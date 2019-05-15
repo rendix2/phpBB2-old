@@ -36,14 +36,13 @@ function validate_username($username)
 	$sql = "SELECT username 
 		FROM " . USERS_TABLE . "
 		WHERE LOWER(username) = '" . strtolower($username) . "'";
-	if ($result = $db->sql_query($sql))
-	{
-		while ($row = $db->sql_fetchrow($result))
-		{
-			if (($userdata['session_logged_in'] && $row['username'] != $userdata['username']) || !$userdata['session_logged_in'])
-			{
+	
+	if ($result = $db->sql_query($sql)) {
+		while ($row = $db->sql_fetchrow($result)) {
+			if (($userdata['session_logged_in'] && $row['username'] != $userdata['username']) || !$userdata['session_logged_in']) {
 				$db->sql_freeresult($result);
-				return array('error' => true, 'error_msg' => $lang['Username_taken']);
+				
+				return ['error' => true, 'error_msg' => $lang['Username_taken']];
 			}
 		}
 	}
@@ -52,28 +51,26 @@ function validate_username($username)
 	$sql = "SELECT group_name
 		FROM " . GROUPS_TABLE . " 
 		WHERE LOWER(group_name) = '" . strtolower($username) . "'";
-	if ($result = $db->sql_query($sql))
-	{
-		if ($row = $db->sql_fetchrow($result))
-		{
+	
+	if ($result = $db->sql_query($sql)) {
+		if ($row = $db->sql_fetchrow($result)) {
 			$db->sql_freeresult($result);
 			return array('error' => true, 'error_msg' => $lang['Username_taken']);
 		}
 	}
+	
 	$db->sql_freeresult($result);
 
 	$sql = "SELECT disallow_username
 		FROM " . DISALLOW_TABLE;
-	if ($result = $db->sql_query($sql))
-	{
-		if ($row = $db->sql_fetchrow($result))
-		{
+	
+	if ($result = $db->sql_query($sql)) {
+		if ($row = $db->sql_fetchrow($result)) {
 			do
 			{
-				if (preg_match("#\b(" . str_replace("\*", ".*?", preg_quote($row['disallow_username'], '#')) . ")\b#i", $username))
-				{
+				if (preg_match("#\b(" . str_replace("\*", ".*?", preg_quote($row['disallow_username'], '#')) . ")\b#i", $username)) {
 					$db->sql_freeresult($result);
-					return array('error' => true, 'error_msg' => $lang['Username_disallowed']);
+					return ['error' => true, 'error_msg' => $lang['Username_disallowed']];
 				}
 			}
 			while($row = $db->sql_fetchrow($result));
@@ -83,14 +80,12 @@ function validate_username($username)
 
 	$sql = "SELECT word 
 		FROM  " . WORDS_TABLE;
-	if ($result = $db->sql_query($sql))
-	{
-		if ($row = $db->sql_fetchrow($result))
-		{
+	
+	if ($result = $db->sql_query($sql)) {
+		if ($row = $db->sql_fetchrow($result)) {
 			do
 			{
-				if (preg_match("#\b(" . str_replace("\*", ".*?", preg_quote($row['word'], '#')) . ")\b#i", $username))
-				{
+				if (preg_match("#\b(" . str_replace("\*", ".*?", preg_quote($row['word'], '#')) . ")\b#i", $username)) {
 					$db->sql_freeresult($result);
 					return array('error' => true, 'error_msg' => $lang['Username_disallowed']);
 				}
@@ -101,9 +96,8 @@ function validate_username($username)
 	$db->sql_freeresult($result);
 
 	// Don't allow " and ALT-255 in username.
-	if (strstr($username, '"') || strstr($username, '&quot;') || strstr($username, chr(160)) || strstr($username, chr(173)))
-	{
-		return array('error' => true, 'error_msg' => $lang['Username_invalid']);
+	if (strstr($username, '"') || strstr($username, '&quot;') || strstr($username, chr(160)) || strstr($username, chr(173))) {
+		return ['error' => true, 'error_msg' => $lang['Username_invalid']];
 	}
 
 	return array('error' => false, 'error_msg' => '');
@@ -117,21 +111,18 @@ function validate_email($email)
 {
 	global $db, $lang;
 
-	if ($email != '')
-	{
-		if (preg_match('/^[a-z0-9&\'\.\-_\+]+@[a-z0-9\-]+\.([a-z0-9\-]+\.)*?[a-z]+$/is', $email))
-		{
+	if ($email != '') {
+		if (preg_match('/^[a-z0-9&\'\.\-_\+]+@[a-z0-9\-]+\.([a-z0-9\-]+\.)*?[a-z]+$/is', $email)) {
 			$sql = "SELECT ban_email
 				FROM " . BANLIST_TABLE;
-			if ($result = $db->sql_query($sql))
-			{
-				if ($row = $db->sql_fetchrow($result))
-				{
+			
+			if ($result = $db->sql_query($sql)) {
+				if ($row = $db->sql_fetchrow($result)) {
 					do
 					{
 						$match_email = str_replace('*', '.*?', $row['ban_email']);
-						if (preg_match('/^' . $match_email . '$/is', $email))
-						{
+						
+						if (preg_match('/^' . $match_email . '$/is', $email)) {
 							$db->sql_freeresult($result);
 							return array('error' => true, 'error_msg' => $lang['Email_banned']);
 						}
@@ -139,20 +130,21 @@ function validate_email($email)
 					while($row = $db->sql_fetchrow($result));
 				}
 			}
+			
 			$db->sql_freeresult($result);
 
 			$sql = "SELECT user_email
 				FROM " . USERS_TABLE . "
 				WHERE user_email = '" . str_replace("\'", "''", $email) . "'";
-			if (!($result = $db->sql_query($sql)))
-			{
+			
+			if (!($result = $db->sql_query($sql))) {
 				message_die(GENERAL_ERROR, "Couldn't obtain user email information.", "", __LINE__, __FILE__, $sql);
 			}
 		
-			if ($row = $db->sql_fetchrow($result))
-			{
+			if ($row = $db->sql_fetchrow($result)) {
 				return array('error' => true, 'error_msg' => $lang['Email_taken']);
 			}
+			
 			$db->sql_freeresult($result);
 
 			return array('error' => false, 'error_msg' => '');
@@ -170,31 +162,25 @@ function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$loca
 {
 	$check_var_length = array('aim', 'msnm', 'yim', 'location', 'occupation', 'interests', 'sig');
 
-	for($i = 0; $i < count($check_var_length); $i++)
-	{
-		if (strlen($$check_var_length[$i]) < 2)
-		{
+	for($i = 0; $i < count($check_var_length); $i++) {
+		if (strlen($$check_var_length[$i]) < 2) {
 			$$check_var_length[$i] = '';
 		}
 	}
 
 	// ICQ number has to be only numbers.
-	if (!preg_match('/^[0-9]+$/', $icq))
-	{
+	if (!preg_match('/^[0-9]+$/', $icq)) {
 		$icq = '';
 	}
 	
 	// website has to start with http://, followed by something with length at least 3 that
 	// contains at least one dot.
-	if ($website != "")
-	{
-		if (!preg_match('#^http[s]?:\/\/#i', $website))
-		{
+	if ($website != "") {
+		if (!preg_match('#^http[s]?:\/\/#i', $website)) {
 			$website = 'http://' . $website;
 		}
 
-		if (!preg_match('#^http[s]?\\:\\/\\/[a-z0-9\-]+\.([a-z0-9\-]+\.)?[a-z]+#i', $website))
-		{
+		if (!preg_match('#^http[s]?\\:\\/\\/[a-z0-9\-]+\.([a-z0-9\-]+\.)?[a-z]+#i', $website)) {
 			$website = '';
 		}
 	}

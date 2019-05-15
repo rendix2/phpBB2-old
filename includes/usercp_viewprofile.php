@@ -154,8 +154,7 @@ $search = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $
 $page_title = $lang['Viewing_profile'];
 include($phpbb_root_path . 'includes/page_header.php');
 
-if (function_exists('get_html_translation_table'))
-{
+if (function_exists('get_html_translation_table')) {
 	$u_search_author = urlencode(strtr($profiledata['username'], array_flip(get_html_translation_table(HTML_ENTITIES))));
 } else {
 	$u_search_author = urlencode(str_replace(array('&amp;', '&#039;', '&quot;', '&lt;', '&gt;'), array('&', "'", '"', '<', '>'), $profiledata['username']));
