@@ -30,7 +30,7 @@ class emailer
 	var $addresses, $reply_to, $from;
 	var $use_smtp;
 
-	var $tpl_msg = array();
+	var $tpl_msg = [];
 
 	function emailer($use_smtp)
 	{
@@ -42,7 +42,7 @@ class emailer
 	// Resets all the data (address, template file, etc etc to default
 	function reset()
 	{
-		$this->addresses = array();
+		$this->addresses = [];
 		$this->vars = $this->msg = $this->extra_headers = '';
 	}
 
@@ -160,7 +160,7 @@ class emailer
 		// We now try and pull a subject from the email body ... if it exists,
 		// do this here because the subject may contain a variable
 		$drop_header = '';
-		$match = array();
+		$match = [];
 		if (preg_match('#^(Subject:(.*?))$#m', $this->msg, $match))
 		{
 			$this->subject = (trim($match[2]) != '') ? trim($match[2]) : (($this->subject != '') ? $this->subject : 'No Subject');

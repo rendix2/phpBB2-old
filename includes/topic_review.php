@@ -28,10 +28,8 @@ function topic_review($topic_id, $is_inline_review)
 	global $orig_word, $replacement_word;
 	global $starttime;
 
-	if ( !$is_inline_review )
-	{
-		if ( !isset($topic_id) || !$topic_id)
-		{
+	if ( !$is_inline_review ) {
+		if ( !isset($topic_id) || !$topic_id) {
 			message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
 		}
 
@@ -42,15 +40,15 @@ function topic_review($topic_id, $is_inline_review)
 			FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f 
 			WHERE t.topic_id = $topic_id
 				AND f.forum_id = t.forum_id";
-		if ( !($result = $db->sql_query($sql)) )
-		{
+		
+		if ( !($result = $db->sql_query($sql)) ) {
 			message_die(GENERAL_ERROR, 'Could not obtain topic information', '', __LINE__, __FILE__, $sql);
 		}
 
-		if ( !($forum_row = $db->sql_fetchrow($result)) )
-		{
+		if ( !($forum_row = $db->sql_fetchrow($result)) ) {
 			message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
 		}
+		
 		$db->sql_freeresult($result);
 
 		$forum_id = $forum_row['forum_id'];
@@ -65,11 +63,10 @@ function topic_review($topic_id, $is_inline_review)
 		// End session management
 		//
 
-		$is_auth = array();
+		$is_auth = [];
 		$is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_row);
 
-		if ( !$is_auth['auth_read'] )
-		{
+		if ( !$is_auth['auth_read'] ) {
 			message_die(GENERAL_MESSAGE, sprintf($lang['Sorry_auth_read'], $is_auth['auth_read_type']));
 		}
 	}
@@ -77,10 +74,9 @@ function topic_review($topic_id, $is_inline_review)
 	//
 	// Define censored word matches
 	//
-	if ( empty($orig_word) && empty($replacement_word) )
-	{
-		$orig_word = array();
-		$replacement_word = array();
+	if ( empty($orig_word) && empty($replacement_word) ) {
+		$orig_word = [];
+		$replacement_word = [];
 
 		obtain_word_list($orig_word, $replacement_word);
 	}
@@ -88,9 +84,8 @@ function topic_review($topic_id, $is_inline_review)
 	//
 	// Dump out the page header and load viewtopic body template
 	//
-	if ( !$is_inline_review )
-	{
-		$gen_simple_header = TRUE;
+	if ( !$is_inline_review ) {
+		$gen_simple_header = tru;
 
 		$page_title = $lang['Topic_review'] . ' - ' . $topic_title;
 		include($phpbb_root_path . 'includes/page_header.php');
@@ -110,8 +105,8 @@ function topic_review($topic_id, $is_inline_review)
 			AND p.post_id = pt.post_id
 		ORDER BY p.post_time DESC
 		LIMIT " . $board_config['posts_per_page'];
-	if ( !($result = $db->sql_query($sql)) )
-	{
+	
+	if ( !($result = $db->sql_query($sql)) ) {
 		message_die(GENERAL_ERROR, 'Could not obtain post/user information', '', __LINE__, __FILE__, $sql);
 	}
 
@@ -119,12 +114,12 @@ function topic_review($topic_id, $is_inline_review)
 	// Okay, let's do the loop, yeah come on baby let's do the loop
 	// and it goes like this ...
 	//
-	if ( $row = $db->sql_fetchrow($result) )
-	{
+	if ( $row = $db->sql_fetchrow($result) ) {
 		$mini_post_img = $images['icon_minipost'];
 		$mini_post_alt = $lang['Post'];
 
 		$i = 0;
+		
 		do
 		{
 			$poster_id = $row['user_id'];
@@ -135,13 +130,10 @@ function topic_review($topic_id, $is_inline_review)
 			//
 			// Handle anon users posting with usernames
 			//
-			if( $poster_id == ANONYMOUS && $row['post_username'] != '' )
-			{
+			if( $poster_id == ANONYMOUS && $row['post_username'] != '' ) {
 				$poster = $row['post_username'];
 				$poster_rank = $lang['Guest'];
-			}
-			elseif ( $poster_id == ANONYMOUS )
-			{
+			} elseif ( $poster_id == ANONYMOUS ) {
 				$poster = $lang['Guest'];
 				$poster_rank = '';
 			}
@@ -155,26 +147,22 @@ function topic_review($topic_id, $is_inline_review)
 			// If the board has HTML off but the post has HTML
 			// on then we process it, else leave it alone
 			//
-			if ( !$board_config['allow_html'] && $row['enable_html'] )
-			{
+			if ( !$board_config['allow_html'] && $row['enable_html'] ) {
 				$message = preg_replace('#(<)([\/]?.*?)(>)#is', '&lt;\2&gt;', $message);
 			}
 
-			if ( $bbcode_uid != "" )
-			{
+			if ( $bbcode_uid != "" ) {
 				$message = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
 			}
 
 			$message = make_clickable($message);
 
-			if ( count($orig_word) )
-			{
+			if ( count($orig_word) ) {
 				$post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
 				$message = preg_replace($orig_word, $replacement_word, $message);
 			}
 
-			if ( $board_config['allow_smilies'] && $row['enable_smilies'] )
-			{
+			if ( $board_config['allow_smilies'] && $row['enable_smilies'] ) {
 				$message = smilies_pass($message);
 			}
 
@@ -203,11 +191,10 @@ function topic_review($topic_id, $is_inline_review)
 			$i++;
 		}
 		while ( $row = $db->sql_fetchrow($result) );
-	}
-	else
-	{
+	} else {
 		message_die(GENERAL_MESSAGE, 'Topic_post_not_exist', '', __LINE__, __FILE__, $sql);
 	}
+	
 	$db->sql_freeresult($result);
 
 	$template->assign_vars(array(
@@ -218,8 +205,7 @@ function topic_review($topic_id, $is_inline_review)
 		'L_TOPIC_REVIEW' => $lang['Topic_review'])
 	);
 
-	if ( !$is_inline_review )
-	{
+	if ( !$is_inline_review ) {
 		$template->pparse('reviewbody');
 		include($phpbb_root_path . 'includes/page_tail.php');
 	}

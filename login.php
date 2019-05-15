@@ -41,41 +41,31 @@ init_userprefs($userdata);
 //
 
 // session id check
-if (!empty($HTTP_POST_VARS['sid']) || !empty($HTTP_GET_VARS['sid']))
-{
-	$sid = (!empty($HTTP_POST_VARS['sid'])) ? $HTTP_POST_VARS['sid'] : $HTTP_GET_VARS['sid'];
-}
-else
-{
+if (!empty($_POST['sid']) || !empty($_GET['sid'])) {
+	$sid = (!empty($_POST['sid'])) ? $_POST['sid'] : $_GET['sid'];
+} else {
 	$sid = '';
 }
 
-if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($HTTP_POST_VARS['logout']) || isset($HTTP_GET_VARS['logout']) )
-{
-	if( ( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) ) && (!$userdata['session_logged_in'] || isset($HTTP_POST_VARS['admin'])) )
-	{
-		$username = isset($HTTP_POST_VARS['username']) ? phpbb_clean_username($HTTP_POST_VARS['username']) : '';
-		$password = isset($HTTP_POST_VARS['password']) ? $HTTP_POST_VARS['password'] : '';
+if( isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) || isset($_GET['logout']) ) {
+	if( ( isset($_POST['login']) || isset($_GET['login']) ) && (!$userdata['session_logged_in'] || isset($_POST['admin'])) ) {
+		$username = isset($_POST['username']) ? phpbb_clean_username($_POST['username']) : '';
+		$password = isset($_POST['password']) ? $_POST['password'] : '';
 
 		$sql = "SELECT user_id, username, user_password, user_active, user_level, user_login_tries, user_last_login_try
 			FROM " . USERS_TABLE . "
 			WHERE username = '" . str_replace("\\'", "''", $username) . "'";
-		if ( !($result = $db->sql_query($sql)) )
-		{
+		
+		if ( !($result = $db->sql_query($sql)) ) {
 			message_die(GENERAL_ERROR, 'Error in obtaining userdata', '', __LINE__, __FILE__, $sql);
 		}
 
-		if( $row = $db->sql_fetchrow($result) )
-		{
-			if( $row['user_level'] != ADMIN && $board_config['board_disable'] )
-			{
+		if( $row = $db->sql_fetchrow($result) ) {
+            if( $row['user_level'] != ADMIN && $board_config['board_disable'] ) {
 				redirect(append_sid("index.php", true));
-			}
-			else
-			{
+			} else {
 				// If the last login is more than x minutes ago, then reset the login tries/time
-				if ($row['user_last_login_try'] && $board_config['login_reset_time'] && $row['user_last_login_try'] < (time() - ($board_config['login_reset_time'] * 60)))
-				{
+				if ($row['user_last_login_try'] && $board_config['login_reset_time'] && $row['user_last_login_try'] < (time() - ($board_config['login_reset_time'] * 60))) {
 					$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_login_tries = 0, user_last_login_try = 0 WHERE user_id = ' . $row['user_id']);
 					$row['user_last_login_try'] = $row['user_login_tries'] = 0;
 				}
@@ -87,44 +77,38 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 					message_die(GENERAL_MESSAGE, sprintf($lang['Login_attempts_exceeded'], $board_config['max_login_attempts'], $board_config['login_reset_time']));
 				}
 
-				if( md5($password) == $row['user_password'] && $row['user_active'] )
-				{
-					$autologin = ( isset($HTTP_POST_VARS['autologin']) ) ? TRUE : 0;
+				if( md5($password) == $row['user_password'] && $row['user_active'] ) {
+					$autologin = ( isset($_POST['autologin']) ) ? TRUE : 0;
 
-					$admin = (isset($HTTP_POST_VARS['admin'])) ? 1 : 0;
+					$admin = (isset($_POST['admin'])) ? 1 : 0;
 					$session_id = session_begin($row['user_id'], $user_ip, PAGE_INDEX, FALSE, $autologin, $admin);
 
 					// Reset login tries
 					$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_login_tries = 0, user_last_login_try = 0 WHERE user_id = ' . $row['user_id']);
 
-					if( $session_id )
-					{
-						$url = ( !empty($HTTP_POST_VARS['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($HTTP_POST_VARS['redirect'])) : "index.php";
+					if( $session_id ) {
+						$url = ( !empty($_POST['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : "index.php";
 						redirect(append_sid($url, true));
-					}
-					else
-					{
+					} else {
 						message_die(CRITICAL_ERROR, "Couldn't start session : login", "", __LINE__, __FILE__);
 					}
 				}
 				// Only store a failed login attempt for an active user - inactive users can't login even with a correct password
-				elseif( $row['user_active'] )
-				{
+				elseif( $row['user_active'] ) {
 					// Save login tries and last login
-					if ($row['user_id'] != ANONYMOUS)
-					{
+					if ($row['user_id'] != ANONYMOUS) {
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET user_login_tries = user_login_tries + 1, user_last_login_try = ' . time() . '
 							WHERE user_id = ' . $row['user_id'];
+						
 						$db->sql_query($sql);
 					}
 				}
 
-				$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($HTTP_POST_VARS['redirect'])) : '';
+				$redirect = ( !empty($_POST['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : '';
 				$redirect = str_replace('?', '&', $redirect);
 
-				if (strstr(urldecode($redirect), "\n") || strstr(urldecode($redirect), "\r") || strstr(urldecode($redirect), ';url'))
-				{
+				if (strstr(urldecode($redirect), "\n") || strstr(urldecode($redirect), "\r") || strstr(urldecode($redirect), ';url')) {
 					message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
 				}
 
@@ -136,14 +120,11 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 
 				message_die(GENERAL_MESSAGE, $message);
 			}
-		}
-		else
-		{
-			$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($HTTP_POST_VARS['redirect'])) : "";
+		} else {
+			$redirect = ( !empty($_POST['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : "";
 			$redirect = str_replace("?", "&", $redirect);
 
-			if (strstr(urldecode($redirect), "\n") || strstr(urldecode($redirect), "\r") || strstr(urldecode($redirect), ';url'))
-			{
+			if (strstr(urldecode($redirect), "\n") || strstr(urldecode($redirect), "\r") || strstr(urldecode($redirect), ';url')) {
 				message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
 			}
 
@@ -155,9 +136,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 
 			message_die(GENERAL_MESSAGE, $message);
 		}
-	}
-	else if( ( isset($HTTP_GET_VARS['logout']) || isset($HTTP_POST_VARS['logout']) ) && $userdata['session_logged_in'] )
-	{
+	} else if( ( isset($_GET['logout']) || isset($_POST['logout']) ) && $userdata['session_logged_in'] ) {
 		// session id check
 		if ($sid == '' || $sid != $userdata['session_id'])
 		{
@@ -169,31 +148,24 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 			session_end($userdata['session_id'], $userdata['user_id']);
 		}
 
-		if (!empty($HTTP_POST_VARS['redirect']) || !empty($HTTP_GET_VARS['redirect']))
+		if (!empty($_POST['redirect']) || !empty($_GET['redirect']))
 		{
-			$url = (!empty($HTTP_POST_VARS['redirect'])) ? htmlspecialchars($HTTP_POST_VARS['redirect']) : htmlspecialchars($HTTP_GET_VARS['redirect']);
+		    $url = (!empty($_POST['redirect'])) ? htmlspecialchars($_POST['redirect']) : htmlspecialchars($_GET['redirect']);
 			$url = str_replace('&amp;', '&', $url);
 			redirect(append_sid($url, true));
-		}
-		else
-		{
+		} else {
 			redirect(append_sid("index.php", true));
 		}
-	}
-	else
-	{
-		$url = ( !empty($HTTP_POST_VARS['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($HTTP_POST_VARS['redirect'])) : "index.php";
+	} else {
+		$url = ( !empty($_POST['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : "index.php";
 		redirect(append_sid($url, true));
 	}
-}
-else
-{
+} else {
 	//
 	// Do a full login page dohickey if
 	// user not already logged in
 	//
-	if( !$userdata['session_logged_in'] || (isset($HTTP_GET_VARS['admin']) && $userdata['session_logged_in'] && $userdata['user_level'] == ADMIN))
-	{
+	if( !$userdata['session_logged_in'] || (isset($_GET['admin']) && $userdata['session_logged_in'] && $userdata['user_level'] == ADMIN)) {
 		$page_title = $lang['Login'];
 		include($phpbb_root_path . 'includes/page_header.php');
 
@@ -203,32 +175,26 @@ else
 
 		$forward_page = '';
 
-		if( isset($HTTP_POST_VARS['redirect']) || isset($HTTP_GET_VARS['redirect']) )
-		{
-			$forward_to = $HTTP_SERVER_VARS['QUERY_STRING'];
+		if( isset($_POST['redirect']) || isset($_GET['redirect']) ) {
+			$forward_to = $_SERVER['QUERY_STRING'];
 
-			if( preg_match("/^redirect=([a-z0-9\.#\/\?&=\+\-_]+)/si", $forward_to, $forward_matches) )
-			{
+			if( preg_match("/^redirect=([a-z0-9\.#\/\?&=\+\-_]+)/si", $forward_to, $forward_matches) ) {
 				$forward_to = ( !empty($forward_matches[3]) ) ? $forward_matches[3] : $forward_matches[1];
 				$forward_match = explode('&', $forward_to);
 
-				if(count($forward_match) > 1)
-				{
-					for($i = 1; $i < count($forward_match); $i++)
-					{
-						if( !ereg("sid=", $forward_match[$i]) )
-						{
-							if( $forward_page != '' )
-							{
+				if(count($forward_match) > 1) {
+					for($i = 1; $i < count($forward_match); $i++) {
+						if( !ereg("sid=", $forward_match[$i]) ) {
+							if( $forward_page != '' ) {
 								$forward_page .= '&';
 							}
+							
 							$forward_page .= $forward_match[$i];
 						}
 					}
+
 					$forward_page = $forward_match[0] . '?' . $forward_page;
-				}
-				else
-				{
+				} else {
 					$forward_page = $forward_match[0];
 				}
 			}
@@ -237,13 +203,13 @@ else
 		$username = ( $userdata['user_id'] != ANONYMOUS ) ? $userdata['username'] : '';
 
 		$s_hidden_fields = '<input type="hidden" name="redirect" value="' . $forward_page . '" />';
-		$s_hidden_fields .= (isset($HTTP_GET_VARS['admin'])) ? '<input type="hidden" name="admin" value="1" />' : '';
+		$s_hidden_fields .= (isset($_GET['admin'])) ? '<input type="hidden" name="admin" value="1" />' : '';
 
 		make_jumpbox('viewforum.php');
 		$template->assign_vars(array(
 			'USERNAME' => $username,
 
-			'L_ENTER_PASSWORD' => (isset($HTTP_GET_VARS['admin'])) ? $lang['Admin_reauthenticate'] : $lang['Enter_password'],
+			'L_ENTER_PASSWORD' => (isset($_GET['admin'])) ? $lang['Admin_reauthenticate'] : $lang['Enter_password'],
 			'L_SEND_PASSWORD' => $lang['Forgotten_password'],
 
 			'U_SEND_PASSWORD' => append_sid("profile.php?mode=sendpassword"),
@@ -254,12 +220,9 @@ else
 		$template->pparse('body');
 
 		include($phpbb_root_path . 'includes/page_tail.php');
-	}
-	else
-	{
+	} else {
 		redirect(append_sid("index.php", true));
 	}
-
 }
 
 ?>

@@ -51,7 +51,7 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 		// is going to get converted to HTML entities
 		$message = stripslashes($message);
 		$html_match = '#<[^\w<]*(\w+)((?:"[^"]*"|\'[^\']*\'|[^<>\'"])+)?>#';
-		$matches = array();
+		$matches = [];
 
 		$message_split = preg_split($html_match, $message);
 		preg_match_all($html_match, $message, $matches);
@@ -150,7 +150,7 @@ function prepare_post(&$mode, &$post_data, &$bbcode_on, &$html_on, &$smilies_on,
 
 		if(!empty($poll_options))
 		{
-			$temp_option_text = array();
+			$temp_option_text = [];
 			while(list($option_id, $option_text) = @each($poll_options))
 			{
 				$option_text = trim($option_text);
@@ -265,7 +265,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 		}
 
 		$delete_option_sql = '';
-		$old_poll_result = array();
+		$old_poll_result = [];
 		if ($mode == 'editpost' && $post_data['has_poll'])
 		{
 			$sql = "SELECT vote_option_id, vote_result  
@@ -582,7 +582,7 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 			}
 
 			$update_watched_sql = '';
-			$bcc_list_ary = array();
+			$bcc_list_ary = [];
 			
 			if ($row = $db->sql_fetchrow($result))
 			{
@@ -613,7 +613,7 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 					$board_config['smtp_host'] = @$ini_val('SMTP');
 				}
 
-				if (sizeof($bcc_list_ary))
+				if (count($bcc_list_ary))
 				{
 					include($phpbb_root_path . 'includes/emailer.php');
 					$emailer = new emailer($board_config['smtp_delivery']);
@@ -624,8 +624,8 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 					$server_protocol = ($board_config['cookie_secure']) ? 'https://' : 'http://';
 					$server_port = ($board_config['server_port'] <> 80) ? ':' . trim($board_config['server_port']) . '/' : '/';
 
-					$orig_word = array();
-					$replacement_word = array();
+					$orig_word = [];
+					$replacement_word = [];
 					obtain_word_list($orig_word, $replacement_word);
 
 					$emailer->from($board_config['board_email']);
@@ -746,7 +746,7 @@ function generate_smilies($mode, $page_id)
 	if ($result = $db->sql_query($sql))
 	{
 		$num_smilies = 0;
-		$rowset = array();
+		$rowset = [];
 		while ($row = $db->sql_fetchrow($result))
 		{
 			if (empty($rowset[$row['smile_url']]))
@@ -841,7 +841,7 @@ function clean_html($tag)
 
 	// Check if this is an end tag
 	preg_match('/<[^\w\/]*\/[\W]*(\w+)/', $tag[0], $matches);
-	if (sizeof($matches))
+	if (count($matches))
 	{
 		if (in_array(strtolower($matches[1]), $allowed_html_tags))
 		{
@@ -860,7 +860,7 @@ function clean_html($tag)
 		if (!empty($tag[2]))
 		{
 			preg_match_all('/[\W]*?(\w+)[\W]*?=[\W]*?(["\'])((?:(?!\2).)*)\2/', $tag[2], $test);
-			for ($i = 0; $i < sizeof($test[0]); $i++)
+			for ($i = 0; $i < count($test[0]); $i++)
 			{
 				if (preg_match($disallowed_attributes, $test[1][$i]))
 				{

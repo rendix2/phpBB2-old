@@ -33,12 +33,12 @@ if ( !defined('IN_PHPBB') )
 // than the GPL. We will be watching ... ;)
 
 // Do we have an id? No, then just exit
-if (empty($HTTP_GET_VARS['id']))
+if (empty($_GET['id']))
 {
 	exit;
 }
 
-$confirm_id = htmlspecialchars($HTTP_GET_VARS['id']);
+$confirm_id = htmlspecialchars($_GET['id']);
 
 // Define available charset
 $chars = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',  'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9');
@@ -79,7 +79,7 @@ $l = 0;
 list($usec, $sec) = explode(' ', microtime()); 
 mt_srand($sec * $usec); 
 
-$char_widths = array();
+$char_widths = [];
 for ($i = 0; $i < strlen($code); $i++)
 {
 	$char = $code{$i};
@@ -93,7 +93,7 @@ $offset_x = mt_rand(0, $total_width - $img_width);
 $offset_y = mt_rand(0, $total_height - $img_height);
 
 $image = '';
-$hold_chars = array();
+$hold_chars = [];
 for ($i = 0; $i < $total_height; $i++)
 {
 	$image .= chr(0);

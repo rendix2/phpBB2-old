@@ -140,7 +140,7 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 	// has the type set to ALL, if yes they are good to go, if not then they
 	// are denied access
 	//
-	$u_access = array();
+	$u_access = [];
 	if ( $userdata['session_logged_in'] )
 	{
 		$forum_match_sql = ( $forum_id != AUTH_LIST_ALL ) ? "AND a.forum_id = $forum_id" : '';
@@ -176,7 +176,7 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 
 	$is_admin = ( $userdata['user_level'] == ADMIN && $userdata['session_logged_in'] ) ? TRUE : 0;
 
-	$auth_user = array();
+	$auth_user = [];
 	for($i = 0; $i < count($auth_fields); $i++)
 	{
 		$key = $auth_fields[$i];

@@ -35,12 +35,9 @@ init_userprefs($userdata);
 //
 
 // session id check
-if (!empty($HTTP_POST_VARS['sid']) || !empty($HTTP_GET_VARS['sid']))
-{
-	$sid = (!empty($HTTP_POST_VARS['sid'])) ? $HTTP_POST_VARS['sid'] : $HTTP_GET_VARS['sid'];
-}
-else
-{
+if (!empty($_POST['sid']) || !empty($_GET['sid'])) {
+	$sid = (!empty($_POST['sid'])) ? $_POST['sid'] : $_GET['sid'];
+} else {
 	$sid = '';
 }
 
@@ -71,49 +68,35 @@ function gen_rand_string($hash)
 //
 // Start of program proper
 //
-if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
-{
-	$mode = ( isset($HTTP_GET_VARS['mode']) ) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mode'];
+if ( isset($_GET['mode']) || isset($_POST['mode']) ) {
+    $mode = ( isset($_GET['mode']) ) ? $_GET['mode'] : $_POST['mode'];
 	$mode = htmlspecialchars($mode);
 
-	if ( $mode == 'viewprofile' )
-	{
+	if ( $mode == 'viewprofile' ) {
 		include($phpbb_root_path . 'includes/usercp_viewprofile.php');
 		exit;
-	}
-	else if ( $mode == 'editprofile' || $mode == 'register' )
-	{
-		if ( !$userdata['session_logged_in'] && $mode == 'editprofile' )
-		{
+	} elseif ( $mode == 'editprofile' || $mode == 'register' ) {
+		if ( !$userdata['session_logged_in'] && $mode == 'editprofile' ) {
 			redirect(append_sid("login.php?redirect=profile.php&mode=editprofile", true));
 		}
 
 		include($phpbb_root_path . 'includes/usercp_register.php');
 		exit;
-	}
-	else if ( $mode == 'confirm' )
-	{
+	} else if ( $mode == 'confirm' ) {
 		// Visual Confirmation
-		if ( $userdata['session_logged_in'] )
-		{
+		if ( $userdata['session_logged_in'] ) {
 			exit;
 		}
 
 		include($phpbb_root_path . 'includes/usercp_confirm.php');
 		exit;
-	}
-	else if ( $mode == 'sendpassword' )
-	{
+	} else if ( $mode == 'sendpassword' ) {
 		include($phpbb_root_path . 'includes/usercp_sendpasswd.php');
 		exit;
-	}
-	else if ( $mode == 'activate' )
-	{
+	} else if ( $mode == 'activate' ) {
 		include($phpbb_root_path . 'includes/usercp_activate.php');
 		exit;
-	}
-	else if ( $mode == 'email' )
-	{
+	} else if ( $mode == 'email' ) {
 		include($phpbb_root_path . 'includes/usercp_email.php');
 		exit;
 	}

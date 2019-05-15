@@ -109,14 +109,14 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 	$stopword_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . "/search_stopwords.txt"); 
 	$synonym_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . "/search_synonyms.txt"); 
 
-	$search_raw_words = array();
+	$search_raw_words = [];
 	$search_raw_words['text'] = split_words(clean_words('post', $post_text, $stopword_array, $synonym_array));
 	$search_raw_words['title'] = split_words(clean_words('post', $post_title, $stopword_array, $synonym_array));
 
 	@set_time_limit(0);
 
-	$word = array();
-	$word_insert_sql = array();
+	$word = [];
+	$word_insert_sql = [];
 	while ( list($word_in, $search_matches) = @each($search_raw_words) )
 	{
 		$word_insert_sql[$word_in] = '';
@@ -144,7 +144,7 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 
 		$prev_word = '';
 		$word_text_sql = '';
-		$temp_word = array();
+		$temp_word = [];
 		for($i = 0; $i < count($word); $i++)
 		{
 			if ( $word[$i] != $prev_word )
@@ -156,7 +156,7 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 		}
 		$word = $temp_word;
 
-		$check_words = array();
+		$check_words = [];
 		switch( SQL_LAYER )
 		{
 			case 'postgresql':
@@ -180,7 +180,7 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 		}
 
 		$value_sql = '';
-		$match_word = array();
+		$match_word = [];
 		for ($i = 0; $i < count($word); $i++)
 		{ 
 			$new_match = true;

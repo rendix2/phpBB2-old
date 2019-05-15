@@ -28,75 +28,59 @@ if ( !defined('IN_PHPBB') )
 }
 
 // Is send through board enabled? No, return to index
-if (!$board_config['board_email_form'])
-{
+if (!$board_config['board_email_form']) {
 	redirect(append_sid("index.php", true));
 }
 
-if ( !empty($HTTP_GET_VARS[POST_USERS_URL]) || !empty($HTTP_POST_VARS[POST_USERS_URL]) )
-{
-	$user_id = ( !empty($HTTP_GET_VARS[POST_USERS_URL]) ) ? intval($HTTP_GET_VARS[POST_USERS_URL]) : intval($HTTP_POST_VARS[POST_USERS_URL]);
-}
-else
-{
+if (!empty($_GET[POST_USERS_URL]) || !empty($_POST[POST_USERS_URL]))  {
+    $user_id = ( !empty($_GET[POST_USERS_URL]) ) ? intval($_GET[POST_USERS_URL]) : intval($_POST[POST_USERS_URL]);
+} else {
 	message_die(GENERAL_MESSAGE, $lang['No_user_specified']);
 }
 
-if ( !$userdata['session_logged_in'] )
-{
+if ( !$userdata['session_logged_in'] ) {
 	redirect(append_sid("login.php?redirect=profile.php&mode=email&" . POST_USERS_URL . "=$user_id", true));
 }
 
 $sql = "SELECT username, user_email, user_viewemail, user_lang  
 	FROM " . USERS_TABLE . " 
 	WHERE user_id = $user_id";
-if ( $result = $db->sql_query($sql) )
-{
-	if ( $row = $db->sql_fetchrow($result) )
-	{
+
+if ( $result = $db->sql_query($sql) ) {
+	if ( $row = $db->sql_fetchrow($result) ) {
 
 		$username = $row['username'];
 		$user_email = $row['user_email']; 
 		$user_lang = $row['user_lang'];
 	
-		if ( $row['user_viewemail'] || $userdata['user_level'] == ADMIN )
-		{
-			if ( time() - $userdata['user_emailtime'] < $board_config['flood_interval'] )
-			{
+		if ( $row['user_viewemail'] || $userdata['user_level'] == ADMIN ) {
+			if ( time() - $userdata['user_emailtime'] < $board_config['flood_interval'] ) {
 				message_die(GENERAL_MESSAGE, $lang['Flood_email_limit']);
 			}
 	
-			if ( isset($HTTP_POST_VARS['submit']) )
-			{
-				$error = FALSE;
+			if ( isset($_POST['submit']) ) {
+				$error = false;
 	
-				if ( !empty($HTTP_POST_VARS['subject']) )
-				{
-					$subject = trim(stripslashes($HTTP_POST_VARS['subject']));
-				}
-				else
-				{
-					$error = TRUE;
+				if ( !empty($_POST['subject']) ) {
+					$subject = trim(stripslashes($_POST['subject']));
+				} else {
+					$error = true;
 					$error_msg = ( !empty($error_msg) ) ? $error_msg . '<br />' . $lang['Empty_subject_email'] : $lang['Empty_subject_email'];
 				}
 	
-				if ( !empty($HTTP_POST_VARS['message']) )
-				{
-					$message = trim(stripslashes($HTTP_POST_VARS['message']));
-				}
-				else
-				{
+				if ( !empty($_POST['message']) ) {
+					$message = trim(stripslashes($_POST['message']));
+				} else {
 					$error = TRUE;
 					$error_msg = ( !empty($error_msg) ) ? $error_msg . '<br />' . $lang['Empty_message_email'] : $lang['Empty_message_email'];
 				}
 	
-				if ( !$error )
-				{
+				if ( !$error ) {
 					$sql = "UPDATE " . USERS_TABLE . " 
 						SET user_emailtime = " . time() . " 
 						WHERE user_id = " . $userdata['user_id'];
-					if ( $result = $db->sql_query($sql) )
-					{
+					
+					if ( $result = $db->sql_query($sql) ) {
 						include($phpbb_root_path . 'includes/emailer.php');
 						$emailer = new emailer($board_config['smtp_delivery']);
 	
@@ -123,8 +107,7 @@ if ( $result = $db->sql_query($sql) )
 						$emailer->send();
 						$emailer->reset();
 	
-						if ( !empty($HTTP_POST_VARS['cc_email']) )
-						{
+						if ( !empty($_POST['cc_email']) ) {
 							$emailer->from($userdata['user_email']);
 							$emailer->replyto($userdata['user_email']);
 							$emailer->use_template('profile_send_email');
@@ -149,9 +132,7 @@ if ( $result = $db->sql_query($sql) )
 						$message = $lang['Email_sent'] . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . append_sid("index.php") . '">', '</a>');
 	
 						message_die(GENERAL_MESSAGE, $message);
-					}
-					else
-					{
+					} else {
 						message_die(GENERAL_ERROR, 'Could not update last email time', '', __LINE__, __FILE__, $sql);
 					}
 				}
@@ -164,8 +145,7 @@ if ( $result = $db->sql_query($sql) )
 			);
 			make_jumpbox('viewforum.php');
 	
-			if ( $error )
-			{
+			if ( $error ) {
 				$template->set_filenames(array(
 					'reg_header' => 'error_body.tpl')
 				);
@@ -197,19 +177,13 @@ if ( $result = $db->sql_query($sql) )
 			$template->pparse('body');
 	
 			include($phpbb_root_path . 'includes/page_tail.php');
-		}
-		else
-		{
+		} else {
 			message_die(GENERAL_MESSAGE, $lang['User_prevent_email']);
 		}
-	}
-	else
-	{
+	} else {
 		message_die(GENERAL_MESSAGE, $lang['User_not_exist']);
 	}
-}
-else
-{
+} else {
 	message_die(GENERAL_ERROR, 'Could not select user data', '', __LINE__, __FILE__, $sql);
 }
 

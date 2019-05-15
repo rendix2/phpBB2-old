@@ -20,8 +20,7 @@
  *
  ***************************************************************************/
 
-if ( !defined('IN_PHPBB') )
-{
+if ( !defined('IN_PHPBB') ) {
 	die("Hacking attempt");
 }
 
@@ -31,26 +30,19 @@ define('HEADER_INC', TRUE);
 // gzip_compression
 //
 $do_gzip_compress = FALSE;
-if ( $board_config['gzip_compress'] )
-{
+if ( $board_config['gzip_compress'] ) {
 	$phpver = phpversion();
 
-	$useragent = (isset($HTTP_SERVER_VARS['HTTP_USER_AGENT'])) ? $HTTP_SERVER_VARS['HTTP_USER_AGENT'] : getenv('HTTP_USER_AGENT');
+	$useragent = (isset($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : getenv('HTTP_USER_AGENT');
 
-	if ( $phpver >= '4.0.4pl1' && ( strstr($useragent,'compatible') || strstr($useragent,'Gecko') ) )
-	{
-		if ( extension_loaded('zlib') )
-		{
+	if ( $phpver >= '4.0.4pl1' && ( strstr($useragent,'compatible') || strstr($useragent,'Gecko') ) ) {
+		if ( extension_loaded('zlib') ) {
 			ob_start('ob_gzhandler');
 		}
-	}
-	else if ( $phpver > '4.0' )
-	{
-		if ( strstr($HTTP_SERVER_VARS['HTTP_ACCEPT_ENCODING'], 'gzip') )
-		{
-			if ( extension_loaded('zlib') )
-			{
-				$do_gzip_compress = TRUE;
+	} else if ( $phpver > '4.0' ) {
+		if ( strstr($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') ) {
+			if ( extension_loaded('zlib') ) {
+				$do_gzip_compress = true;
 				ob_start();
 				ob_implicit_flush(0);
 
@@ -70,13 +62,10 @@ $template->set_filenames(array(
 //
 // Generate logged in/logged out status
 //
-if ( $userdata['session_logged_in'] )
-{
+if ( $userdata['session_logged_in'] ) {
 	$u_login_logout = 'login.'.php.'?logout=true&amp;sid=' . $userdata['session_id'];
 	$l_login_logout = $lang['Logout'] . ' [ ' . $userdata['username'] . ' ]';
-}
-else
-{
+} else {
 	$u_login_logout = 'login.php';
 	$l_login_logout = $lang['Login'];
 }
@@ -93,8 +82,7 @@ $guests_online = 0;
 $online_userlist = '';
 $l_online_users = '';
 
-if (defined('SHOW_ONLINE'))
-{
+if (defined('SHOW_ONLINE')) {
 
 	$user_forum_sql = ( !empty($forum_id) ) ? "AND s.session_page = " . intval($forum_id) : '';
 	$sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_level, s.session_logged_in, s.session_ip
@@ -103,148 +91,117 @@ if (defined('SHOW_ONLINE'))
 			AND s.session_time >= ".( time() - 300 ) . "
 			$user_forum_sql
 		ORDER BY u.username ASC, s.session_ip ASC";
-	if( !($result = $db->sql_query($sql)) )
-	{
+	
+	if( !($result = $db->sql_query($sql)) ) {
 		message_die(GENERAL_ERROR, 'Could not obtain user/online information', '', __LINE__, __FILE__, $sql);
 	}
 
-	$userlist_ary = array();
-	$userlist_visible = array();
+	$userlist_ary = [];
+	$userlist_visible = [];
 
 	$prev_user_id = 0;
 	$prev_user_ip = $prev_session_ip = '';
 
-	while( $row = $db->sql_fetchrow($result) )
-	{
+	while( $row = $db->sql_fetchrow($result) ) {
 		// User is logged in and therefor not a guest
-		if ( $row['session_logged_in'] )
-		{
+		if ( $row['session_logged_in'] ) {
 			// Skip multiple sessions for one user
-			if ( $row['user_id'] != $prev_user_id )
-			{
+			if ( $row['user_id'] != $prev_user_id ) {
 				$style_color = '';
-				if ( $row['user_level'] == ADMIN )
-				{
+				
+				if ( $row['user_level'] == ADMIN ) {
 					$row['username'] = '<b>' . $row['username'] . '</b>';
 					$style_color = 'style="color:#' . $theme['fontcolor3'] . '"';
-				}
-				else if ( $row['user_level'] == MOD )
-				{
+				} else if ( $row['user_level'] == MOD ) {
 					$row['username'] = '<b>' . $row['username'] . '</b>';
 					$style_color = 'style="color:#' . $theme['fontcolor2'] . '"';
 				}
 
-				if ( $row['user_allow_viewonline'] )
-				{
+				if ( $row['user_allow_viewonline'] ) {
 					$user_online_link = '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . '"' . $style_color .'>' . $row['username'] . '</a>';
 					$logged_visible_online++;
-				}
-				else
-				{
+				} else {
 					$user_online_link = '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . '"' . $style_color .'><i>' . $row['username'] . '</i></a>';
 					$logged_hidden_online++;
 				}
 
-				if ( $row['user_allow_viewonline'] || $userdata['user_level'] == ADMIN )
-				{
+				if ( $row['user_allow_viewonline'] || $userdata['user_level'] == ADMIN ) {
 					$online_userlist .= ( $online_userlist != '' ) ? ', ' . $user_online_link : $user_online_link;
 				}
 			}
 
 			$prev_user_id = $row['user_id'];
-		}
-		else
-		{
+		} else {
 			// Skip multiple sessions for one user
-			if ( $row['session_ip'] != $prev_session_ip )
-			{
+			if ( $row['session_ip'] != $prev_session_ip ) {
 				$guests_online++;
 			}
 		}
 
 		$prev_session_ip = $row['session_ip'];
 	}
+	
 	$db->sql_freeresult($result);
 
-	if ( empty($online_userlist) )
-	{
+	if ( empty($online_userlist) ) {
 		$online_userlist = $lang['None'];
 	}
+	
 	$online_userlist = ( ( isset($forum_id) ) ? $lang['Browsing_forum'] : $lang['Registered_users'] ) . ' ' . $online_userlist;
 
 	$total_online_users = $logged_visible_online + $logged_hidden_online + $guests_online;
 
-	if ( $total_online_users > $board_config['record_online_users'])
-	{
+	if ( $total_online_users > $board_config['record_online_users']) {
 		$board_config['record_online_users'] = $total_online_users;
 		$board_config['record_online_date'] = time();
 
 		$sql = "UPDATE " . CONFIG_TABLE . "
 			SET config_value = '$total_online_users'
 			WHERE config_name = 'record_online_users'";
-		if ( !$db->sql_query($sql) )
-		{
+		
+		if ( !$db->sql_query($sql) ) {
 			message_die(GENERAL_ERROR, 'Could not update online user record (nr of users)', '', __LINE__, __FILE__, $sql);
 		}
 
 		$sql = "UPDATE " . CONFIG_TABLE . "
 			SET config_value = '" . $board_config['record_online_date'] . "'
 			WHERE config_name = 'record_online_date'";
-		if ( !$db->sql_query($sql) )
-		{
+		
+		if ( !$db->sql_query($sql) ) {
 			message_die(GENERAL_ERROR, 'Could not update online user record (date)', '', __LINE__, __FILE__, $sql);
 		}
 	}
 
-	if ( $total_online_users == 0 )
-	{
+	if ( $total_online_users == 0 ) {
 		$l_t_user_s = $lang['Online_users_zero_total'];
-	}
-	else if ( $total_online_users == 1 )
-	{
+	} else if ( $total_online_users == 1 ) {
 		$l_t_user_s = $lang['Online_user_total'];
-	}
-	else
-	{
+	} else {
 		$l_t_user_s = $lang['Online_users_total'];
 	}
 
-	if ( $logged_visible_online == 0 )
-	{
+	if ( $logged_visible_online == 0 ) {
 		$l_r_user_s = $lang['Reg_users_zero_total'];
 	}
-	else if ( $logged_visible_online == 1 )
-	{
+	elseif ( $logged_visible_online == 1 ) {
 		$l_r_user_s = $lang['Reg_user_total'];
-	}
-	else
-	{
+	} else {
 		$l_r_user_s = $lang['Reg_users_total'];
 	}
 
-	if ( $logged_hidden_online == 0 )
-	{
+	if ( $logged_hidden_online == 0 ) {
 		$l_h_user_s = $lang['Hidden_users_zero_total'];
-	}
-	else if ( $logged_hidden_online == 1 )
-	{
+	} elseif ( $logged_hidden_online == 1 ) {
 		$l_h_user_s = $lang['Hidden_user_total'];
-	}
-	else
-	{
+	} else {
 		$l_h_user_s = $lang['Hidden_users_total'];
 	}
 
-	if ( $guests_online == 0 )
-	{
+	if ( $guests_online == 0 ) {
 		$l_g_user_s = $lang['Guest_users_zero_total'];
-	}
-	else if ( $guests_online == 1 )
-	{
+	} elseif ( $guests_online == 1 ) {
 		$l_g_user_s = $lang['Guest_user_total'];
-	}
-	else
-	{
+	} else {
 		$l_g_user_s = $lang['Guest_users_total'];
 	}
 
@@ -258,52 +215,40 @@ if (defined('SHOW_ONLINE'))
 // Obtain number of new private messages
 // if user is logged in
 //
-if ( ($userdata['session_logged_in']) && (empty($gen_simple_header)) )
-{
-	if ( $userdata['user_new_privmsg'] )
-	{
+if ( ($userdata['session_logged_in']) && (empty($gen_simple_header)) ) {
+	if ( $userdata['user_new_privmsg'] ) {
 		$l_message_new = ( $userdata['user_new_privmsg'] == 1 ) ? $lang['New_pm'] : $lang['New_pms'];
 		$l_privmsgs_text = sprintf($l_message_new, $userdata['user_new_privmsg']);
 
-		if ( $userdata['user_last_privmsg'] > $userdata['user_lastvisit'] )
-		{
+		if ( $userdata['user_last_privmsg'] > $userdata['user_lastvisit'] ) {
 			$sql = "UPDATE " . USERS_TABLE . "
 				SET user_last_privmsg = " . $userdata['user_lastvisit'] . "
 				WHERE user_id = " . $userdata['user_id'];
-			if ( !$db->sql_query($sql) )
-			{
+			
+			if ( !$db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, 'Could not update private message new/read time for user', '', __LINE__, __FILE__, $sql);
 			}
 
 			$s_privmsg_new = 1;
 			$icon_pm = $images['pm_new_msg'];
-		}
-		else
-		{
+		} else {
 			$s_privmsg_new = 0;
 			$icon_pm = $images['pm_new_msg'];
 		}
-	}
-	else
-	{
+	} else {
 		$l_privmsgs_text = $lang['No_new_pm'];
 
 		$s_privmsg_new = 0;
 		$icon_pm = $images['pm_no_new_msg'];
 	}
 
-	if ( $userdata['user_unread_privmsg'] )
-	{
+	if ( $userdata['user_unread_privmsg'] ) {
 		$l_message_unread = ( $userdata['user_unread_privmsg'] == 1 ) ? $lang['Unread_pm'] : $lang['Unread_pms'];
 		$l_privmsgs_text_unread = sprintf($l_message_unread, $userdata['user_unread_privmsg']);
-	}
-	else
-	{
+	} else {
 		$l_privmsgs_text_unread = $lang['No_unread_pm'];
 	}
-}
-else
-{
+} else {
 	$icon_pm = $images['pm_no_new_msg'];
 	$l_privmsgs_text = $lang['Login_check_pm'];
 	$l_privmsgs_text_unread = '';
@@ -313,24 +258,19 @@ else
 //
 // Generate HTML required for Mozilla Navigation bar
 //
-if (!isset($nav_links))
-{
-	$nav_links = array();
+if (!isset($nav_links)) {
+	$nav_links = [];
 }
 
 $nav_links_html = '';
 $nav_link_proto = '<link rel="%s" href="%s" title="%s" />' . "\n";
-while( list($nav_item, $nav_array) = @each($nav_links) )
-{
-	if ( !empty($nav_array['url']) )
-	{
+
+while( list($nav_item, $nav_array) = @each($nav_links) ) {
+	if ( !empty($nav_array['url']) ) {
 		$nav_links_html .= sprintf($nav_link_proto, $nav_item, append_sid($nav_array['url']), $nav_array['title']);
-	}
-	else
-	{
+	} else {
 		// We have a nested array, used for items like <link rel='chapter'> that can occur more than once.
-		while( list(,$nested_array) = each($nav_array) )
-		{
+		while( list(,$nested_array) = each($nav_array) ) {
 			$nav_links_html .= sprintf($nav_link_proto, $nav_item, $nested_array['url'], $nested_array['title']);
 		}
 	}
@@ -447,39 +387,31 @@ $template->assign_vars(array(
 //
 // Login box?
 //
-if ( !$userdata['session_logged_in'] )
-{
+if ( !$userdata['session_logged_in'] ) {
 	$template->assign_block_vars('switch_user_logged_out', array());
 	//
 	// Allow autologin?
 	//
-	if (!isset($board_config['allow_autologin']) || $board_config['allow_autologin'] )
-	{
+	if (!isset($board_config['allow_autologin']) || $board_config['allow_autologin'] ) {
 		$template->assign_block_vars('switch_allow_autologin', array());
 		$template->assign_block_vars('switch_user_logged_out.switch_allow_autologin', array());
 	}
-}
-else
-{
+} else {
 	$template->assign_block_vars('switch_user_logged_in', array());
 
-	if ( !empty($userdata['user_popup_pm']) )
-	{
+	if ( !empty($userdata['user_popup_pm']) ) {
 		$template->assign_block_vars('switch_enable_pm_popup', array());
 	}
 }
 
 // Add no-cache control for cookies if they are set
-//$c_no_cache = (isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_sid']) || isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_data'])) ? 'no-cache="set-cookie", ' : '';
+//$c_no_cache = (isset($_COOKIE[$board_config['cookie_name'] . '_sid']) || isset($_COOKIE[$board_config['cookie_name'] . '_data'])) ? 'no-cache="set-cookie", ' : '';
 
 // Work around for "current" Apache 2 + PHP module which seems to not
 // cope with private cache control setting
-if (!empty($HTTP_SERVER_VARS['SERVER_SOFTWARE']) && strstr($HTTP_SERVER_VARS['SERVER_SOFTWARE'], 'Apache/2'))
-{
+if (!empty($_SERVER['SERVER_SOFTWARE']) && strstr($_SERVER['SERVER_SOFTWARE'], 'Apache/2')) {
 	header ('Cache-Control: no-cache, pre-check=0, post-check=0');
-}
-else
-{
+} else{
 	header ('Cache-Control: private, pre-check=0, post-check=0, max-age=0');
 }
 header ('Expires: 0');

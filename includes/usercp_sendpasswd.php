@@ -21,27 +21,23 @@
  *
  ***************************************************************************/
 
-if ( !defined('IN_PHPBB') )
-{
+if ( !defined('IN_PHPBB') ) {
 	die('Hacking attempt');
 	exit;
 }
 
-if ( isset($HTTP_POST_VARS['submit']) )
-{
-	$username = ( !empty($HTTP_POST_VARS['username']) ) ? phpbb_clean_username($HTTP_POST_VARS['username']) : '';
-	$email = ( !empty($HTTP_POST_VARS['email']) ) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['email']))) : '';
+if ( isset($_POST['submit']) ) {
+	$username = ( !empty($_POST['username']) ) ? phpbb_clean_username($_POST['username']) : '';
+	$email = ( !empty($_POST['email']) ) ? trim(strip_tags(htmlspecialchars($_POST['email']))) : '';
 
 	$sql = "SELECT user_id, username, user_email, user_active, user_lang 
 		FROM " . USERS_TABLE . " 
 		WHERE user_email = '" . str_replace("\'", "''", $email) . "' 
 			AND username = '" . str_replace("\'", "''", $username) . "'";
-	if ( $result = $db->sql_query($sql) )
-	{
-		if ( $row = $db->sql_fetchrow($result) )
-		{
-			if ( !$row['user_active'] )
-			{
+	
+	if ( $result = $db->sql_query($sql) ) {
+		if ( $row = $db->sql_fetchrow($result) ) {
+			if ( !$row['user_active'] ) {
 				message_die(GENERAL_MESSAGE, $lang['No_send_account_inactive']);
 			}
 
@@ -57,8 +53,8 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			$sql = "UPDATE " . USERS_TABLE . " 
 				SET user_newpasswd = '" . md5($user_password) . "', user_actkey = '$user_actkey'  
 				WHERE user_id = " . $row['user_id'];
-			if ( !$db->sql_query($sql) )
-			{
+			
+			if ( !$db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, 'Could not update new password information', '', __LINE__, __FILE__, $sql);
 			}
 
@@ -90,19 +86,13 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			$message = $lang['Password_updated'] . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . append_sid("index.php") . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
-		}
-		else
-		{
+		} else {
 			message_die(GENERAL_MESSAGE, $lang['No_email_match']);
 		}
-	}
-	else
-	{
+	} else {
 		message_die(GENERAL_ERROR, 'Could not obtain user information for sendpassword', '', __LINE__, __FILE__, $sql);
 	}
-}
-else
-{
+} else {
 	$username = '';
 	$email = '';
 }

@@ -21,7 +21,9 @@
  ***************************************************************************/
 
 define('IN_PHPBB', true);
+
 $phpbb_root_path = './';
+
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.php');
 include($phpbb_root_path . 'includes/bbcode.php');
@@ -30,8 +32,7 @@ include($phpbb_root_path . 'includes/functions_post.php');
 //
 // Is PM disabled?
 //
-if ( !empty($board_config['privmsg_disable']) )
-{
+if ( !empty($board_config['privmsg_disable']) ) {
 	message_die(GENERAL_MESSAGE, 'PM_disabled');
 }
 
@@ -41,33 +42,29 @@ $html_entities_replace = array('&amp;', '&lt;', '&gt;', '&quot;');
 //
 // Parameters
 //
-$submit = ( isset($HTTP_POST_VARS['post']) ) ? TRUE : 0;
-$submit_search = ( isset($HTTP_POST_VARS['usersubmit']) ) ? TRUE : 0; 
-$submit_msgdays = ( isset($HTTP_POST_VARS['submit_msgdays']) ) ? TRUE : 0;
-$cancel = ( isset($HTTP_POST_VARS['cancel']) ) ? TRUE : 0;
-$preview = ( isset($HTTP_POST_VARS['preview']) ) ? TRUE : 0;
-$confirm = ( isset($HTTP_POST_VARS['confirm']) ) ? TRUE : 0;
-$delete = ( isset($HTTP_POST_VARS['delete']) ) ? TRUE : 0;
-$delete_all = ( isset($HTTP_POST_VARS['deleteall']) ) ? TRUE : 0;
-$save = ( isset($HTTP_POST_VARS['save']) ) ? TRUE : 0;
-$sid = (isset($HTTP_POST_VARS['sid'])) ? $HTTP_POST_VARS['sid'] : 0;
+$submit = ( isset($_POST['post']) ) ? TRUE : 0;
+$submit_search = ( isset($_POST['usersubmit']) ) ? TRUE : 0; 
+$submit_msgdays = ( isset($_POST['submit_msgdays']) ) ? TRUE : 0;
+$cancel = ( isset($_POST['cancel']) ) ? TRUE : 0;
+$preview = ( isset($_POST['preview']) ) ? TRUE : 0;
+$confirm = ( isset($_POST['confirm']) ) ? TRUE : 0;
+$delete = ( isset($_POST['delete']) ) ? TRUE : 0;
+$delete_all = ( isset($_POST['deleteall']) ) ? TRUE : 0;
+$save = ( isset($_POST['save']) ) ? TRUE : 0;
+$sid = (isset($_POST['sid'])) ? $_POST['sid'] : 0;
 
 $refresh = $preview || $submit_search;
 
-$mark_list = ( !empty($HTTP_POST_VARS['mark']) ) ? $HTTP_POST_VARS['mark'] : 0;
+$mark_list = ( !empty($_POST['mark']) ) ? $_POST['mark'] : 0;
 
-if ( isset($HTTP_POST_VARS['folder']) || isset($HTTP_GET_VARS['folder']) )
-{
-	$folder = ( isset($HTTP_POST_VARS['folder']) ) ? $HTTP_POST_VARS['folder'] : $HTTP_GET_VARS['folder'];
+if ( isset($_POST['folder']) || isset($_GET['folder']) ) {
+	$folder = ( isset($_POST['folder']) ) ? $_POST['folder'] : $_GET['folder'];
 	$folder = htmlspecialchars($folder);
 
-	if ( $folder != 'inbox' && $folder != 'outbox' && $folder != 'sentbox' && $folder != 'savebox' )
-	{
+	if ( $folder != 'inbox' && $folder != 'outbox' && $folder != 'sentbox' && $folder != 'savebox' ) {
 		$folder = 'inbox';
 	}
-}
-else
-{
+} else {
 	$folder = 'inbox';
 }
 
@@ -83,33 +80,27 @@ init_userprefs($userdata);
 //
 // Cancel 
 //
-if ( $cancel )
-{
+if ( $cancel ) {
 	redirect(append_sid("privmsg.php?folder=$folder", true));
 }
 
 //
 // Var definitions
 //
-if ( !empty($HTTP_POST_VARS['mode']) || !empty($HTTP_GET_VARS['mode']) )
-{
-	$mode = ( !empty($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+if ( !empty($_POST['mode']) || !empty($_GET['mode']) ) {
+	$mode = ( !empty($_POST['mode']) ) ? $_POST['mode'] : $_GET['mode'];
 	$mode = htmlspecialchars($mode);
-}
-else
-{
+} else {
 	$mode = '';
 }
 
-$start = ( !empty($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
+$start = ( !empty($_GET['start']) ) ? intval($_GET['start']) : 0;
 $start = ($start < 0) ? 0 : $start;
 
-if ( isset($HTTP_POST_VARS[POST_POST_URL]) || isset($HTTP_GET_VARS[POST_POST_URL]) )
+if ( isset($_POST[POST_POST_URL]) || isset($_GET[POST_POST_URL]) )
 {
-	$privmsg_id = ( isset($HTTP_POST_VARS[POST_POST_URL]) ) ? intval($HTTP_POST_VARS[POST_POST_URL]) : intval($HTTP_GET_VARS[POST_POST_URL]);
-}
-else
-{
+	$privmsg_id = ( isset($_POST[POST_POST_URL]) ) ? intval($_POST[POST_POST_URL]) : intval($_GET[POST_POST_URL]);
+} else {
 	$privmsg_id = '';
 }
 
@@ -156,9 +147,7 @@ if ( $mode == 'newpm' )
 		}
 
 		$l_new_message .= '<br /><br />' . sprintf($lang['Click_view_privmsg'], '<a href="' . append_sid("privmsg.".php."?folder=inbox") . '" onclick="jump_to_inbox();return false;" target="_new">', '</a>');
-	}
-	else
-	{
+	} else {
 		$l_new_message = $lang['Login_check_pm'];
 	}
 
@@ -171,20 +160,14 @@ if ( $mode == 'newpm' )
 
 	include($phpbb_root_path . 'includes/page_tail.php');
 	
-}
-else if ( $mode == 'read' )
-{
-	if ( !empty($HTTP_GET_VARS[POST_POST_URL]) )
-	{
-		$privmsgs_id = intval($HTTP_GET_VARS[POST_POST_URL]);
-	}
-	else
-	{
+} else if ( $mode == 'read' ) {
+	if ( !empty($_GET[POST_POST_URL]) ) {
+		$privmsgs_id = intval($_GET[POST_POST_URL]);
+	} else {
 		message_die(GENERAL_ERROR, $lang['No_post_id']);
 	}
 
-	if ( !$userdata['session_logged_in'] )
-	{
+	if ( !$userdata['session_logged_in'] ) {
 		redirect(append_sid("login.php?redirect=privmsg.php&folder=$folder&mode=$mode&" . POST_POST_URL . "=$privmsgs_id", true));
 	}
 
@@ -201,17 +184,20 @@ else if ( $mode == 'read' )
 					OR pm.privmsgs_type = " . PRIVMSGS_NEW_MAIL . " 
 					OR pm.privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " )";
 			break;
+			
 		case 'outbox':
 			$l_box_name = $lang['Outbox'];
 			$pm_sql_user = "AND pm.privmsgs_from_userid =  " . $userdata['user_id'] . " 
 				AND ( pm.privmsgs_type = " . PRIVMSGS_NEW_MAIL . "
 					OR pm.privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " ) ";
 			break;
+			
 		case 'sentbox':
 			$l_box_name = $lang['Sentbox'];
 			$pm_sql_user = "AND pm.privmsgs_from_userid =  " . $userdata['user_id'] . " 
 				AND pm.privmsgs_type = " . PRIVMSGS_SENT_MAIL;
 			break;
+			
 		case 'savebox':
 			$l_box_name = $lang['Savebox'];
 			$pm_sql_user = "AND ( ( pm.privmsgs_to_userid = " . $userdata['user_id'] . "
@@ -220,6 +206,7 @@ else if ( $mode == 'read' )
 					AND pm.privmsgs_type = " . PRIVMSGS_SAVED_OUT_MAIL . " ) 
 				)";
 			break;
+			
 		default:
 			message_die(GENERAL_ERROR, $lang['No_such_folder']);
 			break;
@@ -235,16 +222,15 @@ else if ( $mode == 'read' )
 			$pm_sql_user 
 			AND u.user_id = pm.privmsgs_from_userid 
 			AND u2.user_id = pm.privmsgs_to_userid";
-	if ( !($result = $db->sql_query($sql)) )
-	{
+	
+	if ( !($result = $db->sql_query($sql)) ) {
 		message_die(GENERAL_ERROR, 'Could not query private message post information', '', __LINE__, __FILE__, $sql);
 	}
 
 	//
 	// Did the query return any data?
 	//
-	if ( !($privmsg = $db->sql_fetchrow($result)) )
-	{
+	if ( !($privmsg = $db->sql_fetchrow($result)) )	{
 		redirect(append_sid("privmsg.php?folder=$folder", true));
 	}
 
@@ -254,11 +240,9 @@ else if ( $mode == 'read' )
 	// Is this a new message in the inbox? If it is then save
 	// a copy in the posters sent box
 	//
-	if (($privmsg['privmsgs_type'] == PRIVMSGS_NEW_MAIL || $privmsg['privmsgs_type'] == PRIVMSGS_UNREAD_MAIL) && $folder == 'inbox')
-	{
+	if (($privmsg['privmsgs_type'] == PRIVMSGS_NEW_MAIL || $privmsg['privmsgs_type'] == PRIVMSGS_UNREAD_MAIL) && $folder == 'inbox') {
 		// Update appropriate counter
-		switch ($privmsg['privmsgs_type'])
-		{
+		switch ($privmsg['privmsgs_type']) {
 			case PRIVMSGS_NEW_MAIL:
 				$sql = "user_new_privmsg = user_new_privmsg - 1";
 				break;
@@ -270,16 +254,16 @@ else if ( $mode == 'read' )
 		$sql = "UPDATE " . USERS_TABLE . " 
 			SET $sql 
 			WHERE user_id = " . $userdata['user_id'];
-		if ( !$db->sql_query($sql) )
-		{
+		
+		if ( !$db->sql_query($sql) ) {
 			message_die(GENERAL_ERROR, 'Could not update private message read status for user', '', __LINE__, __FILE__, $sql);
 		}
 
 		$sql = "UPDATE " . PRIVMSGS_TABLE . "
 			SET privmsgs_type = " . PRIVMSGS_READ_MAIL . "
 			WHERE privmsgs_id = " . $privmsg['privmsgs_id'];
-		if ( !$db->sql_query($sql) )
-		{
+		
+		if ( !$db->sql_query($sql) ) {
 			message_die(GENERAL_ERROR, 'Could not update private message read status', '', __LINE__, __FILE__, $sql);
 		}
 
@@ -288,39 +272,38 @@ else if ( $mode == 'read' )
 			FROM " . PRIVMSGS_TABLE . " 
 			WHERE privmsgs_type = " . PRIVMSGS_SENT_MAIL . " 
 				AND privmsgs_from_userid = " . $privmsg['privmsgs_from_userid'];
-		if ( !($result = $db->sql_query($sql)) )
-		{
+		
+		if ( !($result = $db->sql_query($sql)) ) {
 			message_die(GENERAL_ERROR, 'Could not obtain sent message info for sendee', '', __LINE__, __FILE__, $sql);
 		}
 
 		$sql_priority = ( SQL_LAYER == 'mysql' ) ? 'LOW_PRIORITY' : '';
 
-		if ( $sent_info = $db->sql_fetchrow($result) )
-		{
-			if ($board_config['max_sentbox_privmsgs'] && $sent_info['sent_items'] >= $board_config['max_sentbox_privmsgs'])
-			{
+		if ( $sent_info = $db->sql_fetchrow($result) ) {
+			if ($board_config['max_sentbox_privmsgs'] && $sent_info['sent_items'] >= $board_config['max_sentbox_privmsgs']) {
 				$sql = "SELECT privmsgs_id FROM " . PRIVMSGS_TABLE . " 
 					WHERE privmsgs_type = " . PRIVMSGS_SENT_MAIL . " 
 						AND privmsgs_date = " . $sent_info['oldest_post_time'] . " 
 						AND privmsgs_from_userid = " . $privmsg['privmsgs_from_userid'];
-				if ( !$result = $db->sql_query($sql) )
-				{
+				
+				if ( !$result = $db->sql_query($sql) ) {
 					message_die(GENERAL_ERROR, 'Could not find oldest privmsgs', '', __LINE__, __FILE__, $sql);
 				}
+				
 				$old_privmsgs_id = $db->sql_fetchrow($result);
 				$old_privmsgs_id = $old_privmsgs_id['privmsgs_id'];
 			
 				$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TABLE . " 
 					WHERE privmsgs_id = $old_privmsgs_id";
-				if ( !$db->sql_query($sql) )
-				{
+				
+				if ( !$db->sql_query($sql) ) {
 					message_die(GENERAL_ERROR, 'Could not delete oldest privmsgs (sent)', '', __LINE__, __FILE__, $sql);
 				}
 
 				$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TEXT_TABLE . " 
 					WHERE privmsgs_text_id = $old_privmsgs_id";
-				if ( !$db->sql_query($sql) )
-				{
+				
+				if ( !$db->sql_query($sql) ) {
 					message_die(GENERAL_ERROR, 'Could not delete oldest privmsgs text (sent)', '', __LINE__, __FILE__, $sql);
 				}
 			}
@@ -333,8 +316,8 @@ else if ( $mode == 'read' )
 		//
 		$sql = "INSERT $sql_priority INTO " . PRIVMSGS_TABLE . " (privmsgs_type, privmsgs_subject, privmsgs_from_userid, privmsgs_to_userid, privmsgs_date, privmsgs_ip, privmsgs_enable_html, privmsgs_enable_bbcode, privmsgs_enable_smilies, privmsgs_attach_sig)
 			VALUES (" . PRIVMSGS_SENT_MAIL . ", '" . str_replace("\'", "''", addslashes($privmsg['privmsgs_subject'])) . "', " . $privmsg['privmsgs_from_userid'] . ", " . $privmsg['privmsgs_to_userid'] . ", " . $privmsg['privmsgs_date'] . ", '" . $privmsg['privmsgs_ip'] . "', " . $privmsg['privmsgs_enable_html'] . ", " . $privmsg['privmsgs_enable_bbcode'] . ", " . $privmsg['privmsgs_enable_smilies'] . ", " .  $privmsg['privmsgs_attach_sig'] . ")";
-		if ( !$db->sql_query($sql) )
-		{
+		
+		if ( !$db->sql_query($sql) ) {
 			message_die(GENERAL_ERROR, 'Could not insert private message sent info', '', __LINE__, __FILE__, $sql);
 		}
 
@@ -342,8 +325,8 @@ else if ( $mode == 'read' )
 
 		$sql = "INSERT $sql_priority INTO " . PRIVMSGS_TEXT_TABLE . " (privmsgs_text_id, privmsgs_bbcode_uid, privmsgs_text)
 			VALUES ($privmsg_sent_id, '" . $privmsg['privmsgs_bbcode_uid'] . "', '" . str_replace("\'", "''", addslashes($privmsg['privmsgs_text'])) . "')";
-		if ( !$db->sql_query($sql) )
-		{
+		
+		if ( !$db->sql_query($sql) ) {
 			message_die(GENERAL_ERROR, 'Could not insert private message sent text', '', __LINE__, __FILE__, $sql);
 		}
 	}
@@ -351,25 +334,28 @@ else if ( $mode == 'read' )
 	//
 	// Pick a folder, any folder, so long as it's one below ...
 	//
-	$post_urls = array(
-		'post' => append_sid("privmsg.php?mode=post"),
+	$post_urls = [
+		'post'  => append_sid("privmsg.php?mode=post"),
 		'reply' => append_sid("privmsg.php?mode=reply&amp;" . POST_POST_URL . "=$privmsg_id"),
 		'quote' => append_sid("privmsg.php?mode=quote&amp;" . POST_POST_URL . "=$privmsg_id"),
-		'edit' => append_sid("privmsg.php?mode=edit&amp;" . POST_POST_URL . "=$privmsg_id")
-	);
-	$post_icons = array(
+		'edit'  => append_sid("privmsg.php?mode=edit&amp;" . POST_POST_URL . "=$privmsg_id")
+	];
+	
+	$post_icons = [
 		'post_img' => '<a href="' . $post_urls['post'] . '"><img src="' . $images['pm_postmsg'] . '" alt="' . $lang['Post_new_pm'] . '" border="0" /></a>',
-		'post' => '<a href="' . $post_urls['post'] . '">' . $lang['Post_new_pm'] . '</a>',
+		'post'     => '<a href="' . $post_urls['post'] . '">' . $lang['Post_new_pm'] . '</a>',
+	    
 		'reply_img' => '<a href="' . $post_urls['reply'] . '"><img src="' . $images['pm_replymsg'] . '" alt="' . $lang['Post_reply_pm'] . '" border="0" /></a>',
-		'reply' => '<a href="' . $post_urls['reply'] . '">' . $lang['Post_reply_pm'] . '</a>',
+		'reply'     => '<a href="' . $post_urls['reply'] . '">' . $lang['Post_reply_pm'] . '</a>',
+	    
 		'quote_img' => '<a href="' . $post_urls['quote'] . '"><img src="' . $images['pm_quotemsg'] . '" alt="' . $lang['Post_quote_pm'] . '" border="0" /></a>',
-		'quote' => '<a href="' . $post_urls['quote'] . '">' . $lang['Post_quote_pm'] . '</a>',
+		'quote'     => '<a href="' . $post_urls['quote'] . '">' . $lang['Post_quote_pm'] . '</a>',
+	    
 		'edit_img' => '<a href="' . $post_urls['edit'] . '"><img src="' . $images['pm_editmsg'] . '" alt="' . $lang['Edit_pm'] . '" border="0" /></a>',
-		'edit' => '<a href="' . $post_urls['edit'] . '">' . $lang['Edit_pm'] . '</a>'
-	);
+		'edit'     => '<a href="' . $post_urls['edit'] . '">' . $lang['Edit_pm'] . '</a>'
+	];
 
-	if ( $folder == 'inbox' )
-	{
+	if ( $folder == 'inbox' ) {
 		$post_img = $post_icons['post_img'];
 		$reply_img = $post_icons['reply_img'];
 		$quote_img = $post_icons['quote_img'];
@@ -379,9 +365,7 @@ else if ( $mode == 'read' )
 		$quote = $post_icons['quote'];
 		$edit = '';
 		$l_box_name = $lang['Inbox'];
-	}
-	else if ( $folder == 'outbox' )
-	{
+	} elseif ($folder == 'outbox') {
 		$post_img = $post_icons['post_img'];
 		$reply_img = '';
 		$quote_img = '';
@@ -391,11 +375,8 @@ else if ( $mode == 'read' )
 		$quote = '';
 		$edit = $post_icons['edit'];
 		$l_box_name = $lang['Outbox'];
-	}
-	else if ( $folder == 'savebox' )
-	{
-		if ( $privmsg['privmsgs_type'] == PRIVMSGS_SAVED_IN_MAIL )
-		{
+	} elseif ($folder == 'savebox') {
+		if ( $privmsg['privmsgs_type'] == PRIVMSGS_SAVED_IN_MAIL ) {
 			$post_img = $post_icons['post_img'];
 			$reply_img = $post_icons['reply_img'];
 			$quote_img = $post_icons['quote_img'];
@@ -404,9 +385,7 @@ else if ( $mode == 'read' )
 			$reply = $post_icons['reply'];
 			$quote = $post_icons['quote'];
 			$edit = '';
-		}
-		else
-		{
+		} else {
 			$post_img = $post_icons['post_img'];
 			$reply_img = '';
 			$quote_img = '';
@@ -416,10 +395,9 @@ else if ( $mode == 'read' )
 			$quote = '';
 			$edit = '';
 		}
+		
 		$l_box_name = $lang['Saved'];
-	}
-	else if ( $folder == 'sentbox' )
-	{
+	} else if ( $folder == 'sentbox' ) {
 		$post_img = $post_icons['post_img'];
 		$reply_img = '';
 		$quote_img = '';
@@ -505,9 +483,7 @@ else if ( $mode == 'read' )
 
 		$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
 		$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
-	}
-	else
-	{
+    } else {
 		$email_img = '';
 		$email = '';
 	}
@@ -515,14 +491,11 @@ else if ( $mode == 'read' )
 	$www_img = ( $privmsg['user_website'] ) ? '<a href="' . $privmsg['user_website'] . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
 	$www = ( $privmsg['user_website'] ) ? '<a href="' . $privmsg['user_website'] . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
 
-	if ( !empty($privmsg['user_icq']) )
-	{
+	if ( !empty($privmsg['user_icq']) ) {
 		$icq_status_img = '<a href="http://wwp.icq.com/' . $privmsg['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $privmsg['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
 		$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $privmsg['user_icq'] . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
 		$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $privmsg['user_icq'] . '">' . $lang['ICQ'] . '</a>';
-	}
-	else
-	{
+	} else {
 		$icq_status_img = '';
 		$icq_img = '';
 		$icq = '';
@@ -553,9 +526,7 @@ else if ( $mode == 'read' )
 	if ( $board_config['allow_sig'] )
 	{
 		$user_sig = ( $privmsg['privmsgs_from_userid'] == $userdata['user_id'] ) ? $userdata['user_sig'] : $privmsg['user_sig'];
-	}
-	else
-	{
+	} else {
 		$user_sig = '';
 	}
 
@@ -565,48 +536,40 @@ else if ( $mode == 'read' )
 	// If the board has HTML off but the post has HTML
 	// on then we process it, else leave it alone
 	//
-	if ( !$board_config['allow_html'] || !$userdata['user_allowhtml'])
-	{
-		if ( $user_sig != '')
-		{
+	if ( !$board_config['allow_html'] || !$userdata['user_allowhtml']) {
+		if ( $user_sig != '') {
 			$user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
 		}
 
-		if ( $privmsg['privmsgs_enable_html'] )
-		{
+		if ( $privmsg['privmsgs_enable_html'] ) {
 			$private_message = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $private_message);
 		}
 	}
 
-	if ( $user_sig != '' && $privmsg['privmsgs_attach_sig'] && $user_sig_bbcode_uid != '' )
-	{
+	if ( $user_sig != '' && $privmsg['privmsgs_attach_sig'] && $user_sig_bbcode_uid != '' ) {
 		$user_sig = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($user_sig, $user_sig_bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $user_sig);
 	}
 
-	if ( $bbcode_uid != '' )
-	{
+	if ( $bbcode_uid != '' ) {
 		$private_message = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($private_message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $private_message);
 	}
 
 	$private_message = make_clickable($private_message);
 
-	if ( $privmsg['privmsgs_attach_sig'] && $user_sig != '' )
-	{
+	if ( $privmsg['privmsgs_attach_sig'] && $user_sig != '' ) {
 		$private_message .= '<br /><br />_________________<br />' . make_clickable($user_sig);
 	}
 
-	$orig_word = array();
-	$replacement_word = array();
+	$orig_word = [];
+	$replacement_word = [];
 	obtain_word_list($orig_word, $replacement_word);
 
-	if ( count($orig_word) )
-	{
+	if ( count($orig_word) ) {
 		$post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
 		$private_message = preg_replace($orig_word, $replacement_word, $private_message);
 	}
 
-	if ( $board_config['allow_smilies'] && $privmsg['privmsgs_enable_smilies'] )
-	{
+	if ( $board_config['allow_smilies'] && $privmsg['privmsgs_enable_smilies'] ) {
 		$private_message = smilies_pass($private_message);
 	}
 
@@ -650,28 +613,22 @@ else if ( $mode == 'read' )
 
 	include($phpbb_root_path . 'includes/page_tail.php');
 
-}
-else if ( ( $delete && $mark_list ) || $delete_all )
-{
-	if ( !$userdata['session_logged_in'] )
-	{
+} else if ( ( $delete && $mark_list ) || $delete_all ) {
+	if ( !$userdata['session_logged_in'] ) {
 		redirect(append_sid("login.php?redirect=privmsg.php&folder=inbox", true));
 	}
 
-	if ( isset($mark_list) && !is_array($mark_list) )
-	{
+	if ( isset($mark_list) && !is_array($mark_list) ) {
 		// Set to empty array instead of '0' if nothing is selected.
-		$mark_list = array();
+		$mark_list = [];
 	}
 
-	if ( !$confirm )
-	{
+	if ( !$confirm ) {
 		$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" />';
-		$s_hidden_fields .= ( isset($HTTP_POST_VARS['delete']) ) ? '<input type="hidden" name="delete" value="true" />' : '<input type="hidden" name="deleteall" value="true" />';
+		$s_hidden_fields .= ( isset($_POST['delete']) ) ? '<input type="hidden" name="delete" value="true" />' : '<input type="hidden" name="deleteall" value="true" />';
 		$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
-		for($i = 0; $i < count($mark_list); $i++)
-		{
+		for($i = 0; $i < count($mark_list); $i++) {
 			$s_hidden_fields .= '<input type="hidden" name="mark[]" value="' . intval($mark_list[$i]) . '" />';
 		}
 
@@ -698,22 +655,18 @@ else if ( ( $delete && $mark_list ) || $delete_all )
 
 		include($phpbb_root_path . 'includes/page_tail.php');
 
-	}
-	else if ($confirm && $sid === $userdata['session_id'])
-	{
+	} else if ($confirm && $sid === $userdata['session_id']) {
 		$delete_sql_id = '';
 
-		if (!$delete_all)
-		{
-			for ($i = 0; $i < count($mark_list); $i++)
-			{
+		if (!$delete_all) {
+			for ($i = 0; $i < count($mark_list); $i++) {
 				$delete_sql_id .= (($delete_sql_id != '') ? ', ' : '') . intval($mark_list[$i]);
 			}
+			
 			$delete_sql_id = "AND privmsgs_id IN ($delete_sql_id)";
 		}
 
-		switch($folder)
-		{
+		switch($folder) {
 			case 'inbox':
 				$delete_type = "privmsgs_to_userid = " . $userdata['user_id'] . " AND (
 				privmsgs_type = " . PRIVMSGS_READ_MAIL . " OR privmsgs_type = " . PRIVMSGS_NEW_MAIL . " OR privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " )";
@@ -739,31 +692,27 @@ else if ( ( $delete && $mark_list ) || $delete_all )
 			FROM " . PRIVMSGS_TABLE . "
 			WHERE $delete_type $delete_sql_id";
 
-		if ( !($result = $db->sql_query($sql)) )
-		{
+		if ( !($result = $db->sql_query($sql)) ) {
 			message_die(GENERAL_ERROR, 'Could not obtain id list to delete messages', '', __LINE__, __FILE__, $sql);
 		}
 
-		$mark_list = array();
-		while ( $row = $db->sql_fetchrow($result) )
-		{
+		$mark_list = [];
+		
+		while ( $row = $db->sql_fetchrow($result) ) {
 			$mark_list[] = $row['privmsgs_id'];
 		}
 
 		unset($delete_type);
 
-		if ( count($mark_list) )
-		{
+		if ( count($mark_list) ) {
 			$delete_sql_id = '';
-			for ($i = 0; $i < sizeof($mark_list); $i++)
-			{
+			
+			for ($i = 0; $i < count($mark_list); $i++) {
 				$delete_sql_id .= (($delete_sql_id != '') ? ', ' : '') . intval($mark_list[$i]);
 			}
 
-			if ($folder == 'inbox' || $folder == 'outbox')
-			{
-				switch ($folder)
-				{
+			if ($folder == 'inbox' || $folder == 'outbox') {
+				switch ($folder) {
 					case 'inbox':
 						$sql = "privmsgs_to_userid = " . $userdata['user_id'];
 						break;
@@ -779,19 +728,17 @@ else if ( ( $delete && $mark_list ) || $delete_all )
 					WHERE privmsgs_id IN ($delete_sql_id) 
 						AND $sql  
 						AND privmsgs_type IN (" . PRIVMSGS_NEW_MAIL . ", " . PRIVMSGS_UNREAD_MAIL . ")";
-				if ( !($result = $db->sql_query($sql)) )
-				{
+				
+				if ( !($result = $db->sql_query($sql)) ) {
 					message_die(GENERAL_ERROR, 'Could not obtain user id list for outbox messages', '', __LINE__, __FILE__, $sql);
 				}
 
-				if ( $row = $db->sql_fetchrow($result))
-				{
-					$update_users = $update_list = array();
+				if ( $row = $db->sql_fetchrow($result)) {
+					$update_users = $update_list = [];
 				
 					do
 					{
-						switch ($row['privmsgs_type'])
-						{
+						switch ($row['privmsgs_type']) {
 							case PRIVMSGS_NEW_MAIL:
 								$update_users['new'][$row['privmsgs_to_userid']]++;
 								break;
@@ -803,21 +750,16 @@ else if ( ( $delete && $mark_list ) || $delete_all )
 					}
 					while ($row = $db->sql_fetchrow($result));
 
-					if (sizeof($update_users))
-					{
-						while (list($type, $users) = each($update_users))
-						{
-							while (list($user_id, $dec) = each($users))
-							{
+					if (count($update_users)) {
+						while (list($type, $users) = each($update_users)) {
+							while (list($user_id, $dec) = each($users)) {
 								$update_list[$type][$dec][] = $user_id;
 							}
 						}
 						unset($update_users);
 
-						while (list($type, $dec_ary) = each($update_list))
-						{
-							switch ($type)
-							{
+						while (list($type, $dec_ary) = each($update_list)) {
+							switch ($type) {
 								case 'new':
 									$type = "user_new_privmsg";
 									break;
@@ -827,22 +769,23 @@ else if ( ( $delete && $mark_list ) || $delete_all )
 									break;
 							}
 
-							while (list($dec, $user_ary) = each($dec_ary))
-							{
+							while (list($dec, $user_ary) = each($dec_ary)) {
 								$user_ids = implode(', ', $user_ary);
 
 								$sql = "UPDATE " . USERS_TABLE . " 
 									SET $type = $type - $dec 
 									WHERE user_id IN ($user_ids)";
-								if ( !$db->sql_query($sql) )
-								{
+								
+								if ( !$db->sql_query($sql) ) {
 									message_die(GENERAL_ERROR, 'Could not update user pm counters', '', __LINE__, __FILE__, $sql);
 								}
 							}
 						}
+						
 						unset($update_list);
 					}
 				}
+				
 				$db->sql_freeresult($result);
 			}
 
@@ -853,8 +796,7 @@ else if ( ( $delete && $mark_list ) || $delete_all )
 				WHERE privmsgs_id IN ($delete_sql_id)
 					AND ";
 
-			switch( $folder )
-			{
+			switch( $folder ) {
 				case 'inbox':
 					$delete_sql .= "privmsgs_to_userid = " . $userdata['user_id'] . " AND (
 						privmsgs_type = " . PRIVMSGS_READ_MAIL . " OR privmsgs_type = " . PRIVMSGS_NEW_MAIL . " OR privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " )";
@@ -877,26 +819,21 @@ else if ( ( $delete && $mark_list ) || $delete_all )
 					break;
 			}
 
-			if ( !$db->sql_query($delete_sql, BEGIN_TRANSACTION) )
-			{
+			if ( !$db->sql_query($delete_sql, BEGIN_TRANSACTION) ) {
 				message_die(GENERAL_ERROR, 'Could not delete private message info', '', __LINE__, __FILE__, $delete_sql);
 			}
 
-			if ( !$db->sql_query($delete_text_sql, END_TRANSACTION) )
-			{
+			if ( !$db->sql_query($delete_text_sql, END_TRANSACTION) ) {
 				message_die(GENERAL_ERROR, 'Could not delete private message text', '', __LINE__, __FILE__, $delete_text_sql);
 			}
 		}
 	}
-}
-else if ( $save && $mark_list && $folder != 'savebox' && $folder != 'outbox' )
-{
-	if ( !$userdata['session_logged_in'] )
-	{
+} else if ( $save && $mark_list && $folder != 'savebox' && $folder != 'outbox' ) {
+	if ( !$userdata['session_logged_in'] ) {
 		redirect(append_sid("login.php?redirect=privmsg.php&folder=inbox", true));
 	}
 	
-	if (sizeof($mark_list))
+	if (count($mark_list))
 	{
 		// See if recipient is at their savebox limit
 		$sql = "SELECT COUNT(privmsgs_id) AS savebox_items, MIN(privmsgs_date) AS oldest_post_time 
@@ -905,25 +842,22 @@ else if ( $save && $mark_list && $folder != 'savebox' && $folder != 'outbox' )
 					AND privmsgs_type = " . PRIVMSGS_SAVED_IN_MAIL . " )
 				OR ( privmsgs_from_userid = " . $userdata['user_id'] . " 
 					AND privmsgs_type = " . PRIVMSGS_SAVED_OUT_MAIL . ") )";
-		if ( !($result = $db->sql_query($sql)) )
-		{
+		if ( !($result = $db->sql_query($sql)) ) {
 			message_die(GENERAL_ERROR, 'Could not obtain sent message info for sendee', '', __LINE__, __FILE__, $sql);
 		}
 
 		$sql_priority = ( SQL_LAYER == 'mysql' ) ? 'LOW_PRIORITY' : '';
 
-		if ( $saved_info = $db->sql_fetchrow($result) )
-		{
-			if ($board_config['max_savebox_privmsgs'] && $saved_info['savebox_items'] >= $board_config['max_savebox_privmsgs'] )
-			{
+		if ( $saved_info = $db->sql_fetchrow($result) ) {
+			if ($board_config['max_savebox_privmsgs'] && $saved_info['savebox_items'] >= $board_config['max_savebox_privmsgs'] ) {
 				$sql = "SELECT privmsgs_id FROM " . PRIVMSGS_TABLE . " 
 					WHERE ( ( privmsgs_to_userid = " . $userdata['user_id'] . " 
 								AND privmsgs_type = " . PRIVMSGS_SAVED_IN_MAIL . " )
 							OR ( privmsgs_from_userid = " . $userdata['user_id'] . " 
 								AND privmsgs_type = " . PRIVMSGS_SAVED_OUT_MAIL . ") ) 
 						AND privmsgs_date = " . $saved_info['oldest_post_time'];
-				if ( !$result = $db->sql_query($sql) )
-				{
+				
+				if ( !$result = $db->sql_query($sql) ) {
 					message_die(GENERAL_ERROR, 'Could not find oldest privmsgs (save)', '', __LINE__, __FILE__, $sql);
 				}
 				$old_privmsgs_id = $db->sql_fetchrow($result);
@@ -931,23 +865,23 @@ else if ( $save && $mark_list && $folder != 'savebox' && $folder != 'outbox' )
 			
 				$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TABLE . " 
 					WHERE privmsgs_id = $old_privmsgs_id";
-				if ( !$db->sql_query($sql) )
-				{
+				
+				if ( !$db->sql_query($sql) ) {
 					message_die(GENERAL_ERROR, 'Could not delete oldest privmsgs (save)', '', __LINE__, __FILE__, $sql);
 				}
 
 				$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TEXT_TABLE . " 
 					WHERE privmsgs_text_id = $old_privmsgs_id";
-				if ( !$db->sql_query($sql) )
-				{
+				
+				if ( !$db->sql_query($sql) ) {
 					message_die(GENERAL_ERROR, 'Could not delete oldest privmsgs text (save)', '', __LINE__, __FILE__, $sql);
 				}
 			}
 		}
 	
 		$saved_sql_id = '';
-		for ($i = 0; $i < sizeof($mark_list); $i++)
-		{
+		
+		for ($i = 0; $i < count($mark_list); $i++) {
 			$saved_sql_id .= (($saved_sql_id != '') ? ', ' : '') . intval($mark_list[$i]);
 		}
 
@@ -955,8 +889,7 @@ else if ( $save && $mark_list && $folder != 'savebox' && $folder != 'outbox' )
 		$saved_sql = "UPDATE " . PRIVMSGS_TABLE;
 
 		// Decrement read/new counters if appropriate
-		if ($folder == 'inbox' || $folder == 'outbox')
-		{
+		if ($folder == 'inbox' || $folder == 'outbox') {
 			switch ($folder)
 			{
 				case 'inbox':
@@ -974,14 +907,13 @@ else if ( $save && $mark_list && $folder != 'savebox' && $folder != 'outbox' )
 				WHERE privmsgs_id IN ($saved_sql_id) 
 					AND $sql  
 					AND privmsgs_type IN (" . PRIVMSGS_NEW_MAIL . ", " . PRIVMSGS_UNREAD_MAIL . ")";
-			if ( !($result = $db->sql_query($sql)) )
-			{
+			
+			if ( !($result = $db->sql_query($sql)) ) {
 				message_die(GENERAL_ERROR, 'Could not obtain user id list for outbox messages', '', __LINE__, __FILE__, $sql);
 			}
 
-			if ( $row = $db->sql_fetchrow($result))
-			{
-				$update_users = $update_list = array();
+			if ( $row = $db->sql_fetchrow($result)) {
+				$update_users = $update_list = [];
 			
 				do
 				{
@@ -998,21 +930,17 @@ else if ( $save && $mark_list && $folder != 'savebox' && $folder != 'outbox' )
 				}
 				while ($row = $db->sql_fetchrow($result));
 
-				if (sizeof($update_users))
-				{
-					while (list($type, $users) = each($update_users))
-					{
-						while (list($user_id, $dec) = each($users))
-						{
+				if (count($update_users)) {
+					while (list($type, $users) = each($update_users)) {
+						while (list($user_id, $dec) = each($users)) {
 							$update_list[$type][$dec][] = $user_id;
 						}
 					}
+					
 					unset($update_users);
 
-					while (list($type, $dec_ary) = each($update_list))
-					{
-						switch ($type)
-						{
+					while (list($type, $dec_ary) = each($update_list)) {
+						switch ($type) {
 							case 'new':
 								$type = "user_new_privmsg";
 								break;
@@ -1022,27 +950,27 @@ else if ( $save && $mark_list && $folder != 'savebox' && $folder != 'outbox' )
 								break;
 						}
 
-						while (list($dec, $user_ary) = each($dec_ary))
-						{
+						while (list($dec, $user_ary) = each($dec_ary)) {
 							$user_ids = implode(', ', $user_ary);
 
 							$sql = "UPDATE " . USERS_TABLE . " 
 								SET $type = $type - $dec 
 								WHERE user_id IN ($user_ids)";
-							if ( !$db->sql_query($sql) )
-							{
+							
+							if ( !$db->sql_query($sql) ) {
 								message_die(GENERAL_ERROR, 'Could not update user pm counters', '', __LINE__, __FILE__, $sql);
 							}
 						}
 					}
+					
 					unset($update_list);
 				}
 			}
+			
 			$db->sql_freeresult($result);
 		}
 
-		switch ($folder)
-		{
+		switch ($folder) {
 			case 'inbox':
 				$saved_sql .= " SET privmsgs_type = " . PRIVMSGS_SAVED_IN_MAIL . " 
 					WHERE privmsgs_to_userid = " . $userdata['user_id'] . " 
@@ -1067,19 +995,15 @@ else if ( $save && $mark_list && $folder != 'savebox' && $folder != 'outbox' )
 
 		$saved_sql .= " AND privmsgs_id IN ($saved_sql_id)";
 
-		if ( !$db->sql_query($saved_sql) )
-		{
+		if ( !$db->sql_query($saved_sql) ) {
 			message_die(GENERAL_ERROR, 'Could not save private messages', '', __LINE__, __FILE__, $saved_sql);
 		}
 
 		redirect(append_sid("privmsg.php?folder=savebox", true));
 	}
-}
-else if ( $submit || $refresh || $mode != '' )
-{
-	if ( !$userdata['session_logged_in'] )
-	{
-		$user_id = ( isset($HTTP_GET_VARS[POST_USERS_URL]) ) ? '&' . POST_USERS_URL . '=' . intval($HTTP_GET_VARS[POST_USERS_URL]) : '';
+} elseif ( $submit || $refresh || $mode != '' ) {
+	if ( !$userdata['session_logged_in'] ) {
+		$user_id = ( isset($_GET[POST_USERS_URL]) ) ? '&' . POST_USERS_URL . '=' . intval($_GET[POST_USERS_URL]) : '';
 		redirect(append_sid("login.php?redirect=privmsg.php&folder=$folder&mode=$mode" . $user_id, true));
 	}
 	
@@ -1089,31 +1013,24 @@ else if ( $submit || $refresh || $mode != '' )
 	if ( !$board_config['allow_html'] )
 	{
 		$html_on = 0;
-	}
-	else
-	{
-		$html_on = ( $submit || $refresh ) ? ( ( !empty($HTTP_POST_VARS['disable_html']) ) ? 0 : TRUE ) : $userdata['user_allowhtml'];
+	} else {
+		$html_on = ( $submit || $refresh ) ? ( ( !empty($_POST['disable_html']) ) ? 0 : TRUE ) : $userdata['user_allowhtml'];
 	}
 
-	if ( !$board_config['allow_bbcode'] )
-	{
+	if ( !$board_config['allow_bbcode'] ) {
 		$bbcode_on = 0;
-	}
-	else
-	{
-		$bbcode_on = ( $submit || $refresh ) ? ( ( !empty($HTTP_POST_VARS['disable_bbcode']) ) ? 0 : TRUE ) : $userdata['user_allowbbcode'];
+	} else {
+		$bbcode_on = ( $submit || $refresh ) ? ( ( !empty($_POST['disable_bbcode']) ) ? 0 : TRUE ) : $userdata['user_allowbbcode'];
 	}
 
 	if ( !$board_config['allow_smilies'] )
 	{
 		$smilies_on = 0;
-	}
-	else
-	{
-		$smilies_on = ( $submit || $refresh ) ? ( ( !empty($HTTP_POST_VARS['disable_smilies']) ) ? 0 : TRUE ) : $userdata['user_allowsmile'];
+	} else {
+		$smilies_on = ( $submit || $refresh ) ? ( ( !empty($_POST['disable_smilies']) ) ? 0 : TRUE ) : $userdata['user_allowsmile'];
 	}
 
-	$attach_sig = ( $submit || $refresh ) ? ( ( !empty($HTTP_POST_VARS['attach_sig']) ) ? TRUE : 0 ) : $userdata['user_attachsig'];
+	$attach_sig = ( $submit || $refresh ) ? ( ( !empty($_POST['attach_sig']) ) ? TRUE : 0 ) : $userdata['user_attachsig'];
 	$user_sig = ( $userdata['user_sig'] != '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : "";
 	
 	if ( $submit && $mode != 'edit' )
@@ -1124,15 +1041,14 @@ else if ( $submit || $refresh || $mode != '' )
 		$sql = "SELECT MAX(privmsgs_date) AS last_post_time
 			FROM " . PRIVMSGS_TABLE . "
 			WHERE privmsgs_from_userid = " . $userdata['user_id'];
-		if ( $result = $db->sql_query($sql) )
-		{
+		
+		if ( $result = $db->sql_query($sql) ) {
 			$db_row = $db->sql_fetchrow($result);
 
 			$last_post_time = $db_row['last_post_time'];
 			$current_time = time();
 
-			if ( ( $current_time - $last_post_time ) < $board_config['flood_interval'])
-			{
+			if ( ( $current_time - $last_post_time ) < $board_config['flood_interval']) {
 				message_die(GENERAL_MESSAGE, $lang['Flood_Error']);
 			}
 		}
@@ -1141,39 +1057,35 @@ else if ( $submit || $refresh || $mode != '' )
 		//
 	}
 
-	if ($submit && $mode == 'edit')
-	{
+	if ($submit && $mode == 'edit') {
 		$sql = 'SELECT privmsgs_from_userid
 			FROM ' . PRIVMSGS_TABLE . '
 			WHERE privmsgs_id = ' . (int) $privmsg_id . '
 				AND privmsgs_from_userid = ' . $userdata['user_id'];
 
-		if (!($result = $db->sql_query($sql)))
-		{
+		if (!($result = $db->sql_query($sql))) {
 			message_die(GENERAL_ERROR, "Could not obtain message details", "", __LINE__, __FILE__, $sql);
 		}
 
-		if (!($row = $db->sql_fetchrow($result)))
-		{
+		if (!($row = $db->sql_fetchrow($result))) {
 			message_die(GENERAL_MESSAGE, $lang['No_such_post']);
 		}
+		
 		$db->sql_freeresult($result);
 
 		unset($row);
 	}
 
-	if ( $submit )
-	{
+	if ( $submit ) {
 		// session id check
-		if ($sid == '' || $sid != $userdata['session_id'])
-		{
+		if ($sid == '' || $sid != $userdata['session_id']) {
 			$error = true;
 			$error_msg .= ( ( !empty($error_msg) ) ? '<br />' : '' ) . $lang['Session_invalid'];
 		}
 
-		if ( !empty($HTTP_POST_VARS['username']) )
+		if ( !empty($_POST['username']) )
 		{
-			$to_username = phpbb_clean_username($HTTP_POST_VARS['username']);
+			$to_username = phpbb_clean_username($_POST['username']);
 
 			$sql = "SELECT user_id, user_notify_pm, user_email, user_lang, user_active 
 				FROM " . USERS_TABLE . "
@@ -1197,14 +1109,14 @@ else if ( $submit || $refresh || $mode != '' )
 			$error_msg .= ( ( !empty($error_msg) ) ? '<br />' : '' ) . $lang['No_to_user'];
 		}
 
-		$privmsg_subject = trim(htmlspecialchars($HTTP_POST_VARS['subject']));
+		$privmsg_subject = trim(htmlspecialchars($_POST['subject']));
 		if ( empty($privmsg_subject) )
 		{
 			$error = TRUE;
 			$error_msg .= ( ( !empty($error_msg) ) ? '<br />' : '' ) . $lang['Empty_subject'];
 		}
 
-		if ( !empty($HTTP_POST_VARS['message']) )
+		if ( !empty($_POST['message']) )
 		{
 			if ( !$error )
 			{
@@ -1213,7 +1125,7 @@ else if ( $submit || $refresh || $mode != '' )
 					$bbcode_uid = make_bbcode_uid();
 				}
 
-				$privmsg_message = prepare_message($HTTP_POST_VARS['message'], $html_on, $bbcode_on, $smilies_on, $bbcode_uid);
+				$privmsg_message = prepare_message($_POST['message'], $html_on, $bbcode_on, $smilies_on, $bbcode_uid);
 
 			}
 		}
@@ -1382,10 +1294,10 @@ else if ( $submit || $refresh || $mode != '' )
 		// passed to the script, process it a little, do some checks
 		// where neccessary, etc.
 		//
-		$to_username = (isset($HTTP_POST_VARS['username']) ) ? trim(htmlspecialchars(stripslashes($HTTP_POST_VARS['username']))) : '';
+		$to_username = (isset($_POST['username']) ) ? trim(htmlspecialchars(stripslashes($_POST['username']))) : '';
 
-		$privmsg_subject = ( isset($HTTP_POST_VARS['subject']) ) ? trim(htmlspecialchars(stripslashes($HTTP_POST_VARS['subject']))) : '';
-		$privmsg_message = ( isset($HTTP_POST_VARS['message']) ) ? trim($HTTP_POST_VARS['message']) : '';
+		$privmsg_subject = ( isset($_POST['subject']) ) ? trim(htmlspecialchars(stripslashes($_POST['subject']))) : '';
+		$privmsg_message = ( isset($_POST['message']) ) ? trim($_POST['message']) : '';
 		// $privmsg_message = preg_replace('#<textarea>#si', '&lt;textarea&gt;', $privmsg_message);
 		if ( !$preview )
 		{
@@ -1440,9 +1352,9 @@ else if ( $submit || $refresh || $mode != '' )
 			message_die(GENERAL_ERROR, $lang['No_post_id']);
 		}
 
-		if ( !empty($HTTP_GET_VARS[POST_USERS_URL]) )
+		if ( !empty($_GET[POST_USERS_URL]) )
 		{
-			$user_id = intval($HTTP_GET_VARS[POST_USERS_URL]);
+			$user_id = intval($_GET[POST_USERS_URL]);
 
 			$sql = "SELECT username
 				FROM " . USERS_TABLE . "
@@ -1517,7 +1429,7 @@ else if ( $submit || $refresh || $mode != '' )
 				redirect(append_sid("privmsg.php?folder=$folder", true));
 			}
 
-			$orig_word = $replacement_word = array();
+			$orig_word = $replacement_word = [];
 			obtain_word_list($orig_word, $replacement_word);
 
 			$privmsg_subject = ( ( !preg_match('/^Re:/', $privmsg['privmsgs_subject']) ) ? 'Re: ' : '' ) . $privmsg['privmsgs_subject'];
@@ -1566,8 +1478,8 @@ else if ( $submit || $refresh || $mode != '' )
 
 	if ( $preview && !$error )
 	{
-		$orig_word = array();
-		$replacement_word = array();
+		$orig_word = [];
+		$replacement_word = [];
 		obtain_word_list($orig_word, $replacement_word);
 
 		if ( $bbcode_on )
@@ -1897,8 +1809,8 @@ $template->set_filenames(array(
 );
 make_jumpbox('viewforum.php');
 
-$orig_word = array();
-$replacement_word = array();
+$orig_word = [];
+$replacement_word = [];
 obtain_word_list($orig_word, $replacement_word);
 
 //
@@ -1969,15 +1881,15 @@ switch( $folder )
 //
 // Show messages over previous x days/months
 //
-if ( $submit_msgdays && ( !empty($HTTP_POST_VARS['msgdays']) || !empty($HTTP_GET_VARS['msgdays']) ) )
+if ( $submit_msgdays && ( !empty($_POST['msgdays']) || !empty($_GET['msgdays']) ) )
 {
-	$msg_days = ( !empty($HTTP_POST_VARS['msgdays']) ) ? intval($HTTP_POST_VARS['msgdays']) : intval($HTTP_GET_VARS['msgdays']);
+	$msg_days = ( !empty($_POST['msgdays']) ) ? intval($_POST['msgdays']) : intval($_GET['msgdays']);
 	$min_msg_time = time() - ($msg_days * 86400);
 
 	$limit_msg_time_total = " AND privmsgs_date > $min_msg_time";
 	$limit_msg_time = " AND pm.privmsgs_date > $min_msg_time ";
 
-	if ( !empty($HTTP_POST_VARS['msgdays']) )
+	if ( !empty($_POST['msgdays']) )
 	{
 		$start = 0;
 	}

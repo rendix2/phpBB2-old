@@ -44,9 +44,9 @@ $params = array('mode' => 'mode', 'user_id' => POST_USERS_URL, 'group_id' => POS
 
 while( list($var, $param) = @each($params) )
 {
-	if ( !empty($HTTP_POST_VARS[$param]) || !empty($HTTP_GET_VARS[$param]) )
+	if ( !empty($_POST[$param]) || !empty($_GET[$param]) )
 	{
-		$$var = ( !empty($HTTP_POST_VARS[$param]) ) ? $HTTP_POST_VARS[$param] : $HTTP_GET_VARS[$param];
+		$$var = ( !empty($_POST[$param]) ) ? $_POST[$param] : $_GET[$param];
 	}
 	else
 	{
@@ -127,7 +127,7 @@ function check_auth($type, $key, $u_access, $is_admin)
 // End Functions
 // -------------
 
-if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 'group' && $group_id ) ) )
+if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 'group' && $group_id ) ) )
 {
 	$user_level = '';
 	if ( $mode == 'user' )
@@ -157,7 +157,7 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == 'user' && $user_id ) || ( 
 	//
 	// Carry out requests
 	//
-	if ( $mode == 'user' && $HTTP_POST_VARS['userlevel'] == 'admin' && $user_level != ADMIN )
+	if ( $mode == 'user' && $_POST['userlevel'] == 'admin' && $user_level != ADMIN )
 	{
 		//
 		// Make user an admin (if already user)
@@ -198,7 +198,7 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == 'user' && $user_id ) || ( 
 	}
 	else
 	{
-		if ( $mode == 'user' && $HTTP_POST_VARS['userlevel'] == 'user' && $user_level == ADMIN )
+		if ( $mode == 'user' && $_POST['userlevel'] == 'user' && $user_level == ADMIN )
 		{
 			//
 			// Make admin a user (if already admin) ... ignore if you're trying
@@ -231,7 +231,7 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == 'user' && $user_id ) || ( 
 		else
 		{
 	
-			$change_mod_list = ( isset($HTTP_POST_VARS['moderator']) ) ? $HTTP_POST_VARS['moderator'] : array();
+			$change_mod_list = ( isset($_POST['moderator']) ) ? $_POST['moderator'] : array();
 
 			if ( empty($adv) )
 			{
@@ -244,7 +244,7 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == 'user' && $user_id ) || ( 
 					message_die(GENERAL_ERROR, "Couldn't obtain forum information", "", __LINE__, __FILE__, $sql);
 				}
 
-				$forum_access = $forum_auth_level_fields = array();
+				$forum_access = $forum_auth_level_fields = [];
 				while( $row = $db->sql_fetchrow($result) )
 				{
 					$forum_access[] = $row;
@@ -261,7 +261,7 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == 'user' && $user_id ) || ( 
 					}
 				}
 
-				while( list($forum_id, $value) = @each($HTTP_POST_VARS['private']) )
+				while( list($forum_id, $value) = @each($_POST['private']) )
 				{
 					while( list($auth_field, $exists) = @each($forum_auth_level_fields[$forum_id]) )
 					{
@@ -274,12 +274,12 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == 'user' && $user_id ) || ( 
 			}
 			else
 			{
-				$change_acl_list = array();
+				$change_acl_list = [];
 				for($j = 0; $j < count($forum_auth_fields); $j++)
 				{
 					$auth_field = $forum_auth_fields[$j];
 
-					while( list($forum_id, $value) = @each($HTTP_POST_VARS['private_' . $auth_field]) )
+					while( list($forum_id, $value) = @each($_POST['private_' . $auth_field]) )
 					{
 						$change_acl_list[$forum_id][$auth_field] = $value;
 					}
@@ -295,7 +295,7 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == 'user' && $user_id ) || ( 
 				message_die(GENERAL_ERROR, "Couldn't obtain forum information", "", __LINE__, __FILE__, $sql);
 			}
 
-			$forum_access = array();
+			$forum_access = [];
 			while( $row = $db->sql_fetchrow($result) )
 			{
 				$forum_access[] = $row;
@@ -308,16 +308,16 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == 'user' && $user_id ) || ( 
 				message_die(GENERAL_ERROR, "Couldn't obtain user/group permissions", "", __LINE__, __FILE__, $sql);
 			}
 
-			$auth_access = array();
+			$auth_access = [];
 			while( $row = $db->sql_fetchrow($result) )
 			{
 				$auth_access[$row['forum_id']] = $row;
 			}
 			$db->sql_freeresult($result);
 
-			$forum_auth_action = array();
-			$update_acl_status = array();
-			$update_mod_status = array();
+			$forum_auth_action = [];
+			$update_acl_status = [];
+			$update_mod_status = [];
 
 			for($i = 0; $i < count($forum_access); $i++)
 			{
@@ -549,7 +549,7 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == 'user' && $user_id ) || ( 
 			WHERE group_id = $group_id";
 		$result = $db->sql_query($sql);
 
-		$group_user = array();
+		$group_user = [];
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$group_user[$row['user_id']] = $row['user_id'];
@@ -576,7 +576,7 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == 'user' && $user_id ) || ( 
 		}
 		$db->sql_freeresult($result);
 
-		if (sizeof($group_user))
+		if (count$group_user))
 		{
 			$sql = "UPDATE " . USERS_TABLE . " 
 				SET user_level = " . USER . " 
@@ -590,11 +590,11 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == 'user' && $user_id ) || ( 
 		message_die(GENERAL_MESSAGE, $message);
 	}
 }
-else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id ) ) || ( $mode == 'group' && $group_id ) )
+else if ( ( $mode == 'user' && ( isset($_POST['username']) || $user_id ) ) || ( $mode == 'group' && $group_id ) )
 {
-	if ( isset($HTTP_POST_VARS['username']) )
+	if ( isset($_POST['username']) )
 	{
-		$this_userdata = get_userdata($HTTP_POST_VARS['username'], true);
+		$this_userdata = get_userdata($_POST['username'], true);
 		if ( !is_array($this_userdata) )
 		{
 			message_die(GENERAL_MESSAGE, $lang['No_such_user']);
@@ -614,7 +614,7 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 		message_die(GENERAL_ERROR, "Couldn't obtain forum information", "", __LINE__, __FILE__, $sql);
 	}
 
-	$forum_access = array();
+	$forum_access = [];
 	while( $row = $db->sql_fetchrow($result) )
 	{
 		$forum_access[] = $row;
@@ -647,7 +647,7 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 	{
 		message_die(GENERAL_ERROR, "Couldn't obtain user/group information", "", __LINE__, __FILE__, $sql);
 	}
-	$ug_info = array();
+	$ug_info = [];
 	while( $row = $db->sql_fetchrow($result) )
 	{
 		$ug_info[] = $row;
@@ -660,8 +660,8 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 		message_die(GENERAL_ERROR, "Couldn't obtain user/group permissions", "", __LINE__, __FILE__, $sql);
 	}
 
-	$auth_access = array();
-	$auth_access_count = array();
+	$auth_access = [];
+	$auth_access_count = [];
 	while( $row = $db->sql_fetchrow($result) )
 	{
 		$auth_access[$row['forum_id']][] = $row; 
@@ -856,8 +856,8 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 		$t_groupname = $ug_info[0]['group_name'];
 	}
 
-	$name = array();
-	$id = array();
+	$name = [];
+	$id = [];
 	for($i = 0; $i < count($ug_info); $i++)
 	{
 		if( ( $mode == 'user' && !$ug_info[$i]['group_single_user'] ) || $mode == 'group' )

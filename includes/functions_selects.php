@@ -30,7 +30,7 @@ function language_select($default, $select_name = "language", $dirname="language
 
 	$dir = opendir($phpbb_root_path . $dirname);
 
-	$lang = array();
+	$lang = [];
 	while ( $file = readdir($dir) )
 	{
 		if (preg_match('#^lang_#i', $file) && !is_file(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file)) && !is_link(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file)))

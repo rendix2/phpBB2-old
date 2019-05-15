@@ -120,7 +120,7 @@ if (!($result = $db->sql_query($sql)))
 
 $row = $db->sql_fetchrow($result);
 
-$sql = array();
+$sql = [];
 
 switch ($row['config_value'])
 {
@@ -677,7 +677,7 @@ echo "<h2>Updating database schema</h2>\n";
 echo "<p>Progress :: <b>";
 flush();
 
-$error_ary = array();
+$error_ary = [];
 $errored = false;
 if (count($sql))
 {
@@ -714,7 +714,7 @@ else
 // Data updates
 //
 unset($sql);
-$error_ary = array();
+$error_ary = [];
 $errored = false;
 
 echo "<h2>Updating data</h2>\n";
@@ -775,7 +775,7 @@ switch ($row['config_value'])
 				AND u.user_level <> " . ADMIN;
 		$result = _sql($sql, $errored, $error_ary);
 
-		$mod_user = array();
+		$mod_user = [];
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$mod_user[] = $row['user_id'];
@@ -836,7 +836,7 @@ switch ($row['config_value'])
 				AND topic_status = " . TOPIC_MOVED;
 		$result = _sql($sql, $errored, $error_ary);
 
-		$topic_ary = array();
+		$topic_ary = [];
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$topic_ary[$row['topic_id']] = $row['topic_moved_id'];
@@ -944,7 +944,7 @@ switch ($row['config_value'])
 
 		if ($row = $db->sql_fetchrow($result))
 		{
-			$update_users = array();
+			$update_users = [];
 			do
 			{
 				$update_users[$row['unread_count']][] = $row['privmsgs_to_userid'];
@@ -972,7 +972,7 @@ switch ($row['config_value'])
 
 		if ($row = $db->sql_fetchrow($result))
 		{
-			$update_users = array();
+			$update_users = [];
 			do
 			{
 				$update_users[$row['new_count']][] = $row['privmsgs_to_userid'];

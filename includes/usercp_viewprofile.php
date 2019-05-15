@@ -21,36 +21,34 @@
  *
  ***************************************************************************/
 
-if ( !defined('IN_PHPBB') )
-{
+if ( !defined('IN_PHPBB') ) {
 	die("Hacking attempt");
 	exit;
 }
 
-if ( empty($HTTP_GET_VARS[POST_USERS_URL]) || $HTTP_GET_VARS[POST_USERS_URL] == ANONYMOUS )
-{
+if ( empty($_GET[POST_USERS_URL]) || $_GET[POST_USERS_URL] == ANONYMOUS ) {
 	message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
 }
-$profiledata = get_userdata($HTTP_GET_VARS[POST_USERS_URL]);
+$profiledata = get_userdata($_GET[POST_USERS_URL]);
 
-if (!$profiledata)
-{
+if (!$profiledata) {
 	message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
 }
 
 $sql = "SELECT *
 	FROM " . RANKS_TABLE . "
 	ORDER BY rank_special, rank_min";
-if ( !($result = $db->sql_query($sql)) )
-{
+
+if ( !($result = $db->sql_query($sql)) ) {
 	message_die(GENERAL_ERROR, 'Could not obtain ranks information', '', __LINE__, __FILE__, $sql);
 }
 
-$ranksrow = array();
-while ( $row = $db->sql_fetchrow($result) )
-{
+$ranksrow = [];
+
+while ( $row = $db->sql_fetchrow($result) ) {
 	$ranksrow[] = $row;
 }
+
 $db->sql_freeresult($result);
 
 //
@@ -70,21 +68,16 @@ $memberdays = max(1, round( ( time() - $regdate ) / 86400 ));
 $posts_per_day = $profiledata['user_posts'] / $memberdays;
 
 // Get the users percentage of total posts
-if ( $profiledata['user_posts'] != 0  )
-{
+if ( $profiledata['user_posts'] != 0  ) {
 	$total_posts = get_db_stat('postcount');
 	$percentage = ( $total_posts ) ? min(100, ($profiledata['user_posts'] / $total_posts) * 100) : 0;
-}
-else
-{
+} else {
 	$percentage = 0;
 }
 
 $avatar_img = '';
-if ( $profiledata['user_avatar_type'] && $profiledata['user_allowavatar'] )
-{
-	switch( $profiledata['user_avatar_type'] )
-	{
+if ( $profiledata['user_avatar_type'] && $profiledata['user_allowavatar'] ) {
+	switch( $profiledata['user_avatar_type'] ) {
 		case USER_AVATAR_UPLOAD:
 			$avatar_img = ( $board_config['allow_avatar_upload'] ) ? '<img src="' . $board_config['avatar_path'] . '/' . $profiledata['user_avatar'] . '" alt="" border="0" />' : '';
 			break;
@@ -99,23 +92,16 @@ if ( $profiledata['user_avatar_type'] && $profiledata['user_allowavatar'] )
 
 $poster_rank = '';
 $rank_image = '';
-if ( $profiledata['user_rank'] )
-{
-	for($i = 0; $i < count($ranksrow); $i++)
-	{
-		if ( $profiledata['user_rank'] == $ranksrow[$i]['rank_id'] && $ranksrow[$i]['rank_special'] )
-		{
+if ( $profiledata['user_rank'] ) {
+	for($i = 0; $i < count($ranksrow); $i++) {
+		if ( $profiledata['user_rank'] == $ranksrow[$i]['rank_id'] && $ranksrow[$i]['rank_special'] ) {
 			$poster_rank = $ranksrow[$i]['rank_title'];
 			$rank_image = ( $ranksrow[$i]['rank_image'] ) ? '<img src="' . $ranksrow[$i]['rank_image'] . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
 		}
 	}
-}
-else
-{
-	for($i = 0; $i < count($ranksrow); $i++)
-	{
-		if ( $profiledata['user_posts'] >= $ranksrow[$i]['rank_min'] && !$ranksrow[$i]['rank_special'] )
-		{
+} else {
+	for($i = 0; $i < count($ranksrow); $i++) {
+		if ( $profiledata['user_posts'] >= $ranksrow[$i]['rank_min'] && !$ranksrow[$i]['rank_special'] ) {
 			$poster_rank = $ranksrow[$i]['rank_title'];
 			$rank_image = ( $ranksrow[$i]['rank_image'] ) ? '<img src="' . $ranksrow[$i]['rank_image'] . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
 		}
@@ -126,15 +112,12 @@ $temp_url = append_sid("privmsg.php?mode=post&amp;" . POST_USERS_URL . "=" . $pr
 $pm_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
 $pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
 
-if ( !empty($profiledata['user_viewemail']) || $userdata['user_level'] == ADMIN )
-{
+if ( !empty($profiledata['user_viewemail']) || $userdata['user_level'] == ADMIN ) {
 	$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.php?mode=email&amp;" . POST_USERS_URL .'=' . $profiledata['user_id']) : 'mailto:' . $profiledata['user_email'];
 
 	$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
 	$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
-}
-else
-{
+} else {
 	$email_img = '&nbsp;';
 	$email = '&nbsp;';
 }
@@ -142,14 +125,11 @@ else
 $www_img = ( $profiledata['user_website'] ) ? '<a href="' . $profiledata['user_website'] . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '&nbsp;';
 $www = ( $profiledata['user_website'] ) ? '<a href="' . $profiledata['user_website'] . '" target="_userwww">' . $profiledata['user_website'] . '</a>' : '&nbsp;';
 
-if ( !empty($profiledata['user_icq']) )
-{
+if ( !empty($profiledata['user_icq']) ) {
 	$icq_status_img = '<a href="http://wwp.icq.com/' . $profiledata['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $profiledata['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
 	$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $profiledata['user_icq'] . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
 	$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $profiledata['user_icq'] . '">' . $lang['ICQ'] . '</a>';
-}
-else
-{
+} else {
 	$icq_status_img = '&nbsp;';
 	$icq_img = '&nbsp;';
 	$icq = '&nbsp;';
@@ -177,9 +157,7 @@ include($phpbb_root_path . 'includes/page_header.php');
 if (function_exists('get_html_translation_table'))
 {
 	$u_search_author = urlencode(strtr($profiledata['username'], array_flip(get_html_translation_table(HTML_ENTITIES))));
-}
-else
-{
+} else {
 	$u_search_author = urlencode(str_replace(array('&amp;', '&#039;', '&quot;', '&lt;', '&gt;'), array('&', "'", '"', '<', '>'), $profiledata['username']));
 }
 

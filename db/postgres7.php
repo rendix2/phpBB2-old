@@ -30,9 +30,9 @@ class sql_db
 	var $db_connect_id;
 	var $query_result;
 	var $in_transaction = 0;
-	var $row = array();
-	var $rowset = array();
-	var $rownum = array();
+	var $row = [];
+	var $rowset = [];
+	var $rownum = [];
 	var $num_queries = 0;
 
 	//

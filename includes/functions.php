@@ -214,7 +214,7 @@ function make_jumpbox($action, $match_forum_id = 0)
 		message_die(GENERAL_ERROR, "Couldn't obtain category list.", "", __LINE__, __FILE__, $sql);
 	}
 	
-	$category_rows = array();
+	$category_rows = [];
 	while ( $row = $db->sql_fetchrow($result) )
 	{
 		$category_rows[] = $row;
@@ -232,7 +232,7 @@ function make_jumpbox($action, $match_forum_id = 0)
 
 		$boxstring = '<select name="' . POST_FORUM_URL . '" onchange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $lang['Select_forum'] . '</option>';
 
-		$forum_rows = array();
+		$forum_rows = [];
 		while ( $row = $db->sql_fetchrow($result) )
 		{
 			$forum_rows[] = $row;

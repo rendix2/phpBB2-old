@@ -310,7 +310,7 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 
 	$dir = @opendir($board_config['avatar_gallery_path']);
 
-	$avatar_images = array();
+	$avatar_images = [];
 	while( $file = @readdir($dir) )
 	{
 		if( $file != '.' && $file != '..' && !is_file($board_config['avatar_gallery_path'] . '/' . $file) && !is_link($board_config['avatar_gallery_path'] . '/' . $file) )

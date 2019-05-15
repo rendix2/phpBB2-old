@@ -177,8 +177,8 @@ function smiley_replace($text = '')
 		$smilies = $db->sql_fetchrowset($result);
 		@usort($smilies, 'smiley_sort');
 
-		$search = array();
-		$replace = array();
+		$search = [];
+		$replace = [];
 		for($i = 0; $i < count($smilies); $i++)
 		{
 			$search[] = '/<IMG SRC=".*?\/' . phpbb_preg_quote($smilies[$i]['smile_url'], '/') .'">/i';
@@ -373,7 +373,7 @@ function bbdecode($message)
 //
 function inarray($needle, $haystack)
 { 
-	for( $i = 0 ; $i < sizeof($haystack) ; $i++ )
+	for( $i = 0 ; $i < count($haystack) ; $i++ )
 	{ 
 		if ( $haystack[$i] == $needle )
 		{ 
@@ -397,7 +397,7 @@ function end_step($next)
 //
 // Start at the beginning if the user hasn't specified a specific starting point.
 //
-$next = ( isset($HTTP_GET_VARS['next']) ) ? $HTTP_GET_VARS['next'] : 'start';
+$next = ( isset($_GET['next']) ) ? $_GET['next'] : 'start';
 
 // If debug is set we'll do all steps in one go.
 $debug = 1;
@@ -737,7 +737,7 @@ if ( !empty($next) )
 
 			if ( $post_total )
 			{
-				$post_id_ary = array();
+				$post_id_ary = [];
 				while( $row = $db->sql_fetchrow($result) )
 				{
 					$post_id_ary[] = $row['post_id'];
@@ -777,7 +777,7 @@ if ( !empty($next) )
 				MODIFY user_sig text";
 			query($sql, "Couldn't add user_sig_bbcode_uid field to users table");
 
-			$super_mods = array();
+			$super_mods = [];
 			$first_admin = -2;
 
 			$batchsize = 1000;
@@ -1156,7 +1156,7 @@ if ( !empty($next) )
 
 			if ( $users_removed )
 			{
-				$post_id_ary = array();
+				$post_id_ary = [];
 				while( $row = $db->sql_fetchrow($result) )
 				{
 					$post_id_ary[] = $row['post_id'];
@@ -1878,7 +1878,7 @@ if ( !empty($next) )
 			$max_post_id = $max_post_id['max_post_id'];
 			$per_percent = round(( $totalposts / 500 ) * 10);
 
-			$postcounter = ( !isset($HTTP_GET_VARS['batchstart']) ) ? 0 : $HTTP_GET_VARS['batchstart'];
+			$postcounter = ( !isset($_GET['batchstart']) ) ? 0 : $_GET['batchstart'];
 
 			$batchsize = 150; // Process this many posts per loop
 			$batchcount = 0;

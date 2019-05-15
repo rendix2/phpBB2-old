@@ -56,7 +56,7 @@ function load_bbcode_template()
 	// Turn template blocks into PHP assignment statements for the values of $bbcode_tpls..
 	$tpl = preg_replace('#<!-- BEGIN (.*?) -->(.*?)<!-- END (.*?) -->#', "\n" . '$bbcode_tpls[\'\\1\'] = \'\\2\';', $tpl);
 
-	$bbcode_tpls = array();
+	$bbcode_tpls = [];
 
 	eval($tpl);
 
@@ -191,8 +191,8 @@ function bbencode_second_pass($text, $uid)
 	$text = str_replace("[/i:$uid]", $bbcode_tpl['i_close'], $text);
 
 	// Patterns and replacements for URL and email tags..
-	$patterns = array();
-	$replacements = array();
+	$patterns = [];
+	$replacements = [];
 
 	// [img]image_url_here[/img] code..
 	// This one gets first-passed..
@@ -255,7 +255,7 @@ function bbencode_first_pass($text, $uid)
 	$text = bbencode_first_pass_pda($text, $uid, '/\[quote=\\\\&quot;(.*?)\\\\&quot;\]/is', '[/quote]', '', false, '', "[quote:$uid=\\\"\\1\\\"]");
 
 	// [list] and [list=x] for (un)ordered lists.
-	$open_tag = array();
+	$open_tag = [];
 	$open_tag[0] = "[list]";
 
 	// unordered..
@@ -328,7 +328,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 
 	$use_function_pointer = ($func && ($func != ''));
 
-	$stack = array();
+	$stack = [];
 
 	if (is_array($open_tag))
 	{
@@ -343,7 +343,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 	{
 		// only one opening tag. make it into a 1-element array.
 		$open_tag_temp = $open_tag;
-		$open_tag = array();
+		$open_tag = [];
 		$open_tag[0] = $open_tag_temp;
 		$open_tag_count = 1;
 	}
@@ -356,7 +356,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 		if (!is_array($open_regexp_replace))
 		{
 			$open_regexp_temp = $open_regexp_replace;
-			$open_regexp_replace = array();
+			$open_regexp_replace = [];
 			$open_regexp_replace[0] = $open_regexp_temp;
 		}
 	}
@@ -405,7 +405,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 				// Now compare, either using regexp or not.
 				if ($open_is_regexp)
 				{
-					$match_result = array();
+					$match_result = [];
 					if (preg_match($open_tag[$i], $possible_start, $match_result))
 					{
 						$found_start = true;
@@ -449,10 +449,10 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 				{
 					// We have an ending tag.
 					// Check if we've already found a matching starting tag.
-					if (sizeof($stack) > 0)
+					if (count($stack) > 0)
 					{
 						// There exists a starting tag.
-						$curr_nesting_depth = sizeof($stack);
+						$curr_nesting_depth = count($stack);
 						// We need to do 2 replacements now.
 						$match = array_pop($stack);
 						$start_index = $match['pos'];
@@ -518,7 +518,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 						// Now.. we've screwed up the indices by changing the length of the string.
 						// So, if there's anything in the stack, we want to resume searching just after it.
 						// otherwise, we go back to the start.
-						if (sizeof($stack) > 0)
+						if (count($stack) > 0)
 						{
 							$match = array_pop($stack);
 							$curr_pos = $match['pos'];
@@ -705,7 +705,7 @@ function escape_slashes($input)
 function bbcode_array_push(&$stack, $value)
 {
    $stack[] = $value;
-   return(sizeof($stack));
+   return(count($stack));
 }
 
 /**
@@ -747,7 +747,7 @@ function smilies_pass($message)
 	if (!isset($orig))
 	{
 		global $db, $board_config;
-		$orig = $repl = array();
+		$orig = $repl = [];
 
 		$sql = 'SELECT * FROM ' . SMILIES_TABLE;
 		if( !$result = $db->sql_query($sql) )

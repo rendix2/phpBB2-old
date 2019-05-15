@@ -35,7 +35,7 @@ require('./pagestart.php');
 //
 function inarray($needle, $haystack)
 { 
-	for($i = 0; $i < sizeof($haystack); $i++ )
+	for($i = 0; $i < count$haystack); $i++ )
 	{ 
 		if( $haystack[$i] == $needle )
 		{ 
@@ -51,7 +51,7 @@ function inarray($needle, $haystack)
 //
 // Generate relevant output
 //
-if( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
+if( isset($_GET['pane']) && $_GET['pane'] == 'left' )
 {
 	$dir = @opendir(".");
 
@@ -118,7 +118,7 @@ if( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
 
 	include('./page_footer_admin.php');
 }
-elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
+elseif( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 {
 
 	include('./page_header_admin.php');
@@ -365,7 +365,7 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 		message_die(GENERAL_ERROR, "Couldn't obtain user/online forums information.", "", __LINE__, __FILE__, $sql);
 	}
 
-	$reg_userid_ary = array();
+	$reg_userid_ary = [];
 
 	if( count($onlinerow_reg) )
 	{

@@ -55,7 +55,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 	{
 		if (is_array($headers))
 		{
-			if (sizeof($headers) > 1)
+			if (count($headers) > 1)
 			{
 				$headers = join("\n", $headers);
 			}

@@ -33,27 +33,20 @@ init_userprefs($userdata);
 // End session management
 //
 
-$start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
+$start = ( isset($_GET['start']) ) ? intval($_GET['start']) : 0;
 $start = ($start < 0) ? 0 : $start;
 
-if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
-{
-	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? htmlspecialchars($HTTP_POST_VARS['mode']) : htmlspecialchars($HTTP_GET_VARS['mode']);
-}
-else
-{
+if ( isset($_GET['mode']) || isset($_POST['mode']) ) {
+    $mode = ( isset($_POST['mode']) ) ? htmlspecialchars($_POST['mode']) : htmlspecialchars($_GET['mode']);
+} else {
 	$mode = 'joined';
 }
 
-if(isset($HTTP_POST_VARS['order']))
-{
-	$sort_order = ($HTTP_POST_VARS['order'] == 'ASC') ? 'ASC' : 'DESC';
-}
-else if(isset($HTTP_GET_VARS['order']))
-{
-	$sort_order = ($HTTP_GET_VARS['order'] == 'ASC') ? 'ASC' : 'DESC';
-}
-else
+if(isset($_POST['order'])) {
+    $sort_order = ($_POST['order'] == 'ASC') ? 'ASC' : 'DESC';
+} else if(isset($_GET['order'])) {
+    $sort_order = ($_GET['order'] == 'ASC') ? 'ASC' : 'DESC';
+} else
 {
 	$sort_order = 'ASC';
 }
@@ -61,37 +54,39 @@ else
 //
 // Memberlist sorting
 //
-$mode_types_text = array($lang['Sort_Joined'], $lang['Sort_Username'], $lang['Sort_Location'], $lang['Sort_Posts'], $lang['Sort_Email'],  $lang['Sort_Website'], $lang['Sort_Top_Ten']);
-$mode_types = array('joined', 'username', 'location', 'posts', 'email', 'website', 'topten');
+$mode_types_text = [$lang['Sort_Joined'], $lang['Sort_Username'], $lang['Sort_Location'], $lang['Sort_Posts'], $lang['Sort_Email'],  $lang['Sort_Website'], $lang['Sort_Top_Ten']];
+$mode_types = ['joined', 'username', 'location', 'posts', 'email', 'website', 'topten'];
 
 $select_sort_mode = '<select name="mode">';
+
 for($i = 0; $i < count($mode_types_text); $i++)
 {
 	$selected = ( $mode == $mode_types[$i] ) ? ' selected="selected"' : '';
 	$select_sort_mode .= '<option value="' . $mode_types[$i] . '"' . $selected . '>' . $mode_types_text[$i] . '</option>';
 }
-$select_sort_mode .= '</select>';
 
+$select_sort_mode .= '</select>';
 $select_sort_order = '<select name="order">';
-if($sort_order == 'ASC')
-{
+
+if($sort_order == 'ASC') {
 	$select_sort_order .= '<option value="ASC" selected="selected">' . $lang['Sort_Ascending'] . '</option><option value="DESC">' . $lang['Sort_Descending'] . '</option>';
-}
-else
-{
+} else {
 	$select_sort_order .= '<option value="ASC">' . $lang['Sort_Ascending'] . '</option><option value="DESC" selected="selected">' . $lang['Sort_Descending'] . '</option>';
 }
+
 $select_sort_order .= '</select>';
 
 //
 // Generate page
 //
 $page_title = $lang['Memberlist'];
-include($phpbb_root_path . 'includes/page_header.php.);
+
+include($phpbb_root_path . 'includes/page_header.php');
 
 $template->set_filenames(array(
 	'body' => 'memberlist_body.tpl')
 );
+
 make_jumpbox('viewforum.php');
 
 $template->assign_vars(array(
@@ -115,8 +110,7 @@ $template->assign_vars(array(
 	'S_MODE_ACTION' => append_sid("memberlist.php"))
 );
 
-switch( $mode )
-{
+switch( $mode ) {
 	case 'joined':
 		$order_by = "user_regdate $sort_order LIMIT $start, " . $board_config['topics_per_page'];
 		break;
@@ -147,16 +141,15 @@ $sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user
 	FROM " . USERS_TABLE . "
 	WHERE user_id <> " . ANONYMOUS . "
 	ORDER BY $order_by";
-if( !($result = $db->sql_query($sql)) )
-{
+
+if( !($result = $db->sql_query($sql)) ) {
 	message_die(GENERAL_ERROR, 'Could not query users', '', __LINE__, __FILE__, $sql);
 }
 
-if ( $row = $db->sql_fetchrow($result) )
-{
+if ( $row = $db->sql_fetchrow($result) ) {
 	$i = 0;
-	do
-	{
+	
+	do {
 		$username = $row['username'];
 		$user_id = $row['user_id'];
 
@@ -165,10 +158,9 @@ if ( $row = $db->sql_fetchrow($result) )
 		$posts = ( $row['user_posts'] ) ? $row['user_posts'] : 0;
 
 		$poster_avatar = '';
-		if ( $row['user_avatar_type'] && $user_id != ANONYMOUS && $row['user_allowavatar'] )
-		{
-			switch( $row['user_avatar_type'] )
-			{
+		
+		if ( $row['user_avatar_type'] && $user_id != ANONYMOUS && $row['user_allowavatar'] ) {
+			switch( $row['user_avatar_type'] ) {
 				case USER_AVATAR_UPLOAD:
 					$poster_avatar = ( $board_config['allow_avatar_upload'] ) ? '<img src="' . $board_config['avatar_path'] . '/' . $row['user_avatar'] . '" alt="" border="0" />' : '';
 					break;
@@ -181,15 +173,12 @@ if ( $row = $db->sql_fetchrow($result) )
 			}
 		}
 
-		if ( !empty($row['user_viewemail']) || $userdata['user_level'] == ADMIN )
-		{
+		if ( !empty($row['user_viewemail']) || $userdata['user_level'] == ADMIN ) {
 			$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.php?mode=email&amp;" . POST_USERS_URL .'=' . $user_id) : 'mailto:' . $row['user_email'];
 
 			$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
 			$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
-		}
-		else
-		{
+		} else {
 			$email_img = '&nbsp;';
 			$email = '&nbsp;';
 		}
@@ -210,9 +199,7 @@ if ( $row = $db->sql_fetchrow($result) )
 			$icq_status_img = '<a href="http://wwp.icq.com/' . $row['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $row['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
 			$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row['user_icq'] . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
 			$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row['user_icq'] . '">' . $lang['ICQ'] . '</a>';
-		}
-		else
-		{
+		} else {
 			$icq_status_img = '';
 			$icq_img = '';
 			$icq = '';
@@ -270,30 +257,27 @@ if ( $row = $db->sql_fetchrow($result) )
 		$i++;
 	}
 	while ( $row = $db->sql_fetchrow($result) );
+	
 	$db->sql_freeresult($result);
 }
 
-if ( $mode != 'topten' || $board_config['topics_per_page'] < 10 )
-{
+if ( $mode != 'topten' || $board_config['topics_per_page'] < 10 ) {
 	$sql = "SELECT count(*) AS total
 		FROM " . USERS_TABLE . "
 		WHERE user_id <> " . ANONYMOUS;
 
-	if ( !($result = $db->sql_query($sql)) )
-	{
+	if ( !($result = $db->sql_query($sql)) ) {
 		message_die(GENERAL_ERROR, 'Error getting total users', '', __LINE__, __FILE__, $sql);
 	}
 
-	if ( $total = $db->sql_fetchrow($result) )
-	{
+	if ( $total = $db->sql_fetchrow($result) ) {
 		$total_members = $total['total'];
 
 		$pagination = generate_pagination("memberlist.php?mode=$mode&amp;order=$sort_order", $total_members, $board_config['topics_per_page'], $start). '&nbsp;';
 	}
+	
 	$db->sql_freeresult($result);
-}
-else
-{
+} else {
 	$pagination = '&nbsp;';
 	$total_members = 10;
 }

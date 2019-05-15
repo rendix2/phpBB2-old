@@ -39,27 +39,27 @@ init_userprefs($userdata);
 //
 // Define initial vars
 //
-if ( isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode']) )
+if ( isset($_POST['mode']) || isset($_GET['mode']) )
 {
-	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+	$mode = ( isset($_POST['mode']) ) ? $_POST['mode'] : $_GET['mode'];
 }
 else
 {
 	$mode = '';
 }
 
-if ( isset($HTTP_POST_VARS['search_keywords']) || isset($HTTP_GET_VARS['search_keywords']) )
+if ( isset($_POST['search_keywords']) || isset($_GET['search_keywords']) )
 {
-	$search_keywords = ( isset($HTTP_POST_VARS['search_keywords']) ) ? $HTTP_POST_VARS['search_keywords'] : $HTTP_GET_VARS['search_keywords'];
+	$search_keywords = ( isset($_POST['search_keywords']) ) ? $_POST['search_keywords'] : $_GET['search_keywords'];
 }
 else
 {
 	$search_keywords = '';
 }
 
-if ( isset($HTTP_POST_VARS['search_author']) || isset($HTTP_GET_VARS['search_author']))
+if ( isset($_POST['search_author']) || isset($_GET['search_author']))
 {
-	$search_author = ( isset($HTTP_POST_VARS['search_author']) ) ? $HTTP_POST_VARS['search_author'] : $HTTP_GET_VARS['search_author'];
+	$search_author = ( isset($_POST['search_author']) ) ? $_POST['search_author'] : $_GET['search_author'];
 	$search_author = phpbb_clean_username($search_author);
 }
 else
@@ -67,49 +67,49 @@ else
 	$search_author = '';
 }
 
-$search_id = ( isset($HTTP_GET_VARS['search_id']) ) ? $HTTP_GET_VARS['search_id'] : '';
+$search_id = ( isset($_GET['search_id']) ) ? $_GET['search_id'] : '';
 
-$show_results = ( isset($HTTP_POST_VARS['show_results']) ) ? $HTTP_POST_VARS['show_results'] : 'posts';
+$show_results = ( isset($_POST['show_results']) ) ? $_POST['show_results'] : 'posts';
 $show_results = ($show_results == 'topics') ? 'topics' : 'posts';
 
-if ( isset($HTTP_POST_VARS['search_terms']) )
+if ( isset($_POST['search_terms']) )
 {
-	$search_terms = ( $HTTP_POST_VARS['search_terms'] == 'all' ) ? 1 : 0;
+	$search_terms = ( $_POST['search_terms'] == 'all' ) ? 1 : 0;
 }
 else
 {
 	$search_terms = 0;
 }
 
-if ( isset($HTTP_POST_VARS['search_fields']) )
+if ( isset($_POST['search_fields']) )
 {
-	$search_fields = ( $HTTP_POST_VARS['search_fields'] == 'all' ) ? 1 : 0;
+	$search_fields = ( $_POST['search_fields'] == 'all' ) ? 1 : 0;
 }
 else
 {
 	$search_fields = 0;
 }
 
-$return_chars = ( isset($HTTP_POST_VARS['return_chars']) ) ? intval($HTTP_POST_VARS['return_chars']) : 200;
+$return_chars = ( isset($_POST['return_chars']) ) ? intval($_POST['return_chars']) : 200;
 
-$search_cat = ( isset($HTTP_POST_VARS['search_cat']) ) ? intval($HTTP_POST_VARS['search_cat']) : -1;
-$search_forum = ( isset($HTTP_POST_VARS['search_forum']) ) ? intval($HTTP_POST_VARS['search_forum']) : -1;
+$search_cat = ( isset($_POST['search_cat']) ) ? intval($_POST['search_cat']) : -1;
+$search_forum = ( isset($_POST['search_forum']) ) ? intval($_POST['search_forum']) : -1;
 
-$sort_by = ( isset($HTTP_POST_VARS['sort_by']) ) ? intval($HTTP_POST_VARS['sort_by']) : 0;
+$sort_by = ( isset($_POST['sort_by']) ) ? intval($_POST['sort_by']) : 0;
 
-if ( isset($HTTP_POST_VARS['sort_dir']) )
+if ( isset($_POST['sort_dir']) )
 {
-	$sort_dir = ( $HTTP_POST_VARS['sort_dir'] == 'DESC' ) ? 'DESC' : 'ASC';
+	$sort_dir = ( $_POST['sort_dir'] == 'DESC' ) ? 'DESC' : 'ASC';
 }
 else
 {
 	$sort_dir =  'DESC';
 }
 
-if ( !empty($HTTP_POST_VARS['search_time']) || !empty($HTTP_GET_VARS['search_time']))
+if ( !empty($_POST['search_time']) || !empty($_GET['search_time']))
 {
-	$search_time = time() - ( ( ( !empty($HTTP_POST_VARS['search_time']) ) ? intval($HTTP_POST_VARS['search_time']) : intval($HTTP_GET_VARS['search_time']) ) * 86400 );
-	$topic_days = (!empty($HTTP_POST_VARS['search_time'])) ? intval($HTTP_POST_VARS['search_time']) : intval($HTTP_GET_VARS['search_time']);
+	$search_time = time() - ( ( ( !empty($_POST['search_time']) ) ? intval($_POST['search_time']) : intval($_GET['search_time']) ) * 86400 );
+	$topic_days = (!empty($_POST['search_time'])) ? intval($_POST['search_time']) : intval($_GET['search_time']);
 }
 else
 {
@@ -117,7 +117,7 @@ else
 	$topic_days = 0;
 }
 
-$start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
+$start = ( isset($_GET['start']) ) ? intval($_GET['start']) : 0;
 $start = ($start < 0) ? 0 : $start;
 
 $sort_by_types = array($lang['Sort_Time'], $lang['Sort_Post_Subject'], $lang['Sort_Topic_Title'], $lang['Sort_Author'], $lang['Sort_Forum']);
@@ -135,9 +135,9 @@ if ( $mode == 'searchuser' )
 	//
 	// This handles the simple windowed user search functions called from various other scripts
 	//
-	if ( isset($HTTP_POST_VARS['search_username']) )
+	if ( isset($_POST['search_username']) )
 	{
-		username_search($HTTP_POST_VARS['search_username']);
+		username_search($_POST['search_username']);
 	}
 	else
 	{
@@ -261,7 +261,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 				message_die(GENERAL_ERROR, 'Could not obtain matched posts list', '', __LINE__, __FILE__, $sql);
 			}
 
-			$search_ids = array();
+			$search_ids = [];
 			while( $row = $db->sql_fetchrow($result) )
 			{
 				$search_ids[] = $row['post_id'];
@@ -276,7 +276,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 			$stopword_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/search_stopwords.txt'); 
 			$synonym_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/search_synonyms.txt'); 
 
-			$split_search = array();
+			$split_search = [];
 			$stripped_keywords = stripslashes($search_keywords);
 			$split_search = ( !strstr($multibyte_charset, $lang['ENCODING']) ) ?  split_words(clean_words('search', $stripped_keywords, $stopword_array, $synonym_array), 'search') : split(' ', $search_keywords);	
 			unset($stripped_keywords);
@@ -286,8 +286,8 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 			$word_count = 0;
 			$current_match_type = 'or';
 
-			$word_match = array();
-			$result_list = array();
+			$word_match = [];
+			$result_list = [];
 
 			for($i = 0; $i < count($split_search); $i++)
 			{
@@ -341,7 +341,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 							message_die(GENERAL_ERROR, 'Could not obtain matched posts list', '', __LINE__, __FILE__, $sql);
 						}
 
-						$row = array();
+						$row = [];
 						while( $temp_row = $db->sql_fetchrow($result) )
 						{
 							$row[$temp_row['post_id']] = 1;
@@ -380,7 +380,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 
 			@reset($result_list);
 
-			$search_ids = array();
+			$search_ids = [];
 			while( list($post_id, $matches) = each($result_list) )
 			{
 				if ( $matches )
@@ -455,7 +455,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 				//
 				// This one is a beast, try to seperate it a bit (workaround for connection timeouts)
 				//
-				$search_id_chunks = array();
+				$search_id_chunks = [];
 				$count = 0;
 				$chunk = 0;
 
@@ -478,7 +478,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 					$search_id_chunks[0] = $search_ids;
 				}
 
-				$search_ids = array();
+				$search_ids = [];
 
 				for ($i = 0; $i < count($search_id_chunks); $i++)
 				{
@@ -532,12 +532,12 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 					$db->sql_freeresult($result);
 				}
 
-				$total_match_count = sizeof($search_ids);
+				$total_match_count = count($search_ids);
 		
 			}
 			else if ( $search_author != '' || $search_time || $auth_sql != '' )
 			{
-				$search_id_chunks = array();
+				$search_id_chunks = [];
 				$count = 0;
 				$chunk = 0;
 
@@ -560,7 +560,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 					$search_id_chunks[0] = $search_ids;
 				}
 
-				$search_ids = array();
+				$search_ids = [];
 
 				for ($i = 0; $i < count($search_id_chunks); $i++)
 				{
@@ -627,7 +627,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 				message_die(GENERAL_ERROR, 'Could not obtain post ids', '', __LINE__, __FILE__, $sql);
 			}
 
-			$search_ids = array();
+			$search_ids = [];
 			while( $row = $db->sql_fetchrow($result) )
 			{
 				$search_ids[] = $row['topic_id'];
@@ -668,7 +668,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		// Combine both results and search data (apart from original query)
 		// so we can serialize it and place it in the DB
 		//
-		$store_search_data = array();
+		$store_search_data = [];
 
 		//
 		// Limit the character length (and with this the results displayed at all following pages) to prevent
@@ -788,7 +788,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 			message_die(GENERAL_ERROR, 'Could not obtain search results', '', __LINE__, __FILE__, $sql);
 		}
 
-		$searchset = array();
+		$searchset = [];
 		while( $row = $db->sql_fetchrow($result) )
 		{
 			$searchset[] = $row;
@@ -799,8 +799,8 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		//
 		// Define censored word matches
 		//
-		$orig_word = array();
-		$replacement_word = array();
+		$orig_word = [];
+		$replacement_word = [];
 		obtain_word_list($orig_word, $replacement_word);
 
 		//
@@ -831,7 +831,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		);
 
 		$highlight_active = '';
-		$highlight_match = array();
+		$highlight_match = [];
 		for($j = 0; $j < count($split_search); $j++ )
 		{
 			$split_word = $split_search[$j];
@@ -856,8 +856,8 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 
 		$highlight_active = urlencode(trim($highlight_active));
 
-		$tracking_topics = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t']) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t']) : array();
-		$tracking_forums = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f']) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f']) : array();
+		$tracking_topics = ( isset($_COOKIE[$board_config['cookie_name'] . '_t']) ) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_t']) : array();
+		$tracking_forums = ( isset($_COOKIE[$board_config['cookie_name'] . '_f']) ) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_f']) : array();
 
 		for($i = 0; $i < count($searchset); $i++)
 		{
@@ -1157,7 +1157,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 					{
 						if ( $searchset[$i]['post_time'] > $userdata['user_lastvisit'] ) 
 						{
-							if ( !empty($tracking_topics) || !empty($tracking_forums) || isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f_all']) )
+							if ( !empty($tracking_topics) || !empty($tracking_forums) || isset($_COOKIE[$board_config['cookie_name'] . '_f_all']) )
 							{
 
 								$unread_topics = true;
@@ -1178,23 +1178,18 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 									}
 								}
 
-								if ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f_all']) )
-								{
-									if ( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f_all'] > $searchset[$i]['post_time'] )
-									{
+								if ( isset($_COOKIE[$board_config['cookie_name'] . '_f_all']) ) {
+									if ( $_COOKIE[$board_config['cookie_name'] . '_f_all'] > $searchset[$i]['post_time'] ) {
 										$unread_topics = false;
 									}
 								}
 
-								if ( $unread_topics )
-								{
+								if ( $unread_topics ) {
 									$folder_image = $folder_new;
 									$folder_alt = $lang['New_posts'];
 
 									$newest_post_img = '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
-								}
-								else
-								{
+								} else {
 									$folder_alt = ( $searchset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
 
 									$folder_image = $folder;
@@ -1202,36 +1197,27 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 									$newest_post_img = '';
 								}
 
-							}
-							else if ( $searchset[$i]['post_time'] > $userdata['user_lastvisit'] ) 
-							{
+							} else if ( $searchset[$i]['post_time'] > $userdata['user_lastvisit'] )  {
 								$folder_image = $folder_new;
 								$folder_alt = $lang['New_posts'];
 
 								$newest_post_img = '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
-							}
-							else 
-							{
+							} else {
 								$folder_image = $folder;
 								$folder_alt = ( $searchset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
 								$newest_post_img = '';
 							}
-						}
-						else
-						{
+						} else {
 							$folder_image = $folder;
 							$folder_alt = ( $searchset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
 							$newest_post_img = '';
 						}
-					}
-					else
-					{
+					} else {
 						$folder_image = $folder;
 						$folder_alt = ( $searchset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
 						$newest_post_img = '';
 					}
 				}
-
 
 				$topic_author = ( $searchset[$i]['user_id'] != ANONYMOUS ) ? '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . '=' . $searchset[$i]['user_id']) . '">' : '';
 				$topic_author .= ( $searchset[$i]['user_id'] != ANONYMOUS ) ? $searchset[$i]['username'] : ( ( $searchset[$i]['post_username'] != '' ) ? $searchset[$i]['post_username'] : $lang['Guest'] );
@@ -1295,9 +1281,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		$template->pparse('body');
 
 		include($phpbb_root_path . 'includes/page_tail.php');
-	}
-	else
-	{
+	} else {
 		message_die(GENERAL_MESSAGE, $lang['No_search_match']);
 	}
 }
@@ -1318,33 +1302,29 @@ if ( !$result )
 $is_auth_ary = auth(AUTH_READ, AUTH_LIST_ALL, $userdata);
 
 $s_forums = '';
-while( $row = $db->sql_fetchrow($result) )
-{
-	if ( $is_auth_ary[$row['forum_id']]['auth_read'] )
-	{
+
+while( $row = $db->sql_fetchrow($result) ) {
+	if ( $is_auth_ary[$row['forum_id']]['auth_read'] ) {
 		$s_forums .= '<option value="' . $row['forum_id'] . '">' . $row['forum_name'] . '</option>';
-		if ( empty($list_cat[$row['cat_id']]) )
-		{
+		
+		if ( empty($list_cat[$row['cat_id']]) ) {
 			$list_cat[$row['cat_id']] = $row['cat_title'];
 		}
 	}
 }
 
-if ( $s_forums != '' )
-{
+if ( $s_forums != '' ) {
 	$s_forums = '<option value="-1">' . $lang['All_available'] . '</option>' . $s_forums;
 
 	//
 	// Category to search
 	//
 	$s_categories = '<option value="-1">' . $lang['All_available'] . '</option>';
-	while( list($cat_id, $cat_title) = @each($list_cat))
-	{
+	
+	while( list($cat_id, $cat_title) = @each($list_cat)) {
 		$s_categories .= '<option value="' . $cat_id . '">' . $cat_title . '</option>';
 	}
-}
-else
-{
+} else {
 	message_die(GENERAL_MESSAGE, $lang['No_searchable_forums']);
 }
 
@@ -1356,8 +1336,7 @@ $s_characters .= '<option value="0">0</option>';
 $s_characters .= '<option value="25">25</option>';
 $s_characters .= '<option value="50">50</option>';
 
-for($i = 100; $i < 1100 ; $i += 100)
-{
+for($i = 100; $i < 1100 ; $i += 100) {
 	$selected = ( $i == 200 ) ? ' selected="selected"' : '';
 	$s_characters .= '<option value="' . $i . '"' . $selected . '>' . $i . '</option>';
 }
@@ -1366,8 +1345,7 @@ for($i = 100; $i < 1100 ; $i += 100)
 // Sorting
 //
 $s_sort_by = "";
-for($i = 0; $i < count($sort_by_types); $i++)
-{
+for($i = 0; $i < count($sort_by_types); $i++) {
 	$s_sort_by .= '<option value="' . $i . '">' . $sort_by_types[$i] . '</option>';
 }
 
@@ -1378,8 +1356,8 @@ $previous_days = array(0, 1, 7, 14, 30, 90, 180, 364);
 $previous_days_text = array($lang['All_Posts'], $lang['1_Day'], $lang['7_Days'], $lang['2_Weeks'], $lang['1_Month'], $lang['3_Months'], $lang['6_Months'], $lang['1_Year']);
 
 $s_time = '';
-for($i = 0; $i < count($previous_days); $i++)
-{
+
+for($i = 0; $i < count($previous_days); $i++) {
 	$selected = ( $topic_days == $previous_days[$i] ) ? ' selected="selected"' : '';
 	$s_time .= '<option value="' . $previous_days[$i] . '"' . $selected . '>' . $previous_days_text[$i] . '</option>';
 }

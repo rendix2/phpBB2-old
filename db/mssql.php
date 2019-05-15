@@ -33,8 +33,8 @@ class sql_db
 	var $next_id;
 	var $in_transaction = 0;
 
-	var $row = array();
-	var $rowset = array();
+	var $row = [];
+	var $rowset = [];
 	var $limit_offset;
 	var $query_limit_success;
 

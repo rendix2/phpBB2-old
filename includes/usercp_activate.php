@@ -29,32 +29,24 @@ if ( !defined('IN_PHPBB') )
 
 $sql = "SELECT user_active, user_id, username, user_email, user_newpasswd, user_lang, user_actkey 
 	FROM " . USERS_TABLE . "
-	WHERE user_id = " . intval($HTTP_GET_VARS[POST_USERS_URL]);
-if ( !($result = $db->sql_query($sql)) )
-{
+	WHERE user_id = " . intval($_GET[POST_USERS_URL]);
+
+if ( !($result = $db->sql_query($sql)) ) {
 	message_die(GENERAL_ERROR, 'Could not obtain user information', '', __LINE__, __FILE__, $sql);
 }
 
-if ( $row = $db->sql_fetchrow($result) )
-{
-	if ( $row['user_active'] && trim($row['user_actkey']) == '' )
-	{
+if ( $row = $db->sql_fetchrow($result) ) {
+	if ( $row['user_active'] && trim($row['user_actkey']) == '' ) {
 		$template->assign_vars(array(
 			'META' => '<meta http-equiv="refresh" content="10;url=' . append_sid("index.php") . '">')
 		);
 
 		message_die(GENERAL_MESSAGE, $lang['Already_activated']);
-	}
-	else if ((trim($row['user_actkey']) == trim($HTTP_GET_VARS['act_key'])) && (trim($row['user_actkey']) != ''))
-	{
-		if (intval($board_config['require_activation']) == USER_ACTIVATION_ADMIN && $row['user_newpasswd'] == '')
-		{
-			if (!$userdata['session_logged_in'])
-			{
-				redirect(append_sid('login.php?redirect=profile.php&mode=activate&' . POST_USERS_URL . '=' . $row['user_id'] . '&act_key=' . trim($HTTP_GET_VARS['act_key'])));
-			}
-			else if ($userdata['user_level'] != ADMIN)
-			{
+	} else if ((trim($row['user_actkey']) == trim($_GET['act_key'])) && (trim($row['user_actkey']) != '')) {
+		if (intval($board_config['require_activation']) == USER_ACTIVATION_ADMIN && $row['user_newpasswd'] == '') {
+			if (!$userdata['session_logged_in']) {
+				redirect(append_sid('login.php?redirect=profile.php&mode=activate&' . POST_USERS_URL . '=' . $row['user_id'] . '&act_key=' . trim($_GET['act_key'])));
+			} else if ($userdata['user_level'] != ADMIN) {
 				message_die(GENERAL_MESSAGE, $lang['Not_Authorised']);
 			}
 		}
@@ -63,14 +55,13 @@ if ( $row = $db->sql_fetchrow($result) )
 
 		$sql = "UPDATE " . USERS_TABLE . "
 			SET user_active = 1, user_actkey = ''" . $sql_update_pass . " 
-			WHERE user_id = " . $row['user_id']; 
-		if ( !($result = $db->sql_query($sql)) )
-		{
+			WHERE user_id = " . $row['user_id'];
+		
+		if ( !($result = $db->sql_query($sql)) ) {
 			message_die(GENERAL_ERROR, 'Could not update users table', '', __LINE__, __FILE__, $sql_update);
 		}
 
-		if ( intval($board_config['require_activation']) == USER_ACTIVATION_ADMIN && $sql_update_pass == '' )
-		{
+		if ( intval($board_config['require_activation']) == USER_ACTIVATION_ADMIN && $sql_update_pass == '' ) {
 			include($phpbb_root_path . 'includes/emailer.php');
 			$emailer = new emailer($board_config['smtp_delivery']);
 
@@ -95,9 +86,7 @@ if ( $row = $db->sql_fetchrow($result) )
 			);
 
 			message_die(GENERAL_MESSAGE, $lang['Account_active_admin']);
-		}
-		else
-		{
+		} else {
 			$template->assign_vars(array(
 				'META' => '<meta http-equiv="refresh" content="10;url=' . append_sid("index.php") . '">')
 			);
@@ -105,14 +94,10 @@ if ( $row = $db->sql_fetchrow($result) )
 			$message = ( $sql_update_pass == '' ) ? $lang['Account_active'] : $lang['Password_activated']; 
 			message_die(GENERAL_MESSAGE, $message);
 		}
-	}
-	else
-	{
+	} else {
 		message_die(GENERAL_MESSAGE, $lang['Wrong_activation']);
 	}
-}
-else
-{
+} else {
 	message_die(GENERAL_MESSAGE, $lang['No_such_user']);
 }
 
