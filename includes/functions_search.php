@@ -264,7 +264,7 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 //
 // Check if specified words are too common now
 //
-function remove_common($mode, $fraction, $word_id_list = array())
+function remove_common($mode, $fraction, $word_id_list = [])
 {
 	global $db;
 
@@ -485,7 +485,7 @@ function username_search($search_match)
 
 	if ( $username_list != '' )
 	{
-		$template->assign_block_vars('switch_select_name', array());
+		$template->assign_block_vars('switch_select_name', []);
 	}
 
 	$template->pparse('search_user_body');

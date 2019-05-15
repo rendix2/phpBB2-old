@@ -1593,7 +1593,7 @@ if ( $mode == 'newpm' )
 	//
 	// Enable extensions in posting_body
 	//
-	$template->assign_block_vars('switch_privmsg', array());
+	$template->assign_block_vars('switch_privmsg', []);
 
 	//
 	// HTML toggle selection
@@ -1601,7 +1601,7 @@ if ( $mode == 'newpm' )
 	if ( $board_config['allow_html'] )
 	{
 		$html_status = $lang['HTML_is_ON'];
-		$template->assign_block_vars('switch_html_checkbox', array());
+		$template->assign_block_vars('switch_html_checkbox', []);
 	}
 	else
 	{
@@ -1614,7 +1614,7 @@ if ( $mode == 'newpm' )
 	if ( $board_config['allow_bbcode'] )
 	{
 		$bbcode_status = $lang['BBCode_is_ON'];
-		$template->assign_block_vars('switch_bbcode_checkbox', array());
+		$template->assign_block_vars('switch_bbcode_checkbox', []);
 	}
 	else
 	{
@@ -1627,7 +1627,7 @@ if ( $mode == 'newpm' )
 	if ( $board_config['allow_smilies'] )
 	{
 		$smilies_status = $lang['Smilies_are_ON'];
-		$template->assign_block_vars('switch_smilies_checkbox', array());
+		$template->assign_block_vars('switch_smilies_checkbox', []);
 	}
 	else
 	{
@@ -1640,7 +1640,7 @@ if ( $mode == 'newpm' )
 	//
 	if ( $user_sig != '' )
 	{
-		$template->assign_block_vars('switch_signature_checkbox', array());
+		$template->assign_block_vars('switch_signature_checkbox', []);
 	}
 
 	if ( $mode == 'post' )
@@ -1965,7 +1965,7 @@ if ( $folder != 'outbox' )
 	$inbox_limit_img_length = ( $board_config['max_' . $folder . '_privmsgs'] > 0 ) ? round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * $board_config['privmsg_graphic_length']) : $board_config['privmsg_graphic_length'];
 	$inbox_limit_remain = ( $board_config['max_' . $folder . '_privmsgs'] > 0 ) ? $board_config['max_' . $folder . '_privmsgs'] - $pm_all_total : 0;
 
-	$template->assign_block_vars('switch_box_size_notice', array());
+	$template->assign_block_vars('switch_box_size_notice', []);
 
 	switch( $folder )
 	{
@@ -2106,14 +2106,12 @@ if ( $row = $db->sql_fetchrow($result) )
 		'L_GOTO_PAGE' => $lang['Goto_page'])
 	);
 
-}
-else
-{
+} else {
 	$template->assign_vars(array(
 		'L_NO_MESSAGES' => $lang['No_messages_folder'])
 	);
 
-	$template->assign_block_vars("switch_no_messages", array() );
+	$template->assign_block_vars("switch_no_messages", [] );
 }
 
 $template->pparse('body');

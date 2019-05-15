@@ -362,7 +362,7 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 	$s_colspan = 0;
 	for($i = 0; $i < count($avatar_images[$category]); $i++)
 	{
-		$template->assign_block_vars("avatar_row", array());
+		$template->assign_block_vars("avatar_row", []);
 
 		$s_colspan = max($s_colspan, count($avatar_images[$category][$i]));
 

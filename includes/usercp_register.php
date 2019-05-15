@@ -938,16 +938,16 @@ else
 
 	if ( $mode == 'editprofile' )
 	{
-		$template->assign_block_vars('switch_edit_profile', array());
+		$template->assign_block_vars('switch_edit_profile', []);
 	}
 
 	if ( ($mode == 'register') || ($board_config['allow_namechange']) )
 	{
-		$template->assign_block_vars('switch_namechange_allowed', array());
+		$template->assign_block_vars('switch_namechange_allowed', []);
 	}
 	else
 	{
-		$template->assign_block_vars('switch_namechange_disallowed', array());
+		$template->assign_block_vars('switch_namechange_disallowed', []);
 	}
 
 
@@ -1016,7 +1016,7 @@ else
 		$confirm_image = '<img src="' . append_sid("profile.php?mode=confirm&amp;id=$confirm_id") . '" alt="" title="" />';
 		$s_hidden_fields .= '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />';
 
-		$template->assign_block_vars('switch_confirm', array());
+		$template->assign_block_vars('switch_confirm', []);
 	}
 
 
@@ -1149,25 +1149,25 @@ else
 	{
 		if ( $userdata['user_allowavatar'] && ( $board_config['allow_avatar_upload'] || $board_config['allow_avatar_local'] || $board_config['allow_avatar_remote'] ) )
 		{
-			$template->assign_block_vars('switch_avatar_block', array() );
+			$template->assign_block_vars('switch_avatar_block', [] );
 
 			if ( $board_config['allow_avatar_upload'] && file_exists(@phpbb_realpath('./' . $board_config['avatar_path'])) )
 			{
 				if ( $form_enctype != '' )
 				{
-					$template->assign_block_vars('switch_avatar_block.switch_avatar_local_upload', array() );
+					$template->assign_block_vars('switch_avatar_block.switch_avatar_local_upload', [] );
 				}
-				$template->assign_block_vars('switch_avatar_block.switch_avatar_remote_upload', array() );
+				$template->assign_block_vars('switch_avatar_block.switch_avatar_remote_upload', [] );
 			}
 
 			if ( $board_config['allow_avatar_remote'] )
 			{
-				$template->assign_block_vars('switch_avatar_block.switch_avatar_remote_link', array() );
+				$template->assign_block_vars('switch_avatar_block.switch_avatar_remote_link', [] );
 			}
 
 			if ( $board_config['allow_avatar_local'] && file_exists(@phpbb_realpath('./' . $board_config['avatar_gallery_path'])) )
 			{
-				$template->assign_block_vars('switch_avatar_block.switch_avatar_local_gallery', array() );
+				$template->assign_block_vars('switch_avatar_block.switch_avatar_local_gallery', [] );
 			}
 		}
 	}

@@ -590,8 +590,8 @@ else if ( $submit || $confirm )
 
 		if ( $mode == 'newtopic' || $mode == 'reply' )
 		{
-			$tracking_topics = ( !empty($_COOKIE[$board_config['cookie_name'] . '_t']) ) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_t']) : array();
-			$tracking_forums = ( !empty($_COOKIE[$board_config['cookie_name'] . '_f']) ) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_f']) : array();
+			$tracking_topics = ( !empty($_COOKIE[$board_config['cookie_name'] . '_t']) ) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_t']) : [];
+			$tracking_forums = ( !empty($_COOKIE[$board_config['cookie_name'] . '_f']) ) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_f']) : [];
 
 			if ( count($tracking_topics) + count($tracking_forums) == 100 && empty($tracking_topics[$topic_id]) )
 			{
@@ -832,7 +832,7 @@ else
 //
 if( $user_sig != '' )
 {
-	$template->assign_block_vars('switch_signature_checkbox', array());
+	$template->assign_block_vars('switch_signature_checkbox', []);
 }
 
 //
@@ -841,7 +841,7 @@ if( $user_sig != '' )
 if ( $board_config['allow_html'] )
 {
 	$html_status = $lang['HTML_is_ON'];
-	$template->assign_block_vars('switch_html_checkbox', array());
+	$template->assign_block_vars('switch_html_checkbox', []);
 }
 else
 {
@@ -854,60 +854,49 @@ else
 if ( $board_config['allow_bbcode'] )
 {
 	$bbcode_status = $lang['BBCode_is_ON'];
-	$template->assign_block_vars('switch_bbcode_checkbox', array());
-}
-else
-{
+	$template->assign_block_vars('switch_bbcode_checkbox', []);
+} else {
 	$bbcode_status = $lang['BBCode_is_OFF'];
 }
 
 //
 // Smilies toggle selection
 //
-if ( $board_config['allow_smilies'] )
-{
+if ( $board_config['allow_smilies'] ) {
 	$smilies_status = $lang['Smilies_are_ON'];
-	$template->assign_block_vars('switch_smilies_checkbox', array());
-}
-else
-{
+	$template->assign_block_vars('switch_smilies_checkbox', []);
+} else {
 	$smilies_status = $lang['Smilies_are_OFF'];
 }
 
-if( !$userdata['session_logged_in'] || ( $mode == 'editpost' && $post_info['poster_id'] == ANONYMOUS ) )
-{
-	$template->assign_block_vars('switch_username_select', array());
+if( !$userdata['session_logged_in'] || ( $mode == 'editpost' && $post_info['poster_id'] == ANONYMOUS ) ) {
+	$template->assign_block_vars('switch_username_select', []);
 }
 
 //
 // Notify checkbox - only show if user is logged in
 //
-if ( $userdata['session_logged_in'] && $is_auth['auth_read'] )
-{
-	if ( $mode != 'editpost' || ( $mode == 'editpost' && $post_info['poster_id'] != ANONYMOUS ) )
-	{
-		$template->assign_block_vars('switch_notify_checkbox', array());
+if ( $userdata['session_logged_in'] && $is_auth['auth_read'] ) {
+	if ( $mode != 'editpost' || ( $mode == 'editpost' && $post_info['poster_id'] != ANONYMOUS ) ) {
+		$template->assign_block_vars('switch_notify_checkbox', []);
 	}
 }
 
 //
 // Delete selection
 //
-if ( $mode == 'editpost' && ( ( $is_auth['auth_delete'] && $post_data['last_post'] && ( !$post_data['has_poll'] || $post_data['edit_poll'] ) ) || $is_auth['auth_mod'] ) )
-{
-	$template->assign_block_vars('switch_delete_checkbox', array());
+if ( $mode == 'editpost' && ( ( $is_auth['auth_delete'] && $post_data['last_post'] && ( !$post_data['has_poll'] || $post_data['edit_poll'] ) ) || $is_auth['auth_mod'] ) ) {
+	$template->assign_block_vars('switch_delete_checkbox', []);
 }
 
 //
 // Topic type selection
 //
 $topic_type_toggle = '';
-if ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['first_post'] ) )
-{
-	$template->assign_block_vars('switch_type_toggle', array());
+if ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['first_post'] )  {
+	$template->assign_block_vars('switch_type_toggle', []);
 
-	if( $is_auth['auth_sticky'] )
-	{
+	if( $is_auth['auth_sticky'] ) {
 		$topic_type_toggle .= '<input type="radio" name="topictype" value="' . POST_STICKY . '"';
 		if ( $post_data['topic_type'] == POST_STICKY || $topic_type == POST_STICKY )
 		{
@@ -916,8 +905,7 @@ if ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['first_post'] ) 
 		$topic_type_toggle .= ' /> ' . $lang['Post_Sticky'] . '&nbsp;&nbsp;';
 	}
 
-	if( $is_auth['auth_announce'] )
-	{
+	if( $is_auth['auth_announce'] ) {
 		$topic_type_toggle .= '<input type="radio" name="topictype" value="' . POST_ANNOUNCE . '"';
 		if ( $post_data['topic_type'] == POST_ANNOUNCE || $topic_type == POST_ANNOUNCE )
 		{
@@ -926,8 +914,7 @@ if ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['first_post'] ) 
 		$topic_type_toggle .= ' /> ' . $lang['Post_Announcement'] . '&nbsp;&nbsp;';
 	}
 
-	if ( $topic_type_toggle != '' )
-	{
+	if ( $topic_type_toggle != '' ) {
 		$topic_type_toggle = $lang['Post_topic_as'] . ': <input type="radio" name="topictype" value="' . POST_NORMAL .'"' . ( ( $post_data['topic_type'] == POST_NORMAL || $topic_type == POST_NORMAL ) ? ' checked="checked"' : '' ) . ' /> ' . $lang['Post_Normal'] . '&nbsp;&nbsp;' . $topic_type_toggle;
 	}
 }
@@ -935,8 +922,7 @@ if ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['first_post'] ) 
 $hidden_form_fields = '<input type="hidden" name="mode" value="' . $mode . '" />';
 $hidden_form_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
-switch( $mode )
-{
+switch( $mode ) {
 	case 'newtopic':
 		$page_title = $lang['Post_a_new_topic'];
 		$hidden_form_fields .= '<input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
@@ -980,7 +966,7 @@ $template->assign_vars(array(
 // This enables the forum/topic title to be output for posting
 // but not for privmsg (where it makes no sense)
 //
-$template->assign_block_vars('switch_not_privmsg', array());
+$template->assign_block_vars('switch_not_privmsg', []);
 
 //
 // Output the data to the template
@@ -1066,8 +1052,7 @@ $template->assign_vars(array(
 //
 // Poll entry switch/output
 //
-if( ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['edit_poll']) ) && $is_auth['auth_pollcreate'] )
-{
+if( ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['edit_poll']) ) && $is_auth['auth_pollcreate'] ) {
 	$template->assign_vars(array(
 		'L_ADD_A_POLL' => $lang['Add_poll'],  
 		'L_ADD_POLL_EXPLAIN' => $lang['Add_poll_explain'],   
@@ -1085,15 +1070,12 @@ if( ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['edit_poll']) )
 		'POLL_LENGTH' => $poll_length)
 	);
 
-	if( $mode == 'editpost' && $post_data['edit_poll'] && $post_data['has_poll'])
-	{
-		$template->assign_block_vars('switch_poll_delete_toggle', array());
+	if( $mode == 'editpost' && $post_data['edit_poll'] && $post_data['has_poll']) {
+		$template->assign_block_vars('switch_poll_delete_toggle', []);
 	}
 
-	if( !empty($poll_options) )
-	{
-		while( list($option_id, $option_text) = each($poll_options) )
-		{
+	if( !empty($poll_options) ) {
+		while( list($option_id, $option_text) = each($poll_options) ) {
 			$template->assign_block_vars('poll_option_rows', array(
 				'POLL_OPTION' => str_replace('"', '&quot;', $option_text), 
 
@@ -1108,12 +1090,11 @@ if( ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['edit_poll']) )
 //
 // Topic review
 //
-if( $mode == 'reply' && $is_auth['auth_read'] )
-{
+if( $mode == 'reply' && $is_auth['auth_read'] ) {
 	require($phpbb_root_path . 'includes/topic_review.php');
 	topic_review($topic_id, true);
 
-	$template->assign_block_vars('switch_inline_mode', array());
+	$template->assign_block_vars('switch_inline_mode', []);
 	$template->assign_var_from_handle('TOPIC_REVIEW_BOX', 'reviewbody');
 }
 

@@ -118,8 +118,8 @@ if ( $mark_read == 'topics' ) {
 		}
 
 		if ( $row = $db->sql_fetchrow($result) ) {
-			$tracking_forums = ( isset($_COOKIE[$board_config['cookie_name'] . '_f']) ) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_f']) : array();
-			$tracking_topics = ( isset($_COOKIE[$board_config['cookie_name'] . '_t']) ) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_t']) : array();
+			$tracking_forums = ( isset($_COOKIE[$board_config['cookie_name'] . '_f']) ) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_f']) : [];
+			$tracking_topics = ( isset($_COOKIE[$board_config['cookie_name'] . '_t']) ) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_t']) : [];
 
 			if ( ( count($tracking_forums) + count($tracking_topics) ) >= 150 && empty($tracking_forums[$forum_id]) )
 			{
@@ -616,7 +616,7 @@ if ($total_topics) {
 		'L_NO_TOPICS' => $no_topics_msg)
 	);
 
-	$template->assign_block_vars('switch_no_topics', array() );
+	$template->assign_block_vars('switch_no_topics', []);
 
 }
 

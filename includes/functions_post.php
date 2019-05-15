@@ -770,7 +770,7 @@ function generate_smilies($mode, $page_id)
 			{
 				if (!$col)
 				{
-					$template->assign_block_vars('smilies_row', array());
+					$template->assign_block_vars('smilies_row', []);
 				}
 
 				$template->assign_block_vars('smilies_row.smilies_col', array(
@@ -798,7 +798,7 @@ function generate_smilies($mode, $page_id)
 
 			if ($mode == 'inline' && $num_smilies > $inline_rows * $inline_columns)
 			{
-				$template->assign_block_vars('switch_smilies_extra', array());
+				$template->assign_block_vars('switch_smilies_extra', []);
 
 				$template->assign_vars(array(
 					'L_MORE_SMILIES' => $lang['More_emoticons'], 

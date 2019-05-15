@@ -388,19 +388,19 @@ $template->assign_vars(array(
 // Login box?
 //
 if ( !$userdata['session_logged_in'] ) {
-	$template->assign_block_vars('switch_user_logged_out', array());
+	$template->assign_block_vars('switch_user_logged_out', []);
 	//
 	// Allow autologin?
 	//
 	if (!isset($board_config['allow_autologin']) || $board_config['allow_autologin'] ) {
-		$template->assign_block_vars('switch_allow_autologin', array());
-		$template->assign_block_vars('switch_user_logged_out.switch_allow_autologin', array());
+		$template->assign_block_vars('switch_allow_autologin', []);
+		$template->assign_block_vars('switch_user_logged_out.switch_allow_autologin', []);
 	}
 } else {
-	$template->assign_block_vars('switch_user_logged_in', array());
+	$template->assign_block_vars('switch_user_logged_in', []);
 
 	if ( !empty($userdata['user_popup_pm']) ) {
-		$template->assign_block_vars('switch_enable_pm_popup', array());
+		$template->assign_block_vars('switch_enable_pm_popup', []);
 	}
 }
 
