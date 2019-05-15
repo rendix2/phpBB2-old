@@ -427,7 +427,7 @@ function remove_search_post($post_id_sql)
 //
 function username_search($search_match)
 {
-	global $db, $board_config, $template, $lang, $images, $theme, $phpEx, $phpbb_root_path;
+	global $db, $board_config, $template, $lang, $images, $theme, $phpbb_root_path;
 	global $starttime, $gen_simple_header;
 	
 	$gen_simple_header = TRUE;
@@ -462,7 +462,7 @@ function username_search($search_match)
 	}
 
 	$page_title = $lang['Search'];
-	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+	include($phpbb_root_path . 'includes/page_header.php');
 
 	$template->set_filenames(array(
 		'search_user_body' => 'search_username.tpl')
@@ -480,7 +480,7 @@ function username_search($search_match)
 		'L_CLOSE_WINDOW' => $lang['Close_window'], 
 
 		'S_USERNAME_OPTIONS' => $username_list, 
-		'S_SEARCH_ACTION' => append_sid("search.$phpEx?mode=searchuser"))
+		'S_SEARCH_ACTION' => append_sid("search.php?mode=searchuser"))
 	);
 
 	if ( $username_list != '' )
@@ -490,7 +490,7 @@ function username_search($search_match)
 
 	$template->pparse('search_user_body');
 
-	include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+	include($phpbb_root_path . 'includes/page_tail.php');
 
 	return;
 }

@@ -44,16 +44,16 @@ function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 define('IN_PHPBB', 1);
 $phpbb_root_path = './../';
 include($phpbb_root_path . 'extension.inc');
-include($phpbb_root_path . 'config.'.$phpEx);
+include($phpbb_root_path . 'config.php');
 if(!isset($dbms))
 {
 	die("Please read: <a href='../docs/INSTALL.html'>INSTALL.html</a> before attempting to update.");
 }
-include($phpbb_root_path . 'includes/constants.'.$phpEx);
-include($phpbb_root_path . 'includes/functions.'.$phpEx);
-include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
-include($phpbb_root_path . 'includes/functions_search.'.$phpEx);
-include($phpbb_root_path . 'includes/db.'.$phpEx);
+include($phpbb_root_path . 'includes/constants.php');
+include($phpbb_root_path . 'includes/functions.php');
+include($phpbb_root_path . 'includes/functions_admin.php');
+include($phpbb_root_path . 'includes/functions_search.php');
+include($phpbb_root_path . 'includes/db.php');
 
 
 //

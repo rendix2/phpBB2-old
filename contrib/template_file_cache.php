@@ -128,9 +128,7 @@ class Template {
 	 */
 	function pparse($handle)
 	{
-		global $phpEx;
-
-		$cache_file = $this->cachedir . $this->filename[$handle] . '.' . $phpEx;
+		$cache_file = $this->cachedir . $this->filename[$handle] . '.php';
 
 		if(@filemtime($cache_file) == @filemtime($this->files[$handle]))
 		{
@@ -175,9 +173,7 @@ class Template {
 	 */
 	function assign_var_from_handle($varname, $handle)
 	{
-		global $phpEx;
-
-		$cache_file = $this->cachedir . $this->filename[$handle] . '.' . $phpEx;
+		$cache_file = $this->cachedir . $this->filename[$handle] . '.php';
 
 		if(@filemtime($cache_file) == @filemtime($this->files[$handle]))
 		{

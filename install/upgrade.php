@@ -33,13 +33,13 @@ if ( !defined('INSTALLING') )
 	// as they are already included.
 	//
 	include($phpbb_root_path . 'extension.inc');
-	include($phpbb_root_path . 'config.'.$phpEx);
-	include($phpbb_root_path . 'includes/constants.'.$phpEx);
-	include($phpbb_root_path . 'includes/functions.'.$phpEx);
+	include($phpbb_root_path . 'config.php');
+	include($phpbb_root_path . 'includes/constants.php');
+	include($phpbb_root_path . 'includes/functions.php');
 
 	if( defined("PHPBB_INSTALLED") )
 	{
-		redirect("../index.$phpEx");
+		redirect("../index.php");
 	}
 }
 
@@ -48,9 +48,9 @@ if ( !defined('INSTALLING') )
 //
 $dbms = 'mysql';
 
-include($phpbb_root_path . 'includes/db.'.$phpEx);
-include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
-include($phpbb_root_path . 'includes/functions_search.'.$phpEx);
+include($phpbb_root_path . 'includes/db.php');
+include($phpbb_root_path . 'includes/bbcode.php');
+include($phpbb_root_path . 'includes/functions_search.php');
 
 set_time_limit(0); // Unlimited execution time
 
@@ -1935,7 +1935,7 @@ if ( !empty($next) )
 	}
 }
 
-print "<br />If the upgrade completed without error you may click <a href=\"./../index.$phpEx\">Here</a> to proceed to the index<br />";
+print "<br />If the upgrade completed without error you may click <a href=\"./../index.php\">Here</a> to proceed to the index<br />";
 
 common_footer();
 
