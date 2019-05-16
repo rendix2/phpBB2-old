@@ -26,7 +26,7 @@ function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 	if (!($result = $db->sql_query($sql)))
 	{
 		$errored = true;
-		$error_ary['sql'][] = (is_array($sql)) ? $sql[$i] : $sql;
+		$error_ary['sql'][] = is_array($sql) ? $sql[$i] : $sql;
 		$error_ary['error_code'][] = $db->sql_error();
 	}
 
@@ -43,17 +43,17 @@ function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 
 define('IN_PHPBB', 1);
 $phpbb_root_path = './../';
-include($phpbb_root_path . 'extension.inc');
-include($phpbb_root_path . 'config.php');
+include $phpbb_root_path . 'extension.inc';
+include $phpbb_root_path . 'config.php';
 if(!isset($dbms))
 {
 	die("Please read: <a href='../docs/INSTALL.html'>INSTALL.html</a> before attempting to update.");
 }
-include($phpbb_root_path . 'includes/constants.php');
-include($phpbb_root_path . 'includes/functions.php');
-include($phpbb_root_path . 'includes/functions_admin.php');
-include($phpbb_root_path . 'includes/functions_search.php');
-include($phpbb_root_path . 'includes/db.php');
+include $phpbb_root_path . 'includes/constants.php';
+include $phpbb_root_path . 'includes/functions.php';
+include $phpbb_root_path . 'includes/functions_admin.php';
+include $phpbb_root_path . 'includes/functions_search.php';
+include $phpbb_root_path . 'includes/db.php';
 
 
 //

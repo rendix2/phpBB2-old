@@ -50,9 +50,9 @@ if( !empty($setmodules) )
 //
 $no_page_header = TRUE;
 $phpbb_root_path = "./../";
-require($phpbb_root_path . 'extension.inc');
-require('./pagestart.php');
-include($phpbb_root_path . 'includes/sql_parse.php');
+require $phpbb_root_path . 'extension.inc';
+require './pagestart.php';
+include $phpbb_root_path . 'includes/sql_parse.php';
 
 //
 // Set VERBOSE to 1  for debugging info..
@@ -220,7 +220,7 @@ function get_table_def_postgresql($table, $crlf)
 		if (eregi('numeric', $row['type']))
 		{
 			$schema_create .= '(';
-			$schema_create .= sprintf("%s,%s", (($row['lengthvar'] >> 16) & 0xffff), (($row['lengthvar'] - 4) & 0xffff));
+			$schema_create .= sprintf("%s,%s", ($row['lengthvar'] >> 16) & 0xffff, ($row['lengthvar'] - 4) & 0xffff);
 			$schema_create .= ')';
 		}
 
@@ -340,7 +340,7 @@ function get_table_def_postgresql($table, $crlf)
 	//
 	// Ok now we've built all the sql return it to the calling function.
 	//
-	return (stripslashes($schema_create));
+	return stripslashes($schema_create);
 
 }
 
@@ -449,11 +449,11 @@ function get_table_def_mysql($table, $crlf)
 
 	if(get_magic_quotes_runtime())
 	{
-		return(stripslashes($schema_create));
+		return stripslashes($schema_create);
 	}
 	else
 	{
-		return($schema_create);
+		return $schema_create;
 	}
 
 } // End get_table_def_mysql
@@ -555,7 +555,7 @@ function get_table_content_postgresql($table, $handler)
 		$handler(trim($schema_insert));
 	}
 
-	return(true);
+	return true;
 
 }// end function get_table_content_postgres...
 
@@ -629,7 +629,7 @@ function get_table_content_mysql($table, $handler)
 		while ($row = $db->sql_fetchrow($result));
 	}
 
-	return(true);
+	return true;
 }
 
 function output_table_content($content)
@@ -651,7 +651,7 @@ function output_table_content($content)
 //
 if( isset($_GET['perform']) || isset($_POST['perform']) )
 {
-	$perform = (isset($_POST['perform'])) ? $_POST['perform'] : $_GET['perform'];
+	$perform = isset($_POST['perform']) ? $_POST['perform'] : $_GET['perform'];
 
 	switch($perform)
 	{
@@ -677,7 +677,7 @@ if( isset($_GET['perform']) || isset($_POST['perform']) )
 
 			if ($error)
 			{
-				include('./page_header_admin.php');
+				include './page_header_admin.php';
 
 				$template->set_filenames(array(
 					"body" => "admin/admin_message_body.tpl")
@@ -690,18 +690,18 @@ if( isset($_GET['perform']) || isset($_POST['perform']) )
 
 				$template->pparse("body");
 
-				include('./page_footer_admin.php');
+				include './page_footer_admin.php';
 			}
 
 			$tables = array('auth_access', 'banlist', 'categories', 'config', 'disallow', 'forums', 'forum_prune', 'groups', 'posts', 'posts_text', 'privmsgs', 'privmsgs_text', 'ranks', 'search_results', 'search_wordlist', 'search_wordmatch', 'sessions', 'smilies', 'themes', 'themes_name', 'topics', 'topics_watch', 'user_group', 'users', 'vote_desc', 'vote_results', 'vote_voters', 'words', 'confirm', 'sessions_keys');
 
-			$additional_tables = (isset($_POST['additional_tables'])) ? $_POST['additional_tables'] : ( (isset($_GET['additional_tables'])) ? $_GET['additional_tables'] : "" );
+			$additional_tables = isset($_POST['additional_tables']) ? $_POST['additional_tables'] : ( isset($_GET['additional_tables']) ? $_GET['additional_tables'] : "" );
 
-			$backup_type = (isset($_POST['backup_type'])) ? $_POST['backup_type'] : ( (isset($_GET['backup_type'])) ? $_GET['backup_type'] : "" );
+			$backup_type = isset($_POST['backup_type']) ? $_POST['backup_type'] : ( isset($_GET['backup_type']) ? $_GET['backup_type'] : "" );
 
-			$gzipcompress = (!empty($_POST['gzipcompress'])) ? $_POST['gzipcompress'] : ( (!empty($_GET['gzipcompress'])) ? $_GET['gzipcompress'] : 0 );
+			$gzipcompress = !empty($_POST['gzipcompress']) ? $_POST['gzipcompress'] : ( !empty($_GET['gzipcompress']) ? $_GET['gzipcompress'] : 0 );
 
-			$drop = (!empty($_POST['drop'])) ? intval($_POST['drop']) : ( (!empty($_GET['drop'])) ? intval($_GET['drop']) : 0 );
+			$drop = !empty($_POST['drop']) ? intval($_POST['drop']) : ( !empty($_GET['drop']) ? intval($_GET['drop']) : 0 );
 
 			if(!empty($additional_tables))
 			{
@@ -723,7 +723,7 @@ if( isset($_GET['perform']) || isset($_POST['perform']) )
 
 			if( !isset($_POST['backupstart']) && !isset($_GET['backupstart']))
 			{
-				include('./page_header_admin.php');
+				include './page_header_admin.php';
 
 				$template->set_filenames(array(
 					"body" => "admin/db_utils_backup_body.tpl")
@@ -768,11 +768,11 @@ if( isset($_GET['perform']) || isset($_POST['perform']) )
 					"MESSAGE_TEXT" => $lang['Backup_download'])
 				);
 
-				include('./page_header_admin.php');
+				include './page_header_admin.php';
 
 				$template->pparse("body");
 
-				include('./page_footer_admin.php');
+				include './page_footer_admin.php';
 
 			}
 			header("Pragma: no-cache");
@@ -863,7 +863,7 @@ if( isset($_GET['perform']) || isset($_POST['perform']) )
 				//
 				// Define Template files...
 				//
-				include('./page_header_admin.php');
+				include './page_header_admin.php';
 
 				$template->set_filenames(array(
 					"body" => "admin/db_utils_restore_body.tpl")
@@ -891,9 +891,9 @@ if( isset($_GET['perform']) || isset($_POST['perform']) )
 				// Handle the file upload ....
 				// If no file was uploaded report an error...
 				//
-				$backup_file_name = (!empty($_FILES['backup_file']['name'])) ? $_FILES['backup_file']['name'] : "";
+				$backup_file_name = !empty($_FILES['backup_file']['name']) ? $_FILES['backup_file']['name'] : "";
 				$backup_file_tmpname = ($_FILES['backup_file']['tmp_name'] != "none") ? $_FILES['backup_file']['tmp_name'] : "";
-				$backup_file_type = (!empty($_FILES['backup_file']['type'])) ? $_FILES['backup_file']['type'] : "";
+				$backup_file_type = !empty($_FILES['backup_file']['type']) ? $_FILES['backup_file']['type'] : "";
 
 				if($backup_file_tmpname == "" || $backup_file_name == "")
 				{
@@ -983,7 +983,7 @@ if( isset($_GET['perform']) || isset($_POST['perform']) )
 					}
 				}
 
-				include('./page_header_admin.php');
+				include './page_header_admin.php';
 
 				$template->set_filenames(array(
 					"body" => "admin/admin_message_body.tpl")
@@ -1003,6 +1003,6 @@ if( isset($_GET['perform']) || isset($_POST['perform']) )
 	}
 }
 
-include('./page_footer_admin.php');
+include './page_footer_admin.php';
 
 ?>

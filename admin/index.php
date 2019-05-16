@@ -27,8 +27,8 @@ define('IN_PHPBB', 1);
 //
 $no_page_header = TRUE;
 $phpbb_root_path = "./../";
-require($phpbb_root_path . 'extension.inc');
-require('./pagestart.php');
+require $phpbb_root_path . 'extension.inc';
+require './pagestart.php';
 
 // ---------------
 // Begin functions
@@ -57,7 +57,7 @@ if( isset($_GET['pane']) && $_GET['pane'] == 'left' )
 
 	while( $file = @readdir($dir) ) {
 		if( preg_match("/^admin_.*?\.php$/", $file) ) {
-			include('./' . $file);
+			include './' . $file;
 		}
 	}
 
@@ -65,7 +65,7 @@ if( isset($_GET['pane']) && $_GET['pane'] == 'left' )
 
 	unset($setmodules);
 
-	include('./page_header_admin.php');
+	include './page_header_admin.php';
 
 	$template->set_filenames(array(
 		"body" => "admin/index_navigate.tpl")
@@ -84,7 +84,7 @@ if( isset($_GET['pane']) && $_GET['pane'] == 'left' )
 
 	while( list($cat, $action_array) = each($module) )
 	{
-		$cat = ( !empty($lang[$cat]) ) ? $lang[$cat] : preg_replace("/_/", " ", $cat);
+		$cat = !empty($lang[$cat]) ? $lang[$cat] : preg_replace("/_/", " ", $cat);
 
 		$template->assign_block_vars("catrow", array(
 			"ADMIN_CATEGORY" => $cat)
@@ -98,7 +98,7 @@ if( isset($_GET['pane']) && $_GET['pane'] == 'left' )
 			$row_color = ( !($row_count%2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($row_count%2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-			$action = ( !empty($lang[$action]) ) ? $lang[$action] : preg_replace("/_/", " ", $action);
+			$action = !empty($lang[$action]) ? $lang[$action] : preg_replace("/_/", " ", $action);
 
 			$template->assign_block_vars("catrow.modulerow", array(
 				"ROW_COLOR" => "#" . $row_color,
@@ -113,12 +113,12 @@ if( isset($_GET['pane']) && $_GET['pane'] == 'left' )
 
 	$template->pparse("body");
 
-	include('./page_footer_admin.php');
+	include './page_footer_admin.php';
 }
 elseif( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 {
 
-	include('./page_header_admin.php');
+	include './page_header_admin.php';
 
 	$template->set_filenames(array(
 		"body" => "admin/index_body.tpl")
@@ -233,7 +233,7 @@ elseif( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 
 			if( preg_match("/^(3\.23|4\.|5\.)/", $version) )
 			{
-				$db_name = ( preg_match("/^(3\.23\.[6-9])|(3\.23\.[1-9][1-9])|(4\.)|(5\.)/", $version) ) ? "`$dbname`" : $dbname;
+				$db_name = preg_match("/^(3\.23\.[6-9])|(3\.23\.[1-9][1-9])|(4\.)|(5\.)/", $version) ? "`$dbname`" : $dbname;
 
 				$sql = "SHOW TABLE STATUS 
 					FROM " . $db_name;
@@ -293,11 +293,11 @@ elseif( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 	{
 		if( $dbsize >= 1048576 )
 		{
-			$dbsize = sprintf("%.2f MB", ( $dbsize / 1048576 ));
+			$dbsize = sprintf("%.2f MB", $dbsize / 1048576);
 		}
 		else if( $dbsize >= 1024 )
 		{
-			$dbsize = sprintf("%.2f KB", ( $dbsize / 1024 ));
+			$dbsize = sprintf("%.2f KB", $dbsize / 1024);
 		}
 		else
 		{
@@ -315,7 +315,7 @@ elseif( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 		"USERS_PER_DAY" => $users_per_day,
 		"AVATAR_DIR_SIZE" => $avatar_dir_size,
 		"DB_SIZE" => $dbsize, 
-		"GZIP_COMPRESSION" => ( $board_config['gzip_compress'] ) ? $lang['ON'] : $lang['OFF'])
+		"GZIP_COMPRESSION" => $board_config['gzip_compress'] ? $lang['ON'] : $lang['OFF'])
 	);
 	//
 	// End forum statistics
@@ -624,7 +624,7 @@ elseif( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 
 	$template->pparse("body");
 
-	include('./page_footer_admin.php');
+	include './page_footer_admin.php';
 
 }
 else

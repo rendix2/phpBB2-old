@@ -62,7 +62,7 @@ if ( $row = $db->sql_fetchrow($result) ) {
 		}
 
 		if ( intval($board_config['require_activation']) == USER_ACTIVATION_ADMIN && $sql_update_pass == '' ) {
-			include($phpbb_root_path . 'includes/emailer.php');
+			include $phpbb_root_path . 'includes/emailer.php';
 			$emailer = new emailer($board_config['smtp_delivery']);
 
 			$emailer->from($board_config['board_email']);
@@ -76,7 +76,7 @@ if ( $row = $db->sql_fetchrow($result) ) {
 				'SITENAME' => $board_config['sitename'], 
 				'USERNAME' => $row['username'],
 				'PASSWORD' => $password_confirm,
-				'EMAIL_SIG' => (!empty($board_config['board_email_sig'])) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '')
+				'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '')
 			);
 			$emailer->send();
 			$emailer->reset();

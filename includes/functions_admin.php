@@ -97,8 +97,8 @@ function sync($type, $id = false)
 			}
 
 			if ( $row = $db->sql_fetchrow($result) ) {
-				$last_post = ( $row['last_post'] ) ? $row['last_post'] : 0;
-				$total_posts = ($row['total']) ? $row['total'] : 0;
+				$last_post = $row['last_post'] ? $row['last_post'] : 0;
+				$total_posts = $row['total'] ? $row['total'] : 0;
 			} else {
 				$last_post = 0;
 				$total_posts = 0;
@@ -112,7 +112,7 @@ function sync($type, $id = false)
 				message_die(GENERAL_ERROR, 'Could not get topic count', '', __LINE__, __FILE__, $sql);
 			}
 
-			$total_topics = ( $row = $db->sql_fetchrow($result) ) ? ( ( $row['total'] ) ? $row['total'] : 0 ) : 0;
+			$total_topics = ( $row = $db->sql_fetchrow($result) ) ? ( $row['total'] ? $row['total'] : 0 ) : 0;
 
 			$sql = "UPDATE " . FORUMS_TABLE . "
 				SET forum_last_post_id = $last_post, forum_posts = $total_posts, forum_topics = $total_topics

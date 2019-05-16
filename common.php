@@ -147,19 +147,19 @@ $nav_links = [];
 $dss_seeded = false;
 $gen_simple_header = false;
 
-include($phpbb_root_path . 'config.php');
+include $phpbb_root_path . 'config.php';
 
 if( !defined("PHPBB_INSTALLED") ) {
 	header('Location: ' . $phpbb_root_path . 'install/install.php');
 	exit;
 }
 
-include($phpbb_root_path . 'includes/constants.php');
-include($phpbb_root_path . 'includes/template.php');
-include($phpbb_root_path . 'includes/sessions.php');
-include($phpbb_root_path . 'includes/auth.php');
-include($phpbb_root_path . 'includes/functions.php');
-include($phpbb_root_path . 'includes/db.php');
+include $phpbb_root_path . 'includes/constants.php';
+include $phpbb_root_path . 'includes/template.php';
+include $phpbb_root_path . 'includes/sessions.php';
+include $phpbb_root_path . 'includes/auth.php';
+include $phpbb_root_path . 'includes/functions.php';
+include $phpbb_root_path . 'includes/db.php';
 
 include $phpbb_root_path .'vendor/autoload.php';
 
@@ -178,7 +178,7 @@ unset($dbpasswd);
 // even bother complaining ... go scream and shout at the idiots out there who feel
 // "clever" is doing harm rather than good ... karma is a great thing ... :)
 //
-$client_ip = ( !empty($_SERVER['REMOTE_ADDR']) ) ? $_SERVER['REMOTE_ADDR'] : ( ( !empty(_ENV['REMOTE_ADDR']) ) ? _ENV['REMOTE_ADDR'] : getenv('REMOTE_ADDR') );
+$client_ip = !empty($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : ( !empty(_ENV['REMOTE_ADDR']) ? _ENV['REMOTE_ADDR'] : getenv('REMOTE_ADDR') );
 $user_ip = encode_ip($client_ip);
 
 //

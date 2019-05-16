@@ -88,7 +88,7 @@ function topic_review($topic_id, $is_inline_review)
 		$gen_simple_header = tru;
 
 		$page_title = $lang['Topic_review'] . ' - ' . $topic_title;
-		include($phpbb_root_path . 'includes/page_header.php');
+		include $phpbb_root_path . 'includes/page_header.php';
 
 		$template->set_filenames(array(
 			'reviewbody' => 'posting_topic_review.tpl')
@@ -152,7 +152,7 @@ function topic_review($topic_id, $is_inline_review)
 			}
 
 			if ( $bbcode_uid != "" ) {
-				$message = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
+				$message = $board_config['allow_bbcode'] ? bbencode_second_pass($message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
 			}
 
 			$message = make_clickable($message);
@@ -207,7 +207,7 @@ function topic_review($topic_id, $is_inline_review)
 
 	if ( !$is_inline_review ) {
 		$template->pparse('reviewbody');
-		include($phpbb_root_path . 'includes/page_tail.php');
+		include $phpbb_root_path . 'includes/page_tail.php';
 	}
 }
 

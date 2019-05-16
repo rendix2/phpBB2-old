@@ -33,7 +33,7 @@ if (!$board_config['board_email_form']) {
 }
 
 if (!empty($_GET[POST_USERS_URL]) || !empty($_POST[POST_USERS_URL]))  {
-    $user_id = ( !empty($_GET[POST_USERS_URL]) ) ? intval($_GET[POST_USERS_URL]) : intval($_POST[POST_USERS_URL]);
+    $user_id = !empty($_GET[POST_USERS_URL]) ? intval($_GET[POST_USERS_URL]) : intval($_POST[POST_USERS_URL]);
 } else {
 	message_die(GENERAL_MESSAGE, $lang['No_user_specified']);
 }
@@ -65,14 +65,14 @@ if ( $result = $db->sql_query($sql) ) {
 					$subject = trim(stripslashes($_POST['subject']));
 				} else {
 					$error = true;
-					$error_msg = ( !empty($error_msg) ) ? $error_msg . '<br />' . $lang['Empty_subject_email'] : $lang['Empty_subject_email'];
+					$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $lang['Empty_subject_email'] : $lang['Empty_subject_email'];
 				}
 	
 				if ( !empty($_POST['message']) ) {
 					$message = trim(stripslashes($_POST['message']));
 				} else {
 					$error = TRUE;
-					$error_msg = ( !empty($error_msg) ) ? $error_msg . '<br />' . $lang['Empty_message_email'] : $lang['Empty_message_email'];
+					$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $lang['Empty_message_email'] : $lang['Empty_message_email'];
 				}
 	
 				if ( !$error ) {
@@ -81,7 +81,7 @@ if ( $result = $db->sql_query($sql) ) {
 						WHERE user_id = " . $userdata['user_id'];
 					
 					if ( $result = $db->sql_query($sql) ) {
-						include($phpbb_root_path . 'includes/emailer.php');
+						include $phpbb_root_path . 'includes/emailer.php';
 						$emailer = new emailer($board_config['smtp_delivery']);
 	
 						$emailer->from($userdata['user_email']);
@@ -138,7 +138,7 @@ if ( $result = $db->sql_query($sql) ) {
 				}
 			}
 	
-			include($phpbb_root_path . 'includes/page_header.php');
+			include $phpbb_root_path . 'includes/page_header.php';
 	
 			$template->set_filenames(array(
 				'body' => 'profile_send_email.tpl')
@@ -172,7 +172,7 @@ if ( $result = $db->sql_query($sql) ) {
 	
 			$template->pparse('body');
 	
-			include($phpbb_root_path . 'includes/page_tail.php');
+			include $phpbb_root_path . 'includes/page_tail.php';
 		} else {
 			message_die(GENERAL_MESSAGE, $lang['User_prevent_email']);
 		}

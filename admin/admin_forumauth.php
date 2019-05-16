@@ -35,8 +35,8 @@ if( !empty($setmodules) )
 //
 $no_page_header = TRUE;
 $phpbb_root_path = './../';
-require($phpbb_root_path . 'extension.inc');
-require('./pagestart.php');
+require $phpbb_root_path . 'extension.inc';
+require './pagestart.php';
 
 //
 // Start program - define vars
@@ -73,7 +73,7 @@ $forum_auth_const = array(AUTH_ALL, AUTH_REG, AUTH_ACL, AUTH_MOD, AUTH_ADMIN);
 
 if(isset($_GET[POST_FORUM_URL]) || isset($_POST[POST_FORUM_URL]))
 {
-	$forum_id = (isset($_POST[POST_FORUM_URL])) ? intval($_POST[POST_FORUM_URL]) : intval($_GET[POST_FORUM_URL]);
+	$forum_id = isset($_POST[POST_FORUM_URL]) ? intval($_POST[POST_FORUM_URL]) : intval($_GET[POST_FORUM_URL]);
 	$forum_sql = "AND forum_id = $forum_id";
 }
 else
@@ -294,9 +294,9 @@ else
 		}
 	}
 
-	$adv_mode = ( empty($adv) ) ? '1' : '0';
+	$adv_mode = empty($adv) ? '1' : '0';
 	$switch_mode = append_sid("admin_forumauth.php?" . POST_FORUM_URL . "=" . $forum_id . "&adv=". $adv_mode);
-	$switch_mode_text = ( empty($adv) ) ? $lang['Advanced_mode'] : $lang['Simple_mode'];
+	$switch_mode_text = empty($adv) ? $lang['Advanced_mode'] : $lang['Simple_mode'];
 	$u_switch_mode = '<a href="' . $switch_mode . '">' . $switch_mode_text . '</a>';
 
 	$s_hidden_fields = '<input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '">';
@@ -319,10 +319,10 @@ else
 
 }
 
-include('./page_header_admin.php');
+include './page_header_admin.php';
 
 $template->pparse('body');
 
-include('./page_footer_admin.php');
+include './page_footer_admin.php';
 
 ?>

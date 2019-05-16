@@ -34,12 +34,12 @@ if ( !empty($setmodules) )
 // Load default header
 //
 $phpbb_root_path = './../';
-require($phpbb_root_path . 'extension.inc');
-require('./pagestart.php');
+require $phpbb_root_path . 'extension.inc';
+require './pagestart.php';
 
 if ( isset($_POST[POST_GROUPS_URL]) || isset($_GET[POST_GROUPS_URL]) )
 {
-	$group_id = ( isset($_POST[POST_GROUPS_URL]) ) ? intval($_POST[POST_GROUPS_URL]) : intval($_GET[POST_GROUPS_URL]);
+	$group_id = isset($_POST[POST_GROUPS_URL]) ? intval($_POST[POST_GROUPS_URL]) : intval($_GET[POST_GROUPS_URL]);
 }
 else
 {
@@ -48,7 +48,7 @@ else
 
 if ( isset($_POST['mode']) || isset($_GET['mode']) )
 {
-	$mode = ( isset($_POST['mode']) ) ? $_POST['mode'] : $_GET['mode'];
+	$mode = isset($_POST['mode']) ? $_POST['mode'] : $_GET['mode'];
 	$mode = htmlspecialchars($mode);
 }
 else
@@ -133,38 +133,38 @@ if ( isset($_POST['edit']) || isset($_POST['new']) )
 	$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
 
 	$template->assign_vars(array(
-		'GROUP_NAME' => $group_info['group_name'],
-		'GROUP_DESCRIPTION' => $group_info['group_description'], 
-		'GROUP_MODERATOR' => $group_moderator, 
+            'GROUP_NAME' => $group_info['group_name'],
+            'GROUP_DESCRIPTION' => $group_info['group_description'],
+            'GROUP_MODERATOR' => $group_moderator,
 
-		'L_GROUP_TITLE' => $lang['Group_administration'],
-		'L_GROUP_EDIT_DELETE' => ( isset($_POST['new']) ) ? $lang['New_group'] : $lang['Edit_group'], 
-		'L_GROUP_NAME' => $lang['group_name'],
-		'L_GROUP_DESCRIPTION' => $lang['group_description'],
-		'L_GROUP_MODERATOR' => $lang['group_moderator'], 
-		'L_FIND_USERNAME' => $lang['Find_username'], 
-		'L_GROUP_STATUS' => $lang['group_status'],
-		'L_GROUP_OPEN' => $lang['group_open'],
-		'L_GROUP_CLOSED' => $lang['group_closed'],
-		'L_GROUP_HIDDEN' => $lang['group_hidden'],
-		'L_GROUP_DELETE' => $lang['group_delete'],
-		'L_GROUP_DELETE_CHECK' => $lang['group_delete_check'],
-		'L_SUBMIT' => $lang['Submit'],
-		'L_RESET' => $lang['Reset'],
-		'L_DELETE_MODERATOR' => $lang['delete_group_moderator'],
-		'L_DELETE_MODERATOR_EXPLAIN' => $lang['delete_moderator_explain'],
-		'L_YES' => $lang['Yes'],
+            'L_GROUP_TITLE' => $lang['Group_administration'],
+            'L_GROUP_EDIT_DELETE' => isset($_POST['new']) ? $lang['New_group'] : $lang['Edit_group'],
+            'L_GROUP_NAME' => $lang['group_name'],
+            'L_GROUP_DESCRIPTION' => $lang['group_description'],
+            'L_GROUP_MODERATOR' => $lang['group_moderator'],
+            'L_FIND_USERNAME' => $lang['Find_username'],
+            'L_GROUP_STATUS' => $lang['group_status'],
+            'L_GROUP_OPEN' => $lang['group_open'],
+            'L_GROUP_CLOSED' => $lang['group_closed'],
+            'L_GROUP_HIDDEN' => $lang['group_hidden'],
+            'L_GROUP_DELETE' => $lang['group_delete'],
+            'L_GROUP_DELETE_CHECK' => $lang['group_delete_check'],
+            'L_SUBMIT' => $lang['Submit'],
+            'L_RESET' => $lang['Reset'],
+            'L_DELETE_MODERATOR' => $lang['delete_group_moderator'],
+            'L_DELETE_MODERATOR_EXPLAIN' => $lang['delete_moderator_explain'],
+            'L_YES' => $lang['Yes'],
 
-		'U_SEARCH_USER' => append_sid("../search.php?mode=searchuser"), 
+            'U_SEARCH_USER' => append_sid("../search.php?mode=searchuser"),
 
-		'S_GROUP_OPEN_TYPE' => GROUP_OPEN,
-		'S_GROUP_CLOSED_TYPE' => GROUP_CLOSED,
-		'S_GROUP_HIDDEN_TYPE' => GROUP_HIDDEN,
-		'S_GROUP_OPEN_CHECKED' => $group_open,
-		'S_GROUP_CLOSED_CHECKED' => $group_closed,
-		'S_GROUP_HIDDEN_CHECKED' => $group_hidden,
-		'S_GROUP_ACTION' => append_sid("admin_groups.php"),
-		'S_HIDDEN_FIELDS' => $s_hidden_fields)
+            'S_GROUP_OPEN_TYPE' => GROUP_OPEN,
+            'S_GROUP_CLOSED_TYPE' => GROUP_CLOSED,
+            'S_GROUP_HIDDEN_TYPE' => GROUP_HIDDEN,
+            'S_GROUP_OPEN_CHECKED' => $group_open,
+            'S_GROUP_CLOSED_CHECKED' => $group_closed,
+            'S_GROUP_HIDDEN_CHECKED' => $group_hidden,
+            'S_GROUP_ACTION' => append_sid("admin_groups.php"),
+            'S_HIDDEN_FIELDS' => $s_hidden_fields)
 	);
 
 	$template->pparse('body');
@@ -412,6 +412,6 @@ else
 	$template->pparse('body');
 }
 
-include('./page_footer_admin.php');
+include './page_footer_admin.php';
 
 ?>

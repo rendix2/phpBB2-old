@@ -37,8 +37,8 @@ if( !empty($setmodules) )
 $no_page_header = TRUE;
 
 $phpbb_root_path = "./../";
-require($phpbb_root_path . 'extension.inc');
-require('./pagestart.php');
+require $phpbb_root_path . 'extension.inc';
+require './pagestart.php';
 
 $params = array('mode' => 'mode', 'user_id' => POST_USERS_URL, 'group_id' => POST_GROUPS_URL, 'adv' => 'adv');
 
@@ -46,7 +46,7 @@ while( list($var, $param) = @each($params) )
 {
 	if ( !empty($_POST[$param]) || !empty($_GET[$param]) )
 	{
-		$$var = ( !empty($_POST[$param]) ) ? $_POST[$param] : $_GET[$param];
+		$$var = !empty($_POST[$param]) ? $_POST[$param] : $_GET[$param];
 	}
 	else
 	{
@@ -231,7 +231,7 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 		else
 		{
 	
-			$change_mod_list = ( isset($_POST['moderator']) ) ? $_POST['moderator'] : array();
+			$change_mod_list = isset($_POST['moderator']) ? $_POST['moderator'] : array();
 
 			if ( empty($adv) )
 			{
@@ -356,7 +356,7 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 							!empty($update_mod_status[$forum_id])
 						)
 						{
-							$update_acl_status[$forum_id][$auth_field] = ( !empty($update_mod_status[$forum_id]) ) ? 0 :  $change_acl_list[$forum_id][$auth_field];
+							$update_acl_status[$forum_id][$auth_field] = !empty($update_mod_status[$forum_id]) ? 0 : $change_acl_list[$forum_id][$auth_field];
 
 							if ( isset($auth_access[$forum_id][$auth_field]) && empty($update_acl_status[$forum_id][$auth_field]) && $forum_auth_action[$forum_id] != 'insert' && $forum_auth_action[$forum_id] != 'update' )
 							{
@@ -402,7 +402,7 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 							$sql_value .= ( ( $sql_value != '' ) ? ', ' : '' ) . $value;
 						}
 						$sql_field .= ( ( $sql_field != '' ) ? ', ' : '' ) . 'auth_mod';
-						$sql_value .= ( ( $sql_value != '' ) ? ', ' : '' ) . ( ( !isset($update_mod_status[$forum_id]) ) ? 0 : $update_mod_status[$forum_id]);
+						$sql_value .= ( ( $sql_value != '' ) ? ', ' : '' ) . ( !isset($update_mod_status[$forum_id]) ? 0 : $update_mod_status[$forum_id]);
 
 						$sql = "INSERT INTO " . AUTH_ACCESS_TABLE . " (forum_id, group_id, $sql_field) 
 							VALUES ($forum_id, $group_id, $sql_value)";
@@ -414,7 +414,7 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 						{
 							$sql_values .= ( ( $sql_values != '' ) ? ', ' : '' ) . $auth_type . ' = ' . $value;
 						}
-						$sql_values .= ( ( $sql_values != '' ) ? ', ' : '' ) . 'auth_mod = ' . ( ( !isset($update_mod_status[$forum_id]) ) ? 0 : $update_mod_status[$forum_id]);
+						$sql_values .= ( ( $sql_values != '' ) ? ', ' : '' ) . 'auth_mod = ' . ( !isset($update_mod_status[$forum_id]) ? 0 : $update_mod_status[$forum_id]);
 
 						$sql = "UPDATE " . AUTH_ACCESS_TABLE . " 
 							SET $sql_values 
@@ -689,7 +689,7 @@ else if ( ( $mode == 'user' && ( isset($_POST['username']) || $user_id ) ) || ( 
 					break;
 
 				case AUTH_ACL:
-					$auth_ug[$forum_id][$key] = ( !empty($auth_access_count[$forum_id]) ) ? check_auth(AUTH_ACL, $key, $auth_access[$forum_id], $is_admin) : 0;
+					$auth_ug[$forum_id][$key] = !empty($auth_access_count[$forum_id]) ? check_auth(AUTH_ACL, $key, $auth_access[$forum_id], $is_admin) : 0;
 					$auth_field_acl[$forum_id][$key] = $auth_ug[$forum_id][$key];
 
 					if ( isset($prev_acl_setting) )
@@ -705,7 +705,7 @@ else if ( ( $mode == 'user' && ( isset($_POST['username']) || $user_id ) ) || ( 
 					break;
 
 				case AUTH_MOD:
-					$auth_ug[$forum_id][$key] = ( !empty($auth_access_count[$forum_id]) ) ? check_auth(AUTH_MOD, $key, $auth_access[$forum_id], $is_admin) : 0;
+					$auth_ug[$forum_id][$key] = !empty($auth_access_count[$forum_id]) ? check_auth(AUTH_MOD, $key, $auth_access[$forum_id], $is_admin) : 0;
 					break;
 
 				case AUTH_ADMIN:
@@ -721,7 +721,7 @@ else if ( ( $mode == 'user' && ( isset($_POST['username']) || $user_id ) ) || ( 
 		//
 		// Is user a moderator?
 		//
-		$auth_ug[$forum_id]['auth_mod'] = ( !empty($auth_access_count[$forum_id]) ) ? check_auth(AUTH_MOD, 'auth_mod', $auth_access[$forum_id], 0) : 0;
+		$auth_ug[$forum_id]['auth_mod'] = !empty($auth_access_count[$forum_id]) ? check_auth(AUTH_MOD, 'auth_mod', $auth_access[$forum_id], 0) : 0;
 	}
 	
 	$i = 0;
@@ -810,7 +810,7 @@ else if ( ( $mode == 'user' && ( isset($_POST['username']) || $user_id ) ) || ( 
 		}
 
 		$optionlist_mod = '<select name="moderator[' . $forum_id . ']">';
-		$optionlist_mod .= ( $user_ary['auth_mod'] ) ? '<option value="1" selected="selected">' . $lang['Is_Moderator'] . '</option><option value="0">' . $lang['Not_Moderator'] . '</option>' : '<option value="1">' . $lang['Is_Moderator'] . '</option><option value="0" selected="selected">' . $lang['Not_Moderator'] . '</option>';
+		$optionlist_mod .= $user_ary['auth_mod'] ? '<option value="1" selected="selected">' . $lang['Is_Moderator'] . '</option><option value="0">' . $lang['Not_Moderator'] . '</option>' : '<option value="1">' . $lang['Is_Moderator'] . '</option><option value="0" selected="selected">' . $lang['Not_Moderator'] . '</option>';
 		$optionlist_mod .= '</select>';
 
 		$row_class = ( !( $i % 2 ) ) ? 'row2' : 'row1';
@@ -849,7 +849,7 @@ else if ( ( $mode == 'user' && ( isset($_POST['username']) || $user_id ) ) || ( 
 	if ( $mode == 'user' )
 	{
 		$t_username = $ug_info[0]['username'];
-		$s_user_type = ( $is_admin ) ? '<select name="userlevel"><option value="admin" selected="selected">' . $lang['Auth_Admin'] . '</option><option value="user">' . $lang['Auth_User'] . '</option></select>' : '<select name="userlevel"><option value="admin">' . $lang['Auth_Admin'] . '</option><option value="user" selected="selected">' . $lang['Auth_User'] . '</option></select>';
+		$s_user_type = $is_admin ? '<select name="userlevel"><option value="admin" selected="selected">' . $lang['Auth_Admin'] . '</option><option value="user">' . $lang['Auth_User'] . '</option></select>' : '<select name="userlevel"><option value="admin">' . $lang['Auth_Admin'] . '</option><option value="user" selected="selected">' . $lang['Auth_User'] . '</option></select>';
 	}
 	else
 	{
@@ -912,16 +912,16 @@ else if ( ( $mode == 'user' && ( isset($_POST['username']) || $user_id ) ) || ( 
 	//
 	// Dump in the page header ...
 	//
-	include('./page_header_admin.php');
+	include './page_header_admin.php';
 
 	$template->set_filenames(array(
 		"body" => 'admin/auth_ug_body.tpl')
 	);
 
-	$adv_switch = ( empty($adv) ) ? 1 : 0;
+	$adv_switch = empty($adv) ? 1 : 0;
 	$u_ug_switch = ( $mode == 'user' ) ? POST_USERS_URL . "=" . $user_id : POST_GROUPS_URL . "=" . $group_id;
 	$switch_mode = append_sid("admin_ug_auth.php?mode=$mode&amp;" . $u_ug_switch . "&amp;adv=$adv_switch");
-	$switch_mode_text = ( empty($adv) ) ? $lang['Advanced_mode'] : $lang['Simple_mode'];
+	$switch_mode_text = empty($adv) ? $lang['Advanced_mode'] : $lang['Simple_mode'];
 	$u_switch_mode = '<a href="' . $switch_mode . '">' . $switch_mode_text . '</a>';
 
 	$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="adv" value="' . $adv . '" />';
@@ -971,7 +971,7 @@ else
 	//
 	// Select a user/group
 	//
-	include('./page_header_admin.php');
+	include './page_header_admin.php';
 
 	$template->set_filenames(array(
 		'body' => ( $mode == 'user' ) ? 'admin/user_select_body.tpl' : 'admin/auth_select_body.tpl')
@@ -1029,6 +1029,6 @@ else
 
 $template->pparse('body');
 
-include('./page_footer_admin.php');
+include './page_footer_admin.php';
 
 ?>

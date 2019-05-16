@@ -32,10 +32,10 @@ if ( !defined('INSTALLING') )
 	// If we are being called from the install script then we don't need these
 	// as they are already included.
 	//
-	include($phpbb_root_path . 'extension.inc');
-	include($phpbb_root_path . 'config.php');
-	include($phpbb_root_path . 'includes/constants.php');
-	include($phpbb_root_path . 'includes/functions.php');
+	include $phpbb_root_path . 'extension.inc';
+	include $phpbb_root_path . 'config.php';
+	include $phpbb_root_path . 'includes/constants.php';
+	include $phpbb_root_path . 'includes/functions.php';
 
 	if( defined("PHPBB_INSTALLED") )
 	{
@@ -48,9 +48,9 @@ if ( !defined('INSTALLING') )
 //
 $dbms = 'mysql';
 
-include($phpbb_root_path . 'includes/db.php');
-include($phpbb_root_path . 'includes/bbcode.php');
-include($phpbb_root_path . 'includes/functions_search.php');
+include $phpbb_root_path . 'includes/db.php';
+include $phpbb_root_path . 'includes/bbcode.php';
+include $phpbb_root_path . 'includes/functions_search.php';
 
 set_time_limit(0); // Unlimited execution time
 
@@ -234,8 +234,8 @@ function get_schema()
 				preg_match('/DEFAULT (NULL|\'.*?\')[,\s](.*)$/i', $matches[4], $match);
 				$default = $match[1];
 
-				$notnull = ( preg_match('/NOT NULL/i', $matches[4]) ) ? 1 : 0;
-				$auto_increment = ( preg_match('/auto_increment/i', $matches[4]) ) ? 1 : 0;
+				$notnull = preg_match('/NOT NULL/i', $matches[4]) ? 1 : 0;
+				$auto_increment = preg_match('/auto_increment/i', $matches[4]) ? 1 : 0;
 
 				$field_def[$table][$field] = array(
 					'type' => $type,
@@ -397,7 +397,7 @@ function end_step($next)
 //
 // Start at the beginning if the user hasn't specified a specific starting point.
 //
-$next = ( isset($_GET['next']) ) ? $_GET['next'] : 'start';
+$next = isset($_GET['next']) ? $_GET['next'] : 'start';
 
 // If debug is set we'll do all steps in one go.
 $debug = 1;
@@ -563,7 +563,7 @@ if ( !empty($next) )
 
 				if ( !inarray($name, $ignore_configs) )
 				{
-					$name = ( !empty($rename_configs[$name]) ) ? $rename_configs[$name] : $name;
+					$name = !empty($rename_configs[$name]) ? $rename_configs[$name] : $name;
 					
 					// phpBB 1.x has some problems with escaping strings in the database. Try to correct for
 					// this by removing all slashes and then escaping once.
@@ -867,7 +867,7 @@ if ( !empty($next) )
 					}
 					$row['user_website'] = addslashes($website);
 					
-					$row['user_icq'] = (ereg("^[0-9]+$", $row['user_icq'])) ? $row['user_icq'] : '';
+					$row['user_icq'] = ereg("^[0-9]+$", $row['user_icq']) ? $row['user_icq'] : '';
 					@reset($checklength);
 
 					while($field = each($checklength))
@@ -1714,8 +1714,8 @@ if ( !empty($next) )
 
 				if ( $row = $db->sql_fetchrow($result) )
 				{
-					$first_post = ( $row['first_post'] ) ? $row['first_post'] : 0;
-					$last_post = ($row['last_post']) ? $row['last_post'] : 0;
+					$first_post = $row['first_post'] ? $row['first_post'] : 0;
+					$last_post = $row['last_post'] ? $row['last_post'] : 0;
 				}
 				else
 				{
@@ -1730,7 +1730,7 @@ if ( !empty($next) )
 
 				if ( $row = $db->sql_fetchrow($result) )
 				{
-					$total_posts = ($row['total']) ? $row['total'] : 0;
+					$total_posts = $row['total'] ? $row['total'] : 0;
 				}
 				else
 				{
@@ -1745,7 +1745,7 @@ if ( !empty($next) )
 
 				if ( $row = $db->sql_fetchrow($result) )
 				{
-					$total_topics = ($row['total']) ? $row['total'] : 0;
+					$total_topics = $row['total'] ? $row['total'] : 0;
 				}
 				else
 				{
@@ -1878,7 +1878,7 @@ if ( !empty($next) )
 			$max_post_id = $max_post_id['max_post_id'];
 			$per_percent = round(( $totalposts / 500 ) * 10);
 
-			$postcounter = ( !isset($_GET['batchstart']) ) ? 0 : $_GET['batchstart'];
+			$postcounter = !isset($_GET['batchstart']) ? 0 : $_GET['batchstart'];
 
 			$batchsize = 150; // Process this many posts per loop
 			$batchcount = 0;

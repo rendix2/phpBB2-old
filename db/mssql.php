@@ -51,7 +51,7 @@ class sql_db
 		$this->server = $sqlserver;
 		$this->dbname = $database;
 
-		$this->db_connect_id = ( $this->persistency ) ? @mssql_pconnect($this->server, $this->user, $this->password) : @mssql_connect($this->server, $this->user, $this->password);
+		$this->db_connect_id = $this->persistency ? @mssql_pconnect($this->server, $this->user, $this->password) : @mssql_connect($this->server, $this->user, $this->password);
 
 		if( $this->db_connect_id && $this->dbname != "" )
 		{
@@ -131,8 +131,8 @@ class sql_db
 
 				if( !empty($limits[2]) )
 				{
-					$row_offset = ( $limits[4] ) ? $limits[3] : "";
-					$num_rows = ( $limits[4] ) ? $limits[4] : $limits[3];
+					$row_offset = $limits[4] ? $limits[3] : "";
+					$num_rows = $limits[4] ? $limits[4] : $limits[3];
 
 					$query = 'TOP ' . ( $row_offset + $num_rows ) . $query;
 				}
@@ -141,7 +141,7 @@ class sql_db
 
 				if( $this->result )
 				{
-					$this->limit_offset[$this->result] = ( !empty($row_offset) ) ? $row_offset : 0;
+					$this->limit_offset[$this->result] = !empty($row_offset) ? $row_offset : 0;
 
 					if( $row_offset > 0 )
 					{
@@ -236,7 +236,7 @@ class sql_db
 
 		if( $query_id )
 		{
-			return ( !empty($this->limit_offset[$query_id]) ) ? @mssql_num_rows($query_id) - $this->limit_offset[$query_id] : @mssql_num_rows($query_id);
+			return !empty($this->limit_offset[$query_id]) ? @mssql_num_rows($query_id) - $this->limit_offset[$query_id] : @mssql_num_rows($query_id);
 		}
 		else
 		{
@@ -251,7 +251,7 @@ class sql_db
 			$query_id = $this->result;
 		}
 
-		return ( $query_id ) ? @mssql_num_fields($query_id) : false;
+		return $query_id ? @mssql_num_fields($query_id) : false;
 	}
 
 	function sql_fieldname($offset, $query_id = 0)
@@ -261,7 +261,7 @@ class sql_db
 			$query_id = $this->result;
 		}
 
-		return ( $query_id ) ? @mssql_field_name($query_id, $offset) : false;
+		return $query_id ? @mssql_field_name($query_id, $offset) : false;
 	}
 
 	function sql_fieldtype($offset, $query_id = 0)
@@ -271,7 +271,7 @@ class sql_db
 			$query_id = $this->result;
 		}
 
-		return ( $query_id ) ? @mssql_field_type($query_id, $offset) : false;
+		return $query_id ? @mssql_field_type($query_id, $offset) : false;
 	}
 
 	function sql_fetchrow($query_id = 0)
@@ -344,7 +344,8 @@ class sql_db
 			{
 				if( $this->limit_offset[$query_id] > 0 )
 				{
-					$result = ( !empty($this->limit_offset[$query_id]) ) ? @mssql_result($this->result, ($this->limit_offset[$query_id] + $row), $field) : false;
+					$result = !empty($this->limit_offset[$query_id]) ? @mssql_result($this->result,
+                        $this->limit_offset[$query_id] + $row, $field) : false;
 				}
 				else
 				{
@@ -377,7 +378,8 @@ class sql_db
 
 		if( $query_id )
 		{
-			return ( !empty($this->limit_offset[$query_id]) ) ? @mssql_data_seek($query_id, ($this->limit_offset[$query_id] + $rownum)) : @mssql_data_seek($query_id, $rownum);
+			return !empty($this->limit_offset[$query_id]) ? @mssql_data_seek($query_id,
+                $this->limit_offset[$query_id] + $rownum) : @mssql_data_seek($query_id, $rownum);
 		}
 		else
 		{
@@ -387,12 +389,12 @@ class sql_db
 
 	function sql_nextid()
 	{
-		return ( $this->next_id[$this->db_connect_id] ) ? $this->next_id[$this->db_connect_id] : false;
+		return $this->next_id[$this->db_connect_id] ? $this->next_id[$this->db_connect_id] : false;
 	}
 
 	function sql_affectedrows()
 	{
-		return ( $this->affected_rows[$this->db_connect_id] ) ? $this->affected_rows[$this->db_connect_id] : false;
+		return $this->affected_rows[$this->db_connect_id] ? $this->affected_rows[$this->db_connect_id] : false;
 	}
 
 	function sql_freeresult($query_id = 0)
@@ -402,7 +404,7 @@ class sql_db
 			$query_id = $this->result;
 		}
 
-		return ( $query_id ) ? @mssql_free_result($query_id) : false;
+		return $query_id ? @mssql_free_result($query_id) : false;
 	}
 
 	function sql_error($query_id = 0)

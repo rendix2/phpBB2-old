@@ -51,9 +51,9 @@ class sql_db
 		$this->password = $sqlpassword;
 		$this->dbname = $database;
 
-		$this->db_connect_id = ($this->persistency) ? odbc_pconnect($this->server, $this->user, $this->password) : odbc_connect($this->server, $this->user, $this->password);
+		$this->db_connect_id = $this->persistency ? odbc_pconnect($this->server, $this->user, $this->password) : odbc_connect($this->server, $this->user, $this->password);
 
-		return ( $this->db_connect_id ) ? $this->db_connect_id : false;
+		return $this->db_connect_id ? $this->db_connect_id : false;
 	}
 	//
 	// Other base methods
@@ -108,8 +108,8 @@ class sql_db
 
 				if( !empty($limits[2]) )
 				{
-					$row_offset = ( $limits[4] ) ? $limits[3] : "";
-					$num_rows = ( $limits[4] ) ? $limits[4] : $limits[3];
+					$row_offset = $limits[4] ? $limits[3] : "";
+					$num_rows = $limits[4] ? $limits[4] : $limits[3];
 
 					$query = "TOP " . ( $row_offset + $num_rows ) . $query;
 				}
@@ -130,8 +130,8 @@ class sql_db
 					$this->current_row[$this->result] = 0;
 					$this->result_rowset[$this->result] = [];
 
-					$row_outer = ( isset($row_offset) ) ? $row_offset + 1 : 1;
-					$row_outer_max = ( isset($num_rows) ) ? $row_offset + $num_rows + 1 : 1E9;
+					$row_outer = isset($row_offset) ? $row_offset + 1 : 1;
+					$row_outer_max = isset($num_rows) ? $row_offset + $num_rows + 1 : 1E9;
 					$row_inner = 0;
 
 					while( odbc_fetch_row($this->result, $row_outer) && $row_outer < $row_outer_max )
@@ -234,7 +234,7 @@ class sql_db
 			$query_id = $this->result;
 		}
 
-		return ( $query_id ) ? $this->num_rows[$query_id] : false;
+		return $query_id ? $this->num_rows[$query_id] : false;
 	}
 
 	function sql_numfields($query_id = 0)
@@ -244,7 +244,7 @@ class sql_db
 			$query_id = $this->result;
 		}
 
-		return ( $query_id ) ? count($this->field_names[$query_id]) : false;
+		return $query_id ? count($this->field_names[$query_id]) : false;
 	}
 
 	function sql_fieldname($offset, $query_id = 0)
@@ -254,7 +254,7 @@ class sql_db
 			$query_id = $this->result;
 		}
 
-		return ( $query_id ) ? $this->field_names[$query_id][$offset] : false;
+		return $query_id ? $this->field_names[$query_id][$offset] : false;
 	}
 
 	function sql_fieldtype($offset, $query_id = 0)
@@ -264,7 +264,7 @@ class sql_db
 			$query_id = $this->result;
 		}
 
-		return ( $query_id ) ? $this->field_types[$query_id][$offset] : false;
+		return $query_id ? $this->field_types[$query_id][$offset] : false;
 	}
 
 	function sql_fetchrow($query_id = 0)
@@ -293,7 +293,7 @@ class sql_db
 
 		if( $query_id )
 		{
-			return ( $this->num_rows[$query_id] ) ? $this->result_rowset[$query_id] : false;
+			return $this->num_rows[$query_id] ? $this->result_rowset[$query_id] : false;
 		}
 		else
 		{
@@ -348,12 +348,12 @@ class sql_db
 
 	function sql_nextid()
 	{
-		return ( $this->next_id[$this->db_connect_id] ) ? $this->next_id[$this->db_connect_id] : false;
+		return $this->next_id[$this->db_connect_id] ? $this->next_id[$this->db_connect_id] : false;
 	}
 
 	function sql_affectedrows()
 	{
-		return ( $this->affected_rows[$this->db_connect_id] ) ? $this->affected_rows[$this->db_connect_id] : false;
+		return $this->affected_rows[$this->db_connect_id] ? $this->affected_rows[$this->db_connect_id] : false;
 	}
 
 	function sql_freeresult($query_id = 0)

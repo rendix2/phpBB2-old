@@ -22,8 +22,8 @@
 
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
-include($phpbb_root_path . 'extension.inc');
-include($phpbb_root_path . 'common.php');
+include $phpbb_root_path . 'extension.inc';
+include $phpbb_root_path . 'common.php';
 
 //
 // Start session management
@@ -36,7 +36,7 @@ init_userprefs($userdata);
 
 // session id check
 if (!empty($_POST['sid']) || !empty($_GET['sid'])) {
-	$sid = (!empty($_POST['sid'])) ? $_POST['sid'] : $_GET['sid'];
+	$sid = !empty($_POST['sid']) ? $_POST['sid'] : $_GET['sid'];
 } else {
 	$sid = '';
 }
@@ -47,7 +47,7 @@ if (!empty($_POST['sid']) || !empty($_GET['sid'])) {
 $script_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['script_path']));
 $script_name = ( $script_name != '' ) ? $script_name . '/profile.php' : 'profile.php';
 $server_name = trim($board_config['server_name']);
-$server_protocol = ( $board_config['cookie_secure'] ) ? 'https://' : 'http://';
+$server_protocol = $board_config['cookie_secure'] ? 'https://' : 'http://';
 $server_port = ( $board_config['server_port'] <> 80 ) ? ':' . trim($board_config['server_port']) . '/' : '/';
 
 $server_url = $server_protocol . $server_name . $server_port . $script_name;
@@ -59,7 +59,7 @@ function gen_rand_string($hash)
 {
 	$rand_str = dss_rand();
 
-	return ( $hash ) ? md5($rand_str) : substr($rand_str, 0, 8);
+	return $hash ? md5($rand_str) : substr($rand_str, 0, 8);
 }
 //
 // End page specific functions
@@ -69,18 +69,18 @@ function gen_rand_string($hash)
 // Start of program proper
 //
 if (isset($_GET['mode']) || isset($_POST['mode'])) {
-    $mode = (isset($_GET['mode'])) ? $_GET['mode'] : $_POST['mode'];
+    $mode = isset($_GET['mode']) ? $_GET['mode'] : $_POST['mode'];
     $mode = htmlspecialchars($mode);
 
     if ($mode == 'viewprofile') {
-        include($phpbb_root_path . 'includes/usercp_viewprofile.php');
+        include $phpbb_root_path . 'includes/usercp_viewprofile.php';
         exit;
     } elseif ($mode == 'editprofile' || $mode == 'register') {
         if (!$userdata['session_logged_in'] && $mode == 'editprofile') {
             redirect(append_sid("login.php?redirect=profile.php&mode=editprofile", true));
         }
 
-        include($phpbb_root_path . 'includes/usercp_register.php');
+        include $phpbb_root_path . 'includes/usercp_register.php';
         exit;
     } elseif ($mode == 'confirm') {
         // Visual Confirmation
@@ -88,16 +88,16 @@ if (isset($_GET['mode']) || isset($_POST['mode'])) {
             exit;
         }
 
-        include($phpbb_root_path . 'includes/usercp_confirm.php');
+        include $phpbb_root_path . 'includes/usercp_confirm.php';
         exit;
     } elseif ($mode == 'sendpassword') {
-        include($phpbb_root_path . 'includes/usercp_sendpasswd.php');
+        include $phpbb_root_path . 'includes/usercp_sendpasswd.php';
         exit;
     } elseif ($mode == 'activate') {
-        include($phpbb_root_path . 'includes/usercp_activate.php');
+        include $phpbb_root_path . 'includes/usercp_activate.php';
         exit;
     } elseif ($mode == 'email') {
-        include($phpbb_root_path . 'includes/usercp_email.php');
+        include $phpbb_root_path . 'includes/usercp_email.php';
         exit;
     }
 }

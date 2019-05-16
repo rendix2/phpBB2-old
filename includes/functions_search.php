@@ -429,23 +429,23 @@ function username_search($search_match)
 	}
 
 	$page_title = $lang['Search'];
-	include($phpbb_root_path . 'includes/page_header.php');
+	include $phpbb_root_path . 'includes/page_header.php';
 
     $template->set_filenames(['search_user_body' => 'search_username.tpl']);
 
     $template->assign_vars(array(
-		'USERNAME' => (!empty($search_match)) ? phpbb_clean_username($search_match) : '', 
+            'USERNAME' => !empty($search_match) ? phpbb_clean_username($search_match) : '',
 
-		'L_CLOSE_WINDOW' => $lang['Close_window'], 
-		'L_SEARCH_USERNAME' => $lang['Find_username'], 
-		'L_UPDATE_USERNAME' => $lang['Select_username'], 
-		'L_SELECT' => $lang['Select'], 
-		'L_SEARCH' => $lang['Search'], 
-		'L_SEARCH_EXPLAIN' => $lang['Search_author_explain'], 
-		'L_CLOSE_WINDOW' => $lang['Close_window'], 
+            'L_CLOSE_WINDOW' => $lang['Close_window'],
+            'L_SEARCH_USERNAME' => $lang['Find_username'],
+            'L_UPDATE_USERNAME' => $lang['Select_username'],
+            'L_SELECT' => $lang['Select'],
+            'L_SEARCH' => $lang['Search'],
+            'L_SEARCH_EXPLAIN' => $lang['Search_author_explain'],
+            'L_CLOSE_WINDOW' => $lang['Close_window'],
 
-		'S_USERNAME_OPTIONS' => $username_list, 
-		'S_SEARCH_ACTION' => append_sid("search.php?mode=searchuser"))
+            'S_USERNAME_OPTIONS' => $username_list,
+            'S_SEARCH_ACTION' => append_sid("search.php?mode=searchuser"))
 	);
 
 	if ( $username_list != '' ) {
@@ -454,7 +454,7 @@ function username_search($search_match)
 
 	$template->pparse('search_user_body');
 
-	include($phpbb_root_path . 'includes/page_tail.php');
+	include $phpbb_root_path . 'includes/page_tail.php';
 
 	return;
 }

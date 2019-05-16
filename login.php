@@ -28,8 +28,8 @@ define("IN_LOGIN", true);
 
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
-include($phpbb_root_path . 'extension.inc');
-include($phpbb_root_path . 'common.php');
+include $phpbb_root_path . 'extension.inc';
+include $phpbb_root_path . 'common.php';
 
 //
 // Set page ID for session management
@@ -42,7 +42,7 @@ init_userprefs($userdata);
 
 // session id check
 if (!empty($_POST['sid']) || !empty($_GET['sid'])) {
-	$sid = (!empty($_POST['sid'])) ? $_POST['sid'] : $_GET['sid'];
+	$sid = !empty($_POST['sid']) ? $_POST['sid'] : $_GET['sid'];
 } else {
 	$sid = '';
 }
@@ -87,7 +87,7 @@ if( isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 					$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_login_tries = 0, user_last_login_try = 0 WHERE user_id = ' . $row['user_id']);
 
 					if( $session_id ) {
-						$url = ( !empty($_POST['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : "index.php";
+						$url = !empty($_POST['redirect']) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : "index.php";
 						redirect(append_sid($url, true));
 					} else {
 						message_die(CRITICAL_ERROR, "Couldn't start session : login", "", __LINE__, __FILE__);
@@ -105,7 +105,7 @@ if( isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 					}
 				}
 
-				$redirect = ( !empty($_POST['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : '';
+				$redirect = !empty($_POST['redirect']) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : '';
 				$redirect = str_replace('?', '&', $redirect);
 
 				if (strstr(urldecode($redirect), "\n") || strstr(urldecode($redirect), "\r") || strstr(urldecode($redirect), ';url')) {
@@ -147,7 +147,7 @@ if( isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 		}
 
 		if (!empty($_POST['redirect']) || !empty($_GET['redirect'])) {
-		    $url = (!empty($_POST['redirect'])) ? htmlspecialchars($_POST['redirect']) : htmlspecialchars($_GET['redirect']);
+		    $url = !empty($_POST['redirect']) ? htmlspecialchars($_POST['redirect']) : htmlspecialchars($_GET['redirect']);
 			$url = str_replace('&amp;', '&', $url);
 			redirect(append_sid($url, true));
 		} else {
@@ -164,7 +164,7 @@ if( isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 	//
 	if( !$userdata['session_logged_in'] || (isset($_GET['admin']) && $userdata['session_logged_in'] && $userdata['user_level'] == ADMIN)) {
 		$page_title = $lang['Login'];
-		include($phpbb_root_path . 'includes/page_header.php');
+		include $phpbb_root_path . 'includes/page_header.php';
 
 		$template->set_filenames(array(
 			'body' => 'login_body.tpl')
@@ -176,7 +176,7 @@ if( isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 			$forward_to = $_SERVER['QUERY_STRING'];
 
 			if( preg_match("/^redirect=([a-z0-9\.#\/\?&=\+\-_]+)/si", $forward_to, $forward_matches) ) {
-				$forward_to = ( !empty($forward_matches[3]) ) ? $forward_matches[3] : $forward_matches[1];
+				$forward_to = !empty($forward_matches[3]) ? $forward_matches[3] : $forward_matches[1];
 				$forward_match = explode('&', $forward_to);
 
 				if(count($forward_match) > 1) {
@@ -200,23 +200,23 @@ if( isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 		$username = ( $userdata['user_id'] != ANONYMOUS ) ? $userdata['username'] : '';
 
 		$s_hidden_fields = '<input type="hidden" name="redirect" value="' . $forward_page . '" />';
-		$s_hidden_fields .= (isset($_GET['admin'])) ? '<input type="hidden" name="admin" value="1" />' : '';
+		$s_hidden_fields .= isset($_GET['admin']) ? '<input type="hidden" name="admin" value="1" />' : '';
 
 		make_jumpbox('viewforum.php');
 		$template->assign_vars(array(
-			'USERNAME' => $username,
+                'USERNAME' => $username,
 
-			'L_ENTER_PASSWORD' => (isset($_GET['admin'])) ? $lang['Admin_reauthenticate'] : $lang['Enter_password'],
-			'L_SEND_PASSWORD' => $lang['Forgotten_password'],
+                'L_ENTER_PASSWORD' => isset($_GET['admin']) ? $lang['Admin_reauthenticate'] : $lang['Enter_password'],
+                'L_SEND_PASSWORD' => $lang['Forgotten_password'],
 
-			'U_SEND_PASSWORD' => append_sid("profile.php?mode=sendpassword"),
+                'U_SEND_PASSWORD' => append_sid("profile.php?mode=sendpassword"),
 
-			'S_HIDDEN_FIELDS' => $s_hidden_fields)
+                'S_HIDDEN_FIELDS' => $s_hidden_fields)
 		);
 
 		$template->pparse('body');
 
-		include($phpbb_root_path . 'includes/page_tail.php');
+		include $phpbb_root_path . 'includes/page_tail.php';
 	} else {
 		redirect(append_sid("index.php", true));
 	}

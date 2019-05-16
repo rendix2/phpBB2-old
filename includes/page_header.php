@@ -33,7 +33,7 @@ $do_gzip_compress = FALSE;
 if ( $board_config['gzip_compress'] ) {
 	$phpver = phpversion();
 
-	$useragent = (isset($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : getenv('HTTP_USER_AGENT');
+	$useragent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : getenv('HTTP_USER_AGENT');
 
 	if ( $phpver >= '4.0.4pl1' && ( strstr($useragent,'compatible') || strstr($useragent,'Gecko') ) ) {
 		if ( extension_loaded('zlib') ) {
@@ -56,7 +56,7 @@ if ( $board_config['gzip_compress'] ) {
 // Parse and show the overall header.
 //
 $template->set_filenames(array(
-	'overall_header' => ( empty($gen_simple_header) ) ? 'overall_header.tpl' : 'simple_header.tpl')
+	'overall_header' => empty($gen_simple_header) ? 'overall_header.tpl' : 'simple_header.tpl')
 );
 
 //
@@ -70,7 +70,7 @@ if ($userdata['session_logged_in'] ) {
 	$l_login_logout = $lang['Login'];
 }
 
-$s_last_visit = ($userdata['session_logged_in'] ) ? create_date($board_config['default_dateformat'], $userdata['user_lastvisit'], $board_config['board_timezone']) : '';
+$s_last_visit = $userdata['session_logged_in'] ? create_date($board_config['default_dateformat'], $userdata['user_lastvisit'], $board_config['board_timezone']) : '';
 
 //
 // Get basic (usernames + totals) online
@@ -84,7 +84,7 @@ $l_online_users = '';
 
 if (defined('SHOW_ONLINE')) {
 
-	$user_forum_sql = ( !empty($forum_id) ) ? "AND s.session_page = " . intval($forum_id) : '';
+	$user_forum_sql = !empty($forum_id) ? "AND s.session_page = " . intval($forum_id) : '';
 	$sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_level, s.session_logged_in, s.session_ip
 		FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s
 		WHERE u.user_id = s.session_user_id
@@ -147,7 +147,7 @@ if (defined('SHOW_ONLINE')) {
 		$online_userlist = $lang['None'];
 	}
 	
-	$online_userlist = ( ( isset($forum_id) ) ? $lang['Browsing_forum'] : $lang['Registered_users'] ) . ' ' . $online_userlist;
+	$online_userlist = ( isset($forum_id) ? $lang['Browsing_forum'] : $lang['Registered_users'] ) . ' ' . $online_userlist;
 
 	$total_online_users = $logged_visible_online + $logged_hidden_online + $guests_online;
 
@@ -215,7 +215,7 @@ if (defined('SHOW_ONLINE')) {
 // Obtain number of new private messages
 // if user is logged in
 //
-if ( ($userdata['session_logged_in']) && (empty($gen_simple_header)) ) {
+if ( $userdata['session_logged_in'] && empty($gen_simple_header)) {
 	if ($userdata['user_new_privmsg'] ) {
 		$l_message_new = ($userdata['user_new_privmsg'] == 1 ) ? $lang['New_pm'] : $lang['New_pms'];
 		$l_privmsgs_text = sprintf($l_message_new, $userdata['user_new_privmsg']);

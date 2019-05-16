@@ -1098,7 +1098,7 @@ if ( $mode == 'newpm' )
 			}
         } else {
 			$error = TRUE;
-			$error_msg .= ( ( !empty($error_msg) ) ? '<br />' : '' ) . $lang['No_to_user'];
+			$error_msg .= ( !empty($error_msg) ? '<br />' : '' ) . $lang['No_to_user'];
 		}
 
 		$privmsg_subject = trim(htmlspecialchars($_POST['subject']));

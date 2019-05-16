@@ -73,7 +73,7 @@ td.catHead,td.catSides,td.catLeft,td.catRight,td.catBottom { background-image: u
 				<td><br /><br /></td>
 			</tr>
 			<tr>
-				<td width="100%"><table width="100%" cellpadding="2" cellspacing="1" border="0" class="forumline"><form action="<?php echo ($form_action) ? $form_action : 'install.php'; ?>" name="install" method="post">
+				<td width="100%"><table width="100%" cellpadding="2" cellspacing="1" border="0" class="forumline"><form action="<?php echo $form_action ? $form_action : 'install.php'; ?>" name="install" method="post">
 <?php
 
 }
@@ -311,7 +311,7 @@ define('IN_PHPBB', true);
 // Uncomment the following line to completely disable the ftp option...
 // define('NO_FTP', true);
 $phpbb_root_path = './../';
-include($phpbb_root_path.'extension.inc');
+include $phpbb_root_path.'extension.inc';
 
 // Initialise some basic arrays
 $userdata = [];
@@ -319,9 +319,9 @@ $lang = [];
 $error = false;
 
 // Include some required functions
-include($phpbb_root_path.'includes/constants.php');
-include($phpbb_root_path.'includes/functions.php');
-include($phpbb_root_path.'includes/sessions.php');
+include $phpbb_root_path.'includes/constants.php';
+include $phpbb_root_path.'includes/functions.php';
+include $phpbb_root_path.'includes/sessions.php';
 
 // Define schema info
 $available_dbms = array(
@@ -370,37 +370,37 @@ $available_dbms = array(
 );
 
 // Obtain various vars
-$confirm = (isset($_POST['confirm'])) ? true : false;
-$cancel = (isset($_POST['cancel'])) ? true : false;
+$confirm = isset($_POST['confirm']) ? true : false;
+$cancel = isset($_POST['cancel']) ? true : false;
 
 if (isset($_POST['install_step']) || isset($_GET['install_step']))
 {
-	$install_step = (isset($_POST['install_step'])) ? $_POST['install_step'] : $_GET['install_step'];
+	$install_step = isset($_POST['install_step']) ? $_POST['install_step'] : $_GET['install_step'];
 }
 else
 {
 	$install_step = '';
 }
 
-$upgrade = (!empty($_POST['upgrade'])) ? $_POST['upgrade']: '';
-$upgrade_now = (!empty($_POST['upgrade_now'])) ? $_POST['upgrade_now']:'';
+$upgrade = !empty($_POST['upgrade']) ? $_POST['upgrade']: '';
+$upgrade_now = !empty($_POST['upgrade_now']) ? $_POST['upgrade_now']:'';
 
 $dbms = isset($_POST['dbms']) ? $_POST['dbms'] : '';
 
-$dbhost = (!empty($_POST['dbhost'])) ? $_POST['dbhost'] : 'localhost';
-$dbuser = (!empty($_POST['dbuser'])) ? $_POST['dbuser'] : '';
-$dbpasswd = (!empty($_POST['dbpasswd'])) ? $_POST['dbpasswd'] : '';
-$dbname = (!empty($_POST['dbname'])) ? $_POST['dbname'] : '';
+$dbhost = !empty($_POST['dbhost']) ? $_POST['dbhost'] : 'localhost';
+$dbuser = !empty($_POST['dbuser']) ? $_POST['dbuser'] : '';
+$dbpasswd = !empty($_POST['dbpasswd']) ? $_POST['dbpasswd'] : '';
+$dbname = !empty($_POST['dbname']) ? $_POST['dbname'] : '';
 
-$table_prefix = (!empty($_POST['prefix'])) ? $_POST['prefix'] : '';
+$table_prefix = !empty($_POST['prefix']) ? $_POST['prefix'] : '';
 
-$admin_name = (!empty($_POST['admin_name'])) ? $_POST['admin_name'] : '';
-$admin_pass1 = (!empty($_POST['admin_pass1'])) ? $_POST['admin_pass1'] : '';
-$admin_pass2 = (!empty($_POST['admin_pass2'])) ? $_POST['admin_pass2'] : '';
+$admin_name = !empty($_POST['admin_name']) ? $_POST['admin_name'] : '';
+$admin_pass1 = !empty($_POST['admin_pass1']) ? $_POST['admin_pass1'] : '';
+$admin_pass2 = !empty($_POST['admin_pass2']) ? $_POST['admin_pass2'] : '';
 
-$ftp_path = (!empty($_POST['ftp_path'])) ? $_POST['ftp_path'] : '';
-$ftp_user = (!empty($_POST['ftp_user'])) ? $_POST['ftp_user'] : '';
-$ftp_pass = (!empty($_POST['ftp_pass'])) ? $_POST['ftp_pass'] : '';
+$ftp_path = !empty($_POST['ftp_path']) ? $_POST['ftp_path'] : '';
+$ftp_user = !empty($_POST['ftp_user']) ? $_POST['ftp_user'] : '';
+$ftp_pass = !empty($_POST['ftp_pass']) ? $_POST['ftp_pass'] : '';
 
 if (isset($_POST['lang']) && preg_match('#^[a-z_]+$#', $_POST['lang']))
 {
@@ -411,8 +411,8 @@ else
 	$language = guess_lang();
 }
 
-$board_email = (!empty($_POST['board_email'])) ? $_POST['board_email'] : '';
-$script_path = (!empty($_POST['script_path'])) ? $_POST['script_path'] : str_replace('install', '', dirname($_SERVER['PHP_SELF']));
+$board_email = !empty($_POST['board_email']) ? $_POST['board_email'] : '';
+$script_path = !empty($_POST['script_path']) ? $_POST['script_path'] : str_replace('install', '', dirname($_SERVER['PHP_SELF']));
 
 if (!empty($_POST['server_name']))
 {
@@ -423,11 +423,11 @@ else
 	// Guess at some basic info used for install..
     if (!empty($_SERVER['SERVER_NAME']) || !empty($_ENV['SERVER_NAME']))
 	{
-	    $server_name = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : $_ENV['SERVER_NAME'];
+	    $server_name = !empty($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : $_ENV['SERVER_NAME'];
 	}
 	else if (!empty($_SERVER['HTTP_HOST']) || !empty($_ENV['HTTP_HOST']))
 	{
-		$server_name = (!empty($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : $_ENV['HTTP_HOST'];
+		$server_name = !empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_ENV['HTTP_HOST'];
 	}
 	else
 	{
@@ -440,7 +440,7 @@ if (!empty($_POST['server_port']))
 	$server_port = $_POST['server_port'];
 } else {
 	if (!empty($_SERVER['SERVER_PORT']) || !empty($_ENV['SERVER_PORT'])) {
-		$server_port = (!empty($_SERVER['SERVER_PORT'])) ? $_SERVER['SERVER_PORT'] : $_ENV['SERVER_PORT'];
+		$server_port = !empty($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : $_ENV['SERVER_PORT'];
 	} else {
 		$server_port = '80';
 	}
@@ -448,7 +448,7 @@ if (!empty($_POST['server_port']))
 
 // Open config.php ... if it exists
 if (@file_exists(@phpbb_realpath('config.php'))) {
-	include($phpbb_root_path.'config.php');
+	include $phpbb_root_path.'config.php';
 }
 
 // Is phpBB already installed? Yes? Redirect to the index
@@ -457,8 +457,8 @@ if (defined("PHPBB_INSTALLED")) {
 }
 
 // Import language file, setup template ...
-include($phpbb_root_path.'language/lang_' . $language . '/lang_main.php');
-include($phpbb_root_path.'language/lang_' . $language . '/lang_admin.php');
+include $phpbb_root_path.'language/lang_' . $language . '/lang_main.php';
+include $phpbb_root_path.'language/lang_' . $language . '/lang_admin.php';
 
 // Ok for the time being I'm commenting this out whilst I'm working on
 // better integration of the install with upgrade as per Bart's request
@@ -584,7 +584,7 @@ else if (!empty($_POST['ftp_file']))
 
 		if ($upgrade == 1)	
 		{
-			require('upgrade.php');
+			require 'upgrade.php';
 			exit;
 		}
 
@@ -603,7 +603,7 @@ else if (!empty($_POST['ftp_file']))
 		exit();
 	}
 }
-else if ((empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin_pass1) || empty($dbhost)))
+else if (empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin_pass1) || empty($dbhost))
 {
 	// Ok we haven't installed before so lets work our way through the various
 	// steps of the install process.  This could turn out to be quite a lengty 
@@ -615,7 +615,7 @@ else if ((empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin_p
 
 	if (!empty($install_step))
 	{
-		if ((($_POST['admin_pass1'] != $_POST['admin_pass2'])) ||
+		if ($_POST['admin_pass1'] != $_POST['admin_pass2'] ||
 			(empty($_POST['admin_pass1']) || empty($dbhost)) && $_POST['cur_lang'] == $language)
 		{
 			$error = $lang['Password_mismatch'];
@@ -704,7 +704,7 @@ else if ((empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin_p
 					</tr>
 					<tr>
 						<td class="row1" align="right"><span class="gen"><?php echo $lang['Table_Prefix']; ?>: </span></td>
-						<td class="row2"><input type="text" name="prefix" value="<?php echo (!empty($table_prefix)) ? $table_prefix : "phpbb_"; ?>" /></td>
+						<td class="row2"><input type="text" name="prefix" value="<?php echo !empty($table_prefix) ? $table_prefix : "phpbb_"; ?>" /></td>
 					</tr>
 					<tr>
 						<th colspan="2"><?php echo $lang['Admin_config']; ?></th>
@@ -797,7 +797,7 @@ else
 			exit;
 		}
 
-		include($phpbb_root_path.'includes/db.php');
+		include $phpbb_root_path.'includes/db.php';
 	}
 
 	$dbms_schema = 'schemas/' . $available_dbms[$dbms]['SCHEMA'] . '_schema.sql';
@@ -814,7 +814,7 @@ else
 			if ($dbms != 'msaccess')
 			{
 				// Load in the sql parser
-				include($phpbb_root_path.'includes/sql_parse.php');
+				include $phpbb_root_path.'includes/sql_parse.php';
 
 				// Ok we have the db info go ahead and read in the relevant schema
 				// and work on building the table.. probably ought to provide some
@@ -1019,7 +1019,7 @@ else
 		if ($upgrade == 1 && $upgrade_now == $lang['upgrade_submit'])
 		{
 			define('INSTALLING', true);
-			require('upgrade.php');
+			require 'upgrade.php';
 			exit;
 		}
 

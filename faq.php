@@ -22,8 +22,8 @@
 
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
-include($phpbb_root_path . 'extension.inc');
-include($phpbb_root_path . 'common.php');
+include $phpbb_root_path . 'extension.inc';
+include $phpbb_root_path . 'common.php';
 
 //
 // Start session management
@@ -56,7 +56,7 @@ if( isset($_GET['mode']) ) {
 	$l_title = $lang['FAQ'];
 }
 
-include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/' . $lang_file . '.php');
+include $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/' . $lang_file . '.php';
 
 //
 // Pull the array data from the lang pack
@@ -89,7 +89,7 @@ for($i = 0; $i < $faq_count; $i++) {
 // Lets build a page ...
 //
 $page_title = $l_title;
-include($phpbb_root_path . 'includes/page_header.php');
+include $phpbb_root_path . 'includes/page_header.php';
 
 $template->set_filenames(['body' => 'faq_body.tpl']);
 make_jumpbox('viewforum.php');
@@ -140,6 +140,6 @@ for($i = 0; $i < $faq_block_count; $i++) {
 
 $template->pparse('body');
 
-include($phpbb_root_path . 'includes/page_tail.php');
+include $phpbb_root_path . 'includes/page_tail.php';
 
 ?>

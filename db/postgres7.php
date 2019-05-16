@@ -76,9 +76,9 @@ class sql_db
 
 		$this->persistency = $persistency;
 
-		$this->db_connect_id = ( $this->persistency ) ? pg_pconnect($this->connect_string) : pg_connect($this->connect_string);
+		$this->db_connect_id = $this->persistency ? pg_pconnect($this->connect_string) : pg_connect($this->connect_string);
 
-		return ( $this->db_connect_id ) ? $this->db_connect_id : false;
+		return $this->db_connect_id ? $this->db_connect_id : false;
 	}
 
 	//
@@ -194,7 +194,7 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		return ( $query_id ) ? @pg_numrows($query_id) : false;
+		return $query_id ? @pg_numrows($query_id) : false;
 	}
 
 	function sql_numfields($query_id = 0)
@@ -204,7 +204,7 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		return ( $query_id ) ? @pg_numfields($query_id) : false;
+		return $query_id ? @pg_numfields($query_id) : false;
 	}
 
 	function sql_fieldname($offset, $query_id = 0)
@@ -214,7 +214,7 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		return ( $query_id ) ? @pg_fieldname($query_id, $offset) : false;
+		return $query_id ? @pg_fieldname($query_id, $offset) : false;
 	}
 
 	function sql_fieldtype($offset, $query_id = 0)
@@ -224,7 +224,7 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		return ( $query_id ) ? @pg_fieldtype($query_id, $offset) : false;
+		return $query_id ? @pg_fieldtype($query_id, $offset) : false;
 	}
 
 	function sql_fetchrow($query_id = 0)
@@ -350,7 +350,7 @@ class sql_db
 
 				$temp_result = @pg_fetch_array($temp_q_id, 0, PGSQL_ASSOC);
 
-				return ( $temp_result ) ? $temp_result['last_value'] : false;
+				return $temp_result ? $temp_result['last_value'] : false;
 			}
 		}
 
@@ -364,7 +364,7 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		return ( $query_id ) ? @pg_cmdtuples($query_id) : false;
+		return $query_id ? @pg_cmdtuples($query_id) : false;
 	}
 
 	function sql_freeresult($query_id = 0)
@@ -374,7 +374,7 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		return ( $query_id ) ? @pg_freeresult($query_id) : false;
+		return $query_id ? @pg_freeresult($query_id) : false;
 	}
 
 	function sql_error($query_id = 0)

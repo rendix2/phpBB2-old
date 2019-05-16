@@ -24,9 +24,9 @@ if( !empty($setmodules) )
 // Let's set the root dir for phpBB
 //
 $phpbb_root_path = "./../";
-require($phpbb_root_path . 'extension.inc');
-require('./pagestart.php');
-include($phpbb_root_path . 'includes/functions_selects.php');
+require $phpbb_root_path . 'extension.inc';
+require './pagestart.php';
+include $phpbb_root_path . 'includes/functions_selects.php';
 
 //
 // Pull all config data
@@ -45,7 +45,7 @@ else
 		$config_value = $row['config_value'];
 		$default_config[$config_name] = isset($_POST['submit']) ? str_replace("'", "\'", $config_value) : $config_value;
 		
-		$new[$config_name] = ( isset($_POST[$config_name]) ) ? $_POST[$config_name] : $default_config[$config_name];
+		$new[$config_name] = isset($_POST[$config_name]) ? $_POST[$config_name] : $default_config[$config_name];
 
 		if ($config_name == 'cookie_name')
 		{
@@ -93,62 +93,62 @@ $style_select = style_select($new['default_style'], 'default_style', "../templat
 $lang_select = language_select($new['default_lang'], 'default_lang', "language");
 $timezone_select = tz_select($new['board_timezone'], 'board_timezone');
 
-$disable_board_yes = ( $new['board_disable'] ) ? "checked=\"checked\"" : "";
+$disable_board_yes = $new['board_disable'] ? "checked=\"checked\"" : "";
 $disable_board_no = ( !$new['board_disable'] ) ? "checked=\"checked\"" : "";
 
-$cookie_secure_yes = ( $new['cookie_secure'] ) ? "checked=\"checked\"" : "";
+$cookie_secure_yes = $new['cookie_secure'] ? "checked=\"checked\"" : "";
 $cookie_secure_no = ( !$new['cookie_secure'] ) ? "checked=\"checked\"" : "";
 
 $html_tags = $new['allow_html_tags'];
 
-$override_user_style_yes = ( $new['override_user_style'] ) ? "checked=\"checked\"" : "";
+$override_user_style_yes = $new['override_user_style'] ? "checked=\"checked\"" : "";
 $override_user_style_no = ( !$new['override_user_style'] ) ? "checked=\"checked\"" : "";
 
-$html_yes = ( $new['allow_html'] ) ? "checked=\"checked\"" : "";
+$html_yes = $new['allow_html'] ? "checked=\"checked\"" : "";
 $html_no = ( !$new['allow_html'] ) ? "checked=\"checked\"" : "";
 
-$bbcode_yes = ( $new['allow_bbcode'] ) ? "checked=\"checked\"" : "";
+$bbcode_yes = $new['allow_bbcode'] ? "checked=\"checked\"" : "";
 $bbcode_no = ( !$new['allow_bbcode'] ) ? "checked=\"checked\"" : "";
 
 $activation_none = ( $new['require_activation'] == USER_ACTIVATION_NONE ) ? "checked=\"checked\"" : "";
 $activation_user = ( $new['require_activation'] == USER_ACTIVATION_SELF ) ? "checked=\"checked\"" : "";
 $activation_admin = ( $new['require_activation'] == USER_ACTIVATION_ADMIN ) ? "checked=\"checked\"" : "";
 
-$confirm_yes = ($new['enable_confirm']) ? 'checked="checked"' : '';
+$confirm_yes = $new['enable_confirm'] ? 'checked="checked"' : '';
 $confirm_no = (!$new['enable_confirm']) ? 'checked="checked"' : '';
 
-$allow_autologin_yes = ($new['allow_autologin']) ? 'checked="checked"' : '';
+$allow_autologin_yes = $new['allow_autologin'] ? 'checked="checked"' : '';
 $allow_autologin_no = (!$new['allow_autologin']) ? 'checked="checked"' : '';
 
-$board_email_form_yes = ( $new['board_email_form'] ) ? "checked=\"checked\"" : "";
+$board_email_form_yes = $new['board_email_form'] ? "checked=\"checked\"" : "";
 $board_email_form_no = ( !$new['board_email_form'] ) ? "checked=\"checked\"" : "";
 
-$gzip_yes = ( $new['gzip_compress'] ) ? "checked=\"checked\"" : "";
+$gzip_yes = $new['gzip_compress'] ? "checked=\"checked\"" : "";
 $gzip_no = ( !$new['gzip_compress'] ) ? "checked=\"checked\"" : "";
 
 $privmsg_on = ( !$new['privmsg_disable'] ) ? "checked=\"checked\"" : "";
-$privmsg_off = ( $new['privmsg_disable'] ) ? "checked=\"checked\"" : "";
+$privmsg_off = $new['privmsg_disable'] ? "checked=\"checked\"" : "";
 
-$prune_yes = ( $new['prune_enable'] ) ? "checked=\"checked\"" : "";
+$prune_yes = $new['prune_enable'] ? "checked=\"checked\"" : "";
 $prune_no = ( !$new['prune_enable'] ) ? "checked=\"checked\"" : "";
 
-$smile_yes = ( $new['allow_smilies'] ) ? "checked=\"checked\"" : "";
+$smile_yes = $new['allow_smilies'] ? "checked=\"checked\"" : "";
 $smile_no = ( !$new['allow_smilies'] ) ? "checked=\"checked\"" : "";
 
-$sig_yes = ( $new['allow_sig'] ) ? "checked=\"checked\"" : "";
+$sig_yes = $new['allow_sig'] ? "checked=\"checked\"" : "";
 $sig_no = ( !$new['allow_sig'] ) ? "checked=\"checked\"" : "";
 
-$namechange_yes = ( $new['allow_namechange'] ) ? "checked=\"checked\"" : "";
+$namechange_yes = $new['allow_namechange'] ? "checked=\"checked\"" : "";
 $namechange_no = ( !$new['allow_namechange'] ) ? "checked=\"checked\"" : "";
 
-$avatars_local_yes = ( $new['allow_avatar_local'] ) ? "checked=\"checked\"" : "";
+$avatars_local_yes = $new['allow_avatar_local'] ? "checked=\"checked\"" : "";
 $avatars_local_no = ( !$new['allow_avatar_local'] ) ? "checked=\"checked\"" : "";
-$avatars_remote_yes = ( $new['allow_avatar_remote'] ) ? "checked=\"checked\"" : "";
+$avatars_remote_yes = $new['allow_avatar_remote'] ? "checked=\"checked\"" : "";
 $avatars_remote_no = ( !$new['allow_avatar_remote'] ) ? "checked=\"checked\"" : "";
-$avatars_upload_yes = ( $new['allow_avatar_upload'] ) ? "checked=\"checked\"" : "";
+$avatars_upload_yes = $new['allow_avatar_upload'] ? "checked=\"checked\"" : "";
 $avatars_upload_no = ( !$new['allow_avatar_upload'] ) ? "checked=\"checked\"" : "";
 
-$smtp_yes = ( $new['smtp_delivery'] ) ? "checked=\"checked\"" : "";
+$smtp_yes = $new['smtp_delivery'] ? "checked=\"checked\"" : "";
 $smtp_no = ( !$new['smtp_delivery'] ) ? "checked=\"checked\"" : "";
 
 $template->set_filenames(array(
@@ -361,6 +361,6 @@ $template->assign_vars(array(
 
 $template->pparse("body");
 
-include('./page_footer_admin.php');
+include './page_footer_admin.php';
 
 ?>

@@ -638,7 +638,7 @@ function make_clickable($text)
 	// Remove our padding..
 	$ret = substr($ret, 1);
 
-	return($ret);
+	return $ret;
 }
 
 /**
@@ -704,7 +704,7 @@ function escape_slashes($input)
 function bbcode_array_push(&$stack, $value)
 {
    $stack[] = $value;
-   return(count($stack));
+   return count($stack);
 }
 
 /**
@@ -732,7 +732,7 @@ function bbcode_array_pop(&$stack)
    }
    $stack = $tmpArr;
 
-   return($return_val);
+   return $return_val;
 }
 
 //

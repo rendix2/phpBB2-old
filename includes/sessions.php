@@ -40,7 +40,7 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 		$sessionmethod = SESSION_METHOD_COOKIE;
 	} else {
 		$sessiondata = [];
-		$session_id = ( isset($_GET['sid']) ) ? $_GET['sid'] : '';
+		$session_id = isset($_GET['sid']) ? $_GET['sid'] : '';
 		$sessionmethod = SESSION_METHOD_GET;
 	}
 
@@ -260,7 +260,7 @@ function session_pagestart($user_ip, $thispage_id)
 		$sessionmethod = SESSION_METHOD_COOKIE;
 	} else {
 		$sessiondata = [];
-		$session_id = ( isset($_GET['sid']) ) ? $_GET['sid'] : '';
+		$session_id = isset($_GET['sid']) ? $_GET['sid'] : '';
 		$sessionmethod = SESSION_METHOD_GET;
 	}
 
@@ -350,7 +350,7 @@ function session_pagestart($user_ip, $thispage_id)
 	// If we reach here then no (valid) session exists. So we'll create a new one,
 	// using the cookie user_id if available to pull basic user prefs.
 	//
-	$user_id = ( isset($sessiondata['userid']) ) ? intval($sessiondata['userid']) : ANONYMOUS;
+	$user_id = isset($sessiondata['userid']) ? intval($sessiondata['userid']) : ANONYMOUS;
 
 	if ( !($userdata = session_begin($user_id, $user_ip, $thispage_id, TRUE)) ) {
 		message_die(CRITICAL_ERROR, 'Error creating user session', '', __LINE__, __FILE__, $sql);
@@ -530,7 +530,7 @@ function append_sid($url, $non_html_amp = false)
 	global $SID;
 
 	if ( !empty($SID) && !preg_match('#sid=#', $url) ) {
-		$url .= ( ( strpos($url, '?') !== false ) ?  ( ( $non_html_amp ) ? '&' : '&amp;' ) : '?' ) . $SID;
+		$url .= ( ( strpos($url, '?') !== false ) ?  ( $non_html_amp ? '&' : '&amp;' ) : '?' ) . $SID;
 	}
 
 	return $url;

@@ -32,12 +32,12 @@ define('IN_PHPBB', 1);
 // Let's set the root dir for phpBB
 //
 $phpbb_root_path = "./../";
-require($phpbb_root_path . 'extension.inc');
+require $phpbb_root_path . 'extension.inc';
 
 $cancel = ( isset($_POST['cancel']) || isset($_POST['cancel']) ) ? true : false;
 $no_page_header = $cancel;
 
-require('./pagestart.php');
+require './pagestart.php';
 
 if ($cancel)
 {
@@ -46,7 +46,7 @@ if ($cancel)
 
 if( isset($_GET['mode']) || isset($_POST['mode']) )
 {
-	$mode = (isset($_GET['mode'])) ? $_GET['mode'] : $_POST['mode'];
+	$mode = isset($_GET['mode']) ? $_GET['mode'] : $_POST['mode'];
 	$mode = htmlspecialchars($mode);
 }
 else 
@@ -69,7 +69,7 @@ else
 }
 
 // Restrict mode input to valid options
-$mode = ( in_array($mode, array('add', 'edit', 'save', 'delete')) ) ? $mode : '';
+$mode = in_array($mode, array('add', 'edit', 'save', 'delete')) ? $mode : '';
 
 if( $mode != "" )
 {
@@ -78,7 +78,7 @@ if( $mode != "" )
 		//
 		// They want to add a new rank, show the form.
 		//
-		$rank_id = ( isset($_GET['id']) ) ? intval($_GET['id']) : 0;
+		$rank_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 		
 		$s_hidden_fields = "";
 		
@@ -107,7 +107,7 @@ if( $mode != "" )
 
 		$s_hidden_fields .= '<input type="hidden" name="mode" value="save" />';
 
-		$rank_is_special = ( $rank_info['rank_special'] ) ? "checked=\"checked\"" : "";
+		$rank_is_special = $rank_info['rank_special'] ? "checked=\"checked\"" : "";
 		$rank_is_not_special = ( !$rank_info['rank_special'] ) ? "checked=\"checked\"" : "";
 		
 		$template->set_filenames(array(
@@ -115,27 +115,27 @@ if( $mode != "" )
 		);
 
 		$template->assign_vars(array(
-			"RANK" => $rank_info['rank_title'],
-			"SPECIAL_RANK" => $rank_is_special,
-			"NOT_SPECIAL_RANK" => $rank_is_not_special,
-			"MINIMUM" => ( $rank_is_special ) ? "" : $rank_info['rank_min'],
-			"IMAGE" => ( $rank_info['rank_image'] != "" ) ? $rank_info['rank_image'] : "",
-			"IMAGE_DISPLAY" => ( $rank_info['rank_image'] != "" ) ? '<img src="../' . $rank_info['rank_image'] . '" />' : "",
-			
-			"L_RANKS_TITLE" => $lang['Ranks_title'],
-			"L_RANKS_TEXT" => $lang['Ranks_explain'],
-			"L_RANK_TITLE" => $lang['Rank_title'],
-			"L_RANK_SPECIAL" => $lang['Rank_special'],
-			"L_RANK_MINIMUM" => $lang['Rank_minimum'],
-			"L_RANK_IMAGE" => $lang['Rank_image'],
-			"L_RANK_IMAGE_EXPLAIN" => $lang['Rank_image_explain'],
-			"L_SUBMIT" => $lang['Submit'],
-			"L_RESET" => $lang['Reset'],
-			"L_YES" => $lang['Yes'],
-			"L_NO" => $lang['No'],
-			
-			"S_RANK_ACTION" => append_sid("admin_ranks.php"),
-			"S_HIDDEN_FIELDS" => $s_hidden_fields)
+                "RANK" => $rank_info['rank_title'],
+                "SPECIAL_RANK" => $rank_is_special,
+                "NOT_SPECIAL_RANK" => $rank_is_not_special,
+                "MINIMUM" => $rank_is_special ? "" : $rank_info['rank_min'],
+                "IMAGE" => ( $rank_info['rank_image'] != "" ) ? $rank_info['rank_image'] : "",
+                "IMAGE_DISPLAY" => ( $rank_info['rank_image'] != "" ) ? '<img src="../' . $rank_info['rank_image'] . '" />' : "",
+
+                "L_RANKS_TITLE" => $lang['Ranks_title'],
+                "L_RANKS_TEXT" => $lang['Ranks_explain'],
+                "L_RANK_TITLE" => $lang['Rank_title'],
+                "L_RANK_SPECIAL" => $lang['Rank_special'],
+                "L_RANK_MINIMUM" => $lang['Rank_minimum'],
+                "L_RANK_IMAGE" => $lang['Rank_image'],
+                "L_RANK_IMAGE_EXPLAIN" => $lang['Rank_image_explain'],
+                "L_SUBMIT" => $lang['Submit'],
+                "L_RESET" => $lang['Reset'],
+                "L_YES" => $lang['Yes'],
+                "L_NO" => $lang['No'],
+
+                "S_RANK_ACTION" => append_sid("admin_ranks.php"),
+                "S_HIDDEN_FIELDS" => $s_hidden_fields)
 		);
 		
 	}
@@ -145,11 +145,11 @@ if( $mode != "" )
 		// Ok, they sent us our info, let's update it.
 		//
 		
-		$rank_id = ( isset($_POST['id']) ) ? intval($_POST['id']) : 0;
-		$rank_title = ( isset($_POST['title']) ) ? trim($_POST['title']) : "";
+		$rank_id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+		$rank_title = isset($_POST['title']) ? trim($_POST['title']) : "";
 		$special_rank = ( $_POST['special_rank'] == 1 ) ? TRUE : 0;
-		$min_posts = ( isset($_POST['min_posts']) ) ? intval($_POST['min_posts']) : -1;
-		$rank_image = ( (isset($_POST['rank_image'])) ) ? trim($_POST['rank_image']) : "";
+		$min_posts = isset($_POST['min_posts']) ? intval($_POST['min_posts']) : -1;
+		$rank_image = isset($_POST['rank_image']) ? trim($_POST['rank_image']) : "";
 
 		if( $rank_title == "" )
 		{
@@ -218,7 +218,7 @@ if( $mode != "" )
 		
 		if( isset($_POST['id']) || isset($_GET['id']) )
 		{
-			$rank_id = ( isset($_POST['id']) ) ? intval($_POST['id']) : intval($_GET['id']);
+			$rank_id = isset($_POST['id']) ? intval($_POST['id']) : intval($_GET['id']);
 		}
 		else
 		{
@@ -279,7 +279,7 @@ if( $mode != "" )
 
 	$template->pparse("body");
 
-	include('./page_footer_admin.php');
+	include './page_footer_admin.php';
 }
 
 //
@@ -328,7 +328,7 @@ for($i = 0; $i < $rank_count; $i++)
 	$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 	$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-	$rank_is_special = ( $special_rank ) ? $lang['Yes'] : $lang['No'];
+	$rank_is_special = $special_rank ? $lang['Yes'] : $lang['No'];
 	
 	$template->assign_block_vars("ranks", array(
 		"ROW_COLOR" => "#" . $row_color,
@@ -344,6 +344,6 @@ for($i = 0; $i < $rank_count; $i++)
 
 $template->pparse("body");
 
-include('./page_footer_admin.php');
+include './page_footer_admin.php';
 
 ?>

@@ -95,11 +95,11 @@ function prepare_post(&$mode, &$post_data, &$bbcode_on, &$html_on, &$smilies_on,
 		$username = phpbb_clean_username($username);
 
 		if (!$userdata['session_logged_in'] || ($userdata['session_logged_in'] && $username != $userdata['username'])) {
-			include($phpbb_root_path . 'includes/functions_validate.php');
+			include $phpbb_root_path . 'includes/functions_validate.php';
 
 			$result = validate_username($username);
 			if ($result['error']) {
-				$error_msg .= (!empty($error_msg)) ? '<br />' . $result['error_msg'] : $result['error_msg'];
+				$error_msg .= !empty($error_msg) ? '<br />' . $result['error_msg'] : $result['error_msg'];
 			}
 		} else {
 			$username = '';
@@ -110,22 +110,22 @@ function prepare_post(&$mode, &$post_data, &$bbcode_on, &$html_on, &$smilies_on,
 	if (!empty($subject)) {
 		$subject = htmlspecialchars(trim($subject));
 	} else if ($mode == 'newtopic' || ($mode == 'editpost' && $post_data['first_post'])) {
-		$error_msg .= (!empty($error_msg)) ? '<br />' . $lang['Empty_subject'] : $lang['Empty_subject'];
+		$error_msg .= !empty($error_msg) ? '<br />' . $lang['Empty_subject'] : $lang['Empty_subject'];
 	}
 
 	// Check message
 	if (!empty($message)) {
-		$bbcode_uid = ($bbcode_on) ? make_bbcode_uid() : '';
+		$bbcode_uid = $bbcode_on ? make_bbcode_uid() : '';
 		$message = prepare_message(trim($message), $html_on, $bbcode_on, $smilies_on, $bbcode_uid);
 	} else if ($mode != 'delete' && $mode != 'poll_delete')  {
-		$error_msg .= (!empty($error_msg)) ? '<br />' . $lang['Empty_message'] : $lang['Empty_message'];
+		$error_msg .= !empty($error_msg) ? '<br />' . $lang['Empty_message'] : $lang['Empty_message'];
 	}
 
 	//
 	// Handle poll stuff
 	//
 	if ($mode == 'newtopic' || ($mode == 'editpost' && $post_data['first_post'])) {
-		$poll_length = (isset($poll_length)) ? max(0, intval($poll_length)) : 0;
+		$poll_length = isset($poll_length) ? max(0, intval($poll_length)) : 0;
 
 		if (!empty($poll_title)) {
 			$poll_title = htmlspecialchars(trim($poll_title));
@@ -144,11 +144,11 @@ function prepare_post(&$mode, &$post_data, &$bbcode_on, &$html_on, &$smilies_on,
 			$option_text = $temp_option_text;
 
             if (count($poll_options) < 2) {
-                $error_msg .= (!empty($error_msg)) ? '<br />' . $lang['To_few_poll_options'] : $lang['To_few_poll_options'];
+                $error_msg .= !empty($error_msg) ? '<br />' . $lang['To_few_poll_options'] : $lang['To_few_poll_options'];
             } elseif (count($poll_options) > $board_config['max_poll_options']) {
-                $error_msg .= (!empty($error_msg)) ? '<br />' . $lang['To_many_poll_options'] : $lang['To_many_poll_options'];
+                $error_msg .= !empty($error_msg) ? '<br />' . $lang['To_many_poll_options'] : $lang['To_many_poll_options'];
             } elseif ($poll_title == '') {
-                $error_msg .= (!empty($error_msg)) ? '<br />' . $lang['Empty_poll_title'] : $lang['Empty_poll_title'];
+                $error_msg .= !empty($error_msg) ? '<br />' . $lang['Empty_poll_title'] : $lang['Empty_poll_title'];
             }
 		}
 	}
@@ -164,7 +164,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	global $board_config, $lang, $db, $phpbb_root_path;
 	global $userdata, $user_ip;
 
-	include($phpbb_root_path . 'includes/functions_search.php');
+	include $phpbb_root_path . 'includes/functions_search.php';
 
 	$current_time = time();
 
@@ -334,7 +334,7 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
 				}
 
 				if ($row = $db->sql_fetchrow($result)) {
-					$forum_update_sql .= ($row['last_post_id']) ? ', forum_last_post_id = ' . $row['last_post_id'] : ', forum_last_post_id = 0';
+					$forum_update_sql .= $row['last_post_id'] ? ', forum_last_post_id = ' . $row['last_post_id'] : ', forum_last_post_id = 0';
 				}
 			}
 		} else if ($post_data['first_post']) {
@@ -401,7 +401,7 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	global $userdata, $user_ip;
 
 	if ($mode != 'poll_delete') {
-		include($phpbb_root_path . 'includes/functions_search.php');
+		include $phpbb_root_path . 'includes/functions_search.php';
 
 		$sql = "DELETE FROM " . POSTS_TABLE . " 
 			WHERE post_id = $post_id";
@@ -543,13 +543,13 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 				}
 
 				if (count($bcc_list_ary)) {
-					include($phpbb_root_path . 'includes/emailer.php');
+					include $phpbb_root_path . 'includes/emailer.php';
 					$emailer = new emailer($board_config['smtp_delivery']);
 
 					$script_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['script_path']));
 					$script_name = ($script_name != '') ? $script_name . '/viewtopic.php' : 'viewtopic.php';
 					$server_name = trim($board_config['server_name']);
-					$server_protocol = ($board_config['cookie_secure']) ? 'https://' : 'http://';
+					$server_protocol = $board_config['cookie_secure'] ? 'https://' : 'http://';
 					$server_port = ($board_config['server_port'] <> 80) ? ':' . trim($board_config['server_port']) . '/' : '/';
 
 					$orig_word = [];
@@ -559,7 +559,7 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 					$emailer->from($board_config['board_email']);
 					$emailer->replyto($board_config['board_email']);
 
-					$topic_title = (count($orig_word)) ? preg_replace($orig_word, $replacement_word, unprepare_message($topic_title)) : unprepare_message($topic_title);
+					$topic_title = count($orig_word) ? preg_replace($orig_word, $replacement_word, unprepare_message($topic_title)) : unprepare_message($topic_title);
 
 					@reset($bcc_list_ary);
 
@@ -580,12 +580,12 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 						$emailer->msg = preg_replace('#[ ]?{USERNAME}#', '', $emailer->msg);
 
 						$emailer->assign_vars(array(
-							'EMAIL_SIG' => (!empty($board_config['board_email_sig'])) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
-							'SITENAME' => $board_config['sitename'],
-							'TOPIC_TITLE' => $topic_title, 
+                                'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
+                                'SITENAME' => $board_config['sitename'],
+                                'TOPIC_TITLE' => $topic_title,
 
-							'U_TOPIC' => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_POST_URL . "=$post_id#$post_id",
-							'U_STOP_WATCHING_TOPIC' => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_TOPIC_URL . "=$topic_id&unwatch=topic")
+                                'U_TOPIC' => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_POST_URL . "=$post_id#$post_id",
+                                'U_STOP_WATCHING_TOPIC' => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_TOPIC_URL . "=$topic_id&unwatch=topic")
 						);
 
 						$emailer->send();
@@ -655,7 +655,7 @@ function generate_smilies($mode, $page_id)
 		$gen_simple_header = TRUE;
 
 		$page_title = $lang['Emoticons'];
-		include($phpbb_root_path . 'includes/page_header.php');
+		include $phpbb_root_path . 'includes/page_header.php';
 
 		$template->set_filenames(array(
 			'smiliesbody' => 'posting_smilies.tpl')
@@ -731,7 +731,7 @@ function generate_smilies($mode, $page_id)
 	if ($mode == 'window') {
 		$template->pparse('smiliesbody');
 
-		include($phpbb_root_path . 'includes/page_tail.php');
+		include $phpbb_root_path . 'includes/page_tail.php';
 	}
 }
 

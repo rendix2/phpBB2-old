@@ -33,12 +33,12 @@ define('IN_PHPBB', 1);
 // Load default header
 //
 $phpbb_root_path = "./../";
-require($phpbb_root_path . 'extension.inc');
+require $phpbb_root_path . 'extension.inc';
 
 $cancel = (isset($_POST['cancel']) || isset($_POST['cancel'])) ? true : false;
 $no_page_header = $cancel;
 
-require('./pagestart.php');
+require './pagestart.php';
 
 if ($cancel)
 {
@@ -47,7 +47,7 @@ if ($cancel)
 
 if( isset($_GET['mode']) || isset($_POST['mode']) )
 {
-	$mode = (isset($_GET['mode'])) ? $_GET['mode'] : $_POST['mode'];
+	$mode = isset($_GET['mode']) ? $_GET['mode'] : $_POST['mode'];
 	$mode = htmlspecialchars($mode);
 }
 else 
@@ -70,13 +70,13 @@ else
 }
 
 // Restrict mode input to valid options
-$mode = ( in_array($mode, array('add', 'edit', 'save', 'delete')) ) ? $mode : '';
+$mode = in_array($mode, array('add', 'edit', 'save', 'delete')) ? $mode : '';
 
 if( $mode != "" )
 {
 	if( $mode == "edit" || $mode == "add" )
 	{
-		$word_id = ( isset($_GET['id']) ) ? intval($_GET['id']) : 0;
+		$word_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 		$template->set_filenames(array(
 			"body" => "admin/words_edit_body.tpl")
@@ -123,13 +123,13 @@ if( $mode != "" )
 
 		$template->pparse("body");
 
-		include('./page_footer_admin.php');
+		include './page_footer_admin.php';
 	}
 	else if( $mode == "save" )
 	{
-		$word_id = ( isset($_POST['id']) ) ? intval($_POST['id']) : 0;
-		$word = ( isset($_POST['word']) ) ? trim($_POST['word']) : "";
-		$replacement = ( isset($_POST['replacement']) ) ? trim($_POST['replacement']) : "";
+		$word_id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+		$word = isset($_POST['word']) ? trim($_POST['word']) : "";
+		$replacement = isset($_POST['replacement']) ? trim($_POST['replacement']) : "";
 
 		if($word == "" || $replacement == "")
 		{
@@ -163,7 +163,7 @@ if( $mode != "" )
 	{
 		if( isset($_POST['id']) ||  isset($_GET['id']) )
 		{
-			$word_id = ( isset($_POST['id']) ) ? $_POST['id'] : $_GET['id'];
+			$word_id = isset($_POST['id']) ? $_POST['id'] : $_GET['id'];
 			$word_id = intval($word_id);
 		}
 		else
@@ -268,6 +268,6 @@ else
 
 $template->pparse("body");
 
-include('./page_footer_admin.php');
+include './page_footer_admin.php';
 
 ?>

@@ -39,7 +39,7 @@ function check_image_type(&$type, &$error, &$error_msg)
 			break;
 		default:
 			$error = true;
-			$error_msg = (!empty($error_msg)) ? $error_msg . '<br />' . $lang['Avatar_filetype'] : $lang['Avatar_filetype'];
+			$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $lang['Avatar_filetype'] : $lang['Avatar_filetype'];
 			break;
 	}
 
@@ -96,7 +96,7 @@ function user_avatar_url($mode, &$error, &$error_msg, $avatar_filename)
 
 	if ( !preg_match("#^((ht|f)tp://)([^ \?&=\#\"\n\r\t<]*?(\.(jpg|jpeg|gif|png))$)#is", $avatar_filename) ) {
 		$error = true;
-		$error_msg = ( !empty($error_msg) ) ? $error_msg . '<br />' . $lang['Wrong_remote_avatar_format'] : $lang['Wrong_remote_avatar_format'];
+		$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $lang['Wrong_remote_avatar_format'] : $lang['Wrong_remote_avatar_format'];
 		return;
 	}
 
@@ -116,16 +116,16 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 	if ( $avatar_mode == 'remote' && preg_match('/^(http:\/\/)?([\w\-\.]+)\:?([0-9]*)\/([^ \?&=\#\"\n\r\t<]*?(\.(jpg|jpeg|gif|png)))$/', $avatar_filename, $url_ary) ) {
 		if ( empty($url_ary[4]) ) {
 			$error = true;
-			$error_msg = ( !empty($error_msg) ) ? $error_msg . '<br />' . $lang['Incomplete_URL'] : $lang['Incomplete_URL'];
+			$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $lang['Incomplete_URL'] : $lang['Incomplete_URL'];
 			return;
 		}
 
 		$base_get = '/' . $url_ary[4];
-		$port = ( !empty($url_ary[3]) ) ? $url_ary[3] : 80;
+		$port = !empty($url_ary[3]) ? $url_ary[3] : 80;
 
 		if ( !($fsock = @fsockopen($url_ary[2], $port, $errno, $errstr)) ) {
 			$error = true;
-			$error_msg = ( !empty($error_msg) ) ? $error_msg . '<br />' . $lang['No_connection_URL'] : $lang['No_connection_URL'];
+			$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $lang['No_connection_URL'] : $lang['No_connection_URL'];
 			return;
 		}
 
@@ -143,7 +143,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 		if (!preg_match('#Content-Length\: ([0-9]+)[^ /][\s]+#i', $avatar_data, $file_data1) || !preg_match('#Content-Type\: image/[x\-]*([a-z]+)[\s]+#i', $avatar_data, $file_data2))
 		{
 			$error = true;
-			$error_msg = ( !empty($error_msg) ) ? $error_msg . '<br />' . $lang['File_no_data'] : $lang['File_no_data'];
+			$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $lang['File_no_data'] : $lang['File_no_data'];
 			return;
 		}
 
@@ -170,9 +170,9 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 			$l_avatar_size = sprintf($lang['Avatar_filesize'], round($board_config['avatar_filesize'] / 1024));
 
 			$error = true;
-			$error_msg = ( !empty($error_msg) ) ? $error_msg . '<br />' . $l_avatar_size : $l_avatar_size;
+			$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $l_avatar_size : $l_avatar_size;
 		}
-	} else if ( ( file_exists(@phpbb_realpath($avatar_filename)) ) && preg_match('/\.(jpg|jpeg|gif|png)$/i', $avatar_realname) ) {
+	} else if ( file_exists(@phpbb_realpath($avatar_filename)) && preg_match('/\.(jpg|jpeg|gif|png)$/i', $avatar_realname) ) {
 		if ( $avatar_filesize <= $board_config['avatar_filesize'] && $avatar_filesize > 0 ) {
 			preg_match('#image\/[x\-]*([a-z]+)#', $avatar_filetype, $avatar_filetype);
 			$avatar_filetype = $avatar_filetype[1];
@@ -180,7 +180,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 			$l_avatar_size = sprintf($lang['Avatar_filesize'], round($board_config['avatar_filesize'] / 1024));
 
 			$error = true;
-			$error_msg = ( !empty($error_msg) ) ? $error_msg . '<br />' . $l_avatar_size : $l_avatar_size;
+			$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $l_avatar_size : $l_avatar_size;
 			return;
 		}
 
@@ -263,7 +263,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 		$l_avatar_size = sprintf($lang['Avatar_imagesize'], $board_config['avatar_max_width'], $board_config['avatar_max_height']);
 
 		$error = true;
-		$error_msg = ( !empty($error_msg) ) ? $error_msg . '<br />' . $l_avatar_size : $l_avatar_size;
+		$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $l_avatar_size : $l_avatar_size;
 	}
 
 	return $avatar_sql;

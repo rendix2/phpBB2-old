@@ -45,7 +45,7 @@ class sql_db
 		$this->server = $sqlserver;
 		$this->dbname = $database;
 
-		$this->db_connect_id = ($this->persistency) ? mysql_pconnect($this->server, $this->user, $this->password) : mysql_connect($this->server, $this->user, $this->password);
+		$this->db_connect_id = $this->persistency ? mysql_pconnect($this->server, $this->user, $this->password) : mysql_connect($this->server, $this->user, $this->password);
 
 		if( $this->db_connect_id )
 		{
@@ -164,12 +164,12 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		return ( $query_id ) ? mysql_num_rows($query_id) : false;
+		return $query_id ? mysql_num_rows($query_id) : false;
 	}
 
 	function sql_affectedrows()
 	{
-		return ( $this->db_connect_id ) ? mysql_affected_rows($this->db_connect_id) : false;
+		return $this->db_connect_id ? mysql_affected_rows($this->db_connect_id) : false;
 	}
 
 	function sql_numfields($query_id = 0)
@@ -179,7 +179,7 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		return ( $query_id ) ? mysql_num_fields($query_id) : false;
+		return $query_id ? mysql_num_fields($query_id) : false;
 	}
 
 	function sql_fieldname($offset, $query_id = 0)
@@ -189,7 +189,7 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		return ( $query_id ) ? mysql_field_name($query_id, $offset) : false;
+		return $query_id ? mysql_field_name($query_id, $offset) : false;
 	}
 
 	function sql_fieldtype($offset, $query_id = 0)
@@ -199,7 +199,7 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		return ( $query_id ) ? mysql_field_type($query_id, $offset) : false;
+		return $query_id ? mysql_field_type($query_id, $offset) : false;
 	}
 
 	function sql_fetchrow($query_id = 0)
@@ -295,12 +295,12 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		return ( $query_id ) ? mysql_data_seek($query_id, $rownum) : false;
+		return $query_id ? mysql_data_seek($query_id, $rownum) : false;
 	}
 
 	function sql_nextid()
 	{
-		return ( $this->db_connect_id ) ? mysql_insert_id($this->db_connect_id) : false;
+		return $this->db_connect_id ? mysql_insert_id($this->db_connect_id) : false;
 	}
 
 	function sql_freeresult($query_id = 0)

@@ -175,7 +175,7 @@ function get_userdata($user, $force_str = false)
 		FROM " . USERS_TABLE . " 
 		WHERE ";
 
-	$sql .= ( ( is_integer($user) ) ? "user_id = $user" : "username = '" .  str_replace("\'", "''", $user) . "'" ) . " AND user_id <> " . ANONYMOUS;
+	$sql .= ( is_integer($user) ? "user_id = $user" : "username = '" .  str_replace("\'", "''", $user) . "'" ) . " AND user_id <> " . ANONYMOUS;
 
 	if ( !($result = $db->sql_query($sql)) ) {
 		message_die(GENERAL_ERROR, 'Tried obtaining data for a non-existent user', '', __LINE__, __FILE__, $sql);
@@ -347,14 +347,14 @@ function init_userprefs($userdata)
 
 	$board_config['default_lang'] = $default_lang;
 
-	include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.php');
+	include $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.php';
 
 	if ( defined('IN_ADMIN') ) {
 		if( !file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.php')) ) {
 			$board_config['default_lang'] = 'english';
 		}
 
-		include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.php');
+		include $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.php';
 	}
 
 	//
@@ -446,13 +446,13 @@ function setup_style($style)
 
 	if ( $template ) {
 		$current_template_path = $template_path . $template_name;
-		@include($phpbb_root_path . $template_path . $template_name . '/' . $template_name . '.cfg');
+		@include $phpbb_root_path . $template_path . $template_name . '/' . $template_name . '.cfg';
 
 		if ( !defined('TEMPLATE_CONFIG') ) {
 			message_die(CRITICAL_ERROR, "Could not open $template_name template config file", '', __LINE__, __FILE__);
 		}
 
-		$img_lang = ( file_exists(@phpbb_realpath($phpbb_root_path . $current_template_path . '/images/lang_' . $board_config['default_lang'])) ) ? $board_config['default_lang'] : 'english';
+		$img_lang = file_exists(@phpbb_realpath($phpbb_root_path . $current_template_path . '/images/lang_' . $board_config['default_lang'])) ? $board_config['default_lang'] : 'english';
 
 		while( list($key, $value) = @each($images) ) {
 			if ( !is_array($value) ) {
@@ -492,7 +492,7 @@ function create_date($format, $gmepoch, $tz)
 		}
 	}
 
-	return ( !empty($translate) ) ? strtr(@gmdate($format, $gmepoch + (3600 * $tz)), $translate) : @gmdate($format, $gmepoch + (3600 * $tz));
+	return !empty($translate) ? strtr(@gmdate($format, $gmepoch + (3600 * $tz)), $translate) : @gmdate($format, $gmepoch + (3600 * $tz));
 }
 
 //
@@ -687,9 +687,9 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 	if ( !defined('HEADER_INC') && $msg_code != CRITICAL_ERROR ) {
 		if ( empty($lang) ) {
 			if ( !empty($board_config['default_lang']) ) {
-				include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.php');
+				include $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.php';
 			} else {
-				include($phpbb_root_path . 'language/lang_english/lang_main.php');
+				include $phpbb_root_path . 'language/lang_english/lang_main.php';
 			}
 		}
 
@@ -701,9 +701,9 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 		// Load the Page Header
 		//
 		if ( !defined('IN_ADMIN') ) {
-			include($phpbb_root_path . 'includes/page_header.php');
+			include $phpbb_root_path . 'includes/page_header.php';
 		} else {
-			include($phpbb_root_path . 'admin/page_header_admin.php');
+			include $phpbb_root_path . 'admin/page_header_admin.php';
 		}
 	}
 
@@ -736,7 +736,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 			// Critical errors mean we cannot rely on _ANY_ DB information being
 			// available so we're going to dump out a simple echo'd statement
 			//
-			include($phpbb_root_path . 'language/lang_english/lang_main.php');
+			include $phpbb_root_path . 'language/lang_english/lang_main.php';
 
 			if ( $msg_text == '' ) {
 				$msg_text = $lang['A_critical_error'];
@@ -778,9 +778,9 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 		$template->pparse('message_body');
 
         if (!defined('IN_ADMIN')) {
-            include($phpbb_root_path . 'includes/page_tail.php');
+            include $phpbb_root_path . 'includes/page_tail.php';
         } else {
-            include($phpbb_root_path . 'admin/page_footer_admin.php');
+            include $phpbb_root_path . 'admin/page_footer_admin.php';
         }
 	} else {
 		echo "<html>\n<body>\n" . $msg_title . "\n<br /><br />\n" . $msg_text . "</body>\n</html>";
@@ -814,7 +814,7 @@ function redirect($url)
 		message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
 	}
 
-	$server_protocol = ($board_config['cookie_secure']) ? 'https://' : 'http://';
+	$server_protocol = $board_config['cookie_secure'] ? 'https://' : 'http://';
 	$server_name = preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['server_name']));
 	$server_port = ($board_config['server_port'] <> 80) ? ':' . trim($board_config['server_port']) : '';
 	$script_name = preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['script_path']));

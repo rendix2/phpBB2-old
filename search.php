@@ -22,10 +22,10 @@
 
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
-include($phpbb_root_path . 'extension.inc');
-include($phpbb_root_path . 'common.php');
-include($phpbb_root_path . 'includes/bbcode.php');
-include($phpbb_root_path . 'includes/functions_search.php');
+include $phpbb_root_path . 'extension.inc';
+include $phpbb_root_path . 'common.php';
+include $phpbb_root_path . 'includes/bbcode.php';
+include $phpbb_root_path . 'includes/functions_search.php';
 
 //
 // Start session management
@@ -40,7 +40,7 @@ init_userprefs($userdata);
 // Define initial vars
 //
 if (isset($_POST['mode']) || isset($_GET['mode'])) {
-    $mode = (isset($_POST['mode'])) ? $_POST['mode'] : $_GET['mode'];
+    $mode = isset($_POST['mode']) ? $_POST['mode'] : $_GET['mode'];
 } else {
     $mode = '';
 }
@@ -75,12 +75,12 @@ if (isset($_POST['search_fields'])) {
     $search_fields = 0;
 }
 
-$return_chars = ( isset($_POST['return_chars']) ) ? intval($_POST['return_chars']) : 200;
+$return_chars = isset($_POST['return_chars']) ? intval($_POST['return_chars']) : 200;
 
-$search_cat = ( isset($_POST['search_cat']) ) ? intval($_POST['search_cat']) : -1;
-$search_forum = ( isset($_POST['search_forum']) ) ? intval($_POST['search_forum']) : -1;
+$search_cat = isset($_POST['search_cat']) ? intval($_POST['search_cat']) : -1;
+$search_forum = isset($_POST['search_forum']) ? intval($_POST['search_forum']) : -1;
 
-$sort_by = ( isset($_POST['sort_by']) ) ? intval($_POST['sort_by']) : 0;
+$sort_by = isset($_POST['sort_by']) ? intval($_POST['sort_by']) : 0;
 
 if (isset($_POST['sort_dir'])) {
     $sort_dir = ($_POST['sort_dir'] == 'DESC') ? 'DESC' : 'ASC';
@@ -89,14 +89,14 @@ if (isset($_POST['sort_dir'])) {
 }
 
 if ( !empty($_POST['search_time']) || !empty($_GET['search_time'])) {
-	$search_time = time() - ( ( ( !empty($_POST['search_time']) ) ? intval($_POST['search_time']) : intval($_GET['search_time']) ) * 86400 );
-	$topic_days = (!empty($_POST['search_time'])) ? intval($_POST['search_time']) : intval($_GET['search_time']);
+	$search_time = time() - ( ( !empty($_POST['search_time']) ? intval($_POST['search_time']) : intval($_GET['search_time']) ) * 86400 );
+	$topic_days = !empty($_POST['search_time']) ? intval($_POST['search_time']) : intval($_GET['search_time']);
 } else {
 	$search_time = 0;
 	$topic_days = 0;
 }
 
-$start = ( isset($_GET['start']) ) ? intval($_GET['start']) : 0;
+$start = isset($_GET['start']) ? intval($_GET['start']) : 0;
 $start = ($start < 0) ? 0 : $start;
 
 $sort_by_types = array($lang['Sort_Time'], $lang['Sort_Post_Subject'], $lang['Sort_Topic_Title'], $lang['Sort_Author'], $lang['Sort_Forum']);
@@ -256,7 +256,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 			$split_search = ( !strstr($multibyte_charset, $lang['ENCODING']) ) ?  split_words(clean_words('search', $stripped_keywords, $stopword_array, $synonym_array), 'search') : split(' ', $search_keywords);	
 			unset($stripped_keywords);
 
-			$search_msg_only = ( !$search_fields ) ? "AND m.title_match = 0" : ( ( strstr($multibyte_charset, $lang['ENCODING']) ) ? '' : '' );
+			$search_msg_only = ( !$search_fields ) ? "AND m.title_match = 0" : ( strstr($multibyte_charset, $lang['ENCODING']) ? '' : '' );
 
 			$word_count = 0;
 			$current_match_type = 'or';
@@ -305,7 +305,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 						else
 						{
 							$match_word =  addslashes('%' . str_replace('*', '', $split_search[$i]) . '%');
-							$search_msg_only = ( $search_fields ) ? "OR post_subject LIKE '$match_word'" : '';
+							$search_msg_only = $search_fields ? "OR post_subject LIKE '$match_word'" : '';
 							$sql = "SELECT post_id
 								FROM " . POSTS_TEXT_TABLE . "
 								WHERE post_text LIKE '$match_word'
@@ -746,7 +746,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		// Output header
 		//
 		$page_title = $lang['Search'];
-		include($phpbb_root_path . 'includes/page_header.php');
+		include $phpbb_root_path . 'includes/page_header.php';
 
 		if ( $show_results == 'posts' ) {
             $template->set_filenames(['body' => 'search_results_posts.tpl']);
@@ -788,8 +788,8 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 
 		$highlight_active = urlencode(trim($highlight_active));
 
-		$tracking_topics = ( isset($_COOKIE[$board_config['cookie_name'] . '_t']) ) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_t']) : [];
-		$tracking_forums = ( isset($_COOKIE[$board_config['cookie_name'] . '_f']) ) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_f']) : [];
+		$tracking_topics = isset($_COOKIE[$board_config['cookie_name'] . '_t']) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_t']) : [];
+		$tracking_forums = isset($_COOKIE[$board_config['cookie_name'] . '_f']) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_f']) : [];
 
 		for($i = 0; $i < count($searchset); $i++) {
 			$forum_url = append_sid("viewforum.php?" . POST_FORUM_URL . '=' . $searchset[$i]['forum_id']);
@@ -825,7 +825,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 						}
 
 						if ( $bbcode_uid != '' ) {
-							$message = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
+							$message = $board_config['allow_bbcode'] ? bbencode_second_pass($message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
 						}
 
 						$message = make_clickable($message);
@@ -915,7 +915,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
                     if (!empty($tracking_topics[$topic_id]) && !empty($tracking_forums[$forum_id])) {
                         $topic_last_read = ($tracking_topics[$topic_id] > $tracking_forums[$forum_id]) ? $tracking_topics[$topic_id] : $tracking_forums[$forum_id];
                     } elseif (!empty($tracking_topics[$topic_id]) || !empty($tracking_forums[$forum_id])) {
-                        $topic_last_read = (!empty($tracking_topics[$topic_id])) ? $tracking_topics[$topic_id] : $tracking_forums[$forum_id];
+                        $topic_last_read = !empty($tracking_topics[$topic_id]) ? $tracking_topics[$topic_id] : $tracking_forums[$forum_id];
                     }
 
                     if ($searchset[$i]['post_time'] > $topic_last_read) {
@@ -1124,26 +1124,27 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		$base_url = "search.php?search_id=$search_id";
 
 		$template->assign_vars(array(
-			'PAGINATION' => generate_pagination($base_url, $total_match_count, $per_page, $start),
-			'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $per_page ) + 1 ), ceil( $total_match_count / $per_page )), 
+                'PAGINATION' => generate_pagination($base_url, $total_match_count, $per_page, $start),
+                'PAGE_NUMBER' => sprintf($lang['Page_of'],
+                    floor( $start / $per_page ) + 1, ceil( $total_match_count / $per_page )),
 
-			'L_AUTHOR' => $lang['Author'],
-			'L_MESSAGE' => $lang['Message'],
-			'L_FORUM' => $lang['Forum'],
-			'L_TOPICS' => $lang['Topics'],
-			'L_REPLIES' => $lang['Replies'],
-			'L_VIEWS' => $lang['Views'],
-			'L_POSTS' => $lang['Posts'],
-			'L_LASTPOST' => $lang['Last_Post'], 
-			'L_POSTED' => $lang['Posted'], 
-			'L_SUBJECT' => $lang['Subject'],
+                'L_AUTHOR' => $lang['Author'],
+                'L_MESSAGE' => $lang['Message'],
+                'L_FORUM' => $lang['Forum'],
+                'L_TOPICS' => $lang['Topics'],
+                'L_REPLIES' => $lang['Replies'],
+                'L_VIEWS' => $lang['Views'],
+                'L_POSTS' => $lang['Posts'],
+                'L_LASTPOST' => $lang['Last_Post'],
+                'L_POSTED' => $lang['Posted'],
+                'L_SUBJECT' => $lang['Subject'],
 
-			'L_GOTO_PAGE' => $lang['Goto_page'])
+                'L_GOTO_PAGE' => $lang['Goto_page'])
 		);
 
 		$template->pparse('body');
 
-		include($phpbb_root_path . 'includes/page_tail.php');
+		include $phpbb_root_path . 'includes/page_tail.php';
 	} else {
 		message_die(GENERAL_MESSAGE, $lang['No_search_match']);
 	}
@@ -1231,7 +1232,7 @@ for($i = 0; $i < count($previous_days); $i++) {
 // Output the basic page
 //
 $page_title = $lang['Search'];
-include($phpbb_root_path . 'includes/page_header.php');
+include $phpbb_root_path . 'includes/page_header.php';
 
 $template->set_filenames(array(
 	'body' => 'search_body.tpl')
@@ -1272,6 +1273,6 @@ $template->assign_vars(array(
 
 $template->pparse('body');
 
-include($phpbb_root_path . 'includes/page_tail.php');
+include $phpbb_root_path . 'includes/page_tail.php';
 
 ?>

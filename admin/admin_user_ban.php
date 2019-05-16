@@ -34,8 +34,8 @@ if ( !empty($setmodules) )
 // Load default header
 //
 $phpbb_root_path = './../';
-require($phpbb_root_path . 'extension.inc');
-require('./pagestart.php');
+require $phpbb_root_path . 'extension.inc';
+require './pagestart.php';
 
 //
 // Start program
@@ -447,6 +447,6 @@ else
 
 $template->pparse('body');
 
-include('./page_footer_admin.php');
+include './page_footer_admin.php';
 
 ?>

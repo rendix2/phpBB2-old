@@ -24,7 +24,7 @@ if ( !defined('IN_PHPBB') ) {
    die("Hacking attempt");
 }
 
-require($phpbb_root_path . 'includes/functions_search.php');
+require $phpbb_root_path . 'includes/functions_search.php';
 
 function prune($forum_id, $prune_date, $prune_all = false)
 {
@@ -44,7 +44,7 @@ function prune($forum_id, $prune_date, $prune_all = false)
 
 	$db->sql_freeresult($result);
 
-	$prune_all = ($prune_all) ? '' : 'AND t.topic_vote = 0 AND t.topic_type <> ' . POST_ANNOUNCE;
+	$prune_all = $prune_all ? '' : 'AND t.topic_vote = 0 AND t.topic_type <> ' . POST_ANNOUNCE;
 	//
 	// Those without polls and announcements ... unless told otherwise!
 	//

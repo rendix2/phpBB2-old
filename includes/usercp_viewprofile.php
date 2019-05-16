@@ -71,7 +71,7 @@ $posts_per_day = $profile_data['user_posts'] / $memberdays;
 // Get the users percentage of total posts
 if ($profile_data['user_posts'] != 0  ) {
 	$total_posts = get_db_stat('postcount');
-	$percentage = ( $total_posts ) ? min(100, ($profile_data['user_posts'] / $total_posts) * 100) : 0;
+	$percentage = $total_posts ? min(100, ($profile_data['user_posts'] / $total_posts) * 100) : 0;
 } else {
 	$percentage = 0;
 }
@@ -80,13 +80,13 @@ $avatar_img = '';
 if ($profile_data['user_avatar_type'] && $profile_data['user_allowavatar'] ) {
 	switch($profile_data['user_avatar_type'] ) {
 		case USER_AVATAR_UPLOAD:
-			$avatar_img = ( $board_config['allow_avatar_upload'] ) ? '<img src="' . $board_config['avatar_path'] . '/' . $profile_data['user_avatar'] . '" alt="" border="0" />' : '';
+			$avatar_img = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $profile_data['user_avatar'] . '" alt="" border="0" />' : '';
 			break;
 		case USER_AVATAR_REMOTE:
-			$avatar_img = ( $board_config['allow_avatar_remote'] ) ? '<img src="' . $profile_data['user_avatar'] . '" alt="" border="0" />' : '';
+			$avatar_img = $board_config['allow_avatar_remote'] ? '<img src="' . $profile_data['user_avatar'] . '" alt="" border="0" />' : '';
 			break;
 		case USER_AVATAR_GALLERY:
-			$avatar_img = ( $board_config['allow_avatar_local'] ) ? '<img src="' . $board_config['avatar_gallery_path'] . '/' . $profile_data['user_avatar'] . '" alt="" border="0" />' : '';
+			$avatar_img = $board_config['allow_avatar_local'] ? '<img src="' . $board_config['avatar_gallery_path'] . '/' . $profile_data['user_avatar'] . '" alt="" border="0" />' : '';
 			break;
 	}
 }
@@ -97,14 +97,14 @@ if ($profile_data['user_rank'] ) {
 	for($i = 0; $i < count($ranksrow); $i++) {
 		if ($profile_data['user_rank'] == $ranksrow[$i]['rank_id'] && $ranksrow[$i]['rank_special'] ) {
 			$poster_rank = $ranksrow[$i]['rank_title'];
-			$rank_image = ( $ranksrow[$i]['rank_image'] ) ? '<img src="' . $ranksrow[$i]['rank_image'] . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
+			$rank_image = $ranksrow[$i]['rank_image'] ? '<img src="' . $ranksrow[$i]['rank_image'] . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
 		}
 	}
 } else {
 	for($i = 0; $i < count($ranksrow); $i++) {
 		if ($profile_data['user_posts'] >= $ranksrow[$i]['rank_min'] && !$ranksrow[$i]['rank_special'] ) {
 			$poster_rank = $ranksrow[$i]['rank_title'];
-			$rank_image = ( $ranksrow[$i]['rank_image'] ) ? '<img src="' . $ranksrow[$i]['rank_image'] . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
+			$rank_image = $ranksrow[$i]['rank_image'] ? '<img src="' . $ranksrow[$i]['rank_image'] . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
 		}
 	}
 }
@@ -114,7 +114,7 @@ $pm_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_pm'] . '" alt
 $pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
 
 if ( !empty($profile_data['user_viewemail']) || $userdata['user_level'] == ADMIN ) {
-	$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.php?mode=email&amp;" . POST_USERS_URL .'=' . $profile_data['user_id']) : 'mailto:' . $profile_data['user_email'];
+	$email_uri = $board_config['board_email_form'] ? append_sid("profile.php?mode=email&amp;" . POST_USERS_URL .'=' . $profile_data['user_id']) : 'mailto:' . $profile_data['user_email'];
 
 	$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
 	$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
@@ -123,8 +123,8 @@ if ( !empty($profile_data['user_viewemail']) || $userdata['user_level'] == ADMIN
 	$email = '&nbsp;';
 }
 
-$www_img = ($profile_data['user_website'] ) ? '<a href="' . $profile_data['user_website'] . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '&nbsp;';
-$www = ($profile_data['user_website'] ) ? '<a href="' . $profile_data['user_website'] . '" target="_userwww">' . $profile_data['user_website'] . '</a>' : '&nbsp;';
+$www_img = $profile_data['user_website'] ? '<a href="' . $profile_data['user_website'] . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '&nbsp;';
+$www = $profile_data['user_website'] ? '<a href="' . $profile_data['user_website'] . '" target="_userwww">' . $profile_data['user_website'] . '</a>' : '&nbsp;';
 
 if ( !empty($profile_data['user_icq']) ) {
 	$icq_status_img = '<a href="http://wwp.icq.com/' . $profile_data['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $profile_data['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
@@ -136,14 +136,14 @@ if ( !empty($profile_data['user_icq']) ) {
 	$icq = '&nbsp;';
 }
 
-$aim_img = ($profile_data['user_aim'] ) ? '<a href="aim:goim?screenname=' . $profile_data['user_aim'] . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '&nbsp;';
-$aim = ($profile_data['user_aim'] ) ? '<a href="aim:goim?screenname=' . $profile_data['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '&nbsp;';
+$aim_img = $profile_data['user_aim'] ? '<a href="aim:goim?screenname=' . $profile_data['user_aim'] . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '&nbsp;';
+$aim = $profile_data['user_aim'] ? '<a href="aim:goim?screenname=' . $profile_data['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '&nbsp;';
 
-$msn_img = ($profile_data['user_msnm'] ) ? $profile_data['user_msnm'] : '&nbsp;';
+$msn_img = $profile_data['user_msnm'] ? $profile_data['user_msnm'] : '&nbsp;';
 $msn = $msn_img;
 
-$yim_img = ($profile_data['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $profile_data['user_yim'] . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
-$yim = ($profile_data['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $profile_data['user_yim'] . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
+$yim_img = $profile_data['user_yim'] ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $profile_data['user_yim'] . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
+$yim = $profile_data['user_yim'] ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $profile_data['user_yim'] . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
 
 $temp_url = append_sid("search.php?search_author=" . urlencode($profile_data['username']) . "&amp;showresults=posts");
 $search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $profile_data['username']) . '" title="' . sprintf($lang['Search_user_posts'], $profile_data['username']) . '" border="0" /></a>';
@@ -153,7 +153,7 @@ $search = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $
 // Generate page
 //
 $page_title = $lang['Viewing_profile'];
-include($phpbb_root_path . 'includes/page_header.php');
+include $phpbb_root_path . 'includes/page_header.php';
 
 if (function_exists('get_html_translation_table')) {
 	$u_search_author = urlencode(strtr($profile_data['username'], array_flip(get_html_translation_table(HTML_ENTITIES))));
@@ -190,9 +190,9 @@ $template->assign_vars(array(
         'YIM_IMG' => $yim_img,
         'YIM' => $yim,
 
-        'LOCATION' => ($profile_data['user_from'] ) ? $profile_data['user_from'] : '&nbsp;',
-        'OCCUPATION' => ($profile_data['user_occ'] ) ? $profile_data['user_occ'] : '&nbsp;',
-        'INTERESTS' => ($profile_data['user_interests'] ) ? $profile_data['user_interests'] : '&nbsp;',
+        'LOCATION' => $profile_data['user_from'] ? $profile_data['user_from'] : '&nbsp;',
+        'OCCUPATION' => $profile_data['user_occ'] ? $profile_data['user_occ'] : '&nbsp;',
+        'INTERESTS' => $profile_data['user_interests'] ? $profile_data['user_interests'] : '&nbsp;',
         'AVATAR_IMG' => $avatar_img,
 
         'L_VIEWING_PROFILE' => sprintf($lang['Viewing_user_profile'], $profile_data['username']),
@@ -222,6 +222,6 @@ $template->assign_vars(array(
 
 $template->pparse('body');
 
-include($phpbb_root_path . 'includes/page_tail.php');
+include $phpbb_root_path . 'includes/page_tail.php';
 
 ?>

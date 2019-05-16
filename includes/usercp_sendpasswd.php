@@ -27,8 +27,8 @@ if ( !defined('IN_PHPBB') ) {
 }
 
 if ( isset($_POST['submit']) ) {
-	$username = ( !empty($_POST['username']) ) ? phpbb_clean_username($_POST['username']) : '';
-	$email = ( !empty($_POST['email']) ) ? trim(strip_tags(htmlspecialchars($_POST['email']))) : '';
+	$username = !empty($_POST['username']) ? phpbb_clean_username($_POST['username']) : '';
+	$email = !empty($_POST['email']) ? trim(strip_tags(htmlspecialchars($_POST['email']))) : '';
 
 	$sql = "SELECT user_id, username, user_email, user_active, user_lang 
 		FROM " . USERS_TABLE . " 
@@ -58,7 +58,7 @@ if ( isset($_POST['submit']) ) {
 				message_die(GENERAL_ERROR, 'Could not update new password information', '', __LINE__, __FILE__, $sql);
 			}
 
-			include($phpbb_root_path . 'includes/emailer.php');
+			include $phpbb_root_path . 'includes/emailer.php';
 			$emailer = new emailer($board_config['smtp_delivery']);
 
 			$emailer->from($board_config['board_email']);
@@ -69,12 +69,12 @@ if ( isset($_POST['submit']) ) {
 			$emailer->set_subject($lang['New_password_activation']);
 
 			$emailer->assign_vars(array(
-				'SITENAME' => $board_config['sitename'], 
-				'USERNAME' => $username,
-				'PASSWORD' => $user_password,
-				'EMAIL_SIG' => (!empty($board_config['board_email_sig'])) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '', 
+                    'SITENAME' => $board_config['sitename'],
+                    'USERNAME' => $username,
+                    'PASSWORD' => $user_password,
+                    'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
 
-				'U_ACTIVATE' => $server_url . '?mode=activate&' . POST_USERS_URL . '=' . $user_id . '&act_key=' . $user_actkey)
+                    'U_ACTIVATE' => $server_url . '?mode=activate&' . POST_USERS_URL . '=' . $user_id . '&act_key=' . $user_actkey)
 			);
 			$emailer->send();
 			$emailer->reset();
@@ -100,7 +100,7 @@ if ( isset($_POST['submit']) ) {
 //
 // Output basic page
 //
-include($phpbb_root_path . 'includes/page_header.php');
+include $phpbb_root_path . 'includes/page_header.php';
 
 $template->set_filenames(array(
 	'body' => 'profile_send_pass.tpl')
@@ -123,6 +123,6 @@ $template->assign_vars(array(
 
 $template->pparse('body');
 
-include($phpbb_root_path . 'includes/page_tail.php');
+include $phpbb_root_path . 'includes/page_tail.php';
 
 ?>

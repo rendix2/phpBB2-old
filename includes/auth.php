@@ -197,17 +197,17 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 					break;
 
 				case AUTH_REG:
-					$auth_user[$key] = ( $userdata['session_logged_in'] ) ? TRUE : 0;
+					$auth_user[$key] = $userdata['session_logged_in'] ? TRUE : 0;
 					$auth_user[$key . '_type'] = $lang['Auth_Registered_Users'];
 					break;
 
 				case AUTH_ACL:
-					$auth_user[$key] = ( $userdata['session_logged_in'] ) ? auth_check_user(AUTH_ACL, $key, $u_access, $is_admin) : 0;
+					$auth_user[$key] = $userdata['session_logged_in'] ? auth_check_user(AUTH_ACL, $key, $u_access, $is_admin) : 0;
 					$auth_user[$key . '_type'] = $lang['Auth_Users_granted_access'];
 					break;
 
 				case AUTH_MOD:
-					$auth_user[$key] = ( $userdata['session_logged_in'] ) ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access, $is_admin) : 0;
+					$auth_user[$key] = $userdata['session_logged_in'] ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access, $is_admin) : 0;
 					$auth_user[$key . '_type'] = $lang['Auth_Moderators'];
 					break;
 
@@ -233,17 +233,17 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 						break;
 
 					case AUTH_REG:
-						$auth_user[$f_forum_id][$key] = ( $userdata['session_logged_in'] ) ? TRUE : 0;
+						$auth_user[$f_forum_id][$key] = $userdata['session_logged_in'] ? TRUE : 0;
 						$auth_user[$f_forum_id][$key . '_type'] = $lang['Auth_Registered_Users'];
 						break;
 
 					case AUTH_ACL:
-						$auth_user[$f_forum_id][$key] = ( $userdata['session_logged_in'] ) ? auth_check_user(AUTH_ACL, $key, $u_access[$f_forum_id], $is_admin) : 0;
+						$auth_user[$f_forum_id][$key] = $userdata['session_logged_in'] ? auth_check_user(AUTH_ACL, $key, $u_access[$f_forum_id], $is_admin) : 0;
 						$auth_user[$f_forum_id][$key . '_type'] = $lang['Auth_Users_granted_access'];
 						break;
 
 					case AUTH_MOD:
-						$auth_user[$f_forum_id][$key] = ( $userdata['session_logged_in'] ) ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access[$f_forum_id], $is_admin) : 0;
+						$auth_user[$f_forum_id][$key] = $userdata['session_logged_in'] ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access[$f_forum_id], $is_admin) : 0;
 						$auth_user[$f_forum_id][$key . '_type'] = $lang['Auth_Moderators'];
 						break;
 
@@ -264,13 +264,13 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 	// Is user a moderator?
 	//
 	if ( $forum_id != AUTH_LIST_ALL ) {
-		$auth_user['auth_mod'] = ( $userdata['session_logged_in'] ) ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access, $is_admin) : 0;
+		$auth_user['auth_mod'] = $userdata['session_logged_in'] ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access, $is_admin) : 0;
 	} else {
 		for($k = 0; $k < count($f_access); $k++) {
 			$f_forum_id = $f_access[$k]['forum_id'];
 			$u_access[$f_forum_id] = isset($u_access[$f_forum_id]) ? $u_access[$f_forum_id] : array();
 
-			$auth_user[$f_forum_id]['auth_mod'] = ( $userdata['session_logged_in'] ) ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access[$f_forum_id], $is_admin) : 0;
+			$auth_user[$f_forum_id]['auth_mod'] = $userdata['session_logged_in'] ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access[$f_forum_id], $is_admin) : 0;
 		}
 	}
 

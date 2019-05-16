@@ -39,17 +39,17 @@ if( !empty($setmodules) )
 // Check if the user has cancled a confirmation message.
 //
 $phpbb_root_path = "./../";
-require($phpbb_root_path . 'extension.inc');
+require $phpbb_root_path . 'extension.inc';
 
 $confirm = (isset($_POST['confirm']) || isset($_POST['confirm'])) ? TRUE : FALSE;
 $cancel = (isset($_POST['cancel']) || isset($_POST['cancel'])) ? TRUE : FALSE;
 
 $no_page_header = (!empty($_POST['send_file']) || !empty($_POST['send_file']) || $cancel) ? TRUE : FALSE;
 
-require('./pagestart.php');
+require './pagestart.php';
 
-$confirm = ( isset($_POST['confirm']) ) ? TRUE : FALSE;
-$cancel = ( isset($_POST['cancel']) ) ? TRUE : FALSE;
+$confirm = isset($_POST['confirm']) ? TRUE : FALSE;
+$cancel = isset($_POST['cancel']) ? TRUE : FALSE;
 
 if ($cancel)
 {
@@ -58,7 +58,7 @@ if ($cancel)
 
 if( isset($_GET['mode']) || isset($_POST['mode']) )
 {
-	$mode = ( isset($_GET['mode']) ) ? $_GET['mode'] : $_POST['mode'];
+	$mode = isset($_GET['mode']) ? $_GET['mode'] : $_POST['mode'];
 	$mode = htmlspecialchars($mode);
 }
 else 
@@ -69,13 +69,13 @@ else
 switch( $mode )
 {
 	case "addnew":
-		$install_to = ( isset($_GET['install_to']) ) ? urldecode($_GET['install_to']) : $_POST['install_to'];
-		$style_name = ( isset($_GET['style']) ) ? urldecode($_GET['style']) : $_POST['style'];
+		$install_to = isset($_GET['install_to']) ? urldecode($_GET['install_to']) : $_POST['install_to'];
+		$style_name = isset($_GET['style']) ? urldecode($_GET['style']) : $_POST['style'];
 	
 		if( isset($install_to) )
 		{
 
-			include($phpbb_root_path. "templates/" . basename($install_to) . "/theme_info.cfg");
+			include $phpbb_root_path. "templates/" . basename($install_to) . "/theme_info.cfg";
 
 			$template_name = $$install_to;
 			$found = FALSE; 
@@ -138,7 +138,7 @@ switch( $mode )
 					{
 						if( @file_exists(@phpbb_realpath($phpbb_root_path. "templates/" . $sub_dir . "/theme_info.cfg")) )
 						{
-							include($phpbb_root_path. "templates/" . $sub_dir . "/theme_info.cfg");
+							include $phpbb_root_path. "templates/" . $sub_dir . "/theme_info.cfg";
 							
 							for($i = 0; $i < count($$sub_dir); $i++)
 							{
@@ -200,7 +200,7 @@ switch( $mode )
 	
 	case "create":
 	case "edit":
-		$submit = ( isset($_POST['submit']) ) ? TRUE : 0;
+		$submit = isset($_POST['submit']) ? TRUE : 0;
 		
 		if( $submit )
 		{
@@ -298,7 +298,7 @@ switch( $mode )
 					// I don't like this but it'll keep MSSQL from throwing
 					// an error and save me alot of typing
 					//
-					$sql .= ( stristr($key, "fontsize") ) ? "$key = $val" : "$key = '" . str_replace("\'", "''", $val) . "'";
+					$sql .= stristr($key, "fontsize") ? "$key = $val" : "$key = '" . str_replace("\'", "''", $val) . "'";
 
 					$count++;
 				}
@@ -821,7 +821,7 @@ switch( $mode )
 		break;
 
 	case "delete":
-		$style_id = ( isset($_GET['style_id']) ) ? intval($_GET['style_id']) : intval($_POST['style_id']);
+		$style_id = isset($_GET['style_id']) ? intval($_GET['style_id']) : intval($_POST['style_id']);
 		
 		if( !$confirm )
 		{
@@ -935,7 +935,7 @@ switch( $mode )
 
 if (empty($_POST['send_file']))
 {
-	include('./page_footer_admin.php');
+	include './page_footer_admin.php';
 }
 
 ?>

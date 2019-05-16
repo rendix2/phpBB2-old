@@ -34,8 +34,8 @@ if( !empty($setmodules) )
 //
 $no_page_header = TRUE;
 $phpbb_root_path = './../';
-require($phpbb_root_path . 'extension.inc');
-require('./pagestart.php');
+require $phpbb_root_path . 'extension.inc';
+require './pagestart.php';
 
 //
 // Increase maximum execution time in case of a lot of users, but don't complain about it if it isn't
@@ -60,13 +60,13 @@ if ( isset($_POST['submit']) )
 	if ( empty($subject) )
 	{
 		$error = true;
-		$error_msg .= ( !empty($error_msg) ) ? '<br />' . $lang['Empty_subject'] : $lang['Empty_subject'];
+		$error_msg .= !empty($error_msg) ? '<br />' . $lang['Empty_subject'] : $lang['Empty_subject'];
 	}
 
 	if ( empty($message) )
 	{
 		$error = true;
-		$error_msg .= ( !empty($error_msg) ) ? '<br />' . $lang['Empty_message'] : $lang['Empty_message'];
+		$error_msg .= !empty($error_msg) ? '<br />' . $lang['Empty_message'] : $lang['Empty_message'];
 	}
 
 	$group_id = intval($_POST[POST_GROUPS_URL]);
@@ -93,12 +93,12 @@ if ( isset($_POST['submit']) )
 		$message = ( $group_id != -1 ) ? $lang['Group_not_exist'] : $lang['No_such_user'];
 
 		$error = true;
-		$error_msg .= ( !empty($error_msg) ) ? '<br />' . $message : $message;
+		$error_msg .= !empty($error_msg) ? '<br />' . $message : $message;
 	}
 
 	if ( !$error )
 	{
-		include($phpbb_root_path . 'includes/emailer.php');
+		include $phpbb_root_path . 'includes/emailer.php';
 
 		//
 		// Let's do some checking to make sure that mass mail functions
@@ -183,7 +183,7 @@ $select_list .= '</select>';
 //
 // Generate page
 //
-include('./page_header_admin.php');
+include './page_header_admin.php';
 
 $template->set_filenames(array(
 	'body' => 'admin/user_email_body.tpl')
@@ -208,6 +208,6 @@ $template->assign_vars(array(
 
 $template->pparse('body');
 
-include('./page_footer_admin.php');
+include './page_footer_admin.php';
 
 ?>

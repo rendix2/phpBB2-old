@@ -22,8 +22,8 @@
 
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
-include($phpbb_root_path . 'extension.inc');
-include($phpbb_root_path . 'common.php');
+include $phpbb_root_path . 'extension.inc';
+include $phpbb_root_path . 'common.php';
 
 //
 // Start session management
@@ -38,7 +38,7 @@ init_userprefs($userdata);
 // Output page header and load viewonline template
 //
 $page_title = $lang['Who_is_Online'];
-include($phpbb_root_path . 'includes/page_header.php');
+include $phpbb_root_path . 'includes/page_header.php';
 
 $template->set_filenames(
     [
@@ -246,6 +246,6 @@ if ($guest_users == 0) {
 
 $template->pparse('body');
 
-include($phpbb_root_path . 'includes/page_tail.php');
+include $phpbb_root_path . 'includes/page_tail.php';
 
 ?>

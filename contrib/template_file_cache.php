@@ -133,7 +133,7 @@ class Template {
 		if(@filemtime($cache_file) == @filemtime($this->files[$handle]))
 		{
 			$_str = '';
-			include($cache_file);
+			include $cache_file;
 
 			if ($_str != '')
 			{
@@ -178,7 +178,7 @@ class Template {
 		if(@filemtime($cache_file) == @filemtime($this->files[$handle]))
 		{
 			$_str = '';
-			include($cache_file);
+			include $cache_file;
 		}
 		else 
 		{

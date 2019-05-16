@@ -34,14 +34,14 @@ if( !empty($setmodules) )
 // Include required files and check permissions
 //
 $phpbb_root_path = "./../";
-require($phpbb_root_path . 'extension.inc');
-require('./pagestart.php');
+require $phpbb_root_path . 'extension.inc';
+require './pagestart.php';
 
 if( isset($_POST['add_name']) )
 {
-	include($phpbb_root_path . 'includes/functions_validate.php');
+	include $phpbb_root_path . 'includes/functions_validate.php';
 
-	$disallowed_user = ( isset($_POST['disallowed_user']) ) ? trim($_POST['disallowed_user']) : trim($_GET['disallowed_user']);
+	$disallowed_user = isset($_POST['disallowed_user']) ? trim($_POST['disallowed_user']) : trim($_GET['disallowed_user']);
 
 	if ($disallowed_user == '')
 	{
@@ -69,7 +69,7 @@ if( isset($_POST['add_name']) )
 }
 else if( isset($_POST['delete_name']) )
 {
-	$disallowed_id = ( isset($_POST['disallowed_id']) ) ? intval( $_POST['disallowed_id'] ) : intval( $_GET['disallowed_id'] );
+	$disallowed_id = isset($_POST['disallowed_id']) ? intval($_POST['disallowed_id'] ) : intval($_GET['disallowed_id'] );
 	
 	$sql = "DELETE FROM " . DISALLOW_TABLE . " 
 		WHERE disallow_id = $disallowed_id";
@@ -141,6 +141,6 @@ $template->assign_vars(array(
 
 $template->pparse("body");
 
-include('./page_footer_admin.php');
+include './page_footer_admin.php';
 
 ?>

@@ -27,7 +27,7 @@ if (!defined('IN_PHPBB'))
 
 define('IN_ADMIN', true);
 // Include files
-include($phpbb_root_path . 'common.php');
+include $phpbb_root_path . 'common.php';
 
 //
 // Start session management
@@ -61,7 +61,7 @@ if (empty($no_page_header))
 {
 	// Not including the pageheader can be neccesarry if META tags are
 	// needed in the calling script.
-	include('./page_header_admin.php');
+	include './page_header_admin.php';
 }
 
 ?>
