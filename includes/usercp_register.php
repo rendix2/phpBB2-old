@@ -613,8 +613,7 @@ if ( isset($_POST['submit']) )
 					'WEB_SITE' => $website,
 					'FROM' => $location,
 					'OCC' => $occupation,
-					'INTERESTS' => $interests,
-					'SITENAME' => $board_config['sitename']));
+					'INTERESTS' => $interests));
 			} else {
 				$emailer->assign_vars(array(
 					'SITENAME' => $board_config['sitename'],
