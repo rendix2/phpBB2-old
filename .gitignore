@@ -1,7 +1,9 @@
 # Created by .ignore support plugin (hsz.mobi)
 /vendor
 /docs
+/contrib
 /contrib2
+/install
 /install2
 /.idea
 /.settings
