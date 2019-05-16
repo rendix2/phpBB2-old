@@ -357,11 +357,13 @@ switch( $mode )
 				$l_redirect = sprintf($lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
 			}
 
-			$template->assign_vars(array(
-				'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
-			);
+            $template->assign_vars(
+                [
+                    'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">'
+                ]
+            );
 
-			message_die(GENERAL_MESSAGE, $lang['Topics_Removed'] . '<br /><br />' . $l_redirect);
+            message_die(GENERAL_MESSAGE, $lang['Topics_Removed'] . '<br /><br />' . $l_redirect);
 		} else {
 			// Not confirmed, show confirmation message
 			if ( empty($_POST['topic_id_list']) && empty($topic_id) ) {
@@ -383,22 +385,22 @@ switch( $mode )
 			//
 			// Set template files
 			//
-			$template->set_filenames(array(
-				'confirm' => 'confirm_body.tpl')
-			);
+            $template->set_filenames(['confirm' => 'confirm_body.tpl']);
 
-			$template->assign_vars(array(
-				'MESSAGE_TITLE' => $lang['Confirm'],
-				'MESSAGE_TEXT' => $lang['Confirm_delete_topic'],
+            $template->assign_vars(
+                [
+                    'MESSAGE_TITLE' => $lang['Confirm'],
+                    'MESSAGE_TEXT'  => $lang['Confirm_delete_topic'],
 
-				'L_YES' => $lang['Yes'],
-				'L_NO' => $lang['No'],
+                    'L_YES' => $lang['Yes'],
+                    'L_NO'  => $lang['No'],
 
-				'S_CONFIRM_ACTION' => append_sid("modcp.php"),
-				'S_HIDDEN_FIELDS' => $hidden_fields)
-			);
+                    'S_CONFIRM_ACTION' => append_sid("modcp.php"),
+                    'S_HIDDEN_FIELDS'  => $hidden_fields
+                ]
+            );
 
-			$template->pparse('confirm');
+            $template->pparse('confirm');
 
 			include $phpbb_root_path . 'includes/page_tail.php';
 		}
@@ -430,9 +432,9 @@ switch( $mode )
 			$db->sql_freeresult($result);
 
 			if ( $new_forum_id != $old_forum_id ) {
-				$topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : array($topic_id);
+                $topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topic_id];
 
-				$topic_list = '';
+                $topic_list = '';
 
 				for ($i = 0; $i < count($topics); $i++) {
 					$topic_list .= ( ( $topic_list != '' ) ? ', ' : '' ) . (int)$topics[$i];
@@ -525,25 +527,29 @@ switch( $mode )
 			//
 			// Set template files
 			//
-			$template->set_filenames(array(
-				'movetopic' => 'modcp_move.tpl')
-			);
+            $template->set_filenames(
+                [
+                    'movetopic' => 'modcp_move.tpl'
+                ]
+            );
 
-			$template->assign_vars(array(
-				'MESSAGE_TITLE' => $lang['Confirm'],
-				'MESSAGE_TEXT' => $lang['Confirm_move_topic'],
+            $template->assign_vars(
+                [
+                    'MESSAGE_TITLE' => $lang['Confirm'],
+                    'MESSAGE_TEXT'  => $lang['Confirm_move_topic'],
 
-				'L_MOVE_TO_FORUM' => $lang['Move_to_forum'], 
-				'L_LEAVESHADOW' => $lang['Leave_shadow_topic'], 
-				'L_YES' => $lang['Yes'],
-				'L_NO' => $lang['No'],
+                    'L_MOVE_TO_FORUM' => $lang['Move_to_forum'],
+                    'L_LEAVESHADOW'   => $lang['Leave_shadow_topic'],
+                    'L_YES'           => $lang['Yes'],
+                    'L_NO'            => $lang['No'],
 
-				'S_FORUM_SELECT' => make_forum_select('new_forum', $forum_id), 
-				'S_MODCP_ACTION' => append_sid("modcp.php"),
-				'S_HIDDEN_FIELDS' => $hidden_fields)
-			);
+                    'S_FORUM_SELECT'  => make_forum_select('new_forum', $forum_id),
+                    'S_MODCP_ACTION'  => append_sid("modcp.php"),
+                    'S_HIDDEN_FIELDS' => $hidden_fields
+                ]
+            );
 
-			$template->pparse('movetopic');
+            $template->pparse('movetopic');
 
 			include $phpbb_root_path . 'includes/page_tail.php';
 		}
@@ -554,9 +560,9 @@ switch( $mode )
 			message_die(GENERAL_MESSAGE, $lang['None_selected']);
 		}
 
-		$topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : array($topic_id);
+        $topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topic_id];
 
-		$topic_id_sql = '';
+        $topic_id_sql = '';
 
 		for ($i = 0; $i < count($topics); $i++) {
 			$topic_id_sql .= ( ( $topic_id_sql != '' ) ? ', ' : '' ) . (int)$topics[$i];
@@ -594,9 +600,9 @@ switch( $mode )
 			message_die(GENERAL_MESSAGE, $lang['None_selected']);
 		}
 
-		$topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : array($topic_id);
+        $topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topic_id];
 
-		$topic_id_sql = '';
+        $topic_id_sql = '';
 		for ($i = 0; $i < count($topics); $i++) {
 			$topic_id_sql .= ( ( $topic_id_sql != "") ? ', ' : '' ) . (int)$topics[$i];
 		}
@@ -620,11 +626,13 @@ switch( $mode )
 
 		$message = $message . '<br \><br \>' . sprintf($lang['Click_return_forum'], '<a href="' . "viewforum.php?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'] . '">', '</a>');
 
-		$template->assign_vars(array(
-			'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
-		);
+        $template->assign_vars(
+            [
+                'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">'
+            ]
+        );
 
-		message_die(GENERAL_MESSAGE, $lang['Topics_Unlocked'] . '<br /><br />' . $message);
+        message_die(GENERAL_MESSAGE, $lang['Topics_Unlocked'] . '<br /><br />' . $message);
 
 		break;
 
@@ -742,11 +750,13 @@ switch( $mode )
 				sync('forum', $new_forum_id);
 				sync('forum', $forum_id);
 
-				$template->assign_vars(array(
-					'META' => '<meta http-equiv="refresh" content="3;url=' . "viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'] . '">')
-				);
+                $template->assign_vars(
+                    [
+                        'META' => '<meta http-equiv="refresh" content="3;url=' . "viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'] . '">'
+                    ]
+                );
 
-				$message = $lang['Topic_split'] . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . "viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'] . '">', '</a>');
+                $message = $lang['Topic_split'] . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . "viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'] . '">', '</a>');
 				message_die(GENERAL_MESSAGE, $message);
 			}
 		} else {
@@ -773,33 +783,35 @@ switch( $mode )
 			if (( $total_posts = $db->sql_numrows($result) ) > 0 ) {
 				$postrow = $db->sql_fetchrowset($result);
 
-				$template->assign_vars(array(
-					'L_SPLIT_TOPIC' => $lang['Split_Topic'],
-					'L_SPLIT_TOPIC_EXPLAIN' => $lang['Split_Topic_explain'],
-					'L_AUTHOR' => $lang['Author'],
-					'L_MESSAGE' => $lang['Message'],
-					'L_SELECT' => $lang['Select'],
-					'L_SPLIT_SUBJECT' => $lang['Split_title'],
-					'L_SPLIT_FORUM' => $lang['Split_forum'],
-					'L_POSTED' => $lang['Posted'],
-					'L_SPLIT_POSTS' => $lang['Split_posts'],
-					'L_SUBMIT' => $lang['Submit'],
-					'L_SPLIT_AFTER' => $lang['Split_after'], 
-					'L_POST_SUBJECT' => $lang['Post_subject'], 
-					'L_MARK_ALL' => $lang['Mark_all'], 
-					'L_UNMARK_ALL' => $lang['Unmark_all'], 
-					'L_POST' => $lang['Post'], 
+                $template->assign_vars(
+                    [
+                        'L_SPLIT_TOPIC'         => $lang['Split_Topic'],
+                        'L_SPLIT_TOPIC_EXPLAIN' => $lang['Split_Topic_explain'],
+                        'L_AUTHOR'              => $lang['Author'],
+                        'L_MESSAGE'             => $lang['Message'],
+                        'L_SELECT'              => $lang['Select'],
+                        'L_SPLIT_SUBJECT'       => $lang['Split_title'],
+                        'L_SPLIT_FORUM'         => $lang['Split_forum'],
+                        'L_POSTED'              => $lang['Posted'],
+                        'L_SPLIT_POSTS'         => $lang['Split_posts'],
+                        'L_SUBMIT'              => $lang['Submit'],
+                        'L_SPLIT_AFTER'         => $lang['Split_after'],
+                        'L_POST_SUBJECT'        => $lang['Post_subject'],
+                        'L_MARK_ALL'            => $lang['Mark_all'],
+                        'L_UNMARK_ALL'          => $lang['Unmark_all'],
+                        'L_POST'                => $lang['Post'],
 
-					'FORUM_NAME' => $forum_name, 
+                        'FORUM_NAME' => $forum_name,
 
-					'U_VIEW_FORUM' => append_sid("viewforum.php?" . POST_FORUM_URL . "=$forum_id"), 
+                        'U_VIEW_FORUM' => append_sid("viewforum.php?" . POST_FORUM_URL . "=$forum_id"),
 
-					'S_SPLIT_ACTION' => append_sid("modcp.php"),
-					'S_HIDDEN_FIELDS' => $s_hidden_fields,
-					'S_FORUM_SELECT' => make_forum_select("new_forum_id", false, $forum_id))
-				);
+                        'S_SPLIT_ACTION'  => append_sid("modcp.php"),
+                        'S_HIDDEN_FIELDS' => $s_hidden_fields,
+                        'S_FORUM_SELECT'  => make_forum_select("new_forum_id", false, $forum_id)
+                    ]
+                );
 
-				//
+                //
 				// Define censored word matches
 				//
 				$orig_word = [];
@@ -848,19 +860,21 @@ switch( $mode )
 					$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
 					$checkbox = ( $i > 0 ) ? '<input type="checkbox" name="post_id_list[]" value="' . $post_id . '" />' : '&nbsp;';
-					
-					$template->assign_block_vars('postrow', array(
-						'ROW_COLOR' => '#' . $row_color,
-						'ROW_CLASS' => $row_class,
-						'POSTER_NAME' => $poster,
-						'POST_DATE' => $post_date,
-						'POST_SUBJECT' => $post_subject,
-						'MESSAGE' => $message,
-						'POST_ID' => $post_id,
-						
-						'S_SPLIT_CHECKBOX' => $checkbox)
-					);
-				}
+
+                    $template->assign_block_vars('postrow',
+                        [
+                            'ROW_COLOR'    => '#' . $row_color,
+                            'ROW_CLASS'    => $row_class,
+                            'POSTER_NAME'  => $poster,
+                            'POST_DATE'    => $post_date,
+                            'POST_SUBJECT' => $post_subject,
+                            'MESSAGE'      => $message,
+                            'POST_ID'      => $post_id,
+
+                            'S_SPLIT_CHECKBOX' => $checkbox
+                        ]
+                    );
+                }
 
 				$template->pparse('split_body');
 			}
@@ -880,15 +894,14 @@ switch( $mode )
 		//
 		// Set template files
 		//
-		$template->set_filenames(array(
-			'viewip' => 'modcp_viewip.tpl')
-		);
+        $template->set_filenames(['viewip' => 'modcp_viewip.tpl']);
 
-		// Look up relevent data for this post
+        // Look up relevent data for this post
 		$sql = "SELECT poster_ip, poster_id 
 			FROM " . POSTS_TABLE . " 
 			WHERE post_id = $post_id
 				AND forum_id = $forum_id";
+
 		if ( !($result = $db->sql_query($sql)) ) {
 			message_die(GENERAL_ERROR, 'Could not get poster IP information', '', __LINE__, __FILE__, $sql);
 		}
@@ -902,22 +915,24 @@ switch( $mode )
 
 		$poster_id = $post_row['poster_id'];
 
-		$template->assign_vars(array(
-			'L_IP_INFO' => $lang['IP_info'],
-			'L_THIS_POST_IP' => $lang['This_posts_IP'],
-			'L_OTHER_IPS' => $lang['Other_IP_this_user'],
-			'L_OTHER_USERS' => $lang['Users_this_IP'],
-			'L_LOOKUP_IP' => $lang['Lookup_IP'], 
-			'L_SEARCH' => $lang['Search'],
+        $template->assign_vars(
+            [
+                'L_IP_INFO'      => $lang['IP_info'],
+                'L_THIS_POST_IP' => $lang['This_posts_IP'],
+                'L_OTHER_IPS'    => $lang['Other_IP_this_user'],
+                'L_OTHER_USERS'  => $lang['Users_this_IP'],
+                'L_LOOKUP_IP'    => $lang['Lookup_IP'],
+                'L_SEARCH'       => $lang['Search'],
 
-			'SEARCH_IMG' => $images['icon_search'], 
+                'SEARCH_IMG' => $images['icon_search'],
 
-			'IP' => $ip_this_post, 
-				
-			'U_LOOKUP_IP' => "modcp.php?mode=ip&amp;" . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=$ip_this_post&amp;sid=" . $userdata['session_id'])
-		);
+                'IP' => $ip_this_post,
 
-		//
+                'U_LOOKUP_IP' => "modcp.php?mode=ip&amp;" . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=$ip_this_post&amp;sid=" . $userdata['session_id']
+            ]
+        );
+
+        //
 		// Get other IP's this user has posted under
 		//
 		$sql = "SELECT poster_ip, COUNT(*) AS postings 
@@ -934,10 +949,12 @@ switch( $mode )
 
 			do {
 				if ( $row['poster_ip'] == $post_row['poster_ip'] ) {
-					$template->assign_vars(array(
-						'POSTS' => $row['postings'] . ' ' . ( ( $row['postings'] == 1 ) ? $lang['Post'] : $lang['Posts'] ))
-					);
-					continue;
+                    $template->assign_vars(
+                        [
+                            'POSTS' => $row['postings'] . ' ' . (($row['postings'] == 1) ? $lang['Post'] : $lang['Posts'])
+                        ]
+                    );
+                    continue;
 				}
 
 				$ip = decode_ip($row['poster_ip']);
@@ -1007,29 +1024,29 @@ switch( $mode )
 		$page_title = $lang['Mod_CP'];
 		include $phpbb_root_path . 'includes/page_header.php';
 
-		$template->assign_vars(array(
-			'FORUM_NAME' => $forum_name,
+        $template->assign_vars(
+            [
+                'FORUM_NAME' => $forum_name,
 
-			'L_MOD_CP' => $lang['Mod_CP'],
-			'L_MOD_CP_EXPLAIN' => $lang['Mod_CP_explain'],
-			'L_SELECT' => $lang['Select'],
-			'L_DELETE' => $lang['Delete'],
-			'L_MOVE' => $lang['Move'],
-			'L_LOCK' => $lang['Lock'],
-			'L_UNLOCK' => $lang['Unlock'],
-			'L_TOPICS' => $lang['Topics'], 
-			'L_REPLIES' => $lang['Replies'], 
-			'L_LASTPOST' => $lang['Last_Post'],
+                'L_MOD_CP'         => $lang['Mod_CP'],
+                'L_MOD_CP_EXPLAIN' => $lang['Mod_CP_explain'],
+                'L_SELECT'         => $lang['Select'],
+                'L_DELETE'         => $lang['Delete'],
+                'L_MOVE'           => $lang['Move'],
+                'L_LOCK'           => $lang['Lock'],
+                'L_UNLOCK'         => $lang['Unlock'],
+                'L_TOPICS'         => $lang['Topics'],
+                'L_REPLIES'        => $lang['Replies'],
+                'L_LASTPOST'       => $lang['Last_Post'],
 
-			'U_VIEW_FORUM' => append_sid("viewforum.php?" . POST_FORUM_URL . "=$forum_id"), 
-			'S_HIDDEN_FIELDS' => '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />',
-			'S_MODCP_ACTION' => append_sid("modcp.php"))
-		);
+                'U_VIEW_FORUM'    => append_sid("viewforum.php?" . POST_FORUM_URL . "=$forum_id"),
+                'S_HIDDEN_FIELDS' => '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />',
+                'S_MODCP_ACTION'  => append_sid("modcp.php")
+            ]
+        );
 
-		$template->set_filenames(array(
-			'body' => 'modcp_body.tpl')
-		);
-		make_jumpbox('modcp.php');
+        $template->set_filenames(['body' => 'modcp_body.tpl']);
+        make_jumpbox('modcp.php');
 
 		//
 		// Define censored word matches
@@ -1098,21 +1115,23 @@ switch( $mode )
 
 			$last_post_time = create_date($board_config['default_dateformat'], $row['post_time'], $board_config['board_timezone']);
 
-			$template->assign_block_vars('topicrow', array(
-				'U_VIEW_TOPIC' => $u_view_topic,
+            $template->assign_block_vars('topicrow',
+                [
+                    'U_VIEW_TOPIC' => $u_view_topic,
 
-				'TOPIC_FOLDER_IMG' => $folder_img, 
-				'TOPIC_TYPE' => $topic_type, 
-				'TOPIC_TITLE' => $topic_title,
-				'REPLIES' => $topic_replies,
-				'LAST_POST_TIME' => $last_post_time,
-				'TOPIC_ID' => $topic_id,
-					
-				'L_TOPIC_FOLDER_ALT' => $folder_alt)
-			);
-		}
+                    'TOPIC_FOLDER_IMG' => $folder_img,
+                    'TOPIC_TYPE'       => $topic_type,
+                    'TOPIC_TITLE'      => $topic_title,
+                    'REPLIES'          => $topic_replies,
+                    'LAST_POST_TIME'   => $last_post_time,
+                    'TOPIC_ID'         => $topic_id,
 
-		$template->assign_vars(array(
+                    'L_TOPIC_FOLDER_ALT' => $folder_alt
+                ]
+            );
+        }
+
+        $template->assign_vars(array(
                 'PAGINATION' => generate_pagination("modcp.php?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'], $forum_topics, $board_config['topics_per_page'], $start),
                 'PAGE_NUMBER' => sprintf($lang['Page_of'],
                     floor( $start / $board_config['topics_per_page'] ) + 1, ceil( $forum_topics / $board_config['topics_per_page'] )),

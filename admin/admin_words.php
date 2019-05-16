@@ -192,21 +192,23 @@ if ($mode != "" )
 	$db->sql_freeresult($result);
 	$word_count = count($word_rows);
 
-	$template->assign_vars(array(
-		"L_WORDS_TITLE" => $lang['Words_title'],
-		"L_WORDS_TEXT" => $lang['Words_explain'],
-		"L_WORD" => $lang['Word'],
-		"L_REPLACEMENT" => $lang['Replacement'],
-		"L_EDIT" => $lang['Edit'],
-		"L_DELETE" => $lang['Delete'],
-		"L_ADD_WORD" => $lang['Add_new_word'],
-		"L_ACTION" => $lang['Action'],
+    $template->assign_vars(
+        [
+            "L_WORDS_TITLE" => $lang['Words_title'],
+            "L_WORDS_TEXT"  => $lang['Words_explain'],
+            "L_WORD"        => $lang['Word'],
+            "L_REPLACEMENT" => $lang['Replacement'],
+            "L_EDIT"        => $lang['Edit'],
+            "L_DELETE"      => $lang['Delete'],
+            "L_ADD_WORD"    => $lang['Add_new_word'],
+            "L_ACTION"      => $lang['Action'],
 
-		"S_WORDS_ACTION" => append_sid("admin_words.php"),
-		"S_HIDDEN_FIELDS" => '')
-	);
+            "S_WORDS_ACTION"  => append_sid("admin_words.php"),
+            "S_HIDDEN_FIELDS" => ''
+        ]
+    );
 
-	for ($i = 0; $i < $word_count; $i++) {
+    for ($i = 0; $i < $word_count; $i++) {
 		$word = $word_rows[$i]['word'];
 		$replacement = $word_rows[$i]['replacement'];
 		$word_id = $word_rows[$i]['word_id'];

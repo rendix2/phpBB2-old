@@ -158,11 +158,13 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 	$row = $db->sql_fetchrow($result);
 
 	if ( $row['group_moderator'] != $userdata['user_id'] && $userdata['user_level'] != ADMIN ) {
-		$template->assign_vars(array(
-			'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.php") . '">')
-		);
+        $template->assign_vars(
+            [
+                'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.php") . '">'
+            ]
+        );
 
-		$message = $lang['Not_group_moderator'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
+        $message = $lang['Not_group_moderator'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
 
 		message_die(GENERAL_MESSAGE, $message);
 	}
@@ -175,11 +177,13 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 		message_die(GENERAL_ERROR, 'Could not obtain user and group information', '', __LINE__, __FILE__, $sql);
 	}
 
-	$template->assign_vars(array(
-		'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">')
-	);
+    $template->assign_vars(
+        [
+            'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">'
+        ]
+    );
 
-	$message = $lang['Group_type_updated'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
+    $message = $lang['Group_type_updated'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
 
 	message_die(GENERAL_MESSAGE, $message);
 
@@ -209,21 +213,25 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 			do
 			{
 				if ( $userdata['user_id'] == $row['user_id'] ) {
-					$template->assign_vars(array(
-						'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.php") . '">')
-					);
+                    $template->assign_vars(
+                        [
+                            'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.php") . '">'
+                        ]
+                    );
 
-					$message = $lang['Already_member_group'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
+                    $message = $lang['Already_member_group'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
 
 					message_die(GENERAL_MESSAGE, $message);
 				}
 			} while ( $row = $db->sql_fetchrow($result) );
 		} else {
-			$template->assign_vars(array(
-				'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.php") . '">')
-			);
+            $template->assign_vars(
+                [
+                    'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.php") . '">'
+                ]
+            );
 
-			$message = $lang['This_closed_group'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
+            $message = $lang['This_closed_group'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		}
@@ -259,21 +267,23 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 	$emailer->email_address($moderator['user_email']);
 	$emailer->set_subject($lang['Group_request']);
 
-	$emailer->assign_vars(array(
+	$emailer->assign_vars([
             'SITENAME' => $board_config['sitename'],
             'GROUP_MODERATOR' => $moderator['username'],
             'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
 
-            'U_GROUPCP' => $server_url . '?' . POST_GROUPS_URL . "=$group_id&validate=true")
+            'U_GROUPCP' => $server_url . '?' . POST_GROUPS_URL . "=$group_id&validate=true"]
 	);
 	$emailer->send();
 	$emailer->reset();
 
-	$template->assign_vars(array(
-		'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.php") . '">')
-	);
+    $template->assign_vars(
+        [
+            'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.php") . '">'
+        ]
+    );
 
-	$message = $lang['Group_joined'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
+    $message = $lang['Group_joined'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
 
 	message_die(GENERAL_MESSAGE, $message);
 } elseif ( isset($_POST['unsub']) || isset($_POST['unsubpending']) && $group_id ) {
@@ -320,11 +330,13 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 			}
 		}
 
-		$template->assign_vars(array(
-			'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.php") . '">')
-		);
+        $template->assign_vars(
+            [
+                'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.php") . '">'
+            ]
+        );
 
-		$message = $lang['Unsub_success'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
+        $message = $lang['Unsub_success'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
 
 		message_die(GENERAL_MESSAGE, $message);
 	} else {
@@ -446,11 +458,13 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 				}
 
 				if ( !($row = $db->sql_fetchrow($result)) ) {
-					$template->assign_vars(array(
-						'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">')
-					);
+                    $template->assign_vars(
+                        [
+                            'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">'
+                        ]
+                    );
 
-					$message = $lang['Could_not_add_user'] . "<br /><br />" . sprintf($lang['Click_return_group'], "<a href=\"" . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_index'], "<a href=\"" . append_sid("index.php") . "\">", "</a>");
+                    $message = $lang['Could_not_add_user'] . "<br /><br />" . sprintf($lang['Click_return_group'], "<a href=\"" . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_index'], "<a href=\"" . append_sid("index.php") . "\">", "</a>");
 
 					message_die(GENERAL_MESSAGE, $message);
 				}
@@ -802,11 +816,8 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 	//
 	// Load templates
 	//
-	$template->set_filenames(array(
-		'info' => 'groupcp_info_body.tpl', 
-		'pendinginfo' => 'groupcp_pending_info.tpl')
-	);
-	make_jumpbox('viewforum.php');
+    $template->set_filenames(['info' => 'groupcp_info_body.tpl', 'pendinginfo' => 'groupcp_pending_info.tpl']);
+    make_jumpbox('viewforum.php');
 
 	//
 	// Add the moderator
@@ -953,13 +964,15 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 		//
 		// No group members
 		//
-		$template->assign_block_vars('switch_no_members', []);
-		$template->assign_vars(array(
-			'L_NO_MEMBERS' => $lang['No_group_members'])
-		);
-	}
+        $template->assign_block_vars('switch_no_members', []);
+        $template->assign_vars(
+            [
+                'L_NO_MEMBERS' => $lang['No_group_members']
+            ]
+        );
+    }
 
-	$current_page = ( !$members_count ) ? 1 : ceil( $members_count / $board_config['topics_per_page'] );
+    $current_page = ( !$members_count ) ? 1 : ceil( $members_count / $board_config['topics_per_page'] );
 
 	$template->assign_vars(array(
             'PAGINATION' => generate_pagination("groupcp.php?" . POST_GROUPS_URL . "=$group_id", $members_count, $board_config['topics_per_page'], $start),
@@ -972,13 +985,15 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 		//
 		// No group members
 		//
-		$template->assign_block_vars('switch_hidden_group', []);
-		$template->assign_vars(array(
-			'L_HIDDEN_MEMBERS' => $lang['Group_hidden_members'])
-		);
-	}
+        $template->assign_block_vars('switch_hidden_group', []);
+        $template->assign_vars(
+            [
+                'L_HIDDEN_MEMBERS' => $lang['Group_hidden_members']
+            ]
+        );
+    }
 
-	//
+    //
 	// We've displayed the members who belong to the group, now we 
 	// do that pending memebers... 
 	//
@@ -1122,26 +1137,24 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 		$page_title = $lang['Group_Control_Panel'];
 		include $phpbb_root_path . 'includes/page_header.php';
 
-		$template->set_filenames(array(
-			'user' => 'groupcp_user_body.tpl')
-		);
-		make_jumpbox('viewforum.php');
+        $template->set_filenames(['user' => 'groupcp_user_body.tpl']);
+        make_jumpbox('viewforum.php');
 
-		if ( $s_pending_groups_opt != '' || $s_member_groups_opt != '' ) {
-			$template->assign_block_vars('switch_groups_joined', []);
-		}
+        if ($s_pending_groups_opt != '' || $s_member_groups_opt != '') {
+            $template->assign_block_vars('switch_groups_joined', []);
+        }
 
-		if ( $s_member_groups_opt != '' ) {
-			$template->assign_block_vars('switch_groups_joined.switch_groups_member', []);
-		}
+        if ($s_member_groups_opt != '') {
+            $template->assign_block_vars('switch_groups_joined.switch_groups_member', []);
+        }
 
-		if ($s_pending_groups_opt != '') {
-			$template->assign_block_vars('switch_groups_joined.switch_groups_pending', []);
-		}
+        if ($s_pending_groups_opt != '') {
+            $template->assign_block_vars('switch_groups_joined.switch_groups_pending', []);
+        }
 
-		if ($s_group_list_opt != '') {
-			$template->assign_block_vars('switch_groups_remaining', []);
-		}
+        if ($s_group_list_opt != '') {
+            $template->assign_block_vars('switch_groups_remaining', []);
+        }
 
 		$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 

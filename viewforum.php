@@ -133,12 +133,14 @@ if ( $mark_read == 'topics' ) {
 			}
 		}
 
-		$template->assign_vars(array(
-			'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewforum.php?" . POST_FORUM_URL . "=$forum_id") . '">')
-		);
-	}
+        $template->assign_vars(
+            [
+                'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewforum.php?" . POST_FORUM_URL . "=$forum_id") . '">'
+            ]
+        );
+    }
 
-	$message = $lang['Topics_marked_read'] . '<br /><br />' . sprintf($lang['Click_return_forum'], '<a href="' . append_sid("viewforum.php?" . POST_FORUM_URL . "=$forum_id") . '">', '</a> ');
+    $message = $lang['Topics_marked_read'] . '<br /><br />' . sprintf($lang['Click_return_forum'], '<a href="' . append_sid("viewforum.php?" . POST_FORUM_URL . "=$forum_id") . '">', '</a> ');
 	message_die(GENERAL_MESSAGE, $message);
 }
 //
@@ -217,10 +219,19 @@ unset($moderators);
 // then get it's value, find the number of topics with dates newer than it (to properly
 // handle pagination) and alter the main query
 //
-$previous_days = array(0, 1, 7, 14, 30, 90, 180, 364);
-$previous_days_text = array($lang['All_Topics'], $lang['1_Day'], $lang['7_Days'], $lang['2_Weeks'], $lang['1_Month'], $lang['3_Months'], $lang['6_Months'], $lang['1_Year']);
+$previous_days = [0, 1, 7, 14, 30, 90, 180, 364];
+$previous_days_text = [
+    $lang['All_Topics'],
+    $lang['1_Day'],
+    $lang['7_Days'],
+    $lang['2_Weeks'],
+    $lang['1_Month'],
+    $lang['3_Months'],
+    $lang['6_Months'],
+    $lang['1_Year']
+];
 
-if ( !empty($_POST['topicdays']) || !empty($_GET['topicdays']) ) {
+if (!empty($_POST['topicdays']) || !empty($_GET['topicdays']) ) {
 	$topic_days = !empty($_POST['topicdays']) ? (int)$_POST['topicdays'] : (int)$_GET['topicdays'];
 	$min_topic_time = time() - ($topic_days * 86400);
 
@@ -330,14 +341,14 @@ obtain_word_list($orig_word, $replacement_word);
 //
 // Post URL generation for templating vars
 //
-$template->assign_vars(array(
-	'L_DISPLAY_TOPICS' => $lang['Display_topics'],
+$template->assign_vars([
+        'L_DISPLAY_TOPICS' => $lang['Display_topics'],
 
-	'U_POST_NEW_TOPIC' => append_sid("posting.php?mode=newtopic&amp;" . POST_FORUM_URL . "=$forum_id"),
+        'U_POST_NEW_TOPIC' => append_sid("posting.php?mode=newtopic&amp;" . POST_FORUM_URL . "=$forum_id"),
 
-	'S_SELECT_TOPIC_DAYS' => $select_topic_days,
-	'S_POST_DAYS_ACTION' => append_sid("viewforum.php?" . POST_FORUM_URL . "=" . $forum_id . "&amp;start=$start"))
-);
+        'S_SELECT_TOPIC_DAYS' => $select_topic_days,
+        'S_POST_DAYS_ACTION'  => append_sid("viewforum.php?" . POST_FORUM_URL . "=" . $forum_id . "&amp;start=$start")
+    ]);
 
 //
 // User authorisation levels output
@@ -355,10 +366,10 @@ if ( $is_auth['auth_mod'] ) {
 //
 // Mozilla navigation bar
 //
-$nav_links['up'] = array(
-	'url' => append_sid('index.php'),
-	'title' => sprintf($lang['Forum_Index'], $board_config['sitename'])
-);
+$nav_links['up'] = [
+    'url'   => append_sid('index.php'),
+    'title' => sprintf($lang['Forum_Index'], $board_config['sitename'])
+];
 
 //
 // Dump out the page header and load viewforum template
@@ -609,11 +620,9 @@ if ($total_topics) {
 	// No topics
 	//
 	$no_topics_msg = ( $forum_row['forum_status'] == FORUM_LOCKED ) ? $lang['Forum_locked'] : $lang['No_topics_post_one'];
-	$template->assign_vars(array(
-		'L_NO_TOPICS' => $no_topics_msg)
-	);
+    $template->assign_vars(['L_NO_TOPICS' => $no_topics_msg]);
 
-	$template->assign_block_vars('switch_no_topics', []);
+    $template->assign_block_vars('switch_no_topics', []);
 
 }
 

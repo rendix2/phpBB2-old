@@ -36,8 +36,8 @@ if ( !empty($board_config['privmsg_disable']) ) {
 	message_die(GENERAL_MESSAGE, 'PM_disabled');
 }
 
-$html_entities_match = array('#&(?!(\#[0-9]+;))#', '#<#', '#>#', '#"#');
-$html_entities_replace = array('&amp;', '&lt;', '&gt;', '&quot;');
+$html_entities_match   = ['#&(?!(\#[0-9]+;))#', '#<#', '#>#', '#"#'];
+$html_entities_replace = ['&amp;', '&lt;', '&gt;', '&quot;'];
 
 //
 // Parameters
@@ -124,39 +124,34 @@ $savebox_url = ( $folder != 'savebox' || $mode != '' ) ? '<a href="' . append_si
 // ----------
 // Start main
 //
-if ( $mode == 'newpm' )
-{
+if ( $mode == 'newpm' ) {
 	$gen_simple_header = TRUE;
 
 	$page_title = $lang['Private_Messaging'];
 	include $phpbb_root_path . 'includes/page_header.php';
 
-	$template->set_filenames(array(
-		'body' => 'privmsgs_popup.tpl')
-	);
+    $template->set_filenames(['body' => 'privmsgs_popup.tpl']);
 
-	if ( $userdata['session_logged_in'] )
-	{
-		if ( $userdata['user_new_privmsg'] )
-		{
-			$l_new_message = ( $userdata['user_new_privmsg'] == 1 ) ? $lang['You_new_pm'] : $lang['You_new_pms'];
-		}
-		else
-		{
-			$l_new_message = $lang['You_no_new_pm'];
-		}
+    if ($userdata['session_logged_in']) {
+        if ($userdata['user_new_privmsg']) {
+            $l_new_message = ($userdata['user_new_privmsg'] == 1) ? $lang['You_new_pm'] : $lang['You_new_pms'];
+        } else {
+            $l_new_message = $lang['You_no_new_pm'];
+        }
 
 		$l_new_message .= '<br /><br />' . sprintf($lang['Click_view_privmsg'], '<a href="' . append_sid("privmsg.php?folder=inbox") . '" onclick="jump_to_inbox();return false;" target="_new">', '</a>');
 	} else {
 		$l_new_message = $lang['Login_check_pm'];
 	}
 
-	$template->assign_vars(array(
-		'L_CLOSE_WINDOW' => $lang['Close_window'], 
-		'L_MESSAGE' => $l_new_message)
-	);
+    $template->assign_vars(
+        [
+            'L_CLOSE_WINDOW' => $lang['Close_window'],
+            'L_MESSAGE'      => $l_new_message
+        ]
+    );
 
-	$template->pparse('body');
+    $template->pparse('body');
 
 	include $phpbb_root_path . 'includes/page_tail.php';
 	
@@ -417,10 +412,8 @@ if ( $mode == 'newpm' )
 	//
 	// Load templates
 	//
-	$template->set_filenames(array(
-		'body' => 'privmsgs_read_body.tpl')
-	);
-	make_jumpbox('viewforum.php');
+    $template->set_filenames(['body' => 'privmsgs_read_body.tpl']);
+    make_jumpbox('viewforum.php');
 
 	$template->assign_vars(array(
 		'INBOX_IMG' => $inbox_img, 
@@ -636,21 +629,19 @@ if ( $mode == 'newpm' )
 		//
 		include $phpbb_root_path . 'includes/page_header.php';
 
-		$template->set_filenames(array(
-			'confirm_body' => 'confirm_body.tpl')
-		);
-		$template->assign_vars(array(
-			'MESSAGE_TITLE' => $lang['Information'],
-			'MESSAGE_TEXT' => ( count($mark_list) == 1 ) ? $lang['Confirm_delete_pm'] : $lang['Confirm_delete_pms'], 
+		$template->set_filenames(array('confirm_body' => 'confirm_body.tpl'));
+        $template->assign_vars([
+                'MESSAGE_TITLE' => $lang['Information'],
+                'MESSAGE_TEXT'  => (count($mark_list) == 1) ? $lang['Confirm_delete_pm'] : $lang['Confirm_delete_pms'],
 
-			'L_YES' => $lang['Yes'],
-			'L_NO' => $lang['No'],
+                'L_YES' => $lang['Yes'],
+                'L_NO'  => $lang['No'],
 
-			'S_CONFIRM_ACTION' => append_sid("privmsg.php?folder=$folder"),
-			'S_HIDDEN_FIELDS' => $s_hidden_fields)
-		);
+                'S_CONFIRM_ACTION' => append_sid("privmsg.php?folder=$folder"),
+                'S_HIDDEN_FIELDS'  => $s_hidden_fields
+            ]);
 
-		$template->pparse('confirm_body');
+        $template->pparse('confirm_body');
 
 		include $phpbb_root_path . 'includes/page_tail.php';
 
@@ -1257,11 +1248,13 @@ if ( $mode == 'newpm' )
 			}
 		}
 
-		$template->assign_vars(array(
-			'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("privmsg.php?folder=inbox") . '">')
-		);
+        $template->assign_vars(
+            [
+                'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("privmsg.php?folder=inbox") . '">'
+            ]
+        );
 
-		$msg = $lang['Message_sent'] . '<br /><br />' . sprintf($lang['Click_return_inbox'], '<a href="' . append_sid("privmsg.php?folder=inbox") . '">', '</a> ') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
+        $msg = $lang['Message_sent'] . '<br /><br />' . sprintf($lang['Click_return_inbox'], '<a href="' . append_sid("privmsg.php?folder=inbox") . '">', '</a> ') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
 
 		message_die(GENERAL_MESSAGE, $msg);
 	} elseif ( $preview || $refresh || $error ) {
@@ -1484,11 +1477,9 @@ if ( $mode == 'newpm' )
             $s_hidden_fields .= '<input type="hidden" name="' . POST_POST_URL . '" value="' . $privmsg_id . '" />';
         }
 
-		$template->set_filenames(array(
-			"preview" => 'privmsgs_preview.tpl')
-		);
+        $template->set_filenames(["preview" => 'privmsgs_preview.tpl']);
 
-		$template->assign_vars(array(
+        $template->assign_vars(array(
 			'TOPIC_TITLE' => $preview_subject,
 			'POST_SUBJECT' => $preview_subject,
 			'MESSAGE_TO' => $to_username, 
@@ -1522,10 +1513,8 @@ if ( $mode == 'newpm' )
     //
     // Load templates
 	//
-	$template->set_filenames(array(
-		'body' => 'posting_body.tpl')
-	);
-	make_jumpbox('viewforum.php');
+    $template->set_filenames(['body' => 'posting_body.tpl']);
+    make_jumpbox('viewforum.php');
 
 	//
 	// Enable extensions in posting_body
@@ -1726,9 +1715,7 @@ include $phpbb_root_path . 'includes/page_header.php';
 //
 // Load templates
 //
-$template->set_filenames(array(
-	'body' => 'privmsgs_body.tpl')
-);
+$template->set_filenames(['body' => 'privmsgs_body.tpl']);
 make_jumpbox('viewforum.php');
 
 $orig_word = [];
@@ -2007,20 +1994,21 @@ if ( $row = $db->sql_fetchrow($result) ) {
 	}
 	while ($row = $db->sql_fetchrow($result) );
 
-	$template->assign_vars(array(
-            'PAGINATION' => generate_pagination("privmsg.php?folder=$folder", $pm_total, $board_config['topics_per_page'], $start),
-            'PAGE_NUMBER' => sprintf($lang['Page_of'],
-                floor( $start / $board_config['topics_per_page'] ) + 1, ceil( $pm_total / $board_config['topics_per_page'] )),
+    $template->assign_vars([
+            'PAGINATION'  => generate_pagination("privmsg.php?folder=$folder", $pm_total, $board_config['topics_per_page'], $start),
+            'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $board_config['topics_per_page']) + 1, ceil($pm_total / $board_config['topics_per_page'])),
 
-            'L_GOTO_PAGE' => $lang['Goto_page'])
-	);
+            'L_GOTO_PAGE' => $lang['Goto_page']
+        ]);
 
 } else {
-	$template->assign_vars(array(
-		'L_NO_MESSAGES' => $lang['No_messages_folder'])
-	);
+    $template->assign_vars(
+        [
+            'L_NO_MESSAGES' => $lang['No_messages_folder']
+        ]
+    );
 
-	$template->assign_block_vars("switch_no_messages", [] );
+    $template->assign_block_vars("switch_no_messages", [] );
 }
 
 $template->pparse('body');

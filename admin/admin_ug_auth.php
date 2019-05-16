@@ -742,25 +742,29 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 		$row_class = ( !( $i % 2 ) ) ? 'row2' : 'row1';
 		$row_color = ( !( $i % 2 ) ) ? $theme['td_color1'] : $theme['td_color2'];
 
-		$template->assign_block_vars('forums', array(
-			'ROW_COLOR' => '#' . $row_color,
-			'ROW_CLASS' => $row_class,
-			'FORUM_NAME' => $forum_access[$i]['forum_name'],
+        $template->assign_block_vars('forums', [
+                'ROW_COLOR'  => '#' . $row_color,
+                'ROW_CLASS'  => $row_class,
+                'FORUM_NAME' => $forum_access[$i]['forum_name'],
 
-			'U_FORUM_AUTH' => append_sid("admin_forumauth.php?f=" . $forum_access[$i]['forum_id']),
+                'U_FORUM_AUTH' => append_sid("admin_forumauth.php?f=" . $forum_access[$i]['forum_id']),
 
-			'S_MOD_SELECT' => $optionlist_mod)
-		);
+                'S_MOD_SELECT' => $optionlist_mod
+            ]);
 
         if (!$adv) {
-            $template->assign_block_vars('forums.aclvalues', [
+            $template->assign_block_vars('forums.aclvalues',
+                [
                     'S_ACL_SELECT' => $optionlist_acl
-                ]);
+                ]
+            );
         } else {
             for ($j = 0; $j < count($forum_auth_fields); $j++) {
-                $template->assign_block_vars('forums.aclvalues', [
+                $template->assign_block_vars('forums.aclvalues',
+                    [
                         'S_ACL_SELECT' => $optionlist_acl_adv[$forum_id][$j]
-                    ]);
+                    ]
+                );
             }
         }
 
@@ -835,21 +839,25 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 	if ( $mode == 'user' ) {
         $template->assign_block_vars('switch_user_auth', []);
 
-        $template->assign_vars(array(
-			'USERNAME' => $t_username,
-			'USER_LEVEL' => $lang['User_Level'] . " : " . $s_user_type,
-			'USER_GROUP_MEMBERSHIPS' => $lang['Group_memberships'] . ' : ' . $t_usergroup_list)
-		);
-	} else {
+        $template->assign_vars(
+            [
+                'USERNAME'               => $t_username,
+                'USER_LEVEL'             => $lang['User_Level'] . " : " . $s_user_type,
+                'USER_GROUP_MEMBERSHIPS' => $lang['Group_memberships'] . ' : ' . $t_usergroup_list
+            ]
+        );
+    } else {
         $template->assign_block_vars("switch_group_auth", []);
 
-        $template->assign_vars(array(
-			'USERNAME' => $t_groupname,
-			'GROUP_MEMBERSHIP' => $lang['Usergroup_members'] . ' : ' . $t_usergroup_list . '<br />' . $lang['Pending_members'] . ' : ' . $t_pending_list)
-		);
-	}
+        $template->assign_vars(
+            [
+                'USERNAME'         => $t_groupname,
+                'GROUP_MEMBERSHIP' => $lang['Usergroup_members'] . ' : ' . $t_usergroup_list . '<br />' . $lang['Pending_members'] . ' : ' . $t_pending_list
+            ]
+        );
+    }
 
-	$template->assign_vars(array(
+    $template->assign_vars(array(
 		'L_USER_OR_GROUPNAME' => ( $mode == 'user' ) ? $lang['Username'] : $lang['Group_name'],
 
 		'L_AUTH_TITLE' => ( $mode == 'user' ) ? $lang['Auth_Control_User'] : $lang['Auth_Control_Group'],
@@ -876,12 +884,14 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
     $template->set_filenames(['body' => ($mode == 'user') ? 'admin/user_select_body.tpl' : 'admin/auth_select_body.tpl']);
 
     if ( $mode == 'user' ) {
-		$template->assign_vars(array(
-			'L_FIND_USERNAME' => $lang['Find_username'],
+        $template->assign_vars(
+            [
+                'L_FIND_USERNAME' => $lang['Find_username'],
 
-			'U_SEARCH_USER' => append_sid("../search.php?mode=searchuser"))
-		);
-	} else {
+                'U_SEARCH_USER' => append_sid("../search.php?mode=searchuser")
+            ]
+        );
+    } else {
 		$sql = "SELECT group_id, group_name
 			FROM " . GROUPS_TABLE . "
 			WHERE group_single_user <> " . TRUE;

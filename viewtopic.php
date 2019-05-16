@@ -213,11 +213,13 @@ if ($userdata['session_logged_in'] ) {
 				}
 			}
 
-			$template->assign_vars(array(
-				'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . '">')
-			);
+            $template->assign_vars(
+                [
+                    'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . '">'
+                ]
+            );
 
-			$message = $lang['No_longer_watching'] . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . '">', '</a>');
+            $message = $lang['No_longer_watching'] . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . '">', '</a>');
 			message_die(GENERAL_MESSAGE, $message);
 		} else {
 			$is_watching_topic = TRUE;
@@ -248,11 +250,13 @@ if ($userdata['session_logged_in'] ) {
 				}
 			}
 
-			$template->assign_vars(array(
-				'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . '">')
-			);
+            $template->assign_vars(
+                [
+                    'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . '">'
+                ]
+            );
 
-			$message = $lang['You_are_watching'] . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . '">', '</a>');
+            $message = $lang['You_are_watching'] . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . '">', '</a>');
 			message_die(GENERAL_MESSAGE, $message);
 		} else {
 			$is_watching_topic = 0;
@@ -455,18 +459,18 @@ $view_next_topic_url = append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_i
 //
 // Mozilla navigation bar
 //
-$nav_links['prev'] = array(
-	'url' => $view_prev_topic_url,
-	'title' => $lang['View_previous_topic']
-);
-$nav_links['next'] = array(
-	'url' => $view_next_topic_url,
-	'title' => $lang['View_next_topic']
-);
-$nav_links['up'] = array(
-	'url' => $view_forum_url,
-	'title' => $forum_name
-);
+$nav_links['prev'] = [
+    'url'   => $view_prev_topic_url,
+    'title' => $lang['View_previous_topic']
+];
+$nav_links['next'] = [
+    'url'   => $view_next_topic_url,
+    'title' => $lang['View_next_topic']
+];
+$nav_links['up']   = [
+    'url'   => $view_forum_url,
+    'title' => $forum_name
+];
 
 $reply_img = ( $forum_topic_data['forum_status'] == FORUM_LOCKED || $forum_topic_data['topic_status'] == TOPIC_LOCKED ) ? $images['reply_locked'] : $images['reply_new'];
 $reply_alt = ( $forum_topic_data['forum_status'] == FORUM_LOCKED || $forum_topic_data['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['Reply_to_topic'];
@@ -501,9 +505,7 @@ if ( $userdata['session_logged_in'] ) {
 //
 // Load templates
 //
-$template->set_filenames(array(
-	'body' => 'viewtopic_body.tpl')
-);
+$template->set_filenames(['body' => 'viewtopic_body.tpl']);
 make_jumpbox('viewforum.php', $forum_id);
 
 //
@@ -648,11 +650,9 @@ if ( !empty($forum_topic_data['topic_vote']) ) {
 		$poll_expired = $vote_info[0]['vote_length'] ? ( ($vote_info[0]['vote_start'] + $vote_info[0]['vote_length'] < time() ) ? true : 0 ) : 0;
 
 		if ( $user_voted || $view_result || $poll_expired || !$is_auth['auth_vote'] || $forum_topic_data['topic_status'] == TOPIC_LOCKED ) {
-			$template->set_filenames(array(
-				'pollbox' => 'viewtopic_poll_result.tpl')
-			);
+            $template->set_filenames(['pollbox' => 'viewtopic_poll_result.tpl']);
 
-			$vote_results_sum = 0;
+            $vote_results_sum = 0;
 
 			for ($i = 0; $i < $vote_options; $i++) {
 				$vote_results_sum += $vote_info[$i]['vote_result'];
@@ -672,15 +672,17 @@ if ( !empty($forum_topic_data['topic_vote']) ) {
 					$vote_info[$i]['vote_option_text'] = preg_replace($orig_word, $replacement_word, $vote_info[$i]['vote_option_text']);
 				}
 
-				$template->assign_block_vars("poll_option", array(
+                $template->assign_block_vars("poll_option",
+                    [
                         'POLL_OPTION_CAPTION' => $vote_info[$i]['vote_option_text'],
-                        'POLL_OPTION_RESULT' => $vote_info[$i]['vote_result'],
+                        'POLL_OPTION_RESULT'  => $vote_info[$i]['vote_result'],
                         'POLL_OPTION_PERCENT' => sprintf("%.1d%%", $vote_percent * 100),
 
-                        'POLL_OPTION_IMG' => $vote_graphic_img,
-                        'POLL_OPTION_IMG_WIDTH' => $vote_graphic_length)
-				);
-			}
+                        'POLL_OPTION_IMG'       => $vote_graphic_img,
+                        'POLL_OPTION_IMG_WIDTH' => $vote_graphic_length
+                    ]
+                );
+            }
 
 			$template->assign_vars(array(
 				'L_TOTAL_VOTES' => $lang['Total_votes'],
@@ -697,20 +699,24 @@ if ( !empty($forum_topic_data['topic_vote']) ) {
 					$vote_info[$i]['vote_option_text'] = preg_replace($orig_word, $replacement_word, $vote_info[$i]['vote_option_text']);
 				}
 
-				$template->assign_block_vars("poll_option", array(
-					'POLL_OPTION_ID' => $vote_info[$i]['vote_option_id'],
-					'POLL_OPTION_CAPTION' => $vote_info[$i]['vote_option_text'])
-				);
-			}
+                $template->assign_block_vars("poll_option",
+                    [
+                        'POLL_OPTION_ID'      => $vote_info[$i]['vote_option_id'],
+                        'POLL_OPTION_CAPTION' => $vote_info[$i]['vote_option_text']
+                    ]
+                );
+            }
 
-			$template->assign_vars(array(
-				'L_SUBMIT_VOTE' => $lang['Submit_vote'],
-				'L_VIEW_RESULTS' => $lang['View_results'],
+            $template->assign_vars(
+                [
+                    'L_SUBMIT_VOTE'  => $lang['Submit_vote'],
+                    'L_VIEW_RESULTS' => $lang['View_results'],
 
-				'U_VIEW_RESULTS' => append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order&amp;vote=viewresult"))
-			);
+                    'U_VIEW_RESULTS' => append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order&amp;vote=viewresult")
+                ]
+            );
 
-			$s_hidden_fields = '<input type="hidden" name="topic_id" value="' . $topic_id . '" /><input type="hidden" name="mode" value="vote" />';
+            $s_hidden_fields = '<input type="hidden" name="topic_id" value="' . $topic_id . '" /><input type="hidden" name="mode" value="vote" />';
 		}
 
 		if ( count($orig_word) ) {
@@ -719,14 +725,16 @@ if ( !empty($forum_topic_data['topic_vote']) ) {
 
 		$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
-		$template->assign_vars(array(
-			'POLL_QUESTION' => $vote_title,
+        $template->assign_vars(
+            [
+                'POLL_QUESTION' => $vote_title,
 
-			'S_HIDDEN_FIELDS' => $s_hidden_fields,
-			'S_POLL_ACTION' => append_sid("posting.php?mode=vote&amp;" . POST_TOPIC_URL . "=$topic_id"))
-		);
+                'S_HIDDEN_FIELDS' => $s_hidden_fields,
+                'S_POLL_ACTION'   => append_sid("posting.php?mode=vote&amp;" . POST_TOPIC_URL . "=$topic_id")
+            ]
+        );
 
-		$template->assign_var_from_handle('POLL_DISPLAY', 'pollbox');
+        $template->assign_var_from_handle('POLL_DISPLAY', 'pollbox');
 	}
 }
 

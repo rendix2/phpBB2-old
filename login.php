@@ -112,11 +112,13 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 					message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
 				}
 
-				$template->assign_vars(array(
-					'META' => "<meta http-equiv=\"refresh\" content=\"3;url=login.php?redirect=$redirect\">")
-				);
+                $template->assign_vars(
+                    [
+                        'META' => "<meta http-equiv=\"refresh\" content=\"3;url=login.php?redirect=$redirect\">"
+                    ]
+                );
 
-				$message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], "<a href=\"login.php?redirect=$redirect\">", '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
+                $message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], "<a href=\"login.php?redirect=$redirect\">", '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
 
 				message_die(GENERAL_MESSAGE, $message);
 			}
@@ -128,11 +130,13 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 				message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
 			}
 
-			$template->assign_vars(array(
-				'META' => "<meta http-equiv=\"refresh\" content=\"3;url=login.php?redirect=$redirect\">")
-			);
+            $template->assign_vars(
+                [
+                    'META' => "<meta http-equiv=\"refresh\" content=\"3;url=login.php?redirect=$redirect\">"
+                ]
+            );
 
-			$message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], "<a href=\"login.php?redirect=$redirect\">", '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
+            $message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], "<a href=\"login.php?redirect=$redirect\">", '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		}
@@ -166,11 +170,9 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 		$page_title = $lang['Login'];
 		include $phpbb_root_path . 'includes/page_header.php';
 
-		$template->set_filenames(array(
-			'body' => 'login_body.tpl')
-		);
+        $template->set_filenames(['body' => 'login_body.tpl']);
 
-		$forward_page = '';
+        $forward_page = '';
 
 		if (isset($_POST['redirect']) || isset($_GET['redirect']) ) {
 			$forward_to = $_SERVER['QUERY_STRING'];
@@ -203,18 +205,20 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 		$s_hidden_fields .= isset($_GET['admin']) ? '<input type="hidden" name="admin" value="1" />' : '';
 
 		make_jumpbox('viewforum.php');
-		$template->assign_vars(array(
+        $template->assign_vars(
+            [
                 'USERNAME' => $username,
 
                 'L_ENTER_PASSWORD' => isset($_GET['admin']) ? $lang['Admin_reauthenticate'] : $lang['Enter_password'],
-                'L_SEND_PASSWORD' => $lang['Forgotten_password'],
+                'L_SEND_PASSWORD'  => $lang['Forgotten_password'],
 
                 'U_SEND_PASSWORD' => append_sid("profile.php?mode=sendpassword"),
 
-                'S_HIDDEN_FIELDS' => $s_hidden_fields)
-		);
+                'S_HIDDEN_FIELDS' => $s_hidden_fields
+            ]
+        );
 
-		$template->pparse('body');
+        $template->pparse('body');
 
 		include $phpbb_root_path . 'includes/page_tail.php';
 	} else {

@@ -192,18 +192,20 @@ while ( $row = $db->sql_fetchrow($result) ) {
 		$row_color = ( $$which_counter % 2 ) ? $theme['td_color1'] : $theme['td_color2'];
 		$row_class = ( $$which_counter % 2 ) ? $theme['td_class1'] : $theme['td_class2'];
 
-		$template->assign_block_vars((string)$which_row, array(
-			'ROW_COLOR' => '#' . $row_color,
-			'ROW_CLASS' => $row_class,
-			'USERNAME' => $username,
-			'LASTUPDATE' => create_date($board_config['default_dateformat'], $row['session_time'], $board_config['board_timezone']),
-			'FORUM_LOCATION' => $location,
+        $template->assign_block_vars((string)$which_row,
+            [
+                'ROW_COLOR'      => '#' . $row_color,
+                'ROW_CLASS'      => $row_class,
+                'USERNAME'       => $username,
+                'LASTUPDATE'     => create_date($board_config['default_dateformat'], $row['session_time'], $board_config['board_timezone']),
+                'FORUM_LOCATION' => $location,
 
-			'U_USER_PROFILE' => append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . '=' . $user_id),
-			'U_FORUM_LOCATION' => append_sid($location_url))
-		);
+                'U_USER_PROFILE'   => append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . '=' . $user_id),
+                'U_FORUM_LOCATION' => append_sid($location_url)
+            ]
+        );
 
-		$$which_counter++;
+        $$which_counter++;
 	}
 }
 
@@ -231,9 +233,11 @@ if ($guest_users == 0) {
     $l_g_user_s = $lang['Guest_users_online'];
 }
 
-$template->assign_vars(array(
-	'TOTAL_REGISTERED_USERS_ONLINE' => sprintf($l_r_user_s, $registered_users) . sprintf($l_h_user_s, $hidden_users), 
-	'TOTAL_GUEST_USERS_ONLINE' => sprintf($l_g_user_s, $guest_users))
+$template->assign_vars(
+    [
+        'TOTAL_REGISTERED_USERS_ONLINE' => sprintf($l_r_user_s, $registered_users) . sprintf($l_h_user_s, $hidden_users),
+        'TOTAL_GUEST_USERS_ONLINE'      => sprintf($l_g_user_s, $guest_users)
+    ]
 );
 
 if ($registered_users + $hidden_users == 0) {

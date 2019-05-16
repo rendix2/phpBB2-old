@@ -99,7 +99,13 @@ if ( !empty($_POST['search_time']) || !empty($_GET['search_time'])) {
 $start = isset($_GET['start']) ? (int)$_GET['start'] : 0;
 $start = ($start < 0) ? 0 : $start;
 
-$sort_by_types = array($lang['Sort_Time'], $lang['Sort_Post_Subject'], $lang['Sort_Topic_Title'], $lang['Sort_Author'], $lang['Sort_Forum']);
+$sort_by_types = [
+    $lang['Sort_Time'],
+    $lang['Sort_Post_Subject'],
+    $lang['Sort_Topic_Title'],
+    $lang['Sort_Author'],
+    $lang['Sort_Forum']
+];
 
 //
 // encoding match for workaround
@@ -123,8 +129,16 @@ if ($mode == 'searchuser') {
 }
 elseif ( $search_keywords != '' || $search_author != '' || $search_id )
 {
-	$store_vars = array('search_results', 'total_match_count', 'split_search', 'sort_by', 'sort_dir', 'show_results', 'return_chars');
-	$search_results = '';
+    $store_vars = [
+        'search_results',
+        'total_match_count',
+        'split_search',
+        'sort_by',
+        'sort_dir',
+        'show_results',
+        'return_chars'
+    ];
+    $search_results = '';
 
 	//
 	// Search ID Limiter, decrease this value if you experience further timeout problems with searching forums
@@ -264,16 +278,13 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
 			$word_match = [];
 			$result_list = [];
 
-			for ($i = 0; $i < count($split_search); $i++)
-			{
-				if ( strlen(str_replace(array('*', '%'), '', trim($split_search[$i]))) < $board_config['search_min_chars'] )
-				{
+			for ($i = 0; $i < count($split_search); $i++) {
+                if (strlen(str_replace(['*', '%'], '', trim($split_search[$i]))) < $board_config['search_min_chars']) {
 					$split_search[$i] = '';
 					continue;
 				}
 
-				switch ( $split_search[$i] )
-				{
+				switch ( $split_search[$i] ) {
 					case 'and':
 						$current_match_type = 'and';
 						break;
@@ -1218,8 +1229,17 @@ for ($i = 0; $i < count($sort_by_types); $i++) {
 //
 // Search time
 //
-$previous_days = array(0, 1, 7, 14, 30, 90, 180, 364);
-$previous_days_text = array($lang['All_Posts'], $lang['1_Day'], $lang['7_Days'], $lang['2_Weeks'], $lang['1_Month'], $lang['3_Months'], $lang['6_Months'], $lang['1_Year']);
+$previous_days = [0, 1, 7, 14, 30, 90, 180, 364];
+$previous_days_text = [
+    $lang['All_Posts'],
+    $lang['1_Day'],
+    $lang['7_Days'],
+    $lang['2_Weeks'],
+    $lang['1_Month'],
+    $lang['3_Months'],
+    $lang['6_Months'],
+    $lang['1_Year']
+];
 
 $s_time = '';
 
@@ -1234,9 +1254,7 @@ for ($i = 0; $i < count($previous_days); $i++) {
 $page_title = $lang['Search'];
 include $phpbb_root_path . 'includes/page_header.php';
 
-$template->set_filenames(array(
-	'body' => 'search_body.tpl')
-);
+$template->set_filenames(['body' => 'search_body.tpl']);
 make_jumpbox('viewforum.php');
 
 $template->assign_vars(array(
