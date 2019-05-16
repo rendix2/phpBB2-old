@@ -57,14 +57,14 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 		{
 			if (count($headers) > 1)
 			{
-				$headers = join("\n", $headers);
+				$headers = implode("\n", $headers);
 			}
 			else
 			{
 				$headers = $headers[0];
 			}
 		}
-		$headers = chop($headers);
+		$headers = rtrim($headers);
 
 		// Make sure there are no bare linefeeds in the headers
 		$headers = preg_replace('#(?<!\r)\n#si', "\r\n", $headers);
@@ -90,7 +90,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 			$headers .= ($header != '') ? $header . "\r\n" : '';
 		}
 
-		$headers = chop($headers);
+		$headers = rtrim($headers);
 		$cc = explode(', ', $cc);
 		$bcc = explode(', ', $bcc);
 	}

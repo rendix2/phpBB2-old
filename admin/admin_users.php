@@ -235,7 +235,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 
 		$user_style = isset( $_POST['style'] ) ? (int)$_POST['style'] : $board_config['default_style'];
 		$user_lang = $_POST['language'] ? $_POST['language'] : $board_config['default_lang'];
-		$user_timezone = isset( $_POST['timezone']) ? doubleval($_POST['timezone'] ) : $board_config['board_timezone'];
+		$user_timezone = isset( $_POST['timezone']) ? (float)$_POST['timezone'] : $board_config['board_timezone'];
 		$user_dateformat = $_POST['dateformat'] ? trim($_POST['dateformat'] ) : $board_config['default_dateformat'];
 
 		$user_avatar_local = ( isset( $_POST['avatarselect'] ) && !empty($_POST['submitavatar'] ) && $board_config['allow_avatar_local'] ) ? $_POST['avatarselect'] : ( isset( $_POST['avatarlocal'] ) ? $_POST['avatarlocal'] : '' );

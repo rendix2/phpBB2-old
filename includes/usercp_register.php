@@ -166,7 +166,7 @@ if (
 		$user_lang = $board_config['default_lang'];
 	}
 
-	$user_timezone = isset($_POST['timezone']) ? doubleval($_POST['timezone']) : $board_config['board_timezone'];
+	$user_timezone = isset($_POST['timezone']) ? (float)$_POST['timezone'] : $board_config['board_timezone'];
 
 	$sql = "SELECT config_value
 		FROM " . CONFIG_TABLE . "

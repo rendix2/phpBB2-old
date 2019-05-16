@@ -175,7 +175,7 @@ function get_userdata($user, $force_str = false)
 		FROM " . USERS_TABLE . " 
 		WHERE ";
 
-	$sql .= ( is_integer($user) ? "user_id = $user" : "username = '" .  str_replace("\'", "''", $user) . "'" ) . " AND user_id <> " . ANONYMOUS;
+	$sql .= ( is_int($user) ? "user_id = $user" : "username = '" .  str_replace("\'", "''", $user) . "'" ) . " AND user_id <> " . ANONYMOUS;
 
 	if ( !($result = $db->sql_query($sql)) ) {
 		message_die(GENERAL_ERROR, 'Tried obtaining data for a non-existent user', '', __LINE__, __FILE__, $sql);

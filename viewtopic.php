@@ -567,7 +567,7 @@ $template->assign_vars(array(
         'TOPIC_TITLE' => $topic_title,
         'PAGINATION' => $pagination,
         'PAGE_NUMBER' => sprintf($lang['Page_of'],
-            floor( $start / intval($board_config['posts_per_page']) ) + 1, ceil( $total_replies / (int)$board_config['posts_per_page'])),
+            floor( $start / (int)$board_config['posts_per_page']) + 1, ceil( $total_replies / (int)$board_config['posts_per_page'])),
 
         'POST_IMG' => $post_img,
         'REPLY_IMG' => $reply_img,
