@@ -378,9 +378,7 @@ define('SHOW_ONLINE', true);
 $page_title = $lang['View_forum'] . ' - ' . $forum_row['forum_name'];
 include $phpbb_root_path . 'includes/page_header.php';
 
-$template->set_filenames(array(
-	'body' => 'viewforum_body.tpl')
-);
+$template->set_filenames(['body' => 'viewforum_body.tpl']);
 make_jumpbox('viewforum.php');
 
 $template->assign_vars(array(

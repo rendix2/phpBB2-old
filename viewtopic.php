@@ -684,17 +684,16 @@ if ( !empty($forum_topic_data['topic_vote']) ) {
                 );
             }
 
-			$template->assign_vars(array(
-				'L_TOTAL_VOTES' => $lang['Total_votes'],
-				'TOTAL_VOTES' => $vote_results_sum)
-			);
+            $template->assign_vars(
+                [
+                    'L_TOTAL_VOTES' => $lang['Total_votes'],
+                    'TOTAL_VOTES'   => $vote_results_sum
+                ]
+            );
+        } else {
+            $template->set_filenames(['pollbox' => 'viewtopic_poll_ballot.tpl']);
 
-		} else {
-			$template->set_filenames(array(
-				'pollbox' => 'viewtopic_poll_ballot.tpl')
-			);
-
-			for ($i = 0; $i < $vote_options; $i++) {
+            for ($i = 0; $i < $vote_options; $i++) {
 				if ( count($orig_word) ) {
 					$vote_info[$i]['vote_option_text'] = preg_replace($orig_word, $replacement_word, $vote_info[$i]['vote_option_text']);
 				}

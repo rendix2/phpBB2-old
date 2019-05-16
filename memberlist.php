@@ -92,31 +92,31 @@ $page_title = $lang['Memberlist'];
 
 include $phpbb_root_path . 'includes/page_header.php';
 
-$template->set_filenames(array(
-	'body' => 'memberlist_body.tpl')
-);
+$template->set_filenames(['body' => 'memberlist_body.tpl']);
 
 make_jumpbox('viewforum.php');
 
-$template->assign_vars(array(
-	'L_SELECT_SORT_METHOD' => $lang['Select_sort_method'],
-	'L_EMAIL' => $lang['Email'],
-	'L_WEBSITE' => $lang['Website'],
-	'L_FROM' => $lang['Location'],
-	'L_ORDER' => $lang['Order'],
-	'L_SORT' => $lang['Sort'],
-	'L_SUBMIT' => $lang['Sort'],
-	'L_AIM' => $lang['AIM'],
-	'L_YIM' => $lang['YIM'],
-	'L_MSNM' => $lang['MSNM'],
-	'L_ICQ' => $lang['ICQ'], 
-	'L_JOINED' => $lang['Joined'], 
-	'L_POSTS' => $lang['Posts'], 
-	'L_PM' => $lang['Private_Message'], 
+$template->assign_vars(
+    [
+        'L_SELECT_SORT_METHOD' => $lang['Select_sort_method'],
+        'L_EMAIL'              => $lang['Email'],
+        'L_WEBSITE'            => $lang['Website'],
+        'L_FROM'               => $lang['Location'],
+        'L_ORDER'              => $lang['Order'],
+        'L_SORT'               => $lang['Sort'],
+        'L_SUBMIT'             => $lang['Sort'],
+        'L_AIM'                => $lang['AIM'],
+        'L_YIM'                => $lang['YIM'],
+        'L_MSNM'               => $lang['MSNM'],
+        'L_ICQ'                => $lang['ICQ'],
+        'L_JOINED'             => $lang['Joined'],
+        'L_POSTS'              => $lang['Posts'],
+        'L_PM'                 => $lang['Private_Message'],
 
-	'S_MODE_SELECT' => $select_sort_mode,
-	'S_ORDER_SELECT' => $select_sort_order,
-	'S_MODE_ACTION' => append_sid("memberlist.php"))
+        'S_MODE_SELECT'  => $select_sort_mode,
+        'S_ORDER_SELECT' => $select_sort_order,
+        'S_MODE_ACTION'  => append_sid("memberlist.php")
+    ]
 );
 
 switch( $mode ) {
@@ -231,39 +231,41 @@ if ( $row = $db->sql_fetchrow($result) ) {
 		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-		$template->assign_block_vars('memberrow', array(
-			'ROW_NUMBER' => $i + ( $start + 1 ),
-			'ROW_COLOR' => '#' . $row_color,
-			'ROW_CLASS' => $row_class,
-			'USERNAME' => $username,
-			'FROM' => $from,
-			'JOINED' => $joined,
-			'POSTS' => $posts,
-			'AVATAR_IMG' => $poster_avatar,
-			'PROFILE_IMG' => $profile_img, 
-			'PROFILE' => $profile, 
-			'SEARCH_IMG' => $search_img,
-			'SEARCH' => $search,
-			'PM_IMG' => $pm_img,
-			'PM' => $pm,
-			'EMAIL_IMG' => $email_img,
-			'EMAIL' => $email,
-			'WWW_IMG' => $www_img,
-			'WWW' => $www,
-			'ICQ_STATUS_IMG' => $icq_status_img,
-			'ICQ_IMG' => $icq_img, 
-			'ICQ' => $icq, 
-			'AIM_IMG' => $aim_img,
-			'AIM' => $aim,
-			'MSN_IMG' => $msn_img,
-			'MSN' => $msn,
-			'YIM_IMG' => $yim_img,
-			'YIM' => $yim,
-			
-			'U_VIEWPROFILE' => append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id"))
-		);
+        $template->assign_block_vars('memberrow',
+            [
+                'ROW_NUMBER'     => $i + ($start + 1),
+                'ROW_COLOR'      => '#' . $row_color,
+                'ROW_CLASS'      => $row_class,
+                'USERNAME'       => $username,
+                'FROM'           => $from,
+                'JOINED'         => $joined,
+                'POSTS'          => $posts,
+                'AVATAR_IMG'     => $poster_avatar,
+                'PROFILE_IMG'    => $profile_img,
+                'PROFILE'        => $profile,
+                'SEARCH_IMG'     => $search_img,
+                'SEARCH'         => $search,
+                'PM_IMG'         => $pm_img,
+                'PM'             => $pm,
+                'EMAIL_IMG'      => $email_img,
+                'EMAIL'          => $email,
+                'WWW_IMG'        => $www_img,
+                'WWW'            => $www,
+                'ICQ_STATUS_IMG' => $icq_status_img,
+                'ICQ_IMG'        => $icq_img,
+                'ICQ'            => $icq,
+                'AIM_IMG'        => $aim_img,
+                'AIM'            => $aim,
+                'MSN_IMG'        => $msn_img,
+                'MSN'            => $msn,
+                'YIM_IMG'        => $yim_img,
+                'YIM'            => $yim,
 
-		$i++;
+                'U_VIEWPROFILE' => append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id")
+            ]
+        );
+
+        $i++;
 	}
 	while ( $row = $db->sql_fetchrow($result) );
 	
@@ -291,12 +293,13 @@ if ( $mode != 'topten' || $board_config['topics_per_page'] < 10 ) {
 	$total_members = 10;
 }
 
-$template->assign_vars(array(
-        'PAGINATION' => $pagination,
-        'PAGE_NUMBER' => sprintf($lang['Page_of'],
-            floor( $start / $board_config['topics_per_page'] ) + 1, ceil( $total_members / $board_config['topics_per_page'] )),
+$template->assign_vars(
+    [
+        'PAGINATION'  => $pagination,
+        'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $board_config['topics_per_page']) + 1, ceil($total_members / $board_config['topics_per_page'])),
 
-        'L_GOTO_PAGE' => $lang['Goto_page'])
+        'L_GOTO_PAGE' => $lang['Goto_page']
+    ]
 );
 
 $template->pparse('body');

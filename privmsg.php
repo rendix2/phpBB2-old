@@ -415,47 +415,49 @@ if ( $mode == 'newpm' ) {
     $template->set_filenames(['body' => 'privmsgs_read_body.tpl']);
     make_jumpbox('viewforum.php');
 
-	$template->assign_vars(array(
-		'INBOX_IMG' => $inbox_img, 
-		'SENTBOX_IMG' => $sentbox_img, 
-		'OUTBOX_IMG' => $outbox_img, 
-		'SAVEBOX_IMG' => $savebox_img, 
-		'INBOX' => $inbox_url, 
+    $template->assign_vars(
+        [
+            'INBOX_IMG'   => $inbox_img,
+            'SENTBOX_IMG' => $sentbox_img,
+            'OUTBOX_IMG'  => $outbox_img,
+            'SAVEBOX_IMG' => $savebox_img,
+            'INBOX'       => $inbox_url,
 
-		'POST_PM_IMG' => $post_img, 
-		'REPLY_PM_IMG' => $reply_img, 
-		'EDIT_PM_IMG' => $edit_img, 
-		'QUOTE_PM_IMG' => $quote_img, 
-		'POST_PM' => $post, 
-		'REPLY_PM' => $reply, 
-		'EDIT_PM' => $edit, 
-		'QUOTE_PM' => $quote, 
+            'POST_PM_IMG'  => $post_img,
+            'REPLY_PM_IMG' => $reply_img,
+            'EDIT_PM_IMG'  => $edit_img,
+            'QUOTE_PM_IMG' => $quote_img,
+            'POST_PM'      => $post,
+            'REPLY_PM'     => $reply,
+            'EDIT_PM'      => $edit,
+            'QUOTE_PM'     => $quote,
 
-		'SENTBOX' => $sentbox_url, 
-		'OUTBOX' => $outbox_url, 
-		'SAVEBOX' => $savebox_url, 
+            'SENTBOX' => $sentbox_url,
+            'OUTBOX'  => $outbox_url,
+            'SAVEBOX' => $savebox_url,
 
-		'BOX_NAME' => $l_box_name, 
+            'BOX_NAME' => $l_box_name,
 
-		'L_MESSAGE' => $lang['Message'], 
-		'L_INBOX' => $lang['Inbox'],
-		'L_OUTBOX' => $lang['Outbox'],
-		'L_SENTBOX' => $lang['Sent'],
-		'L_SAVEBOX' => $lang['Saved'],
-		'L_FLAG' => $lang['Flag'],
-		'L_SUBJECT' => $lang['Subject'],
-		'L_POSTED' => $lang['Posted'], 
-		'L_DATE' => $lang['Date'],
-		'L_FROM' => $lang['From'],
-		'L_TO' => $lang['To'], 
-		'L_SAVE_MSG' => $lang['Save_message'], 
-		'L_DELETE_MSG' => $lang['Delete_message'], 
+            'L_MESSAGE'    => $lang['Message'],
+            'L_INBOX'      => $lang['Inbox'],
+            'L_OUTBOX'     => $lang['Outbox'],
+            'L_SENTBOX'    => $lang['Sent'],
+            'L_SAVEBOX'    => $lang['Saved'],
+            'L_FLAG'       => $lang['Flag'],
+            'L_SUBJECT'    => $lang['Subject'],
+            'L_POSTED'     => $lang['Posted'],
+            'L_DATE'       => $lang['Date'],
+            'L_FROM'       => $lang['From'],
+            'L_TO'         => $lang['To'],
+            'L_SAVE_MSG'   => $lang['Save_message'],
+            'L_DELETE_MSG' => $lang['Delete_message'],
 
-		'S_PRIVMSGS_ACTION' => append_sid("privmsg.php?folder=$folder"),
-		'S_HIDDEN_FIELDS' => $s_hidden_fields)
-	);
-	
-	$username_from = $privmsg['username_1'];
+            'S_PRIVMSGS_ACTION' => append_sid("privmsg.php?folder=$folder"),
+            'S_HIDDEN_FIELDS'   => $s_hidden_fields
+        ]
+    );
+
+    $username_from = $privmsg['username_1'];
 	$user_id_from = $privmsg['user_id_1'];
 	$username_to = $privmsg['username_2'];
 	$user_id_to = $privmsg['user_id_2'];
@@ -629,8 +631,9 @@ if ( $mode == 'newpm' ) {
 		//
 		include $phpbb_root_path . 'includes/page_header.php';
 
-		$template->set_filenames(array('confirm_body' => 'confirm_body.tpl'));
-        $template->assign_vars([
+        $template->set_filenames(['confirm_body' => 'confirm_body.tpl']);
+        $template->assign_vars(
+            [
                 'MESSAGE_TITLE' => $lang['Information'],
                 'MESSAGE_TEXT'  => (count($mark_list) == 1) ? $lang['Confirm_delete_pm'] : $lang['Confirm_delete_pms'],
 
@@ -639,7 +642,8 @@ if ( $mode == 'newpm' ) {
 
                 'S_CONFIRM_ACTION' => append_sid("privmsg.php?folder=$folder"),
                 'S_HIDDEN_FIELDS'  => $s_hidden_fields
-            ]);
+            ]
+        );
 
         $template->pparse('confirm_body');
 

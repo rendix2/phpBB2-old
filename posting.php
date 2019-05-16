@@ -876,28 +876,28 @@ $template->assign_block_vars('switch_not_privmsg', []);
 //
 // Output the data to the template
 //
-$template->assign_vars(array(
-        'USERNAME' => $username,
-        'SUBJECT' => $subject,
-        'MESSAGE' => $message,
-        'HTML_STATUS' => $html_status,
-        'BBCODE_STATUS' => sprintf($bbcode_status, '<a href="' . append_sid("faq.php?mode=bbcode") . '" target="_phpbbcode">', '</a>'),
+$template->assign_vars([
+        'USERNAME'       => $username,
+        'SUBJECT'        => $subject,
+        'MESSAGE'        => $message,
+        'HTML_STATUS'    => $html_status,
+        'BBCODE_STATUS'  => sprintf($bbcode_status, '<a href="' . append_sid("faq.php?mode=bbcode") . '" target="_phpbbcode">', '</a>'),
         'SMILIES_STATUS' => $smilies_status,
 
-        'L_SUBJECT' => $lang['Subject'],
-        'L_MESSAGE_BODY' => $lang['Message_body'],
-        'L_OPTIONS' => $lang['Options'],
-        'L_PREVIEW' => $lang['Preview'],
-        'L_SPELLCHECK' => $lang['Spellcheck'],
-        'L_SUBMIT' => $lang['Submit'],
-        'L_CANCEL' => $lang['Cancel'],
-        'L_CONFIRM_DELETE' => $lang['Confirm_delete'],
-        'L_DISABLE_HTML' => $lang['Disable_HTML_post'],
-        'L_DISABLE_BBCODE' => $lang['Disable_BBCode_post'],
-        'L_DISABLE_SMILIES' => $lang['Disable_Smilies_post'],
+        'L_SUBJECT'          => $lang['Subject'],
+        'L_MESSAGE_BODY'     => $lang['Message_body'],
+        'L_OPTIONS'          => $lang['Options'],
+        'L_PREVIEW'          => $lang['Preview'],
+        'L_SPELLCHECK'       => $lang['Spellcheck'],
+        'L_SUBMIT'           => $lang['Submit'],
+        'L_CANCEL'           => $lang['Cancel'],
+        'L_CONFIRM_DELETE'   => $lang['Confirm_delete'],
+        'L_DISABLE_HTML'     => $lang['Disable_HTML_post'],
+        'L_DISABLE_BBCODE'   => $lang['Disable_BBCode_post'],
+        'L_DISABLE_SMILIES'  => $lang['Disable_Smilies_post'],
         'L_ATTACH_SIGNATURE' => $lang['Attach_signature'],
-        'L_NOTIFY_ON_REPLY' => $lang['Notify'],
-        'L_DELETE_POST' => $lang['Delete_post'],
+        'L_NOTIFY_ON_REPLY'  => $lang['Notify'],
+        'L_DELETE_POST'      => $lang['Delete_post'],
 
         'L_BBCODE_B_HELP' => $lang['bbcode_b_help'],
         'L_BBCODE_I_HELP' => $lang['bbcode_i_help'],
@@ -913,46 +913,46 @@ $template->assign_vars(array(
         'L_BBCODE_F_HELP' => $lang['bbcode_f_help'],
         'L_EMPTY_MESSAGE' => $lang['Empty_message'],
 
-        'L_FONT_COLOR' => $lang['Font_color'],
-        'L_COLOR_DEFAULT' => $lang['color_default'],
-        'L_COLOR_DARK_RED' => $lang['color_dark_red'],
-        'L_COLOR_RED' => $lang['color_red'],
-        'L_COLOR_ORANGE' => $lang['color_orange'],
-        'L_COLOR_BROWN' => $lang['color_brown'],
-        'L_COLOR_YELLOW' => $lang['color_yellow'],
-        'L_COLOR_GREEN' => $lang['color_green'],
-        'L_COLOR_OLIVE' => $lang['color_olive'],
-        'L_COLOR_CYAN' => $lang['color_cyan'],
-        'L_COLOR_BLUE' => $lang['color_blue'],
+        'L_FONT_COLOR'      => $lang['Font_color'],
+        'L_COLOR_DEFAULT'   => $lang['color_default'],
+        'L_COLOR_DARK_RED'  => $lang['color_dark_red'],
+        'L_COLOR_RED'       => $lang['color_red'],
+        'L_COLOR_ORANGE'    => $lang['color_orange'],
+        'L_COLOR_BROWN'     => $lang['color_brown'],
+        'L_COLOR_YELLOW'    => $lang['color_yellow'],
+        'L_COLOR_GREEN'     => $lang['color_green'],
+        'L_COLOR_OLIVE'     => $lang['color_olive'],
+        'L_COLOR_CYAN'      => $lang['color_cyan'],
+        'L_COLOR_BLUE'      => $lang['color_blue'],
         'L_COLOR_DARK_BLUE' => $lang['color_dark_blue'],
-        'L_COLOR_INDIGO' => $lang['color_indigo'],
-        'L_COLOR_VIOLET' => $lang['color_violet'],
-        'L_COLOR_WHITE' => $lang['color_white'],
-        'L_COLOR_BLACK' => $lang['color_black'],
+        'L_COLOR_INDIGO'    => $lang['color_indigo'],
+        'L_COLOR_VIOLET'    => $lang['color_violet'],
+        'L_COLOR_WHITE'     => $lang['color_white'],
+        'L_COLOR_BLACK'     => $lang['color_black'],
 
-        'L_FONT_SIZE' => $lang['Font_size'],
-        'L_FONT_TINY' => $lang['font_tiny'],
-        'L_FONT_SMALL' => $lang['font_small'],
+        'L_FONT_SIZE'   => $lang['Font_size'],
+        'L_FONT_TINY'   => $lang['font_tiny'],
+        'L_FONT_SMALL'  => $lang['font_small'],
         'L_FONT_NORMAL' => $lang['font_normal'],
-        'L_FONT_LARGE' => $lang['font_large'],
-        'L_FONT_HUGE' => $lang['font_huge'],
+        'L_FONT_LARGE'  => $lang['font_large'],
+        'L_FONT_HUGE'   => $lang['font_huge'],
 
         'L_BBCODE_CLOSE_TAGS' => $lang['Close_Tags'],
-        'L_STYLES_TIP' => $lang['Styles_tip'],
+        'L_STYLES_TIP'        => $lang['Styles_tip'],
 
-        'U_VIEWTOPIC' => $mode == 'reply' ? append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;postorder=desc") : '',
+        'U_VIEWTOPIC'    => $mode == 'reply' ? append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;postorder=desc") : '',
         'U_REVIEW_TOPIC' => $mode == 'reply' ? append_sid("posting.php?mode=topicreview&amp;" . POST_TOPIC_URL . "=$topic_id") : '',
 
-        'S_HTML_CHECKED' => ( !$html_on ) ? 'checked="checked"' : '',
-        'S_BBCODE_CHECKED' => ( !$bbcode_on ) ? 'checked="checked"' : '',
-        'S_SMILIES_CHECKED' => ( !$smilies_on ) ? 'checked="checked"' : '',
-        'S_SIGNATURE_CHECKED' => $attach_sig ? 'checked="checked"' : '',
-        'S_NOTIFY_CHECKED' => $notify_user ? 'checked="checked"' : '',
-        'S_TYPE_TOGGLE' => $topic_type_toggle,
-        'S_TOPIC_ID' => $topic_id,
-        'S_POST_ACTION' => append_sid("posting.php"),
-        'S_HIDDEN_FORM_FIELDS' => $hidden_form_fields)
-);
+        'S_HTML_CHECKED'       => (!$html_on) ? 'checked="checked"' : '',
+        'S_BBCODE_CHECKED'     => (!$bbcode_on) ? 'checked="checked"' : '',
+        'S_SMILIES_CHECKED'    => (!$smilies_on) ? 'checked="checked"' : '',
+        'S_SIGNATURE_CHECKED'  => $attach_sig ? 'checked="checked"' : '',
+        'S_NOTIFY_CHECKED'     => $notify_user ? 'checked="checked"' : '',
+        'S_TYPE_TOGGLE'        => $topic_type_toggle,
+        'S_TOPIC_ID'           => $topic_id,
+        'S_POST_ACTION'        => append_sid("posting.php"),
+        'S_HIDDEN_FORM_FIELDS' => $hidden_form_fields
+    ]);
 
 //
 // Poll entry switch/output
@@ -983,13 +983,15 @@ if (( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['edit_poll']) )
 
 	if (!empty($poll_options) ) {
 		while (list($option_id, $option_text) = each($poll_options) ) {
-			$template->assign_block_vars('poll_option_rows', array(
-				'POLL_OPTION' => str_replace('"', '&quot;', $option_text),
+            $template->assign_block_vars('poll_option_rows',
+                [
+                    'POLL_OPTION' => str_replace('"', '&quot;', $option_text),
 
-				'S_POLL_OPTION_NUM' => $option_id)
-			);
-		}
-	}
+                    'S_POLL_OPTION_NUM' => $option_id
+                ]
+            );
+        }
+    }
 
 	$template->assign_var_from_handle('POLLBOX', 'pollbody');
 }

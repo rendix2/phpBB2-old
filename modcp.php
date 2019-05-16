@@ -502,11 +502,9 @@ switch( $mode )
 
 			$message = $message . '<br \><br \>' . sprintf($lang['Click_return_forum'], '<a href="' . "viewforum.php?" . POST_FORUM_URL . "=$old_forum_id&amp;sid=" . $userdata['session_id'] . '">', '</a>');
 
-			$template->assign_vars(array(
-				'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
-			);
+            $template->assign_vars(['META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">']);
 
-			message_die(GENERAL_MESSAGE, $message);
+            message_die(GENERAL_MESSAGE, $message);
 		} else {
 			if ( empty($_POST['topic_id_list']) && empty($topic_id) ) {
 				message_die(GENERAL_MESSAGE, $lang['None_selected']);
@@ -587,11 +585,9 @@ switch( $mode )
 
 		$message = $message . '<br \><br \>' . sprintf($lang['Click_return_forum'], '<a href="' . "viewforum.php?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'] . '">', '</a>');
 
-		$template->assign_vars(array(
-			'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
-		);
+        $template->assign_vars(['META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">']);
 
-		message_die(GENERAL_MESSAGE, $lang['Topics_Locked'] . '<br /><br />' . $message);
+        message_die(GENERAL_MESSAGE, $lang['Topics_Locked'] . '<br /><br />' . $message);
 
 		break;
 
@@ -763,11 +759,9 @@ switch( $mode )
 			//
 			// Set template files
 			//
-			$template->set_filenames(array(
-				'split_body' => 'modcp_split.tpl')
-			);
+            $template->set_filenames(['split_body' => 'modcp_split.tpl']);
 
-			$sql = "SELECT u.username, p.*, pt.post_text, pt.bbcode_uid, pt.post_subject, p.post_username
+            $sql = "SELECT u.username, p.*, pt.post_text, pt.bbcode_uid, pt.post_subject, p.post_username
 				FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
 				WHERE p.topic_id = $topic_id
 					AND p.poster_id = u.user_id
@@ -963,16 +957,18 @@ switch( $mode )
 				$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 				$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-				$template->assign_block_vars('iprow', array(
-					'ROW_COLOR' => '#' . $row_color, 
-					'ROW_CLASS' => $row_class, 
-					'IP' => $ip,
-					'POSTS' => $row['postings'] . ' ' . ( ( $row['postings'] == 1 ) ? $lang['Post'] : $lang['Posts'] ),
+                $template->assign_block_vars('iprow',
+                    [
+                        'ROW_COLOR' => '#' . $row_color,
+                        'ROW_CLASS' => $row_class,
+                        'IP'        => $ip,
+                        'POSTS'     => $row['postings'] . ' ' . (($row['postings'] == 1) ? $lang['Post'] : $lang['Posts']),
 
-					'U_LOOKUP_IP' => "modcp.php?mode=ip&amp;" . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=" . $row['poster_ip'] . "&amp;sid=" . $userdata['session_id'])
-				);
+                        'U_LOOKUP_IP' => "modcp.php?mode=ip&amp;" . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=" . $row['poster_ip'] . "&amp;sid=" . $userdata['session_id']
+                    ]
+                );
 
-				$i++; 
+                $i++;
 			}
 			while ( $row = $db->sql_fetchrow($result) );
 		}
@@ -1000,18 +996,18 @@ switch( $mode )
 				$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 				$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-				$template->assign_block_vars('userrow', array(
-					'ROW_COLOR' => '#' . $row_color, 
-					'ROW_CLASS' => $row_class, 
-					'USERNAME' => $username,
-					'POSTS' => $row['postings'] . ' ' . ( ( $row['postings'] == 1 ) ? $lang['Post'] : $lang['Posts'] ),
-					'L_SEARCH_POSTS' => sprintf($lang['Search_user_posts'], $username), 
+                $template->assign_block_vars('userrow', [
+                        'ROW_COLOR'      => '#' . $row_color,
+                        'ROW_CLASS'      => $row_class,
+                        'USERNAME'       => $username,
+                        'POSTS'          => $row['postings'] . ' ' . (($row['postings'] == 1) ? $lang['Post'] : $lang['Posts']),
+                        'L_SEARCH_POSTS' => sprintf($lang['Search_user_posts'], $username),
 
-					'U_PROFILE' => ($id == ANONYMOUS) ? "modcp.php?mode=ip&amp;" . POST_POST_URL . "=" . $post_id . "&amp;" . POST_TOPIC_URL . "=" . $topic_id . "&amp;sid=" . $userdata['session_id'] : append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$id"),
-					'U_SEARCHPOSTS' => append_sid("search.php?search_author=" . (($id == ANONYMOUS) ? 'Anonymous' : urlencode($username)) . "&amp;showresults=topics"))
-				);
+                        'U_PROFILE'     => ($id == ANONYMOUS) ? "modcp.php?mode=ip&amp;" . POST_POST_URL . "=" . $post_id . "&amp;" . POST_TOPIC_URL . "=" . $topic_id . "&amp;sid=" . $userdata['session_id'] : append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$id"),
+                        'U_SEARCHPOSTS' => append_sid("search.php?search_author=" . (($id == ANONYMOUS) ? 'Anonymous' : urlencode($username)) . "&amp;showresults=topics")
+                    ]);
 
-				$i++; 
+                $i++;
 			}
 			while ( $row = $db->sql_fetchrow($result) );
 		}
@@ -1131,14 +1127,14 @@ switch( $mode )
             );
         }
 
-        $template->assign_vars(array(
-                'PAGINATION' => generate_pagination("modcp.php?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'], $forum_topics, $board_config['topics_per_page'], $start),
-                'PAGE_NUMBER' => sprintf($lang['Page_of'],
-                    floor( $start / $board_config['topics_per_page'] ) + 1, ceil( $forum_topics / $board_config['topics_per_page'] )),
-                'L_GOTO_PAGE' => $lang['Goto_page'])
-		);
+        $template->assign_vars([
+                'PAGINATION'  => generate_pagination("modcp.php?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'], $forum_topics, $board_config['topics_per_page'], $start),
+                'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $board_config['topics_per_page']) + 1, ceil($forum_topics / $board_config['topics_per_page'])),
 
-		$template->pparse('body');
+                'L_GOTO_PAGE' => $lang['Goto_page']
+            ]);
+
+        $template->pparse('body');
 
 		break;
 }
