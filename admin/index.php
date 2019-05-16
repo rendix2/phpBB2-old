@@ -287,55 +287,42 @@ if (isset($_GET['pane']) && $_GET['pane'] == 'left' )
 	//
 	// Get users online information.
 	//
-	$sql = "SELECT u.user_id, u.username, u.user_session_time, u.user_session_page, s.session_logged_in, s.session_ip, s.session_start 
-		FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE . " s
-		WHERE s.session_logged_in = " . TRUE . " 
-			AND u.user_id = s.session_user_id 
-			AND u.user_id <> " . ANONYMOUS . " 
-			AND s.session_time >= " . ( time() - 300 ) . " 
-		ORDER BY u.user_session_time DESC";
+    $onlinerow_reg = dibi::select(['u.user_id', 'u.username', 'u.user_session_time', 'u.user_session_page', 's.session_logged_in', 's.session_ip', 's.session_start'])
+        ->from(USERS_TABLE)
+        ->as('u')
+        ->from(SESSIONS_TABLE)
+        ->as('s')
+        ->where('s.session_logged_in = %i', 1)
+        ->where('u.user_id = s.session_user_id')
+        ->where('u.user_id <> %i', ANONYMOUS)
+        ->where('s.session_time >= %i', time() - 300)
+        ->orderBy('u.user_session_time', 'DESC')
+        ->fetchAll();
 
-	if (!$result = $db->sql_query($sql)) {
-		message_die(GENERAL_ERROR, "Couldn't obtain regd user/online information.", "", __LINE__, __FILE__, $sql);
-	}
+    $onlinerow_guest = dibi::select(['session_page', 'session_logged_in', 'session_time', 'session_ip', 'session_start'])
+        ->from(SESSIONS_TABLE)
+        ->where('session_logged_in = %i', 0)
+        ->where('session_time > %i', time() - 300)
+        ->orderBy('session_time', 'DESC')
+        ->fetchAll();
 
-	$onlinerow_reg = $db->sql_fetchrowset($result);
-
-	$sql = "SELECT session_page, session_logged_in, session_time, session_ip, session_start   
-		FROM " . SESSIONS_TABLE . "
-		WHERE session_logged_in = 0
-			AND session_time >= " . ( time() - 300 ) . "
-		ORDER BY session_time DESC";
-
-	if (!$result = $db->sql_query($sql)) {
-		message_die(GENERAL_ERROR, "Couldn't obtain guest user/online information.", "", __LINE__, __FILE__, $sql);
-	}
-
-	$onlinerow_guest = $db->sql_fetchrowset($result);
-
-	$sql = "SELECT forum_name, forum_id
-		FROM " . FORUMS_TABLE;
-
-    if ($forums_result = $db->sql_query($sql)) {
-        while ($forumsrow = $db->sql_fetchrow($forums_result)) {
-            $forum_data[$forumsrow['forum_id']] = $forumsrow['forum_name'];
-        }
-    } else {
-        message_die(GENERAL_ERROR, "Couldn't obtain user/online forums information.", "", __LINE__, __FILE__, $sql);
-    }
+	$forums_result = dibi::select(['forum_name', 'forum_id'])
+        ->from(FORUMS_TABLE)
+        ->fetchPairs('forum_id', 'forum_name');
 
 	$reg_userid_ary = [];
 
     if (count($onlinerow_reg)) {
         $registered_users = 0;
 
-        for ($i = 0; $i < count($onlinerow_reg); $i++) {
-            if (!inarray($onlinerow_reg[$i]['user_id'], $reg_userid_ary)) {
-				$reg_userid_ary[] = $onlinerow_reg[$i]['user_id'];
+        //for ($i = 0; $i < count($onlinerow_reg); $i++) {
+        foreach ($onlinerow_reg as $online_user) {
+            if (!inarray($online_user->user_id, $reg_userid_ary)) {
+				$reg_userid_ary[] = $online_user->user_id;
 
-				$username = $onlinerow_reg[$i]['username'];
+				$username = $online_user->username;
 
-                if ($onlinerow_reg[$i]['user_allow_viewonline'] || $userdata['user_level'] == ADMIN) {
+                if ($online_user->user_allow_viewonline || $userdata['user_level'] == ADMIN) {
                     $registered_users++;
                     $hidden = false;
                 } else {
@@ -343,8 +330,8 @@ if (isset($_GET['pane']) && $_GET['pane'] == 'left' )
                     $hidden = true;
                 }
 
-				if ($onlinerow_reg[$i]['user_session_page'] < 1 ) {
-					switch($onlinerow_reg[$i]['user_session_page']) {
+				if ($online_user->user_session_page < 1 ) {
+					switch($online_user->user_session_page) {
 						case PAGE_INDEX:
 							$location = $lang['Forum_index'];
 							$location_url = "index.php?pane=right";
@@ -386,27 +373,27 @@ if (isset($_GET['pane']) && $_GET['pane'] == 'left' )
 							$location_url = "index.php?pane=right";
 					}
 				} else {
-					$location_url = append_sid("admin_forums.php?mode=editforum&amp;" . POST_FORUM_URL . "=" . $onlinerow_reg[$i]['user_session_page']);
-					$location = $forum_data[$onlinerow_reg[$i]['user_session_page']];
+					$location_url = append_sid("admin_forums.php?mode=editforum&amp;" . POST_FORUM_URL . "=" . $online_user->user_session_page);
+					$location = $forum_data[$online_user->user_session_page];
 				}
 
 				$row_color = ( $registered_users % 2 ) ? $theme['td_color1'] : $theme['td_color2'];
 				$row_class = ( $registered_users % 2 ) ? $theme['td_class1'] : $theme['td_class2'];
 
-				$reg_ip = decode_ip($onlinerow_reg[$i]['session_ip']);
+				$reg_ip = decode_ip($online_user->session_ip);
 
                 $template->assign_block_vars("reg_user_row",
                     [
                         "ROW_COLOR"      => "#" . $row_color,
                         "ROW_CLASS"      => $row_class,
                         "USERNAME"       => $username,
-                        "STARTED"        => create_date($board_config['default_dateformat'], $onlinerow_reg[$i]['session_start'], $board_config['board_timezone']),
-                        "LASTUPDATE"     => create_date($board_config['default_dateformat'], $onlinerow_reg[$i]['user_session_time'], $board_config['board_timezone']),
+                        "STARTED"        => create_date($board_config['default_dateformat'], $online_user->session_start, $board_config['board_timezone']),
+                        "LASTUPDATE"     => create_date($board_config['default_dateformat'], $online_user->user_session_time, $board_config['board_timezone']),
                         "FORUM_LOCATION" => $location,
                         "IP_ADDRESS"     => $reg_ip,
 
                         "U_WHOIS_IP"       => "http://network-tools.com/default.asp?host=$reg_ip",
-                        "U_USER_PROFILE"   => append_sid("admin_users.php?mode=edit&amp;" . POST_USERS_URL . "=" . $onlinerow_reg[$i]['user_id']),
+                        "U_USER_PROFILE"   => append_sid("admin_users.php?mode=edit&amp;" . POST_USERS_URL . "=" . $online_user->user_id),
                         "U_FORUM_LOCATION" => append_sid($location_url)
                     ]
                 );
@@ -423,12 +410,12 @@ if (isset($_GET['pane']) && $_GET['pane'] == 'left' )
 	if (count($onlinerow_guest) ) {
 		$guest_users = 0;
 
-		for ($i = 0; $i < count($onlinerow_guest); $i++) {
-			$guest_userip_ary[] = $onlinerow_guest[$i]['session_ip'];
+        foreach ($onlinerow_guest as $guest) {
+			$guest_userip_ary[] = $guest->session_ip;
 			$guest_users++;
 
-			if ($onlinerow_guest[$i]['session_page'] < 1 ) {
-				switch( $onlinerow_guest[$i]['session_page'] ) {
+			if ($guest->session_page < 1 ) {
+				switch( $guest->session_page ) {
 					case PAGE_INDEX:
 						$location = $lang['Forum_index'];
 						$location_url = "index.php?pane=right";
@@ -470,21 +457,21 @@ if (isset($_GET['pane']) && $_GET['pane'] == 'left' )
 						$location_url = "index.php?pane=right";
 				}
 			} else {
-				$location_url = append_sid("admin_forums.php?mode=editforum&amp;" . POST_FORUM_URL . "=" . $onlinerow_guest[$i]['session_page']);
-				$location = $forum_data[$onlinerow_guest[$i]['session_page']];
+				$location_url = append_sid("admin_forums.php?mode=editforum&amp;" . POST_FORUM_URL . "=" . $guest->session_page);
+				$location = $forum_data[$guest->session_page];
 			}
 
 			$row_color = ( $guest_users % 2 ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( $guest_users % 2 ) ? $theme['td_class1'] : $theme['td_class2'];
 
-			$guest_ip = decode_ip($onlinerow_guest[$i]['session_ip']);
+			$guest_ip = decode_ip($guest->session_ip);
 
             $template->assign_block_vars("guest_user_row", [
                     "ROW_COLOR"      => "#" . $row_color,
                     "ROW_CLASS"      => $row_class,
                     "USERNAME"       => $lang['Guest'],
-                    "STARTED"        => create_date($board_config['default_dateformat'], $onlinerow_guest[$i]['session_start'], $board_config['board_timezone']),
-                    "LASTUPDATE"     => create_date($board_config['default_dateformat'], $onlinerow_guest[$i]['session_time'], $board_config['board_timezone']),
+                    "STARTED"        => create_date($board_config['default_dateformat'], $guest->session_start, $board_config['board_timezone']),
+                    "LASTUPDATE"     => create_date($board_config['default_dateformat'], $guest->session_time, $board_config['board_timezone']),
                     "FORUM_LOCATION" => $location,
                     "IP_ADDRESS"     => $guest_ip,
 
