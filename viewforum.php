@@ -52,25 +52,21 @@ if ( isset($_GET['mark']) || isset($_POST['mark']) ) {
 // Check if the user has actually sent a forum ID with his/her request
 // If not give them a nice error page.
 //
-if ( !empty($forum_id) )
-{
-	$sql = "SELECT *
-		FROM " . FORUMS_TABLE . "
-		WHERE forum_id = $forum_id";
-	
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, 'Could not obtain forums information', '', __LINE__, __FILE__, $sql);
-	}
-} else {
-	message_die(GENERAL_MESSAGE, 'Forum_not_exist');
+if (!is_numeric($forum_id)) {
+    message_die(GENERAL_MESSAGE, 'Forum_not_exist');
 }
+
+$forum_row = dibi::select('*')
+    ->from(FORUMS_TABLE)
+    ->where('forum_id = %i', $forum_id)
+    ->fetch();
 
 //
 // If the query doesn't return any rows this isn't a valid forum. Inform
 // the user.
 //
-if ( !($forum_row = $db->sql_fetchrow($result)) ) {
-	message_die(GENERAL_MESSAGE, 'Forum_not_exist');
+if (!$forum_row) {
+    message_die(GENERAL_MESSAGE, 'Forum_not_exist');
 }
 
 //
@@ -81,6 +77,11 @@ init_userprefs($userdata);
 //
 // End session management
 //
+
+// define cookie names
+$topic_cookie_name = $board_config['cookie_name'] . '_t';
+$forum_cookie_name = $board_config['cookie_name'] . '_f';
+$forum_all_cookie_name = $board_config['cookie_name'] . '_f_all';
 
 //
 // Start auth check
@@ -109,27 +110,32 @@ if ( !$is_auth['auth_read'] || !$is_auth['auth_view'] ) {
 //
 if ( $mark_read == 'topics' ) {
 	if ( $userdata['session_logged_in'] ) {
-		$sql = "SELECT MAX(post_time) AS last_post 
-			FROM " . POSTS_TABLE . " 
-			WHERE forum_id = $forum_id";
-		
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, 'Could not obtain forums information', '', __LINE__, __FILE__, $sql);
-		}
+        $last_post = dibi::select('MAX(post_time)')
+            ->as('last_post')
+            ->from(POSTS_TABLE)
+            ->where('forum_id = %i', $forum_id)
+            ->fetchSingle();
 
-		if ( $row = $db->sql_fetchrow($result) ) {
-			$tracking_forums = isset($_COOKIE[$board_config['cookie_name'] . '_f']) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_f']) : [];
-			$tracking_topics = isset($_COOKIE[$board_config['cookie_name'] . '_t']) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_t']) : [];
+		if ($last_post) {
+			$tracking_forums = isset($_COOKIE[$forum_cookie_name]) ? unserialize($_COOKIE[$forum_cookie_name]) : [];
+			$tracking_topics = isset($_COOKIE[$topic_cookie_name]) ? unserialize($_COOKIE[$topic_cookie_name]) : [];
 
             if ((count($tracking_forums) + count($tracking_topics)) >= 150 && empty($tracking_forums[$forum_id])) {
                 asort($tracking_forums);
                 unset($tracking_forums[key($tracking_forums)]);
             }
 
-            if ($row['last_post'] > $userdata['user_lastvisit']) {
+            if ($last_post > $userdata['user_lastvisit']) {
 				$tracking_forums[$forum_id] = time();
 
-				setcookie($board_config['cookie_name'] . '_f', serialize($tracking_forums), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+				setcookie(
+                    $forum_cookie_name,
+                    serialize($tracking_forums),
+                    0,
+                    $board_config['cookie_path'],
+                    $board_config['cookie_domain'],
+                    $board_config['cookie_secure']
+                );
 			}
 		}
 
@@ -147,8 +153,8 @@ if ( $mark_read == 'topics' ) {
 // End handle marking posts
 //
 
-$tracking_topics = isset($_COOKIE[$board_config['cookie_name'] . '_t']) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_t']) : '';
-$tracking_forums = isset($_COOKIE[$board_config['cookie_name'] . '_f']) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_f']) : '';
+$tracking_topics = isset($_COOKIE[$topic_cookie_name]) ? unserialize($_COOKIE[$topic_cookie_name]) : '';
+$tracking_forums = isset($_COOKIE[$forum_cookie_name]) ? unserialize($_COOKIE[$forum_cookie_name]) : '';
 
 //
 // Do the forum Prune
@@ -168,46 +174,53 @@ if ($is_auth['auth_mod'] && $board_config['prune_enable']) {
 // Obtain list of moderators of each forum
 // First users, then groups ... broken into two queries
 //
-$sql = "SELECT u.user_id, u.username 
-	FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g, " . USERS_TABLE . " u
-	WHERE aa.forum_id = $forum_id 
-		AND aa.auth_mod = " . TRUE . " 
-		AND g.group_single_user = 1
-		AND ug.group_id = aa.group_id 
-		AND g.group_id = aa.group_id 
-		AND u.user_id = ug.user_id 
-	GROUP BY u.user_id, u.username  
-	ORDER BY u.user_id";
 
-if ( !($result = $db->sql_query($sql)) )
-{
-	message_die(GENERAL_ERROR, 'Could not query forum moderator information', '', __LINE__, __FILE__, $sql);
-}
+$users_moderator_data = dibi::select('u.user_id, u.username ')
+    ->from(AUTH_ACCESS_TABLE)
+    ->as('aa')
+    ->from(USER_GROUP_TABLE)
+    ->as('ug')
+    ->from(GROUPS_TABLE)
+    ->as('g')
+    ->from(USERS_TABLE)
+    ->as('u')
+    ->where('aa.forum_id = %i', $forum_id)
+    ->where('aa.auth_mod = %i', 1)
+    ->where('g.group_single_user = %i', 1)
+    ->where('ug.group_id = aa.group_id')
+    ->where('g.group_id = aa.group_id')
+    ->where('u.user_id = ug.user_id')
+    ->groupBy('u.user_id')
+    ->groupBy('u.username')
+    ->orderBy('u.user_id')
+    ->fetchAll();
 
 $moderators = [];
 
-while ($row = $db->sql_fetchrow($result) )
-{
-	$moderators[] = '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . '">' . $row['username'] . '</a>';
+foreach ($users_moderator_data as $row) {
+    $moderators[] = '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row->user_id) . '">' . $row->username . '</a>';
 }
 
-$sql = "SELECT g.group_id, g.group_name 
-	FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g 
-	WHERE aa.forum_id = $forum_id
-		AND aa.auth_mod = " . TRUE . " 
-		AND g.group_single_user = 0
-		AND g.group_type <> ". GROUP_HIDDEN ."
-		AND ug.group_id = aa.group_id 
-		AND g.group_id = aa.group_id 
-	GROUP BY g.group_id, g.group_name  
-	ORDER BY g.group_id";
+$group_moderator_data = dibi::select('g.group_id, g.group_name')
+    ->from(AUTH_ACCESS_TABLE)
+    ->as('aa')
+    ->from(USER_GROUP_TABLE)
+    ->as('ug')
+    ->from(GROUPS_TABLE)
+    ->as('g')
+    ->where('aa.forum_id = %i', $forum_id)
+    ->where('aa.auth_mod = %i', 1)
+    ->where('g.group_single_user = %i', 0)
+    ->where('g.group_type <> %i', GROUP_HIDDEN)
+    ->where('ug.group_id = aa.group_id')
+    ->where('g.group_id = aa.group_id')
+    ->groupBy('g.group_id')
+    ->groupBy('g.group_name')
+    ->orderBy('g.group_id')
+    ->fetchAll();
 
-if ( !($result = $db->sql_query($sql)) ) {
-	message_die(GENERAL_ERROR, 'Could not query forum moderator information', '', __LINE__, __FILE__, $sql);
-}
-
-while ($row = $db->sql_fetchrow($result) ) {
-	$moderators[] = '<a href="' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=" . $row['group_id']) . '">' . $row['group_name'] . '</a>';
+foreach ($group_moderator_data as $row) {
+    $moderators[] = '<a href="' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=" . $row->group_id) . '">' . $row->group_name . '</a>';
 }
 	
 $l_moderators = ( count($moderators) == 1 ) ? $lang['Moderator'] : $lang['Moderators'];
@@ -235,19 +248,18 @@ if (!empty($_POST['topicdays']) || !empty($_GET['topicdays']) ) {
 	$topic_days = !empty($_POST['topicdays']) ? (int)$_POST['topicdays'] : (int)$_GET['topicdays'];
 	$min_topic_time = time() - ($topic_days * 86400);
 
-	$sql = "SELECT COUNT(t.topic_id) AS forum_topics 
-		FROM " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p 
-		WHERE t.forum_id = $forum_id 
-			AND p.post_id = t.topic_last_post_id
-			AND p.post_time >= $min_topic_time"; 
+	$forum_topics = dibi::select('COUNT(t.topic_id)')
+        ->as('forum_topics')
+        ->from(TOPICS_TABLE)
+        ->as('t')
+        ->from(POSTS_TABLE)
+        ->as('p')
+        ->where('t.forum_id = %i', $forum_id)
+        ->where('p.post_id = t.topic_last_post_id')
+        ->where('p.post_time >= %i', $min_topic_time)
+        ->fetchSingle();
 
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, 'Could not obtain limited topics count information', '', __LINE__, __FILE__, $sql);
-	}
-	
-	$row = $db->sql_fetchrow($result);
-
-	$topics_count = $row['forum_topics'] ? $row['forum_topics'] : 1;
+	$topics_count = $forum_topics ? $forum_topics : 1;
 	$limit_topics_time = "AND p.post_time >= $min_topic_time";
 
 	if ( !empty($_POST['topicdays']) ) {
@@ -483,7 +495,7 @@ if ($total_topics) {
 			$newest_post_img = '';
 			if ($userdata['session_logged_in'] ) {
 				if ($topic_rowset[$i]['post_time'] > $userdata['user_lastvisit'] )  {
-					if (!empty($tracking_topics) || !empty($tracking_forums) || isset($_COOKIE[$board_config['cookie_name'] . '_f_all']) ) {
+					if (!empty($tracking_topics) || !empty($tracking_forums) || isset($_COOKIE[$forum_all_cookie_name]) ) {
 						$unread_topics = true;
 
 						if (!empty($tracking_topics[$topic_id]) ) {
@@ -498,8 +510,8 @@ if ($total_topics) {
 							}
 						}
 
-						if (isset($_COOKIE[$board_config['cookie_name'] . '_f_all']) ) {
-							if ($_COOKIE[$board_config['cookie_name'] . '_f_all'] >= $topic_rowset[$i]['post_time'] ) {
+						if (isset($_COOKIE[$forum_all_cookie_name]) ) {
+							if ($_COOKIE[$forum_all_cookie_name] >= $topic_rowset[$i]['post_time'] ) {
 								$unread_topics = false;
 							}
 						}
