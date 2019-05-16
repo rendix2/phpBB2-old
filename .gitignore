@@ -3,4 +3,5 @@
 /docs
 /.idea
 /.settings
+config.php
 ./config.php
