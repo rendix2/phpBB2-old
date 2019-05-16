@@ -641,7 +641,7 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 function generate_smilies($mode, $page_id)
 {
 	global $db, $board_config, $template, $lang, $images, $theme, $phpbb_root_path;
-	global $user_ip, $session_length, $starttime;
+	global $user_ip, $session_length;
 	global $userdata;
 
 	$inline_columns = 4;
