@@ -37,7 +37,7 @@ function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
 		$entry = preg_replace('/\[img:[a-z0-9]{10,}\].*?\[\/img:[a-z0-9]{10,}\]/', ' ', $entry); 
 		$entry = preg_replace('/\[\/?url(=.*?)?\]/', ' ', $entry);
 		$entry = preg_replace('/\[\/?[a-z\*=\+\-]+(\:?[0-9a-z]+)?:[a-z0-9]{10,}(\:[a-z0-9]+)?=?.*?\]/', ' ', $entry);
-	} else if ( $mode == 'search' ) {
+	} elseif ( $mode == 'search' ) {
 		$entry = str_replace(' +', ' and ', $entry);
 		$entry = str_replace(' -', ' not ', $entry);
 	}
@@ -45,7 +45,7 @@ function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
 	//
 	// Filter out strange characters like ^, $, &, change "it's" to "its"
 	//
-	for($i = 0; $i < count($drop_char_match); $i++) {
+	for ($i = 0; $i < count($drop_char_match); $i++) {
 		$entry =  str_replace($drop_char_match[$i], $drop_char_replace[$i], $entry);
 	}
 
@@ -115,7 +115,7 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 			for ($i = 0; $i < count($search_matches); $i++) {
 				$search_matches[$i] = trim($search_matches[$i]);
 
-				if( $search_matches[$i] != '' ) {
+				if ($search_matches[$i] != '' ) {
 					$word[] = $search_matches[$i];
 
 					if ( !strstr($word_insert_sql[$word_in], "'" . $search_matches[$i] . "'") ) {
@@ -133,7 +133,7 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 		$word_text_sql = '';
 		$temp_word = [];
 
-		for($i = 0; $i < count($word); $i++) {
+		for ($i = 0; $i < count($word); $i++) {
 			if ( $word[$i] != $prev_word ) {
 				$temp_word[] = $word[$i];
 				$word_text_sql .= ( ( $word_text_sql != '' ) ? ', ' : '' ) . "'" . $word[$i] . "'";
@@ -187,7 +187,7 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 						$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text, word_common) 
 							VALUES ('" . $word[$i] . "', 0)";
 
-						if( !$db->sql_query($sql) ) {
+						if (!$db->sql_query($sql) ) {
 							message_die(GENERAL_ERROR, 'Could not insert new word', '', __LINE__, __FILE__, $sql);
 						}
 						break;
@@ -215,7 +215,7 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 		}
 	}
 
-	while( list($word_in, $match_sql) = @each($word_insert_sql) )
+	while (list($word_in, $match_sql) = @each($word_insert_sql) )
 	{
 		$title_match = ( $word_in == 'title' ) ? 1 : 0;
 
@@ -261,7 +261,7 @@ function remove_common($mode, $fraction, $word_id_list = [])
 		if ( $mode == 'single' && count($word_id_list) ) {
 			$word_id_sql = '';
 
-			for($i = 0; $i < count($word_id_list); $i++) {
+			for ($i = 0; $i < count($word_id_list); $i++) {
 				$word_id_sql .= ( ( $word_id_sql != '' ) ? ', ' : '' ) . "'" . $word_id_list[$i] . "'";
 			}
 

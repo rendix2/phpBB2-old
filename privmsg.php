@@ -160,7 +160,7 @@ if ( $mode == 'newpm' )
 
 	include $phpbb_root_path . 'includes/page_tail.php';
 	
-} else if ( $mode == 'read' ) {
+} elseif ( $mode == 'read' ) {
     if (!empty($_GET[POST_POST_URL])) {
         $privmsgs_id = (int)$_GET[POST_POST_URL];
     } else {
@@ -397,7 +397,7 @@ if ( $mode == 'newpm' )
 		}
 
 		$l_box_name = $lang['Saved'];
-	} else if ( $folder == 'sentbox' ) {
+	} elseif ( $folder == 'sentbox' ) {
 		$post_img = $post_icons['post_img'];
 		$reply_img = '';
 		$quote_img = '';
@@ -612,7 +612,7 @@ if ( $mode == 'newpm' )
 
 	include $phpbb_root_path . 'includes/page_tail.php';
 
-} else if ( ( $delete && $mark_list ) || $delete_all ) {
+} elseif ( ( $delete && $mark_list ) || $delete_all ) {
 	if ( !$userdata['session_logged_in'] ) {
 		redirect(append_sid("login.php?redirect=privmsg.php&folder=inbox", true));
 	}
@@ -627,7 +627,7 @@ if ( $mode == 'newpm' )
 		$s_hidden_fields .= isset($_POST['delete']) ? '<input type="hidden" name="delete" value="true" />' : '<input type="hidden" name="deleteall" value="true" />';
 		$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
-		for($i = 0; $i < count($mark_list); $i++) {
+		for ($i = 0; $i < count($mark_list); $i++) {
 			$s_hidden_fields .= '<input type="hidden" name="mark[]" value="' . (int)$mark_list[$i] . '" />';
 		}
 
@@ -654,7 +654,7 @@ if ( $mode == 'newpm' )
 
 		include $phpbb_root_path . 'includes/page_tail.php';
 
-	} else if ($confirm && $sid === $userdata['session_id']) {
+	} elseif ($confirm && $sid === $userdata['session_id']) {
 		$delete_sql_id = '';
 
 		if (!$delete_all) {
@@ -827,7 +827,7 @@ if ( $mode == 'newpm' )
 			}
 		}
 	}
-} else if ( $save && $mark_list && $folder != 'savebox' && $folder != 'outbox' ) {
+} elseif ( $save && $mark_list && $folder != 'savebox' && $folder != 'outbox' ) {
     if (!$userdata['session_logged_in']) {
         redirect(append_sid("login.php?redirect=privmsg.php&folder=inbox", true));
     }
@@ -1264,7 +1264,7 @@ if ( $mode == 'newpm' )
 		$msg = $lang['Message_sent'] . '<br /><br />' . sprintf($lang['Click_return_inbox'], '<a href="' . append_sid("privmsg.php?folder=inbox") . '">', '</a> ') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
 
 		message_die(GENERAL_MESSAGE, $msg);
-	} else if ( $preview || $refresh || $error ) {
+	} elseif ( $preview || $refresh || $error ) {
 
 		//
 		// If we're previewing or refreshing then obtain the data
@@ -1287,12 +1287,12 @@ if ( $mode == 'newpm' )
 			$page_title = $lang['Post_new_pm'];
 
 			$user_sig = ( $userdata['user_sig'] != '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : '';
-		} else if ( $mode == 'reply' ) {
+		} elseif ( $mode == 'reply' ) {
 			$page_title = $lang['Post_reply_pm'];
 
 			$user_sig = ( $userdata['user_sig'] != '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : '';
 		}
-		else if ( $mode == 'edit' )
+		elseif ( $mode == 'edit' )
 		{
 			$page_title = $lang['Edit_pm'];
 
@@ -1334,7 +1334,7 @@ if ( $mode == 'newpm' )
             if ($row = $db->sql_fetchrow($result)) {
                 $to_username = $row['username'];
             }
-		} else if ( $mode == 'edit' ) {
+		} elseif ( $mode == 'edit' ) {
 			$sql = "SELECT pm.*, pmt.privmsgs_bbcode_uid, pmt.privmsgs_text, u.username, u.user_id, u.user_sig 
 				FROM " . PRIVMSGS_TABLE . " pm, " . PRIVMSGS_TEXT_TABLE . " pmt, " . USERS_TABLE . " u
 				WHERE pm.privmsgs_id = $privmsg_id
@@ -1370,7 +1370,7 @@ if ( $mode == 'newpm' )
 			$to_username = $privmsg['username'];
 			$to_userid = $privmsg['user_id'];
 
-		} else if ( $mode == 'reply' || $mode == 'quote' ) {
+		} elseif ( $mode == 'reply' || $mode == 'quote' ) {
 
 			$sql = "SELECT pm.privmsgs_subject, pm.privmsgs_date, pmt.privmsgs_bbcode_uid, pmt.privmsgs_text, u.username, u.user_id
 				FROM " . PRIVMSGS_TABLE . " pm, " . PRIVMSGS_TEXT_TABLE . " pmt, " . USERS_TABLE . " u
@@ -1846,7 +1846,7 @@ $previous_days_text = array($lang['All_Posts'], $lang['1_Day'], $lang['7_Days'],
 
 $select_msg_days = '';
 
-for($i = 0; $i < count($previous_days); $i++) {
+for ($i = 0; $i < count($previous_days); $i++) {
 	$selected = ( $msg_days == $previous_days[$i] ) ? ' selected="selected"' : '';
 	$select_msg_days .= '<option value="' . $previous_days[$i] . '"' . $selected . '>' . $previous_days_text[$i] . '</option>';
 }
@@ -2005,7 +2005,7 @@ if ( $row = $db->sql_fetchrow($result) ) {
 			'U_FROM_USER_PROFILE' => $u_from_user_profile)
 		);
 	}
-	while( $row = $db->sql_fetchrow($result) );
+	while ($row = $db->sql_fetchrow($result) );
 
 	$template->assign_vars(array(
             'PAGINATION' => generate_pagination("privmsg.php?folder=$folder", $pm_total, $board_config['topics_per_page'], $start),

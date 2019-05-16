@@ -183,14 +183,14 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 
 	message_die(GENERAL_MESSAGE, $message);
 
-} else if ( isset($_POST['joingroup']) && $group_id ) {
+} elseif ( isset($_POST['joingroup']) && $group_id ) {
 	//
 	// First, joining a group
 	// If the user isn't logged in redirect them to login
 	//
 	if ( !$userdata['session_logged_in'] ) {
 		redirect(append_sid("login.php?redirect=groupcp.php&" . POST_GROUPS_URL . "=$group_id", true));
-	} else if ( $sid !== $userdata['session_id'] ) {
+	} elseif ( $sid !== $userdata['session_id'] ) {
 		message_die(GENERAL_ERROR, $lang['Session_invalid']);
 	}
 
@@ -276,16 +276,16 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 	$message = $lang['Group_joined'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
 
 	message_die(GENERAL_MESSAGE, $message);
-} else if ( isset($_POST['unsub']) || isset($_POST['unsubpending']) && $group_id ) {
+} elseif ( isset($_POST['unsub']) || isset($_POST['unsubpending']) && $group_id ) {
 	//
 	// Second, unsubscribing from a group
 	// Check for confirmation of unsub.
 	//
 	if ( $cancel ) {
 		redirect(append_sid("groupcp.php", true));
-	} else if ( !$userdata['session_logged_in'] ) {
+	} elseif ( !$userdata['session_logged_in'] ) {
 		redirect(append_sid("login.php?redirect=groupcp.php&" . POST_GROUPS_URL . "=$group_id", true));
-	} else if ( $sid !== $userdata['session_id'] ) {
+	} elseif ( $sid !== $userdata['session_id'] ) {
 		message_die(GENERAL_ERROR, $lang['Session_invalid']);
 	}
 
@@ -352,7 +352,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 		include $phpbb_root_path . 'includes/page_tail.php';
 	}
 
-} else if ( $group_id ) {
+} elseif ( $group_id ) {
 	//
 	// Did the group moderator get here through an email?
 	// If so, check to see if they are logged in.
@@ -420,7 +420,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 		if ( !empty($_POST['add']) || !empty($_POST['remove']) || isset($_POST['approve']) || isset($_POST['deny']) ) {
 			if ( !$userdata['session_logged_in'] ) {
 				redirect(append_sid("login.php?redirect=groupcp.php&" . POST_GROUPS_URL . "=$group_id", true));
-			} else if ( $sid !== $userdata['session_id'] ) {
+			} elseif ( $sid !== $userdata['session_id'] ) {
 				message_die(GENERAL_ERROR, $lang['Session_invalid']);
 			}
 
@@ -543,7 +543,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 					$members = ( isset($_POST['approve']) || isset($_POST['deny']) ) ? $_POST['pending_members'] : $_POST['members'];
 
 					$sql_in = '';
-					for($i = 0; $i < count($members); $i++) {
+					for ($i = 0; $i < count($members); $i++) {
 						$sql_in .= ( ( $sql_in != '' ) ? ', ' : '' ) . (int)$members[$i];
 					}
 
@@ -566,7 +566,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 						$sql_select = "SELECT user_email 
 							FROM ". USERS_TABLE . " 
 							WHERE user_id IN ($sql_in)"; 
-					} else if ( isset($_POST['deny']) || isset($_POST['remove']) ) {
+					} elseif ( isset($_POST['deny']) || isset($_POST['remove']) ) {
 						if ( $group_info['auth_mod'] ) {
 							$sql = "SELECT ug.user_id, ug.group_id 
 								FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug 
@@ -589,7 +589,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 								}
 								while ( $row = $db->sql_fetchrow($result) );
 
-								while( list($user_id, $group_list) = @each($group_check) ) {
+								while (list($user_id, $group_list) = @each($group_check) ) {
 									if ( count($group_list) == 1 ) {
 										$remove_mod_sql .= ( ( $remove_mod_sql != '' ) ? ', ' : '' ) . $user_id;
 									}
@@ -745,7 +745,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 
 	$is_group_member = 0;
 	if ( $members_count ) {
-		for($i = 0; $i < $members_count; $i++) {
+		for ($i = 0; $i < $members_count; $i++) {
 			if ( $group_members[$i]['user_id'] == $userdata['user_id'] && $userdata['session_logged_in'] ) {
 				$is_group_member = true;
 			}
@@ -755,7 +755,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 	$is_group_pending_member = 0;
 
 	if ( $modgroup_pending_count ) {
-		for($i = 0; $i < $modgroup_pending_count; $i++) {
+		for ($i = 0; $i < $modgroup_pending_count; $i++) {
 			if ( $modgroup_pending_list[$i]['user_id'] == $userdata['user_id'] && $userdata['session_logged_in'] ) {
 				$is_group_pending_member = true;
 			}
@@ -772,13 +772,13 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 		$group_details =  $lang['Are_group_moderator'];
 
 		$s_hidden_fields = '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
-	} else if ( $is_group_member || $is_group_pending_member ) {
+	} elseif ( $is_group_member || $is_group_pending_member ) {
 	    $template->assign_block_vars('switch_unsubscribe_group_input', []);
 
 		$group_details =  $is_group_pending_member ? $lang['Pending_this_group'] : $lang['Member_this_group'];
 
 		$s_hidden_fields = '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
-	} else if ( $userdata['user_id'] == ANONYMOUS ) {
+	} elseif ( $userdata['user_id'] == ANONYMOUS ) {
 		$group_details =  $lang['Login_to_join'];
 		$s_hidden_fields = '';
 	} else {
@@ -787,10 +787,10 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 
 			$group_details =  $lang['This_open_group'];
 			$s_hidden_fields = '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
-		} else if ( $group_info['group_type'] == GROUP_CLOSED ) {
+		} elseif ( $group_info['group_type'] == GROUP_CLOSED ) {
 			$group_details =  $lang['This_closed_group'];
 			$s_hidden_fields = '';
-		} else if ( $group_info['group_type'] == GROUP_HIDDEN ) {
+		} elseif ( $group_info['group_type'] == GROUP_HIDDEN ) {
 			$group_details =  $lang['This_hidden_group'];
 			$s_hidden_fields = '';
 		}
@@ -901,7 +901,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 	//
 	// Dump out the remaining users
 	//
-	for($i = $start; $i < min($board_config['topics_per_page'] + $start, $members_count); $i++) {
+	for ($i = $start; $i < min($board_config['topics_per_page'] + $start, $members_count); $i++) {
 		$username = $group_members[$i]['username'];
 		$user_id = $group_members[$i]['user_id'];
 
@@ -987,7 +987,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 		// Users pending in ONLY THIS GROUP (which is moderated by this user)
 		//
 		if ( $modgroup_pending_count ) {
-			for($i = 0; $i < $modgroup_pending_count; $i++) {
+			for ($i = 0; $i < $modgroup_pending_count; $i++) {
 				$username = $modgroup_pending_list[$i]['username'];
 				$user_id = $modgroup_pending_list[$i]['user_id'];
 
@@ -1085,7 +1085,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 					$s_member_groups_opt .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
 				}
 			}
-			while( $row = $db->sql_fetchrow($result) );
+			while ($row = $db->sql_fetchrow($result) );
 
 			$s_pending_groups = '<select name="' . POST_GROUPS_URL . '">' . $s_pending_groups_opt . "</select>";
 			$s_member_groups = '<select name="' . POST_GROUPS_URL . '">' . $s_member_groups_opt . "</select>";
@@ -1108,7 +1108,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 
 	$s_group_list_opt = '';
 
-	while( $row = $db->sql_fetchrow($result) ) {
+	while ($row = $db->sql_fetchrow($result) ) {
 		if  ( $row['group_type'] != GROUP_HIDDEN || $userdata['user_level'] == ADMIN ) {
 			$s_group_list_opt .='<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
 		}

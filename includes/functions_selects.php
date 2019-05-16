@@ -98,7 +98,7 @@ function tz_select($default, $select_name = 'timezone')
 
 	$tz_select = '<select name="' . $select_name . '">';
 
-	while( list($offset, $zone) = @each($lang['tz']) ) {
+	while (list($offset, $zone) = @each($lang['tz']) ) {
 		$selected = ( $offset == $default ) ? ' selected="selected"' : '';
 		$tz_select .= '<option value="' . $offset . '"' . $selected . '>' . $zone . '</option>';
 	}

@@ -40,7 +40,7 @@ $faq = [];
 //
 // Load the appropriate faq file
 //
-if( isset($_GET['mode']) ) {
+if (isset($_GET['mode']) ) {
 	switch( $_GET['mode'] ) {
 		case 'bbcode':
 			$lang_file = 'lang_bbcode';
@@ -68,8 +68,8 @@ $faq_block = [];
 $faq_block_titles = [];
 $faq_count = count($faq);
 
-for($i = 0; $i < $faq_count; $i++) {
-	if( $faq[$i][0] != '--' ) {
+for ($i = 0; $i < $faq_count; $i++) {
+	if ($faq[$i][0] != '--' ) {
 		$faq_block[$j][$counter]['id'] = $counter_2;
 		$faq_block[$j][$counter]['question'] = $faq[$i][0];
 		$faq_block[$j][$counter]['answer'] = $faq[$i][1];
@@ -103,14 +103,14 @@ $template->assign_vars(
 
 $faq_block_count = count($faq_block);
 
-for($i = 0; $i < $faq_block_count; $i++) {
+for ($i = 0; $i < $faq_block_count; $i++) {
     $faq_block_i_count = count($faq_block[$i]);
 
-	if( $faq_block_i_count ) {
+	if ($faq_block_i_count ) {
         $template->assign_block_vars('faq_block', ['BLOCK_TITLE' => $faq_block_titles[$i]]);
         $template->assign_block_vars('faq_block_link', ['BLOCK_TITLE' => $faq_block_titles[$i]]);
 
-        for($j = 0; $j < $faq_block_i_count; $j++) {
+        for ($j = 0; $j < $faq_block_i_count; $j++) {
 			$row_color = ( !($j % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($j % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 

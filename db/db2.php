@@ -19,7 +19,7 @@
  *
  ***************************************************************************/
 
-if(!defined("SQL_LAYER"))
+if (!defined("SQL_LAYER"))
 {
 
 define("SQL_LAYER","db2");
@@ -49,7 +49,7 @@ class sql_db
 
 		$this->server = $sqlserver;
 
-		if($this->persistency)
+		if ($this->persistency)
 		{
 			$this->db_connect_id = odbc_pconnect($this->server, "", "");
 		}
@@ -58,7 +58,7 @@ class sql_db
 			$this->db_connect_id = odbc_connect($this->server, "", "");
 		}
 
-		if($this->db_connect_id)
+		if ($this->db_connect_id)
 		{
 			@odbc_autocommit($this->db_connect_id, off);
 
@@ -74,9 +74,9 @@ class sql_db
 	//
 	function sql_close()
 	{
-		if($this->db_connect_id)
+		if ($this->db_connect_id)
 		{
-			if($this->query_result)
+			if ($this->query_result)
 			{
 				@odbc_free_result($this->query_result);
 			}
@@ -100,18 +100,18 @@ class sql_db
 		//
 		unset($this->query_result);
 		unset($this->row);
-		if($query != "")
+		if ($query != "")
 		{
 			$this->num_queries++;
 
-			if(!eregi("^INSERT ",$query))
+			if (!eregi("^INSERT ",$query))
 			{
-				if(eregi("LIMIT", $query))
+				if (eregi("LIMIT", $query))
 				{
 					preg_match("/^(.*)LIMIT ([0-9]+)[, ]*([0-9]+)*/s", $query, $limits);
 
 					$query = $limits[1];
-					if($limits[3])
+					if ($limits[3])
 					{
 						$row_offset = $limits[2];
 						$num_rows = $limits[3];
@@ -138,20 +138,20 @@ class sql_db
 				}
 
 				$result_id = $this->query_result;
-				if($this->query_result && eregi("^SELECT", $query))
+				if ($this->query_result && eregi("^SELECT", $query))
 				{
 
-					for($i = 1; $i < odbc_num_fields($result_id)+1; $i++)
+					for ($i = 1; $i < odbc_num_fields($result_id)+1; $i++)
 					{
 						$this->result_field_names[$result_id][] = odbc_field_name($result_id, $i);
 					}
 
 					$i =  $row_offset + 1;
 					$k = 0;
-					while(odbc_fetch_row($result_id, $i) && $k < $this->result_numrows[$result_id])
+					while (odbc_fetch_row($result_id, $i) && $k < $this->result_numrows[$result_id])
 					{
 
-						for($j = 1; $j < count($this->result_field_names[$result_id])+1; $j++)
+						for ($j = 1; $j < count($this->result_field_names[$result_id])+1; $j++)
 						{
 							$this->result_rowset[$result_id][$k][$this->result_field_names[$result_id][$j-1]] = odbc_result($result_id, $j);
 						}
@@ -170,22 +170,22 @@ class sql_db
 			}
 			else
 			{
-				if(eregi("^(INSERT|UPDATE) ", $query))
+				if (eregi("^(INSERT|UPDATE) ", $query))
 				{
 					$query = preg_replace("/\\\'/s", "''", $query);
 				}
 
 				$this->query_result = odbc_exec($this->db_connect_id, $query);
 
-				if($this->query_result)
+				if ($this->query_result)
 				{
 					$sql_id = "VALUES(IDENTITY_VAL_LOCAL())";
 
 					$id_result = odbc_exec($this->db_connect_id, $sql_id);
-					if($id_result)
+					if ($id_result)
 					{
 						$row_result = odbc_fetch_row($id_result);
-						if($row_result)
+						if ($row_result)
 						{
 							$this->next_id[$this->query_result] = odbc_result($id_result, 1);
 						}
@@ -211,11 +211,11 @@ class sql_db
 	//
 	function sql_numrows($query_id = 0)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
-		if($query_id)
+		if ($query_id)
 		{
 			return $this->result_numrows[$query_id];
 		}
@@ -226,11 +226,11 @@ class sql_db
 	}
 	function sql_affectedrows($query_id = 0)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
-		if($query_id)
+		if ($query_id)
 		{
 			return $this->result_numrows[$query_id];
 		}
@@ -241,11 +241,11 @@ class sql_db
 	}
 	function sql_numfields($query_id = 0)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
-		if($query_id)
+		if ($query_id)
 		{
 			$result = count($this->result_field_names[$query_id]);
 			return $result;
@@ -257,11 +257,11 @@ class sql_db
 	}
 	function sql_fieldname($offset, $query_id = 0)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
-		if($query_id)
+		if ($query_id)
 		{
 			$result = $this->result_field_names[$query_id][$offset];
 			return $result;
@@ -273,11 +273,11 @@ class sql_db
 	}
 	function sql_fieldtype($offset, $query_id = 0)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
-		if($query_id)
+		if ($query_id)
 		{
 			$result = @odbc_field_type($query_id, $offset);
 			return $result;
@@ -289,13 +289,13 @@ class sql_db
 	}
 	function sql_fetchrow($query_id = 0)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
-		if($query_id)
+		if ($query_id)
 		{
-			if($this->row_index[$query_id] < $this->result_numrows[$query_id])
+			if ($this->row_index[$query_id] < $this->result_numrows[$query_id])
 			{
 				$result = $this->result_rowset[$query_id][$this->row_index[$query_id]];
 				$this->row_index[$query_id]++;
@@ -313,11 +313,11 @@ class sql_db
 	}
 	function sql_fetchrowset($query_id = 0)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
-		if($query_id)
+		if ($query_id)
 		{
 			$this->row_index[$query_id] = $this->result_numrows[$query_id];
 			return $this->result_rowset[$query_id];
@@ -329,15 +329,15 @@ class sql_db
 	}
 	function sql_fetchfield($field, $row = -1, $query_id = 0)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
-		if($query_id)
+		if ($query_id)
 		{
-			if($row < $this->result_numrows[$query_id])
+			if ($row < $this->result_numrows[$query_id])
 			{
-				if($row == -1)
+				if ($row == -1)
 				{
 					$getrow = $this->row_index[$query_id]-1;
 				}
@@ -361,11 +361,11 @@ class sql_db
 	}
 	function sql_rowseek($offset, $query_id = 0)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
-		if($query_id)
+		if ($query_id)
 		{
 			$this->row_index[$query_id] = 0;
 			return true;
@@ -377,11 +377,11 @@ class sql_db
 	}
 	function sql_nextid($query_id = 0)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
-		if($query_id)
+		if ($query_id)
 		{
 			return $this->next_id[$query_id];
 		}
@@ -392,11 +392,11 @@ class sql_db
 	}
 	function sql_freeresult($query_id = 0)
 	{
-		if(!$query_id)
+		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
-		if($query_id)
+		if ($query_id)
 		{
 			$result = @odbc_free_result($query_id);
 			return $result;

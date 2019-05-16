@@ -89,11 +89,11 @@ if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals
 // this is a security precaution to prevent someone
 // trying to break out of a SQL statement.
 //
-if( !get_magic_quotes_gpc() ) {
-	if( is_array($HTTP_GET_VARS) ) {
-		while( list($k, $v) = each($HTTP_GET_VARS) ) {
-			if( is_array($HTTP_GET_VARS[$k]) ) {
-				while( list($k2, $v2) = each($HTTP_GET_VARS[$k]) ) {
+if (!get_magic_quotes_gpc() ) {
+	if (is_array($HTTP_GET_VARS) ) {
+		while (list($k, $v) = each($HTTP_GET_VARS) ) {
+			if (is_array($HTTP_GET_VARS[$k]) ) {
+				while (list($k2, $v2) = each($HTTP_GET_VARS[$k]) ) {
 					$HTTP_GET_VARS[$k][$k2] = addslashes($v2);
 				}
 				@reset($HTTP_GET_VARS[$k]);
@@ -104,10 +104,10 @@ if( !get_magic_quotes_gpc() ) {
 		@reset($HTTP_GET_VARS);
 	}
 
-	if( is_array($HTTP_POST_VARS) ) {
-		while( list($k, $v) = each($HTTP_POST_VARS) ) {
-			if( is_array($HTTP_POST_VARS[$k]) ) {
-				while( list($k2, $v2) = each($HTTP_POST_VARS[$k]) ) {
+	if (is_array($HTTP_POST_VARS) ) {
+		while (list($k, $v) = each($HTTP_POST_VARS) ) {
+			if (is_array($HTTP_POST_VARS[$k]) ) {
+				while (list($k2, $v2) = each($HTTP_POST_VARS[$k]) ) {
 					$HTTP_POST_VARS[$k][$k2] = addslashes($v2);
 				}
 				@reset($HTTP_POST_VARS[$k]);
@@ -118,10 +118,10 @@ if( !get_magic_quotes_gpc() ) {
 		@reset($HTTP_POST_VARS);
 	}
 
-	if( is_array($HTTP_COOKIE_VARS) ) {
-		while( list($k, $v) = each($HTTP_COOKIE_VARS) ) {
-			if( is_array($HTTP_COOKIE_VARS[$k]) ) {
-				while( list($k2, $v2) = each($HTTP_COOKIE_VARS[$k]) ) {
+	if (is_array($HTTP_COOKIE_VARS) ) {
+		while (list($k, $v) = each($HTTP_COOKIE_VARS) ) {
+			if (is_array($HTTP_COOKIE_VARS[$k]) ) {
+				while (list($k2, $v2) = each($HTTP_COOKIE_VARS[$k]) ) {
 					$HTTP_COOKIE_VARS[$k][$k2] = addslashes($v2);
 				}
 				@reset($HTTP_COOKIE_VARS[$k]);
@@ -149,7 +149,7 @@ $gen_simple_header = false;
 
 include $phpbb_root_path . 'config.php';
 
-if( !defined("PHPBB_INSTALLED") ) {
+if (!defined("PHPBB_INSTALLED") ) {
 	header('Location: ' . $phpbb_root_path . 'install/install.php');
 	exit;
 }
@@ -189,7 +189,7 @@ $user_ip = encode_ip($client_ip);
 $sql = "SELECT *
 	FROM " . CONFIG_TABLE;
 
-if( !($result = $db->sql_query($sql)) ) {
+if (!($result = $db->sql_query($sql)) ) {
 	message_die(CRITICAL_ERROR, "Could not query config information", "", __LINE__, __FILE__, $sql);
 }
 
@@ -204,7 +204,7 @@ if (file_exists('install') || file_exists('contrib')) {
 //
 // Show 'Board is disabled' message if needed.
 //
-if( $board_config['board_disable'] && !defined("IN_ADMIN") && !defined("IN_LOGIN") ) {
+if ($board_config['board_disable'] && !defined("IN_ADMIN") && !defined("IN_LOGIN") ) {
 	message_die(GENERAL_MESSAGE, 'Board_disable', 'Information');
 }
 

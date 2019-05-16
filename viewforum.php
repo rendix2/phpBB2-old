@@ -30,7 +30,7 @@ include $phpbb_root_path . 'common.php';
 //
 if ( isset($_GET[POST_FORUM_URL]) || isset($_POST[POST_FORUM_URL]) ) {
 	$forum_id = isset($_GET[POST_FORUM_URL]) ? (int)$_GET[POST_FORUM_URL] : (int)$_POST[POST_FORUM_URL];
-} else if ( isset($_GET['forum'])) {
+} elseif ( isset($_GET['forum'])) {
 	$forum_id = (int)$_GET['forum'];
 } else {
 	$forum_id = '';
@@ -184,7 +184,7 @@ if ( !($result = $db->sql_query($sql)) )
 
 $moderators = [];
 
-while( $row = $db->sql_fetchrow($result) )
+while ($row = $db->sql_fetchrow($result) )
 {
 	$moderators[] = '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . '">' . $row['username'] . '</a>';
 }
@@ -204,7 +204,7 @@ if ( !($result = $db->sql_query($sql)) ) {
 	message_die(GENERAL_ERROR, 'Could not query forum moderator information', '', __LINE__, __FILE__, $sql);
 }
 
-while( $row = $db->sql_fetchrow($result) ) {
+while ($row = $db->sql_fetchrow($result) ) {
 	$moderators[] = '<a href="' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=" . $row['group_id']) . '">' . $row['group_name'] . '</a>';
 }
 	
@@ -251,7 +251,7 @@ if ( !empty($_POST['topicdays']) || !empty($_GET['topicdays']) ) {
 
 $select_topic_days = '<select name="topicdays">';
 
-for($i = 0; $i < count($previous_days); $i++) {
+for ($i = 0; $i < count($previous_days); $i++) {
 	$selected = ($topic_days == $previous_days[$i]) ? ' selected="selected"' : '';
 	$select_topic_days .= '<option value="' . $previous_days[$i] . '"' . $selected . '>' . $previous_days_text[$i] . '</option>';
 }
@@ -279,7 +279,7 @@ if ( !($result = $db->sql_query($sql)) ) {
 $topic_rowset = [];
 $total_announcements = 0;
 
-while( $row = $db->sql_fetchrow($result) ) {
+while ($row = $db->sql_fetchrow($result) ) {
 	$topic_rowset[] = $row;
 	$total_announcements++;
 }
@@ -308,7 +308,7 @@ if ( !($result = $db->sql_query($sql)) ) {
 
 $total_topics = 0;
 
-while( $row = $db->sql_fetchrow($result) ) {
+while ($row = $db->sql_fetchrow($result) ) {
 	$topic_rowset[] = $row;
 	$total_topics++;
 }
@@ -462,7 +462,7 @@ if ($total_topics) {
 				$folder = $images['folder_locked'];
 				$folder_new = $images['folder_locked_new'];
 			} else {
-				if($replies >= $board_config['hot_threshold']) {
+				if ($replies >= $board_config['hot_threshold']) {
 					$folder = $images['folder_hot'];
 					$folder_new = $images['folder_hot_new'];
 				} else {
@@ -472,30 +472,30 @@ if ($total_topics) {
 			}
 
 			$newest_post_img = '';
-			if( $userdata['session_logged_in'] ) {
-				if( $topic_rowset[$i]['post_time'] > $userdata['user_lastvisit'] )  {
-					if( !empty($tracking_topics) || !empty($tracking_forums) || isset($_COOKIE[$board_config['cookie_name'] . '_f_all']) ) {
+			if ($userdata['session_logged_in'] ) {
+				if ($topic_rowset[$i]['post_time'] > $userdata['user_lastvisit'] )  {
+					if (!empty($tracking_topics) || !empty($tracking_forums) || isset($_COOKIE[$board_config['cookie_name'] . '_f_all']) ) {
 						$unread_topics = true;
 
-						if( !empty($tracking_topics[$topic_id]) ) {
-							if( $tracking_topics[$topic_id] >= $topic_rowset[$i]['post_time'] ) {
+						if (!empty($tracking_topics[$topic_id]) ) {
+							if ($tracking_topics[$topic_id] >= $topic_rowset[$i]['post_time'] ) {
 								$unread_topics = false;
 							}
 						}
 
-						if( !empty($tracking_forums[$forum_id]) ) {
-							if( $tracking_forums[$forum_id] >= $topic_rowset[$i]['post_time'] ) {
+						if (!empty($tracking_forums[$forum_id]) ) {
+							if ($tracking_forums[$forum_id] >= $topic_rowset[$i]['post_time'] ) {
 								$unread_topics = false;
 							}
 						}
 
-						if( isset($_COOKIE[$board_config['cookie_name'] . '_f_all']) ) {
-							if( $_COOKIE[$board_config['cookie_name'] . '_f_all'] >= $topic_rowset[$i]['post_time'] ) {
+						if (isset($_COOKIE[$board_config['cookie_name'] . '_f_all']) ) {
+							if ($_COOKIE[$board_config['cookie_name'] . '_f_all'] >= $topic_rowset[$i]['post_time'] ) {
 								$unread_topics = false;
 							}
 						}
 
-						if( $unread_topics ) {
+						if ($unread_topics ) {
 							$folder_image = $folder_new;
 							$folder_alt = $lang['New_posts'];
 
@@ -526,20 +526,20 @@ if ($total_topics) {
 			}
 		}
 
-		if( ( $replies + 1 ) > $board_config['posts_per_page'] ) {
+		if (( $replies + 1 ) > $board_config['posts_per_page'] ) {
 			$total_pages = ceil( ( $replies + 1 ) / $board_config['posts_per_page'] );
 			$goto_page = ' [ <img src="' . $images['icon_gotopost'] . '" alt="' . $lang['Goto_page'] . '" title="' . $lang['Goto_page'] . '" />' . $lang['Goto_page'] . ': ';
 
 			$times = 1;
 			
-			for($j = 0; $j < $replies + 1; $j += $board_config['posts_per_page']) {
+			for ($j = 0; $j < $replies + 1; $j += $board_config['posts_per_page']) {
 				$goto_page .= '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=" . $topic_id . "&amp;start=$j") . '">' . $times . '</a>';
 				
-				if( $times == 1 && $total_pages > 4 ) {
+				if ($times == 1 && $total_pages > 4 ) {
 					$goto_page .= ' ... ';
 					$times = $total_pages - 3;
 					$j += ( $total_pages - 4 ) * $board_config['posts_per_page'];
-				} else if ( $times < $total_pages ) {
+				} elseif ( $times < $total_pages ) {
 					$goto_page .= ', ';
 				}
 				

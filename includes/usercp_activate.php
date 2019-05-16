@@ -42,11 +42,11 @@ if ( $row = $db->sql_fetchrow($result) ) {
 		);
 
 		message_die(GENERAL_MESSAGE, $lang['Already_activated']);
-	} else if ((trim($row['user_actkey']) == trim($_GET['act_key'])) && (trim($row['user_actkey']) != '')) {
+	} elseif ((trim($row['user_actkey']) == trim($_GET['act_key'])) && (trim($row['user_actkey']) != '')) {
 		if ((int)$board_config['require_activation'] == USER_ACTIVATION_ADMIN && $row['user_newpasswd'] == '') {
 			if (!$userdata['session_logged_in']) {
 				redirect(append_sid('login.php?redirect=profile.php&mode=activate&' . POST_USERS_URL . '=' . $row['user_id'] . '&act_key=' . trim($_GET['act_key'])));
-			} else if ($userdata['user_level'] != ADMIN) {
+			} elseif ($userdata['user_level'] != ADMIN) {
 				message_die(GENERAL_MESSAGE, $lang['Not_Authorised']);
 			}
 		}

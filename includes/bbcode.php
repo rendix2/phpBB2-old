@@ -388,7 +388,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 				//
 				// We're going to try and catch usernames with "[' characters.
 				//
-				if( preg_match('#\[quote=\\\&quot;#si', $possible_start, $match) && !preg_match('#\[quote=\\\&quot;(.*?)\\\&quot;\]#si', $possible_start) )
+				if (preg_match('#\[quote=\\\&quot;#si', $possible_start, $match) && !preg_match('#\[quote=\\\&quot;(.*?)\\\&quot;\]#si', $possible_start) )
 				{
 					// OK we are in a quote tag that probably contains a ] bracket.
 					// Grab a bit more of the string to hopefully get all of it..
@@ -718,9 +718,9 @@ function bbcode_array_pop(&$stack)
    $arrSize = count($stack);
    $x = 1;
 
-   while(list($key, $val) = each($stack))
+   while (list($key, $val) = each($stack))
    {
-      if($x < count($stack))
+      if ($x < count($stack))
       {
 	 		$tmpArr[] = $val;
       }
@@ -749,7 +749,7 @@ function smilies_pass($message)
 		$orig = $repl = [];
 
 		$sql = 'SELECT * FROM ' . SMILIES_TABLE;
-		if( !$result = $db->sql_query($sql) )
+		if (!$result = $db->sql_query($sql) )
 		{
 			message_die(GENERAL_ERROR, "Couldn't obtain smilies data", "", __LINE__, __FILE__, $sql);
 		}

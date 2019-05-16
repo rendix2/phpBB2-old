@@ -22,7 +22,7 @@
 
 define('IN_PHPBB', 1);
 
-if( !empty($setmodules) ) {
+if (!empty($setmodules) ) {
 	$filename = basename(__FILE__);
 	$module['Forums']['Permissions']   = $filename;
 
@@ -112,7 +112,7 @@ if (isset($_POST['submit'])) {
 	$sql = '';
 
     if (!empty($forum_id)) {
-		if(isset($_POST['simpleauth']))
+		if (isset($_POST['simpleauth']))
 		{
 			$simple_ary = $simple_auth_ary[(int)$_POST['simpleauth']];
 
@@ -124,7 +124,7 @@ if (isset($_POST['submit'])) {
                 $sql = "UPDATE " . FORUMS_TABLE . " SET $sql WHERE forum_id = $forum_id";
             }
 		} else {
-			for($i = 0; $i < count($forum_auth_fields); $i++) {
+			for ($i = 0; $i < count($forum_auth_fields); $i++) {
 				$value = (int)$_POST[$forum_auth_fields[$i]];
 
                 if ($forum_auth_fields[$i] == 'auth_vote') {
@@ -176,7 +176,7 @@ if ( !($result = $db->sql_query($sql)) )
 $forum_rows = $db->sql_fetchrowset($result);
 $db->sql_freeresult($result);
 
-if( empty($forum_id) )
+if (empty($forum_id) )
 {
 	//
 	// Output the selection table if no forum id was
@@ -187,7 +187,7 @@ if( empty($forum_id) )
 	);
 
 	$select_list = '<select name="' . POST_FORUM_URL . '">';
-	for($i = 0; $i < count($forum_rows); $i++)
+	for ($i = 0; $i < count($forum_rows); $i++)
 	{
 		$select_list .= '<option value="' . $forum_rows[$i]['forum_id'] . '">' . $forum_rows[$i]['forum_name'] . '</option>';
 	}
@@ -214,9 +214,9 @@ if( empty($forum_id) )
 
 	@reset($simple_auth_ary);
 
-	while( list($key, $auth_levels) = each($simple_auth_ary)) {
+	while (list($key, $auth_levels) = each($simple_auth_ary)) {
 		$matched = 1;
-		for($k = 0; $k < count($auth_levels); $k++) {
+		for ($k = 0; $k < count($auth_levels); $k++) {
 			$matched_type = $key;
 
 			if ( $forum_rows[0][$forum_auth_fields[$k]] != $auth_levels[$k] ) {
@@ -262,10 +262,10 @@ if( empty($forum_id) )
 		// Output values of individual
 		// fields
 		//
-		for($j = 0; $j < count($forum_auth_fields); $j++) {
+		for ($j = 0; $j < count($forum_auth_fields); $j++) {
 			$custom_auth[$j] = '&nbsp;<select name="' . $forum_auth_fields[$j] . '">';
 
-			for($k = 0; $k < count($forum_auth_levels); $k++) {
+			for ($k = 0; $k < count($forum_auth_levels); $k++) {
 				$selected = ( $forum_rows[0][$forum_auth_fields[$j]] == $forum_auth_const[$k] ) ? ' selected="selected"' : '';
 				$custom_auth[$j] .= '<option value="' . $forum_auth_const[$k] . '"' . $selected . '>' . $lang['Forum_' . $forum_auth_levels[$k]] . '</option>';
 			}

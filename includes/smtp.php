@@ -76,13 +76,13 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 		@reset($header_array);
 
 		$headers = '';
-		while(list(, $header) = each($header_array))
+		while (list(, $header) = each($header_array))
 		{
 			if (preg_match('#^cc:#si', $header))
 			{
 				$cc = preg_replace('#^cc:(.*)#si', '\1', $header);
 			}
-			else if (preg_match('#^bcc:#si', $header))
+			elseif (preg_match('#^bcc:#si', $header))
 			{
 				$bcc = preg_replace('#^bcc:(.*)#si', '\1', $header);
 				$header = '';
@@ -107,7 +107,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 
 	// Ok we have error checked as much as we can to this point let's get on
 	// it already.
-	if( !$socket = @fsockopen($board_config['smtp_host'], 25, $errno, $errstr, 20) )
+	if (!$socket = @fsockopen($board_config['smtp_host'], 25, $errno, $errstr, 20) )
 	{
 		message_die(GENERAL_ERROR, "Could not connect to smtp host : $errno : $errstr", "", __LINE__, __FILE__);
 	}
@@ -117,7 +117,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 
 	// Do we want to use AUTH?, send RFC2554 EHLO, else send RFC821 HELO
 	// This improved as provided by SirSir to accomodate
-	if( !empty($board_config['smtp_username']) && !empty($board_config['smtp_password']) )
+	if (!empty($board_config['smtp_username']) && !empty($board_config['smtp_password']) )
 	{ 
 		fputs($socket, "EHLO " . $board_config['smtp_host'] . "\r\n");
 		server_parse($socket, "250", __LINE__);
@@ -155,7 +155,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 
 	// Ok now do the CC and BCC fields...
 	@reset($bcc);
-	while(list(, $bcc_address) = each($bcc))
+	while (list(, $bcc_address) = each($bcc))
 	{
 		// Add an additional bit of error checking to bcc header...
 		$bcc_address = trim($bcc_address);
@@ -167,7 +167,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 	}
 
 	@reset($cc);
-	while(list(, $cc_address) = each($cc))
+	while (list(, $cc_address) = each($cc))
 	{
 		// Add an additional bit of error checking to cc header
 		$cc_address = trim($cc_address);

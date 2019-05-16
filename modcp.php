@@ -115,7 +115,7 @@ if ( !empty($topic_id) ) {
 	$forum_topics = ( $topic_row['forum_topics'] == 0 ) ? 1 : $topic_row['forum_topics'];
 	$forum_id = $topic_row['forum_id'];
 	$forum_name = $topic_row['forum_name'];
-} else if ( !empty($forum_id) ) {
+} elseif ( !empty($forum_id) ) {
 	$sql = "SELECT forum_name, forum_topics
 		FROM " . FORUMS_TABLE . "
 		WHERE forum_id = " . $forum_id;
@@ -199,7 +199,7 @@ switch( $mode )
 			$topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : array($topic_id);
 
 			$topic_id_sql = '';
-			for($i = 0; $i < count($topics); $i++) {
+			for ($i = 0; $i < count($topics); $i++) {
 				$topic_id_sql .= ( ( $topic_id_sql != '' ) ? ', ' : '' ) . (int)$topics[$i];
 			}
 
@@ -242,7 +242,7 @@ switch( $mode )
 			$db->sql_freeresult($result);
 
 			if ( count($count_sql) ) {
-				for($i = 0; $i < count($count_sql); $i++) {
+				for ($i = 0; $i < count($count_sql); $i++) {
 					if ( !$db->sql_query($count_sql[$i]) ) {
 						message_die(GENERAL_ERROR, 'Could not update user post count information', '', __LINE__, __FILE__, $sql);
 					}
@@ -373,7 +373,7 @@ switch( $mode )
 			if ( isset($_POST['topic_id_list']) ) {
 				$topics = $_POST['topic_id_list'];
 
-				for($i = 0; $i < count($topics); $i++) {
+				for ($i = 0; $i < count($topics); $i++) {
 					$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . (int)$topics[$i] . '" />';
 				}
 			} else {
@@ -434,7 +434,7 @@ switch( $mode )
 
 				$topic_list = '';
 
-				for($i = 0; $i < count($topics); $i++) {
+				for ($i = 0; $i < count($topics); $i++) {
 					$topic_list .= ( ( $topic_list != '' ) ? ', ' : '' ) . (int)$topics[$i];
 				}
 
@@ -451,7 +451,7 @@ switch( $mode )
 				$row = $db->sql_fetchrowset($result);
 				$db->sql_freeresult($result);
 
-				for($i = 0; $i < count($row); $i++) {
+				for ($i = 0; $i < count($row); $i++) {
 					$topic_id = $row[$i]['topic_id'];
 					
 					if ( isset($_POST['move_leave_shadow']) ) {
@@ -515,7 +515,7 @@ switch( $mode )
 			if ( isset($_POST['topic_id_list']) ) {
 				$topics = $_POST['topic_id_list'];
 
-				for($i = 0; $i < count($topics); $i++) {
+				for ($i = 0; $i < count($topics); $i++) {
 					$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . (int)$topics[$i] . '" />';
 				}
 			} else {
@@ -558,7 +558,7 @@ switch( $mode )
 
 		$topic_id_sql = '';
 
-		for($i = 0; $i < count($topics); $i++) {
+		for ($i = 0; $i < count($topics); $i++) {
 			$topic_id_sql .= ( ( $topic_id_sql != '' ) ? ', ' : '' ) . (int)$topics[$i];
 		}
 
@@ -597,7 +597,7 @@ switch( $mode )
 		$topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : array($topic_id);
 
 		$topic_id_sql = '';
-		for($i = 0; $i < count($topics); $i++) {
+		for ($i = 0; $i < count($topics); $i++) {
 			$topic_id_sql .= ( ( $topic_id_sql != "") ? ', ' : '' ) . (int)$topics[$i];
 		}
 
@@ -770,7 +770,7 @@ switch( $mode )
 
 			$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" /><input type="hidden" name="' . POST_TOPIC_URL . '" value="' . $topic_id . '" /><input type="hidden" name="mode" value="split" />';
 
-			if( ( $total_posts = $db->sql_numrows($result) ) > 0 ) {
+			if (( $total_posts = $db->sql_numrows($result) ) > 0 ) {
 				$postrow = $db->sql_fetchrowset($result);
 
 				$template->assign_vars(array(
@@ -806,7 +806,7 @@ switch( $mode )
 				$replacement_word = [];
 				obtain_word_list($orig_word, $replacement_word);
 
-				for($i = 0; $i < $total_posts; $i++) {
+				for ($i = 0; $i < $total_posts; $i++) {
 					$post_id = $postrow[$i]['post_id'];
 					$poster_id = $postrow[$i]['poster_id'];
 					$poster = $postrow[$i]['username'];

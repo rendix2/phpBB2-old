@@ -13,8 +13,7 @@
 
 define('IN_PHPBB', 1);
 
-if( !empty($setmodules) )
-{
+if (!empty($setmodules) ) {
 	$file = basename(__FILE__);
 	$module['General']['Configuration'] = $file;
 	return;
@@ -34,14 +33,10 @@ include $phpbb_root_path . 'includes/functions_selects.php';
 $sql = "SELECT *
 	FROM " . CONFIG_TABLE;
 
-if(!$result = $db->sql_query($sql))
-{
+if (!$result = $db->sql_query($sql)) {
 	message_die(CRITICAL_ERROR, "Could not query config information in admin_board", "", __LINE__, __FILE__, $sql);
-}
-else
-{
-	while( $row = $db->sql_fetchrow($result) )
-	{
+} else {
+	while ($row = $db->sql_fetchrow($result) ) {
 		$config_name = $row['config_name'];
 		$config_value = $row['config_value'];
 		$default_config[$config_name] = isset($_POST['submit']) ? str_replace("'", "\'", $config_value) : $config_value;
@@ -67,18 +62,18 @@ else
 			}
 		}
 
-		if( isset($_POST['submit']) ) {
+		if (isset($_POST['submit']) ) {
 			$sql = "UPDATE " . CONFIG_TABLE . " SET
 				config_value = '" . str_replace("\'", "''", $new[$config_name]) . "'
 				WHERE config_name = '$config_name'";
 
-			if( !$db->sql_query($sql) ) {
+			if (!$db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, "Failed to update general configuration for $config_name", "", __LINE__, __FILE__, $sql);
 			}
 		}
 	}
 
-	if( isset($_POST['submit']) ) {
+	if (isset($_POST['submit']) ) {
 		$message = $lang['Config_updated'] . "<br /><br />" . sprintf($lang['Click_return_config'], "<a href=\"" . append_sid("admin_board.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
 
 		message_die(GENERAL_MESSAGE, $message);

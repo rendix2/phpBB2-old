@@ -50,7 +50,7 @@ function inarray($needle, $haystack)
 //
 // Generate relevant output
 //
-if( isset($_GET['pane']) && $_GET['pane'] == 'left' )
+if (isset($_GET['pane']) && $_GET['pane'] == 'left' )
 {
 	$dir = @opendir(".");
 
@@ -81,7 +81,7 @@ if( isset($_GET['pane']) && $_GET['pane'] == 'left' )
 
 	ksort($module);
 
-	while( list($cat, $action_array) = each($module) ) {
+	while (list($cat, $action_array) = each($module) ) {
 		$cat = !empty($lang[$cat]) ? $lang[$cat] : preg_replace("/_/", " ", $cat);
 
         $template->assign_block_vars("catrow", ["ADMIN_CATEGORY" => $cat]);
@@ -90,7 +90,7 @@ if( isset($_GET['pane']) && $_GET['pane'] == 'left' )
 
 		$row_count = 0;
 
-		while( list($action, $file)	= each($action_array) ) {
+		while (list($action, $file)	= each($action_array) ) {
 			$row_color = ( !($row_count%2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($row_count%2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
@@ -110,7 +110,7 @@ if( isset($_GET['pane']) && $_GET['pane'] == 'left' )
 	$template->pparse("body");
 
 	include './page_footer_admin.php';
-} elseif( isset($_GET['pane']) && $_GET['pane'] == 'right' ) {
+} elseif (isset($_GET['pane']) && $_GET['pane'] == 'right' ) {
 
 	include './page_header_admin.php';
 
@@ -203,20 +203,20 @@ if( isset($_GET['pane']) && $_GET['pane'] == 'left' )
 	// This code is heavily influenced by a similar routine
 	// in phpMyAdmin 2.2.0
 	//
-	if( preg_match("/^mysql/", SQL_LAYER) ) {
+	if (preg_match("/^mysql/", SQL_LAYER) ) {
 		$sql = "SELECT VERSION() AS mysql_version";
 
-		if($result = $db->sql_query($sql)) {
+		if ($result = $db->sql_query($sql)) {
 			$row = $db->sql_fetchrow($result);
 			$version = $row['mysql_version'];
 
-			if( preg_match("/^(3\.23|4\.|5\.)/", $version) ) {
+			if (preg_match("/^(3\.23|4\.|5\.)/", $version) ) {
 				$db_name = preg_match("/^(3\.23\.[6-9])|(3\.23\.[1-9][1-9])|(4\.)|(5\.)/", $version) ? "`$dbname`" : $dbname;
 
 				$sql = "SHOW TABLE STATUS 
 					FROM " . $db_name;
 
-				if($result = $db->sql_query($sql)) {
+				if ($result = $db->sql_query($sql)) {
 					$tabledata_ary = $db->sql_fetchrowset($result);
 
 					$dbsize = 0;
@@ -239,11 +239,11 @@ if( isset($_GET['pane']) && $_GET['pane'] == 'left' )
         } else {
             $dbsize = $lang['Not_available'];
         }
-	} else if( preg_match("/^mssql/", SQL_LAYER) ) {
+	} elseif (preg_match("/^mssql/", SQL_LAYER) ) {
 		$sql = "SELECT ((SUM(size) * 8.0) * 1024.0) as dbsize 
 			FROM sysfiles";
 
-		if( $result = $db->sql_query($sql) ) {
+        if ($result = $db->sql_query($sql)) {
 			$dbsize = ( $row = $db->sql_fetchrow($result) ) ? (int)$row['dbsize'] : $lang['Not_available'];
 		} else {
 			$dbsize = $lang['Not_available'];
@@ -289,7 +289,7 @@ if( isset($_GET['pane']) && $_GET['pane'] == 'left' )
 			AND s.session_time >= " . ( time() - 300 ) . " 
 		ORDER BY u.user_session_time DESC";
 
-	if(!$result = $db->sql_query($sql)) {
+	if (!$result = $db->sql_query($sql)) {
 		message_die(GENERAL_ERROR, "Couldn't obtain regd user/online information.", "", __LINE__, __FILE__, $sql);
 	}
 
@@ -301,7 +301,7 @@ if( isset($_GET['pane']) && $_GET['pane'] == 'left' )
 			AND session_time >= " . ( time() - 300 ) . "
 		ORDER BY session_time DESC";
 
-	if(!$result = $db->sql_query($sql)) {
+	if (!$result = $db->sql_query($sql)) {
 		message_die(GENERAL_ERROR, "Couldn't obtain guest user/online information.", "", __LINE__, __FILE__, $sql);
 	}
 
@@ -337,7 +337,7 @@ if( isset($_GET['pane']) && $_GET['pane'] == 'left' )
                     $hidden = true;
                 }
 
-				if( $onlinerow_reg[$i]['user_session_page'] < 1 ) {
+				if ($onlinerow_reg[$i]['user_session_page'] < 1 ) {
 					switch($onlinerow_reg[$i]['user_session_page']) {
 						case PAGE_INDEX:
 							$location = $lang['Forum_index'];
@@ -412,14 +412,14 @@ if( isset($_GET['pane']) && $_GET['pane'] == 'left' )
     //
 	// Guest users
 	//
-	if( count($onlinerow_guest) ) {
+	if (count($onlinerow_guest) ) {
 		$guest_users = 0;
 
-		for($i = 0; $i < count($onlinerow_guest); $i++) {
+		for ($i = 0; $i < count($onlinerow_guest); $i++) {
 			$guest_userip_ary[] = $onlinerow_guest[$i]['session_ip'];
 			$guest_users++;
 
-			if( $onlinerow_guest[$i]['session_page'] < 1 ) {
+			if ($onlinerow_guest[$i]['session_page'] < 1 ) {
 				switch( $onlinerow_guest[$i]['session_page'] ) {
 					case PAGE_INDEX:
 						$location = $lang['Forum_index'];

@@ -45,7 +45,7 @@ define('IN_PHPBB', 1);
 $phpbb_root_path = './../';
 include $phpbb_root_path . 'extension.inc';
 include $phpbb_root_path . 'config.php';
-if(!isset($dbms))
+if (!isset($dbms))
 {
 	die("Please read: <a href='../docs/INSTALL.html'>INSTALL.html</a> before attempting to update.");
 }

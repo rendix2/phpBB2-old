@@ -21,7 +21,7 @@
 
 define('IN_PHPBB', 1);
 
-if( !empty($setmodules) ) {
+if (!empty($setmodules) ) {
 	$file = basename(__FILE__);
 	$module['Forums']['Manage'] = $file;
 	return;
@@ -88,7 +88,7 @@ function get_info($mode, $id)
 	$sql = "SELECT count(*) as total
 		FROM $table";
 
-	if( !$result = $db->sql_query($sql) ) {
+	if (!$result = $db->sql_query($sql) ) {
 		message_die(GENERAL_ERROR, "Couldn't get Forum/Category information", "", __LINE__, __FILE__, $sql);
 	}
 
@@ -99,11 +99,11 @@ function get_info($mode, $id)
 		FROM $table
 		WHERE $idfield = $id";
 
-	if( !$result = $db->sql_query($sql) ) {
+	if (!$result = $db->sql_query($sql) ) {
 		message_die(GENERAL_ERROR, "Couldn't get Forum/Category information", "", __LINE__, __FILE__, $sql);
 	}
 
-	if( $db->sql_numrows($result) != 1 ) {
+	if ($db->sql_numrows($result) != 1 ) {
 		message_die(GENERAL_ERROR, "Forum/Category doesn't exist or multiple forums/categories with ID $id", "", __LINE__, __FILE__);
 	}
 
@@ -138,17 +138,17 @@ function get_list($mode, $id, $select)
 	$sql = "SELECT *
 		FROM $table";
 
-	if( $select == 0 ) {
+	if ($select == 0 ) {
 		$sql .= " WHERE $idfield <> $id";
 	}
 
-	if( !$result = $db->sql_query($sql) ) {
+	if (!$result = $db->sql_query($sql) ) {
 		message_die(GENERAL_ERROR, "Couldn't get list of Categories/Forums", "", __LINE__, __FILE__, $sql);
 	}
 
 	$cat_list = "";
 
-	while( $row = $db->sql_fetchrow($result) ) {
+	while ($row = $db->sql_fetchrow($result) ) {
 		$s = "";
 
 		if ($row[$idfield] == $id) {
@@ -188,25 +188,25 @@ function renumber_order($mode, $cat = 0)
 
 	$sql = "SELECT * FROM $table";
 
-	if( $cat != 0) {
+	if ($cat != 0) {
 		$sql .= " WHERE $catfield = $cat";
 	}
 	$sql .= " ORDER BY $orderfield ASC";
 
 
-	if( !$result = $db->sql_query($sql) ) {
+	if (!$result = $db->sql_query($sql) ) {
 		message_die(GENERAL_ERROR, "Couldn't get list of Categories", "", __LINE__, __FILE__, $sql);
 	}
 
 	$i = 10;
 	$inc = 10;
 
-	while( $row = $db->sql_fetchrow($result) ) {
+	while ($row = $db->sql_fetchrow($result) ) {
 		$sql = "UPDATE $table
 			SET $orderfield = $i
 			WHERE $idfield = " . $row[$idfield];
 
-		if( !$db->sql_query($sql) ) {
+		if (!$db->sql_query($sql) ) {
 			message_die(GENERAL_ERROR, "Couldn't update order fields", "", __LINE__, __FILE__, $sql);
 		}
 
@@ -221,10 +221,10 @@ function renumber_order($mode, $cat = 0)
 //
 // Begin program proper
 //
-if( isset($_POST['addforum']) || isset($_POST['addcategory']) ) {
+if (isset($_POST['addforum']) || isset($_POST['addcategory']) ) {
 	$mode = isset($_POST['addforum']) ? "addforum" : "addcat";
 
-	if( $mode == "addforum" ) {
+	if ($mode == "addforum" ) {
 		list($cat_id) = each($_POST['addforum']);
 		$cat_id = (int)$cat_id;
 		//
@@ -234,7 +234,7 @@ if( isset($_POST['addforum']) || isset($_POST['addcategory']) ) {
 	}
 }
 
-if( !empty($mode) ) {
+if (!empty($mode) ) {
 	switch($mode) {
 		case 'addforum':
 		case 'editforum':
@@ -260,7 +260,7 @@ if( !empty($mode) ) {
 				//
 				// start forum prune stuff.
 				//
-				if( $row['prune_enable'] ) {
+				if ($row['prune_enable'] ) {
 					$prune_enabled = "checked=\"checked\"";
 					$sql = "SELECT *
                			FROM " . PRUNE_TABLE . "
@@ -334,7 +334,7 @@ if( !empty($mode) ) {
 			//
 			// Create a forum in the DB
 			//
-			if( trim($_POST['forumname']) == "" ) {
+			if (trim($_POST['forumname']) == "" ) {
 				message_die(GENERAL_ERROR, "Can't create a forum without a name");
 			}
 
@@ -342,7 +342,7 @@ if( !empty($mode) ) {
 				FROM " . FORUMS_TABLE . "
 				WHERE cat_id = " . (int)$_POST[POST_CAT_URL];
 
-			if( !$result = $db->sql_query($sql) ) {
+			if (!$result = $db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, "Couldn't get order number from forums table", "", __LINE__, __FILE__, $sql);
 			}
 
@@ -354,7 +354,7 @@ if( !empty($mode) ) {
 			$sql = "SELECT MAX(forum_id) AS max_id
 				FROM " . FORUMS_TABLE;
 
-			if( !$result = $db->sql_query($sql) ) {
+			if (!$result = $db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, "Couldn't get order number from forums table", "", __LINE__, __FILE__, $sql);
 			}
 
@@ -369,7 +369,7 @@ if( !empty($mode) ) {
 			$field_sql = "";
 			$value_sql = "";
 
-			while( list($field, $value) = each($forum_auth_ary) ) {
+			while (list($field, $value) = each($forum_auth_ary) ) {
 				$field_sql .= ", $field";
 				$value_sql .= ", $value";
 
@@ -379,20 +379,20 @@ if( !empty($mode) ) {
 			$sql = "INSERT INTO " . FORUMS_TABLE . " (forum_id, forum_name, cat_id, forum_desc, forum_order, forum_status, prune_enable" . $field_sql . ")
 				VALUES ('" . $next_id . "', '" . str_replace("\'", "''", $_POST['forumname']) . "', " . (int)$_POST[POST_CAT_URL] . ", '" . str_replace("\'", "''", $_POST['forumdesc']) . "', $next_order, " . (int)$_POST['forumstatus'] . ", " . (int)$_POST['prune_enable'] . $value_sql . ")";
 
-			if( !$result = $db->sql_query($sql) ) {
+			if (!$result = $db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, "Couldn't insert row in forums table", "", __LINE__, __FILE__, $sql);
 			}
 
-			if( $_POST['prune_enable'] ) {
+			if ($_POST['prune_enable'] ) {
 
-				if( $_POST['prune_days'] == "" || $_POST['prune_freq'] == "") {
+				if ($_POST['prune_days'] == "" || $_POST['prune_freq'] == "") {
 					message_die(GENERAL_MESSAGE, $lang['Set_prune_data']);
 				}
 
 				$sql = "INSERT INTO " . PRUNE_TABLE . " (forum_id, prune_days, prune_freq)
 					VALUES('" . $next_id . "', " . (int)$_POST['prune_days'] . ", " . (int)$_POST['prune_freq'] . ")";
 
-				if( !$result = $db->sql_query($sql) ) {
+				if (!$result = $db->sql_query($sql) ) {
 					message_die(GENERAL_ERROR, "Couldn't insert row in prune table", "", __LINE__, __FILE__, $sql);
 				}
 			}
@@ -405,8 +405,8 @@ if( !empty($mode) ) {
 
 		case 'modforum':
 			// Modify a forum in the DB
-			if( isset($_POST['prune_enable'])) {
-				if( $_POST['prune_enable'] != 1 ) {
+			if (isset($_POST['prune_enable'])) {
+				if ($_POST['prune_enable'] != 1 ) {
 					$_POST['prune_enable'] = 0;
 				}
 			}
@@ -415,12 +415,12 @@ if( !empty($mode) ) {
 				SET forum_name = '" . str_replace("\'", "''", $_POST['forumname']) . "', cat_id = " . (int)$_POST[POST_CAT_URL] . ", forum_desc = '" . str_replace("\'", "''", $_POST['forumdesc']) . "', forum_status = " . (int)$_POST['forumstatus'] . ", prune_enable = " . (int)$_POST['prune_enable'] . "
 				WHERE forum_id = " . (int)$_POST[POST_FORUM_URL];
 
-			if( !$result = $db->sql_query($sql) ) {
+			if (!$result = $db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, "Couldn't update forum information", "", __LINE__, __FILE__, $sql);
 			}
 
-			if( $_POST['prune_enable'] == 1 ) {
-				if( $_POST['prune_days'] == "" || $_POST['prune_freq'] == "" ) {
+			if ($_POST['prune_enable'] == 1 ) {
+				if ($_POST['prune_days'] == "" || $_POST['prune_freq'] == "" ) {
 					message_die(GENERAL_MESSAGE, $lang['Set_prune_data']);
 				}
 
@@ -428,11 +428,11 @@ if( !empty($mode) ) {
 					FROM " . PRUNE_TABLE . "
 					WHERE forum_id = " . (int)$_POST[POST_FORUM_URL];
 
-				if( !$result = $db->sql_query($sql) ) {
+				if (!$result = $db->sql_query($sql) ) {
 					message_die(GENERAL_ERROR, "Couldn't get forum Prune Information","",__LINE__, __FILE__, $sql);
 				}
 
-				if( $db->sql_numrows($result) > 0 ) {
+				if ($db->sql_numrows($result) > 0 ) {
 					$sql = "UPDATE " . PRUNE_TABLE . "
 						SET	prune_days = " . (int)$_POST['prune_days'] . ",	prune_freq = " . (int)$_POST['prune_freq'] . "
 				 		WHERE forum_id = " . (int)$_POST[POST_FORUM_URL];
@@ -441,7 +441,7 @@ if( !empty($mode) ) {
 						VALUES(" . (int)$_POST[POST_FORUM_URL] . ", " . (int)$_POST['prune_days'] . ", " . (int)$_POST['prune_freq'] . ")";
 				}
 
-				if( !$result = $db->sql_query($sql) ) {
+				if (!$result = $db->sql_query($sql) ) {
 					message_die(GENERAL_ERROR, "Couldn't Update Forum Prune Information","",__LINE__, __FILE__, $sql);
 				}
 			}
@@ -454,14 +454,14 @@ if( !empty($mode) ) {
 
 		case 'addcat':
 			// Create a category in the DB
-			if( trim($_POST['categoryname']) == '') {
+			if (trim($_POST['categoryname']) == '') {
 				message_die(GENERAL_ERROR, "Can't create a category without a name");
 			}
 
 			$sql = "SELECT MAX(cat_order) AS max_order
 				FROM " . CATEGORIES_TABLE;
 
-			if( !$result = $db->sql_query($sql) ) {
+			if (!$result = $db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, "Couldn't get order number from categories table", "", __LINE__, __FILE__, $sql);
 			}
 
@@ -476,7 +476,7 @@ if( !empty($mode) ) {
 			$sql = "INSERT INTO " . CATEGORIES_TABLE . " (cat_title, cat_order)
 				VALUES ('" . str_replace("\'", "''", $_POST['categoryname']) . "', $next_order)";
 
-			if( !$result = $db->sql_query($sql) ) {
+			if (!$result = $db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, "Couldn't insert row in categories table", "", __LINE__, __FILE__, $sql);
 			}
 
@@ -523,7 +523,7 @@ if( !empty($mode) ) {
 				SET cat_title = '" . str_replace("\'", "''", $_POST['cat_title']) . "'
 				WHERE cat_id = " . (int)$_POST[POST_CAT_URL];
 
-			if( !$result = $db->sql_query($sql) ) {
+			if (!$result = $db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, "Couldn't update forum information", "", __LINE__, __FILE__, $sql);
 			}
 
@@ -579,7 +579,7 @@ if( !empty($mode) ) {
 			$delete_old = (int)$_POST['delete_old'];
 
 			// Either delete or move all posts in a forum
-			if($to_id == -1) {
+			if ($to_id == -1) {
 				// Delete polls in this forum
 				$sql = "SELECT v.vote_id 
 					FROM " . VOTE_DESC_TABLE . " v, " . TOPICS_TABLE . " t 
@@ -622,11 +622,11 @@ if( !empty($mode) ) {
 					FROM " . FORUMS_TABLE . "
 					WHERE forum_id IN ($from_id, $to_id)";
 
-				if( !$result = $db->sql_query($sql) ) {
+				if (!$result = $db->sql_query($sql) ) {
 					message_die(GENERAL_ERROR, "Couldn't verify existence of forums", "", __LINE__, __FILE__, $sql);
 				}
 
-				if($db->sql_numrows($result) != 2) {
+				if ($db->sql_numrows($result) != 2) {
 					message_die(GENERAL_ERROR, "Ambiguous forum ID's", "", __LINE__, __FILE__);
 				}
 
@@ -634,7 +634,7 @@ if( !empty($mode) ) {
 					SET forum_id = $to_id
 					WHERE forum_id = $from_id";
 
-				if( !$result = $db->sql_query($sql) ) {
+				if (!$result = $db->sql_query($sql) ) {
 					message_die(GENERAL_ERROR, "Couldn't move topics to other forum", "", __LINE__, __FILE__, $sql);
 				}
 
@@ -642,7 +642,7 @@ if( !empty($mode) ) {
 					SET	forum_id = $to_id
 					WHERE forum_id = $from_id";
 
-				if( !$result = $db->sql_query($sql) ) {
+				if (!$result = $db->sql_query($sql) ) {
 					message_die(GENERAL_ERROR, "Couldn't move posts to other forum", "", __LINE__, __FILE__, $sql);
 				}
 
@@ -656,7 +656,7 @@ if( !empty($mode) ) {
 					AND a.auth_mod = 1
 					AND ug.group_id = a.group_id";
 
-			if( !$result = $db->sql_query($sql) ) {
+			if (!$result = $db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, "Couldn't obtain moderator list", "", __LINE__, __FILE__, $sql);
 			}
 
@@ -675,7 +675,7 @@ if( !empty($mode) ) {
 						AND ug.group_id = a.group_id
 						AND ug.user_id NOT IN ($user_ids)";
 
-				if( !$result2 = $db->sql_query($sql) ) {
+				if (!$result2 = $db->sql_query($sql) ) {
 					message_die(GENERAL_ERROR, "Couldn't obtain moderator list", "", __LINE__, __FILE__, $sql);
 				}
 
@@ -703,21 +703,21 @@ if( !empty($mode) ) {
 			$sql = "DELETE FROM " . FORUMS_TABLE . "
 				WHERE forum_id = $from_id";
 
-			if( !$result = $db->sql_query($sql) ) {
+			if (!$result = $db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, "Couldn't delete forum", "", __LINE__, __FILE__, $sql);
 			}
 
 			$sql = "DELETE FROM " . AUTH_ACCESS_TABLE . "
 				WHERE forum_id = $from_id";
 
-			if( !$result = $db->sql_query($sql) ) {
+			if (!$result = $db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, "Couldn't delete forum", "", __LINE__, __FILE__, $sql);
 			}
 
 			$sql = "DELETE FROM " . PRUNE_TABLE . "
 				WHERE forum_id = $from_id";
 
-			if( !$result = $db->sql_query($sql) ) {
+			if (!$result = $db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, "Couldn't delete forum prune information!", "", __LINE__, __FILE__, $sql);
 			}
 
@@ -742,7 +742,7 @@ if( !empty($mode) ) {
 				$sql = "SELECT count(*) as total
 					FROM ". FORUMS_TABLE;
 
-				if( !$result = $db->sql_query($sql) ) {
+				if (!$result = $db->sql_query($sql) ) {
 					message_die(GENERAL_ERROR, "Couldn't get Forum count", "", __LINE__, __FILE__, $sql);
 				}
 
@@ -793,11 +793,11 @@ if( !empty($mode) ) {
 					FROM " . CATEGORIES_TABLE . "
 					WHERE cat_id IN ($from_id, $to_id)";
 
-				if( !$result = $db->sql_query($sql) ) {
+				if (!$result = $db->sql_query($sql) ) {
 					message_die(GENERAL_ERROR, "Couldn't verify existence of categories", "", __LINE__, __FILE__, $sql);
 				}
 
-				if($db->sql_numrows($result) != 2) {
+				if ($db->sql_numrows($result) != 2) {
 					message_die(GENERAL_ERROR, "Ambiguous category ID's", "", __LINE__, __FILE__);
 				}
 
@@ -805,7 +805,7 @@ if( !empty($mode) ) {
 					SET cat_id = $to_id
 					WHERE cat_id = $from_id";
 
-				if( !$result = $db->sql_query($sql) ) {
+				if (!$result = $db->sql_query($sql) ) {
 					message_die(GENERAL_ERROR, "Couldn't move forums to other category", "", __LINE__, __FILE__, $sql);
 				}
 			}
@@ -813,7 +813,7 @@ if( !empty($mode) ) {
 			$sql = "DELETE FROM " . CATEGORIES_TABLE ."
 				WHERE cat_id = $from_id";
 
-			if( !$result = $db->sql_query($sql) ) {
+			if (!$result = $db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, "Couldn't delete category", "", __LINE__, __FILE__, $sql);
 			}
 
@@ -838,7 +838,7 @@ if( !empty($mode) ) {
 				SET forum_order = forum_order + $move
 				WHERE forum_id = $forum_id";
 
-			if( !$result = $db->sql_query($sql) ) {
+			if (!$result = $db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, "Couldn't change category order", "", __LINE__, __FILE__, $sql);
 			}
 
@@ -858,7 +858,7 @@ if( !empty($mode) ) {
 				SET cat_order = cat_order + $move
 				WHERE cat_id = $cat_id";
 
-			if( !$result = $db->sql_query($sql) ) {
+			if (!$result = $db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, "Couldn't change category order", "", __LINE__, __FILE__, $sql);
 			}
 
@@ -906,22 +906,22 @@ $sql = "SELECT cat_id, cat_title, cat_order
 	FROM " . CATEGORIES_TABLE . "
 	ORDER BY cat_order";
 
-if( !$q_categories = $db->sql_query($sql) ) {
+if (!$q_categories = $db->sql_query($sql) ) {
 	message_die(GENERAL_ERROR, "Could not query categories list", "", __LINE__, __FILE__, $sql);
 }
 
-if( $category_count = $db->sql_numrows($q_categories) ) {
+if ($category_count = $db->sql_numrows($q_categories) ) {
 	$category_rows = $db->sql_fetchrowset($q_categories);
 
 	$sql = "SELECT *
 		FROM " . FORUMS_TABLE . "
 		ORDER BY cat_id, forum_order";
 
-	if(!$q_forums = $db->sql_query($sql)) {
+	if (!$q_forums = $db->sql_query($sql)) {
 		message_die(GENERAL_ERROR, "Could not query forums information", "", __LINE__, __FILE__, $sql);
 	}
 
-	if( $total_forums = $db->sql_numrows($q_forums) ) {
+	if ($total_forums = $db->sql_numrows($q_forums) ) {
 		$forum_rows = $db->sql_fetchrowset($q_forums);
 	}
 
@@ -930,7 +930,7 @@ if( $category_count = $db->sql_numrows($q_categories) ) {
 	//
 	$gen_cat = [];
 
-	for($i = 0; $i < $category_count; $i++) {
+	for ($i = 0; $i < $category_count; $i++) {
 		$cat_id = $category_rows[$i]['cat_id'];
 
 		$template->assign_block_vars("catrow", array(
@@ -947,7 +947,7 @@ if( $category_count = $db->sql_numrows($q_categories) ) {
 			'U_VIEWCAT' => append_sid($phpbb_root_path."index.php?" . POST_CAT_URL . "=$cat_id"))
 		);
 
-		for($j = 0; $j < $total_forums; $j++) {
+		for ($j = 0; $j < $total_forums; $j++) {
 			$forum_id = $forum_rows[$j]['forum_id'];
 
 			if ($forum_rows[$j]['cat_id'] == $cat_id) {

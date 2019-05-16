@@ -41,7 +41,7 @@ function make_forum_select($box_name, $ignore_forum = false, $select_forum = '')
 
 	$forum_list = '';
 
-	while( $row = $db->sql_fetchrow($result) ) {
+	while ($row = $db->sql_fetchrow($result) ) {
 		if ( $is_auth_ary[$row['forum_id']]['auth_read'] && $ignore_forum != $row['forum_id'] ) {
 			$selected = ( $select_forum == $row['forum_id'] ) ? ' selected="selected"' : '';
 			$forum_list .= '<option value="' . $row['forum_id'] . '"' . $selected .'>' . $row['forum_name'] . '</option>';
@@ -69,7 +69,7 @@ function sync($type, $id = false)
 				message_die(GENERAL_ERROR, 'Could not get forum IDs', '', __LINE__, __FILE__, $sql);
 			}
 
-			while( $row = $db->sql_fetchrow($result) ) {
+			while ($row = $db->sql_fetchrow($result) ) {
 				sync('forum', $row['forum_id']);
 			}
 		   	break;
@@ -82,7 +82,7 @@ function sync($type, $id = false)
 				message_die(GENERAL_ERROR, 'Could not get topic ID', '', __LINE__, __FILE__, $sql);
 			}
 
-			while( $row = $db->sql_fetchrow($result) ) {
+			while ($row = $db->sql_fetchrow($result) ) {
 				sync('topic', $row['topic_id']);
 			}
 			break;

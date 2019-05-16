@@ -28,7 +28,7 @@ define('IN_PHPBB', 1);
 //
 // First we do the setmodules stuff for the admin cp.
 //
-if( !empty($setmodules) ) {
+if (!empty($setmodules) ) {
 	$filename = basename(__FILE__);
 	$module['General']['Smilies'] = $filename;
 
@@ -58,7 +58,7 @@ if ($cancel) {
 //
 // Check to see what mode we should operate in.
 //
-if( isset($_POST['mode']) || isset($_GET['mode']) ) {
+if (isset($_POST['mode']) || isset($_GET['mode']) ) {
 	$mode = isset($_POST['mode']) ? $_POST['mode'] : $_GET['mode'];
 	$mode = htmlspecialchars($mode);
 } else {
@@ -72,13 +72,13 @@ $delimeter  = '=+:';
 //
 $dir = @opendir($phpbb_root_path . $board_config['smilies_path']);
 
-while($file = @readdir($dir)) {
-	if( !@is_dir(phpbb_realpath($phpbb_root_path . $board_config['smilies_path'] . '/' . $file)) ) {
+while ($file = @readdir($dir)) {
+	if (!@is_dir(phpbb_realpath($phpbb_root_path . $board_config['smilies_path'] . '/' . $file)) ) {
 		$img_size = @getimagesize($phpbb_root_path . $board_config['smilies_path'] . '/' . $file);
 
-		if( $img_size[0] && $img_size[1] ) {
+		if ($img_size[0] && $img_size[1] ) {
 			$smiley_images[] = $file;
-		} else if( eregi('.pak$', $file) ) {
+		} elseif (eregi('.pak$', $file) ) {
 			$smiley_paks[] = $file;
 		}
 	}
@@ -89,7 +89,7 @@ while($file = @readdir($dir)) {
 //
 // Select main mode
 //
-if( isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
+if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 	//
 	// Import a list a "Smiley Pack"
 	//
@@ -101,18 +101,18 @@ if( isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 		//
 		// The user has already selected a smile_pak file.. Import it.
 		//
-		if( !empty($clear_current)  ) {
+		if (!empty($clear_current)  ) {
 			$sql = "DELETE 
 				FROM " . SMILIES_TABLE;
 
-			if( !$result = $db->sql_query($sql) ) {
+			if (!$result = $db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, "Couldn't delete current smilies", "", __LINE__, __FILE__, $sql);
 			}
 		} else {
 			$sql = "SELECT code 
 				FROM ". SMILIES_TABLE;
 
-			if( !$result = $db->sql_query($sql) ) {
+			if (!$result = $db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, "Couldn't get current smilies", "", __LINE__, __FILE__, $sql);
 			}
 
@@ -126,14 +126,14 @@ if( isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 
 		$fcontents = @file($phpbb_root_path . $board_config['smilies_path'] . '/'. $smile_pak);
 
-		if( empty($fcontents) ) {
+		if (empty($fcontents) ) {
 			message_die(GENERAL_ERROR, "Couldn't read smiley pak file", "", __LINE__, __FILE__, $sql);
 		}
 
-		for( $i = 0; $i < count($fcontents); $i++ ) {
+		for ($i = 0; $i < count($fcontents); $i++ ) {
 			$smile_data = explode($delimeter, trim(addslashes($fcontents[$i])));
 
-			for( $j = 2; $j < count($smile_data); $j++) {
+			for ($j = 2; $j < count($smile_data); $j++) {
 				//
 				// Replace > and < with the proper html_entities for matching.
 				//
@@ -141,8 +141,8 @@ if( isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 				$smile_data[$j] = str_replace(">", "&gt;", $smile_data[$j]);
 				$k = $smile_data[$j];
 
-				if( $smiles[$k] == 1 ) {
-					if( !empty($replace_existing) ) {
+				if ($smiles[$k] == 1 ) {
+					if (!empty($replace_existing) ) {
 						$sql = "UPDATE " . SMILIES_TABLE . " 
 							SET smile_url = '" . str_replace("\'", "''", $smile_data[0]) . "', emoticon = '" . str_replace("\'", "''", $smile_data[1]) . "' 
 							WHERE code = '" . str_replace("\'", "''", $smile_data[$j]) . "'";
@@ -154,10 +154,10 @@ if( isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 						VALUES('" . str_replace("\'", "''", $smile_data[$j]) . "', '" . str_replace("\'", "''", $smile_data[0]) . "', '" . str_replace("\'", "''", $smile_data[1]) . "')";
 				}
 
-				if( $sql != '' ) {
+				if ($sql != '' ) {
 					$result = $db->sql_query($sql);
 
-					if( !$result ) {
+					if (!$result ) {
 						message_die(GENERAL_ERROR, "Couldn't update smilies!", "", __LINE__, __FILE__, $sql);
 					}
 				}
@@ -174,7 +174,7 @@ if( isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 		//
 		$smile_paks_select = "<select name='smile_pak'><option value=''>" . $lang['Select_pak'] . "</option>";
 
-		while( list($key, $value) = @each($smiley_paks) ) {
+		while (list($key, $value) = @each($smiley_paks) ) {
 			if ( !empty($value) ) {
 				$smile_paks_select .= "<option>" . $value . "</option>";
 			}
@@ -204,7 +204,7 @@ if( isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 
 		$template->pparse("body");
 	}
-} else if( isset($_POST['export_pack']) || isset($_GET['export_pack']) ) {
+} elseif (isset($_POST['export_pack']) || isset($_GET['export_pack']) ) {
 	//
 	// Export our smiley config as a smiley pak...
 	//
@@ -212,14 +212,14 @@ if( isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 		$sql = "SELECT * 
 			FROM " . SMILIES_TABLE;
 
-		if( !$result = $db->sql_query($sql) ) {
+		if (!$result = $db->sql_query($sql) ) {
 			message_die(GENERAL_ERROR, "Could not get smiley list", "", __LINE__, __FILE__, $sql);
 		}
 
 		$resultset = $db->sql_fetchrowset($result);
 		$smile_pak = "";
 
-		for($i = 0; $i < count($resultset); $i++ ) {
+		for ($i = 0; $i < count($resultset); $i++ ) {
 			$smile_pak .= $resultset[$i]['smile_url'] . $delimeter;
 			$smile_pak .= $resultset[$i]['emoticon'] . $delimeter;
 			$smile_pak .= $resultset[$i]['code'] . "\n";
@@ -237,7 +237,7 @@ if( isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 
 	message_die(GENERAL_MESSAGE, $message);
 
-} else if( isset($_POST['add']) || isset($_GET['add']) ) {
+} elseif (isset($_POST['add']) || isset($_GET['add']) ) {
 	//
 	// Admin has selected to add a smiley.
 	//
@@ -246,7 +246,7 @@ if( isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 
 	$filename_list = "";
 
-	for( $i = 0; $i < count($smiley_images); $i++ ) {
+	for ($i = 0; $i < count($smiley_images); $i++ ) {
 		$filename_list .= '<option value="' . $smiley_images[$i] . '">' . $smiley_images[$i] . '</option>';
 	}
 
@@ -271,7 +271,7 @@ if( isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 	);
 
 	$template->pparse("body");
-} else if ( $mode != "" ) {
+} elseif ( $mode != "" ) {
 	switch( $mode ) {
 		case 'delete':
 			//
@@ -283,13 +283,13 @@ if( isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 
 			$confirm = isset($_POST['confirm']);
 
-			if( $confirm ) {
+			if ($confirm ) {
 				$sql = "DELETE FROM " . SMILIES_TABLE . "
 					WHERE smilies_id = " . $smiley_id;
 
 				$result = $db->sql_query($sql);
 
-				if( !$result ) {
+				if (!$result ) {
 					message_die(GENERAL_ERROR, "Couldn't delete smiley", "", __LINE__, __FILE__, $sql);
 				}
 
@@ -330,7 +330,7 @@ if( isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 
 			$result = $db->sql_query($sql);
 
-			if( !$result ) {
+			if (!$result ) {
 				message_die(GENERAL_ERROR, 'Could not obtain emoticon information', "", __LINE__, __FILE__, $sql);
 			}
 
@@ -338,8 +338,8 @@ if( isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 
 			$filename_list = "";
 
-			for( $i = 0; $i < count($smiley_images); $i++ ) {
-				if( $smiley_images[$i] == $smile_data['smile_url'] ) {
+			for ($i = 0; $i < count($smiley_images); $i++ ) {
+				if ($smiley_images[$i] == $smile_data['smile_url'] ) {
 					$smiley_selected = "selected=\"selected\"";
 					$smiley_edit_img = $smiley_images[$i];
 				} else {
@@ -502,7 +502,7 @@ if( isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 	//
 	// Loop throuh the rows of smilies setting block vars for the template.
 	//
-	for($i = 0; $i < count($smilies); $i++) {
+	for ($i = 0; $i < count($smilies); $i++) {
 		//
 		// Replace htmlentites for < and > with actual character.
 		//

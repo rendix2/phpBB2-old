@@ -130,7 +130,7 @@ class Template {
 	{
 		$cache_file = $this->cachedir . $this->filename[$handle] . '.php';
 
-		if(@filemtime($cache_file) == @filemtime($this->files[$handle]))
+		if (@filemtime($cache_file) == @filemtime($this->files[$handle]))
 		{
 			$_str = '';
 			include $cache_file;
@@ -175,7 +175,7 @@ class Template {
 	{
 		$cache_file = $this->cachedir . $this->filename[$handle] . '.php';
 
-		if(@filemtime($cache_file) == @filemtime($this->files[$handle]))
+		if (@filemtime($cache_file) == @filemtime($this->files[$handle]))
 		{
 			$_str = '';
 			include $cache_file;
@@ -443,7 +443,7 @@ class Template {
 					}
 				}
 			}
-			else if (preg_match('#<!-- END (.*?) -->#', $code_lines[$i], $m))
+			elseif (preg_match('#<!-- END (.*?) -->#', $code_lines[$i], $m))
 			{
 				// We have the end of a block.
 				unset($block_names[$block_nesting_level]);

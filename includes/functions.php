@@ -215,7 +215,7 @@ function make_jumpbox($action, $match_forum_id = 0)
 			message_die(GENERAL_ERROR, 'Could not obtain forums information', '', __LINE__, __FILE__, $sql);
 		}
 
-		$boxstring = '<select name="' . POST_FORUM_URL . '" onchange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $lang['Select_forum'] . '</option>';
+		$boxstring = '<select name="' . POST_FORUM_URL . '" onchange="if (this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $lang['Select_forum'] . '</option>';
 
 		$forum_rows = [];
 
@@ -224,10 +224,10 @@ function make_jumpbox($action, $match_forum_id = 0)
 		}
 
 		if ( $total_forums = count($forum_rows) ) {
-			for($i = 0; $i < $total_categories; $i++) {
+			for ($i = 0; $i < $total_categories; $i++) {
 				$boxstring_forums = '';
 
-				for($j = 0; $j < $total_forums; $j++) {
+				for ($j = 0; $j < $total_forums; $j++) {
 					if ( $forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $forum_rows[$j]['auth_view'] <= AUTH_REG ) {
 
 //					if ( $forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $is_auth[$forum_rows[$j]['forum_id']]['auth_view'] )
@@ -259,7 +259,7 @@ function make_jumpbox($action, $match_forum_id = 0)
 
 		$boxstring .= '</select>';
 	} else {
-		$boxstring .= '<select name="' . POST_FORUM_URL . '" onchange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"></select>';
+		$boxstring .= '<select name="' . POST_FORUM_URL . '" onchange="if (this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"></select>';
 	}
 
 	// Let the jumpbox work again in sites having additional session id checks.
@@ -350,7 +350,7 @@ function init_userprefs($userdata)
 	include $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.php';
 
 	if ( defined('IN_ADMIN') ) {
-		if( !file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.php')) ) {
+		if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.php')) ) {
 			$board_config['default_lang'] = 'english';
 		}
 
@@ -454,7 +454,7 @@ function setup_style($style)
 
 		$img_lang = file_exists(@phpbb_realpath($phpbb_root_path . $current_template_path . '/images/lang_' . $board_config['default_lang'])) ? $board_config['default_lang'] : 'english';
 
-		while( list($key, $value) = @each($images) ) {
+		while (list($key, $value) = @each($images) ) {
 			if ( !is_array($value) ) {
 				$images[$key] = str_replace('{LANG}', 'lang_' . $img_lang, $value);
 			}
@@ -515,7 +515,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 	if ( $total_pages > 10 ) {
 		$init_page_max = ( $total_pages > 3 ) ? 3 : $total_pages;
 
-		for($i = 1; $i < $init_page_max + 1; $i++) {
+		for ($i = 1; $i < $init_page_max + 1; $i++) {
 			$page_string .= ( $i == $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
 			if ( $i <  $init_page_max ) {
@@ -530,7 +530,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 				$init_page_min = ( $on_page > 4 ) ? $on_page : 5;
 				$init_page_max = ( $on_page < $total_pages - 4 ) ? $on_page : $total_pages - 4;
 
-				for($i = $init_page_min - 1; $i < $init_page_max + 2; $i++) {
+				for ($i = $init_page_min - 1; $i < $init_page_max + 2; $i++) {
 					$page_string .= ($i == $on_page) ? '<b>' . $i . '</b>' : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
 					if ( $i <  $init_page_max + 1 ) {
@@ -543,17 +543,17 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 				$page_string .= ' ... ';
 			}
 
-			for($i = $total_pages - 2; $i < $total_pages + 1; $i++) {
+			for ($i = $total_pages - 2; $i < $total_pages + 1; $i++) {
 				$page_string .= ( $i == $on_page ) ? '<b>' . $i . '</b>'  : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
-				if( $i <  $total_pages ) {
+				if ($i <  $total_pages ) {
 					$page_string .= ", ";
 				}
 			}
 		}
 	}
 	else {
-		for($i = 1; $i < $total_pages + 1; $i++) {
+		for ($i = 1; $i < $total_pages + 1; $i++) {
 			$page_string .= ( $i == $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
 			if ( $i <  $total_pages ) {
@@ -605,7 +605,7 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 	$sql = "SELECT word, replacement
 		FROM  " . WORDS_TABLE;
 
-	if( !($result = $db->sql_query($sql)) ) {
+	if (!($result = $db->sql_query($sql)) ) {
 		message_die(GENERAL_ERROR, 'Could not get censored words from database', '', __LINE__, __FILE__, $sql);
 	}
 
@@ -645,7 +645,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 	global $userdata, $user_ip, $session_length;
 	global $starttime;
 
-	if(defined('HAS_DIED')) {
+	if (defined('HAS_DIED')) {
 		die("message_die() was called multiple times. This isn't supposed to happen. Was message_die() used in page_tail.php?");
 	}
 	
@@ -676,7 +676,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 		}
 	}
 
-	if( empty($userdata) && ( $msg_code == GENERAL_MESSAGE || $msg_code == GENERAL_ERROR ) ) {
+	if (empty($userdata) && ( $msg_code == GENERAL_MESSAGE || $msg_code == GENERAL_ERROR ) ) {
 		$userdata = session_pagestart($user_ip, PAGE_INDEX);
 		init_userprefs($userdata);
 	}

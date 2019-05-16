@@ -130,7 +130,7 @@ function topic_review($topic_id, $is_inline_review)
 			//
 			// Handle anon users posting with usernames
 			//
-			if( $poster_id == ANONYMOUS && $row['post_username'] != '' ) {
+			if ($poster_id == ANONYMOUS && $row['post_username'] != '' ) {
 				$poster = $row['post_username'];
 				$poster_rank = $lang['Guest'];
 			} elseif ( $poster_id == ANONYMOUS ) {

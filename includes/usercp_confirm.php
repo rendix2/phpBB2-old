@@ -151,7 +151,7 @@ function randomise($scanline, $width)
 
 		if ($pixel < 190) {
 			$new_line .= chr(mt_rand(0, 205));
-		} else if ($pixel > 190) {
+		} elseif ($pixel > 190) {
 			$new_line .= chr(mt_rand(145, 255));
 		} else {
 			$new_line .= $scanline{$i};

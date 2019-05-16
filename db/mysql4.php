@@ -19,7 +19,7 @@
  *
  ***************************************************************************/
 
-if(!defined("SQL_LAYER"))
+if (!defined("SQL_LAYER"))
 {
 
 define("SQL_LAYER","mysql4");
@@ -47,14 +47,14 @@ class sql_db
 
 		$this->db_connect_id = $this->persistency ? mysql_pconnect($this->server, $this->user, $this->password) : mysql_connect($this->server, $this->user, $this->password);
 
-		if( $this->db_connect_id )
+		if ($this->db_connect_id )
 		{
-			if( $database != "" )
+			if ($database != "" )
 			{
 				$this->dbname = $database;
 				$dbselect = mysql_select_db($this->dbname);
 
-				if( !$dbselect )
+				if (!$dbselect )
 				{
 					mysql_close($this->db_connect_id);
 					$this->db_connect_id = $dbselect;
@@ -74,12 +74,12 @@ class sql_db
 	//
 	function sql_close()
 	{
-		if( $this->db_connect_id )
+		if ($this->db_connect_id )
 		{
 			//
 			// Commit any remaining transactions
 			//
-			if( $this->in_transaction )
+			if ($this->in_transaction )
 			{
 				mysql_query("COMMIT", $this->db_connect_id);
 			}
@@ -102,13 +102,13 @@ class sql_db
 		//
 		unset($this->query_result);
 
-		if( $query != "" )
+		if ($query != "" )
 		{
 			$this->num_queries++;
-			if( $transaction == BEGIN_TRANSACTION && !$this->in_transaction )
+			if ($transaction == BEGIN_TRANSACTION && !$this->in_transaction )
 			{
 				$result = mysql_query("BEGIN", $this->db_connect_id);
-				if(!$result)
+				if (!$result)
 				{
 					return false;
 				}
@@ -119,18 +119,18 @@ class sql_db
 		}
 		else
 		{
-			if( $transaction == END_TRANSACTION && $this->in_transaction )
+			if ($transaction == END_TRANSACTION && $this->in_transaction )
 			{
 				$result = mysql_query("COMMIT", $this->db_connect_id);
 			}
 		}
 
-		if( $this->query_result )
+		if ($this->query_result )
 		{
 			unset($this->row[$this->query_result]);
 			unset($this->rowset[$this->query_result]);
 
-			if( $transaction == END_TRANSACTION && $this->in_transaction )
+			if ($transaction == END_TRANSACTION && $this->in_transaction )
 			{
 				$this->in_transaction = FALSE;
 
@@ -145,7 +145,7 @@ class sql_db
 		}
 		else
 		{
-			if( $this->in_transaction )
+			if ($this->in_transaction )
 			{
 				mysql_query("ROLLBACK", $this->db_connect_id);
 				$this->in_transaction = FALSE;
@@ -159,7 +159,7 @@ class sql_db
 	//
 	function sql_numrows($query_id = 0)
 	{
-		if( !$query_id )
+		if (!$query_id )
 		{
 			$query_id = $this->query_result;
 		}
@@ -174,7 +174,7 @@ class sql_db
 
 	function sql_numfields($query_id = 0)
 	{
-		if( !$query_id )
+		if (!$query_id )
 		{
 			$query_id = $this->query_result;
 		}
@@ -184,7 +184,7 @@ class sql_db
 
 	function sql_fieldname($offset, $query_id = 0)
 	{
-		if( !$query_id )
+		if (!$query_id )
 		{
 			$query_id = $this->query_result;
 		}
@@ -194,7 +194,7 @@ class sql_db
 
 	function sql_fieldtype($offset, $query_id = 0)
 	{
-		if( !$query_id )
+		if (!$query_id )
 		{
 			$query_id = $this->query_result;
 		}
@@ -204,12 +204,12 @@ class sql_db
 
 	function sql_fetchrow($query_id = 0)
 	{
-		if( !$query_id )
+		if (!$query_id )
 		{
 			$query_id = $this->query_result;
 		}
 
-		if( $query_id )
+		if ($query_id )
 		{
 			$this->row[$query_id] = mysql_fetch_array($query_id, MYSQL_ASSOC);
 			return $this->row[$query_id];
@@ -222,17 +222,17 @@ class sql_db
 
 	function sql_fetchrowset($query_id = 0)
 	{
-		if( !$query_id )
+		if (!$query_id )
 		{
 			$query_id = $this->query_result;
 		}
 
-		if( $query_id )
+		if ($query_id )
 		{
 			unset($this->rowset[$query_id]);
 			unset($this->row[$query_id]);
 
-			while($this->rowset[$query_id] = mysql_fetch_array($query_id, MYSQL_ASSOC))
+			while ($this->rowset[$query_id] = mysql_fetch_array($query_id, MYSQL_ASSOC))
 			{
 				$result[] = $this->rowset[$query_id];
 			}
@@ -247,33 +247,33 @@ class sql_db
 
 	function sql_fetchfield($field, $rownum = -1, $query_id = 0)
 	{
-		if( !$query_id )
+		if (!$query_id )
 		{
 			$query_id = $this->query_result;
 		}
 
-		if( $query_id )
+		if ($query_id )
 		{
-			if( $rownum > -1 )
+			if ($rownum > -1 )
 			{
 				$result = mysql_result($query_id, $rownum, $field);
 			}
 			else
 			{
-				if( empty($this->row[$query_id]) && empty($this->rowset[$query_id]) )
+				if (empty($this->row[$query_id]) && empty($this->rowset[$query_id]) )
 				{
-					if( $this->sql_fetchrow() )
+					if ($this->sql_fetchrow() )
 					{
 						$result = $this->row[$query_id][$field];
 					}
 				}
 				else
 				{
-					if( $this->rowset[$query_id] )
+					if ($this->rowset[$query_id] )
 					{
 						$result = $this->rowset[$query_id][0][$field];
 					}
-					else if( $this->row[$query_id] )
+					elseif ($this->row[$query_id] )
 					{
 						$result = $this->row[$query_id][$field];
 					}
@@ -290,7 +290,7 @@ class sql_db
 
 	function sql_rowseek($rownum, $query_id = 0)
 	{
-		if( !$query_id )
+		if (!$query_id )
 		{
 			$query_id = $this->query_result;
 		}
@@ -305,7 +305,7 @@ class sql_db
 
 	function sql_freeresult($query_id = 0)
 	{
-		if( !$query_id )
+		if (!$query_id )
 		{
 			$query_id = $this->query_result;
 		}

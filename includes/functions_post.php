@@ -69,7 +69,7 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 		$message = preg_replace($html_entities_match, $html_entities_replace, $message);
 	}
 
-	if($bbcode_on && $bbcode_uid != '') {
+	if ($bbcode_on && $bbcode_uid != '') {
 		$message = bbencode_first_pass($message, $bbcode_uid);
 	}
 
@@ -109,7 +109,7 @@ function prepare_post(&$mode, &$post_data, &$bbcode_on, &$html_on, &$smilies_on,
 	// Check subject
 	if (!empty($subject)) {
 		$subject = htmlspecialchars(trim($subject));
-	} else if ($mode == 'newtopic' || ($mode == 'editpost' && $post_data['first_post'])) {
+	} elseif ($mode == 'newtopic' || ($mode == 'editpost' && $post_data['first_post'])) {
 		$error_msg .= !empty($error_msg) ? '<br />' . $lang['Empty_subject'] : $lang['Empty_subject'];
 	}
 
@@ -117,7 +117,7 @@ function prepare_post(&$mode, &$post_data, &$bbcode_on, &$html_on, &$smilies_on,
 	if (!empty($message)) {
 		$bbcode_uid = $bbcode_on ? make_bbcode_uid() : '';
 		$message = prepare_message(trim($message), $html_on, $bbcode_on, $smilies_on, $bbcode_uid);
-	} else if ($mode != 'delete' && $mode != 'poll_delete')  {
+	} elseif ($mode != 'delete' && $mode != 'poll_delete')  {
 		$error_msg .= !empty($error_msg) ? '<br />' . $lang['Empty_message'] : $lang['Empty_message'];
 	}
 
@@ -131,10 +131,10 @@ function prepare_post(&$mode, &$post_data, &$bbcode_on, &$html_on, &$smilies_on,
 			$poll_title = htmlspecialchars(trim($poll_title));
 		}
 
-		if(!empty($poll_options)) {
+		if (!empty($poll_options)) {
 			$temp_option_text = [];
 
-			while(list($option_id, $option_text) = @each($poll_options)) {
+			while (list($option_id, $option_text) = @each($poll_options)) {
 				$option_text = trim($option_text);
 
 				if (!empty($option_text)) {
@@ -337,7 +337,7 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
 					$forum_update_sql .= $row['last_post_id'] ? ', forum_last_post_id = ' . $row['last_post_id'] : ', forum_last_post_id = 0';
 				}
 			}
-		} else if ($post_data['first_post']) {
+		} elseif ($post_data['first_post']) {
 			$sql = "SELECT MIN(post_id) AS first_post_id
 				FROM " . POSTS_TABLE . " 
 				WHERE topic_id = $topic_id";
@@ -352,7 +352,7 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
 		} else {
 			$topic_update_sql .= 'topic_replies = topic_replies - 1';
 		}
-	} else if ($mode != 'poll_delete') {
+	} elseif ($mode != 'poll_delete') {
 		$forum_update_sql .= ", forum_last_post_id = $post_id" . (($mode == 'newtopic') ? ", forum_topics = forum_topics $sign" : ""); 
 		$topic_update_sql = "topic_last_post_id = $post_id" . (($mode == 'reply') ? ", topic_replies = topic_replies $sign" : ", topic_first_post_id = $post_id");
 	} else {
@@ -623,7 +623,7 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 			if (!$db->sql_query($sql)) {
 				message_die(GENERAL_ERROR, 'Could not delete topic watch information', '', __LINE__, __FILE__, $sql);
 			}
-		} else if ($notify_user && empty($row['topic_id'])) {
+		} elseif ($notify_user && empty($row['topic_id'])) {
 			$sql = "INSERT INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id, notify_status)
 				VALUES (" . $userdata['user_id'] . ", $topic_id, 0)";
 

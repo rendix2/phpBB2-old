@@ -21,7 +21,7 @@
 
 define('IN_PHPBB', 1);
 
-if( !empty($setmodules) ) {
+if (!empty($setmodules) ) {
 	$filename = basename(__FILE__);
 	$module['General']['Mass_Email'] = $filename;
 	

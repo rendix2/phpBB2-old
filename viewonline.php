@@ -109,7 +109,7 @@ while ( $row = $db->sql_fetchrow($result) ) {
 			$style_color = '';
 			if ( $row['user_level'] == ADMIN ) {
 				$username = '<b style="color:#' . $theme['fontcolor3'] . '">' . $username . '</b>';
-			} else if ( $row['user_level'] == MOD ) {
+			} elseif ( $row['user_level'] == MOD ) {
 				$username = '<b style="color:#' . $theme['fontcolor2'] . '">' . $username . '</b>';
 			}
 

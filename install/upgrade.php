@@ -37,7 +37,7 @@ if ( !defined('INSTALLING') )
 	include $phpbb_root_path . 'includes/constants.php';
 	include $phpbb_root_path . 'includes/functions.php';
 
-	if( defined("PHPBB_INSTALLED") )
+	if (defined("PHPBB_INSTALLED") )
 	{
 		redirect("../index.php");
 	}
@@ -179,7 +179,7 @@ function smiley_replace($text = '')
 
 		$search = [];
 		$replace = [];
-		for($i = 0; $i < count($smilies); $i++)
+		for ($i = 0; $i < count($smilies); $i++)
 		{
 			$search[] = '/<IMG SRC=".*?\/' . phpbb_preg_quote($smilies[$i]['smile_url'], '/') .'">/i';
 			$replace[] = $smilies[$i]['code'];
@@ -197,7 +197,7 @@ function get_schema()
 	$schemafile = file('schemas/mysql_schema.sql');
 	$tabledata = 0;
 
-	for($i=0; $i < count($schemafile); $i++)
+	for ($i=0; $i < count($schemafile); $i++)
 	{
 		$line = $schemafile[$i];
 
@@ -251,12 +251,12 @@ function get_schema()
 				// Primary key
 				$key_def[$table]['PRIMARY'] = $matches[1];
 			}
-			else if ( preg_match('/\s*KEY\s+(\w+)\s*\((.*)\)/', $line, $matches) )
+			elseif ( preg_match('/\s*KEY\s+(\w+)\s*\((.*)\)/', $line, $matches) )
 			{
 				// Normal key
 				$key_def[$table][$matches[1]] = $matches[2];
 			}
-			else if ( preg_match('/^\s*(\w+)\s*(.*?),?\s*$/', $line, $matches) )
+			elseif ( preg_match('/^\s*(\w+)\s*(.*?),?\s*$/', $line, $matches) )
 			{
 				// Column definition
 				$create_def[$table][$matches[1]] = $matches[2];
@@ -282,7 +282,7 @@ function get_inserts()
 
 	$insertfile = file('schemas/mysql_basic.sql');
 
-	for($i = 0; $i < count($insertfile); $i++)
+	for ($i = 0; $i < count($insertfile); $i++)
 	{
 		if ( preg_match('/(INSERT INTO (\w+)\s.*);/i', str_replace('phpbb_', $table_prefix, $insertfile[$i]), $matches) )
 		{
@@ -373,7 +373,7 @@ function bbdecode($message)
 //
 function inarray($needle, $haystack)
 { 
-	for( $i = 0 ; $i < count($haystack) ; $i++ )
+	for ($i = 0 ; $i < count($haystack) ; $i++ )
 	{ 
 		if ( $haystack[$i] == $needle )
 		{ 
@@ -457,11 +457,11 @@ if ( !empty($next) )
 				"words" => "words"
 			);
 
-			while( list($old, $new) = each($modtables) )
+			while (list($old, $new) = each($modtables) )
 			{
 				$result = query("SHOW INDEX FROM $old", "Couldn't get list of indices for table $old");
 
-				while( $row = $db->sql_fetchrow($result) )
+				while ($row = $db->sql_fetchrow($result) )
 				{
 					$index = $row['Key_name'];
 					if ( $index != 'PRIMARY' )
@@ -485,13 +485,13 @@ if ( !empty($next) )
 			// Create array with tables in 'old' database
 			$result = query('SHOW TABLES', "Couldn't get list of current tables");
 
-			while( $table = $db->sql_fetchrow($result) )
+			while ($table = $db->sql_fetchrow($result) )
 			{
 				$currenttables[] = $table[0];
 			}
 			
 			// Check what tables we need to CREATE
-			while( list($table, $definition) = each($table_def) )
+			while (list($table, $definition) = each($table_def) )
 			{
 				if ( !inarray($table, $currenttables) )
 				{
@@ -509,14 +509,14 @@ if ( !empty($next) )
 			print " * Inserting new values into new layout config table :: ";
 
 			@reset($inserts);
-			while( list($table, $inserts_table) = each($inserts) )
+			while (list($table, $inserts_table) = each($inserts) )
 			{
 				if ( $table == CONFIG_TABLE )
 				{
 					$per_pct = ceil( count($inserts_table) / 40 );
 					$inc = 0;
 
-					while( list($nr, $insert) = each($inserts_table) )
+					while (list($nr, $insert) = each($inserts_table) )
 					{
 						query($insert, "Couldn't insert value into config table");
 
@@ -554,7 +554,7 @@ if ( !empty($next) )
 				"email_sig" => "board_email_sig"
 			);
 
-			while( list($name, $value) = each($oldconfig) )
+			while (list($name, $value) = each($oldconfig) )
 			{
 				if ( is_int($name) )
 				{
@@ -600,7 +600,7 @@ if ( !empty($next) )
 			lock_tables(1, array(POSTS_TABLE, PRIVMSGS_TABLE, BANLIST_TABLE));
 
 			$batchsize = 2000;
-			while( list($table, $data_array) = each($names) )
+			while (list($table, $data_array) = each($names) )
 			{
 				$sql = "SELECT MAX(" . $data_array['id'] . ") AS max_id 
 					FROM $table";
@@ -610,7 +610,7 @@ if ( !empty($next) )
 
 				$maxid = $row['max_id'];
 
-				for($i = 0; $i <= $maxid; $i += $batchsize)
+				for ($i = 0; $i <= $maxid; $i += $batchsize)
 				{
 					$batchstart = $i;
 					$batchend = $i + $batchsize;
@@ -631,7 +631,7 @@ if ( !empty($next) )
 					$per_pct = ceil( $db->sql_numrows($result) / 40 );
 					$inc = 0;
 
-					while( $row = $db->sql_fetchrow($result) )
+					while ($row = $db->sql_fetchrow($result) )
 					{
 						$sql = "UPDATE $table 
 							SET $field = '" . encode_ip($row[$field]) . "' 
@@ -663,12 +663,12 @@ if ( !empty($next) )
 
 			lock_tables(1, array(POSTS_TABLE, TOPICS_TABLE, PRIVMSGS_TABLE));
 
-			while( list($table, $fields) = each($names) )
+			while (list($table, $fields) = each($names) )
 			{
 				print " * Converting date format of $fields[$i] in $table :: ";
 				flush();
 
-				for($i = 0; $i < count($fields); $i++)
+				for ($i = 0; $i < count($fields); $i++)
 				{
 					$sql = "UPDATE $table 
 						SET " . $fields[$i] . " = UNIX_TIMESTAMP(" . $fields[$i] . ")";
@@ -701,15 +701,15 @@ if ( !empty($next) )
 
 			lock_tables(1, array(TOPICS_TABLE, FORUMS_TABLE, CATEGORIES_TABLE, WORDS_TABLE, RANKS_TABLE, DISALLOW_TABLE, SMILIES_TABLE));
 
-			while( list($table, $fields) = each($slashfields) )
+			while (list($table, $fields) = each($slashfields) )
 			{
 				print " * Removing slashes from $table table :: ";
 				flush();
 
-				while( list($nr, $field) = each($fields) )
+				while (list($nr, $field) = each($fields) )
 				{
 					@reset($slashes);
-					while( list($search, $replace) = each($slashes) )
+					while (list($search, $replace) = each($slashes) )
 					{
 						$sql = "UPDATE $table 
 							SET $field = REPLACE($field, '" . addslashes($search) . "', '" . addslashes($replace) . "')";
@@ -738,7 +738,7 @@ if ( !empty($next) )
 			if ( $post_total )
 			{
 				$post_id_ary = [];
-				while( $row = $db->sql_fetchrow($result) )
+				while ($row = $db->sql_fetchrow($result) )
 				{
 					$post_id_ary[] = $row['post_id'];
 				}
@@ -781,7 +781,7 @@ if ( !empty($next) )
 			$first_admin = -2;
 
 			$batchsize = 1000;
-			for($i = -1; $i <= $maxid; $i += $batchsize)
+			for ($i = -1; $i <= $maxid; $i += $batchsize)
 			{
 				$batchstart = $i;
 				$batchend = $i + $batchsize;
@@ -812,7 +812,7 @@ if ( !empty($next) )
 				$per_pct = ceil( $db->sql_numrows($result) / 40 );
 				$inc = 0;
 
-				while( $row = $db->sql_fetchrow($result) )
+				while ($row = $db->sql_fetchrow($result) )
 				{
 					$sql = "INSERT INTO " . GROUPS_TABLE . " (group_name, group_description, group_single_user) 
 						VALUES ('" . addslashes($row['username']) . "', 'Personal User', 1)";
@@ -848,7 +848,7 @@ if ( !empty($next) )
 
 					// Check for invalid info like '-' and '?' for a lot of fields
 					@reset($checklength);
-					while($field = each($checklength))
+					while ($field = each($checklength))
 					{
 						$row[$field[1]] = strlen($row[$field[1]]) < 3 ? '' : $row[$field[1]];
 					}
@@ -861,7 +861,7 @@ if ( !empty($next) )
 					{
 						$website = "http://" . $website;
 					}
-					if( strtolower($website) == 'http://' )
+					if (strtolower($website) == 'http://' )
 					{
 						$website = '';
 					}
@@ -870,7 +870,7 @@ if ( !empty($next) )
 					$row['user_icq'] = ereg("^[0-9]+$", $row['user_icq']) ? $row['user_icq'] : '';
 					@reset($checklength);
 
-					while($field = each($checklength))
+					while ($field = each($checklength))
 					{
 						if ( strlen($row[$field[1]]) < 3 )
 						{
@@ -882,7 +882,7 @@ if ( !empty($next) )
 					//
 					// Is user a super moderator?
 					//
-					if( $row['user_level'] == 3 )
+					if ($row['user_level'] == 3 )
 					{
 						$super_mods[] = $row['user_id'];
 					}
@@ -893,7 +893,7 @@ if ( !empty($next) )
 					// Used to define a 'practical' group moderator user_id
 					// for super mods a little latter.
 					//
-					if( $first_admin == -2 && $row['user_level'] == ADMIN )
+					if ($first_admin == -2 && $row['user_level'] == ADMIN )
 					{
 						$first_admin = $row['user_id'];
 					}
@@ -901,7 +901,7 @@ if ( !empty($next) )
 					//
 					// Dutch language files have been renamed from 'nederlands' to 'dutch'
 					//
-					if( $row['user_lang'] == 'nederlands' )
+					if ($row['user_lang'] == 'nederlands' )
 					{
 						$row['user_lang'] = 'dutch';
 					}
@@ -952,7 +952,7 @@ if ( !empty($next) )
 			// Handle super-mods, create hidden group for them
 			//
 			// Iterate trough access table
-			if( count($super_mods) && $first_admin != -2 )
+			if (count($super_mods) && $first_admin != -2 )
 			{
 				print "\n<br />\n * Creating new group for super moderators :: ";
 				flush();
@@ -978,14 +978,14 @@ if ( !empty($next) )
 					FROM " . FORUMS_TABLE;
 				$result = query($sql, "Couldn't obtain forum_id list");
 
-				while( $row = $db->sql_fetchrow($result) )
+				while ($row = $db->sql_fetchrow($result) )
 				{
 					$sql = "INSERT INTO " . AUTH_ACCESS_TABLE . " (group_id, forum_id, auth_mod)
 						VALUES ($group_id, " . $row['forum_id'] . ", 1)";
 					$result_insert = query($sql, "Unable to set group auth access for super mods.");
 				}
 
-				for($i = 0; $i < count($super_mods); $i++)
+				for ($i = 0; $i < count($super_mods); $i++)
 				{
 					$sql = "INSERT INTO " . USER_GROUP_TABLE . " (group_id, user_id, user_pending)
 						VALUES ($group_id, " . $super_mods[$i] . ", 0)";
@@ -1043,7 +1043,7 @@ if ( !empty($next) )
 			$maxid = $maxid['maxid'];
 
 			$batchsize = 2000;
-			for($i = 0; $i <= $maxid; $i += $batchsize)
+			for ($i = 0; $i <= $maxid; $i += $batchsize)
 			{
 				$batchstart = $i + 1;
 				$batchend = $i + $batchsize;
@@ -1063,7 +1063,7 @@ if ( !empty($next) )
 				$per_pct = ceil( $db->sql_numrows($result) / 40 );
 				$inc = 0;
 
-				while( $row = $db->sql_fetchrow($result) )
+				while ($row = $db->sql_fetchrow($result) )
 				{
 					if ( $row['bbcode_uid'] != '' )
 					{
@@ -1157,7 +1157,7 @@ if ( !empty($next) )
 			if ( $users_removed )
 			{
 				$post_id_ary = [];
-				while( $row = $db->sql_fetchrow($result) )
+				while ($row = $db->sql_fetchrow($result) )
 				{
 					$post_id_ary[] = $row['post_id'];
 				}
@@ -1188,7 +1188,7 @@ if ( !empty($next) )
 			query($sql, "Couldn't add privmsgs_subject field to " . PRIVMSGS_TABLE . " table");
 
 			$batchsize = 2000;
-			for($i = 0; $i <= $maxid; $i += $batchsize)
+			for ($i = 0; $i <= $maxid; $i += $batchsize)
 			{
 				$batchstart = $i + 1;
 				$batchend = $i + $batchsize;
@@ -1208,7 +1208,7 @@ if ( !empty($next) )
 				$per_pct = ceil( $db->sql_numrows($result) / 40 );
 				$inc = 0;
 
-				while( $row = $db->sql_fetchrow($result) )
+				while ($row = $db->sql_fetchrow($result) )
 				{
 					if ( $row['msg_text'] == NULL )
 					{
@@ -1278,7 +1278,7 @@ if ( !empty($next) )
 				FROM forum_mods";
 			$result = query($sql, "Couldn't get list with all forum moderators");
 
-			while( $row = $db->sql_fetchrow($result) )
+			while ($row = $db->sql_fetchrow($result) )
 			{
 				// Check if this moderator and this forum still exist
 				$sql = "SELECT user_id  
@@ -1351,7 +1351,7 @@ if ( !empty($next) )
 			$forum_access = query($sql, "Couldn't get list with special forum access (forum_access)");
 
 			$forum_id = -1;
-			while( $row = $db->sql_fetchrow($forum_access) )
+			while ($row = $db->sql_fetchrow($forum_access) )
 			{
 				// Iterate trough access table
 				if ( $row['forum_id'] != $forum_id )
@@ -1440,7 +1440,7 @@ if ( !empty($next) )
 					FROM $table";
 				$result = query($sql, "Can't get definition of current $table table");
 
-				while( $row = $db->sql_fetchrow($result) )
+				while ($row = $db->sql_fetchrow($result) )
 				{
 					$current_fields[] = $row['Field'];
 				}
@@ -1487,7 +1487,7 @@ if ( !empty($next) )
 
 				unset($indices);
 
-				while( $row = $db->sql_fetchrow($result) )
+				while ($row = $db->sql_fetchrow($result) )
 				{
 					$indices[] = $row['Key_name'];
 				}
@@ -1512,7 +1512,7 @@ if ( !empty($next) )
 				FROM " . FORUMS_TABLE;
 			$result = query($sql, "Couldn't get list with all forums");
 
-			while( $row = $db->sql_fetchrow($result) )
+			while ($row = $db->sql_fetchrow($result) )
 			{
 				print " * Converting forum '" . $row['forum_name'] . "' :: ";
 				flush();
@@ -1608,14 +1608,14 @@ if ( !empty($next) )
 			print " * Inserting new values into themes table :: ";
 
 			@reset($inserts);
-			while( list($table, $inserts_table) = each($inserts) )
+			while (list($table, $inserts_table) = each($inserts) )
 			{
 				if ( $table == THEMES_TABLE )
 				{
 					$per_pct = ceil( count($inserts_table) / 40 );
 					$inc = 0;
 
-					while( list($nr, $insert) = each($inserts_table) )
+					while (list($nr, $insert) = each($inserts_table) )
 					{
 						query($insert, "Couldn't insert value into " . THEMES_TABLE);
 
@@ -1645,7 +1645,7 @@ if ( !empty($next) )
 			lock_tables(1, array(TOPICS_TABLE, POSTS_TABLE));
 
 			$batchsize = 1000;
-			for($i = 0; $i <= $maxid; $i += $batchsize)
+			for ($i = 0; $i <= $maxid; $i += $batchsize)
 			{
 				$batchstart = $i + 1;
 				$batchend = $i + $batchsize;
@@ -1699,7 +1699,7 @@ if ( !empty($next) )
 				FROM " . FORUMS_TABLE;
 			$f_result = query($sql, "Couldn't obtain forum_ids");
 
-			while( $forum_row = $db->sql_fetchrow($f_result) )
+			while ($forum_row = $db->sql_fetchrow($f_result) )
 			{
 				print " * Updating '" . $forum_row['forum_name'] . "' post info :: ";
 				flush();
@@ -1828,9 +1828,9 @@ if ( !empty($next) )
 				TOPICS_TABLE => array("topic_notify")
 			);
 
-			while( list($table, $field_data) = each($fields) )
+			while (list($table, $field_data) = each($fields) )
 			{
-				for($i = 0; $i < count($field_data); $i++)
+				for ($i = 0; $i < count($field_data); $i++)
 				{
 					print " * Drop field '" . $field_data[$i] . "' in '$table' :: ";
 					flush();
@@ -1849,7 +1849,7 @@ if ( !empty($next) )
 		case 'drop_tables':
 			$drop_tables = array('access', 'forum_access', 'forum_mods', 'headermetafooter', 'whosonline', $table_prefix . 'old_config');
 
-			for($i = 0; $i < count($drop_tables); $i++)
+			for ($i = 0; $i < count($drop_tables); $i++)
 			{
 				print " * Dropping table '" . $drop_tables[$i] . "' :: ";
 				flush();
@@ -1917,7 +1917,7 @@ if ( !empty($next) )
 							$inc = 0;
 						}
 					}
-					while( $row = $db->sql_fetchrow($posts_result) );
+					while ($row = $db->sql_fetchrow($posts_result) );
 				}
 
 				$db->sql_freeresult($posts_result);

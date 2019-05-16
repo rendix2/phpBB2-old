@@ -22,7 +22,7 @@
 
 define('IN_PHPBB', 1);
 
-if( !empty($setmodules) ) {
+if (!empty($setmodules) ) {
 	$filename = basename(__FILE__);
 	$module['Users']['Manage'] = $filename;
 
@@ -65,14 +65,14 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 			message_die(GENERAL_MESSAGE, $lang['No_user_id_specified'] );
 		}
 
-		if( $_POST['deleteuser'] && ($userdata['user_id'] != $user_id ) ) {
+		if ($_POST['deleteuser'] && ($userdata['user_id'] != $user_id ) ) {
 			$sql = "SELECT g.group_id 
 				FROM " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g  
 				WHERE ug.user_id = $user_id 
 					AND g.group_id = ug.group_id 
 					AND g.group_single_user = 1";
 
-			if( !($result = $db->sql_query($sql)) ) {
+			if (!($result = $db->sql_query($sql)) ) {
 				message_die(GENERAL_ERROR, 'Could not obtain group information for this user', '', __LINE__, __FILE__, $sql);
 			}
 
@@ -82,7 +82,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 				SET poster_id = " . DELETED . ", post_username = '" . str_replace("\\'", "''", addslashes($this_userdata['username'])) . "' 
 				WHERE poster_id = $user_id";
 
-			if( !$db->sql_query($sql) ) {
+			if (!$db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, 'Could not update posts for this user', '', __LINE__, __FILE__, $sql);
 			}
 
@@ -90,7 +90,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 				SET topic_poster = " . DELETED . " 
 				WHERE topic_poster = $user_id";
 
-			if( !$db->sql_query($sql) ) {
+			if (!$db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, 'Could not update topics for this user', '', __LINE__, __FILE__, $sql);
 			}
 			
@@ -98,7 +98,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 				SET vote_user_id = " . DELETED . "
 				WHERE vote_user_id = $user_id";
 
-			if( !$db->sql_query($sql) ) {
+			if (!$db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, 'Could not update votes for this user', '', __LINE__, __FILE__, $sql);
 			}
 			
@@ -106,35 +106,35 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 				SET group_moderator = " . $userdata['user_id'] . "
 				WHERE group_moderator = $user_id";
 
-			if( !$db->sql_query($sql) ) {
+			if (!$db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, 'Could not update group moderators', '', __LINE__, __FILE__, $sql);
 			}
 
 			$sql = "DELETE FROM " . USERS_TABLE . "
 				WHERE user_id = $user_id";
 
-			if( !$db->sql_query($sql) ) {
+			if (!$db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, 'Could not delete user', '', __LINE__, __FILE__, $sql);
 			}
 
 			$sql = "DELETE FROM " . USER_GROUP_TABLE . "
 				WHERE user_id = $user_id";
 
-			if( !$db->sql_query($sql) ) {
+			if (!$db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, 'Could not delete user from user_group table', '', __LINE__, __FILE__, $sql);
 			}
 
 			$sql = "DELETE FROM " . GROUPS_TABLE . "
 				WHERE group_id = " . $row['group_id'];
 
-			if( !$db->sql_query($sql) ) {
+			if (!$db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, 'Could not delete group for this user', '', __LINE__, __FILE__, $sql);
 			}
 
 			$sql = "DELETE FROM " . AUTH_ACCESS_TABLE . "
 				WHERE group_id = " . $row['group_id'];
 
-			if( !$db->sql_query($sql) ) {
+			if (!$db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, 'Could not delete group for this user', '', __LINE__, __FILE__, $sql);
 			}
 
@@ -256,7 +256,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 		$user_rank = !empty($_POST['user_rank']) ? (int)$_POST['user_rank'] : 0;
 		$user_allowavatar = !empty($_POST['user_allowavatar']) ? (int)$_POST['user_allowavatar'] : 0;
 
-		if( isset( $_POST['avatargallery'] ) || isset( $_POST['submitavatar'] ) || isset( $_POST['cancelavatar'] ) ) {
+		if (isset( $_POST['avatargallery'] ) || isset( $_POST['submitavatar'] ) || isset( $_POST['cancelavatar'] ) ) {
 			$username = stripslashes($username);
 			$email = stripslashes($email);
 			$password = '';
@@ -283,7 +283,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 		}
 	}
 
-	if( isset( $_POST['submit'] ) ) {
+	if (isset( $_POST['submit'] ) ) {
 		include $phpbb_root_path . 'includes/usercp_avatar.php';
 
 		$error = FALSE;
@@ -297,7 +297,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 				if ( $result['error'] ) {
 					$error = TRUE;
 					$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $result['error_msg'];
-				} else if ( strtolower(str_replace("\\'", "''", $username)) == strtolower($userdata['username']) ) {
+				} elseif ( strtolower(str_replace("\\'", "''", $username)) == strtolower($userdata['username']) ) {
 					$error = TRUE;
 					$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Username_taken'];
 				}
@@ -310,21 +310,21 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 		}
 
 		$passwd_sql = '';
-		if( !empty($password) && !empty($password_confirm) ) {
+		if (!empty($password) && !empty($password_confirm) ) {
 			//
 			// Awww, the user wants to change their password, isn't that cute..
 			//
-			if($password != $password_confirm) {
+			if ($password != $password_confirm) {
 				$error = TRUE;
 				$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Password_mismatch'];
 			} else {
 				$password = md5($password);
 				$passwd_sql = "user_password = '$password', ";
 			}
-		} else if( $password && !$password_confirm ) {
+		} elseif ($password && !$password_confirm ) {
 			$error = TRUE;
 			$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Password_mismatch'];
-		} else if( !$password && $password_confirm ) {
+		} elseif (!$password && $password_confirm ) {
 			$error = TRUE;
 			$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Password_mismatch'];
 		}
@@ -354,32 +354,32 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 		//
 		$avatar_sql = "";
 
-		if( isset($_POST['avatardel']) ) {
-			if( $this_userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] != "" ) {
-				if( @file_exists(@phpbb_realpath('./../' . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar'])) ) {
+		if (isset($_POST['avatardel']) ) {
+			if ($this_userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] != "" ) {
+				if (@file_exists(@phpbb_realpath('./../' . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar'])) ) {
 					@unlink('./../' . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']);
 				}
 			}
 
 			$avatar_sql = ", user_avatar = '', user_avatar_type = " . USER_AVATAR_NONE;
-		} else if( ( $user_avatar_loc != "" || !empty($user_avatar_url) ) && !$error ) {
+		} elseif (( $user_avatar_loc != "" || !empty($user_avatar_url) ) && !$error ) {
 			//
 			// Only allow one type of upload, either a
 			// filename or a URL
 			//
-			if( !empty($user_avatar_loc) && !empty($user_avatar_url) ) {
+			if (!empty($user_avatar_loc) && !empty($user_avatar_url) ) {
 				$error = TRUE;
 
-				if( isset($error_msg) ) {
+				if (isset($error_msg) ) {
 					$error_msg .= "<br />";
 				}
 
 				$error_msg .= $lang['Only_one_avatar'];
 			}
 
-			if( $user_avatar_loc != "" ) {
-				if( file_exists(@phpbb_realpath($user_avatar_loc)) && ereg(".jpg$|.gif$|.png$", $user_avatar_name) ) {
-					if( $user_avatar_size <= $board_config['avatar_filesize'] && $user_avatar_size > 0) {
+			if ($user_avatar_loc != "" ) {
+				if (file_exists(@phpbb_realpath($user_avatar_loc)) && ereg(".jpg$|.gif$|.png$", $user_avatar_name) ) {
+					if ($user_avatar_size <= $board_config['avatar_filesize'] && $user_avatar_size > 0) {
 						$error_type = false;
 
 						//
@@ -406,16 +406,16 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 								break;
 						}
 
-						if( !$error ) {
+						if (!$error ) {
 							list($width, $height) = @getimagesize($user_avatar_loc);
 
-							if( $width <= $board_config['avatar_max_width'] && $height <= $board_config['avatar_max_height'] ) {
+							if ($width <= $board_config['avatar_max_width'] && $height <= $board_config['avatar_max_height'] ) {
 								$user_id = $this_userdata['user_id'];
 
 								$avatar_filename = $user_id . $imgtype;
 
-								if( $this_userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] != "" ) {
-									if( @file_exists(@phpbb_realpath("./../" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar'])) ) {
+								if ($this_userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] != "" ) {
+									if (@file_exists(@phpbb_realpath("./../" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar'])) ) {
 										@unlink("./../" . $board_config['avatar_path'] . "/". $this_userdata['user_avatar']);
 									}
 								}
@@ -439,7 +439,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 					$error = true;
 					$error_msg = !empty($error_msg) ? $error_msg . "<br />" . $lang['Avatar_filetype'] : $lang['Avatar_filetype'];
 				}
-			} else if( !empty($user_avatar_url) ) {
+			} elseif (!empty($user_avatar_url) ) {
 				//
 				// First check what port we should connect
 				// to, look for a :[xxxx]/ or, if that doesn't
@@ -447,12 +447,12 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 				//
 				preg_match("/^(http:\/\/)?([\w\-\.]+)\:?([0-9]*)\/(.*)$/", $user_avatar_url, $url_ary);
 
-				if( !empty($url_ary[4]) ) {
+				if (!empty($url_ary[4]) ) {
 					$port = !empty($url_ary[3]) ? $url_ary[3] : 80;
 
 					$fsock = @fsockopen($url_ary[2], $port, $errno, $errstr);
 
-					if( $fsock ) {
+					if ($fsock ) {
 						$base_get = "/" . $url_ary[4];
 
 						//
@@ -464,12 +464,12 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 
 						unset($avatar_data);
 
-						while( !@feof($fsock) ) {
+						while (!@feof($fsock) ) {
 							$avatar_data .= @fread($fsock, $board_config['avatar_filesize']);
 						}
 						@fclose($fsock);
 
-						if( preg_match("/Content-Length\: ([0-9]+)[^\/ ][\s]+/i", $avatar_data, $file_data1) && preg_match("/Content-Type\: image\/[x\-]*([a-z]+)[\s]+/i", $avatar_data, $file_data2) ) {
+						if (preg_match("/Content-Length\: ([0-9]+)[^\/ ][\s]+/i", $avatar_data, $file_data1) && preg_match("/Content-Type\: image\/[x\-]*([a-z]+)[\s]+/i", $avatar_data, $file_data2) ) {
 							$file_size = $file_data1[1]; 
 							$file_type = $file_data2[1];
 
@@ -491,7 +491,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 									break;
 							}
 
-							if( !$error && $file_size > 0 && $file_size < $board_config['avatar_filesize'] ) {
+							if (!$error && $file_size > 0 && $file_size < $board_config['avatar_filesize'] ) {
 								$avatar_data = substr($avatar_data, strlen($avatar_data) - $file_size, $file_size);
 
 								$tmp_filename = tempnam ("/tmp", $this_userdata['user_id'] . "-");
@@ -499,16 +499,16 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 								$bytes_written = @fwrite($fptr, $avatar_data, $file_size);
 								@fclose($fptr);
 
-								if( $bytes_written == $file_size ) {
+								if ($bytes_written == $file_size ) {
 									list($width, $height) = @getimagesize($tmp_filename);
 
-									if( $width <= $board_config['avatar_max_width'] && $height <= $board_config['avatar_max_height'] ) {
+									if ($width <= $board_config['avatar_max_width'] && $height <= $board_config['avatar_max_height'] ) {
 										$user_id = $this_userdata['user_id'];
 
 										$avatar_filename = $user_id . $imgtype;
 
-										if( $this_userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] != "") {
-											if( file_exists(@phpbb_realpath("./../" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar'])) ) {
+										if ($this_userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] != "") {
+											if (file_exists(@phpbb_realpath("./../" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar'])) ) {
 												@unlink("./../" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']);
 											}
 										}
@@ -548,42 +548,42 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 					$error = true;
 					$error_msg = !empty($error_msg) ? $error_msg . "<br />" . $lang['Incomplete_URL'] : $lang['Incomplete_URL'];
 				}
-			} else if( !empty($user_avatar_name) ) {
+			} elseif (!empty($user_avatar_name) ) {
 				$l_avatar_size = sprintf($lang['Avatar_filesize'], round($board_config['avatar_filesize'] / 1024));
 
 				$error = true;
 				$error_msg = !empty($error_msg) ? $error_msg . "<br />" . $l_avatar_size : $l_avatar_size;
 			}
-		} else if( $user_avatar_remoteurl != "" && $avatar_sql == "" && !$error ) {
-			if( !preg_match("#^http:\/\/#i", $user_avatar_remoteurl) ) {
+		} elseif ($user_avatar_remoteurl != "" && $avatar_sql == "" && !$error ) {
+			if (!preg_match("#^http:\/\/#i", $user_avatar_remoteurl) ) {
 				$user_avatar_remoteurl = "http://" . $user_avatar_remoteurl;
 			}
 
-			if( preg_match("#^(http:\/\/[a-z0-9\-]+?\.([a-z0-9\-]+\.)*[a-z]+\/.*?\.(gif|jpg|png)$)#is", $user_avatar_remoteurl) ) {
+			if (preg_match("#^(http:\/\/[a-z0-9\-]+?\.([a-z0-9\-]+\.)*[a-z]+\/.*?\.(gif|jpg|png)$)#is", $user_avatar_remoteurl) ) {
 				$avatar_sql = ", user_avatar = '" . str_replace("\'", "''", $user_avatar_remoteurl) . "', user_avatar_type = " . USER_AVATAR_REMOTE;
 			} else {
 				$error = true;
 				$error_msg = !empty($error_msg) ? $error_msg . "<br />" . $lang['Wrong_remote_avatar_format'] : $lang['Wrong_remote_avatar_format'];
 			}
-		} else if( $user_avatar_local != "" && $avatar_sql == "" && !$error ) {
+		} elseif ($user_avatar_local != "" && $avatar_sql == "" && !$error ) {
 			$avatar_sql = ", user_avatar = '" . str_replace("\'", "''", phpbb_ltrim(basename($user_avatar_category), "'") . '/' . phpbb_ltrim(basename($user_avatar_local), "'")) . "', user_avatar_type = " . USER_AVATAR_GALLERY;
 		}
 	
 		//
 		// Update entry in DB
 		//
-		if( !$error ) {
+		if (!$error ) {
 			$sql = "UPDATE " . USERS_TABLE . "
 				SET " . $username_sql . $passwd_sql . "user_email = '" . str_replace("\'", "''", $email) . "', user_icq = '" . str_replace("\'", "''", $icq) . "', user_website = '" . str_replace("\'", "''", $website) . "', user_occ = '" . str_replace("\'", "''", $occupation) . "', user_from = '" . str_replace("\'", "''", $location) . "', user_interests = '" . str_replace("\'", "''", $interests) . "', user_sig = '" . str_replace("\'", "''", $signature) . "', user_viewemail = $viewemail, user_aim = '" . str_replace("\'", "''", $aim) . "', user_yim = '" . str_replace("\'", "''", $yim) . "', user_msnm = '" . str_replace("\'", "''", $msn) . "', user_attachsig = $attachsig, user_sig_bbcode_uid = '$signature_bbcode_uid', user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowavatar = $user_allowavatar, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_notify = $notifyreply, user_allow_pm = $user_allowpm, user_notify_pm = $notifypm, user_popup_pm = $popuppm, user_lang = '" . str_replace("\'", "''", $user_lang) . "', user_style = $user_style, user_timezone = $user_timezone, user_dateformat = '" . str_replace("\'", "''", $user_dateformat) . "', user_active = $user_status, user_rank = $user_rank" . $avatar_sql . "
 				WHERE user_id = $user_id";
 
-			if( $result = $db->sql_query($sql) ) {
-				if( isset($rename_user) ) {
+			if ($result = $db->sql_query($sql) ) {
+				if (isset($rename_user) ) {
 					$sql = "UPDATE " . GROUPS_TABLE . "
 						SET group_name = '".str_replace("\'", "''", $rename_user)."'
 						WHERE group_name = '".str_replace("'", "''", $this_userdata['username'] )."'";
 
-					if( !$result = $db->sql_query($sql) ) {
+					if (!$result = $db->sql_query($sql) ) {
 						message_die(GENERAL_ERROR, 'Could not rename users group', '', __LINE__, __FILE__, $sql);
 					}
 				}
@@ -642,18 +642,18 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 			$user_lang = stripslashes($user_lang);
 			$user_dateformat = htmlspecialchars(stripslashes($user_dateformat));
 		}
-	} else if( !isset( $_POST['submit'] ) && $mode != 'save' && !isset( $_POST['avatargallery'] ) && !isset( $_POST['submitavatar'] ) && !isset( $_POST['cancelavatar'] ) ) {
-		if( isset( $_GET[POST_USERS_URL]) || isset( $_POST[POST_USERS_URL]) ) {
+	} elseif (!isset( $_POST['submit'] ) && $mode != 'save' && !isset( $_POST['avatargallery'] ) && !isset( $_POST['submitavatar'] ) && !isset( $_POST['cancelavatar'] ) ) {
+		if (isset( $_GET[POST_USERS_URL]) || isset( $_POST[POST_USERS_URL]) ) {
 			$user_id = isset( $_POST[POST_USERS_URL]) ? (int)$_POST[POST_USERS_URL] : (int)$_GET[POST_USERS_URL];
 			$this_userdata = get_userdata($user_id);
 
-			if( !$this_userdata ) {
+			if (!$this_userdata ) {
 				message_die(GENERAL_MESSAGE, $lang['No_user_id_specified'] );
 			}
 		} else {
 			$this_userdata = get_userdata($_POST['username'], true);
 
-			if( !$this_userdata ) {
+			if (!$this_userdata ) {
 				message_die(GENERAL_MESSAGE, $lang['No_user_id_specified'] );
 			}
 		}
@@ -708,8 +708,8 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 		$smilies_status = $this_userdata['user_allowsmile'] ? $lang['Smilies_are_ON'] : $lang['Smilies_are_OFF'];
 	}
 
-	if( isset($_POST['avatargallery']) && !$error ) {
-		if( !$error ) {
+	if (isset($_POST['avatargallery']) && !$error ) {
+		if (!$error ) {
 			$user_id = (int)$_POST['id'];
 
             $template->set_filenames(["body" => "admin/user_avatar_gallery.tpl"]);
@@ -717,20 +717,20 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
             $dir = @opendir("../" . $board_config['avatar_gallery_path']);
 
 			$avatar_images = [];
-			while( $file = @readdir($dir) ) {
-				if( $file != "." && $file != ".." && !is_file(phpbb_realpath("./../" . $board_config['avatar_gallery_path'] . "/" . $file)) && !is_link(phpbb_realpath("./../" . $board_config['avatar_gallery_path'] . "/" . $file)) ) {
+			while ($file = @readdir($dir) ) {
+				if ($file != "." && $file != ".." && !is_file(phpbb_realpath("./../" . $board_config['avatar_gallery_path'] . "/" . $file)) && !is_link(phpbb_realpath("./../" . $board_config['avatar_gallery_path'] . "/" . $file)) ) {
 					$sub_dir = @opendir("../" . $board_config['avatar_gallery_path'] . "/" . $file);
 
 					$avatar_row_count = 0;
 					$avatar_col_count = 0;
 
-					while( $sub_file = @readdir($sub_dir) ) {
-						if( preg_match("/(\.gif$|\.png$|\.jpg)$/is", $sub_file) ) {
+					while ($sub_file = @readdir($sub_dir) ) {
+						if (preg_match("/(\.gif$|\.png$|\.jpg)$/is", $sub_file) ) {
 							$avatar_images[$file][$avatar_row_count][$avatar_col_count] = $sub_file;
 
 							$avatar_col_count++;
 
-							if( $avatar_col_count == 5 ) {
+							if ($avatar_col_count == 5 ) {
 								$avatar_row_count++;
 								$avatar_col_count = 0;
 							}
@@ -741,7 +741,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 	
 			@closedir($dir);
 
-			if( isset($_POST['avatarcategory']) ) {
+			if (isset($_POST['avatarcategory']) ) {
 				$category = htmlspecialchars($_POST['avatarcategory']);
 			} else {
 				list($category, ) = each($avatar_images);
@@ -751,21 +751,21 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 
 			$s_categories = "";
 
-			while( list($key) = each($avatar_images) ) {
+			while (list($key) = each($avatar_images) ) {
 				$selected = ( $key == $category ) ? "selected=\"selected\"" : "";
 
-				if( count($avatar_images[$key]) ) {
+				if (count($avatar_images[$key]) ) {
 					$s_categories .= '<option value="' . $key . '"' . $selected . '>' . ucfirst($key) . '</option>';
 				}
 			}
 
 			$s_colspan = 0;
-			for($i = 0; $i < count($avatar_images[$category]); $i++) {
+			for ($i = 0; $i < count($avatar_images[$category]); $i++) {
                 $template->assign_block_vars("avatar_row", []);
 
                 $s_colspan = max($s_colspan, count($avatar_images[$category][$i]));
 
-				for($j = 0; $j < count($avatar_images[$category][$i]); $j++) {
+				for ($j = 0; $j < count($avatar_images[$category][$i]); $j++) {
                     $template->assign_block_vars("avatar_row.avatar_column", [
                             "AVATAR_IMAGE" => "../" . $board_config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_images[$category][$i][$j]
                         ]);
@@ -830,11 +830,11 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 		$s_hidden_fields = '<input type="hidden" name="mode" value="save" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';
 		$s_hidden_fields .= '<input type="hidden" name="id" value="' . $this_userdata['user_id'] . '" />';
 
-		if( !empty($user_avatar_local) ) {
+		if (!empty($user_avatar_local) ) {
 			$s_hidden_fields .= '<input type="hidden" name="avatarlocal" value="' . $user_avatar_local . '" /><input type="hidden" name="avatarcatname" value="' . $user_avatar_category . '" />';
 		}
 
-		if( $user_avatar_type ) {
+		if ($user_avatar_type ) {
 			switch( $user_avatar_type )
 			{
 				case USER_AVATAR_UPLOAD:
@@ -861,7 +861,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 
 		$rank_select_box = '<option value="0">' . $lang['No_assigned_rank'] . '</option>';
 
-		while( $row = $db->sql_fetchrow($result) ) {
+		while ($row = $db->sql_fetchrow($result) ) {
 			$rank = $row['rank_title'];
 			$rank_id = $row['rank_id'];
 			

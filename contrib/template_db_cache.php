@@ -114,9 +114,9 @@ class Template {
 			WHERE template_name IN ($template_names)";
 		if ( $result = $this->db->sql_query($sql) )
 		{
-			while( $row = $this->db->sql_fetchrow($result) )
+			while ($row = $this->db->sql_fetchrow($result) )
 			{
-				if( $row['template_cached'] == filemtime($row['template_name']) )
+				if ($row['template_cached'] == filemtime($row['template_name']) )
 				{
 					$this->compiled_code[$row['template_handle']] = $row['template_compile'];
 					$this->echo_compiled[$row['template_handle']] = $row['template_echo'];
@@ -139,7 +139,7 @@ class Template {
 	{
 		global $table_prefix;
 
-		if( empty($this->compiled_code[$handle]) )
+		if (empty($this->compiled_code[$handle]) )
 		{
 			if ( !$this->loadfile($handle) )
 			{
@@ -163,7 +163,7 @@ class Template {
 		$_str = "";
 		eval($this->compiled_code[$handle]);
 
-		if( $_str != "" ) 
+		if ($_str != "" )
 		{
 			echo $_str;
 		}
@@ -183,7 +183,7 @@ class Template {
 	{
 		global $table_prefix;
 
-		if( empty($this->compiled_code[$handle]) )
+		if (empty($this->compiled_code[$handle]) )
 		{
 			if ( !$this->loadfile($handle) )
 			{
@@ -447,7 +447,7 @@ class Template {
 					}
 				}
 			}
-			else if (preg_match('#<!-- END (.*?) -->#', $code_lines[$i], $m))
+			elseif (preg_match('#<!-- END (.*?) -->#', $code_lines[$i], $m))
 			{
 				// We have the end of a block.
 				unset($block_names[$block_nesting_level]);

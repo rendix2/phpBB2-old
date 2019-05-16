@@ -73,7 +73,7 @@ function validate_username($username)
 					return ['error' => true, 'error_msg' => $lang['Username_disallowed']];
 				}
 			}
-			while($row = $db->sql_fetchrow($result));
+			while ($row = $db->sql_fetchrow($result));
 		}
 	}
 	$db->sql_freeresult($result);
@@ -127,7 +127,7 @@ function validate_email($email)
 							return array('error' => true, 'error_msg' => $lang['Email_banned']);
 						}
 					}
-					while($row = $db->sql_fetchrow($result));
+					while ($row = $db->sql_fetchrow($result));
 				}
 			}
 			
@@ -162,7 +162,7 @@ function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$loca
 {
 	$check_var_length = array('aim', 'msnm', 'yim', 'location', 'occupation', 'interests', 'sig');
 
-	for($i = 0; $i < count($check_var_length); $i++) {
+	for ($i = 0; $i < count($check_var_length); $i++) {
 		if (strlen($$check_var_length[$i]) < 2) {
 			$$check_var_length[$i] = '';
 		}

@@ -38,7 +38,7 @@ function prune($forum_id, $prune_date, $prune_all = false)
 		message_die(GENERAL_ERROR, 'Could not obtain lists of topics to sync', '', __LINE__, __FILE__, $sql);
 	}
 
-	while( $row = $db->sql_fetchrow($result) ) {
+	while ($row = $db->sql_fetchrow($result) ) {
 		sync('topic', $row['topic_id']);
 	}
 
@@ -64,13 +64,13 @@ function prune($forum_id, $prune_date, $prune_all = false)
 
 	$sql_topics = '';
 	
-	while( $row = $db->sql_fetchrow($result) ) {
+	while ($row = $db->sql_fetchrow($result) ) {
 		$sql_topics .= ( ( $sql_topics != '' ) ? ', ' : '' ) . $row['topic_id'];
 	}
 	
 	$db->sql_freeresult($result);
 		
-	if( $sql_topics != '' ) {
+	if ($sql_topics != '' ) {
 		$sql = "SELECT post_id
 			FROM " . POSTS_TABLE . " 
 			WHERE forum_id = $forum_id 

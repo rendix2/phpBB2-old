@@ -121,7 +121,7 @@ if ($mode == 'searchuser') {
 
     exit;
 }
-else if ( $search_keywords != '' || $search_author != '' || $search_id )
+elseif ( $search_keywords != '' || $search_author != '' || $search_id )
 {
 	$store_vars = array('search_results', 'total_match_count', 'split_search', 'sort_by', 'sort_dir', 'show_results', 'return_chars');
 	$search_results = '';
@@ -173,7 +173,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 				$sort_by = 0;
 				$sort_dir = 'DESC';
 			}
-			else if ( $search_id == 'egosearch' )
+			elseif ( $search_id == 'egosearch' )
 			{
 				if ( $userdata['session_logged_in'] )
 				{
@@ -194,7 +194,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 			{
 				$search_author = str_replace('*', '%', trim($search_author));
 
-				if( ( strpos($search_author, '%') !== false ) && ( strlen(str_replace('%', '', $search_author)) < $board_config['search_min_chars'] ) )
+				if (( strpos($search_author, '%') !== false ) && ( strlen(str_replace('%', '', $search_author)) < $board_config['search_min_chars'] ) )
 				{
 					$search_author = '';
 				}
@@ -214,7 +214,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 					{
 						$matching_userids .= ( ( $matching_userids != '' ) ? ', ' : '' ) . $row['user_id'];
 					}
-					while( $row = $db->sql_fetchrow($result) );
+					while ($row = $db->sql_fetchrow($result) );
 				}
 				else
 				{
@@ -237,7 +237,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 			}
 
 			$search_ids = [];
-			while( $row = $db->sql_fetchrow($result) )
+			while ($row = $db->sql_fetchrow($result) )
 			{
 				$search_ids[] = $row['post_id'];
 			}
@@ -246,7 +246,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 			$total_match_count = count($search_ids);
 
 		}
-		else if ( $search_keywords != '' )
+		elseif ( $search_keywords != '' )
 		{
 			$stopword_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/search_stopwords.txt'); 
 			$synonym_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/search_synonyms.txt'); 
@@ -264,7 +264,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 			$word_match = [];
 			$result_list = [];
 
-			for($i = 0; $i < count($split_search); $i++)
+			for ($i = 0; $i < count($split_search); $i++)
 			{
 				if ( strlen(str_replace(array('*', '%'), '', trim($split_search[$i]))) < $board_config['search_min_chars'] )
 				{
@@ -317,7 +317,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 						}
 
 						$row = [];
-						while( $temp_row = $db->sql_fetchrow($result) )
+						while ($temp_row = $db->sql_fetchrow($result) )
 						{
 							$row[$temp_row['post_id']] = 1;
 
@@ -404,7 +404,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		{
 			$search_author = str_replace('*', '%', trim($search_author));
 
-			if( ( strpos($search_author, '%') !== false ) && ( strlen(str_replace('%', '', $search_author)) < $board_config['search_min_chars'] ) )
+			if (( strpos($search_author, '%') !== false ) && ( strlen(str_replace('%', '', $search_author)) < $board_config['search_min_chars'] ) )
 			{
 				$search_author = '';
 			}
@@ -490,7 +490,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 				$total_match_count = count($search_ids);
 		
 			}
-			else if ( $search_author != '' || $search_time || $auth_sql != '' )
+			elseif ( $search_author != '' || $search_time || $auth_sql != '' )
 			{
 				$search_id_chunks = [];
 				$count = 0;
@@ -549,7 +549,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 				$total_match_count = count($search_ids);
 			}
 		}
-		else if ( $search_id == 'unanswered' )
+		elseif ( $search_id == 'unanswered' )
 		{
 			if ( $auth_sql != '' )
 			{
@@ -768,7 +768,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
         $highlight_active = '';
 		$highlight_match = [];
 
-		for($j = 0; $j < count($split_search); $j++ ) {
+		for ($j = 0; $j < count($split_search); $j++ ) {
 			$split_word = $split_search[$j];
 
 			if ( $split_word != 'and' && $split_word != 'or' && $split_word != 'not' ) {
@@ -791,7 +791,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		$tracking_topics = isset($_COOKIE[$board_config['cookie_name'] . '_t']) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_t']) : [];
 		$tracking_forums = isset($_COOKIE[$board_config['cookie_name'] . '_f']) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_f']) : [];
 
-		for($i = 0; $i < count($searchset); $i++) {
+		for ($i = 0; $i < count($searchset); $i++) {
 			$forum_url = append_sid("viewforum.php?" . POST_FORUM_URL . '=' . $searchset[$i]['forum_id']);
 			$topic_url = append_sid("viewtopic.php?" . POST_TOPIC_URL . '=' . $searchset[$i]['topic_id'] . "&amp;highlight=$highlight_active");
 			$post_url = append_sid("viewtopic.php?" . POST_POST_URL . '=' . $searchset[$i]['post_id'] . "&amp;highlight=$highlight_active") . '#' . $searchset[$i]['post_id'];
@@ -839,7 +839,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 								$temp_message = '';
 								$message = ' ' . $message . ' ';
 
-								while( $start_html = strpos($message, '<', $start_html) ) {
+								while ($start_html = strpos($message, '<', $start_html) ) {
 									$grab_length = $start_html - $end_html - 1;
 									$temp_message .= substr($message, $end_html + 1, $grab_length);
 
@@ -865,7 +865,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 											$hold_string = substr($message, $start_html, $length);
 											$hold_string = str_replace('<!-- #sh -->', '', $hold_string);
 											$hold_string = str_replace('<!-- #eh -->', '', $hold_string);
-										} else if ( $hold_string == '<!-- #sh -->' ) {
+										} elseif ( $hold_string == '<!-- #sh -->' ) {
 											$hold_string = str_replace('<!-- #sh -->', '<span style="color:#' . $theme['fontcolor3'] . '"><b>', $hold_string);
                                         } elseif ($hold_string == '<!-- #eh -->') {
                                             $hold_string = str_replace('<!-- #eh -->', '</b></span>', $hold_string);
@@ -978,14 +978,14 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 
 					$times = 1;
 
-					for($j = 0; $j < $replies + 1; $j += $board_config['posts_per_page']) {
+					for ($j = 0; $j < $replies + 1; $j += $board_config['posts_per_page']) {
 						$goto_page .= '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=" . $topic_id . "&amp;start=$j") . '">' . $times . '</a>';
 
 						if ( $times == 1 && $total_pages > 4 ) {
 							$goto_page .= ' ... ';
 							$times = $total_pages - 3;
 							$j += ( $total_pages - 4 ) * $board_config['posts_per_page'];
-						} else if ( $times < $total_pages ) {
+						} elseif ( $times < $total_pages ) {
 							$goto_page .= ', ';
 						}
 
@@ -1007,10 +1007,10 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 					if ( $searchset[$i]['topic_status'] == TOPIC_LOCKED ) {
 						$folder = $images['folder_locked'];
 						$folder_new = $images['folder_locked_new'];
-					} else if ( $searchset[$i]['topic_type'] == POST_ANNOUNCE ) {
+					} elseif ( $searchset[$i]['topic_type'] == POST_ANNOUNCE ) {
 						$folder = $images['folder_announce'];
 						$folder_new = $images['folder_announce_new'];
-					} else if ( $searchset[$i]['topic_type'] == POST_STICKY ) {
+					} elseif ( $searchset[$i]['topic_type'] == POST_STICKY ) {
 						$folder = $images['folder_sticky'];
 						$folder_new = $images['folder_sticky_new'];
 					} else {
@@ -1060,7 +1060,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 									$newest_post_img = '';
 								}
 
-							} else if ( $searchset[$i]['post_time'] > $userdata['user_lastvisit'] )  {
+							} elseif ( $searchset[$i]['post_time'] > $userdata['user_lastvisit'] )  {
 								$folder_image = $folder_new;
 								$folder_alt = $lang['New_posts'];
 
@@ -1168,7 +1168,7 @@ $is_auth_ary = auth(AUTH_READ, AUTH_LIST_ALL, $userdata);
 
 $s_forums = '';
 
-while( $row = $db->sql_fetchrow($result) ) {
+while ($row = $db->sql_fetchrow($result) ) {
 	if ( $is_auth_ary[$row['forum_id']]['auth_read'] ) {
 		$s_forums .= '<option value="' . $row['forum_id'] . '">' . $row['forum_name'] . '</option>';
 		
@@ -1186,7 +1186,7 @@ if ( $s_forums != '' ) {
 	//
 	$s_categories = '<option value="-1">' . $lang['All_available'] . '</option>';
 	
-	while( list($cat_id, $cat_title) = @each($list_cat)) {
+	while (list($cat_id, $cat_title) = @each($list_cat)) {
 		$s_categories .= '<option value="' . $cat_id . '">' . $cat_title . '</option>';
 	}
 } else {
@@ -1201,7 +1201,7 @@ $s_characters .= '<option value="0">0</option>';
 $s_characters .= '<option value="25">25</option>';
 $s_characters .= '<option value="50">50</option>';
 
-for($i = 100; $i < 1100 ; $i += 100) {
+for ($i = 100; $i < 1100 ; $i += 100) {
 	$selected = ( $i == 200 ) ? ' selected="selected"' : '';
 	$s_characters .= '<option value="' . $i . '"' . $selected . '>' . $i . '</option>';
 }
@@ -1211,7 +1211,7 @@ for($i = 100; $i < 1100 ; $i += 100) {
 //
 $s_sort_by = "";
 
-for($i = 0; $i < count($sort_by_types); $i++) {
+for ($i = 0; $i < count($sort_by_types); $i++) {
 	$s_sort_by .= '<option value="' . $i . '">' . $sort_by_types[$i] . '</option>';
 }
 
@@ -1223,7 +1223,7 @@ $previous_days_text = array($lang['All_Posts'], $lang['1_Day'], $lang['7_Days'],
 
 $s_time = '';
 
-for($i = 0; $i < count($previous_days); $i++) {
+for ($i = 0; $i < count($previous_days); $i++) {
 	$selected = ( $topic_days == $previous_days[$i] ) ? ' selected="selected"' : '';
 	$s_time .= '<option value="' . $previous_days[$i] . '"' . $selected . '>' . $previous_days_text[$i] . '</option>';
 }

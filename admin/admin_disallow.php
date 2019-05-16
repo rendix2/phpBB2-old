@@ -22,7 +22,7 @@
 
 define('IN_PHPBB', 1);
 
-if( !empty($setmodules) ) {
+if (!empty($setmodules) ) {
 	$filename = basename(__FILE__);
 	$module['Users']['Disallow'] = $filename;
 
@@ -36,7 +36,7 @@ $phpbb_root_path = "./../";
 require $phpbb_root_path . 'extension.inc';
 require './pagestart.php';
 
-if( isset($_POST['add_name']) ) {
+if (isset($_POST['add_name']) ) {
 	include $phpbb_root_path . 'includes/functions_validate.php';
 
 	$disallowed_user = isset($_POST['disallowed_user']) ? trim($_POST['disallowed_user']) : trim($_GET['disallowed_user']);
@@ -45,7 +45,7 @@ if( isset($_POST['add_name']) ) {
 		message_die(GENERAL_MESSAGE, $lang['Fields_empty']);
 	}
 
-	if( !validate_username($disallowed_user) ) {
+	if (!validate_username($disallowed_user) ) {
 		$message = $lang['Disallowed_already'];
 	} else {
 		$sql = "INSERT INTO " . DISALLOW_TABLE . " (disallow_username) 
@@ -62,14 +62,14 @@ if( isset($_POST['add_name']) ) {
 	$message .= "<br /><br />" . sprintf($lang['Click_return_disallowadmin'], "<a href=\"" . append_sid("admin_disallow.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
 
 	message_die(GENERAL_MESSAGE, $message);
-} else if( isset($_POST['delete_name']) ) {
+} elseif (isset($_POST['delete_name']) ) {
 	$disallowed_id = isset($_POST['disallowed_id']) ? (int)$_POST['disallowed_id'] : (int)$_GET['disallowed_id'];
 	
 	$sql = "DELETE FROM " . DISALLOW_TABLE . " 
 		WHERE disallow_id = $disallowed_id";
 	$result = $db->sql_query($sql);
 
-	if( !$result ) {
+	if (!$result ) {
 		message_die(GENERAL_ERROR, "Couldn't removed disallowed user.", "",__LINE__, __FILE__, $sql);
 	}
 
@@ -86,7 +86,7 @@ $sql = "SELECT *
 	FROM " . DISALLOW_TABLE;
 $result = $db->sql_query($sql);
 
-if( !$result ) {
+if (!$result ) {
 	message_die(GENERAL_ERROR, "Couldn't get disallowed users.", "", __LINE__, __FILE__, $sql );
 }
 
@@ -98,12 +98,12 @@ $disallowed = $db->sql_fetchrowset($result);
 //
 $disallow_select = '<select name="disallowed_id">';
 
-if( trim($disallowed) == "" ) {
+if (trim($disallowed) == "" ) {
 	$disallow_select .= '<option value="">' . $lang['no_disallowed'] . '</option>';
 } else {
 	$user = [];
 
-	for( $i = 0; $i < count($disallowed); $i++ ) {
+	for ($i = 0; $i < count($disallowed); $i++ ) {
 		$disallow_select .= '<option value="' . $disallowed[$i]['disallow_id'] . '">' . $disallowed[$i]['disallow_username'] . '</option>';
 	}
 }

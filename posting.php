@@ -547,7 +547,7 @@ if (($delete || $poll_delete || $mode == 'delete') && !$confirm) {
 	}
 }
 
-if( $refresh || isset($_POST['del_poll_option']) || $error_msg != '' )
+if ($refresh || isset($_POST['del_poll_option']) || $error_msg != '' )
 {
 	$username = !empty($_POST['username']) ? htmlspecialchars(trim(stripslashes($_POST['username']))) : '';
 	$subject = !empty($_POST['subject']) ? htmlspecialchars(trim(stripslashes($_POST['subject']))) : '';
@@ -559,11 +559,11 @@ if( $refresh || isset($_POST['del_poll_option']) || $error_msg != '' )
 	$poll_options = [];
 
 	if ( !empty($_POST['poll_option_text']) ) {
-		while( list($option_id, $option_text) = @each($_POST['poll_option_text']) )
+		while (list($option_id, $option_text) = @each($_POST['poll_option_text']) )
 		{
-			if( isset($_POST['del_poll_option'][$option_id]) ) {
+			if (isset($_POST['del_poll_option'][$option_id]) ) {
 				unset($poll_options[$option_id]);
-			} else if ( !empty($option_text) ) {
+			} elseif ( !empty($option_text) ) {
                 $poll_options[(int)$option_id] = htmlspecialchars(trim(stripslashes($option_text)));
 			}
 		}
@@ -575,12 +575,12 @@ if( $refresh || isset($_POST['del_poll_option']) || $error_msg != '' )
 
 	if ( $mode == 'newtopic' || $mode == 'reply') {
 		$user_sig = ( $userdata['user_sig'] != '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : '';
-	} else if ( $mode == 'editpost' ) {
+	} elseif ( $mode == 'editpost' ) {
 		$user_sig = ( $post_info['user_sig'] != '' && $board_config['allow_sig'] ) ? $post_info['user_sig'] : '';
 		$userdata['user_sig_bbcode_uid'] = $post_info['user_sig_bbcode_uid'];
 	}
 
-	if( $preview ) {
+	if ($preview ) {
 		$orig_word = [];
 		$replacement_word = [];
 		obtain_word_list($orig_word, $replacement_word);
@@ -671,7 +671,7 @@ if( $refresh || isset($_POST['del_poll_option']) || $error_msg != '' )
 		$poll_length = '';
 		$subject = '';
 		$message = '';
-	} else if ( $mode == 'reply' ) {
+	} elseif ( $mode == 'reply' ) {
 		$user_sig = ( $userdata['user_sig'] != '' ) ? $userdata['user_sig'] : '';
 
 		$username = $userdata['session_logged_in'] ? $userdata['username'] : '';
@@ -732,7 +732,7 @@ if( $refresh || isset($_POST['del_poll_option']) || $error_msg != '' )
 //
 // Signature toggle selection
 //
-if( $user_sig != '' ) {
+if ($user_sig != '' ) {
 	$template->assign_block_vars('switch_signature_checkbox', []);
 }
 
@@ -951,7 +951,7 @@ $template->assign_vars(array(
 //
 // Poll entry switch/output
 //
-if( ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['edit_poll']) ) && $is_auth['auth_pollcreate'] ) {
+if (( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['edit_poll']) ) && $is_auth['auth_pollcreate'] ) {
 	$template->assign_vars(array(
 		'L_ADD_A_POLL' => $lang['Add_poll'],
 		'L_ADD_POLL_EXPLAIN' => $lang['Add_poll_explain'],
@@ -969,12 +969,12 @@ if( ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['edit_poll']) )
 		'POLL_LENGTH' => $poll_length)
 	);
 
-	if( $mode == 'editpost' && $post_data['edit_poll'] && $post_data['has_poll']) {
+	if ($mode == 'editpost' && $post_data['edit_poll'] && $post_data['has_poll']) {
 		$template->assign_block_vars('switch_poll_delete_toggle', []);
 	}
 
-	if( !empty($poll_options) ) {
-		while( list($option_id, $option_text) = each($poll_options) ) {
+	if (!empty($poll_options) ) {
+		while (list($option_id, $option_text) = each($poll_options) ) {
 			$template->assign_block_vars('poll_option_rows', array(
 				'POLL_OPTION' => str_replace('"', '&quot;', $option_text),
 
@@ -989,7 +989,7 @@ if( ( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['edit_poll']) )
 //
 // Topic review
 //
-if( $mode == 'reply' && $is_auth['auth_read'] ) {
+if ($mode == 'reply' && $is_auth['auth_read'] ) {
 	require $phpbb_root_path . 'includes/topic_review.php';
 	topic_review($topic_id, true);
 

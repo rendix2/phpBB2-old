@@ -30,13 +30,13 @@
 
 define('IN_PHPBB', 1);
 
-if( !empty($setmodules) ) {
+if (!empty($setmodules) ) {
 	$filename = basename(__FILE__);
 	$module['General']['Backup_DB'] = $filename . "?perform=backup";
 
 	$file_uploads = (@phpversion() >= '4.0.0') ? @ini_get('file_uploads') : @get_cfg_var('file_uploads');
 
-	if( (empty($file_uploads) || $file_uploads != 0) && (strtolower($file_uploads) != 'off') && (@phpversion() != '4.0.4pl1') ) {
+	if ((empty($file_uploads) || $file_uploads != 0) && (strtolower($file_uploads) != 'off') && (@phpversion() != '4.0.4pl1') ) {
 		$module['General']['Restore_DB'] = $filename . "?perform=restore";
 	}
 
@@ -88,23 +88,23 @@ function pg_get_sequences($crlf, $backup_type)
 
 	$seq = $db->sql_query($get_seq_sql);
 
-	if( !$num_seq = $db->sql_numrows($seq) ) {
+	if (!$num_seq = $db->sql_numrows($seq) ) {
 		$return_val = "# No Sequences Found $crlf";
 	} else {
 		$return_val = "# Sequences $crlf";
 		$i_seq = 0;
 
-		while($i_seq < $num_seq) {
+		while ($i_seq < $num_seq) {
 			$row = $db->sql_fetchrow($seq);
 			$sequence = $row['relname'];
 
 			$get_props_sql = "SELECT * FROM $sequence";
 			$seq_props = $db->sql_query($get_props_sql);
 
-			if($db->sql_numrows($seq_props) > 0) {
+			if ($db->sql_numrows($seq_props) > 0) {
 				$row1 = $db->sql_fetchrow($seq_props);
 
-				if($backup_type == 'structure') {
+				if ($backup_type == 'structure') {
 					$row['last_value'] = 1;
 				}
 
@@ -112,7 +112,7 @@ function pg_get_sequences($crlf, $backup_type)
 
 			}  // End if numrows > 0
 
-			if(($row['last_value'] > 1) && ($backup_type != 'structure')) {
+			if (($row['last_value'] > 1) && ($backup_type != 'structure')) {
 				$return_val .= "SELECT NEXTVALE('$sequence'); $crlf";
 				unset($row['last_value']);
 			}
@@ -151,7 +151,7 @@ function get_table_def_postgresql($table, $crlf)
 		ORDER BY a.attnum";
 	$result = $db->sql_query($field_query);
 
-	if(!$result)
+	if (!$result)
 	{
 		message_die(GENERAL_ERROR, "Failed in get_table_def (show fields)", "", __LINE__, __FILE__, $field_query);
 	} // end if..
@@ -232,7 +232,7 @@ function get_table_def_postgresql($table, $crlf)
 		ORDER BY index_name, tab_name, column_name ";
 	$result = $db->sql_query($sql_pri_keys);
 
-	if(!$result) {
+	if (!$result) {
 		message_die(GENERAL_ERROR, "Failed in get_table_def (show fields)", "", __LINE__, __FILE__, $sql_pri_keys);
 	}
 
@@ -257,7 +257,7 @@ function get_table_def_postgresql($table, $crlf)
 	}
 
 	if (!empty($index_rows)) {
-		while(list($idx_name, $props) = each($index_rows)) {
+		while (list($idx_name, $props) = each($index_rows)) {
 			$props['column_names'] = ereg_replace(", $", "" , $props['column_names']);
 			$index_create .= 'CREATE ' . $props['unique'] . " INDEX $idx_name ON $table (" . $props['column_names'] . ");$crlf";
 		}
@@ -337,22 +337,22 @@ function get_table_def_mysql($table, $crlf)
 	// Ok lets grab the fields...
 	//
 	$result = $db->sql_query($field_query);
-	if(!$result) {
+	if (!$result) {
 		message_die(GENERAL_ERROR, "Failed in get_table_def (show fields)", "", __LINE__, __FILE__, $field_query);
 	}
 
 	while ($row = $db->sql_fetchrow($result)) {
 		$schema_create .= '	' . $row['Field'] . ' ' . $row['Type'];
 
-		if(!empty($row['Default'])) {
+		if (!empty($row['Default'])) {
 			$schema_create .= ' DEFAULT \'' . $row['Default'] . '\'';
 		}
 
-		if($row['Null'] != "YES") {
+		if ($row['Null'] != "YES") {
 			$schema_create .= ' NOT NULL';
 		}
 
-		if($row['Extra'] != "") {
+		if ($row['Extra'] != "") {
 			$schema_create .= ' ' . $row['Extra'];
 		}
 
@@ -368,7 +368,7 @@ function get_table_def_mysql($table, $crlf)
 	//
 	$result = $db->sql_query($key_query);
 
-	if(!$result) {
+	if (!$result) {
 		message_die(GENERAL_ERROR, "FAILED IN get_table_def (show keys)", "", __LINE__, __FILE__, $key_query);
 	}
 
@@ -445,14 +445,14 @@ function get_table_content_postgresql($table, $handler)
 
 	$iRec = 0;
 
-	while($row = $db->sql_fetchrow($result)) {
+	while ($row = $db->sql_fetchrow($result)) {
 		$schema_vals = '';
 		$schema_fields = '';
 		$schema_insert = '';
 		//
 		// Build the SQL statement to recreate the data.
 		//
-		for($i = 0; $i < $i_num_fields; $i++) {
+		for ($i = 0; $i < $i_num_fields; $i++) {
 			$strVal = $row[$aryName[$i]];
 
 			if (eregi("char|text|bool", $aryType[$i])) {
@@ -535,7 +535,7 @@ function get_table_content_mysql($table, $handler)
 			for ($j = 0; $j < $num_fields; $j++) {
 				$schema_insert .= ($j > 0) ? ', ' : '';
 
-				if(!isset($row[$field_names[$j]])) {
+				if (!isset($row[$field_names[$j]])) {
 					//
 					// If there is no data for the column set it to null.
 					// There was a problem here with an extra space causing the
@@ -579,7 +579,7 @@ function output_table_content($content)
 //
 // Begin program proper
 //
-if( isset($_GET['perform']) || isset($_POST['perform']) )
+if (isset($_GET['perform']) || isset($_POST['perform']) )
 {
 	$perform = isset($_POST['perform']) ? $_POST['perform'] : $_GET['perform'];
 
@@ -632,11 +632,11 @@ if( isset($_GET['perform']) || isset($_POST['perform']) )
 
 			$drop = !empty($_POST['drop']) ? (int)$_POST['drop'] : ( !empty($_GET['drop']) ? (int)$_GET['drop'] : 0 );
 
-			if(!empty($additional_tables)) {
-				if(ereg(",", $additional_tables)) {
+			if (!empty($additional_tables)) {
+				if (ereg(",", $additional_tables)) {
 					$additional_tables = split(",", $additional_tables);
 
-					for($i = 0; $i < count($additional_tables); $i++) {
+					for ($i = 0; $i < count($additional_tables); $i++) {
 						$tables[] = trim($additional_tables[$i]);
 					}
 				} else {
@@ -644,7 +644,7 @@ if( isset($_GET['perform']) || isset($_POST['perform']) )
 				}
 			}
 
-			if( !isset($_POST['backupstart']) && !isset($_GET['backupstart'])) {
+			if (!isset($_POST['backupstart']) && !isset($_GET['backupstart'])) {
 				include './page_header_admin.php';
 
 				$template->set_filenames(array(
@@ -672,8 +672,8 @@ if( isset($_GET['perform']) || isset($_POST['perform']) )
 
 				break;
 
-			} else if( !isset($_POST['startdownload']) && !isset($_GET['startdownload']) ) {
-				if(is_array($additional_tables)) {
+			} elseif (!isset($_POST['startdownload']) && !isset($_GET['startdownload']) ) {
+				if (is_array($additional_tables)) {
 					$additional_tables = implode(',', $additional_tables);
 				}
 
@@ -697,17 +697,17 @@ if( isset($_GET['perform']) || isset($_POST['perform']) )
 			header("Pragma: no-cache");
 			$do_gzip_compress = false;
 
-			if( $gzipcompress ) {
+			if ($gzipcompress ) {
 				$phpver = phpversion();
 
-				if($phpver >= "4.0") {
-					if(extension_loaded("zlib")) {
+				if ($phpver >= "4.0") {
+					if (extension_loaded("zlib")) {
 						$do_gzip_compress = TRUE;
 					}
 				}
 			}
 
-			if($do_gzip_compress) {
+			if ($do_gzip_compress) {
 				@ob_start();
 				@ob_implicit_flush(0);
 				header("Content-Type: application/x-gzip; name=\"phpbb_db_backup.sql.gz\"");
@@ -726,11 +726,11 @@ if( isset($_GET['perform']) || isset($_POST['perform']) )
 			echo "#\n# DATE : " .  gmdate("d-m-Y H:i:s", time()) . " GMT\n";
 			echo "#\n";
 
-			if(SQL_LAYER == 'postgresql') {
+			if (SQL_LAYER == 'postgresql') {
 				 echo "\n" . pg_get_sequences("\n", $backup_type);
 			}
 
-			for($i = 0; $i < count($tables); $i++) {
+			for ($i = 0; $i < count($tables); $i++) {
 				$table_name = $tables[$i];
 
 				switch (SQL_LAYER) {
@@ -768,7 +768,7 @@ if( isset($_GET['perform']) || isset($_POST['perform']) )
 			break;
 
 		case 'restore':
-			if(!isset($_POST['restore_start'])) {
+			if (!isset($_POST['restore_start'])) {
 				//
 				// Define Template files...
 				//
@@ -802,7 +802,7 @@ if( isset($_GET['perform']) || isset($_POST['perform']) )
 				$backup_file_tmpname = ($_FILES['backup_file']['tmp_name'] != "none") ? $_FILES['backup_file']['tmp_name'] : "";
 				$backup_file_type = !empty($_FILES['backup_file']['type']) ? $_FILES['backup_file']['type'] : "";
 
-				if($backup_file_tmpname == "" || $backup_file_name == "") {
+				if ($backup_file_tmpname == "" || $backup_file_name == "") {
 					message_die(GENERAL_MESSAGE, $lang['Restore_Error_no_file']);
 				}
 				//
@@ -811,23 +811,23 @@ if( isset($_GET['perform']) || isset($_POST['perform']) )
 				// a hackers attempt at getting us to process a local system
 				// file.
 				//
-				if( file_exists(phpbb_realpath($backup_file_tmpname)) ) {
-					if( preg_match("/^(text\/[a-zA-Z]+)|(application\/(x\-)?gzip(\-compressed)?)|(application\/octet-stream)$/is", $backup_file_type) ) {
-						if( preg_match("/\.gz$/is",$backup_file_name) ) {
+				if (file_exists(phpbb_realpath($backup_file_tmpname)) ) {
+					if (preg_match("/^(text\/[a-zA-Z]+)|(application\/(x\-)?gzip(\-compressed)?)|(application\/octet-stream)$/is", $backup_file_type) ) {
+						if (preg_match("/\.gz$/is",$backup_file_name) ) {
 							$do_gzip_compress = FALSE;
 							$phpver = phpversion();
 
-							if($phpver >= "4.0") {
-								if(extension_loaded("zlib")) {
+							if ($phpver >= "4.0") {
+								if (extension_loaded("zlib")) {
 									$do_gzip_compress = TRUE;
 								}
 							}
 
-							if($do_gzip_compress) {
+							if ($do_gzip_compress) {
 								$gz_ptr = gzopen($backup_file_tmpname, 'rb');
 								$sql_query = "";
 
-								while( !gzeof($gz_ptr) ) {
+								while (!gzeof($gz_ptr) ) {
 									$sql_query .= gzgets($gz_ptr, 100000);
 								}
 							} else {
@@ -847,25 +847,25 @@ if( isset($_GET['perform']) || isset($_POST['perform']) )
 					message_die(GENERAL_ERROR, $lang['Restore_Error_uploading']);
 				}
 
-				if($sql_query != "") {
+				if ($sql_query != "") {
 					// Strip out sql comments...
 					$sql_query = remove_remarks($sql_query);
 					$pieces = split_sql_file($sql_query, ";");
 
 					$sql_count = count($pieces);
 
-					for($i = 0; $i < $sql_count; $i++) {
+					for ($i = 0; $i < $sql_count; $i++) {
 						$sql = trim($pieces[$i]);
 
-						if(!empty($sql) and $sql[0] != "#") {
-							if(VERBOSE == 1) {
+						if (!empty($sql) and $sql[0] != "#") {
+							if (VERBOSE == 1) {
 								echo "Executing: $sql\n<br>";
 								flush();
 							}
 
 							$result = $db->sql_query($sql);
 
-							if(!$result && ( !(SQL_LAYER == 'postgresql' && eregi("drop table", $sql) ) ) ) {
+							if (!$result && ( !(SQL_LAYER == 'postgresql' && eregi("drop table", $sql) ) ) ) {
 								message_die(GENERAL_ERROR, "Error importing backup file", "", __LINE__, __FILE__, $sql);
 							}
 						}

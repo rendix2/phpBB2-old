@@ -22,7 +22,7 @@
 
 define('IN_PHPBB', 1);
 
-if( !empty($setmodules) ) {
+if (!empty($setmodules) ) {
 	$filename = basename(__FILE__);
 	$module['Users']['Permissions'] = $filename . "?mode=user";
 	$module['Groups']['Permissions'] = $filename . "?mode=group";
@@ -93,8 +93,8 @@ function check_auth($type, $key, $u_access, $is_admin)
 {
 	$auth_user = 0;
 
-	if( count($u_access) ) {
-		for($j = 0; $j < count($u_access); $j++) {
+	if (count($u_access) ) {
+		for ($j = 0; $j < count($u_access); $j++) {
 			$result = 0;
 
 			switch($type) {
@@ -232,21 +232,21 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 
 				$forum_access = $forum_auth_level_fields = [];
 
-				while( $row = $db->sql_fetchrow($result) ) {
+				while ($row = $db->sql_fetchrow($result) ) {
 					$forum_access[] = $row;
 				}
 				$db->sql_freeresult($result);
 
-				for($i = 0; $i < count($forum_access); $i++) {
+				for ($i = 0; $i < count($forum_access); $i++) {
 					$forum_id = $forum_access[$i]['forum_id'];
 
-					for($j = 0; $j < count($forum_auth_fields); $j++) {
+					for ($j = 0; $j < count($forum_auth_fields); $j++) {
 						$forum_auth_level_fields[$forum_id][$forum_auth_fields[$j]] = $forum_access[$i][$forum_auth_fields[$j]] == AUTH_ACL;
 					}
 				}
 
-				while( list($forum_id, $value) = @each($_POST['private']) ) {
-					while( list($auth_field, $exists) = @each($forum_auth_level_fields[$forum_id]) ) {
+				while (list($forum_id, $value) = @each($_POST['private']) ) {
+					while (list($auth_field, $exists) = @each($forum_auth_level_fields[$forum_id]) ) {
 						if ($exists) {
 							$change_acl_list[$forum_id][$auth_field] = $value;
 						}
@@ -255,10 +255,10 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 			} else {
 				$change_acl_list = [];
 
-				for($j = 0; $j < count($forum_auth_fields); $j++) {
+				for ($j = 0; $j < count($forum_auth_fields); $j++) {
 					$auth_field = $forum_auth_fields[$j];
 
-					while( list($forum_id, $value) = @each($_POST['private_' . $auth_field]) ) {
+					while (list($forum_id, $value) = @each($_POST['private_' . $auth_field]) ) {
 						$change_acl_list[$forum_id][$auth_field] = $value;
 					}
 				}
@@ -275,7 +275,7 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 
 			$forum_access = [];
 
-			while( $row = $db->sql_fetchrow($result) ) {
+			while ($row = $db->sql_fetchrow($result) ) {
 				$forum_access[] = $row;
 			}
 
@@ -289,7 +289,7 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 
 			$auth_access = [];
 
-			while( $row = $db->sql_fetchrow($result) ) {
+			while ($row = $db->sql_fetchrow($result) ) {
 				$auth_access[$row['forum_id']] = $row;
 			}
 
@@ -299,7 +299,7 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 			$update_acl_status = [];
 			$update_mod_status = [];
 
-			for($i = 0; $i < count($forum_access); $i++) {
+			for ($i = 0; $i < count($forum_access); $i++) {
 				$forum_id = $forum_access[$i]['forum_id'];
 
 				if ( 
@@ -317,10 +317,10 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
                     }
 				}
 
-				for($j = 0; $j < count($forum_auth_fields); $j++) {
+				for ($j = 0; $j < count($forum_auth_fields); $j++) {
 					$auth_field = $forum_auth_fields[$j];
 
-					if( $forum_access[$i][$auth_field] == AUTH_ACL && isset($change_acl_list[$forum_id][$auth_field]) ) {
+					if ($forum_access[$i][$auth_field] == AUTH_ACL && isset($change_acl_list[$forum_id][$auth_field]) ) {
 						if ( ( empty($auth_access[$forum_id]['auth_mod']) && 
 							( isset($auth_access[$forum_id][$auth_field]) && $change_acl_list[$forum_id][$auth_field] != $auth_access[$forum_id][$auth_field] ) || 
 							( !isset($auth_access[$forum_id][$auth_field]) && !empty($change_acl_list[$forum_id][$auth_field]) ) ) ||
@@ -335,7 +335,7 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
                             } elseif (isset($auth_access[$forum_id][$auth_field]) && !empty($update_acl_status[$forum_id][$auth_field])) {
                                 $forum_auth_action[$forum_id] = 'update';
                             }
-						} else if ( ( empty($auth_access[$forum_id]['auth_mod']) &&
+						} elseif ( ( empty($auth_access[$forum_id]['auth_mod']) &&
 							( isset($auth_access[$forum_id][$auth_field]) && $change_acl_list[$forum_id][$auth_field] == $auth_access[$forum_id][$auth_field] ) ) && $forum_auth_action[$forum_id] == 'delete'
                         ) {
 							$forum_auth_action[$forum_id] = 'update';
@@ -349,7 +349,7 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 			//
 			$delete_sql = '';
 
-			while( list($forum_id, $action) = @each($forum_auth_action) ) {
+			while (list($forum_id, $action) = @each($forum_auth_action) ) {
 				if ( $action == 'delete' ) {
 					$delete_sql .= ( ( $delete_sql != '' ) ? ', ' : '' ) . $forum_id;
 				} else {
@@ -384,7 +384,7 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 								AND forum_id = $forum_id";
 					}
 
-					if( !($result = $db->sql_query($sql)) ) {
+					if (!($result = $db->sql_query($sql)) ) {
 						message_die(GENERAL_ERROR, "Couldn't update private forum permissions", "", __LINE__, __FILE__, $sql);
 					}
 				}
@@ -395,7 +395,7 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 					WHERE group_id = $group_id 
 						AND forum_id IN ($delete_sql)";
 
-				if( !($result = $db->sql_query($sql)) ) {
+				if (!($result = $db->sql_query($sql)) ) {
 					message_die(GENERAL_ERROR, "Couldn't delete permission entries", "", __LINE__, __FILE__, $sql);
 				}
 			}
@@ -422,7 +422,7 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 
 		$set_mod = '';
 
-		while( $row = $db->sql_fetchrow($result) ) {
+		while ($row = $db->sql_fetchrow($result) ) {
 			$set_mod .= ( ( $set_mod != '' ) ? ', ' : '' ) . $row['user_id'];
 		}
 
@@ -479,7 +479,7 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 
 		$unset_mod = "";
 
-		while( $row = $db->sql_fetchrow($result) ) {
+		while ($row = $db->sql_fetchrow($result) ) {
 			$unset_mod .= ( ( $unset_mod != '' ) ? ', ' : '' ) . $row['user_id'];
 		}
 
@@ -490,7 +490,7 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 				SET user_level = " . MOD . " 
 				WHERE user_id IN ($set_mod)";
 
-			if( !($result = $db->sql_query($sql)) ) {
+			if (!($result = $db->sql_query($sql)) ) {
 				message_die(GENERAL_ERROR, "Couldn't update user level", "", __LINE__, __FILE__, $sql);
 			}
 		}
@@ -501,7 +501,7 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 				SET user_level = " . USER . " 
 				WHERE user_id IN ($unset_mod)";
 
-			if( !($result = $db->sql_query($sql)) ) {
+			if (!($result = $db->sql_query($sql)) ) {
 				message_die(GENERAL_ERROR, "Couldn't update user level", "", __LINE__, __FILE__, $sql);
 			}
 		}
@@ -549,7 +549,7 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 
 		message_die(GENERAL_MESSAGE, $message);
 	}
-} else if ( ( $mode == 'user' && ( isset($_POST['username']) || $user_id ) ) || ( $mode == 'group' && $group_id ) ) {
+} elseif ( ( $mode == 'user' && ( isset($_POST['username']) || $user_id ) ) || ( $mode == 'group' && $group_id ) ) {
 	if ( isset($_POST['username']) ) {
 		$this_userdata = get_userdata($_POST['username'], true);
 
@@ -574,19 +574,19 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 
 	$forum_access = [];
 
-	while( $row = $db->sql_fetchrow($result) ) {
+	while ($row = $db->sql_fetchrow($result) ) {
 		$forum_access[] = $row;
 	}
 
 	$db->sql_freeresult($result);
 
-	if( empty($adv) ) {
-		for($i = 0; $i < count($forum_access); $i++) {
+	if (empty($adv) ) {
+		for ($i = 0; $i < count($forum_access); $i++) {
 			$forum_id = $forum_access[$i]['forum_id'];
 
 			$forum_auth_level[$forum_id] = AUTH_ALL;
 
-			for($j = 0; $j < count($forum_auth_fields); $j++) {
+			for ($j = 0; $j < count($forum_auth_fields); $j++) {
 				$forum_access[$i][$forum_auth_fields[$j]] . ' :: ';
 
                 if ($forum_access[$i][$forum_auth_fields[$j]] == AUTH_ACL) {
@@ -605,7 +605,7 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 
 	$ug_info = [];
 
-	while( $row = $db->sql_fetchrow($result) ) {
+	while ($row = $db->sql_fetchrow($result) ) {
 		$ug_info[] = $row;
 	}
 
@@ -629,12 +629,12 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 
 	$is_admin = ( $mode == 'user' ) ? ( ( $ug_info[0]['user_level'] == ADMIN && $ug_info[0]['user_id'] != ANONYMOUS ) ? 1 : 0 ) : 0;
 
-	for($i = 0; $i < count($forum_access); $i++) {
+	for ($i = 0; $i < count($forum_access); $i++) {
 		$forum_id = $forum_access[$i]['forum_id'];
 
 		unset($prev_acl_setting);
 
-		for($j = 0; $j < count($forum_auth_fields); $j++) {
+		for ($j = 0; $j < count($forum_auth_fields); $j++) {
 			$key = $forum_auth_fields[$j];
 			$value = $forum_access[$i][$key];
 

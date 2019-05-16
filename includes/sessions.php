@@ -86,7 +86,7 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 			$db->sql_freeresult($result);
 		
 			$enable_autologin = $login = 1;
-		} else if (!$auto_create) {
+		} elseif (!$auto_create) {
 			$sessiondata['autologinid'] = '';
 			$sessiondata['userid'] = $user_id;
 

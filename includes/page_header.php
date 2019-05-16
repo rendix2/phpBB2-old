@@ -39,7 +39,7 @@ if ( $board_config['gzip_compress'] ) {
 		if ( extension_loaded('zlib') ) {
 			ob_start('ob_gzhandler');
 		}
-	} else if ( $phpver > '4.0' ) {
+	} elseif ( $phpver > '4.0' ) {
 		if ( strstr($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') ) {
 			if ( extension_loaded('zlib') ) {
 				$do_gzip_compress = true;
@@ -92,7 +92,7 @@ if (defined('SHOW_ONLINE')) {
 			$user_forum_sql
 		ORDER BY u.username ASC, s.session_ip ASC";
 	
-	if( !($result = $db->sql_query($sql)) ) {
+	if (!($result = $db->sql_query($sql)) ) {
 		message_die(GENERAL_ERROR, 'Could not obtain user/online information', '', __LINE__, __FILE__, $sql);
 	}
 
@@ -102,7 +102,7 @@ if (defined('SHOW_ONLINE')) {
 	$prev_user_id = 0;
 	$prev_user_ip = $prev_session_ip = '';
 
-	while( $row = $db->sql_fetchrow($result) ) {
+	while ($row = $db->sql_fetchrow($result) ) {
 		// User is logged in and therefor not a guest
 		if ( $row['session_logged_in'] ) {
 			// Skip multiple sessions for one user
@@ -112,7 +112,7 @@ if (defined('SHOW_ONLINE')) {
 				if ( $row['user_level'] == ADMIN ) {
 					$row['username'] = '<b>' . $row['username'] . '</b>';
 					$style_color = 'style="color:#' . $theme['fontcolor3'] . '"';
-				} else if ( $row['user_level'] == MOD ) {
+				} elseif ( $row['user_level'] == MOD ) {
 					$row['username'] = '<b>' . $row['username'] . '</b>';
 					$style_color = 'style="color:#' . $theme['fontcolor2'] . '"';
 				}
@@ -174,7 +174,7 @@ if (defined('SHOW_ONLINE')) {
 
 	if ( $total_online_users == 0 ) {
 		$l_t_user_s = $lang['Online_users_zero_total'];
-	} else if ( $total_online_users == 1 ) {
+	} elseif ( $total_online_users == 1 ) {
 		$l_t_user_s = $lang['Online_user_total'];
 	} else {
 		$l_t_user_s = $lang['Online_users_total'];
@@ -265,12 +265,12 @@ if (!isset($nav_links)) {
 $nav_links_html = '';
 $nav_link_proto = '<link rel="%s" href="%s" title="%s" />' . "\n";
 
-while( list($nav_item, $nav_array) = @each($nav_links) ) {
+while (list($nav_item, $nav_array) = @each($nav_links) ) {
 	if ( !empty($nav_array['url']) ) {
 		$nav_links_html .= sprintf($nav_link_proto, $nav_item, append_sid($nav_array['url']), $nav_array['title']);
 	} else {
 		// We have a nested array, used for items like <link rel='chapter'> that can occur more than once.
-		while( list(,$nested_array) = each($nav_array) ) {
+		while (list(,$nested_array) = each($nav_array) ) {
 			$nav_links_html .= sprintf($nav_link_proto, $nav_item, $nested_array['url'], $nested_array['title']);
 		}
 	}

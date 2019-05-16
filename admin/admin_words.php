@@ -20,7 +20,7 @@
  *
  ***************************************************************************/
 
-if( !empty($setmodules) ) {
+if (!empty($setmodules) ) {
 	$file = basename(__FILE__);
 	$module['General']['Word_Censor'] = $file;
 	return;
@@ -62,9 +62,9 @@ if (isset($_GET['mode']) || isset($_POST['mode'])) {
 // Restrict mode input to valid options
 $mode = in_array($mode, array('add', 'edit', 'save', 'delete')) ? $mode : '';
 
-if( $mode != "" )
+if ($mode != "" )
 {
-	if( $mode == "edit" || $mode == "add" )
+	if ($mode == "edit" || $mode == "add" )
 	{
 		$word_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
@@ -73,13 +73,13 @@ if( $mode != "" )
         $word_info = array('word' => '', 'replacement' => '');
 		$s_hidden_fields = '';
 
-		if( $mode == "edit" ) {
-			if( $word_id ) {
+		if ($mode == "edit" ) {
+			if ($word_id ) {
 				$sql = "SELECT * 
 					FROM " . WORDS_TABLE . " 
 					WHERE word_id = $word_id";
 
-				if(!$result = $db->sql_query($sql)) {
+				if (!$result = $db->sql_query($sql)) {
 					message_die(GENERAL_ERROR, "Could not query words table", "Error", __LINE__, __FILE__, $sql);
 				}
 
@@ -108,16 +108,16 @@ if( $mode != "" )
 		$template->pparse("body");
 
 		include './page_footer_admin.php';
-	} else if( $mode == "save" ) {
+	} elseif ($mode == "save" ) {
 		$word_id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
 		$word = isset($_POST['word']) ? trim($_POST['word']) : "";
 		$replacement = isset($_POST['replacement']) ? trim($_POST['replacement']) : "";
 
-		if($word == "" || $replacement == "") {
+		if ($word == "" || $replacement == "") {
 			message_die(GENERAL_MESSAGE, $lang['Must_enter_word']);
 		}
 
-		if( $word_id ) {
+		if ($word_id ) {
 			$sql = "UPDATE " . WORDS_TABLE . " 
 				SET word = '" . str_replace("\'", "''", $word) . "', replacement = '" . str_replace("\'", "''", $replacement) . "' 
 				WHERE word_id = $word_id";
@@ -129,14 +129,14 @@ if( $mode != "" )
 			$message = $lang['Word_added'];
 		}
 
-		if(!$result = $db->sql_query($sql)) {
+		if (!$result = $db->sql_query($sql)) {
 			message_die(GENERAL_ERROR, "Could not insert data into words table", $lang['Error'], __LINE__, __FILE__, $sql);
 		}
 
 		$message .= "<br /><br />" . sprintf($lang['Click_return_wordadmin'], "<a href=\"" . append_sid("admin_words.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
 
 		message_die(GENERAL_MESSAGE, $message);
-	} else if( $mode == "delete" ) {
+	} elseif ($mode == "delete" ) {
         if (isset($_POST['id']) || isset($_GET['id'])) {
             $word_id = isset($_POST['id']) ? $_POST['id'] : $_GET['id'];
             $word_id = (int)$word_id;
@@ -146,18 +146,18 @@ if( $mode != "" )
 
 		$confirm = isset($_POST['confirm']);
 
-		if( $word_id && $confirm ) {
+		if ($word_id && $confirm ) {
 			$sql = "DELETE FROM " . WORDS_TABLE . " 
 				WHERE word_id = $word_id";
 
-			if(!$result = $db->sql_query($sql)) {
+			if (!$result = $db->sql_query($sql)) {
 				message_die(GENERAL_ERROR, "Could not remove data from words table", $lang['Error'], __LINE__, __FILE__, $sql);
 			}
 
 			$message = $lang['Word_removed'] . "<br /><br />" . sprintf($lang['Click_return_wordadmin'], "<a href=\"" . append_sid("admin_words.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
 
 			message_die(GENERAL_MESSAGE, $message);
-		} elseif( $word_id && !$confirm) {
+		} elseif ($word_id && !$confirm) {
 			// Present the confirmation screen to the user
             $template->set_filenames(['body' => 'admin/confirm_body.tpl']);
 
@@ -184,7 +184,7 @@ if( $mode != "" )
 		FROM " . WORDS_TABLE . " 
 		ORDER BY word";
 
-	if( !$result = $db->sql_query($sql) ) {
+	if (!$result = $db->sql_query($sql) ) {
 		message_die(GENERAL_ERROR, "Could not query words table", $lang['Error'], __LINE__, __FILE__, $sql);
 	}
 
@@ -206,7 +206,7 @@ if( $mode != "" )
 		"S_HIDDEN_FIELDS" => '')
 	);
 
-	for($i = 0; $i < $word_count; $i++) {
+	for ($i = 0; $i < $word_count; $i++) {
 		$word = $word_rows[$i]['word'];
 		$replacement = $word_rows[$i]['replacement'];
 		$word_id = $word_rows[$i]['word_id'];

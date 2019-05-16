@@ -173,7 +173,7 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 	$is_admin = ( $userdata['user_level'] == ADMIN && $userdata['session_logged_in'] ) ? TRUE : 0;
 
 	$auth_user = [];
-	for($i = 0; $i < count($auth_fields); $i++) {
+	for ($i = 0; $i < count($auth_fields); $i++) {
 		$key = $auth_fields[$i];
 
 		//
@@ -221,7 +221,7 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 					break;
 			}
 		} else {
-			for($k = 0; $k < count($f_access); $k++) {
+			for ($k = 0; $k < count($f_access); $k++) {
 				$value = $f_access[$k][$key];
 				$f_forum_id = $f_access[$k]['forum_id'];
 				$u_access[$f_forum_id] = isset($u_access[$f_forum_id]) ? $u_access[$f_forum_id] : array();
@@ -266,7 +266,7 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 	if ( $forum_id != AUTH_LIST_ALL ) {
 		$auth_user['auth_mod'] = $userdata['session_logged_in'] ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access, $is_admin) : 0;
 	} else {
-		for($k = 0; $k < count($f_access); $k++) {
+		for ($k = 0; $k < count($f_access); $k++) {
 			$f_forum_id = $f_access[$k]['forum_id'];
 			$u_access[$f_forum_id] = isset($u_access[$f_forum_id]) ? $u_access[$f_forum_id] : array();
 
@@ -282,7 +282,7 @@ function auth_check_user($type, $key, $u_access, $is_admin)
 	$auth_user = 0;
 
 	if ( count($u_access) ) {
-		for($j = 0; $j < count($u_access); $j++) {
+		for ($j = 0; $j < count($u_access); $j++) {
 			$result = 0;
 			switch($type) {
 				case AUTH_ACL:

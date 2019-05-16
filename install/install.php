@@ -425,7 +425,7 @@ else
 	{
 	    $server_name = !empty($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : $_ENV['SERVER_NAME'];
 	}
-	else if (!empty($_SERVER['HTTP_HOST']) || !empty($_ENV['HTTP_HOST']))
+	elseif (!empty($_SERVER['HTTP_HOST']) || !empty($_ENV['HTTP_HOST']))
 	{
 		$server_name = !empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_ENV['HTTP_HOST'];
 	}
@@ -482,7 +482,7 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] == 1 && empty($_POST['upg
 
 	exit;
 }
-else if (!empty($_POST['send_file']) && $_POST['send_file'] == 2)
+elseif (!empty($_POST['send_file']) && $_POST['send_file'] == 2)
 {
 	$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars(stripslashes($_POST['config_data'])) . '" />';
 	$s_hidden_fields .= '<input type="hidden" name="ftp_file" value="1" />';
@@ -517,7 +517,7 @@ else if (!empty($_POST['send_file']) && $_POST['send_file'] == 2)
 	exit;
 
 }
-else if (!empty($_POST['ftp_file']))
+elseif (!empty($_POST['ftp_file']))
 {
 	// Try to connect ...
 	$conn_id = @ftp_connect('localhost');
@@ -603,7 +603,7 @@ else if (!empty($_POST['ftp_file']))
 		exit();
 	}
 }
-else if (empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin_pass1) || empty($dbhost))
+elseif (empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin_pass1) || empty($dbhost))
 {
 	// Ok we haven't installed before so lets work our way through the various
 	// steps of the install process.  This could turn out to be quite a lengty 
@@ -650,7 +650,7 @@ else if (empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin_pa
 	}
 	$lang_select .= '</select>';
 
-	$dbms_select = '<select name="dbms" onchange="if(this.form.upgrade.options[this.form.upgrade.selectedIndex].value == 1){ this.selectedIndex = 0;}">';
+	$dbms_select = '<select name="dbms" onchange="if (this.form.upgrade.options[this.form.upgrade.selectedIndex].value == 1){ this.selectedIndex = 0;}">';
 	while (list($dbms_name, $details) = @each($available_dbms))
 	{
 		$selected = ($dbms_name == $dbms) ? 'selected="selected"' : '';
@@ -849,7 +849,7 @@ else
 				$sql_query = $remove_remarks($sql_query);
 				$sql_query = split_sql_file($sql_query, $delimiter_basic);
 
-				for($i = 0; $i < count($sql_query); $i++)
+				for ($i = 0; $i < count($sql_query); $i++)
 				{
 					if (trim($sql_query[$i]) != '')
 					{

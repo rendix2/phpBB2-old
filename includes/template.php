@@ -95,7 +95,7 @@ class Template {
 		}
 
 		reset($filename_array);
-		while(list($handle, $filename) = each($filename_array))
+		while (list($handle, $filename) = each($filename_array))
 		{
 			$this->files[$handle] = $this->make_filename($filename);
 		}
@@ -389,7 +389,7 @@ class Template {
 					}
 				}
 			}
-			else if (preg_match('#<!-- END (.*?) -->#', $code_lines[$i], $m))
+			elseif (preg_match('#<!-- END (.*?) -->#', $code_lines[$i], $m))
 			{
 				// We have the end of a block.
 				unset($block_names[$block_nesting_level]);

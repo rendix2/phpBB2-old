@@ -22,7 +22,7 @@
 
 define('IN_PHPBB', 1);
 
-if( !empty($setmodules) ) {
+if (!empty($setmodules) ) {
 	$file = basename(__FILE__);
 	$module['Styles']['Add_new'] = "$file?mode=addnew";
 	$module['Styles']['Create_new'] = "$file?mode=create";
@@ -67,15 +67,15 @@ switch( $mode )
 		$install_to = isset($_GET['install_to']) ? urldecode($_GET['install_to']) : $_POST['install_to'];
 		$style_name = isset($_GET['style']) ? urldecode($_GET['style']) : $_POST['style'];
 	
-		if( isset($install_to) ) {
+		if (isset($install_to) ) {
 			include $phpbb_root_path. "templates/" . basename($install_to) . "/theme_info.cfg";
 
 			$template_name = $$install_to;
 			$found = FALSE; 
 			
-			for($i = 0; $i < count($template_name) && !$found; $i++) {
-				if( $template_name[$i]['style_name'] == $style_name ) {
-					while(list($key, $val) = each($template_name[$i])) {
+			for ($i = 0; $i < count($template_name) && !$found; $i++) {
+				if ($template_name[$i]['style_name'] == $style_name ) {
+					while (list($key, $val) = each($template_name[$i])) {
 						$db_fields[] = $key;
 						$db_values[] = str_replace("\'", "''" , $val);
 					}
@@ -84,9 +84,9 @@ switch( $mode )
 					
 			$sql = "INSERT INTO " . THEMES_TABLE . " (";
 
-			for($i = 0; $i < count($db_fields); $i++) {
+			for ($i = 0; $i < count($db_fields); $i++) {
 				$sql .= $db_fields[$i];
-				if($i != (count($db_fields) - 1))
+				if ($i != (count($db_fields) - 1))
 				{
 					$sql .= ", ";
 				}
@@ -95,17 +95,17 @@ switch( $mode )
 
 			$sql .= ") VALUES (";
 
-			for($i = 0; $i < count($db_values); $i++) {
+			for ($i = 0; $i < count($db_values); $i++) {
 				$sql .= "'" . $db_values[$i] . "'";
 
-				if($i != (count($db_values) - 1)) {
+				if ($i != (count($db_values) - 1)) {
 					$sql .= ", ";
 				}
 			}
 
 			$sql .= ")";
 			
-			if( !$result = $db->sql_query($sql) ) {
+			if (!$result = $db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, "Could not insert theme data!", "", __LINE__, __FILE__, $sql);
 			}
 			
@@ -115,13 +115,13 @@ switch( $mode )
 		} else {
 			$installable_themes = [];
 			
-			if( $dir = @opendir($phpbb_root_path. "templates/") ) {
-				while( $sub_dir = @readdir($dir) ) {
-					if( !is_file(phpbb_realpath($phpbb_root_path . 'templates/' .$sub_dir)) && !is_link(phpbb_realpath($phpbb_root_path . 'templates/' .$sub_dir)) && $sub_dir != "." && $sub_dir != ".." && $sub_dir != "CVS" ) {
-						if( @file_exists(@phpbb_realpath($phpbb_root_path. "templates/" . $sub_dir . "/theme_info.cfg")) ) {
+			if ($dir = @opendir($phpbb_root_path. "templates/") ) {
+				while ($sub_dir = @readdir($dir) ) {
+					if (!is_file(phpbb_realpath($phpbb_root_path . 'templates/' .$sub_dir)) && !is_link(phpbb_realpath($phpbb_root_path . 'templates/' .$sub_dir)) && $sub_dir != "." && $sub_dir != ".." && $sub_dir != "CVS" ) {
+						if (@file_exists(@phpbb_realpath($phpbb_root_path. "templates/" . $sub_dir . "/theme_info.cfg")) ) {
 							include $phpbb_root_path. "templates/" . $sub_dir . "/theme_info.cfg";
 							
-							for($i = 0; $i < count($$sub_dir); $i++) {
+							for ($i = 0; $i < count($$sub_dir); $i++) {
 								$working_data = $$sub_dir;
 								
 								$style_name = $working_data[$i]['style_name'];
@@ -130,11 +130,11 @@ switch( $mode )
 									FROM " . THEMES_TABLE . " 
 									WHERE style_name = '" . str_replace("\'", "''", $style_name) . "'";
 
-								if(!$result = $db->sql_query($sql)) {
+								if (!$result = $db->sql_query($sql)) {
 									message_die(GENERAL_ERROR, "Could not query themes table!", "", __LINE__, __FILE__, $sql);
 								}
 
-								if(!$db->sql_numrows($result)) {
+								if (!$db->sql_numrows($result)) {
 									$installable_themes[] = $working_data[$i];
 								}
 							}
@@ -153,7 +153,7 @@ switch( $mode )
 					"L_ACTION" => $lang['Action'])
 				);
 					
-				for($i = 0; $i < count($installable_themes); $i++) {
+				for ($i = 0; $i < count($installable_themes); $i++) {
 					$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 					$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 		
@@ -178,7 +178,7 @@ switch( $mode )
 	case "edit":
 		$submit = isset($_POST['submit']) ? TRUE : 0;
 		
-		if( $submit )
+		if ($submit )
 		{
 			//	
 			// DAMN! Thats alot of data to validate...
@@ -258,12 +258,12 @@ switch( $mode )
 			// Wheeeew! Thank heavens for copy and paste and search and replace :D
 			//
 			
-			if($mode == "edit") {
+			if ($mode == "edit") {
 				$sql = "UPDATE " . THEMES_TABLE . " SET ";
 				$count = 0;
 
-				while(list($key, $val) = each($updated)) {
-					if($count != 0) {
+				while (list($key, $val) = each($updated)) {
+					if ($count != 0) {
 						$sql .= ", ";
 					}
 
@@ -278,7 +278,7 @@ switch( $mode )
 				
 				$sql .= " WHERE themes_id = $style_id";
 				
-				if(!$result = $db->sql_query($sql)) {
+				if (!$result = $db->sql_query($sql)) {
 					message_die(GENERAL_ERROR, "Could not update themes table!", "", __LINE__, __FILE__, $sql);
 				}
 				
@@ -289,18 +289,18 @@ switch( $mode )
 					FROM " . THEMES_NAME_TABLE . " 
 					WHERE themes_id = $style_id";
 
-				if(!$result = $db->sql_query($sql)) {
+				if (!$result = $db->sql_query($sql)) {
 					message_die(GENERAL_ERROR, "Could not get data from themes_name table", "", __LINE__, __FILE__, $sql);
 				}
 				
-				if($db->sql_numrows($result) > 0) {
+				if ($db->sql_numrows($result) > 0) {
 					$sql = "UPDATE " . THEMES_NAME_TABLE . " 
 						SET ";
 
 					$count = 0;
 
-					while(list($key, $val) = each($updated_name)) {
-						if($count != 0) {
+					while (list($key, $val) = each($updated_name)) {
+						if ($count != 0) {
 							$sql .= ", ";
 						}
 			
@@ -316,13 +316,13 @@ switch( $mode )
 					//
 					$sql = "INSERT INTO " . THEMES_NAME_TABLE . " (themes_id, ";
 
-					while(list($key, $val) = each($updated_name)) {
+					while (list($key, $val) = each($updated_name)) {
 						$fields[] = $key;
 						$vals[] = str_replace("\'", "''", $val);
 					}
 
-					for($i = 0; $i < count($fields); $i++) {
-						if($i > 0) {
+					for ($i = 0; $i < count($fields); $i++) {
+						if ($i > 0) {
 							$sql .= ", ";
 						}
 
@@ -331,8 +331,8 @@ switch( $mode )
 					
 					$sql .= ") VALUES ($style_id, ";
 
-					for($i = 0; $i < count($vals); $i++) {
-						if($i > 0) {
+					for ($i = 0; $i < count($vals); $i++) {
+						if ($i > 0) {
 							$sql .= ", ";
 						}
 
@@ -342,7 +342,7 @@ switch( $mode )
 					$sql .= ")";
 				}
 										
-				if(!$result = $db->sql_query($sql)) {
+				if (!$result = $db->sql_query($sql)) {
 					message_die(GENERAL_ERROR, "Could not update themes name table!", "", __LINE__, __FILE__, $sql);
 				}
 							
@@ -357,11 +357,11 @@ switch( $mode )
 					FROM " . THEMES_TABLE . " 
 					WHERE style_name = '" . str_replace("\'", "''", $updated['style_name']) . "'";
 
-				if(!$result = $db->sql_query($sql)) {
+				if (!$result = $db->sql_query($sql)) {
 					message_die(GENERAL_ERROR, "Could not query themes table", "", __LINE__, __FILE__, $sql);
 				}
 				
-				if($db->sql_numrows($result)) {
+				if ($db->sql_numrows($result)) {
 					message_die(GENERAL_ERROR, $lang['Style_exists'], $lang['Error']);
 				}
 
@@ -379,7 +379,7 @@ switch( $mode )
 					INTO " . THEMES_TABLE . " (";
 
                 for ($i = 0; $i < count($field_names); $i++) {
-					if($i != 0) {
+					if ($i != 0) {
 						$sql .= ", ";
 					}
 
@@ -414,8 +414,8 @@ switch( $mode )
 					$vals[] = $val;
 				}
 
-				for($i = 0; $i < count($fields); $i++) {
-					if($i > 0) {
+				for ($i = 0; $i < count($fields); $i++) {
+					if ($i > 0) {
 						$sql .= ", ";
 					}
 
@@ -424,8 +424,8 @@ switch( $mode )
 				
 				$sql .= ") VALUES ($style_id, ";
 
-				for($i = 0; $i < count($vals); $i++) {
-					if($i > 0) {
+				for ($i = 0; $i < count($vals); $i++) {
+					if ($i > 0) {
 					    $sql .= ", ";
 					}
 
@@ -434,7 +434,7 @@ switch( $mode )
 				
 				$sql .= ")";
 										
-				if(!$result = $db->sql_query($sql)) {
+				if (!$result = $db->sql_query($sql)) {
 					message_die(GENERAL_ERROR, "Could not insert themes name table!", "", __LINE__, __FILE__, $sql);
 				}
 				
@@ -443,7 +443,7 @@ switch( $mode )
 				message_die(GENERAL_MESSAGE, $message);
 			}
 		} else {
-			if($mode == "edit") {
+			if ($mode == "edit") {
 				$themes_title = $lang['Edit_theme'];
 				$themes_explain = $lang['Edit_theme_explain'];
 				
@@ -458,12 +458,12 @@ switch( $mode )
 					FROM " . THEMES_TABLE . " 
 					WHERE themes_id = $style_id";
 
-				if(!$result = $db->sql_query($sql)) {
+				if (!$result = $db->sql_query($sql)) {
 					message_die(GENERAL_ERROR, "Could not get data from themes table", "", __LINE__, __FILE__, $sql);
 				}
 				
 				if ( $selected_values = $db->sql_fetchrow($result) ) {
-					while(list($key, $val) = @each($selected_values)) {
+					while (list($key, $val) = @each($selected_values)) {
 						$selected[$key] = $val;
 					}
 				}
@@ -475,7 +475,7 @@ switch( $mode )
 					FROM " . THEMES_NAME_TABLE . " 
 					WHERE themes_id = $style_id";
 
-				if(!$result = $db->sql_query($sql)) {
+				if (!$result = $db->sql_query($sql)) {
 					message_die(GENERAL_ERROR, "Could not get data from themes name table", "", __LINE__, __FILE__, $sql);
 				}
 
@@ -497,7 +497,7 @@ switch( $mode )
                 $s_template_select = '<select name="template_name">';
 
                 while ($file = @readdir($dir)) {
-                    if( !is_file(phpbb_realpath($phpbb_root_path . 'templates/' . $file)) && !is_link(phpbb_realpath($phpbb_root_path . 'templates/' . $file)) && $file != "." && $file != ".." && $file != "CVS" ) {
+                    if (!is_file(phpbb_realpath($phpbb_root_path . 'templates/' . $file)) && !is_link(phpbb_realpath($phpbb_root_path . 'templates/' . $file)) && $file != "." && $file != ".." && $file != "CVS" ) {
                         if ($file == $selected['template_name']) {
                             $s_template_select .= '<option value="' . $file . '" selected="selected">' . $file . "</option>\n";
                         } else {
@@ -644,20 +644,20 @@ switch( $mode )
 		break;
 
 	case "export";
-		if($_POST['export_template']) {
+		if ($_POST['export_template']) {
 			$template_name = $_POST['export_template'];
 
 			$sql = "SELECT * 
 				FROM " . THEMES_TABLE . " 
 				WHERE template_name = '" . str_replace("\'", "''", $template_name) . "'";
 
-			if(!$result = $db->sql_query($sql)) {
+			if (!$result = $db->sql_query($sql)) {
 				message_die(GENERAL_ERROR, "Could not get theme data for selected template", "", __LINE__, __FILE__, $sql);
 			}
 			
 			$theme_rowset = $db->sql_fetchrowset($result);
 			
-			if( count($theme_rowset) == 0 ) {
+			if (count($theme_rowset) == 0 ) {
 				message_die(GENERAL_MESSAGE, $lang['No_themes']);
 			}
 			
@@ -679,7 +679,7 @@ switch( $mode )
 
 			$fp = @fopen($phpbb_root_path . 'templates/' . basename($template_name) . '/theme_info.cfg', 'w');
 
-			if( !$fp ) {
+			if (!$fp ) {
 				//
 				// Unable to open the file writeable do something here as an attempt
 				// to get around that...
@@ -707,7 +707,7 @@ switch( $mode )
 
 			message_die(GENERAL_MESSAGE, $message);
 
-		} else if($_POST['send_file']) {
+		} elseif ($_POST['send_file']) {
 			
 			header("Content-Type: text/x-delimtext; name=\"theme_info.cfg\"");
 			header("Content-disposition: attachment; filename=theme_info.cfg");
@@ -716,10 +716,10 @@ switch( $mode )
 		} else {
             $template->set_filenames(["body" => "admin/styles_exporter.tpl"]);
 
-            if( $dir = @opendir($phpbb_root_path . 'templates/') ) {
+            if ($dir = @opendir($phpbb_root_path . 'templates/') ) {
 				$s_template_select = '<select name="export_template">';
-				while( $file = @readdir($dir) ) {
-					if( !is_file(phpbb_realpath($phpbb_root_path . 'templates/' . $file)) && !is_link(phpbb_realpath($phpbb_root_path . 'templates/' .$file)) && $file != "." && $file != ".." && $file != "CVS" ) {
+				while ($file = @readdir($dir) ) {
+					if (!is_file(phpbb_realpath($phpbb_root_path . 'templates/' . $file)) && !is_link(phpbb_realpath($phpbb_root_path . 'templates/' .$file)) && $file != "." && $file != ".." && $file != "CVS" ) {
 						$s_template_select .= '<option value="' . $file . '">' . $file . "</option>\n";
 					}
 				}
@@ -748,8 +748,8 @@ switch( $mode )
 	case "delete":
 		$style_id = isset($_GET['style_id']) ? (int)$_GET['style_id'] : (int)$_POST['style_id'];
 		
-		if( !$confirm ) {
-			if($style_id == $board_config['default_style']) {
+		if (!$confirm ) {
+			if ($style_id == $board_config['default_style']) {
 				message_die(GENERAL_MESSAGE, $lang['Cannot_remove_style']);
 			}
 			
@@ -783,7 +783,7 @@ switch( $mode )
 			$sql = "DELETE FROM " . THEMES_TABLE . " 
 				WHERE themes_id = $style_id";
 
-			if(!$result = $db->sql_query($sql, BEGIN_TRANSACTION)) {
+			if (!$result = $db->sql_query($sql, BEGIN_TRANSACTION)) {
 				message_die(GENERAL_ERROR, "Could not remove style data!", "", __LINE__, __FILE__, $sql);
 			}
 			
@@ -800,7 +800,7 @@ switch( $mode )
 				SET user_style = " . $board_config['default_style'] . " 
 				WHERE user_style = $style_id";
 
-			if(!$result = $db->sql_query($sql, END_TRANSACTION)) {
+			if (!$result = $db->sql_query($sql, END_TRANSACTION)) {
 				message_die(GENERAL_ERROR, "Could not update user style information", "", __LINE__, __FILE__, $sql);
 			}
 			
@@ -833,7 +833,7 @@ switch( $mode )
 			"L_DELETE" => $lang['Delete'])
 		);
 					
-		for($i = 0; $i < count($style_rowset); $i++) {
+		for ($i = 0; $i < count($style_rowset); $i++) {
 			$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 

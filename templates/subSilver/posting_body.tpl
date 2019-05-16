@@ -118,7 +118,7 @@ function bbfontstyle(bbopen, bbclose) {
 		txtarea.focus();
 		return;
 	}
-	else if (txtarea.selectionEnd && (txtarea.selectionEnd - txtarea.selectionStart > 0))
+	elseif (txtarea.selectionEnd && (txtarea.selectionEnd - txtarea.selectionStart > 0))
 	{
 		mozWrap(txtarea, bbopen, bbclose);
 		return;
@@ -163,7 +163,7 @@ function bbstyle(bbnumber) {
 			return;
 		}
 	}
-	else if (txtarea.selectionEnd && (txtarea.selectionEnd - txtarea.selectionStart > 0))
+	elseif (txtarea.selectionEnd && (txtarea.selectionEnd - txtarea.selectionStart > 0))
 	{
 		mozWrap(txtarea, bbtags[bbnumber], bbtags[bbnumber+1]);
 		return;

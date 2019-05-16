@@ -8,7 +8,7 @@ function checkForm(formObj) {
 	if (formObj.message.value.length < 2) {
 		formErrors = "{L_EMPTY_MESSAGE_EMAIL}";
 	}
-	else if ( formObj.subject.value.length < 2)
+	elseif ( formObj.subject.value.length < 2)
 	{
 		formErrors = "{L_EMPTY_SUBJECT_EMAIL}";
 	}

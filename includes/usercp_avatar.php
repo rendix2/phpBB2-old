@@ -68,7 +68,7 @@ function user_avatar_gallery($mode, &$error, &$error_msg, $avatar_filename, $ava
 	$avatar_filename = phpbb_ltrim(basename($avatar_filename), "'");
 	$avatar_category = phpbb_ltrim(basename($avatar_category), "'");
 	
-	if(!preg_match('/(\.gif$|\.png$|\.jpg|\.jpeg)$/is', $avatar_filename)) {
+	if (!preg_match('/(\.gif$|\.png$|\.jpg|\.jpeg)$/is', $avatar_filename)) {
 		return '';
 	}
 
@@ -135,7 +135,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 
 		unset($avatar_data);
 
-		while( !@feof($fsock) ) {
+		while (!@feof($fsock) ) {
 			$avatar_data .= @fread($fsock, $board_config['avatar_filesize']);
 		}
 		@fclose($fsock);
@@ -172,7 +172,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 			$error = true;
 			$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $l_avatar_size : $l_avatar_size;
 		}
-	} else if ( file_exists(@phpbb_realpath($avatar_filename)) && preg_match('/\.(jpg|jpeg|gif|png)$/i', $avatar_realname) ) {
+	} elseif ( file_exists(@phpbb_realpath($avatar_filename)) && preg_match('/\.(jpg|jpeg|gif|png)$/i', $avatar_realname) ) {
 		if ( $avatar_filesize <= $board_config['avatar_filesize'] && $avatar_filesize > 0 ) {
 			preg_match('#image\/[x\-]*([a-z]+)#', $avatar_filetype, $avatar_filetype);
 			$avatar_filetype = $avatar_filetype[1];
@@ -236,7 +236,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 			user_avatar_delete($current_type, $current_avatar);
 		}
 
-		if( $avatar_mode == 'remote' ) {
+		if ($avatar_mode == 'remote' ) {
 			@copy($tmp_filename, './' . $board_config['avatar_path'] . "/$new_filename");
 			@unlink($tmp_filename);
 		} else {
@@ -278,22 +278,22 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 
 	$avatar_images = [];
 
-	while( $file = @readdir($dir) ) {
-		if( $file != '.' && $file != '..' && !is_file($board_config['avatar_gallery_path'] . '/' . $file) && !is_link($board_config['avatar_gallery_path'] . '/' . $file) )
+	while ($file = @readdir($dir) ) {
+		if ($file != '.' && $file != '..' && !is_file($board_config['avatar_gallery_path'] . '/' . $file) && !is_link($board_config['avatar_gallery_path'] . '/' . $file) )
 		{
 			$sub_dir = @opendir($board_config['avatar_gallery_path'] . '/' . $file);
 
 			$avatar_row_count = 0;
 			$avatar_col_count = 0;
 
-			while( $sub_file = @readdir($sub_dir) ) {
-				if( preg_match('/(\.gif$|\.png$|\.jpg|\.jpeg)$/is', $sub_file) ) {
+			while ($sub_file = @readdir($sub_dir) ) {
+				if (preg_match('/(\.gif$|\.png$|\.jpg|\.jpeg)$/is', $sub_file) ) {
 					$avatar_images[$file][$avatar_row_count][$avatar_col_count] = $sub_file; 
 					$avatar_name[$file][$avatar_row_count][$avatar_col_count] = ucfirst(str_replace("_", " ", preg_replace('/^(.*)\..*$/', '\1', $sub_file)));
 
 					$avatar_col_count++;
 
-					if( $avatar_col_count == 5 ) {
+					if ($avatar_col_count == 5 ) {
 						$avatar_row_count++;
 						$avatar_col_count = 0;
 					}
@@ -307,7 +307,7 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 	@ksort($avatar_images);
 	@reset($avatar_images);
 
-	if( empty($category) ) {
+	if (empty($category) ) {
 		list($category, ) = each($avatar_images);
 	}
 
@@ -315,10 +315,10 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 
 	$s_categories = '<select name="avatarcategory">';
 
-	while( list($key) = each($avatar_images) ) {
+	while (list($key) = each($avatar_images) ) {
 		$selected = ( $key == $category ) ? ' selected="selected"' : '';
 
-		if( count($avatar_images[$key]) ) {
+		if (count($avatar_images[$key]) ) {
 			$s_categories .= '<option value="' . $key . '"' . $selected . '>' . ucfirst($key) . '</option>';
 		}
 	}
@@ -326,12 +326,12 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 	$s_categories .= '</select>';
 
 	$s_colspan = 0;
-	for($i = 0; $i < count($avatar_images[$category]); $i++) {
+	for ($i = 0; $i < count($avatar_images[$category]); $i++) {
 		$template->assign_block_vars("avatar_row", []);
 
 		$s_colspan = max($s_colspan, count($avatar_images[$category][$i]));
 
-		for($j = 0; $j < count($avatar_images[$category][$i]); $j++) {
+		for ($j = 0; $j < count($avatar_images[$category][$i]); $j++) {
 			$template->assign_block_vars('avatar_row.avatar_column', array(
 				"AVATAR_IMAGE" => $board_config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_images[$category][$i][$j], 
 				"AVATAR_NAME" => $avatar_name[$category][$i][$j])
@@ -347,7 +347,7 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 
 	$s_hidden_vars = '<input type="hidden" name="sid" value="' . $session_id . '" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="avatarcatname" value="' . $category . '" />';
 
-	for($i = 0; $i < count($params); $i++) {
+	for ($i = 0; $i < count($params); $i++) {
 		$s_hidden_vars .= '<input type="hidden" name="' . $params[$i] . '" value="' . str_replace('"', '&quot;', $$params[$i]) . '" />';
 	}
 	

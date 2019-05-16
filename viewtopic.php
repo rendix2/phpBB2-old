@@ -32,7 +32,7 @@ include $phpbb_root_path . 'includes/bbcode.php';
 $topic_id = $post_id = 0;
 if ( isset($_GET[POST_TOPIC_URL]) ) {
 	$topic_id = (int)$_GET[POST_TOPIC_URL];
-} else if ( isset($_GET['topic']) ) {
+} elseif ( isset($_GET['topic']) ) {
 	$topic_id = (int)$_GET['topic'];
 }
 
@@ -91,7 +91,7 @@ if ( isset($_GET['view']) && empty($_GET[POST_POST_URL]) ) {
 		}
 
 		redirect(append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id", true));
-	} else if ( $_GET['view'] == 'next' || $_GET['view'] == 'previous' ) {
+	} elseif ( $_GET['view'] == 'next' || $_GET['view'] == 'previous' ) {
 		$sql_condition = ( $_GET['view'] == 'next' ) ? '>' : '<';
 		$sql_ordering = ( $_GET['view'] == 'next' ) ? 'ASC' : 'DESC';
 
@@ -160,7 +160,7 @@ init_userprefs($userdata);
 $is_auth = [];
 $is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_topic_data);
 
-if( !$is_auth['auth_view'] || !$is_auth['auth_read'] ) {
+if (!$is_auth['auth_view'] || !$is_auth['auth_read'] ) {
 	if ( !$userdata['session_logged_in'] ) {
 		$redirect = $post_id ? POST_POST_URL . "=$post_id" : POST_TOPIC_URL . "=$topic_id";
 		$redirect .= $start ? "&start=$start" : '';
@@ -187,7 +187,7 @@ if ($post_id) {
 //
 // Is user watching this thread?
 //
-if( $userdata['session_logged_in'] ) {
+if ($userdata['session_logged_in'] ) {
 	$can_watch_topic = TRUE;
 
 	$sql = "SELECT notify_status
@@ -277,7 +277,7 @@ if( $userdata['session_logged_in'] ) {
 $previous_days = [0, 1, 7, 14, 30, 90, 180, 364];
 $previous_days_text = [$lang['All_Posts'], $lang['1_Day'], $lang['7_Days'], $lang['2_Weeks'], $lang['1_Month'], $lang['3_Months'], $lang['6_Months'], $lang['1_Year']];
 
-if( !empty($_POST['postdays']) || !empty($_GET['postdays']) ) {
+if (!empty($_POST['postdays']) || !empty($_GET['postdays']) ) {
 	$post_days =  !empty($_POST['postdays']) ? (int)$_POST['postdays'] : (int)$_GET['postdays'];
 	$min_post_time = time() - ($post_days * 86400);
 
@@ -307,7 +307,7 @@ if( !empty($_POST['postdays']) || !empty($_GET['postdays']) ) {
 
 $select_post_days = '<select name="postdays">';
 
-for($i = 0; $i < count($previous_days); $i++) {
+for ($i = 0; $i < count($previous_days); $i++) {
 	$selected = ($post_days == $previous_days[$i]) ? ' selected="selected"' : '';
 	$select_post_days .= '<option value="' . $previous_days[$i] . '"' . $selected . '>' . $previous_days_text[$i] . '</option>';
 }
@@ -430,7 +430,7 @@ if (isset($_GET['highlight'])) {
 	// Split words and phrases
 	$words = explode(' ', trim(htmlspecialchars($_GET['highlight'])));
 
-	for($i = 0; $i < count($words); $i++) {
+	for ($i = 0; $i < count($words); $i++) {
 		if (trim($words[$i]) != '') {
 			$highlight_match .= (($highlight_match != '') ? '|' : '') . str_replace('*', '\w*', preg_quote($words[$i], '#'));
 		}
@@ -482,7 +482,7 @@ if ( $userdata['session_logged_in'] ) {
 
 	if ( !empty($tracking_topics[$topic_id]) && !empty($tracking_forums[$forum_id]) ) {
 		$topic_last_read = ( $tracking_topics[$topic_id] > $tracking_forums[$forum_id] ) ? $tracking_topics[$topic_id] : $tracking_forums[$forum_id];
-	} else if ( !empty($tracking_topics[$topic_id]) || !empty($tracking_forums[$forum_id]) ) {
+	} elseif ( !empty($tracking_topics[$topic_id]) || !empty($tracking_forums[$forum_id]) ) {
 		$topic_last_read = !empty($tracking_topics[$topic_id]) ? $tracking_topics[$topic_id] : $tracking_forums[$forum_id];
 	} else {
 		$topic_last_read = $userdata['user_lastvisit'];
@@ -654,14 +654,14 @@ if ( !empty($forum_topic_data['topic_vote']) ) {
 
 			$vote_results_sum = 0;
 
-			for($i = 0; $i < $vote_options; $i++) {
+			for ($i = 0; $i < $vote_options; $i++) {
 				$vote_results_sum += $vote_info[$i]['vote_result'];
 			}
 
 			$vote_graphic = 0;
 			$vote_graphic_max = count($images['voting_graphic']);
 
-			for($i = 0; $i < $vote_options; $i++) {
+			for ($i = 0; $i < $vote_options; $i++) {
 				$vote_percent = ( $vote_results_sum > 0 ) ? $vote_info[$i]['vote_result'] / $vote_results_sum : 0;
 				$vote_graphic_length = round($vote_percent * $board_config['vote_graphic_length']);
 
@@ -692,7 +692,7 @@ if ( !empty($forum_topic_data['topic_vote']) ) {
 				'pollbox' => 'viewtopic_poll_ballot.tpl')
 			);
 
-			for($i = 0; $i < $vote_options; $i++) {
+			for ($i = 0; $i < $vote_options; $i++) {
 				if ( count($orig_word) ) {
 					$vote_info[$i]['vote_option_text'] = preg_replace($orig_word, $replacement_word, $vote_info[$i]['vote_option_text']);
 				}
@@ -745,7 +745,7 @@ if ( !$db->sql_query($sql) ) {
 // Okay, let's do the loop, yeah come on baby let's do the loop
 // and it goes like this ...
 //
-for($i = 0; $i < $total_posts; $i++) {
+for ($i = 0; $i < $total_posts; $i++) {
 	$poster_id = $postrow[$i]['user_id'];
 	$poster = ( $poster_id == ANONYMOUS ) ? $lang['Guest'] : $postrow[$i]['username'];
 
@@ -795,15 +795,15 @@ for($i = 0; $i < $total_posts; $i++) {
 	{
 	    // WHAT WAS THERE???????
 	}
-	else if ( $postrow[$i]['user_rank'] ) {
-		for($j = 0; $j < count($ranksrow); $j++) {
+	elseif ( $postrow[$i]['user_rank'] ) {
+		for ($j = 0; $j < count($ranksrow); $j++) {
 			if ( $postrow[$i]['user_rank'] == $ranksrow[$j]['rank_id'] && $ranksrow[$j]['rank_special'] ) {
 				$poster_rank = $ranksrow[$j]['rank_title'];
 				$rank_image = $ranksrow[$j]['rank_image'] ? '<img src="' . $ranksrow[$j]['rank_image'] . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
 			}
 		}
 	} else {
-		for($j = 0; $j < count($ranksrow); $j++) {
+		for ($j = 0; $j < count($ranksrow); $j++) {
 			if ( $postrow[$i]['user_posts'] >= $ranksrow[$j]['rank_min'] && !$ranksrow[$j]['rank_special'] ) {
 				$poster_rank = $ranksrow[$j]['rank_title'];
 				$rank_image = $ranksrow[$j]['rank_image'] ? '<img src="' . $ranksrow[$j]['rank_image'] . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';

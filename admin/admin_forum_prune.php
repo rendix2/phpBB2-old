@@ -40,7 +40,7 @@ require $phpbb_root_path . 'includes/functions_admin.php';
 //
 // Get the forum ID for pruning
 //
-if( isset($_GET[POST_FORUM_URL]) || isset($_POST[POST_FORUM_URL]) )
+if (isset($_GET[POST_FORUM_URL]) || isset($_POST[POST_FORUM_URL]) )
 {
 	$forum_id = isset($_POST[POST_FORUM_URL]) ? $_POST[POST_FORUM_URL] : $_GET[POST_FORUM_URL];
 
@@ -63,13 +63,13 @@ $sql = "SELECT f.*
 	$forum_sql
 	ORDER BY c.cat_order ASC, f.forum_order ASC";
 
-if( !($result = $db->sql_query($sql)) ) {
+if (!($result = $db->sql_query($sql)) ) {
 	message_die(GENERAL_ERROR, 'Could not obtain list of forums for pruning', '', __LINE__, __FILE__, $sql);
 }
 
 $forum_rows = [];
 
-while( $row = $db->sql_fetchrow($result) )
+while ($row = $db->sql_fetchrow($result) )
 {
 	$forum_rows[] = $row;
 }
@@ -77,7 +77,7 @@ while( $row = $db->sql_fetchrow($result) )
 //
 // Check for submit to be equal to Prune. If so then proceed with the pruning.
 //
-if( isset($_POST['doprune']) ) {
+if (isset($_POST['doprune']) ) {
 	$prunedays = isset($_POST['prunedays']) ? (int)$_POST['prunedays'] : 0;
 
 	// Convert days to seconds for timestamp functions...
@@ -85,7 +85,7 @@ if( isset($_POST['doprune']) ) {
 
     $template->set_filenames(['body' => 'admin/forum_prune_result_body.tpl']);
 
-    for($i = 0; $i < count($forum_rows); $i++) {
+    for ($i = 0; $i < count($forum_rows); $i++) {
 		$p_result = prune($forum_rows[$i]['forum_id'], $prunedate);
 		sync('forum', $forum_rows[$i]['forum_id']);
 	
@@ -113,7 +113,7 @@ if( isset($_POST['doprune']) ) {
 	// If they haven't selected a forum for pruning yet then
 	// display a select box to use for pruning.
 	//
-	if( empty($_POST[POST_FORUM_URL]) ) {
+	if (empty($_POST[POST_FORUM_URL]) ) {
 		//
 		// Output a selection table if no forum id has been specified.
 		//
@@ -122,7 +122,7 @@ if( isset($_POST['doprune']) ) {
         $select_list = '<select name="' . POST_FORUM_URL . '">';
 		$select_list .= '<option value="-1">' . $lang['All_Forums'] . '</option>';
 
-		for($i = 0; $i < count($forum_rows); $i++) {
+		for ($i = 0; $i < count($forum_rows); $i++) {
 			$select_list .= '<option value="' . $forum_rows[$i]['forum_id'] . '">' . $forum_rows[$i]['forum_name'] . '</option>';
 		}
 

@@ -76,7 +76,7 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 		$mode = 'editgroup';
 		$template->assign_block_vars('group_edit', array());
 
-	} else if ( isset($_POST['new']) ) {
+	} elseif ( isset($_POST['new']) ) {
 		$group_info = [
 			'group_name'        => '',
 			'group_description' => '',
@@ -153,7 +153,7 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 
 	$template->pparse('body');
 
-} else if ( isset($_POST['group_update']) ) {
+} elseif ( isset($_POST['group_update']) ) {
 	//
 	// Ok, they are submitting a group, let's save the data based on if it's new or editing
 	//
@@ -239,7 +239,7 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 
 		if ( $group_name == '' ) {
 			message_die(GENERAL_MESSAGE, $lang['No_group_name']);
-		} else if ( $group_moderator == '' ) {
+		} elseif ( $group_moderator == '' ) {
 			message_die(GENERAL_MESSAGE, $lang['No_group_moderator']);
 		}
 		
@@ -250,7 +250,7 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 			message_die(GENERAL_MESSAGE, $lang['No_group_moderator']);
 		}
 				
-		if( $mode == "editgroup" ) {
+		if ($mode == "editgroup" ) {
 			$sql = "SELECT *
 				FROM " . GROUPS_TABLE . "
 				WHERE group_single_user <> " . TRUE . "
@@ -260,7 +260,7 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 				message_die(GENERAL_ERROR, 'Error getting group information', '', __LINE__, __FILE__, $sql);
 			}
 
-			if( !($group_info = $db->sql_fetchrow($result)) ) {
+			if (!($group_info = $db->sql_fetchrow($result)) ) {
 				message_die(GENERAL_MESSAGE, $lang['Group_not_exist']);
 			}
 		
@@ -305,7 +305,7 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 			$message = $lang['Updated_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . append_sid("admin_groups.php") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');;
 
 			message_die(GENERAL_MESSAGE, $message);
-		} else if( $mode == 'newgroup' ) {
+		} elseif ($mode == 'newgroup' ) {
 			$sql = "INSERT INTO " . GROUPS_TABLE . " (group_type, group_name, group_description, group_moderator, group_single_user) 
 				VALUES ($group_type, '" . str_replace("\'", "''", $group_name) . "', '" . str_replace("\'", "''", $group_description) . "', $group_moderator,	'0')";
 

@@ -42,9 +42,9 @@ if ( isset($_GET['mode']) || isset($_POST['mode']) ) {
 	$mode = 'joined';
 }
 
-if(isset($_POST['order'])) {
+if (isset($_POST['order'])) {
     $sort_order = ($_POST['order'] == 'ASC') ? 'ASC' : 'DESC';
-} else if(isset($_GET['order'])) {
+} elseif (isset($_GET['order'])) {
     $sort_order = ($_GET['order'] == 'ASC') ? 'ASC' : 'DESC';
 } else {
 	$sort_order = 'ASC';
@@ -69,7 +69,7 @@ $select_sort_mode = '<select name="mode">';
 
 $count_mode_type_text = count($mode_types_text);
 
-for($i = 0; $i < $count_mode_type_text; $i++) {
+for ($i = 0; $i < $count_mode_type_text; $i++) {
 	$selected = ( $mode == $mode_types[$i] ) ? ' selected="selected"' : '';
 	$select_sort_mode .= '<option value="' . $mode_types[$i] . '"' . $selected . '>' . $mode_types_text[$i] . '</option>';
 }
@@ -77,7 +77,7 @@ for($i = 0; $i < $count_mode_type_text; $i++) {
 $select_sort_mode .= '</select>';
 $select_sort_order = '<select name="order">';
 
-if($sort_order == 'ASC') {
+if ($sort_order == 'ASC') {
 	$select_sort_order .= '<option value="ASC" selected="selected">' . $lang['Sort_Ascending'] . '</option><option value="DESC">' . $lang['Sort_Descending'] . '</option>';
 } else {
 	$select_sort_order .= '<option value="ASC">' . $lang['Sort_Ascending'] . '</option><option value="DESC" selected="selected">' . $lang['Sort_Descending'] . '</option>';
@@ -151,7 +151,7 @@ $sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user
 	WHERE user_id <> " . ANONYMOUS . "
 	ORDER BY $order_by";
 
-if( !($result = $db->sql_query($sql)) ) {
+if (!($result = $db->sql_query($sql)) ) {
 	message_die(GENERAL_ERROR, 'Could not query users', '', __LINE__, __FILE__, $sql);
 }
 
