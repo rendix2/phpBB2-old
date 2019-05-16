@@ -38,7 +38,6 @@ if (!empty($setmodules) ) {
 // Check if the user has cancled a confirmation message.
 //
 $phpbb_root_path = "./../";
-require $phpbb_root_path . 'extension.inc';
 
 $confirm = (isset($_POST['confirm']) || isset($_POST['confirm'])) ? TRUE : FALSE;
 $cancel = (isset($_POST['cancel']) || isset($_POST['cancel'])) ? TRUE : FALSE;

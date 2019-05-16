@@ -24,6 +24,9 @@ if ( !defined('IN_PHPBB') )
 	die("Hacking attempt");
 }
 
+// i merged extension.in into this file.
+$starttime = 0;
+
 //
 error_reporting  (E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
 set_magic_quotes_runtime(0); // Disable magic_quotes_runtime

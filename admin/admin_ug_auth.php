@@ -37,7 +37,6 @@ $no_page_header = TRUE;
 
 $phpbb_root_path = "./../";
 
-require $phpbb_root_path . 'extension.inc';
 require './pagestart.php';
 
 $params = ['mode' => 'mode', 'user_id' => POST_USERS_URL, 'group_id' => POST_GROUPS_URL, 'adv' => 'adv'];

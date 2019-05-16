@@ -37,8 +37,6 @@ if (!empty($setmodules) ) {
 
 $phpbb_root_path = "./../";
 
-require $phpbb_root_path . 'extension.inc';
-
 $cancel = ( isset($_POST['cancel']) || isset($_POST['cancel']) ) ? true : false;
 $no_page_header = $cancel;
 

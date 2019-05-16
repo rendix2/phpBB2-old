@@ -34,7 +34,6 @@ if ( !empty($setmodules) ) {
 //
 $phpbb_root_path = './../';
 
-require $phpbb_root_path . 'extension.inc';
 require './pagestart.php';
 
 //

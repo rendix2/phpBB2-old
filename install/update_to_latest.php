@@ -43,7 +43,7 @@ function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 
 define('IN_PHPBB', 1);
 $phpbb_root_path = './../';
-include $phpbb_root_path . 'extension.inc';
+
 include $phpbb_root_path . 'config.php';
 if (!isset($dbms))
 {

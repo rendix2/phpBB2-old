@@ -27,7 +27,7 @@ define('IN_PHPBB', 1);
 //
 $no_page_header = TRUE;
 $phpbb_root_path = "./../";
-require $phpbb_root_path . 'extension.inc';
+
 require './pagestart.php';
 
 // ---------------

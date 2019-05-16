@@ -32,7 +32,6 @@ if ( !defined('INSTALLING') )
 	// If we are being called from the install script then we don't need these
 	// as they are already included.
 	//
-	include $phpbb_root_path . 'extension.inc';
 	include $phpbb_root_path . 'config.php';
 	include $phpbb_root_path . 'includes/constants.php';
 	include $phpbb_root_path . 'includes/functions.php';

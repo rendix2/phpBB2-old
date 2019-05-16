@@ -311,7 +311,6 @@ define('IN_PHPBB', true);
 // Uncomment the following line to completely disable the ftp option...
 // define('NO_FTP', true);
 $phpbb_root_path = './../';
-include $phpbb_root_path.'extension.inc';
 
 // Initialise some basic arrays
 $userdata = [];

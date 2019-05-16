@@ -32,7 +32,6 @@ if (!empty($setmodules)) {
 // Load default header
 //
 $phpbb_root_path = "./../";
-require $phpbb_root_path . 'extension.inc';
 require './pagestart.php';
 require $phpbb_root_path . 'includes/prune.php';
 require $phpbb_root_path . 'includes/functions_admin.php';

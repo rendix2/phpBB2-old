@@ -33,7 +33,7 @@ if (!empty($setmodules) ) {
 // Include required files and check permissions
 //
 $phpbb_root_path = "./../";
-require $phpbb_root_path . 'extension.inc';
+
 require './pagestart.php';
 
 if (isset($_POST['add_name']) ) {
