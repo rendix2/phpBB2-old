@@ -145,11 +145,11 @@ if (
 		$allowbbcode = ( isset($_POST['allowbbcode']) ) ? ( ($_POST['allowbbcode']) ? TRUE : 0 ) : $board_config['allow_bbcode'];
 		$allowsmilies = ( isset($_POST['allowsmilies']) ) ? ( ($_POST['allowsmilies']) ? TRUE : 0 ) : $board_config['allow_smilies'];
 	} else {
-		$attachsig = ( isset($_POST['attachsig']) ) ? ( ($_POST['attachsig']) ? TRUE : 0 ) : $user_data['user_attachsig'];
+		$attachsig = ( isset($_POST['attachsig']) ) ? ( ($_POST['attachsig']) ? TRUE : 0 ) : $userdata['user_attachsig'];
 
-		$allowhtml = ( isset($_POST['allowhtml']) ) ? ( ($_POST['allowhtml']) ? TRUE : 0 ) : $user_data['user_allowhtml'];
-		$allowbbcode = ( isset($_POST['allowbbcode']) ) ? ( ($_POST['allowbbcode']) ? TRUE : 0 ) : $user_data['user_allowbbcode'];
-		$allowsmilies = ( isset($_POST['allowsmilies']) ) ? ( ($_POST['allowsmilies']) ? TRUE : 0 ) : $user_data['user_allowsmile'];
+		$allowhtml = ( isset($_POST['allowhtml']) ) ? ( ($_POST['allowhtml']) ? TRUE : 0 ) : $userdata['user_allowhtml'];
+		$allowbbcode = ( isset($_POST['allowbbcode']) ) ? ( ($_POST['allowbbcode']) ? TRUE : 0 ) : $userdata['user_allowbbcode'];
+		$allowsmilies = ( isset($_POST['allowsmilies']) ) ? ( ($_POST['allowsmilies']) ? TRUE : 0 ) : $userdata['user_allowsmile'];
 	}
 
 	$user_style = ( isset($_POST['style']) ) ? intval($_POST['style']) : $board_config['default_style'];
@@ -187,8 +187,8 @@ if (
 	$user_avatar_size = ( !empty($_FILES['avatar']['size']) ) ? $_FILES['avatar']['size'] : 0;
 	$user_avatar_filetype = ( !empty($_FILES['avatar']['type']) ) ? $_FILES['avatar']['type'] : '';
 
-	$user_avatar = ( empty($user_avatar_local) && $mode == 'editprofile' ) ? $user_data['user_avatar'] : '';
-	$user_avatar_type = ( empty($user_avatar_local) && $mode == 'editprofile' ) ? $user_data['user_avatar_type'] : '';
+	$user_avatar = ( empty($user_avatar_local) && $mode == 'editprofile' ) ? $userdata['user_avatar'] : '';
+	$user_avatar_type = ( empty($user_avatar_local) && $mode == 'editprofile' ) ? $userdata['user_avatar_type'] : '';
 
 	if ( (isset($_POST['avatargallery']) || isset($_POST['submitavatar']) || isset($_POST['cancelavatar'])) && (!isset($_POST['submit'])) ) {
 		$username = stripslashes($username);
@@ -223,7 +223,7 @@ if (
 // and ensure that they were trying to register a second time
 // (Prevents double registrations)
 //
-if ($mode == 'register' && ($user_data['session_logged_in'] || $username == $user_data['username'])) {
+if ($mode == 'register' && ($userdata['session_logged_in'] || $username == $userdata['username'])) {
 	message_die(GENERAL_MESSAGE, $lang['Username_taken'], '', __LINE__, __FILE__);
 }
 
@@ -235,14 +235,14 @@ if ( isset($_POST['submit']) )
 	include($phpbb_root_path . 'includes/usercp_avatar.php');
 
 	// session id check
-	if ($sid == '' || $sid != $user_data['session_id']) {
+	if ($sid == '' || $sid != $userdata['session_id']) {
 		$error = true;
 		$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Session_invalid'];
 	}
 
 	$passwd_sql = '';
 	if ( $mode == 'editprofile' ) {
-		if ( $user_id != $user_data['user_id'] ) {
+		if ( $user_id != $userdata['user_id'] ) {
 			$error = true;
 			$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Wrong_Profile'];
 		}
@@ -267,7 +267,7 @@ if ( isset($_POST['submit']) )
 			$sql = 'SELECT code 
 				FROM ' . CONFIRM_TABLE . " 
 				WHERE confirm_id = '$confirm_id' 
-					AND session_id = '" . $user_data['session_id'] . "'";
+					AND session_id = '" . $userdata['session_id'] . "'";
 
 			if (!($result = $db->sql_query($sql))) {
 				message_die(GENERAL_ERROR, 'Could not obtain confirmation code', '', __LINE__, __FILE__, $sql);
@@ -280,7 +280,7 @@ if ( isset($_POST['submit']) )
 				} else {
 					$sql = 'DELETE FROM ' . CONFIRM_TABLE . " 
 						WHERE confirm_id = '$confirm_id' 
-							AND session_id = '" . $user_data['session_id'] . "'";
+							AND session_id = '" . $userdata['session_id'] . "'";
 
 					if (!$db->sql_query($sql)) {
 						message_die(GENERAL_ERROR, 'Could not delete confirmation code', '', __LINE__, __FILE__, $sql);
@@ -333,12 +333,12 @@ if ( isset($_POST['submit']) )
 	//
 	// Do a ban check on this email address
 	//
-	if ( $email != $user_data['user_email'] || $mode == 'register' )
+	if ( $email != $userdata['user_email'] || $mode == 'register' )
 	{
 		$result = validate_email($email);
 
 		if ( $result['error'] ) {
-			$email = $user_data['user_email'];
+			$email = $userdata['user_email'];
 
 			$error = TRUE;
 			$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $result['error_msg'];
@@ -356,7 +356,7 @@ if ( isset($_POST['submit']) )
 			$row = $db->sql_fetchrow($result);
 
 			if ( $row['user_password'] != md5($cur_password) ) {
-				$email = $user_data['user_email'];
+				$email = $userdata['user_email'];
 
 				$error = TRUE;
 				$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Current_password_mismatch'];
@@ -369,8 +369,8 @@ if ( isset($_POST['submit']) )
 		if ( empty($username) ) {
 			// Error is already triggered, since one field is empty.
 			$error = TRUE;
-		} else if ( $username != $user_data['username'] || $mode == 'register') {
-			if (strtolower($username) != strtolower($user_data['username']) || $mode == 'register') {
+		} else if ( $username != $userdata['username'] || $mode == 'register') {
+			if (strtolower($username) != strtolower($userdata['username']) || $mode == 'register') {
 				$result = validate_username($username);
 
 				if ( $result['error'] ) {
@@ -404,11 +404,11 @@ if ( isset($_POST['submit']) )
 	$avatar_sql = '';
 
 	if ( isset($_POST['avatardel']) && $mode == 'editprofile' ) {
-		$avatar_sql = user_avatar_delete($user_data['user_avatar_type'], $user_data['user_avatar']);
+		$avatar_sql = user_avatar_delete($userdata['user_avatar_type'], $userdata['user_avatar']);
 	} elseif ( ( !empty($user_avatar_upload) || !empty($user_avatar_name) ) && $board_config['allow_avatar_upload'] ) {
 		if ( !empty($user_avatar_upload) ) {
 			$avatar_mode = (empty($user_avatar_name)) ? 'remote' : 'local';
-			$avatar_sql = user_avatar_upload($mode, $avatar_mode, $user_data['user_avatar'], $user_data['user_avatar_type'], $error, $error_msg, $user_avatar_upload, $user_avatar_name, $user_avatar_size, $user_avatar_filetype);
+			$avatar_sql = user_avatar_upload($mode, $avatar_mode, $userdata['user_avatar'], $userdata['user_avatar_type'], $error, $error_msg, $user_avatar_upload, $user_avatar_name, $user_avatar_size, $user_avatar_filetype);
 		} else if ( !empty($user_avatar_name) ) {
 			$l_avatar_size = sprintf($lang['Avatar_filesize'], round($board_config['avatar_filesize'] / 1024));
 
@@ -416,10 +416,10 @@ if ( isset($_POST['submit']) )
 			$error_msg .= ( ( !empty($error_msg) ) ? '<br />' : '' ) . $l_avatar_size;
 		}
 	} else if ( $user_avatar_remoteurl != '' && $board_config['allow_avatar_remote'] ) {
-		user_avatar_delete($user_data['user_avatar_type'], $user_data['user_avatar']);
+		user_avatar_delete($userdata['user_avatar_type'], $userdata['user_avatar']);
 		$avatar_sql = user_avatar_url($mode, $error, $error_msg, $user_avatar_remoteurl);
 	} else if ( $user_avatar_local != '' && $board_config['allow_avatar_local'] ) {
-		user_avatar_delete($user_data['user_avatar_type'], $user_data['user_avatar']);
+		user_avatar_delete($userdata['user_avatar_type'], $userdata['user_avatar']);
 		$avatar_sql = user_avatar_gallery($mode, $error, $error_msg, $user_avatar_local, $user_avatar_category);
 	}
 
@@ -429,7 +429,7 @@ if ( isset($_POST['submit']) )
 		}
 
 		if ( $mode == 'editprofile' ) {
-			if ( $email != $user_data['user_email'] && $board_config['require_activation'] != USER_ACTIVATION_NONE && $user_data['user_level'] != ADMIN ) {
+			if ( $email != $userdata['user_email'] && $board_config['require_activation'] != USER_ACTIVATION_NONE && $userdata['user_level'] != ADMIN ) {
 				$user_active = 0;
 
 				$user_actkey = gen_rand_string(true);
@@ -437,8 +437,8 @@ if ( isset($_POST['submit']) )
 				$key_len = ( $key_len > 6 ) ? $key_len : 6;
 				$user_actkey = substr($user_actkey, 0, $key_len);
 
-				if ($user_data['session_logged_in'] ) {
-					session_end($user_data['session_id'], $user_data['user_id']);
+				if ($userdata['session_logged_in'] ) {
+					session_end($userdata['session_id'], $userdata['user_id']);
 				}
 			} else {
 				$user_active = 1;
@@ -692,42 +692,42 @@ if ( $error ) {
 	$user_lang = stripslashes($user_lang);
 	$user_dateformat = stripslashes($user_dateformat);
 } else if ( $mode == 'editprofile' && !isset($_POST['avatargallery']) && !isset($_POST['submitavatar']) && !isset($_POST['cancelavatar']) ) {
-	$user_id = $user_data['user_id'];
-	$username = $user_data['username'];
-	$email = $user_data['user_email'];
+	$user_id = $userdata['user_id'];
+	$username = $userdata['username'];
+	$email = $userdata['user_email'];
 	$cur_password = '';
 	$new_password = '';
 	$password_confirm = '';
 
-	$icq = $user_data['user_icq'];
-	$aim = str_replace('+', ' ', $user_data['user_aim']);
-	$msn = $user_data['user_msnm'];
-	$yim = $user_data['user_yim'];
+	$icq = $userdata['user_icq'];
+	$aim = str_replace('+', ' ', $userdata['user_aim']);
+	$msn = $userdata['user_msnm'];
+	$yim = $userdata['user_yim'];
 
-	$website = $user_data['user_website'];
-	$location = $user_data['user_from'];
-	$occupation = $user_data['user_occ'];
-	$interests = $user_data['user_interests'];
-	$signature_bbcode_uid = $user_data['user_sig_bbcode_uid'];
-	$signature = ($signature_bbcode_uid != '') ? preg_replace("/:(([a-z0-9]+:)?)$signature_bbcode_uid(=|\])/si", '\\3', $user_data['user_sig']) : $user_data['user_sig'];
+	$website = $userdata['user_website'];
+	$location = $userdata['user_from'];
+	$occupation = $userdata['user_occ'];
+	$interests = $userdata['user_interests'];
+	$signature_bbcode_uid = $userdata['user_sig_bbcode_uid'];
+	$signature = ($signature_bbcode_uid != '') ? preg_replace("/:(([a-z0-9]+:)?)$signature_bbcode_uid(=|\])/si", '\\3', $userdata['user_sig']) : $userdata['user_sig'];
 
-	$viewemail = $user_data['user_viewemail'];
-	$notifypm = $user_data['user_notify_pm'];
-	$popup_pm = $user_data['user_popup_pm'];
-	$notifyreply = $user_data['user_notify'];
-	$attachsig = $user_data['user_attachsig'];
-	$allowhtml = $user_data['user_allowhtml'];
-	$allowbbcode = $user_data['user_allowbbcode'];
-	$allowsmilies = $user_data['user_allowsmile'];
-	$allowviewonline = $user_data['user_allow_viewonline'];
+	$viewemail = $userdata['user_viewemail'];
+	$notifypm = $userdata['user_notify_pm'];
+	$popup_pm = $userdata['user_popup_pm'];
+	$notifyreply = $userdata['user_notify'];
+	$attachsig = $userdata['user_attachsig'];
+	$allowhtml = $userdata['user_allowhtml'];
+	$allowbbcode = $userdata['user_allowbbcode'];
+	$allowsmilies = $userdata['user_allowsmile'];
+	$allowviewonline = $userdata['user_allow_viewonline'];
 
-	$user_avatar = ($user_data['user_allowavatar'] ) ? $user_data['user_avatar'] : '';
-	$user_avatar_type = ($user_data['user_allowavatar'] ) ? $user_data['user_avatar_type'] : USER_AVATAR_NONE;
+	$user_avatar = ($userdata['user_allowavatar'] ) ? $userdata['user_avatar'] : '';
+	$user_avatar_type = ($userdata['user_allowavatar'] ) ? $userdata['user_avatar_type'] : USER_AVATAR_NONE;
 
-	$user_style = $user_data['user_style'];
-	$user_lang = $user_data['user_lang'];
-	$user_timezone = $user_data['user_timezone'];
-	$user_dateformat = $user_data['user_dateformat'];
+	$user_style = $userdata['user_style'];
+	$user_lang = $userdata['user_lang'];
+	$user_timezone = $userdata['user_timezone'];
+	$user_dateformat = $userdata['user_dateformat'];
 }
 
 //
@@ -738,7 +738,7 @@ include($phpbb_root_path . 'includes/page_header.php');
 make_jumpbox('viewforum.php');
 
 if ( $mode == 'editprofile' ) {
-	if ( $user_id != $user_data['user_id'] ) {
+	if ( $user_id != $userdata['user_id'] ) {
 		$error = TRUE;
 		$error_msg = $lang['Wrong_Profile'];
 	}
@@ -755,7 +755,7 @@ if( isset($_POST['avatargallery']) && !$error ) {
 
 	$allowviewonline = !$allowviewonline;
 
-	display_avatar_gallery($mode, $avatar_category, $user_id, $email, $current_email, $coppa, $username, $email, $new_password, $cur_password, $password_confirm, $icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature, $viewemail, $notifypm, $popup_pm, $notifyreply, $attachsig, $allowhtml, $allowbbcode, $allowsmilies, $allowviewonline, $user_style, $user_lang, $user_timezone, $user_dateformat, $user_data['session_id']);
+	display_avatar_gallery($mode, $avatar_category, $user_id, $email, $current_email, $coppa, $username, $email, $new_password, $cur_password, $password_confirm, $icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature, $viewemail, $notifypm, $popup_pm, $notifyreply, $attachsig, $allowhtml, $allowbbcode, $allowsmilies, $allowviewonline, $user_style, $user_lang, $user_timezone, $user_dateformat, $userdata['session_id']);
 } else {
 	include($phpbb_root_path . 'includes/functions_selects.php');
 
@@ -784,23 +784,23 @@ if( isset($_POST['avatargallery']) && !$error ) {
 	}
 
 	$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';
-	$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $user_data['session_id'] . '" />';
+	$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 	if( $mode == 'editprofile' ) {
-		$s_hidden_fields .= '<input type="hidden" name="user_id" value="' . $user_data['user_id'] . '" />';
+		$s_hidden_fields .= '<input type="hidden" name="user_id" value="' . $userdata['user_id'] . '" />';
 		//
 		// Send the users current email address. If they change it, and account activation is turned on
 		// the user account will be disabled and the user will have to reactivate their account.
 		//
-		$s_hidden_fields .= '<input type="hidden" name="current_email" value="' . $user_data['user_email'] . '" />';
+		$s_hidden_fields .= '<input type="hidden" name="current_email" value="' . $userdata['user_email'] . '" />';
 	}
 
 	if ( !empty($user_avatar_local) ) {
 		$s_hidden_fields .= '<input type="hidden" name="avatarlocal" value="' . $user_avatar_local . '" /><input type="hidden" name="avatarcatname" value="' . $user_avatar_category . '" />';
 	}
 
-	$html_status =  ($user_data['user_allowhtml'] && $board_config['allow_html'] ) ? $lang['HTML_is_ON'] : $lang['HTML_is_OFF'];
-	$bbcode_status = ($user_data['user_allowbbcode'] && $board_config['allow_bbcode']  ) ? $lang['BBCode_is_ON'] : $lang['BBCode_is_OFF'];
-	$smilies_status = ($user_data['user_allowsmile'] && $board_config['allow_smilies']  ) ? $lang['Smilies_are_ON'] : $lang['Smilies_are_OFF'];
+	$html_status =  ($userdata['user_allowhtml'] && $board_config['allow_html'] ) ? $lang['HTML_is_ON'] : $lang['HTML_is_OFF'];
+	$bbcode_status = ($userdata['user_allowbbcode'] && $board_config['allow_bbcode']  ) ? $lang['BBCode_is_ON'] : $lang['BBCode_is_OFF'];
+	$smilies_status = ($userdata['user_allowsmile'] && $board_config['allow_smilies']  ) ? $lang['Smilies_are_ON'] : $lang['Smilies_are_OFF'];
 
 	if ( $error ) {
 		$template->set_filenames(array(
@@ -854,7 +854,7 @@ if( isset($_POST['avatargallery']) && !$error ) {
 
 		$sql = 'SELECT COUNT(session_id) AS attempts 
 			FROM ' . CONFIRM_TABLE . " 
-			WHERE session_id = '" . $user_data['session_id'] . "'";
+			WHERE session_id = '" . $userdata['session_id'] . "'";
 
 		if (!($result = $db->sql_query($sql))) {
 			message_die(GENERAL_ERROR, 'Could not obtain confirm code count', '', __LINE__, __FILE__, $sql);
@@ -875,7 +875,7 @@ if( isset($_POST['avatargallery']) && !$error ) {
 		$confirm_id = md5(uniqid($user_ip));
 
 		$sql = 'INSERT INTO ' . CONFIRM_TABLE . " (confirm_id, session_id, code) 
-			VALUES ('$confirm_id', '". $user_data['session_id'] . "', '$code')";
+			VALUES ('$confirm_id', '". $userdata['session_id'] . "', '$code')";
 
 		if (!$db->sql_query($sql)) {
 			message_die(GENERAL_ERROR, 'Could not insert new confirm code information', '', __LINE__, __FILE__, $sql);
@@ -1016,7 +1016,7 @@ if( isset($_POST['avatargallery']) && !$error ) {
 	// it works well :)
 	//
 	if ( $mode != 'register' ) {
-		if ($user_data['user_allowavatar'] && ($board_config['allow_avatar_upload'] || $board_config['allow_avatar_local'] || $board_config['allow_avatar_remote'] ) ) {
+		if ($userdata['user_allowavatar'] && ($board_config['allow_avatar_upload'] || $board_config['allow_avatar_local'] || $board_config['allow_avatar_remote'] ) ) {
 			$template->assign_block_vars('switch_avatar_block', [] );
 
 			if ( $board_config['allow_avatar_upload'] && file_exists(@phpbb_realpath('./' . $board_config['avatar_path'])) ) {

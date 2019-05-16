@@ -367,7 +367,7 @@ function session_pagestart($user_ip, $thispage_id)
 */
 function session_end($session_id, $user_id)
 {
-	global $db, $lang, $board_config, $user_data;
+	global $db, $lang, $board_config, $userdata;
 	global $SID;
 
 	$cookiename = $board_config['cookie_name'];
@@ -395,8 +395,8 @@ function session_end($session_id, $user_id)
 	//
 	// Remove this auto-login entry (if applicable)
 	//
-	if ( isset($user_data['session_key']) && $user_data['session_key'] != '' ) {
-		$autologin_key = md5($user_data['session_key']);
+	if ( isset($userdata['session_key']) && $userdata['session_key'] != '' ) {
+		$autologin_key = md5($userdata['session_key']);
 		$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
 			WHERE user_id = ' . (int) $user_id . "
 				AND key_id = '$autologin_key'";
@@ -418,7 +418,7 @@ function session_end($session_id, $user_id)
 		message_die(CRITICAL_ERROR, 'Error obtaining user details', '', __LINE__, __FILE__, $sql);
 	}
 	
-	if ( !($user_data = $db->sql_fetchrow($result)) ) {
+	if ( !($userdata = $db->sql_fetchrow($result)) ) {
 		message_die(CRITICAL_ERROR, 'Error obtaining user details', '', __LINE__, __FILE__, $sql);
 	}
 	
@@ -469,9 +469,9 @@ function session_clean($session_id)
 */
 function session_reset_keys($user_id, $user_ip)
 {
-	global $db, $user_data, $board_config;
+	global $db, $userdata, $board_config;
 
-	$key_sql = ($user_id == $user_data['user_id'] && !empty($user_data['session_key'])) ? "AND key_id != '" . md5($user_data['session_key']) . "'" : '';
+	$key_sql = ($user_id == $userdata['user_id'] && !empty($userdata['session_key'])) ? "AND key_id != '" . md5($userdata['session_key']) . "'" : '';
 
 	$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
 		WHERE user_id = ' . (int) $user_id . "
@@ -482,7 +482,7 @@ function session_reset_keys($user_id, $user_ip)
 	}
 
 	$where_sql = 'session_user_id = ' . (int) $user_id;
-	$where_sql .= ($user_id == $user_data['user_id']) ? " AND session_id <> '" . $user_data['session_id'] . "'" : '';
+	$where_sql .= ($user_id == $userdata['user_id']) ? " AND session_id <> '" . $userdata['session_id'] . "'" : '';
 	$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
 		WHERE $where_sql";
 	
@@ -497,7 +497,7 @@ function session_reset_keys($user_id, $user_ip)
 		
 		$sql = 'UPDATE ' . SESSIONS_KEYS_TABLE . "
 			SET last_ip = '$user_ip', key_id = '" . md5($auto_login_key) . "', last_login = $current_time
-			WHERE key_id = '" . md5($user_data['session_key']) . "'";
+			WHERE key_id = '" . md5($userdata['session_key']) . "'";
 		
 		if ( !$db->sql_query($sql) ) {
 			message_die(CRITICAL_ERROR, 'Error updating session key', '', __LINE__, __FILE__, $sql);
@@ -513,7 +513,7 @@ function session_reset_keys($user_id, $user_ip)
 
 		setcookie($cookiename . '_data', serialize($sessiondata), $current_time + 31536000, $cookiepath, $cookiedomain, $cookiesecure);
 
-        $user_data['session_key'] = $auto_login_key;
+        $userdata['session_key'] = $auto_login_key;
 		unset($sessiondata);
 		unset($auto_login_key);
 	}

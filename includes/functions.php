@@ -186,7 +186,7 @@ function get_userdata($user, $force_str = false)
 
 function make_jumpbox($action, $match_forum_id = 0)
 {
-	global $template, $user_data, $lang, $db, $nav_links, $SID;
+	global $template, $userdata, $lang, $db, $nav_links, $SID;
 
 //	$is_auth = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
 
@@ -265,7 +265,7 @@ function make_jumpbox($action, $match_forum_id = 0)
 	// Let the jumpbox work again in sites having additional session id checks.
 //	if ( !empty($SID) )
 //	{
-		$boxstring .= '<input type="hidden" name="sid" value="' . $user_data['session_id'] . '" />';
+		$boxstring .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 //	}
 
     $template->set_filenames(['jumpbox' => 'jumpbox.tpl']);
@@ -642,7 +642,7 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '', $err_file = '', $sql = '')
 {
 	global $db, $template, $board_config, $theme, $lang, $phpbb_root_path, $nav_links, $gen_simple_header, $images;
-	global $user_data, $user_ip, $session_length;
+	global $userdata, $user_ip, $session_length;
 	global $starttime;
 
 	if(defined('HAS_DIED')) {
@@ -676,9 +676,9 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 		}
 	}
 
-	if( empty($user_data) && ( $msg_code == GENERAL_MESSAGE || $msg_code == GENERAL_ERROR ) ) {
-		$user_data = session_pagestart($user_ip, PAGE_INDEX);
-		init_userprefs($user_data);
+	if( empty($userdata) && ( $msg_code == GENERAL_MESSAGE || $msg_code == GENERAL_ERROR ) ) {
+		$userdata = session_pagestart($user_ip, PAGE_INDEX);
+		init_userprefs($userdata);
 	}
 
 	//

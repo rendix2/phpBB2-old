@@ -24,7 +24,7 @@
 function topic_review($topic_id, $is_inline_review)
 {
 	global $db, $board_config, $template, $lang, $images, $theme, $phpbb_root_path;
-	global $user_data, $user_ip;
+	global $userdata, $user_ip;
 	global $orig_word, $replacement_word;
 	global $starttime;
 
@@ -57,14 +57,14 @@ function topic_review($topic_id, $is_inline_review)
 		//
 		// Start session management
 		//
-		$user_data = session_pagestart($user_ip, $forum_id);
-		init_userprefs($user_data);
+		$userdata = session_pagestart($user_ip, $forum_id);
+		init_userprefs($userdata);
 		//
 		// End session management
 		//
 
 		$is_auth = [];
-		$is_auth = auth(AUTH_ALL, $forum_id, $user_data, $forum_row);
+		$is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_row);
 
 		if ( !$is_auth['auth_read'] ) {
 			message_die(GENERAL_MESSAGE, sprintf($lang['Sorry_auth_read'], $is_auth['auth_read_type']));

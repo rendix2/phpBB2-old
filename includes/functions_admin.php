@@ -26,9 +26,9 @@
 //
 function make_forum_select($box_name, $ignore_forum = false, $select_forum = '')
 {
-	global $db, $user_data, $lang;
+	global $db, $userdata, $lang;
 
-	$is_auth_ary = auth(AUTH_READ, AUTH_LIST_ALL, $user_data);
+	$is_auth_ary = auth(AUTH_READ, AUTH_LIST_ALL, $userdata);
 
 	$sql = 'SELECT f.forum_id, f.forum_name
 		FROM ' . CATEGORIES_TABLE . ' c, ' . FORUMS_TABLE . ' f

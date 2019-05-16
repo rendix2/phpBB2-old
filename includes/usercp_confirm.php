@@ -50,7 +50,7 @@ if (!preg_match('/^[A-Za-z0-9]+$/', $confirm_id)) {
 // Try and grab code for this id and session
 $sql = 'SELECT code  
 	FROM ' . CONFIRM_TABLE . " 
-	WHERE session_id = '" . $user_data['session_id'] . "' 
+	WHERE session_id = '" . $userdata['session_id'] . "' 
 		AND confirm_id = '$confirm_id'";
 $result = $db->sql_query($sql);
 

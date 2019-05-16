@@ -125,8 +125,8 @@ if ( isset($_POST['submit']) )
 		}
 
 		$email_headers = 'X-AntiAbuse: Board servername - ' . $board_config['server_name'] . "\n";
-		$email_headers .= 'X-AntiAbuse: User_id - ' . $user_data['user_id'] . "\n";
-		$email_headers .= 'X-AntiAbuse: Username - ' . $user_data['username'] . "\n";
+		$email_headers .= 'X-AntiAbuse: User_id - ' . $userdata['user_id'] . "\n";
+		$email_headers .= 'X-AntiAbuse: Username - ' . $userdata['username'] . "\n";
 		$email_headers .= 'X-AntiAbuse: User IP - ' . decode_ip($user_ip) . "\n";
 
 		$emailer->use_template('admin_send_email');

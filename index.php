@@ -28,8 +28,8 @@ include $phpbb_root_path . 'common.php';
 //
 // Start session management
 //
-$user_data = session_pagestart($user_ip, PAGE_INDEX);
-init_userprefs($user_data);
+$userdata = session_pagestart($user_ip, PAGE_INDEX);
+init_userprefs($userdata);
 //
 // End session management
 //
@@ -46,7 +46,7 @@ if (isset($_GET['mark']) || isset($_POST['mark'])) {
 // Handle marking posts
 //
 if ($mark_read == 'forums') {
-    if ($user_data['session_logged_in']) {
+    if ($userdata['session_logged_in']) {
         setcookie($board_config['cookie_name'] . '_f_all', time(), 0, $board_config['cookie_path'],
             $board_config['cookie_domain'], $board_config['cookie_secure']);
     }
@@ -181,16 +181,16 @@ if (!$total_forums) {
 // Obtain a list of topic ids which contain
 // posts made since user last visited
 //
-if ($user_data['session_logged_in']) {
+if ($userdata['session_logged_in']) {
     // 60 days limit
-    if ($user_data['user_lastvisit'] < (time() - 5184000)) {
-        $user_data['user_lastvisit'] = time() - 5184000;
+    if ($userdata['user_lastvisit'] < (time() - 5184000)) {
+        $userdata['user_lastvisit'] = time() - 5184000;
     }
 
     $sql = "SELECT t.forum_id, t.topic_id, p.post_time 
 			FROM " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p 
 			WHERE p.post_id = t.topic_last_post_id 
-				AND p.post_time > " . $user_data['user_lastvisit'] . " 
+				AND p.post_time > " . $userdata['user_lastvisit'] . " 
 				AND t.topic_moved_id = 0";
 
     if (!($result = $db->sql_query($sql))) {
@@ -256,7 +256,7 @@ $db->sql_freeresult($result);
 // Find which forums are visible for this user
 //
 $is_auth_array = [];
-$is_auth_array = auth(AUTH_VIEW, AUTH_LIST_ALL, $user_data, $forum_data);
+$is_auth_array = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata, $forum_data);
 
 //
 // Start output of page
@@ -337,7 +337,7 @@ for ($i = 0; $i < $category_count; $i++) {
                         } else {
                             $unread_topics = false;
 
-                            if ($user_data['session_logged_in']) {
+                            if ($userdata['session_logged_in']) {
                                 if (!empty($new_topic_data[$forum_id])) {
                                     $forum_last_post_time = 0;
 

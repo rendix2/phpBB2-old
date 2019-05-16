@@ -376,7 +376,7 @@ elseif( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 
 				$username = $onlinerow_reg[$i]['username'];
 
-				if( $onlinerow_reg[$i]['user_allow_viewonline'] || $user_data['user_level'] == ADMIN )
+				if( $onlinerow_reg[$i]['user_allow_viewonline'] || $userdata['user_level'] == ADMIN )
 				{
 					$registered_users++;
 					$hidden = FALSE;

@@ -35,7 +35,7 @@ $template->set_filenames(array(
 );
 
 $template->assign_vars(array(
-        'PHPBB_VERSION' => ($user_data['user_level'] == ADMIN && $user_data['user_id'] != ANONYMOUS) ? '2' . $board_config['version'] : '',
+        'PHPBB_VERSION' => ($userdata['user_level'] == ADMIN && $userdata['user_id'] != ANONYMOUS) ? '2' . $board_config['version'] : '',
         'TRANSLATION_INFO' => (isset($lang['TRANSLATION_INFO'])) ? $lang['TRANSLATION_INFO'] : ((isset($lang['TRANSLATION'])) ? $lang['TRANSLATION'] : ''))
 );
 

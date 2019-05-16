@@ -48,7 +48,7 @@ function check_image_type(&$type, &$error, &$error_msg)
 
 function user_avatar_delete($avatar_type, $avatar_file)
 {
-	global $board_config, $user_data;
+	global $board_config, $userdata;
 
 	$avatar_file = basename($avatar_file);
 
