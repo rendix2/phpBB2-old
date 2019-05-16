@@ -1999,23 +1999,24 @@ if ( $row = $db->sql_fetchrow($result) ) {
 		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 		$i++;
 
-		$template->assign_block_vars('listrow', array(
-			'ROW_COLOR' => '#' . $row_color,
-			'ROW_CLASS' => $row_class,
-			'FROM' => $msg_username,
-			'SUBJECT' => $msg_subject,
-			'DATE' => $msg_date,
-			'PRIVMSG_FOLDER_IMG' => $icon_flag,
+        $template->assign_block_vars('listrow',
+            [
+                'ROW_COLOR'          => '#' . $row_color,
+                'ROW_CLASS'          => $row_class,
+                'FROM'               => $msg_username,
+                'SUBJECT'            => $msg_subject,
+                'DATE'               => $msg_date,
+                'PRIVMSG_FOLDER_IMG' => $icon_flag,
 
-			'L_PRIVMSG_FOLDER_ALT' => $icon_flag_alt, 
+                'L_PRIVMSG_FOLDER_ALT' => $icon_flag_alt,
 
-			'S_MARK_ID' => $privmsg_id, 
+                'S_MARK_ID' => $privmsg_id,
 
-			'U_READ' => $u_subject,
-			'U_FROM_USER_PROFILE' => $u_from_user_profile)
-		);
-	}
-	while ($row = $db->sql_fetchrow($result) );
+                'U_READ'              => $u_subject,
+                'U_FROM_USER_PROFILE' => $u_from_user_profile
+            ]
+        );
+    } while ($row = $db->sql_fetchrow($result) );
 
     $template->assign_vars([
             'PAGINATION'  => generate_pagination("privmsg.php?folder=$folder", $pm_total, $board_config['topics_per_page'], $start),

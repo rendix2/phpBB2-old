@@ -941,24 +941,26 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
                     $mini_post_alt = $lang['Post'];
                 }
 
-				$template->assign_block_vars("searchresults", array( 
-					'TOPIC_TITLE' => $topic_title,
-					'FORUM_NAME' => $searchset[$i]['forum_name'],
-					'POST_SUBJECT' => $post_subject,
-					'POST_DATE' => $post_date,
-					'POSTER_NAME' => $poster,
-					'TOPIC_REPLIES' => $searchset[$i]['topic_replies'],
-					'TOPIC_VIEWS' => $searchset[$i]['topic_views'],
-					'MESSAGE' => $message,
-					'MINI_POST_IMG' => $mini_post_img, 
+                $template->assign_block_vars("searchresults",
+                    [
+                        'TOPIC_TITLE'   => $topic_title,
+                        'FORUM_NAME'    => $searchset[$i]['forum_name'],
+                        'POST_SUBJECT'  => $post_subject,
+                        'POST_DATE'     => $post_date,
+                        'POSTER_NAME'   => $poster,
+                        'TOPIC_REPLIES' => $searchset[$i]['topic_replies'],
+                        'TOPIC_VIEWS'   => $searchset[$i]['topic_views'],
+                        'MESSAGE'       => $message,
+                        'MINI_POST_IMG' => $mini_post_img,
 
-					'L_MINI_POST_ALT' => $mini_post_alt, 
+                        'L_MINI_POST_ALT' => $mini_post_alt,
 
-					'U_POST' => $post_url,
-					'U_TOPIC' => $topic_url,
-					'U_FORUM' => $forum_url)
-				);
-			} else {
+                        'U_POST'  => $post_url,
+                        'U_TOPIC' => $topic_url,
+                        'U_FORUM' => $forum_url
+                    ]
+                );
+            } else {
 				$message = '';
 
 				if ( count($orig_word) ) {
@@ -1134,26 +1136,27 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
 
 		$base_url = "search.php?search_id=$search_id";
 
-		$template->assign_vars(array(
-                'PAGINATION' => generate_pagination($base_url, $total_match_count, $per_page, $start),
-                'PAGE_NUMBER' => sprintf($lang['Page_of'],
-                    floor( $start / $per_page ) + 1, ceil( $total_match_count / $per_page )),
+        $template->assign_vars(
+            [
+                'PAGINATION'  => generate_pagination($base_url, $total_match_count, $per_page, $start),
+                'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $per_page) + 1, ceil($total_match_count / $per_page)),
 
-                'L_AUTHOR' => $lang['Author'],
-                'L_MESSAGE' => $lang['Message'],
-                'L_FORUM' => $lang['Forum'],
-                'L_TOPICS' => $lang['Topics'],
-                'L_REPLIES' => $lang['Replies'],
-                'L_VIEWS' => $lang['Views'],
-                'L_POSTS' => $lang['Posts'],
+                'L_AUTHOR'   => $lang['Author'],
+                'L_MESSAGE'  => $lang['Message'],
+                'L_FORUM'    => $lang['Forum'],
+                'L_TOPICS'   => $lang['Topics'],
+                'L_REPLIES'  => $lang['Replies'],
+                'L_VIEWS'    => $lang['Views'],
+                'L_POSTS'    => $lang['Posts'],
                 'L_LASTPOST' => $lang['Last_Post'],
-                'L_POSTED' => $lang['Posted'],
-                'L_SUBJECT' => $lang['Subject'],
+                'L_POSTED'   => $lang['Posted'],
+                'L_SUBJECT'  => $lang['Subject'],
 
-                'L_GOTO_PAGE' => $lang['Goto_page'])
-		);
+                'L_GOTO_PAGE' => $lang['Goto_page']
+            ]
+        );
 
-		$template->pparse('body');
+        $template->pparse('body');
 
 		include $phpbb_root_path . 'includes/page_tail.php';
 	} else {

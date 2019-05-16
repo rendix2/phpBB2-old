@@ -220,15 +220,17 @@ if ($mode != "" ) {
 
 			$hidden_fields = '<input type="hidden" name="mode" value="delete" /><input type="hidden" name="id" value="' . $rank_id . '" />';
 
-			$template->assign_vars(array(
-				'MESSAGE_TITLE' => $lang['Confirm'],
-				'MESSAGE_TEXT' => $lang['Confirm_delete_rank'],
+			$template->assign_vars(
+				[
+					'MESSAGE_TITLE' => $lang['Confirm'],
+					'MESSAGE_TEXT'  => $lang['Confirm_delete_rank'],
 
-				'L_YES' => $lang['Yes'],
-				'L_NO' => $lang['No'],
+					'L_YES' => $lang['Yes'],
+					'L_NO'  => $lang['No'],
 
-				'S_CONFIRM_ACTION' => append_sid("admin_ranks.php"),
-				'S_HIDDEN_FIELDS' => $hidden_fields)
+					'S_CONFIRM_ACTION' => append_sid("admin_ranks.php"),
+					'S_HIDDEN_FIELDS'  => $hidden_fields
+				]
 			);
 		} else {
 			message_die(GENERAL_MESSAGE, $lang['Must_select_rank']);

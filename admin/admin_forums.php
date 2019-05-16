@@ -301,33 +301,35 @@ if (!empty($mode) ) {
 
         $s_hidden_fields = '<input type="hidden" name="mode" value="' . $newmode .'" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
 
-			$template->assign_vars(array(
-                    'S_FORUM_ACTION' => append_sid("admin_forums.php"),
-                    'S_HIDDEN_FIELDS' => $s_hidden_fields,
-                    'S_SUBMIT_VALUE' => $buttonvalue,
-                    'S_CAT_LIST' => $catlist,
-                    'S_STATUS_LIST' => $statuslist,
-                    'S_PRUNE_ENABLED' => $prune_enabled,
+        $template->assign_vars(
+            [
+                'S_FORUM_ACTION'  => append_sid("admin_forums.php"),
+                'S_HIDDEN_FIELDS' => $s_hidden_fields,
+                'S_SUBMIT_VALUE'  => $buttonvalue,
+                'S_CAT_LIST'      => $catlist,
+                'S_STATUS_LIST'   => $statuslist,
+                'S_PRUNE_ENABLED' => $prune_enabled,
 
-                    'L_FORUM_TITLE' => $l_title,
-                    'L_FORUM_EXPLAIN' => $lang['Forum_edit_delete_explain'],
-                    'L_FORUM_SETTINGS' => $lang['Forum_settings'],
-                    'L_FORUM_NAME' => $lang['Forum_name'],
-                    'L_CATEGORY' => $lang['Category'],
-                    'L_FORUM_DESCRIPTION' => $lang['Forum_desc'],
-                    'L_FORUM_STATUS' => $lang['Forum_status'],
-                    'L_AUTO_PRUNE' => $lang['Forum_pruning'],
-                    'L_ENABLED' => $lang['Enabled'],
-                    'L_PRUNE_DAYS' => $lang['prune_days'],
-                    'L_PRUNE_FREQ' => $lang['prune_freq'],
-                    'L_DAYS' => $lang['Days'],
+                'L_FORUM_TITLE'       => $l_title,
+                'L_FORUM_EXPLAIN'     => $lang['Forum_edit_delete_explain'],
+                'L_FORUM_SETTINGS'    => $lang['Forum_settings'],
+                'L_FORUM_NAME'        => $lang['Forum_name'],
+                'L_CATEGORY'          => $lang['Category'],
+                'L_FORUM_DESCRIPTION' => $lang['Forum_desc'],
+                'L_FORUM_STATUS'      => $lang['Forum_status'],
+                'L_AUTO_PRUNE'        => $lang['Forum_pruning'],
+                'L_ENABLED'           => $lang['Enabled'],
+                'L_PRUNE_DAYS'        => $lang['prune_days'],
+                'L_PRUNE_FREQ'        => $lang['prune_freq'],
+                'L_DAYS'              => $lang['Days'],
 
-                    'PRUNE_DAYS' => isset($pr_row['prune_days']) ? $pr_row['prune_days'] : 7,
-                    'PRUNE_FREQ' => isset($pr_row['prune_freq']) ? $pr_row['prune_freq'] : 1,
-                    'FORUM_NAME' => $forumname,
-                    'DESCRIPTION' => $forumdesc)
-			);
-			$template->pparse("body");
+                'PRUNE_DAYS'  => isset($pr_row['prune_days']) ? $pr_row['prune_days'] : 7,
+                'PRUNE_FREQ'  => isset($pr_row['prune_freq']) ? $pr_row['prune_freq'] : 1,
+                'FORUM_NAME'  => $forumname,
+                'DESCRIPTION' => $forumdesc
+            ]
+        );
+        $template->pparse("body");
 			break;
 
 		case 'createforum':

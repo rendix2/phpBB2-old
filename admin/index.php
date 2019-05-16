@@ -395,20 +395,22 @@ if (isset($_GET['pane']) && $_GET['pane'] == 'left' )
 
 				$reg_ip = decode_ip($onlinerow_reg[$i]['session_ip']);
 
-				$template->assign_block_vars("reg_user_row", array(
-					"ROW_COLOR" => "#" . $row_color,
-					"ROW_CLASS" => $row_class,
-					"USERNAME" => $username, 
-					"STARTED" => create_date($board_config['default_dateformat'], $onlinerow_reg[$i]['session_start'], $board_config['board_timezone']), 
-					"LASTUPDATE" => create_date($board_config['default_dateformat'], $onlinerow_reg[$i]['user_session_time'], $board_config['board_timezone']),
-					"FORUM_LOCATION" => $location,
-					"IP_ADDRESS" => $reg_ip, 
+                $template->assign_block_vars("reg_user_row",
+                    [
+                        "ROW_COLOR"      => "#" . $row_color,
+                        "ROW_CLASS"      => $row_class,
+                        "USERNAME"       => $username,
+                        "STARTED"        => create_date($board_config['default_dateformat'], $onlinerow_reg[$i]['session_start'], $board_config['board_timezone']),
+                        "LASTUPDATE"     => create_date($board_config['default_dateformat'], $onlinerow_reg[$i]['user_session_time'], $board_config['board_timezone']),
+                        "FORUM_LOCATION" => $location,
+                        "IP_ADDRESS"     => $reg_ip,
 
-					"U_WHOIS_IP" => "http://network-tools.com/default.asp?host=$reg_ip", 
-					"U_USER_PROFILE" => append_sid("admin_users.php?mode=edit&amp;" . POST_USERS_URL . "=" . $onlinerow_reg[$i]['user_id']),
-					"U_FORUM_LOCATION" => append_sid($location_url))
-				);
-			}
+                        "U_WHOIS_IP"       => "http://network-tools.com/default.asp?host=$reg_ip",
+                        "U_USER_PROFILE"   => append_sid("admin_users.php?mode=edit&amp;" . POST_USERS_URL . "=" . $onlinerow_reg[$i]['user_id']),
+                        "U_FORUM_LOCATION" => append_sid($location_url)
+                    ]
+                );
+            }
 		}
 
 	} else {

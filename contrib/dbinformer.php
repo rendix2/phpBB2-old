@@ -224,124 +224,107 @@ else
     /* dbal added by Techie-Micheal [and then obliterated by BFL]. weeeeeee! */ 
     switch ($dbms) 
     { 
-        case 'mysql': 
-            if (function_exists(@mysql_connect)) 
-            { 
-                $db = array( 
-                    'choice' => 'MySQL 3.x', 
-                    'connect' => @mysql_connect($dbhost, $dbuser, $dbpasswd), 
-                    'select' => @mysql_select_db($dbname), 
-                    'error' => @mysql_error(), 
-                    'list' => @mysql_list_tables($dbname), 
-                    'fetch' => @mysql_fetch_row, 
-                    'close' => @mysql_close() 
-                ); 
-            } 
-            else 
-            { 
-                $error = true; 
-                $error_msg = 'You do not have the needed functions available for ' . $available_dbms[$dbms] . '.'; 
-            } 
-        break; 
+        case 'mysql':
+            if (function_exists(@mysql_connect)) {
+                $db = [
+                    'choice'  => 'MySQL 3.x',
+                    'connect' => @mysql_connect($dbhost, $dbuser, $dbpasswd),
+                    'select'  => @mysql_select_db($dbname),
+                    'error'   => @mysql_error(),
+                    'list'    => @mysql_list_tables($dbname),
+                    'fetch'   => @mysql_fetch_row,
+                    'close'   => @mysql_close()
+                ];
+            } else {
+                $error     = true;
+                $error_msg = 'You do not have the needed functions available for ' . $available_dbms[$dbms] . '.';
+            }
+            break;
 
-        case 'mysql4': 
-            if (function_exists(@mysql_connect)) 
-            { 
-                $db = array( 
-                    'choice' => 'MySQL 4.x', 
-                    'connect' => @mysql_connect($dbhost, $dbuser, $dbpasswd), 
-                    'select' => @mysql_select_db($dbname), 
-                    'error' => @mysql_error(), 
-                    'list' => @mysql_list_tables($dbname), 
-                    'fetch' => @mysql_fetch_row, 
-                    'close' => @mysql_close() 
-                ); 
-            } 
-            else 
-            { 
-                $error = true; 
-                $error_msg = 'You do not have the needed functions available for ' . $available_dbms[$dbms] . '.'; 
-            } 
-        break; 
+        case 'mysql4':
+            if (function_exists(@mysql_connect)) {
+                $db = [
+                    'choice'  => 'MySQL 4.x',
+                    'connect' => @mysql_connect($dbhost, $dbuser, $dbpasswd),
+                    'select'  => @mysql_select_db($dbname),
+                    'error'   => @mysql_error(),
+                    'list'    => @mysql_list_tables($dbname),
+                    'fetch'   => @mysql_fetch_row,
+                    'close'   => @mysql_close()
+                ];
+            } else {
+                $error     = true;
+                $error_msg = 'You do not have the needed functions available for ' . $available_dbms[$dbms] . '.';
+            }
+            break;
              
-        case 'msaccess': 
-            if (function_exists(@odbc_connect)) 
-            { 
-                $db = array( 
-                    'choice' => 'MS Access [ ODBC ]', 
-                    'connect' => @odbc_connect($dbhost, $dbuser, $dbpasswd), 
-                    'select' => 'na', 
-                    'error' => @odbc_errormsg(), 
-                    'list' => 'na', /* odbc_tables() */ 
-                    'fetch' => 'na', /* odbc_fetch_row(), odbc_result_all() */ 
-                    'close' => @odbc_close() 
-                ); 
-            } 
-            else 
-            { 
-                $error = true; 
-                $error_msg = 'You do not have the needed functions available for ' . $available_dbms[$dbms] . '.'; 
-            } 
-        break; 
+        case 'msaccess':
+            if (function_exists(@odbc_connect)) {
+                $db = [
+                    'choice'  => 'MS Access [ ODBC ]',
+                    'connect' => @odbc_connect($dbhost, $dbuser, $dbpasswd),
+                    'select'  => 'na',
+                    'error'   => @odbc_errormsg(),
+                    'list'    => 'na', /* odbc_tables() */
+                    'fetch'   => 'na', /* odbc_fetch_row(), odbc_result_all() */
+                    'close'   => @odbc_close()
+                ];
+            } else {
+                $error     = true;
+                $error_msg = 'You do not have the needed functions available for ' . $available_dbms[$dbms] . '.';
+            }
+            break;
               
-        case 'postgres': 
-            if (function_exists(@pg_connect)) 
-            { 
-                $db = array( 
-                    'choice' => 'PostgreSQL 7.x', 
-                    'connect' => @pg_connect('host=' . $dbhost . ' user=' . $dbuser . ' dbname=' . $dbname . ' password=' . $dbpasswd), 
-                    'select' => 'na', 
-                    'error' => @pg_last_error(), 
-                    'list' => @pg_exec("SELECT relname FROM pg_class WHERE relkind = 'r' AND relname NOT LIKE 'pg\_%'"), /* provided by SuGa */ 
-                    'fetch' => @pg_fetch_row, 
-                    'close' => @pg_close() 
-                ); 
-            } 
-            else 
-            { 
-                $error = true; 
-                $error_msg = 'You do not have the needed functions available for ' . $available_dbms[$dbms] . '.'; 
-            } 
-        break;                 
-        case 'mssql': 
-            if (function_exists(@mssql_connect)) 
-            { 
-                $db = array( 
-                    'choice' => 'MS SQL Server 7/2000', 
-                    'connect' => @mssql_connect($dbhost, $dbuser, $dbpasswd), 
-                    'select' => @mssql_select_db($dbname), 
-                    'error' => @mssql_get_last_message(), 
-                    'list' => 'na', 
-                    'fetch' => 'na', /* mssql_fetch_row() */ 
-                    'close' => @mssql_close() 
-                ); 
-            } 
-            else 
-            { 
-                $error = true; 
-                $error_msg = 'You do not have the needed functions available for ' . $available_dbms[$dbms] . '.'; 
-            } 
-        break;  
+        case 'postgres':
+            if (function_exists(@pg_connect)) {
+                $db = [
+                    'choice'  => 'PostgreSQL 7.x',
+                    'connect' => @pg_connect('host=' . $dbhost . ' user=' . $dbuser . ' dbname=' . $dbname . ' password=' . $dbpasswd),
+                    'select'  => 'na',
+                    'error'   => @pg_last_error(),
+                    'list'    => @pg_exec("SELECT relname FROM pg_class WHERE relkind = 'r' AND relname NOT LIKE 'pg\_%'"),
+                    /* provided by SuGa */
+                    'fetch'   => @pg_fetch_row,
+                    'close'   => @pg_close()
+                ];
+            } else {
+                $error     = true;
+                $error_msg = 'You do not have the needed functions available for ' . $available_dbms[$dbms] . '.';
+            }
+            break;
+        case 'mssql':
+            if (function_exists(@mssql_connect)) {
+                $db = [
+                    'choice'  => 'MS SQL Server 7/2000',
+                    'connect' => @mssql_connect($dbhost, $dbuser, $dbpasswd),
+                    'select'  => @mssql_select_db($dbname),
+                    'error'   => @mssql_get_last_message(),
+                    'list'    => 'na',
+                    'fetch'   => 'na', /* mssql_fetch_row() */
+                    'close'   => @mssql_close()
+                ];
+            } else {
+                $error     = true;
+                $error_msg = 'You do not have the needed functions available for ' . $available_dbms[$dbms] . '.';
+            }
+            break;
 
-        case 'mssql-odbc': 
-            if (function_exists(@odbc_connect)) 
-            { 
-                $db = array( 
-                    'choice' => 'MS SQL Server [ ODBC ]', 
-                    'connect' => @odbc_connect($dbhost, $dbuser, $dbpasswd), 
-                    'select' => 'na', 
-                    'error' => @odbc_errormsg(), 
-                    'list' => 'na', /* odbc_tables() */ 
-                    'fetch' => 'na', /* odbc_fetch_row(), odbc_result_all() */ 
-                    'close' => @odbc_close() 
-                ); 
-            } 
-            else 
-            { 
-                $error = true; 
-                $error_msg = 'You do not have the needed functions available for ' . $available_dbms[$dbms] . '.'; 
-            } 
-        break;  
+        case 'mssql-odbc':
+            if (function_exists(@odbc_connect)) {
+                $db = [
+                    'choice'  => 'MS SQL Server [ ODBC ]',
+                    'connect' => @odbc_connect($dbhost, $dbuser, $dbpasswd),
+                    'select'  => 'na',
+                    'error'   => @odbc_errormsg(),
+                    'list'    => 'na', /* odbc_tables() */
+                    'fetch'   => 'na', /* odbc_fetch_row(), odbc_result_all() */
+                    'close'   => @odbc_close()
+                ];
+            } else {
+                $error     = true;
+                $error_msg = 'You do not have the needed functions available for ' . $available_dbms[$dbms] . '.';
+            }
+            break;
 
         default: 
             $error = true; 
@@ -362,72 +345,58 @@ else
         echo 'Database Username: <b>' . $dbuser .   '</b><br />'; 
         echo 'Database Password: <b>' . $dbpasswd   . '</b><br />'; 
 
-        echo '<a name="connect"><h3><u>Connection to database</u></h3></a>'; 
-         
-        if (!$db['connect']) 
-        { 
-            echo 'You have not established a connection to <b>' . $db['choice'] . '</b>.<br />'; 
-            echo '<b>ERROR:</b> <i>' . $db['error'] . '</i><br /><br />'; 
-        } 
-        else 
-        { 
-            echo 'You have established a connection to <b>' . $db['choice'] . '</b>.<br /><br />'; 
-            $connect = true; 
-        } 
+        echo '<a name="connect"><h3><u>Connection to database</u></h3></a>';
 
-        if ($dbms == 'msaccess' || $dbms == 'postgres' || $dbms == 'mssql-odbc')  
-        {         
-            /* for dbmses which have no db select function */ 
-            $select = true; 
-        } 
-        else 
-        { 
-            if (!$db['select']) 
-            { 
-                echo 'Your database was not found.<br />'; 
-                echo '<b>ERROR:</b> <i>' . htmlspecialchars($db['error']) . '</i><br />'; 
-            } 
-            else 
-            { 
-                echo 'Your database was found.<br />'; 
-                $select = true; 
-            } 
-        } 
+        if (!$db['connect']) {
+            echo 'You have not established a connection to <b>' . $db['choice'] . '</b>.<br />';
+            echo '<b>ERROR:</b> <i>' . $db['error'] . '</i><br /><br />';
+        } else {
+            echo 'You have established a connection to <b>' . $db['choice'] . '</b>.<br /><br />';
+            $connect = true;
+        }
 
-        if ($connect == true && $select == true) 
-        { 
-            echo '<a name="tables"><h3><u>Tables in database</u></h3></a>'; 
-            if ($dbms == 'mysql' || $dbms == 'mysql4' || $dbms == 'postgres') 
-            { 
-                echo '<i>Tables with the table prefix you specified are in bold.</i>'; 
-                echo '<ul>'; 
-                while ($table = $db['fetch']($db['list'])) 
-                {    
-                    /* Highlight tables with the table_prefix specified */ 
-                    if (preg_match("/^$HTTP_POST_VARS[table_prefix]/i", $table[0])) 
-                    { 
-                        echo '<li><b>' . htmlspecialchars($table[0]) . '</b></li><br />'; 
-                    } 
-                    else 
-                    { 
-                        echo '<li>' . htmlspecialchars($table[0]) . '</li><br />'; 
-                    } 
-                } 
-                echo '</ul>'; 
-            } 
-            else 
-            { 
-                echo 'Sorry, this feature isn\'t available with ' . $db['choice'] . '.'; 
-            } 
+        if ($dbms == 'msaccess' || $dbms == 'postgres' || $dbms == 'mssql-odbc') {
+            /* for dbmses which have no db select function */
+            $select = true;
+        } else {
+            if (!$db['select']) {
+                echo 'Your database was not found.<br />';
+                echo '<b>ERROR:</b> <i>' . htmlspecialchars($db['error']) . '</i><br />';
+            } else {
+                echo 'Your database was found.<br />';
+                $select = true;
+            }
+        }
 
-            /* defined a var which is only there if successfully connected to the database and the database is found */ 
-            $all_connected = true; 
-        } 
+        if ($connect == true && $select == true) {
+            echo '<a name="tables"><h3><u>Tables in database</u></h3></a>';
+            if ($dbms == 'mysql' || $dbms == 'mysql4' || $dbms == 'postgres') {
+                echo '<i>Tables with the table prefix you specified are in bold.</i>';
+                echo '<ul>';
+
+                while ($table = $db['fetch']($db['list'])) {
+                    /* Highlight tables with the table_prefix specified */
+                    if (preg_match("/^$HTTP_POST_VARS[table_prefix]/i", $table[0])) {
+                        echo '<li><b>' . htmlspecialchars($table[0]) . '</b></li><br />';
+                    } else {
+                        echo '<li>' . htmlspecialchars($table[0]) . '</li><br />';
+                    }
+                }
+
+                echo '</ul>';
+            } else {
+                echo 'Sorry, this feature isn\'t available with ' . $db['choice'] . '.';
+            }
+
+            /* defined a var which is only there if successfully connected to the database and the database is found */
+            $all_connected = true;
+        }
 
         /* Create a config file if checked and if the connection went OK */ 
         if (isset($HTTP_POST_VARS['generate_config']) && $HTTP_POST_VARS['generate_config'] == true) 
         { 
-            echo '<a name="config"><h3><u>Config file</u></h3></a>'; 
+            echo '<a name="config"><h3><u>Config file</u></h3></a>';
+
             if ($all_connected != true) 
             { 
                 echo 'The database has not been successfully connected to so no config file has been generated.<br />'; 

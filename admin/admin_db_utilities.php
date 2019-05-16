@@ -682,21 +682,23 @@ if (isset($_GET['perform']) || isset($_POST['perform']) )
 
 				$s_hidden_fields = "<input type=\"hidden\" name=\"perform\" value=\"backup\" /><input type=\"hidden\" name=\"drop\" value=\"1\" /><input type=\"hidden\" name=\"perform\" value=\"$perform\" />";
 
-				$template->assign_vars(array(
-					"L_DATABASE_BACKUP" => $lang['Database_Utilities'] . " : " . $lang['Backup'],
-					"L_BACKUP_EXPLAIN" => $lang['Backup_explain'],
-					"L_FULL_BACKUP" => $lang['Full_backup'],
-					"L_STRUCTURE_BACKUP" => $lang['Structure_backup'],
-					"L_DATA_BACKUP" => $lang['Data_backup'],
-					"L_ADDITIONAL_TABLES" => $lang['Additional_tables'],
-					"L_START_BACKUP" => $lang['Start_backup'],
-					"L_BACKUP_OPTIONS" => $lang['Backup_options'],
-					"L_GZIP_COMPRESS" => $lang['Gzip_compress'],
-					"L_NO" => $lang['No'],
-					"L_YES" => $lang['Yes'],
+				$template->assign_vars(
+					[
+						"L_DATABASE_BACKUP"   => $lang['Database_Utilities'] . " : " . $lang['Backup'],
+						"L_BACKUP_EXPLAIN"    => $lang['Backup_explain'],
+						"L_FULL_BACKUP"       => $lang['Full_backup'],
+						"L_STRUCTURE_BACKUP"  => $lang['Structure_backup'],
+						"L_DATA_BACKUP"       => $lang['Data_backup'],
+						"L_ADDITIONAL_TABLES" => $lang['Additional_tables'],
+						"L_START_BACKUP"      => $lang['Start_backup'],
+						"L_BACKUP_OPTIONS"    => $lang['Backup_options'],
+						"L_GZIP_COMPRESS"     => $lang['Gzip_compress'],
+						"L_NO"                => $lang['No'],
+						"L_YES"               => $lang['Yes'],
 
-					"S_HIDDEN_FIELDS" => $s_hidden_fields,
-					"S_DBUTILS_ACTION" => append_sid("admin_db_utilities.php"))
+						"S_HIDDEN_FIELDS"  => $s_hidden_fields,
+						"S_DBUTILS_ACTION" => append_sid("admin_db_utilities.php")
+					]
 				);
 				$template->pparse("body");
 
@@ -709,11 +711,13 @@ if (isset($_GET['perform']) || isset($_POST['perform']) )
 
 				$template->set_filenames(["body" => "admin/admin_message_body.tpl"]);
 
-				$template->assign_vars(array(
-					"META" => '<meta http-equiv="refresh" content="2;url=' . append_sid("admin_db_utilities.php?perform=backup&additional_tables=" . quotemeta($additional_tables) . "&backup_type=$backup_type&drop=1&amp;backupstart=1&gzipcompress=$gzipcompress&startdownload=1") . '">',
+				$template->assign_vars(
+					[
+						"META" => '<meta http-equiv="refresh" content="2;url=' . append_sid("admin_db_utilities.php?perform=backup&additional_tables=" . quotemeta($additional_tables) . "&backup_type=$backup_type&drop=1&amp;backupstart=1&gzipcompress=$gzipcompress&startdownload=1") . '">',
 
-					"MESSAGE_TITLE" => $lang['Database_Utilities'] . " : " . $lang['Backup'],
-					"MESSAGE_TEXT" => $lang['Backup_download'])
+						"MESSAGE_TITLE" => $lang['Database_Utilities'] . " : " . $lang['Backup'],
+						"MESSAGE_TEXT"  => $lang['Backup_download']
+					]
 				);
 
 				include './page_header_admin.php';
@@ -808,14 +812,16 @@ if (isset($_GET['perform']) || isset($_POST['perform']) )
 
 				$s_hidden_fields = "<input type=\"hidden\" name=\"perform\" value=\"restore\" /><input type=\"hidden\" name=\"perform\" value=\"$perform\" />";
 
-				$template->assign_vars(array(
-					"L_DATABASE_RESTORE" => $lang['Database_Utilities'] . " : " . $lang['Restore'],
-					"L_RESTORE_EXPLAIN" => $lang['Restore_explain'],
-					"L_SELECT_FILE" => $lang['Select_file'],
-					"L_START_RESTORE" => $lang['Start_Restore'],
+				$template->assign_vars(
+					[
+						"L_DATABASE_RESTORE" => $lang['Database_Utilities'] . " : " . $lang['Restore'],
+						"L_RESTORE_EXPLAIN"  => $lang['Restore_explain'],
+						"L_SELECT_FILE"      => $lang['Select_file'],
+						"L_START_RESTORE"    => $lang['Start_Restore'],
 
-					"S_DBUTILS_ACTION" => append_sid("admin_db_utilities.php"),
-					"S_HIDDEN_FIELDS" => $s_hidden_fields)
+						"S_DBUTILS_ACTION" => append_sid("admin_db_utilities.php"),
+						"S_HIDDEN_FIELDS"  => $s_hidden_fields
+					]
 				);
 				$template->pparse("body");
 
@@ -906,9 +912,11 @@ if (isset($_GET['perform']) || isset($_POST['perform']) )
 
 				$message = $lang['Restore_success'];
 
-				$template->assign_vars(array(
-					"MESSAGE_TITLE" => $lang['Database_Utilities'] . " : " . $lang['Restore'],
-					"MESSAGE_TEXT" => $message)
+				$template->assign_vars(
+					[
+						"MESSAGE_TITLE" => $lang['Database_Utilities'] . " : " . $lang['Restore'],
+						"MESSAGE_TEXT"  => $message
+					]
 				);
 
 				$template->pparse("body");

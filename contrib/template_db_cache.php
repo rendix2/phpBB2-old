@@ -96,22 +96,22 @@ class Template {
 	{
 		global $table_prefix;
 
-		if ( !is_array($filename_array) )
-		{
-			return false;
-		}
+        if (!is_array($filename_array)) {
+            return false;
+        }
 
-		$template_names = '';
-		@reset($filename_array);
-		while ( list($handle, $filename) = @each($filename_array) )
-		{
-			$this->files[$handle] = $this->make_filename($filename);
-			$template_names .= ( $template_names != '' ) ? ", '" . addslashes($this->files[$handle]) . "'" : "'" . addslashes($this->files[$handle]) . "'";
-		}
+        $template_names = '';
+        @reset($filename_array);
+
+        while (list($handle, $filename) = @each($filename_array)) {
+            $this->files[$handle] = $this->make_filename($filename);
+            $template_names       .= ($template_names != '') ? ", '" . addslashes($this->files[$handle]) . "'" : "'" . addslashes($this->files[$handle]) . "'";
+        }
 
 		$sql = "SELECT * 
 			FROM " . $table_prefix . "template_cache 
 			WHERE template_name IN ($template_names)";
+
 		if ( $result = $this->db->sql_query($sql) )
 		{
 			while ($row = $this->db->sql_fetchrow($result) )

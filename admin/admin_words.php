@@ -90,22 +90,24 @@ if ($mode != "" )
 			}
 		}
 
-		$template->assign_vars(array(
-			"WORD" => htmlspecialchars($word_info['word']),
-			"REPLACEMENT" => htmlspecialchars($word_info['replacement']),
+        $template->assign_vars(
+            [
+                "WORD"        => htmlspecialchars($word_info['word']),
+                "REPLACEMENT" => htmlspecialchars($word_info['replacement']),
 
-			"L_WORDS_TITLE" => $lang['Words_title'],
-			"L_WORDS_TEXT" => $lang['Words_explain'],
-			"L_WORD_CENSOR" => $lang['Edit_word_censor'],
-			"L_WORD" => $lang['Word'],
-			"L_REPLACEMENT" => $lang['Replacement'],
-			"L_SUBMIT" => $lang['Submit'],
+                "L_WORDS_TITLE" => $lang['Words_title'],
+                "L_WORDS_TEXT"  => $lang['Words_explain'],
+                "L_WORD_CENSOR" => $lang['Edit_word_censor'],
+                "L_WORD"        => $lang['Word'],
+                "L_REPLACEMENT" => $lang['Replacement'],
+                "L_SUBMIT"      => $lang['Submit'],
 
-			"S_WORDS_ACTION" => append_sid("admin_words.php"),
-			"S_HIDDEN_FIELDS" => $s_hidden_fields)
-		);
+                "S_WORDS_ACTION"  => append_sid("admin_words.php"),
+                "S_HIDDEN_FIELDS" => $s_hidden_fields
+            ]
+        );
 
-		$template->pparse("body");
+        $template->pparse("body");
 
 		include './page_footer_admin.php';
 	} elseif ($mode == "save" ) {
@@ -163,17 +165,19 @@ if ($mode != "" )
 
             $hidden_fields = '<input type="hidden" name="mode" value="delete" /><input type="hidden" name="id" value="' . $word_id . '" />';
 
-			$template->assign_vars(array(
-				'MESSAGE_TITLE' => $lang['Confirm'],
-				'MESSAGE_TEXT' => $lang['Confirm_delete_word'],
+            $template->assign_vars(
+                [
+                    'MESSAGE_TITLE' => $lang['Confirm'],
+                    'MESSAGE_TEXT'  => $lang['Confirm_delete_word'],
 
-				'L_YES' => $lang['Yes'],
-				'L_NO' => $lang['No'],
+                    'L_YES' => $lang['Yes'],
+                    'L_NO'  => $lang['No'],
 
-				'S_CONFIRM_ACTION' => append_sid("admin_words.php"),
-				'S_HIDDEN_FIELDS' => $hidden_fields)
-			);
-		} else {
+                    'S_CONFIRM_ACTION' => append_sid("admin_words.php"),
+                    'S_HIDDEN_FIELDS'  => $hidden_fields
+                ]
+            );
+        } else {
 			message_die(GENERAL_MESSAGE, $lang['No_word_selected']);
 		}
 	}
