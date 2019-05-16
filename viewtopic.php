@@ -279,7 +279,7 @@ $previous_days_text = [$lang['All_Posts'], $lang['1_Day'], $lang['7_Days'], $lan
 
 if( !empty($_POST['postdays']) || !empty($_GET['postdays']) ) {
 	$post_days =  !empty($_POST['postdays']) ? (int)$_POST['postdays'] : (int)$_GET['postdays'];
-	$min_post_time = time() - ((int)$post_days * 86400);
+	$min_post_time = time() - ($post_days * 86400);
 
 	$sql = "SELECT COUNT(p.post_id) AS num_posts
 		FROM " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p
