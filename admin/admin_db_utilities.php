@@ -34,9 +34,9 @@ if (!empty($setmodules) ) {
 	$filename = basename(__FILE__);
 	$module['General']['Backup_DB'] = $filename . "?perform=backup";
 
-	$file_uploads = (@phpversion() >= '4.0.0') ? @ini_get('file_uploads') : @get_cfg_var('file_uploads');
+	$file_uploads = (@PHP_VERSION >= '4.0.0') ? @ini_get('file_uploads') : @get_cfg_var('file_uploads');
 
-	if ((empty($file_uploads) || $file_uploads != 0) && (strtolower($file_uploads) != 'off') && (@phpversion() != '4.0.4pl1') ) {
+	if ((empty($file_uploads) || $file_uploads != 0) && (strtolower($file_uploads) != 'off') && (@PHP_VERSION != '4.0.4pl1') ) {
 		$module['General']['Restore_DB'] = $filename . "?perform=restore";
 	}
 
@@ -698,7 +698,7 @@ if (isset($_GET['perform']) || isset($_POST['perform']) )
 			$do_gzip_compress = false;
 
 			if ($gzipcompress ) {
-				$phpver = phpversion();
+				$phpver = PHP_VERSION;
 
 				if ($phpver >= "4.0") {
 					if (extension_loaded("zlib")) {
@@ -815,7 +815,7 @@ if (isset($_GET['perform']) || isset($_POST['perform']) )
 					if (preg_match("/^(text\/[a-zA-Z]+)|(application\/(x\-)?gzip(\-compressed)?)|(application\/octet-stream)$/is", $backup_file_type) ) {
 						if (preg_match("/\.gz$/is",$backup_file_name) ) {
 							$do_gzip_compress = FALSE;
-							$phpver = phpversion();
+							$phpver = PHP_VERSION;
 
 							if ($phpver >= "4.0") {
 								if (extension_loaded("zlib")) {

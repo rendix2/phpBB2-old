@@ -74,7 +74,7 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 		}
 
 		$mode = 'editgroup';
-		$template->assign_block_vars('group_edit', array());
+		$template->assign_block_vars('group_edit', []);
 
 	} elseif ( isset($_POST['new']) ) {
 		$group_info = [
@@ -368,7 +368,7 @@ else
 	);
 
 	if ( $select_list != '' ) {
-		$template->assign_block_vars('select_box', array());
+		$template->assign_block_vars('select_box', []);
 	}
 
 	$template->pparse('body');

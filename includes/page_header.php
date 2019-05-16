@@ -31,7 +31,7 @@ define('HEADER_INC', TRUE);
 //
 $do_gzip_compress = FALSE;
 if ( $board_config['gzip_compress'] ) {
-	$phpver = phpversion();
+	$phpver = PHP_VERSION;
 
 	$useragent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : getenv('HTTP_USER_AGENT');
 

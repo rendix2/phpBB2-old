@@ -297,7 +297,7 @@ class emailer
 			$this->mimeOut .= "Date: ".date("D, d M Y H:i:s") . " UT\n";
 			$this->mimeOut .= "Reply-To:".$szFromAddress."\n";
 			$this->mimeOut .= "Subject: ".$this->mailSubject."\n";
-			$this->mimeOut .= "X-Mailer: PHP/".phpversion()."\n";
+			$this->mimeOut .= "X-Mailer: PHP/". PHP_VERSION ."\n";
 			$this->mimeOut .= "MIME-Version: 1.0\n";
 		}
 

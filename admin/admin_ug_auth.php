@@ -218,7 +218,7 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 			$message = $lang['Auth_updated'] . '<br /><br />' . sprintf($lang['Click_return_userauth'], '<a href="' . append_sid("admin_ug_auth.php?mode=$mode") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');
 		} else {
 	
-			$change_mod_list = isset($_POST['moderator']) ? $_POST['moderator'] : array();
+			$change_mod_list = isset($_POST['moderator']) ? $_POST['moderator'] : [];
 
 			if ( empty($adv) ) {
 				$sql = "SELECT f.* 
@@ -833,17 +833,17 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 	$s_hidden_fields .= ( $mode == 'user' ) ? '<input type="hidden" name="' . POST_USERS_URL . '" value="' . $user_id . '" />' : '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
 
 	if ( $mode == 'user' ) {
-		$template->assign_block_vars('switch_user_auth', array());
+        $template->assign_block_vars('switch_user_auth', []);
 
-		$template->assign_vars(array(
+        $template->assign_vars(array(
 			'USERNAME' => $t_username,
 			'USER_LEVEL' => $lang['User_Level'] . " : " . $s_user_type,
 			'USER_GROUP_MEMBERSHIPS' => $lang['Group_memberships'] . ' : ' . $t_usergroup_list)
 		);
 	} else {
-		$template->assign_block_vars("switch_group_auth", array());
+        $template->assign_block_vars("switch_group_auth", []);
 
-		$template->assign_vars(array(
+        $template->assign_vars(array(
 			'USERNAME' => $t_groupname,
 			'GROUP_MEMBERSHIP' => $lang['Usergroup_members'] . ' : ' . $t_usergroup_list . '<br />' . $lang['Pending_members'] . ' : ' . $t_pending_list)
 		);

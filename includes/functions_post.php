@@ -534,7 +534,7 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 				// are working in win32 versions of php.
 				//
 				if (preg_match('/[c-z]:\\\.*/i', getenv('PATH')) && !$board_config['smtp_delivery']) {
-					$ini_val = (@phpversion() >= '4.0.0') ? 'ini_get' : 'get_cfg_var';
+					$ini_val = (@PHP_VERSION >= '4.0.0') ? 'ini_get' : 'get_cfg_var';
 
 					// We are running on windows, force delivery to use our smtp functions
 					// since php's are broken by default

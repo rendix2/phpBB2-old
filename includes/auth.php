@@ -224,16 +224,16 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 			for ($k = 0; $k < count($f_access); $k++) {
 				$value = $f_access[$k][$key];
 				$f_forum_id = $f_access[$k]['forum_id'];
-				$u_access[$f_forum_id] = isset($u_access[$f_forum_id]) ? $u_access[$f_forum_id] : array();
+				$u_access[$f_forum_id] = isset($u_access[$f_forum_id]) ? $u_access[$f_forum_id] : [];
 
 				switch( $value ) {
 					case AUTH_ALL:
-						$auth_user[$f_forum_id][$key] = TRUE;
+						$auth_user[$f_forum_id][$key] = true;
 						$auth_user[$f_forum_id][$key . '_type'] = $lang['Auth_Anonymous_Users'];
 						break;
 
 					case AUTH_REG:
-						$auth_user[$f_forum_id][$key] = $userdata['session_logged_in'] ? TRUE : 0;
+						$auth_user[$f_forum_id][$key] = $userdata['session_logged_in'] ? true : 0;
 						$auth_user[$f_forum_id][$key . '_type'] = $lang['Auth_Registered_Users'];
 						break;
 
@@ -268,9 +268,9 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 	} else {
 		for ($k = 0; $k < count($f_access); $k++) {
 			$f_forum_id = $f_access[$k]['forum_id'];
-			$u_access[$f_forum_id] = isset($u_access[$f_forum_id]) ? $u_access[$f_forum_id] : array();
+            $u_access[$f_forum_id] = isset($u_access[$f_forum_id]) ? $u_access[$f_forum_id] : [];
 
-			$auth_user[$f_forum_id]['auth_mod'] = $userdata['session_logged_in'] ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access[$f_forum_id], $is_admin) : 0;
+            $auth_user[$f_forum_id]['auth_mod'] = $userdata['session_logged_in'] ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access[$f_forum_id], $is_admin) : 0;
 		}
 	}
 
