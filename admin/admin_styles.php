@@ -700,7 +700,7 @@ switch( $mode )
 				exit();
 			}
 
-			$result = @fputs($fp, $theme_data, strlen($theme_data));
+			$result = @fwrite($fp, $theme_data, strlen($theme_data));
 			fclose($fp);
 			
 			$message = $lang['Theme_info_saved'] . "<br /><br />" . sprintf($lang['Click_return_styleadmin'], "<a href=\"" . append_sid("admin_styles.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");

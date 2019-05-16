@@ -458,9 +458,9 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 						//
 						// Uses HTTP 1.1, could use HTTP 1.0 ...
 						//
-						@fputs($fsock, "GET $base_get HTTP/1.1\r\n");
-						@fputs($fsock, "HOST: " . $url_ary[2] . "\r\n");
-						@fputs($fsock, "Connection: close\r\n\r\n");
+						@fwrite($fsock, "GET $base_get HTTP/1.1\r\n");
+						@fwrite($fsock, "HOST: " . $url_ary[2] . "\r\n");
+						@fwrite($fsock, "Connection: close\r\n\r\n");
 
 						unset($avatar_data);
 

@@ -496,9 +496,9 @@ if (isset($_GET['pane']) && $_GET['pane'] == 'left' )
 	$errstr = $version_info = '';
 
 	if ($fsock = @fsockopen('www.phpbb.com', 80, $errno, $errstr, 10)) {
-		@fputs($fsock, "GET /updatecheck/20x.txt HTTP/1.1\r\n");
-		@fputs($fsock, "HOST: www.phpbb.com\r\n");
-		@fputs($fsock, "Connection: close\r\n\r\n");
+		@fwrite($fsock, "GET /updatecheck/20x.txt HTTP/1.1\r\n");
+		@fwrite($fsock, "HOST: www.phpbb.com\r\n");
+		@fwrite($fsock, "Connection: close\r\n\r\n");
 
 		$get_info = false;
 

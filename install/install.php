@@ -1009,7 +1009,7 @@ else
 				exit;
 			}
 
-			$result = @fputs($fp, $config_data, strlen($config_data));
+			$result = @fwrite($fp, $config_data, strlen($config_data));
 
 			@fclose($fp);
 			$upgrade_now = $lang['upgrade_submit'];

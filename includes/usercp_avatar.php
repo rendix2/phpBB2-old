@@ -129,19 +129,19 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 			return;
 		}
 
-		@fputs($fsock, "GET $base_get HTTP/1.1\r\n");
-		@fputs($fsock, "HOST: " . $url_ary[2] . "\r\n");
-		@fputs($fsock, "Connection: close\r\n\r\n");
+		@fwrite($fsock, "GET $base_get HTTP/1.1\r\n");
+		@fwrite($fsock, "HOST: " . $url_ary[2] . "\r\n");
+		@fwrite($fsock, "Connection: close\r\n\r\n");
 
 		unset($avatar_data);
 
 		while (!@feof($fsock) ) {
 			$avatar_data .= @fread($fsock, $board_config['avatar_filesize']);
 		}
+
 		@fclose($fsock);
 
-		if (!preg_match('#Content-Length\: ([0-9]+)[^ /][\s]+#i', $avatar_data, $file_data1) || !preg_match('#Content-Type\: image/[x\-]*([a-z]+)[\s]+#i', $avatar_data, $file_data2))
-		{
+		if (!preg_match('#Content-Length\: ([0-9]+)[^ /][\s]+#i', $avatar_data, $file_data1) || !preg_match('#Content-Type\: image/[x\-]*([a-z]+)[\s]+#i', $avatar_data, $file_data2)) {
 			$error = true;
 			$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $lang['File_no_data'] : $lang['File_no_data'];
 			return;
@@ -279,8 +279,7 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 	$avatar_images = [];
 
 	while ($file = @readdir($dir) ) {
-		if ($file != '.' && $file != '..' && !is_file($board_config['avatar_gallery_path'] . '/' . $file) && !is_link($board_config['avatar_gallery_path'] . '/' . $file) )
-		{
+		if ($file != '.' && $file != '..' && !is_file($board_config['avatar_gallery_path'] . '/' . $file) && !is_link($board_config['avatar_gallery_path'] . '/' . $file) ) {
 			$sub_dir = @opendir($board_config['avatar_gallery_path'] . '/' . $file);
 
 			$avatar_row_count = 0;
@@ -326,6 +325,7 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 	$s_categories .= '</select>';
 
 	$s_colspan = 0;
+
 	for ($i = 0; $i < count($avatar_images[$category]); $i++) {
 		$template->assign_block_vars("avatar_row", []);
 
