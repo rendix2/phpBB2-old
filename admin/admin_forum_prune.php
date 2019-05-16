@@ -21,8 +21,7 @@
 
 define('IN_PHPBB', true);
 
-if ( !empty($setmodules) )
-{
+if (!empty($setmodules)) {
 	$filename = basename(__FILE__);
 	$module['Forums']['Prune'] = $filename;
 
@@ -45,18 +44,13 @@ if( isset($_GET[POST_FORUM_URL]) || isset($_POST[POST_FORUM_URL]) )
 {
 	$forum_id = isset($_POST[POST_FORUM_URL]) ? $_POST[POST_FORUM_URL] : $_GET[POST_FORUM_URL];
 
-	if( $forum_id == -1 )
-	{
-		$forum_sql = '';
-	}
-	else
-	{
-		$forum_id = (int)$forum_id;
-		$forum_sql = "AND forum_id = $forum_id";
-	}
-}
-else
-{
+    if ($forum_id == -1) {
+        $forum_sql = '';
+    } else {
+        $forum_id = (int)$forum_id;
+        $forum_sql = "AND forum_id = $forum_id";
+    }
+} else {
 	$forum_id = '';
 	$forum_sql = '';
 }
@@ -68,12 +62,13 @@ $sql = "SELECT f.*
 	WHERE c.cat_id = f.cat_id
 	$forum_sql
 	ORDER BY c.cat_order ASC, f.forum_order ASC";
-if( !($result = $db->sql_query($sql)) )
-{
+
+if( !($result = $db->sql_query($sql)) ) {
 	message_die(GENERAL_ERROR, 'Could not obtain list of forums for pruning', '', __LINE__, __FILE__, $sql);
 }
 
 $forum_rows = [];
+
 while( $row = $db->sql_fetchrow($result) )
 {
 	$forum_rows[] = $row;
@@ -82,19 +77,15 @@ while( $row = $db->sql_fetchrow($result) )
 //
 // Check for submit to be equal to Prune. If so then proceed with the pruning.
 //
-if( isset($_POST['doprune']) )
-{
+if( isset($_POST['doprune']) ) {
 	$prunedays = isset($_POST['prunedays']) ? (int)$_POST['prunedays'] : 0;
 
 	// Convert days to seconds for timestamp functions...
 	$prunedate = time() - ( $prunedays * 86400 );
 
-	$template->set_filenames(array(
-		'body' => 'admin/forum_prune_result_body.tpl')
-	);
+    $template->set_filenames(['body' => 'admin/forum_prune_result_body.tpl']);
 
-	for($i = 0; $i < count($forum_rows); $i++)
-	{
+    for($i = 0; $i < count($forum_rows); $i++) {
 		$p_result = prune($forum_rows[$i]['forum_id'], $prunedate);
 		sync('forum', $forum_rows[$i]['forum_id']);
 	
@@ -117,29 +108,24 @@ if( isset($_POST['doprune']) )
 		'L_POSTS_PRUNED' => $lang['Posts_pruned'],
 		'L_PRUNE_RESULT' => $lang['Prune_success'])
 	);
-}
-else
-{
+} else {
 	//
 	// If they haven't selected a forum for pruning yet then
 	// display a select box to use for pruning.
 	//
-	if( empty($_POST[POST_FORUM_URL]) )
-	{
+	if( empty($_POST[POST_FORUM_URL]) ) {
 		//
 		// Output a selection table if no forum id has been specified.
 		//
-		$template->set_filenames(array(
-			'body' => 'admin/forum_prune_select_body.tpl')
-		);
+        $template->set_filenames(['body' => 'admin/forum_prune_select_body.tpl']);
 
-		$select_list = '<select name="' . POST_FORUM_URL . '">';
+        $select_list = '<select name="' . POST_FORUM_URL . '">';
 		$select_list .= '<option value="-1">' . $lang['All_Forums'] . '</option>';
 
-		for($i = 0; $i < count($forum_rows); $i++)
-		{
+		for($i = 0; $i < count($forum_rows); $i++) {
 			$select_list .= '<option value="' . $forum_rows[$i]['forum_id'] . '">' . $forum_rows[$i]['forum_name'] . '</option>';
 		}
+
 		$select_list .= '</select>';
 
 		//
@@ -161,9 +147,7 @@ else
 		//
 		// Output the form to retrieve Prune information.
 		//
-		$template->set_filenames(array(
-			'body' => 'admin/forum_prune_body.tpl')
-		);
+		$template->set_filenames(array('body' => 'admin/forum_prune_body.tpl'));
 
 		$forum_name = ( $forum_id == -1 ) ? $lang['All_Forums'] : $forum_rows[0]['forum_name'];
 

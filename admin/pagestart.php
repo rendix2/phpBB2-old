@@ -20,9 +20,8 @@
  *
  ***************************************************************************/
 
-if (!defined('IN_PHPBB'))
-{
-	die("Hacking attempt");
+if (!defined('IN_PHPBB')) {
+    die("Hacking attempt");
 }
 
 define('IN_ADMIN', true);
@@ -38,30 +37,24 @@ init_userprefs($userdata);
 // End session management
 //
 
-if (!$userdata['session_logged_in'])
-{
-	redirect(append_sid("login.php?redirect=admin/index.php", true));
-}
-else if ($userdata['user_level'] != ADMIN)
-{
-	message_die(GENERAL_MESSAGE, $lang['Not_admin']);
+if (!$userdata['session_logged_in']) {
+    redirect(append_sid("login.php?redirect=admin/index.php", true));
+} elseif ($userdata['user_level'] != ADMIN) {
+    message_die(GENERAL_MESSAGE, $lang['Not_admin']);
 }
 
-if ($_GET['sid'] != $userdata['session_id'])
-{
-	redirect("index.php?sid=" . $userdata['session_id']);
+if ($_GET['sid'] != $userdata['session_id']) {
+    redirect("index.php?sid=" . $userdata['session_id']);
 }
 
-if (!$userdata['session_admin'])
-{
-	redirect(append_sid("login.php?redirect=admin/index.php&admin=1", true));
+if (!$userdata['session_admin']) {
+    redirect(append_sid("login.php?redirect=admin/index.php&admin=1", true));
 }
 
-if (empty($no_page_header))
-{
-	// Not including the pageheader can be neccesarry if META tags are
-	// needed in the calling script.
-	include './page_header_admin.php';
+if (empty($no_page_header)) {
+    // Not including the pageheader can be neccesarry if META tags are
+    // needed in the calling script.
+    include './page_header_admin.php';
 }
 
 ?>

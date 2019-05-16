@@ -34,13 +34,14 @@ require './pagestart.php';
 // Begin functions
 //
 function inarray($needle, $haystack)
-{ 
-	for($i = 0; $i < count($haystack); $i++ ) {
-		if( $haystack[$i] == $needle ) {
-			return true; 
-		} 
-	} 
-	return false; 
+{
+    for ($i = 0; $i < count($haystack); $i++) {
+        if ($haystack[$i] == $needle) {
+            return true;
+        }
+    }
+
+    return false;
 }
 //
 // End functions
@@ -55,11 +56,11 @@ if( isset($_GET['pane']) && $_GET['pane'] == 'left' )
 
 	$setmodules = 1;
 
-	while( $file = @readdir($dir) ) {
-		if( preg_match("/^admin_.*?\.php$/", $file) ) {
-			include './' . $file;
-		}
-	}
+    while ($file = @readdir($dir)) {
+        if (preg_match("/^admin_.*?\.php$/", $file)) {
+            include './' . $file;
+        }
+    }
 
 	@closedir($dir);
 
@@ -67,34 +68,29 @@ if( isset($_GET['pane']) && $_GET['pane'] == 'left' )
 
 	include './page_header_admin.php';
 
-	$template->set_filenames(array(
-		"body" => "admin/index_navigate.tpl")
-	);
+	$template->set_filenames(array("body" => "admin/index_navigate.tpl"));
 
 	$template->assign_vars(array(
 		"U_FORUM_INDEX" => append_sid("../index.php"),
 		"U_ADMIN_INDEX" => append_sid("index.php?pane=right"),
 
 		"L_FORUM_INDEX" => $lang['Main_index'],
-		"L_ADMIN_INDEX" => $lang['Admin_Index'], 
+		"L_ADMIN_INDEX" => $lang['Admin_Index'],
 		"L_PREVIEW_FORUM" => $lang['Preview_forum'])
 	);
 
 	ksort($module);
 
-	while( list($cat, $action_array) = each($module) )
-	{
+	while( list($cat, $action_array) = each($module) ) {
 		$cat = !empty($lang[$cat]) ? $lang[$cat] : preg_replace("/_/", " ", $cat);
 
-		$template->assign_block_vars("catrow", array(
-			"ADMIN_CATEGORY" => $cat)
-		);
+        $template->assign_block_vars("catrow", ["ADMIN_CATEGORY" => $cat]);
 
-		ksort($action_array);
+        ksort($action_array);
 
 		$row_count = 0;
-		while( list($action, $file)	= each($action_array) )
-		{
+
+		while( list($action, $file)	= each($action_array) ) {
 			$row_color = ( !($row_count%2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($row_count%2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
@@ -102,7 +98,7 @@ if( isset($_GET['pane']) && $_GET['pane'] == 'left' )
 
 			$template->assign_block_vars("catrow.modulerow", array(
 				"ROW_COLOR" => "#" . $row_color,
-				"ROW_CLASS" => $row_class, 
+				"ROW_CLASS" => $row_class,
 
 				"ADMIN_MODULE" => $action,
 				"U_ADMIN_MODULE" => append_sid($file))
@@ -114,17 +110,13 @@ if( isset($_GET['pane']) && $_GET['pane'] == 'left' )
 	$template->pparse("body");
 
 	include './page_footer_admin.php';
-}
-elseif( isset($_GET['pane']) && $_GET['pane'] == 'right' )
-{
+} elseif( isset($_GET['pane']) && $_GET['pane'] == 'right' ) {
 
 	include './page_header_admin.php';
 
-	$template->set_filenames(array(
-		"body" => "admin/index_body.tpl")
-	);
+    $template->set_filenames(["body" => "admin/index_body.tpl"]);
 
-	$template->assign_vars(array(
+    $template->assign_vars(array(
 		"L_WELCOME" => $lang['Welcome_phpBB'],
 		"L_ADMIN_INTRO" => $lang['Admin_intro'],
 		"L_FORUM_STATS" => $lang['Forum_stats'],
@@ -166,15 +158,13 @@ elseif( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 
 	$avatar_dir_size = 0;
 
-	if ($avatar_dir = @opendir($phpbb_root_path . $board_config['avatar_path']))
-	{
-		while( $file = @readdir($avatar_dir) )
-		{
-			if( $file != "." && $file != ".." )
-			{
-				$avatar_dir_size += @filesize($phpbb_root_path . $board_config['avatar_path'] . "/" . $file);
-			}
-		}
+    if ($avatar_dir = @opendir($phpbb_root_path . $board_config['avatar_path'])) {
+        while ($file = @readdir($avatar_dir)) {
+            if ($file != "." && $file != "..") {
+                $avatar_dir_size += @filesize($phpbb_root_path . $board_config['avatar_path'] . "/" . $file);
+            }
+        }
+
 		@closedir($avatar_dir);
 
 		//
@@ -182,40 +172,30 @@ elseif( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 		// Borrowed the code from the PHP.net annoted manual, origanally written by:
 		// Jesse (jesse@jess.on.ca)
 		//
-		if($avatar_dir_size >= 1048576)
-		{
-			$avatar_dir_size = round($avatar_dir_size / 1048576 * 100) / 100 . " MB";
-		}
-		else if($avatar_dir_size >= 1024)
-		{
-			$avatar_dir_size = round($avatar_dir_size / 1024 * 100) / 100 . " KB";
-		}
-		else
-		{
-			$avatar_dir_size = $avatar_dir_size . " Bytes";
-		}
 
-	}
-	else
-	{
+        if ($avatar_dir_size >= 1048576) {
+            $avatar_dir_size = round($avatar_dir_size / 1048576 * 100) / 100 . " MB";
+        } elseif ($avatar_dir_size >= 1024) {
+            $avatar_dir_size = round($avatar_dir_size / 1024 * 100) / 100 . " KB";
+        } else {
+            $avatar_dir_size = $avatar_dir_size . " Bytes";
+        }
+	} else {
 		// Couldn't open Avatar dir.
 		$avatar_dir_size = $lang['Not_available'];
 	}
 
-	if($posts_per_day > $total_posts)
-	{
-		$posts_per_day = $total_posts;
-	}
+    if ($posts_per_day > $total_posts) {
+        $posts_per_day = $total_posts;
+    }
 
-	if($topics_per_day > $total_topics)
-	{
-		$topics_per_day = $total_topics;
-	}
+    if ($topics_per_day > $total_topics) {
+        $topics_per_day = $total_topics;
+    }
 
-	if($users_per_day > $total_users)
-	{
-		$users_per_day = $total_users;
-	}
+    if ($users_per_day > $total_users) {
+        $users_per_day = $total_users;
+    }
 
 	//
 	// DB size ... MySQL only
@@ -223,87 +203,64 @@ elseif( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 	// This code is heavily influenced by a similar routine
 	// in phpMyAdmin 2.2.0
 	//
-	if( preg_match("/^mysql/", SQL_LAYER) )
-	{
+	if( preg_match("/^mysql/", SQL_LAYER) ) {
 		$sql = "SELECT VERSION() AS mysql_version";
-		if($result = $db->sql_query($sql))
-		{
+
+		if($result = $db->sql_query($sql)) {
 			$row = $db->sql_fetchrow($result);
 			$version = $row['mysql_version'];
 
-			if( preg_match("/^(3\.23|4\.|5\.)/", $version) )
-			{
+			if( preg_match("/^(3\.23|4\.|5\.)/", $version) ) {
 				$db_name = preg_match("/^(3\.23\.[6-9])|(3\.23\.[1-9][1-9])|(4\.)|(5\.)/", $version) ? "`$dbname`" : $dbname;
 
 				$sql = "SHOW TABLE STATUS 
 					FROM " . $db_name;
-				if($result = $db->sql_query($sql))
-				{
+
+				if($result = $db->sql_query($sql)) {
 					$tabledata_ary = $db->sql_fetchrowset($result);
 
 					$dbsize = 0;
-					for($i = 0; $i < count($tabledata_ary); $i++)
-					{
-						if( $tabledata_ary[$i]['Type'] != "MRG_MyISAM" )
-						{
-							if( $table_prefix != "" )
-							{
-								if( strstr($tabledata_ary[$i]['Name'], $table_prefix) )
-								{
-									$dbsize += $tabledata_ary[$i]['Data_length'] + $tabledata_ary[$i]['Index_length'];
-								}
-							}
-							else
-							{
-								$dbsize += $tabledata_ary[$i]['Data_length'] + $tabledata_ary[$i]['Index_length'];
-							}
-						}
-					}
+
+                    for ($i = 0; $i < count($tabledata_ary); $i++) {
+                        if ($tabledata_ary[$i]['Type'] != "MRG_MyISAM") {
+                            if ($table_prefix != "") {
+                                if (strstr($tabledata_ary[$i]['Name'], $table_prefix)) {
+                                    $dbsize += $tabledata_ary[$i]['Data_length'] + $tabledata_ary[$i]['Index_length'];
+                                }
+                            } else {
+                                $dbsize += $tabledata_ary[$i]['Data_length'] + $tabledata_ary[$i]['Index_length'];
+                            }
+                        }
+                    }
 				} // Else we couldn't get the table status.
-			}
-			else
-			{
-				$dbsize = $lang['Not_available'];
-			}
-		}
-		else
-		{
-			$dbsize = $lang['Not_available'];
-		}
-	}
-	else if( preg_match("/^mssql/", SQL_LAYER) )
-	{
+            } else {
+                $dbsize = $lang['Not_available'];
+            }
+        } else {
+            $dbsize = $lang['Not_available'];
+        }
+	} else if( preg_match("/^mssql/", SQL_LAYER) ) {
 		$sql = "SELECT ((SUM(size) * 8.0) * 1024.0) as dbsize 
-			FROM sysfiles"; 
-		if( $result = $db->sql_query($sql) )
-		{
+			FROM sysfiles";
+
+		if( $result = $db->sql_query($sql) ) {
 			$dbsize = ( $row = $db->sql_fetchrow($result) ) ? (int)$row['dbsize'] : $lang['Not_available'];
-		}
-		else
-		{
+		} else {
 			$dbsize = $lang['Not_available'];
 		}
-	}
-	else
-	{
+	} else {
 		$dbsize = $lang['Not_available'];
 	}
 
-	if ( is_integer($dbsize) )
-	{
-		if( $dbsize >= 1048576 )
-		{
-			$dbsize = sprintf("%.2f MB", $dbsize / 1048576);
-		}
-		else if( $dbsize >= 1024 )
-		{
-			$dbsize = sprintf("%.2f KB", $dbsize / 1024);
-		}
-		else
-		{
-			$dbsize = sprintf("%.2f Bytes", $dbsize);
-		}
-	}
+    if (is_int($dbsize)) {
+        if ($dbsize >= 1048576) {
+            $dbsize = sprintf("%.2f MB", $dbsize / 1048576);
+        } elseif ($dbsize >= 1024) {
+            $dbsize = sprintf("%.2f KB", $dbsize / 1024);
+        } else {
+            $dbsize = sprintf("%.2f Bytes", $dbsize);
+        }
+    }
 
 	$template->assign_vars(array(
 		"NUMBER_OF_POSTS" => $total_posts,
@@ -331,10 +288,11 @@ elseif( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 			AND u.user_id <> " . ANONYMOUS . " 
 			AND s.session_time >= " . ( time() - 300 ) . " 
 		ORDER BY u.user_session_time DESC";
-	if(!$result = $db->sql_query($sql))
-	{
+
+	if(!$result = $db->sql_query($sql)) {
 		message_die(GENERAL_ERROR, "Couldn't obtain regd user/online information.", "", __LINE__, __FILE__, $sql);
 	}
+
 	$onlinerow_reg = $db->sql_fetchrowset($result);
 
 	$sql = "SELECT session_page, session_logged_in, session_time, session_ip, session_start   
@@ -342,55 +300,45 @@ elseif( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 		WHERE session_logged_in = 0
 			AND session_time >= " . ( time() - 300 ) . "
 		ORDER BY session_time DESC";
-	if(!$result = $db->sql_query($sql))
-	{
+
+	if(!$result = $db->sql_query($sql)) {
 		message_die(GENERAL_ERROR, "Couldn't obtain guest user/online information.", "", __LINE__, __FILE__, $sql);
 	}
+
 	$onlinerow_guest = $db->sql_fetchrowset($result);
 
 	$sql = "SELECT forum_name, forum_id
 		FROM " . FORUMS_TABLE;
-	if($forums_result = $db->sql_query($sql))
-	{
-		while($forumsrow = $db->sql_fetchrow($forums_result))
-		{
-			$forum_data[$forumsrow['forum_id']] = $forumsrow['forum_name'];
-		}
-	}
-	else
-	{
-		message_die(GENERAL_ERROR, "Couldn't obtain user/online forums information.", "", __LINE__, __FILE__, $sql);
-	}
+
+    if ($forums_result = $db->sql_query($sql)) {
+        while ($forumsrow = $db->sql_fetchrow($forums_result)) {
+            $forum_data[$forumsrow['forum_id']] = $forumsrow['forum_name'];
+        }
+    } else {
+        message_die(GENERAL_ERROR, "Couldn't obtain user/online forums information.", "", __LINE__, __FILE__, $sql);
+    }
 
 	$reg_userid_ary = [];
 
-	if( count($onlinerow_reg) )
-	{
-		$registered_users = 0;
+    if (count($onlinerow_reg)) {
+        $registered_users = 0;
 
-		for($i = 0; $i < count($onlinerow_reg); $i++)
-		{
-			if( !inarray($onlinerow_reg[$i]['user_id'], $reg_userid_ary) )
-			{
+        for ($i = 0; $i < count($onlinerow_reg); $i++) {
+            if (!inarray($onlinerow_reg[$i]['user_id'], $reg_userid_ary)) {
 				$reg_userid_ary[] = $onlinerow_reg[$i]['user_id'];
 
 				$username = $onlinerow_reg[$i]['username'];
 
-				if( $onlinerow_reg[$i]['user_allow_viewonline'] || $userdata['user_level'] == ADMIN )
-				{
-					$registered_users++;
-					$hidden = FALSE;
-				}
-				else
-				{
-					$hidden_users++;
-					$hidden = TRUE;
-				}
+                if ($onlinerow_reg[$i]['user_allow_viewonline'] || $userdata['user_level'] == ADMIN) {
+                    $registered_users++;
+                    $hidden = false;
+                } else {
+                    $hidden_users++;
+                    $hidden = true;
+                }
 
-				if( $onlinerow_reg[$i]['user_session_page'] < 1 )
-				{
-					switch($onlinerow_reg[$i]['user_session_page'])
-					{
+				if( $onlinerow_reg[$i]['user_session_page'] < 1 ) {
+					switch($onlinerow_reg[$i]['user_session_page']) {
 						case PAGE_INDEX:
 							$location = $lang['Forum_index'];
 							$location_url = "index.php?pane=right";
@@ -431,9 +379,7 @@ elseif( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 							$location = $lang['Forum_index'];
 							$location_url = "index.php?pane=right";
 					}
-				}
-				else
-				{
+				} else {
 					$location_url = append_sid("admin_forums.php?mode=editforum&amp;" . POST_FORUM_URL . "=" . $onlinerow_reg[$i]['user_session_page']);
 					$location = $forum_data[$onlinerow_reg[$i]['user_session_page']];
 				}
@@ -459,30 +405,22 @@ elseif( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 			}
 		}
 
-	}
-	else
-	{
-		$template->assign_vars(array(
-			"L_NO_REGISTERED_USERS_BROWSING" => $lang['No_users_browsing'])
-		);
-	}
+	} else {
+        $template->assign_vars(["L_NO_REGISTERED_USERS_BROWSING" => $lang['No_users_browsing']]);
+    }
 
-	//
+    //
 	// Guest users
 	//
-	if( count($onlinerow_guest) )
-	{
+	if( count($onlinerow_guest) ) {
 		$guest_users = 0;
 
-		for($i = 0; $i < count($onlinerow_guest); $i++)
-		{
+		for($i = 0; $i < count($onlinerow_guest); $i++) {
 			$guest_userip_ary[] = $onlinerow_guest[$i]['session_ip'];
 			$guest_users++;
 
-			if( $onlinerow_guest[$i]['session_page'] < 1 )
-			{
-				switch( $onlinerow_guest[$i]['session_page'] )
-				{
+			if( $onlinerow_guest[$i]['session_page'] < 1 ) {
+				switch( $onlinerow_guest[$i]['session_page'] ) {
 					case PAGE_INDEX:
 						$location = $lang['Forum_index'];
 						$location_url = "index.php?pane=right";
@@ -523,9 +461,7 @@ elseif( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 						$location = $lang['Forum_index'];
 						$location_url = "index.php?pane=right";
 				}
-			}
-			else
-			{
+			} else {
 				$location_url = append_sid("admin_forums.php?mode=editforum&amp;" . POST_FORUM_URL . "=" . $onlinerow_guest[$i]['session_page']);
 				$location = $forum_data[$onlinerow_guest[$i]['session_page']];
 			}
@@ -548,43 +484,34 @@ elseif( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 				"U_FORUM_LOCATION" => append_sid($location_url))
 			);
 		}
+	} else {
+        $template->assign_vars(["L_NO_GUESTS_BROWSING" => $lang['No_users_browsing']]);
+    }
 
-	}
-	else
-	{
-		$template->assign_vars(array(
-			"L_NO_GUESTS_BROWSING" => $lang['No_users_browsing'])
-		);
-	}
-
-	// Check for new version
+    // Check for new version
 	$current_version = explode('.', '2' . $board_config['version']);
 	$minor_revision = (int) $current_version[2];
 
 	$errno = 0;
 	$errstr = $version_info = '';
 
-	if ($fsock = @fsockopen('www.phpbb.com', 80, $errno, $errstr, 10))
-	{
+	if ($fsock = @fsockopen('www.phpbb.com', 80, $errno, $errstr, 10)) {
 		@fputs($fsock, "GET /updatecheck/20x.txt HTTP/1.1\r\n");
 		@fputs($fsock, "HOST: www.phpbb.com\r\n");
 		@fputs($fsock, "Connection: close\r\n\r\n");
 
 		$get_info = false;
-		while (!@feof($fsock))
-		{
-			if ($get_info)
-			{
-				$version_info .= @fread($fsock, 1024);
-			}
-			else
-			{
-				if (@fgets($fsock, 1024) == "\r\n")
-				{
-					$get_info = true;
-				}
-			}
-		}
+
+        while (!@feof($fsock)) {
+            if ($get_info) {
+                $version_info .= @fread($fsock, 1024);
+            } else {
+                if (@fgets($fsock, 1024) == "\r\n") {
+                    $get_info = true;
+                }
+            }
+        }
+
 		@fclose($fsock);
 
 		$version_info = explode("\n", $version_info);
@@ -592,30 +519,21 @@ elseif( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 		$latest_minor_revision = (int) $version_info[2];
 		$latest_version = (int) $version_info[0] . '.' . (int) $version_info[1] . '.' . (int) $version_info[2];
 
-		if ($latest_head_revision == 2 && $minor_revision == $latest_minor_revision)
-		{
+		if ($latest_head_revision == 2 && $minor_revision == $latest_minor_revision) {
 			$version_info = '<p style="color:green">' . $lang['Version_up_to_date'] . '</p>';
-		}
-		else
-		{
+		} else {
 			$version_info = '<p style="color:red">' . $lang['Version_not_up_to_date'];
 			$version_info .= '<br />' . sprintf($lang['Latest_version_info'], $latest_version) . ' ' . sprintf($lang['Current_version_info'], '2' . $board_config['version']) . '</p>';
 		}
-	}
-	else
-	{
-		if ($errstr)
-		{
+	} else {
+		if ($errstr) {
 			$version_info = '<p style="color:red">' . sprintf($lang['Connect_socket_error'], $errstr) . '</p>';
-		}
-		else
-		{
+		} else {
 			$version_info = '<p>' . $lang['Socket_functions_disabled'] . '</p>';
 		}
 	}
 	
 	$version_info .= '<p>' . $lang['Mailing_list_subscribe_reminder'] . '</p>';
-	
 
 	$template->assign_vars(array(
 		'VERSION_INFO'	=> $version_info,
@@ -625,18 +543,13 @@ elseif( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 	$template->pparse("body");
 
 	include './page_footer_admin.php';
-
-}
-else
-{
+} else {
 	//
 	// Generate frameset
 	//
-	$template->set_filenames(array(
-		"body" => "admin/index_frameset.tpl")
-	);
+    $template->set_filenames(["body" => "admin/index_frameset.tpl"]);
 
-	$template->assign_vars(array(
+    $template->assign_vars(array(
 		"S_FRAME_NAV" => append_sid("index.php?pane=left"),
 		"S_FRAME_MAIN" => append_sid("index.php?pane=right"))
 	);
@@ -648,7 +561,6 @@ else
 
 	$db->sql_close();
 	exit;
-
 }
 
 ?>

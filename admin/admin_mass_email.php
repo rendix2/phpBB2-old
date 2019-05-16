@@ -21,8 +21,7 @@
 
 define('IN_PHPBB', 1);
 
-if( !empty($setmodules) )
-{
+if( !empty($setmodules) ) {
 	$filename = basename(__FILE__);
 	$module['General']['Mass_Email'] = $filename;
 	
@@ -34,6 +33,7 @@ if( !empty($setmodules) )
 //
 $no_page_header = TRUE;
 $phpbb_root_path = './../';
+
 require $phpbb_root_path . 'extension.inc';
 require './pagestart.php';
 
@@ -49,22 +49,19 @@ $subject = '';
 //
 // Do the job ...
 //
-if ( isset($_POST['submit']) )
-{
+if ( isset($_POST['submit']) ) {
 	$subject = stripslashes(trim($_POST['subject']));
 	$message = stripslashes(trim($_POST['message']));
 	
 	$error = FALSE;
 	$error_msg = '';
 
-	if ( empty($subject) )
-	{
+	if ( empty($subject) ) {
 		$error = true;
 		$error_msg .= !empty($error_msg) ? '<br />' . $lang['Empty_subject'] : $lang['Empty_subject'];
 	}
 
-	if ( empty($message) )
-	{
+	if ( empty($message) ) {
 		$error = true;
 		$error_msg .= !empty($error_msg) ? '<br />' . $lang['Empty_message'] : $lang['Empty_message'];
 	}
@@ -72,40 +69,35 @@ if ( isset($_POST['submit']) )
 	$group_id = (int)$_POST[POST_GROUPS_URL];
 
 	$sql = ( $group_id != -1 ) ? "SELECT u.user_email FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug WHERE ug.group_id = $group_id AND ug.user_pending <> " . TRUE . " AND u.user_id = ug.user_id" : "SELECT user_email FROM " . USERS_TABLE;
-	if ( !($result = $db->sql_query($sql)) )
-	{
+
+	if ( !($result = $db->sql_query($sql)) ) {
 		message_die(GENERAL_ERROR, 'Could not select group members', '', __LINE__, __FILE__, $sql);
 	}
 
-	if ( $row = $db->sql_fetchrow($result) )
-	{
+	if ( $row = $db->sql_fetchrow($result) ) {
 		$bcc_list = [];
-		do
-		{
+
+		do {
 			$bcc_list[] = $row['user_email'];
 		}
 		while ( $row = $db->sql_fetchrow($result) );
 
 		$db->sql_freeresult($result);
-	}
-	else
-	{
+	} else {
 		$message = ( $group_id != -1 ) ? $lang['Group_not_exist'] : $lang['No_such_user'];
 
 		$error = true;
 		$error_msg .= !empty($error_msg) ? '<br />' . $message : $message;
 	}
 
-	if ( !$error )
-	{
+	if ( !$error ) {
 		include $phpbb_root_path . 'includes/emailer.php';
 
 		//
 		// Let's do some checking to make sure that mass mail functions
 		// are working in win32 versions of php.
 		//
-		if ( preg_match('/[c-z]:\\\.*/i', getenv('PATH')) && !$board_config['smtp_delivery'])
-		{
+		if ( preg_match('/[c-z]:\\\.*/i', getenv('PATH')) && !$board_config['smtp_delivery']) {
 			$ini_val = ( @phpversion() >= '4.0.0' ) ? 'ini_get' : 'get_cfg_var';
 
 			// We are running on windows, force delivery to use our smtp functions
@@ -119,8 +111,7 @@ if ( isset($_POST['submit']) )
 		$emailer->from($board_config['board_email']);
 		$emailer->replyto($board_config['board_email']);
 
-		for ($i = 0; $i < count($bcc_list); $i++)
-		{
+		for ($i = 0; $i < count($bcc_list); $i++) {
 			$emailer->bcc($bcc_list[$i]);
 		}
 
@@ -144,17 +135,12 @@ if ( isset($_POST['submit']) )
 
 		message_die(GENERAL_MESSAGE, $lang['Email_sent'] . '<br /><br />' . sprintf($lang['Click_return_admin_index'],  '<a href="' . append_sid("index.php?pane=right") . '">', '</a>'));
 	}
-}	
+}
 
-if ( $error )
-{
-	$template->set_filenames(array(
-		'reg_header' => 'error_body.tpl')
-	);
-	$template->assign_vars(array(
-		'ERROR_MESSAGE' => $error_msg)
-	);
-	$template->assign_var_from_handle('ERROR_BOX', 'reg_header');
+if ($error) {
+    $template->set_filenames(['reg_header' => 'error_body.tpl']);
+    $template->assign_vars(['ERROR_MESSAGE' => $error_msg]);
+    $template->assign_var_from_handle('ERROR_BOX', 'reg_header');
 }
 
 //
@@ -164,20 +150,19 @@ if ( $error )
 $sql = "SELECT group_id, group_name 
 	FROM ".GROUPS_TABLE . "  
 	WHERE group_single_user <> 1";
-if ( !($result = $db->sql_query($sql)) ) 
-{
+
+if ( !($result = $db->sql_query($sql)) ) {
 	message_die(GENERAL_ERROR, 'Could not obtain list of groups', '', __LINE__, __FILE__, $sql);
 }
 
 $select_list = '<select name = "' . POST_GROUPS_URL . '"><option value = "-1">' . $lang['All_users'] . '</option>';
-if ( $row = $db->sql_fetchrow($result) )
-{
-	do
-	{
+if ( $row = $db->sql_fetchrow($result) ) {
+	do {
 		$select_list .= '<option value = "' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
 	}
 	while ( $row = $db->sql_fetchrow($result) );
 }
+
 $select_list .= '</select>';
 
 //
@@ -185,9 +170,7 @@ $select_list .= '</select>';
 //
 include './page_header_admin.php';
 
-$template->set_filenames(array(
-	'body' => 'admin/user_email_body.tpl')
-);
+$template->set_filenames(array('body' => 'admin/user_email_body.tpl'));
 
 $template->assign_vars(array(
 	'MESSAGE' => $message,

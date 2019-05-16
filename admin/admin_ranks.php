@@ -19,8 +19,7 @@
  *
  ***************************************************************************/
 
-if( !empty($setmodules) )
-{
+if( !empty($setmodules) ) {
 	$file = basename(__FILE__);
 	$module['Users']['Ranks'] = $file;
 	return;
@@ -32,6 +31,7 @@ define('IN_PHPBB', 1);
 // Let's set the root dir for phpBB
 //
 $phpbb_root_path = "./../";
+
 require $phpbb_root_path . 'extension.inc';
 
 $cancel = ( isset($_POST['cancel']) || isset($_POST['cancel']) ) ? true : false;
@@ -39,31 +39,22 @@ $no_page_header = $cancel;
 
 require './pagestart.php';
 
-if ($cancel)
-{
+if ($cancel) {
 	redirect('admin/' . append_sid("admin_ranks.php", true));
 }
 
-if( isset($_GET['mode']) || isset($_POST['mode']) )
-{
+if( isset($_GET['mode']) || isset($_POST['mode']) ) {
 	$mode = isset($_GET['mode']) ? $_GET['mode'] : $_POST['mode'];
 	$mode = htmlspecialchars($mode);
-}
-else 
-{
+} else {
 	//
 	// These could be entered via a form button
 	//
-	if( isset($_POST['add']) )
-	{
+	if (isset($_POST['add'])) {
 		$mode = "add";
-	}
-	else if( isset($_POST['save']) )
-	{
+	} elseif (isset($_POST['save'])) {
 		$mode = "save";
-	}
-	else
-	{
+	} else {
 		$mode = "";
 	}
 }
@@ -71,10 +62,8 @@ else
 // Restrict mode input to valid options
 $mode = in_array($mode, array('add', 'edit', 'save', 'delete')) ? $mode : '';
 
-if( $mode != "" )
-{
-	if( $mode == "edit" || $mode == "add" )
-	{
+if( $mode != "" ) {
+	if( $mode == "edit" || $mode == "add" ) {
 		//
 		// They want to add a new rank, show the form.
 		//
@@ -82,26 +71,21 @@ if( $mode != "" )
 		
 		$s_hidden_fields = "";
 		
-		if( $mode == "edit" )
-		{
-			if( empty($rank_id) )
-			{
+		if( $mode == "edit" ) {
+			if( empty($rank_id) ) {
 				message_die(GENERAL_MESSAGE, $lang['Must_select_rank']);
 			}
 
 			$sql = "SELECT * FROM " . RANKS_TABLE . "
 				WHERE rank_id = $rank_id";
-			if(!$result = $db->sql_query($sql))
-			{
+
+			if (!$result = $db->sql_query($sql)) {
 				message_die(GENERAL_ERROR, "Couldn't obtain rank data", "", __LINE__, __FILE__, $sql);
 			}
 			
 			$rank_info = $db->sql_fetchrow($result);
 			$s_hidden_fields .= '<input type="hidden" name="id" value="' . $rank_id . '" />';
-
-		}
-		else
-		{
+		} else {
 			$rank_info['rank_special'] = 0;
 		}
 
@@ -109,10 +93,8 @@ if( $mode != "" )
 
 		$rank_is_special = $rank_info['rank_special'] ? "checked=\"checked\"" : "";
 		$rank_is_not_special = ( !$rank_info['rank_special'] ) ? "checked=\"checked\"" : "";
-		
-		$template->set_filenames(array(
-			"body" => "admin/ranks_edit_body.tpl")
-		);
+
+		$template->set_filenames(["body" => "admin/ranks_edit_body.tpl"]);
 
 		$template->assign_vars(array(
                 "RANK" => $rank_info['rank_title'],
@@ -137,10 +119,7 @@ if( $mode != "" )
                 "S_RANK_ACTION" => append_sid("admin_ranks.php"),
                 "S_HIDDEN_FIELDS" => $s_hidden_fields)
 		);
-		
-	}
-	else if( $mode == "save" )
-	{
+	} else if( $mode == "save" ) {
 		//
 		// Ok, they sent us our info, let's update it.
 		//
@@ -151,13 +130,11 @@ if( $mode != "" )
 		$min_posts = isset($_POST['min_posts']) ? (int)$_POST['min_posts'] : -1;
 		$rank_image = isset($_POST['rank_image']) ? trim($_POST['rank_image']) : "";
 
-		if( $rank_title == "" )
-		{
+		if( $rank_title == "" ) {
 			message_die(GENERAL_MESSAGE, $lang['Must_select_rank']);
 		}
 
-		if( $special_rank == 1 )
-		{
+		if( $special_rank == 1 ) {
 			$max_posts = -1;
 			$min_posts = -1;
 		}
@@ -165,43 +142,36 @@ if( $mode != "" )
 		//
 		// The rank image has to be a jpg, gif or png
 		//
-		if($rank_image != "")
-		{
-			if ( !preg_match("/(\.gif|\.png|\.jpg)$/is", $rank_image))
-			{
+		if($rank_image != "") {
+			if ( !preg_match("/(\.gif|\.png|\.jpg)$/is", $rank_image)) {
 				$rank_image = "";
 			}
 		}
 
-		if ($rank_id)
-		{
-			if (!$special_rank)
-			{
+		if ($rank_id) {
+			if (!$special_rank) {
 				$sql = "UPDATE " . USERS_TABLE . " 
 					SET user_rank = 0 
 					WHERE user_rank = $rank_id";
 
-				if( !$result = $db->sql_query($sql) ) 
-				{
+				if( !$result = $db->sql_query($sql) ) {
 					message_die(GENERAL_ERROR, $lang['No_update_ranks'], "", __LINE__, __FILE__, $sql);
 				}
 			}
+
 			$sql = "UPDATE " . RANKS_TABLE . "
 				SET rank_title = '" . str_replace("\'", "''", $rank_title) . "', rank_special = $special_rank, rank_min = $min_posts, rank_image = '" . str_replace("\'", "''", $rank_image) . "'
 				WHERE rank_id = $rank_id";
 
 			$message = $lang['Rank_updated'];
-		}
-		else
-		{
+		} else {
 			$sql = "INSERT INTO " . RANKS_TABLE . " (rank_title, rank_special, rank_min, rank_image)
 				VALUES ('" . str_replace("\'", "''", $rank_title) . "', $special_rank, $min_posts, '" . str_replace("\'", "''", $rank_image) . "')";
 
 			$message = $lang['Rank_added'];
 		}
 		
-		if( !$result = $db->sql_query($sql) )
-		{
+		if( !$result = $db->sql_query($sql) ) {
 			message_die(GENERAL_ERROR, "Couldn't update/insert into ranks table", "", __LINE__, __FILE__, $sql);
 		}
 
@@ -209,31 +179,24 @@ if( $mode != "" )
 
 		message_die(GENERAL_MESSAGE, $message);
 
-	}
-	else if( $mode == "delete" )
-	{
+	} else if( $mode == "delete" ) {
 		//
 		// Ok, they want to delete their rank
 		//
 		
-		if( isset($_POST['id']) || isset($_GET['id']) )
-		{
+		if( isset($_POST['id']) || isset($_GET['id']) ) {
 			$rank_id = isset($_POST['id']) ? (int)$_POST['id'] : (int)$_GET['id'];
-		}
-		else
-		{
+		} else {
 			$rank_id = 0;
 		}
 
 		$confirm = isset($_POST['confirm']);
 		
-		if( $rank_id && $confirm )
-		{
+		if( $rank_id && $confirm ) {
 			$sql = "DELETE FROM " . RANKS_TABLE . "
 				WHERE rank_id = $rank_id";
 			
-			if( !$result = $db->sql_query($sql) )
-			{
+			if( !$result = $db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, "Couldn't delete rank data", "", __LINE__, __FILE__, $sql);
 			}
 			
@@ -241,8 +204,7 @@ if( $mode != "" )
 				SET user_rank = 0 
 				WHERE user_rank = $rank_id";
 
-			if( !$result = $db->sql_query($sql) ) 
-			{
+			if( !$result = $db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, $lang['No_update_ranks'], "", __LINE__, __FILE__, $sql);
 			}
 
@@ -250,13 +212,9 @@ if( $mode != "" )
 
 			message_die(GENERAL_MESSAGE, $message);
 
-		}
-		elseif( $rank_id && !$confirm)
-		{
+		} elseif( $rank_id && !$confirm) {
 			// Present the confirmation screen to the user
-			$template->set_filenames(array(
-				'body' => 'admin/confirm_body.tpl')
-			);
+			$template->set_filenames(array('body' => 'admin/confirm_body.tpl'));
 
 			$hidden_fields = '<input type="hidden" name="mode" value="delete" /><input type="hidden" name="id" value="' . $rank_id . '" />';
 
@@ -270,9 +228,7 @@ if( $mode != "" )
 				'S_CONFIRM_ACTION' => append_sid("admin_ranks.php"),
 				'S_HIDDEN_FIELDS' => $hidden_fields)
 			);
-		}
-		else
-		{
+		} else {
 			message_die(GENERAL_MESSAGE, $lang['Must_select_rank']);
 		}
 	}
@@ -285,16 +241,15 @@ if( $mode != "" )
 //
 // Show the default page
 //
-$template->set_filenames(array(
-	"body" => "admin/ranks_list_body.tpl")
-);
+$template->set_filenames(["body" => "admin/ranks_list_body.tpl"]);
 
 $sql = "SELECT * FROM " . RANKS_TABLE . "
 	ORDER BY rank_min ASC, rank_special ASC";
-if( !$result = $db->sql_query($sql) )
-{
+
+if( !$result = $db->sql_query($sql) ) {
 	message_die(GENERAL_ERROR, "Couldn't obtain ranks data", "", __LINE__, __FILE__, $sql);
 }
+
 $rank_count = $db->sql_numrows($result);
 
 $rank_rows = $db->sql_fetchrowset($result);
@@ -313,15 +268,13 @@ $template->assign_vars(array(
 	"S_RANKS_ACTION" => append_sid("admin_ranks.php"))
 );
 
-for($i = 0; $i < $rank_count; $i++)
-{
+for($i = 0; $i < $rank_count; $i++) {
 	$rank = $rank_rows[$i]['rank_title'];
 	$special_rank = $rank_rows[$i]['rank_special'];
 	$rank_id = $rank_rows[$i]['rank_id'];
 	$rank_min = $rank_rows[$i]['rank_min'];
 	
-	if( $special_rank == 1 )
-	{
+	if( $special_rank == 1 ) {
 		$rank_min = $rank_max = "-";
 	}
 

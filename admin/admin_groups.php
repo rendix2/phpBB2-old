@@ -22,8 +22,7 @@
 
 define('IN_PHPBB', 1);
 
-if ( !empty($setmodules) )
-{
+if ( !empty($setmodules) ) {
 	$filename = basename(__FILE__);
 	$module['Groups']['Manage'] = $filename;
 
@@ -34,39 +33,30 @@ if ( !empty($setmodules) )
 // Load default header
 //
 $phpbb_root_path = './../';
+
 require $phpbb_root_path . 'extension.inc';
 require './pagestart.php';
 
-if ( isset($_POST[POST_GROUPS_URL]) || isset($_GET[POST_GROUPS_URL]) )
-{
+if ( isset($_POST[POST_GROUPS_URL]) || isset($_GET[POST_GROUPS_URL]) ) {
 	$group_id = isset($_POST[POST_GROUPS_URL]) ? (int)$_POST[POST_GROUPS_URL] : (int)$_GET[POST_GROUPS_URL];
-}
-else
-{
+} else {
 	$group_id = 0;
 }
 
-if ( isset($_POST['mode']) || isset($_GET['mode']) )
-{
+if (isset($_POST['mode']) || isset($_GET['mode'])) {
 	$mode = isset($_POST['mode']) ? $_POST['mode'] : $_GET['mode'];
 	$mode = htmlspecialchars($mode);
-}
-else
-{
+} else {
 	$mode = '';
 }
 
-if ( isset($_POST['edit']) || isset($_POST['new']) )
-{
+if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 	//
 	// Ok they are editing a group or creating a new group
 	//
-	$template->set_filenames(array(
-		'body' => 'admin/group_edit_body.tpl')
-	);
+	$template->set_filenames(['body' => 'admin/group_edit_body.tpl']);
 
-	if ( isset($_POST['edit']) )
-	{
+	if (isset($_POST['edit'])) {
 		//
 		// They're editing. Grab the vars.
 		//
@@ -74,55 +64,49 @@ if ( isset($_POST['edit']) || isset($_POST['new']) )
 			FROM " . GROUPS_TABLE . "
 			WHERE group_single_user <> " . TRUE . "
 			AND group_id = $group_id";
-		if ( !($result = $db->sql_query($sql)) )
-		{
+
+		if (!($result = $db->sql_query($sql))) {
 			message_die(GENERAL_ERROR, 'Error getting group information', '', __LINE__, __FILE__, $sql);
 		}
 
-		if ( !($group_info = $db->sql_fetchrow($result)) )
-		{
+		if (!($group_info = $db->sql_fetchrow($result))) {
 			message_die(GENERAL_MESSAGE, $lang['Group_not_exist']);
 		}
 
 		$mode = 'editgroup';
 		$template->assign_block_vars('group_edit', array());
 
-	}
-	else if ( isset($_POST['new']) )
-	{
-		$group_info = array (
-			'group_name' => '',
+	} else if ( isset($_POST['new']) ) {
+		$group_info = [
+			'group_name'        => '',
 			'group_description' => '',
-			'group_moderator' => '',
-			'group_type' => GROUP_OPEN);
+			'group_moderator'   => '',
+			'group_type'        => GROUP_OPEN
+		];
+
 		$group_open = ' checked="checked"';
 
 		$mode = 'newgroup';
-
 	}
 
 	//
 	// Ok, now we know everything about them, let's show the page.
 	//
-	if ($group_info['group_moderator'] != '')
-	{
+	if ($group_info['group_moderator'] != '') {
 		$sql = "SELECT user_id, username
 			FROM " . USERS_TABLE . "
 			WHERE user_id = " . $group_info['group_moderator'];
-		if ( !($result = $db->sql_query($sql)) )
-		{
+
+		if (!($result = $db->sql_query($sql))) {
 			message_die(GENERAL_ERROR, 'Could not obtain user info for moderator list', '', __LINE__, __FILE__, $sql);
 		}
 
-		if ( !($row = $db->sql_fetchrow($result)) )
-		{
+		if (!($row = $db->sql_fetchrow($result))) {
 			message_die(GENERAL_ERROR, 'Could not obtain user info for moderator list', '', __LINE__, __FILE__, $sql);
 		}
 
 		$group_moderator = $row['username'];
-	}
-	else
-	{
+	} else {
 		$group_moderator = '';
 	}
 
@@ -169,14 +153,11 @@ if ( isset($_POST['edit']) || isset($_POST['new']) )
 
 	$template->pparse('body');
 
-}
-else if ( isset($_POST['group_update']) )
-{
+} else if ( isset($_POST['group_update']) ) {
 	//
 	// Ok, they are submitting a group, let's save the data based on if it's new or editing
 	//
-	if ( isset($_POST['group_delete']) )
-	{
+	if ( isset($_POST['group_delete']) ) {
 		//
 		// Reset User Moderator Level
 		//
@@ -184,40 +165,38 @@ else if ( isset($_POST['group_update']) )
 		// Is Group moderating a forum ?
 		$sql = "SELECT auth_mod FROM " . AUTH_ACCESS_TABLE . " 
 			WHERE group_id = " . $group_id;
-		if ( !($result = $db->sql_query($sql)) )
-		{
+
+		if ( !($result = $db->sql_query($sql)) ) {
 			message_die(GENERAL_ERROR, 'Could not select auth_access', '', __LINE__, __FILE__, $sql);
 		}
 
 		$row = $db->sql_fetchrow($result);
-		if ((int)$row['auth_mod'] == 1)
-		{
+
+		if ((int)$row['auth_mod'] == 1) {
 			// Yes, get the assigned users and update their Permission if they are no longer moderator of one of the forums
 			$sql = "SELECT user_id FROM " . USER_GROUP_TABLE . "
 				WHERE group_id = " . $group_id;
-			if ( !($result = $db->sql_query($sql)) )
-			{
+
+			if ( !($result = $db->sql_query($sql)) ) {
 				message_die(GENERAL_ERROR, 'Could not select user_group', '', __LINE__, __FILE__, $sql);
 			}
 
 			$rows = $db->sql_fetchrowset($result);
-			for ($i = 0; $i < count($rows); $i++)
-			{
+
+			for ($i = 0; $i < count($rows); $i++) {
 				$sql = "SELECT g.group_id FROM " . AUTH_ACCESS_TABLE . " a, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug
 				WHERE (a.auth_mod = 1) AND (g.group_id = a.group_id) AND (a.group_id = ug.group_id) AND (g.group_id = ug.group_id) 
 					AND (ug.user_id = " . (int)$rows[$i]['user_id'] . ") AND (ug.group_id <> " . $group_id . ")";
-				if ( !($result = $db->sql_query($sql)) )
-				{
+
+				if ( !($result = $db->sql_query($sql)) ) {
 					message_die(GENERAL_ERROR, 'Could not obtain moderator permissions', '', __LINE__, __FILE__, $sql);
 				}
 
-				if ($db->sql_numrows($result) == 0)
-				{
+				if ($db->sql_numrows($result) == 0) {
 					$sql = "UPDATE " . USERS_TABLE . " SET user_level = " . USER . " 
 					WHERE user_level = " . MOD . " AND user_id = " . (int)$rows[$i]['user_id'];
 					
-					if ( !$db->sql_query($sql) )
-					{
+					if ( !$db->sql_query($sql) ) {
 						message_die(GENERAL_ERROR, 'Could not update moderator permissions', '', __LINE__, __FILE__, $sql);
 					}
 				}
@@ -229,79 +208,69 @@ else if ( isset($_POST['group_update']) )
 		//
 		$sql = "DELETE FROM " . GROUPS_TABLE . "
 			WHERE group_id = " . $group_id;
-		if ( !$db->sql_query($sql) )
-		{
+
+		if ( !$db->sql_query($sql) ) {
 			message_die(GENERAL_ERROR, 'Could not update group', '', __LINE__, __FILE__, $sql);
 		}
 
 		$sql = "DELETE FROM " . USER_GROUP_TABLE . "
 			WHERE group_id = " . $group_id;
-		if ( !$db->sql_query($sql) )
-		{
+
+		if ( !$db->sql_query($sql) ) {
 			message_die(GENERAL_ERROR, 'Could not update user_group', '', __LINE__, __FILE__, $sql);
 		}
 
 		$sql = "DELETE FROM " . AUTH_ACCESS_TABLE . "
 			WHERE group_id = " . $group_id;
-		if ( !$db->sql_query($sql) )
-		{
+
+		if ( !$db->sql_query($sql) ) {
 			message_die(GENERAL_ERROR, 'Could not update auth_access', '', __LINE__, __FILE__, $sql);
 		}
 
 		$message = $lang['Deleted_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . append_sid("admin_groups.php") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');
 
 		message_die(GENERAL_MESSAGE, $message);
-	}
-	else
-	{
+	} else {
 		$group_type = isset($_POST['group_type']) ? (int)$_POST['group_type'] : GROUP_OPEN;
 		$group_name = isset($_POST['group_name']) ? htmlspecialchars(trim($_POST['group_name'])) : '';
 		$group_description = isset($_POST['group_description']) ? trim($_POST['group_description']) : '';
 		$group_moderator = isset($_POST['username']) ? $_POST['username'] : '';
 		$delete_old_moderator = isset($_POST['delete_old_moderator']) ? true : false;
 
-		if ( $group_name == '' )
-		{
+		if ( $group_name == '' ) {
 			message_die(GENERAL_MESSAGE, $lang['No_group_name']);
-		}
-		else if ( $group_moderator == '' )
-		{
+		} else if ( $group_moderator == '' ) {
 			message_die(GENERAL_MESSAGE, $lang['No_group_moderator']);
 		}
 		
 		$this_userdata = get_userdata($group_moderator, true);
 		$group_moderator = $this_userdata['user_id'];
 
-		if ( !$group_moderator )
-		{
+		if ( !$group_moderator ) {
 			message_die(GENERAL_MESSAGE, $lang['No_group_moderator']);
 		}
 				
-		if( $mode == "editgroup" )
-		{
+		if( $mode == "editgroup" ) {
 			$sql = "SELECT *
 				FROM " . GROUPS_TABLE . "
 				WHERE group_single_user <> " . TRUE . "
 				AND group_id = " . $group_id;
-			if ( !($result = $db->sql_query($sql)) )
-			{
+
+			if ( !($result = $db->sql_query($sql)) ) {
 				message_die(GENERAL_ERROR, 'Error getting group information', '', __LINE__, __FILE__, $sql);
 			}
 
-			if( !($group_info = $db->sql_fetchrow($result)) )
-			{
+			if( !($group_info = $db->sql_fetchrow($result)) ) {
 				message_die(GENERAL_MESSAGE, $lang['Group_not_exist']);
 			}
 		
-			if ( $group_info['group_moderator'] != $group_moderator )
-			{
-				if ( $delete_old_moderator )
-				{
+			if ( $group_info['group_moderator'] != $group_moderator ) {
+				if ( $delete_old_moderator ) {
 					$sql = "DELETE FROM " . USER_GROUP_TABLE . "
 						WHERE user_id = " . $group_info['group_moderator'] . " 
 							AND group_id = " . $group_id;
-					if ( !$db->sql_query($sql) )
-					{
+
+					if ( !$db->sql_query($sql) ) {
 						message_die(GENERAL_ERROR, 'Could not update group moderator', '', __LINE__, __FILE__, $sql);
 					}
 				}
@@ -310,17 +279,16 @@ else if ( isset($_POST['group_update']) )
 					FROM " . USER_GROUP_TABLE . " 
 					WHERE user_id = $group_moderator 
 						AND group_id = $group_id";
-				if ( !($result = $db->sql_query($sql)) )
-				{
+
+				if ( !($result = $db->sql_query($sql)) ) {
 					message_die(GENERAL_ERROR, 'Failed to obtain current group moderator info', '', __LINE__, __FILE__, $sql);
 				}
 
-				if ( !($row = $db->sql_fetchrow($result)) )
-				{
+				if ( !($row = $db->sql_fetchrow($result)) ) {
 					$sql = "INSERT INTO " . USER_GROUP_TABLE . " (group_id, user_id, user_pending)
 						VALUES (" . $group_id . ", " . $group_moderator . ", 0)";
-					if ( !$db->sql_query($sql) )
-					{
+
+					if ( !$db->sql_query($sql) ) {
 						message_die(GENERAL_ERROR, 'Could not update group moderator', '', __LINE__, __FILE__, $sql);
 					}
 				}
@@ -329,39 +297,35 @@ else if ( isset($_POST['group_update']) )
 			$sql = "UPDATE " . GROUPS_TABLE . "
 				SET group_type = $group_type, group_name = '" . str_replace("\'", "''", $group_name) . "', group_description = '" . str_replace("\'", "''", $group_description) . "', group_moderator = $group_moderator 
 				WHERE group_id = $group_id";
-			if ( !$db->sql_query($sql) )
-			{
+
+			if ( !$db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, 'Could not update group', '', __LINE__, __FILE__, $sql);
 			}
 	
 			$message = $lang['Updated_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . append_sid("admin_groups.php") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');;
 
 			message_die(GENERAL_MESSAGE, $message);
-		}
-		else if( $mode == 'newgroup' )
-		{
+		} else if( $mode == 'newgroup' ) {
 			$sql = "INSERT INTO " . GROUPS_TABLE . " (group_type, group_name, group_description, group_moderator, group_single_user) 
 				VALUES ($group_type, '" . str_replace("\'", "''", $group_name) . "', '" . str_replace("\'", "''", $group_description) . "', $group_moderator,	'0')";
-			if ( !$db->sql_query($sql) )
-			{
+
+			if ( !$db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, 'Could not insert new group', '', __LINE__, __FILE__, $sql);
 			}
+
 			$new_group_id = $db->sql_nextid();
 
 			$sql = "INSERT INTO " . USER_GROUP_TABLE . " (group_id, user_id, user_pending)
 				VALUES ($new_group_id, $group_moderator, 0)";
-			if ( !$db->sql_query($sql) )
-			{
+
+			if ( !$db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, 'Could not insert new user-group info', '', __LINE__, __FILE__, $sql);
 			}
 			
 			$message = $lang['Added_new_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . append_sid("admin_groups.php") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');;
 
 			message_die(GENERAL_MESSAGE, $message);
-
-		}
-		else
-		{
+		} else {
 			message_die(GENERAL_MESSAGE, $lang['No_group_action']);
 		}
 	}
@@ -372,26 +336,25 @@ else
 		FROM " . GROUPS_TABLE . "
 		WHERE group_single_user <> " . TRUE . "
 		ORDER BY group_name";
-	if ( !($result = $db->sql_query($sql)) )
-	{
+
+	if ( !($result = $db->sql_query($sql)) ) {
 		message_die(GENERAL_ERROR, 'Could not obtain group list', '', __LINE__, __FILE__, $sql);
 	}
 
 	$select_list = '';
-	if ( $row = $db->sql_fetchrow($result) )
-	{
+
+	if ( $row = $db->sql_fetchrow($result) ) {
 		$select_list .= '<select name="' . POST_GROUPS_URL . '">';
-		do
-		{
+
+		do {
 			$select_list .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
 		}
 		while ( $row = $db->sql_fetchrow($result) );
+
 		$select_list .= '</select>';
 	}
 
-	$template->set_filenames(array(
-		'body' => 'admin/group_select_body.tpl')
-	);
+	$template->set_filenames(['body' => 'admin/group_select_body.tpl']);
 
 	$template->assign_vars(array(
 		'L_GROUP_TITLE' => $lang['Group_administration'],
@@ -404,8 +367,7 @@ else
 		'S_GROUP_SELECT' => $select_list)
 	);
 
-	if ( $select_list != '' )
-	{
+	if ( $select_list != '' ) {
 		$template->assign_block_vars('select_box', array());
 	}
 
