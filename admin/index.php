@@ -35,10 +35,8 @@ require('./pagestart.php');
 //
 function inarray($needle, $haystack)
 { 
-	for($i = 0; $i < count$haystack); $i++ )
-	{ 
-		if( $haystack[$i] == $needle )
-		{ 
+	for($i = 0; $i < count($haystack); $i++ ) {
+		if( $haystack[$i] == $needle ) {
 			return true; 
 		} 
 	} 
@@ -56,10 +54,9 @@ if( isset($_GET['pane']) && $_GET['pane'] == 'left' )
 	$dir = @opendir(".");
 
 	$setmodules = 1;
-	while( $file = @readdir($dir) )
-	{
-		if( preg_match("/^admin_.*?\.php$/", $file) )
-		{
+
+	while( $file = @readdir($dir) ) {
+		if( preg_match("/^admin_.*?\.php$/", $file) ) {
 			include('./' . $file);
 		}
 	}

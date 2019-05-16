@@ -347,7 +347,7 @@ function init_userprefs($userdata)
 
 	$board_config['default_lang'] = $default_lang;
 
-	include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_mainphp.');
+	include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.php');
 
 	if ( defined('IN_ADMIN') ) {
 		if( !file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.php')) ) {

@@ -161,6 +161,12 @@ include($phpbb_root_path . 'includes/auth.php');
 include($phpbb_root_path . 'includes/functions.php');
 include($phpbb_root_path . 'includes/db.php');
 
+include $phpbb_root_path .'vendor/autoload.php';
+
+use Tracy\Debugger;
+
+Debugger::enable();
+
 // We do not need this any longer, unset for safety purposes
 unset($dbpasswd);
 

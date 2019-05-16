@@ -576,7 +576,7 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 		}
 		$db->sql_freeresult($result);
 
-		if (count$group_user))
+		if (count($group_user))
 		{
 			$sql = "UPDATE " . USERS_TABLE . " 
 				SET user_level = " . USER . " 
