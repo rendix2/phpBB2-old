@@ -118,32 +118,34 @@ if (isset($_GET['pane']) && $_GET['pane'] == 'left' )
 
     $template->set_filenames(["body" => "admin/index_body.tpl"]);
 
-    $template->assign_vars(array(
-		"L_WELCOME" => $lang['Welcome_phpBB'],
-		"L_ADMIN_INTRO" => $lang['Admin_intro'],
-		"L_FORUM_STATS" => $lang['Forum_stats'],
-		"L_WHO_IS_ONLINE" => $lang['Who_is_Online'],
-		"L_USERNAME" => $lang['Username'],
-		"L_LOCATION" => $lang['Location'],
-		"L_LAST_UPDATE" => $lang['Last_updated'],
-		"L_IP_ADDRESS" => $lang['IP_Address'],
-		"L_STATISTIC" => $lang['Statistic'],
-		"L_VALUE" => $lang['Value'],
-		"L_NUMBER_POSTS" => $lang['Number_posts'],
-		"L_POSTS_PER_DAY" => $lang['Posts_per_day'],
-		"L_NUMBER_TOPICS" => $lang['Number_topics'],
-		"L_TOPICS_PER_DAY" => $lang['Topics_per_day'],
-		"L_NUMBER_USERS" => $lang['Number_users'],
-		"L_USERS_PER_DAY" => $lang['Users_per_day'],
-		"L_BOARD_STARTED" => $lang['Board_started'],
-		"L_AVATAR_DIR_SIZE" => $lang['Avatar_dir_size'],
-		"L_DB_SIZE" => $lang['Database_size'], 
-		"L_FORUM_LOCATION" => $lang['Forum_Location'],
-		"L_STARTED" => $lang['Login'],
-		"L_GZIP_COMPRESSION" => $lang['Gzip_compression'])
-	);
+    $template->assign_vars(
+        [
+            "L_WELCOME"          => $lang['Welcome_phpBB'],
+            "L_ADMIN_INTRO"      => $lang['Admin_intro'],
+            "L_FORUM_STATS"      => $lang['Forum_stats'],
+            "L_WHO_IS_ONLINE"    => $lang['Who_is_Online'],
+            "L_USERNAME"         => $lang['Username'],
+            "L_LOCATION"         => $lang['Location'],
+            "L_LAST_UPDATE"      => $lang['Last_updated'],
+            "L_IP_ADDRESS"       => $lang['IP_Address'],
+            "L_STATISTIC"        => $lang['Statistic'],
+            "L_VALUE"            => $lang['Value'],
+            "L_NUMBER_POSTS"     => $lang['Number_posts'],
+            "L_POSTS_PER_DAY"    => $lang['Posts_per_day'],
+            "L_NUMBER_TOPICS"    => $lang['Number_topics'],
+            "L_TOPICS_PER_DAY"   => $lang['Topics_per_day'],
+            "L_NUMBER_USERS"     => $lang['Number_users'],
+            "L_USERS_PER_DAY"    => $lang['Users_per_day'],
+            "L_BOARD_STARTED"    => $lang['Board_started'],
+            "L_AVATAR_DIR_SIZE"  => $lang['Avatar_dir_size'],
+            "L_DB_SIZE"          => $lang['Database_size'],
+            "L_FORUM_LOCATION"   => $lang['Forum_Location'],
+            "L_STARTED"          => $lang['Login'],
+            "L_GZIP_COMPRESSION" => $lang['Gzip_compression']
+        ]
+    );
 
-	//
+    //
 	// Get forum statistics
 	//
 	$total_posts = get_db_stat('postcount');
@@ -264,20 +266,22 @@ if (isset($_GET['pane']) && $_GET['pane'] == 'left' )
         }
     }
 
-	$template->assign_vars(array(
-		"NUMBER_OF_POSTS" => $total_posts,
-		"NUMBER_OF_TOPICS" => $total_topics,
-		"NUMBER_OF_USERS" => $total_users,
-		"START_DATE" => $start_date,
-		"POSTS_PER_DAY" => $posts_per_day,
-		"TOPICS_PER_DAY" => $topics_per_day,
-		"USERS_PER_DAY" => $users_per_day,
-		"AVATAR_DIR_SIZE" => $avatar_dir_size,
-		"DB_SIZE" => $dbsize, 
-		"GZIP_COMPRESSION" => $board_config['gzip_compress'] ? $lang['ON'] : $lang['OFF'])
-	);
-	//
-	// End forum statistics
+    $template->assign_vars(
+        [
+            "NUMBER_OF_POSTS"  => $total_posts,
+            "NUMBER_OF_TOPICS" => $total_topics,
+            "NUMBER_OF_USERS"  => $total_users,
+            "START_DATE"       => $start_date,
+            "POSTS_PER_DAY"    => $posts_per_day,
+            "TOPICS_PER_DAY"   => $topics_per_day,
+            "USERS_PER_DAY"    => $users_per_day,
+            "AVATAR_DIR_SIZE"  => $avatar_dir_size,
+            "DB_SIZE"          => $dbsize,
+            "GZIP_COMPRESSION" => $board_config['gzip_compress'] ? $lang['ON'] : $lang['OFF']
+        ]
+    );
+    //
+    // End forum statistics
 	//
 
 	//
@@ -473,20 +477,21 @@ if (isset($_GET['pane']) && $_GET['pane'] == 'left' )
 
 			$guest_ip = decode_ip($onlinerow_guest[$i]['session_ip']);
 
-			$template->assign_block_vars("guest_user_row", array(
-				"ROW_COLOR" => "#" . $row_color,
-				"ROW_CLASS" => $row_class,
-				"USERNAME" => $lang['Guest'],
-				"STARTED" => create_date($board_config['default_dateformat'], $onlinerow_guest[$i]['session_start'], $board_config['board_timezone']), 
-				"LASTUPDATE" => create_date($board_config['default_dateformat'], $onlinerow_guest[$i]['session_time'], $board_config['board_timezone']),
-				"FORUM_LOCATION" => $location,
-				"IP_ADDRESS" => $guest_ip, 
+            $template->assign_block_vars("guest_user_row", [
+                    "ROW_COLOR"      => "#" . $row_color,
+                    "ROW_CLASS"      => $row_class,
+                    "USERNAME"       => $lang['Guest'],
+                    "STARTED"        => create_date($board_config['default_dateformat'], $onlinerow_guest[$i]['session_start'], $board_config['board_timezone']),
+                    "LASTUPDATE"     => create_date($board_config['default_dateformat'], $onlinerow_guest[$i]['session_time'], $board_config['board_timezone']),
+                    "FORUM_LOCATION" => $location,
+                    "IP_ADDRESS"     => $guest_ip,
 
-				"U_WHOIS_IP" => "http://network-tools.com/default.asp?host=$guest_ip", 
-				"U_FORUM_LOCATION" => append_sid($location_url))
-			);
-		}
-	} else {
+                    "U_WHOIS_IP"       => "http://network-tools.com/default.asp?host=$guest_ip",
+                    "U_FORUM_LOCATION" => append_sid($location_url)
+                ]
+            );
+        }
+    } else {
         $template->assign_vars(["L_NO_GUESTS_BROWSING" => $lang['No_users_browsing']]);
     }
 
@@ -551,12 +556,14 @@ if (isset($_GET['pane']) && $_GET['pane'] == 'left' )
 	//
     $template->set_filenames(["body" => "admin/index_frameset.tpl"]);
 
-    $template->assign_vars(array(
-		"S_FRAME_NAV" => append_sid("index.php?pane=left"),
-		"S_FRAME_MAIN" => append_sid("index.php?pane=right"))
-	);
+    $template->assign_vars(
+        [
+            "S_FRAME_NAV"  => append_sid("index.php?pane=left"),
+            "S_FRAME_MAIN" => append_sid("index.php?pane=right")
+        ]
+    );
 
-	header ("Expires: " . gmdate("D, d M Y H:i:s", time()) . " GMT");
+    header ("Expires: " . gmdate("D, d M Y H:i:s", time()) . " GMT");
 	header ("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 
 	$template->pparse("body");
