@@ -78,9 +78,9 @@ if( isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 				}
 
 				if( md5($password) == $row['user_password'] && $row['user_active'] ) {
-					$autologin = ( isset($_POST['autologin']) ) ? TRUE : 0;
+					$autologin = isset($_POST['autologin']) ? TRUE : 0;
 
-					$admin = (isset($_POST['admin'])) ? 1 : 0;
+					$admin = isset($_POST['admin']) ? 1 : 0;
 					$session_id = session_begin($row['user_id'], $user_ip, PAGE_INDEX, FALSE, $autologin, $admin);
 
 					// Reset login tries
@@ -121,7 +121,7 @@ if( isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 				message_die(GENERAL_MESSAGE, $message);
 			}
 		} else {
-			$redirect = ( !empty($_POST['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : "";
+			$redirect = !empty($_POST['redirect']) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : "";
 			$redirect = str_replace("?", "&", $redirect);
 
 			if (strstr(urldecode($redirect), "\n") || strstr(urldecode($redirect), "\r") || strstr(urldecode($redirect), ';url')) {
@@ -138,18 +138,15 @@ if( isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 		}
 	} else if( ( isset($_GET['logout']) || isset($_POST['logout']) ) && $userdata['session_logged_in'] ) {
 		// session id check
-		if ($sid == '' || $sid != $userdata['session_id'])
-		{
+		if ($sid == '' || $sid != $userdata['session_id']) {
 			message_die(GENERAL_ERROR, 'Invalid_session');
 		}
 
-		if( $userdata['session_logged_in'] )
-		{
+		if( $userdata['session_logged_in'] ) {
 			session_end($userdata['session_id'], $userdata['user_id']);
 		}
 
-		if (!empty($_POST['redirect']) || !empty($_GET['redirect']))
-		{
+		if (!empty($_POST['redirect']) || !empty($_GET['redirect'])) {
 		    $url = (!empty($_POST['redirect'])) ? htmlspecialchars($_POST['redirect']) : htmlspecialchars($_GET['redirect']);
 			$url = str_replace('&amp;', '&', $url);
 			redirect(append_sid($url, true));
@@ -157,7 +154,7 @@ if( isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 			redirect(append_sid("index.php", true));
 		}
 	} else {
-		$url = ( !empty($_POST['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : "index.php";
+		$url = !empty($_POST['redirect']) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : "index.php";
 		redirect(append_sid($url, true));
 	}
 } else {

@@ -31,18 +31,17 @@ include($phpbb_root_path . 'includes/bbcode.php');
 //
 $topic_id = $post_id = 0;
 if ( isset($_GET[POST_TOPIC_URL]) ) {
-	$topic_id = intval($_GET[POST_TOPIC_URL]);
+	$topic_id = (int)$_GET[POST_TOPIC_URL];
 } else if ( isset($_GET['topic']) ) {
-	$topic_id = intval($_GET['topic']);
+	$topic_id = (int)$_GET['topic'];
 }
 
 if ( isset($_GET[POST_POST_URL])) {
-	$post_id = intval($_GET[POST_POST_URL]);
+	$post_id = (int)$_GET[POST_POST_URL];
 }
 
-
-$start = ( isset($_GET['start']) ) ? intval($_GET['start']) : 0;
-$start = ($start < 0) ? 0 : $start;
+$start = isset($_GET['start']) ? (int)$_GET['start'] : 0;
+$start = $start < 0 ? 0 : $start;
 
 if (!$topic_id && !$post_id) {
 	message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
@@ -57,10 +56,9 @@ if ( isset($_GET['view']) && empty($_GET[POST_POST_URL]) ) {
 		if ( isset($_COOKIE[$board_config['cookie_name'] . '_sid']) || isset($_GET['sid']) ) {
 			$session_id = isset($_COOKIE[$board_config['cookie_name'] . '_sid']) ? $_COOKIE[$board_config['cookie_name'] . '_sid'] : $_GET['sid'];
 
-			if (!preg_match('/^[A-Za-z0-9]*$/', $session_id)) 
-			{
-				$session_id = '';
-			}
+            if (!preg_match('/^[A-Za-z0-9]*$/', $session_id)) {
+                $session_id = '';
+            }
 
 			if ( $session_id )
 			{
@@ -72,33 +70,28 @@ if ( isset($_GET['view']) && empty($_GET[POST_POST_URL]) ) {
 						AND p.post_time >= u.user_lastvisit
 					ORDER BY p.post_time ASC
 					LIMIT 1";
-				if ( !($result = $db->sql_query($sql)) )
-				{
-					message_die(GENERAL_ERROR, 'Could not obtain newer/older topic information', '', __LINE__, __FILE__, $sql);
-				}
 
-				if ( !($row = $db->sql_fetchrow($result)) )
-				{
-					message_die(GENERAL_MESSAGE, 'No_new_posts_last_visit');
-				}
+                if (!($result = $db->sql_query($sql))) {
+                    message_die(GENERAL_ERROR, 'Could not obtain newer/older topic information', '', __LINE__, __FILE__,
+                        $sql);
+                }
+
+                if (!($row = $db->sql_fetchrow($result))) {
+                    message_die(GENERAL_MESSAGE, 'No_new_posts_last_visit');
+                }
 
 				$post_id = $row['post_id'];
 
-				if (isset($_GET['sid']))
-				{
-					redirect("viewtopic.php?sid=$session_id&" . POST_POST_URL . "=$post_id#$post_id");
-				}
-				else
-				{
-					redirect("viewtopic.php?" . POST_POST_URL . "=$post_id#$post_id");
-				}
+                if (isset($_GET['sid'])) {
+                    redirect("viewtopic.php?sid=$session_id&" . POST_POST_URL . "=$post_id#$post_id");
+                } else {
+                    redirect("viewtopic.php?" . POST_POST_URL . "=$post_id#$post_id");
+                }
 			}
 		}
 
 		redirect(append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id", true));
-	}
-	else if ( $_GET['view'] == 'next' || $_GET['view'] == 'previous' )
-	{
+	} else if ( $_GET['view'] == 'next' || $_GET['view'] == 'previous' ) {
 		$sql_condition = ( $_GET['view'] == 'next' ) ? '>' : '<';
 		$sql_ordering = ( $_GET['view'] == 'next' ) ? 'ASC' : 'DESC';
 
@@ -111,17 +104,14 @@ if ( isset($_GET['view']) && empty($_GET[POST_POST_URL]) ) {
 				AND t.topic_last_post_id $sql_condition t2.topic_last_post_id
 			ORDER BY t.topic_last_post_id $sql_ordering
 			LIMIT 1";
-		if ( !($result = $db->sql_query($sql)) )
-		{
+
+		if ( !($result = $db->sql_query($sql)) ) {
 			message_die(GENERAL_ERROR, "Could not obtain newer/older topic information", '', __LINE__, __FILE__, $sql);
 		}
 
-		if ( $row = $db->sql_fetchrow($result) )
-		{
+		if ( $row = $db->sql_fetchrow($result) ) {
 			$topic_id = intval($row['topic_id']);
-		}
-		else
-		{
+		} else {
 			$message = ( $_GET['view'] == 'next' ) ? 'No_newer_topics' : 'No_older_topics';
 			message_die(GENERAL_MESSAGE, $message);
 		}
@@ -144,13 +134,12 @@ $sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.top
 	WHERE $join_sql
 		AND f.forum_id = t.forum_id
 		$order_sql";
-if ( !($result = $db->sql_query($sql)) )
-{
+
+if ( !($result = $db->sql_query($sql)) ) {
 	message_die(GENERAL_ERROR, "Could not obtain topic information", '', __LINE__, __FILE__, $sql);
 }
 
-if ( !($forum_topic_data = $db->sql_fetchrow($result)) )
-{
+if ( !($forum_topic_data = $db->sql_fetchrow($result)) ) {
 	message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
 }
 
@@ -171,10 +160,8 @@ init_userprefs($userdata);
 $is_auth = [];
 $is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_topic_data);
 
-if( !$is_auth['auth_view'] || !$is_auth['auth_read'] )
-{
-	if ( !$userdata['session_logged_in'] )
-	{
+if( !$is_auth['auth_view'] || !$is_auth['auth_read'] ) {
+	if ( !$userdata['session_logged_in'] ) {
 		$redirect = ($post_id) ? POST_POST_URL . "=$post_id" : POST_TOPIC_URL . "=$topic_id";
 		$redirect .= ($start) ? "&start=$start" : '';
 		redirect(append_sid("login.php?redirect=viewtopic.php&$redirect", true));
@@ -193,41 +180,35 @@ $topic_title = $forum_topic_data['topic_title'];
 $topic_id = intval($forum_topic_data['topic_id']);
 $topic_time = $forum_topic_data['topic_time'];
 
-if ($post_id)
-{
+if ($post_id) {
 	$start = floor(($forum_topic_data['prev_posts'] - 1) / intval($board_config['posts_per_page'])) * intval($board_config['posts_per_page']);
 }
 
 //
 // Is user watching this thread?
 //
-if( $userdata['session_logged_in'] )
-{
+if( $userdata['session_logged_in'] ) {
 	$can_watch_topic = TRUE;
 
 	$sql = "SELECT notify_status
 		FROM " . TOPICS_WATCH_TABLE . "
 		WHERE topic_id = $topic_id
 			AND user_id = " . $userdata['user_id'];
-	if ( !($result = $db->sql_query($sql)) )
-	{
+	if ( !($result = $db->sql_query($sql)) ) {
 		message_die(GENERAL_ERROR, "Could not obtain topic watch information", '', __LINE__, __FILE__, $sql);
 	}
 
-	if ( $row = $db->sql_fetchrow($result) )
-	{
-		if ( isset($_GET['unwatch']) )
-		{
-			if ( $_GET['unwatch'] == 'topic' )
-			{
+	if ( $row = $db->sql_fetchrow($result) ) {
+		if ( isset($_GET['unwatch']) ) {
+			if ( $_GET['unwatch'] == 'topic' ) {
 				$is_watching_topic = 0;
 
 				$sql_priority = (SQL_LAYER == "mysql") ? "LOW_PRIORITY" : '';
 				$sql = "DELETE $sql_priority FROM " . TOPICS_WATCH_TABLE . "
 					WHERE topic_id = $topic_id
 						AND user_id = " . $userdata['user_id'];
-				if ( !($result = $db->sql_query($sql)) )
-				{
+
+				if ( !($result = $db->sql_query($sql)) ) {
 					message_die(GENERAL_ERROR, "Could not delete topic watch information", '', __LINE__, __FILE__, $sql);
 				}
 			}
@@ -238,38 +219,31 @@ if( $userdata['session_logged_in'] )
 
 			$message = $lang['No_longer_watching'] . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . '">', '</a>');
 			message_die(GENERAL_MESSAGE, $message);
-		}
-		else
-		{
+		} else {
 			$is_watching_topic = TRUE;
 
-			if ( $row['notify_status'] )
-			{
+			if ( $row['notify_status'] ) {
 				$sql_priority = (SQL_LAYER == "mysql") ? "LOW_PRIORITY" : '';
 				$sql = "UPDATE $sql_priority " . TOPICS_WATCH_TABLE . "
 					SET notify_status = 0
 					WHERE topic_id = $topic_id
 						AND user_id = " . $userdata['user_id'];
-				if ( !($result = $db->sql_query($sql)) )
-				{
+
+				if ( !($result = $db->sql_query($sql)) ) {
 					message_die(GENERAL_ERROR, "Could not update topic watch information", '', __LINE__, __FILE__, $sql);
 				}
 			}
 		}
-	}
-	else
-	{
-		if ( isset($_GET['watch']) )
-		{
-			if ( $_GET['watch'] == 'topic' )
-			{
+	} else {
+		if ( isset($_GET['watch']) ) {
+			if ( $_GET['watch'] == 'topic' ) {
 				$is_watching_topic = TRUE;
 
 				$sql_priority = (SQL_LAYER == "mysql") ? "LOW_PRIORITY" : '';
 				$sql = "INSERT $sql_priority INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id, notify_status)
 					VALUES (" . $userdata['user_id'] . ", $topic_id, 0)";
-				if ( !($result = $db->sql_query($sql)) )
-				{
+
+				if ( !($result = $db->sql_query($sql)) ) {
 					message_die(GENERAL_ERROR, "Could not insert topic watch information", '', __LINE__, __FILE__, $sql);
 				}
 			}
@@ -280,24 +254,16 @@ if( $userdata['session_logged_in'] )
 
 			$message = $lang['You_are_watching'] . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . '">', '</a>');
 			message_die(GENERAL_MESSAGE, $message);
-		}
-		else
-		{
+		} else {
 			$is_watching_topic = 0;
 		}
 	}
-}
-else
-{
-	if ( isset($_GET['unwatch']) )
-	{
-		if ( $_GET['unwatch'] == 'topic' )
-		{
+} else {
+    if (isset($_GET['unwatch'])) {
+        if ($_GET['unwatch'] == 'topic') {
 			redirect(append_sid("login.php?redirect=viewtopic.php&" . POST_TOPIC_URL . "=$topic_id&unwatch=topic", true));
 		}
-	}
-	else
-	{
+	} else {
 		$can_watch_topic = 0;
 		$is_watching_topic = 0;
 	}
@@ -312,8 +278,8 @@ $previous_days = [0, 1, 7, 14, 30, 90, 180, 364];
 $previous_days_text = [$lang['All_Posts'], $lang['1_Day'], $lang['7_Days'], $lang['2_Weeks'], $lang['1_Month'], $lang['3_Months'], $lang['6_Months'], $lang['1_Year']];
 
 if( !empty($_POST['postdays']) || !empty($_GET['postdays']) ) {
-	$post_days = ( !empty($_POST['postdays']) ) ? intval($_POST['postdays']) : intval($_GET['postdays']);
-	$min_post_time = time() - (intval($post_days) * 86400);
+	$post_days =  !empty($_POST['postdays']) ? (int)$_POST['postdays'] : (int)$_GET['postdays'];
+	$min_post_time = time() - ((int)$post_days * 86400);
 
 	$sql = "SELECT COUNT(p.post_id) AS num_posts
 		FROM " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p
@@ -341,8 +307,7 @@ if( !empty($_POST['postdays']) || !empty($_GET['postdays']) ) {
 
 $select_post_days = '<select name="postdays">';
 
-for($i = 0; $i < count($previous_days); $i++)
-{
+for($i = 0; $i < count($previous_days); $i++) {
 	$selected = ($post_days == $previous_days[$i]) ? ' selected="selected"' : '';
 	$select_post_days .= '<option value="' . $previous_days[$i] . '"' . $selected . '>' . $previous_days_text[$i] . '</option>';
 }
@@ -352,7 +317,7 @@ $select_post_days .= '</select>';
 //
 // Decide how to order the post display
 //
-if ( !empty($_POST['postorder']) || !empty($_GET['postorder']) ) {
+if (!empty($_POST['postorder']) || !empty($_GET['postorder'])) {
 	$post_order = (!empty($_POST['postorder'])) ? htmlspecialchars($_POST['postorder']) : htmlspecialchars($_GET['postorder']);
 	$post_time_order = ($post_order == "asc") ? "ASC" : "DESC";
 } else {
@@ -362,7 +327,7 @@ if ( !empty($_POST['postorder']) || !empty($_GET['postorder']) ) {
 
 $select_post_order = '<select name="postorder">';
 
-if ( $post_time_order == 'ASC' ) {
+if ($post_time_order == 'ASC') {
 	$select_post_order .= '<option value="asc" selected="selected">' . $lang['Oldest_First'] . '</option><option value="desc">' . $lang['Newest_First'] . '</option>';
 } else {
 	$select_post_order .= '<option value="asc">' . $lang['Oldest_First'] . '</option><option value="desc" selected="selected">' . $lang['Newest_First'] . '</option>';
@@ -387,6 +352,7 @@ if ( !($result = $db->sql_query($sql)) ) {
 }
 
 $postrow = [];
+
 if ($row = $db->sql_fetchrow($result)) {
 	do {
 		$postrow[] = $row;
@@ -403,7 +369,8 @@ if ($row = $db->sql_fetchrow($result)) {
    message_die(GENERAL_MESSAGE, $lang['No_posts_topic']); 
 } 
 
-$resync = false; 
+$resync = false;
+
 if ($forum_topic_data['topic_replies'] + 1 < $start + count($postrow))  { 
    $resync = true; 
 } elseif ($start + $board_config['posts_per_page'] > $forum_topic_data['topic_replies'])  { 
@@ -808,14 +775,13 @@ for($i = 0; $i < $total_posts; $i++) {
 	//
 	// Define the little post icon
 	//
-	if ( $userdata['session_logged_in'] && $postrow[$i]['post_time'] > $userdata['user_lastvisit'] && $postrow[$i]['post_time'] > $topic_last_read )
-	{
-		$mini_post_img = $images['icon_minipost_new'];
-		$mini_post_alt = $lang['New_post'];
-	} else {
-		$mini_post_img = $images['icon_minipost'];
-		$mini_post_alt = $lang['Post'];
-	}
+    if ($userdata['session_logged_in'] && $postrow[$i]['post_time'] > $userdata['user_lastvisit'] && $postrow[$i]['post_time'] > $topic_last_read) {
+        $mini_post_img = $images['icon_minipost_new'];
+        $mini_post_alt = $lang['New_post'];
+    } else {
+        $mini_post_img = $images['icon_minipost'];
+        $mini_post_alt = $lang['Post'];
+    }
 
 	$mini_post_url = append_sid("viewtopic.php?" . POST_POST_URL . '=' . $postrow[$i]['post_id']) . '#' . $postrow[$i]['post_id'];
 
@@ -938,20 +904,20 @@ for($i = 0; $i < $total_posts; $i++) {
 		$ip_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_ip'] . '" alt="' . $lang['View_IP'] . '" title="' . $lang['View_IP'] . '" border="0" /></a>';
 		$ip = '<a href="' . $temp_url . '">' . $lang['View_IP'] . '</a>';
 
-		$temp_url = "posting.php?mode=delete&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&amp;sid=" . $userdata['session_id'];
-		$delpost_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_delpost'] . '" alt="' . $lang['Delete_post'] . '" title="' . $lang['Delete_post'] . '" border="0" /></a>';
-		$delpost = '<a href="' . $temp_url . '">' . $lang['Delete_post'] . '</a>';
+		$temp_url        = "posting.php?mode=delete&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&amp;sid=" . $userdata['session_id'];
+		$delete_post_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_delpost'] . '" alt="' . $lang['Delete_post'] . '" title="' . $lang['Delete_post'] . '" border="0" /></a>';
+		$delete_post     = '<a href="' . $temp_url . '">' . $lang['Delete_post'] . '</a>';
 	} else {
 		$ip_img = '';
 		$ip = '';
 
 		if ( $userdata['user_id'] == $poster_id && $is_auth['auth_delete'] && $forum_topic_data['topic_last_post_id'] == $postrow[$i]['post_id'] ) {
-			$temp_url = "posting.php?mode=delete&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&amp;sid=" . $userdata['session_id'];
-			$delpost_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_delpost'] . '" alt="' . $lang['Delete_post'] . '" title="' . $lang['Delete_post'] . '" border="0" /></a>';
-			$delpost = '<a href="' . $temp_url . '">' . $lang['Delete_post'] . '</a>';
+			$temp_url        = "posting.php?mode=delete&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id'] . "&amp;sid=" . $userdata['session_id'];
+			$delete_post_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_delpost'] . '" alt="' . $lang['Delete_post'] . '" title="' . $lang['Delete_post'] . '" border="0" /></a>';
+			$delete_post     = '<a href="' . $temp_url . '">' . $lang['Delete_post'] . '</a>';
 		} else {
-			$delpost_img = '';
-			$delpost = '';
+			$delete_post_img = '';
+			$delete_post     = '';
 		}
 	}
 
@@ -972,15 +938,15 @@ for($i = 0; $i < $total_posts; $i++) {
 	// If the board has HTML off but the post has HTML
 	// on then we process it, else leave it alone
 	//
-	if ( !$board_config['allow_html'] || !$userdata['user_allowhtml']) {
-		if ( $user_sig != '' ) {
-			$user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
-		}
+    if (!$board_config['allow_html'] || !$userdata['user_allowhtml']) {
+        if ($user_sig != '') {
+            $user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
+        }
 
-		if ( $postrow[$i]['enable_html'] ) {
-			$message = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $message);
-		}
-	}
+        if ($postrow[$i]['enable_html']) {
+            $message = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $message);
+        }
+    }
 
 	//
 	// Parse message and/or sig for BBCode if reqd
@@ -1002,15 +968,15 @@ for($i = 0; $i < $total_posts; $i++) {
 	//
 	// Parse smilies
 	//
-	if ( $board_config['allow_smilies'] ) {
-		if ( $postrow[$i]['user_allowsmile'] && $user_sig != '' ) {
-			$user_sig = smilies_pass($user_sig);
-		}
+    if ($board_config['allow_smilies']) {
+        if ($postrow[$i]['user_allowsmile'] && $user_sig != '') {
+            $user_sig = smilies_pass($user_sig);
+        }
 
-		if ( $postrow[$i]['enable_smilies'] ) {
-			$message = smilies_pass($message);
-		}
-	}
+        if ($postrow[$i]['enable_smilies']) {
+            $message = smilies_pass($message);
+        }
+    }
 
 	//
 	// Highlight active words (primarily for search)
@@ -1064,54 +1030,67 @@ for($i = 0; $i < $total_posts; $i++) {
 	$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
 	$template->assign_block_vars('postrow', array(
-		'ROW_COLOR' => '#' . $row_color,
-		'ROW_CLASS' => $row_class,
-		'POSTER_NAME' => $poster,
-		'POSTER_RANK' => $poster_rank,
-		'RANK_IMAGE' => $rank_image,
-		'POSTER_JOINED' => $poster_joined,
-		'POSTER_POSTS' => $poster_posts,
-		'POSTER_FROM' => $poster_from,
-		'POSTER_AVATAR' => $poster_avatar,
-		'POST_DATE' => $post_date,
-		'POST_SUBJECT' => $post_subject,
-		'MESSAGE' => $message,
-		'SIGNATURE' => $user_sig,
-		'EDITED_MESSAGE' => $l_edited_by,
+            'ROW_COLOR' => '#' . $row_color,
+            'ROW_CLASS' => $row_class,
+            'POSTER_NAME' => $poster,
+            'POSTER_RANK' => $poster_rank,
+            'RANK_IMAGE' => $rank_image,
+            'POSTER_JOINED' => $poster_joined,
+            'POSTER_POSTS' => $poster_posts,
+            'POSTER_FROM' => $poster_from,
+            'POSTER_AVATAR' => $poster_avatar,
+            'POST_DATE' => $post_date,
+            'POST_SUBJECT' => $post_subject,
+            'MESSAGE' => $message,
+            'SIGNATURE' => $user_sig,
+            'EDITED_MESSAGE' => $l_edited_by,
 
-		'MINI_POST_IMG' => $mini_post_img,
-		'PROFILE_IMG' => $profile_img,
-		'PROFILE' => $profile,
-		'SEARCH_IMG' => $search_img,
-		'SEARCH' => $search,
-		'PM_IMG' => $pm_img,
-		'PM' => $pm,
-		'EMAIL_IMG' => $email_img,
-		'EMAIL' => $email,
-		'WWW_IMG' => $www_img,
-		'WWW' => $www,
-		'ICQ_STATUS_IMG' => $icq_status_img,
-		'ICQ_IMG' => $icq_img,
-		'ICQ' => $icq,
-		'AIM_IMG' => $aim_img,
-		'AIM' => $aim,
-		'MSN_IMG' => $msn_img,
-		'MSN' => $msn,
-		'YIM_IMG' => $yim_img,
-		'YIM' => $yim,
-		'EDIT_IMG' => $edit_img,
-		'EDIT' => $edit,
-		'QUOTE_IMG' => $quote_img,
-		'QUOTE' => $quote,
-		'IP_IMG' => $ip_img,
-		'IP' => $ip,
-		'DELETE_IMG' => $delpost_img,
-		'DELETE' => $delpost,
+            'MINI_POST_IMG' => $mini_post_img,
 
-		'L_MINI_POST_ALT' => $mini_post_alt,
+            'PROFILE_IMG' => $profile_img,
+            'PROFILE' => $profile,
 
-		'U_MINI_POST' => $mini_post_url,
-		'U_POST_ID' => $postrow[$i]['post_id'])
+            'SEARCH_IMG' => $search_img,
+            'SEARCH' => $search,
+
+            'PM_IMG' => $pm_img,
+            'PM' => $pm,
+
+            'EMAIL_IMG' => $email_img,
+            'EMAIL' => $email,
+
+            'WWW_IMG' => $www_img,
+            'WWW' => $www,
+
+            'ICQ_STATUS_IMG' => $icq_status_img,
+            'ICQ_IMG' => $icq_img,
+            'ICQ' => $icq,
+
+            'AIM_IMG' => $aim_img,
+            'AIM' => $aim,
+
+            'MSN_IMG' => $msn_img,
+            'MSN' => $msn,
+
+            'YIM_IMG' => $yim_img,
+            'YIM' => $yim,
+
+            'EDIT_IMG' => $edit_img,
+            'EDIT' => $edit,
+
+            'QUOTE_IMG' => $quote_img,
+            'QUOTE' => $quote,
+
+            'IP_IMG' => $ip_img,
+            'IP' => $ip,
+
+            'DELETE_IMG' => $delete_post_img,
+            'DELETE' => $delete_post,
+
+            'L_MINI_POST_ALT' => $mini_post_alt,
+
+            'U_MINI_POST' => $mini_post_url,
+            'U_POST_ID' => $postrow[$i]['post_id'])
 	);
 }
 

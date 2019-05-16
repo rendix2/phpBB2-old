@@ -43,26 +43,22 @@ $confirm_id = htmlspecialchars($_GET['id']);
 // Define available charset
 $chars = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',  'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9');
 
-if (!preg_match('/^[A-Za-z0-9]+$/', $confirm_id))
-{
+if (!preg_match('/^[A-Za-z0-9]+$/', $confirm_id)) {
 	$confirm_id = '';
 }
 
 // Try and grab code for this id and session
 $sql = 'SELECT code  
 	FROM ' . CONFIRM_TABLE . " 
-	WHERE session_id = '" . $userdata['session_id'] . "' 
+	WHERE session_id = '" . $user_data['session_id'] . "' 
 		AND confirm_id = '$confirm_id'";
 $result = $db->sql_query($sql);
 
 // If we have a row then grab data else create a new id
-if ($row = $db->sql_fetchrow($result))
-{
+if ($row = $db->sql_fetchrow($result)) {
 	$db->sql_freeresult($result);
 	$code = $row['code'];
-}
-else
-{
+} else {
 	exit;
 }
 
@@ -80,8 +76,8 @@ list($usec, $sec) = explode(' ', microtime());
 mt_srand($sec * $usec); 
 
 $char_widths = [];
-for ($i = 0; $i < strlen($code); $i++)
-{
+
+for ($i = 0; $i < strlen($code); $i++) {
 	$char = $code{$i};
 
 	$width = mt_rand(0, 4);
@@ -94,42 +90,34 @@ $offset_y = mt_rand(0, $total_height - $img_height);
 
 $image = '';
 $hold_chars = [];
-for ($i = 0; $i < $total_height; $i++)
-{
+for ($i = 0; $i < $total_height; $i++) {
 	$image .= chr(0);
 
-	if ($i > $offset_y && $i < $offset_y + $img_height)
-	{
+	if ($i > $offset_y && $i < $offset_y + $img_height) {
 		$j = 0;
 
-		for ($k = 0; $k < $offset_x; $k++)
-		{
+		for ($k = 0; $k < $offset_x; $k++) {
 			$image .= chr(mt_rand(140, 255));
 		}
 
-		for ($k = 0; $k < strlen($code); $k++)
-		{
+		for ($k = 0; $k < strlen($code); $k++) {
 			$char = $code{$k};
 
-			if (empty($hold_chars[$char]))
-			{
+			if (empty($hold_chars[$char])) {
 				$hold_chars[$char] = explode("\n", chunk_split(base64_decode($_png[$char]['data']), $_png[$char]['width'] + 1, "\n"));
 			}
+
 			$image .= randomise(substr($hold_chars[$char][$l], 1), $char_widths[$j]);
 			$j++;
 		}
 
-		for ($k = $offset_x + $img_width; $k < $total_width; $k++)
-		{
+		for ($k = $offset_x + $img_width; $k < $total_width; $k++) {
 			$image .= chr(mt_rand(140, 255));
 		}
 
 		$l++;
-	}
-	else
-	{
-		for ($k = 0; $k < $total_width; $k++)
-		{
+	} else {
+		for ($k = 0; $k < $total_width; $k++) {
 			$image .= chr(mt_rand(140, 255));
 		}
 	}
@@ -158,20 +146,14 @@ function randomise($scanline, $width)
 	$start = floor($width/2);
 	$end = strlen($scanline) - ceil($width/2);
 
-	for ($i = $start; $i < $end; $i++)
-	{
+	for ($i = $start; $i < $end; $i++) {
 		$pixel = ord($scanline{$i});
 
-		if ($pixel < 190)
-		{
+		if ($pixel < 190) {
 			$new_line .= chr(mt_rand(0, 205));
-		}
-		else if ($pixel > 190)
-		{
+		} else if ($pixel > 190) {
 			$new_line .= chr(mt_rand(145, 255));
-		}
-		else
-		{
+		} else {
 			$new_line .= $scanline{$i};
 		}
 	}
@@ -205,13 +187,10 @@ function create_png($raw_image, $width, $height)
 	$raw .= pack('C5', 8, 0, 0, 0, 0);
 	$image .= png_chunk(13, 'IHDR', $raw);
 
-	if (@extension_loaded('zlib'))
-	{
+	if (@extension_loaded('zlib')) {
 		$raw_image = gzcompress($raw_image);
 		$length = strlen($raw_image);
-	}
-	else
-	{
+	} else {
 		// The total length of this image, uncompressed, is just a calculation of pixels
 		$length = ($width + 1) * $height;
 
@@ -221,16 +200,14 @@ function create_png($raw_image, $width, $height)
 		$s1 = 1;
 		$s2 = $index = 0;
 
-		while ($temp_length > 0)
-		{
+		while ($temp_length > 0) {
 			// We can defer the modulo operation:
 			// s1 maximally grows from 65521 to 65521 + 255 * 3800
 			// s2 maximally grows by 3800 * median(s1) = 2090079800 < 2^31
 			$substract_value = ($temp_length < 3800) ? $temp_length : 3800;
 			$temp_length -= $substract_value;
 
-			while (--$substract_value >= 0)
-			{
+			while (--$substract_value >= 0) {
 				$s1 += ord($raw_image[$index]);
 				$s2 += $s1;
 

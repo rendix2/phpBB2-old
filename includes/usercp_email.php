@@ -38,7 +38,7 @@ if (!empty($_GET[POST_USERS_URL]) || !empty($_POST[POST_USERS_URL]))  {
 	message_die(GENERAL_MESSAGE, $lang['No_user_specified']);
 }
 
-if ( !$userdata['session_logged_in'] ) {
+if ( !$user_data['session_logged_in'] ) {
 	redirect(append_sid("login.php?redirect=profile.php&mode=email&" . POST_USERS_URL . "=$user_id", true));
 }
 
@@ -53,8 +53,8 @@ if ( $result = $db->sql_query($sql) ) {
 		$user_email = $row['user_email']; 
 		$user_lang = $row['user_lang'];
 	
-		if ( $row['user_viewemail'] || $userdata['user_level'] == ADMIN ) {
-			if ( time() - $userdata['user_emailtime'] < $board_config['flood_interval'] ) {
+		if ( $row['user_viewemail'] || $user_data['user_level'] == ADMIN ) {
+			if ( time() - $user_data['user_emailtime'] < $board_config['flood_interval'] ) {
 				message_die(GENERAL_MESSAGE, $lang['Flood_email_limit']);
 			}
 	
@@ -78,18 +78,18 @@ if ( $result = $db->sql_query($sql) ) {
 				if ( !$error ) {
 					$sql = "UPDATE " . USERS_TABLE . " 
 						SET user_emailtime = " . time() . " 
-						WHERE user_id = " . $userdata['user_id'];
+						WHERE user_id = " . $user_data['user_id'];
 					
 					if ( $result = $db->sql_query($sql) ) {
 						include($phpbb_root_path . 'includes/emailer.php');
 						$emailer = new emailer($board_config['smtp_delivery']);
 	
-						$emailer->from($userdata['user_email']);
-						$emailer->replyto($userdata['user_email']);
+						$emailer->from($user_data['user_email']);
+						$emailer->replyto($user_data['user_email']);
 	
 						$email_headers = 'X-AntiAbuse: Board servername - ' . $server_name . "\n";
-						$email_headers .= 'X-AntiAbuse: User_id - ' . $userdata['user_id'] . "\n";
-						$email_headers .= 'X-AntiAbuse: Username - ' . $userdata['username'] . "\n";
+						$email_headers .= 'X-AntiAbuse: User_id - ' . $user_data['user_id'] . "\n";
+						$email_headers .= 'X-AntiAbuse: Username - ' . $user_data['username'] . "\n";
 						$email_headers .= 'X-AntiAbuse: User IP - ' . decode_ip($user_ip) . "\n";
 	
 						$emailer->use_template('profile_send_email', $user_lang);
@@ -98,28 +98,28 @@ if ( $result = $db->sql_query($sql) ) {
 						$emailer->extra_headers($email_headers);
 	
 						$emailer->assign_vars(array(
-							'SITENAME' => $board_config['sitename'], 
-							'BOARD_EMAIL' => $board_config['board_email'], 
-							'FROM_USERNAME' => $userdata['username'], 
-							'TO_USERNAME' => $username, 
-							'MESSAGE' => $message)
+                                'SITENAME' => $board_config['sitename'],
+                                'BOARD_EMAIL' => $board_config['board_email'],
+                                'FROM_USERNAME' => $user_data['username'],
+                                'TO_USERNAME' => $username,
+                                'MESSAGE' => $message)
 						);
 						$emailer->send();
 						$emailer->reset();
 	
 						if ( !empty($_POST['cc_email']) ) {
-							$emailer->from($userdata['user_email']);
-							$emailer->replyto($userdata['user_email']);
+							$emailer->from($user_data['user_email']);
+							$emailer->replyto($user_data['user_email']);
 							$emailer->use_template('profile_send_email');
-							$emailer->email_address($userdata['user_email']);
+							$emailer->email_address($user_data['user_email']);
 							$emailer->set_subject($subject);
 	
 							$emailer->assign_vars(array(
-								'SITENAME' => $board_config['sitename'], 
-								'BOARD_EMAIL' => $board_config['board_email'], 
-								'FROM_USERNAME' => $userdata['username'], 
-								'TO_USERNAME' => $username, 
-								'MESSAGE' => $message)
+                                    'SITENAME' => $board_config['sitename'],
+                                    'BOARD_EMAIL' => $board_config['board_email'],
+                                    'FROM_USERNAME' => $user_data['username'],
+                                    'TO_USERNAME' => $username,
+                                    'MESSAGE' => $message)
 							);
 							$emailer->send();
 							$emailer->reset();
@@ -146,16 +146,12 @@ if ( $result = $db->sql_query($sql) ) {
 			make_jumpbox('viewforum.php');
 	
 			if ( $error ) {
-				$template->set_filenames(array(
-					'reg_header' => 'error_body.tpl')
-				);
-				$template->assign_vars(array(
-					'ERROR_MESSAGE' => $error_msg)
-				);
-				$template->assign_var_from_handle('ERROR_BOX', 'reg_header');
-			}
-	
-			$template->assign_vars(array(
+                $template->set_filenames(['reg_header' => 'error_body.tpl']);
+                $template->assign_vars(['ERROR_MESSAGE' => $error_msg]);
+                $template->assign_var_from_handle('ERROR_BOX', 'reg_header');
+            }
+
+            $template->assign_vars(array(
 				'USERNAME' => $username,
 	
 				'S_HIDDEN_FIELDS' => '', 

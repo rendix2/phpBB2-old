@@ -61,12 +61,12 @@ $template->assign_vars(array(
 $sql = "SELECT forum_name, forum_id
 	FROM " . FORUMS_TABLE;
 
-if ( $result = $db->sql_query($sql) ) {
-	while( $row = $db->sql_fetchrow($result) ) {
-		$forum_data[$row['forum_id']] = $row['forum_name'];
-	}
+if ($result = $db->sql_query($sql)) {
+    while ($row = $db->sql_fetchrow($result)) {
+        $forum_data[$row['forum_id']] = $row['forum_name'];
+    }
 } else {
-	message_die(GENERAL_ERROR, 'Could not obtain user/online forums information', '', __LINE__, __FILE__, $sql);
+    message_die(GENERAL_ERROR, 'Could not obtain user/online forums information', '', __LINE__, __FILE__, $sql);
 }
 
 //
@@ -208,27 +208,27 @@ while ( $row = $db->sql_fetchrow($result) ) {
 }
 
 if ($registered_users == 0) {
-	$l_r_user_s = $lang['Reg_users_zero_online'];
+    $l_r_user_s = $lang['Reg_users_zero_online'];
 } elseif ($registered_users == 1) {
-	$l_r_user_s = $lang['Reg_user_online'];
+    $l_r_user_s = $lang['Reg_user_online'];
 } else {
-	$l_r_user_s = $lang['Reg_users_online'];
+    $l_r_user_s = $lang['Reg_users_online'];
 }
 
 if ($hidden_users == 0) {
-	$l_h_user_s = $lang['Hidden_users_zero_online'];
+    $l_h_user_s = $lang['Hidden_users_zero_online'];
 } elseif ($hidden_users == 1) {
-	$l_h_user_s = $lang['Hidden_user_online'];
+    $l_h_user_s = $lang['Hidden_user_online'];
 } else {
-	$l_h_user_s = $lang['Hidden_users_online'];
+    $l_h_user_s = $lang['Hidden_users_online'];
 }
 
 if ($guest_users == 0) {
-	$l_g_user_s = $lang['Guest_users_zero_online'];
-} else if ($guest_users == 1) {
-	$l_g_user_s = $lang['Guest_user_online'];
+    $l_g_user_s = $lang['Guest_users_zero_online'];
+} elseif ($guest_users == 1) {
+    $l_g_user_s = $lang['Guest_user_online'];
 } else {
-	$l_g_user_s = $lang['Guest_users_online'];
+    $l_g_user_s = $lang['Guest_users_online'];
 }
 
 $template->assign_vars(array(
@@ -237,15 +237,11 @@ $template->assign_vars(array(
 );
 
 if ($registered_users + $hidden_users == 0) {
-	$template->assign_vars(array(
-		'L_NO_REGISTERED_USERS_BROWSING' => $lang['No_users_browsing'])
-	);
+    $template->assign_vars(['L_NO_REGISTERED_USERS_BROWSING' => $lang['No_users_browsing']]);
 }
 
 if ($guest_users == 0) {
-	$template->assign_vars(array(
-		'L_NO_GUESTS_BROWSING' => $lang['No_users_browsing'])
-	);
+    $template->assign_vars(['L_NO_GUESTS_BROWSING' => $lang['No_users_browsing']]);
 }
 
 $template->pparse('body');

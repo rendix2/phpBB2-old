@@ -62,15 +62,15 @@ $template->set_filenames(array(
 //
 // Generate logged in/logged out status
 //
-if ( $userdata['session_logged_in'] ) {
-	$u_login_logout = 'login.'.php.'?logout=true&amp;sid=' . $userdata['session_id'];
-	$l_login_logout = $lang['Logout'] . ' [ ' . $userdata['username'] . ' ]';
+if ($user_data['session_logged_in'] ) {
+	$u_login_logout = 'login.'.php.'?logout=true&amp;sid=' . $user_data['session_id'];
+	$l_login_logout = $lang['Logout'] . ' [ ' . $user_data['username'] . ' ]';
 } else {
 	$u_login_logout = 'login.php';
 	$l_login_logout = $lang['Login'];
 }
 
-$s_last_visit = ( $userdata['session_logged_in'] ) ? create_date($board_config['default_dateformat'], $userdata['user_lastvisit'], $board_config['board_timezone']) : '';
+$s_last_visit = ($user_data['session_logged_in'] ) ? create_date($board_config['default_dateformat'], $user_data['user_lastvisit'], $board_config['board_timezone']) : '';
 
 //
 // Get basic (usernames + totals) online
@@ -125,7 +125,7 @@ if (defined('SHOW_ONLINE')) {
 					$logged_hidden_online++;
 				}
 
-				if ( $row['user_allow_viewonline'] || $userdata['user_level'] == ADMIN ) {
+				if ( $row['user_allow_viewonline'] || $user_data['user_level'] == ADMIN ) {
 					$online_userlist .= ( $online_userlist != '' ) ? ', ' . $user_online_link : $user_online_link;
 				}
 			}
@@ -215,15 +215,15 @@ if (defined('SHOW_ONLINE')) {
 // Obtain number of new private messages
 // if user is logged in
 //
-if ( ($userdata['session_logged_in']) && (empty($gen_simple_header)) ) {
-	if ( $userdata['user_new_privmsg'] ) {
-		$l_message_new = ( $userdata['user_new_privmsg'] == 1 ) ? $lang['New_pm'] : $lang['New_pms'];
-		$l_privmsgs_text = sprintf($l_message_new, $userdata['user_new_privmsg']);
+if ( ($user_data['session_logged_in']) && (empty($gen_simple_header)) ) {
+	if ($user_data['user_new_privmsg'] ) {
+		$l_message_new = ($user_data['user_new_privmsg'] == 1 ) ? $lang['New_pm'] : $lang['New_pms'];
+		$l_privmsgs_text = sprintf($l_message_new, $user_data['user_new_privmsg']);
 
-		if ( $userdata['user_last_privmsg'] > $userdata['user_lastvisit'] ) {
+		if ($user_data['user_last_privmsg'] > $user_data['user_lastvisit'] ) {
 			$sql = "UPDATE " . USERS_TABLE . "
-				SET user_last_privmsg = " . $userdata['user_lastvisit'] . "
-				WHERE user_id = " . $userdata['user_id'];
+				SET user_last_privmsg = " . $user_data['user_lastvisit'] . "
+				WHERE user_id = " . $user_data['user_id'];
 			
 			if ( !$db->sql_query($sql) ) {
 				message_die(GENERAL_ERROR, 'Could not update private message new/read time for user', '', __LINE__, __FILE__, $sql);
@@ -242,9 +242,9 @@ if ( ($userdata['session_logged_in']) && (empty($gen_simple_header)) ) {
 		$icon_pm = $images['pm_no_new_msg'];
 	}
 
-	if ( $userdata['user_unread_privmsg'] ) {
-		$l_message_unread = ( $userdata['user_unread_privmsg'] == 1 ) ? $lang['Unread_pm'] : $lang['Unread_pms'];
-		$l_privmsgs_text_unread = sprintf($l_message_unread, $userdata['user_unread_privmsg']);
+	if ($user_data['user_unread_privmsg'] ) {
+		$l_message_unread = ($user_data['user_unread_privmsg'] == 1 ) ? $lang['Unread_pm'] : $lang['Unread_pms'];
+		$l_privmsgs_text_unread = sprintf($l_message_unread, $user_data['user_unread_privmsg']);
 	} else {
 		$l_privmsgs_text_unread = $lang['No_unread_pm'];
 	}
@@ -387,7 +387,7 @@ $template->assign_vars(array(
 //
 // Login box?
 //
-if ( !$userdata['session_logged_in'] ) {
+if ( !$user_data['session_logged_in'] ) {
 	$template->assign_block_vars('switch_user_logged_out', []);
 	//
 	// Allow autologin?
@@ -399,7 +399,7 @@ if ( !$userdata['session_logged_in'] ) {
 } else {
 	$template->assign_block_vars('switch_user_logged_in', []);
 
-	if ( !empty($userdata['user_popup_pm']) ) {
+	if ( !empty($user_data['user_popup_pm']) ) {
 		$template->assign_block_vars('switch_enable_pm_popup', []);
 	}
 }

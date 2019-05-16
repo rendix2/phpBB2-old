@@ -35,7 +35,7 @@ init_userprefs($userdata);
 //
 
 // Set vars to prevent naughtiness
-$faq = ;
+$faq = [];
 
 //
 // Load the appropriate faq file
@@ -66,8 +66,9 @@ $counter = 0;
 $counter_2 = 0;
 $faq_block = [];
 $faq_block_titles = [];
+$faq_count = count($faq);
 
-for($i = 0; $i < count($faq); $i++) {
+for($i = 0; $i < $faq_count; $i++) {
 	if( $faq[$i][0] != '--' ) {
 		$faq_block[$j][$counter]['id'] = $counter_2;
 		$faq_block[$j][$counter]['question'] = $faq[$i][0];
@@ -90,47 +91,51 @@ for($i = 0; $i < count($faq); $i++) {
 $page_title = $l_title;
 include($phpbb_root_path . 'includes/page_header.php');
 
-$template->set_filenames(array(
-	'body' => 'faq_body.tpl')
-);
+$template->set_filenames(['body' => 'faq_body.tpl']);
 make_jumpbox('viewforum.php');
 
-$template->assign_vars(array(
-	'L_FAQ_TITLE' => $l_title, 
-	'L_BACK_TO_TOP' => $lang['Back_to_top'])
+$template->assign_vars(
+    [
+        'L_FAQ_TITLE'   => $l_title,
+        'L_BACK_TO_TOP' => $lang['Back_to_top']
+    ]
 );
 
-for($i = 0; $i < count($faq_block); $i++) {
-	if( count($faq_block[$i]) ) {
-		$template->assign_block_vars('faq_block', array(
-			'BLOCK_TITLE' => $faq_block_titles[$i])
-		);
-		$template->assign_block_vars('faq_block_link', array( 
-			'BLOCK_TITLE' => $faq_block_titles[$i])
-		);
+$faq_block_count = count($faq_block);
 
-		for($j = 0; $j < count($faq_block[$i]); $j++) {
+for($i = 0; $i < $faq_block_count; $i++) {
+    $faq_block_i_count = count($faq_block[$i]);
+
+	if( $faq_block_i_count ) {
+        $template->assign_block_vars('faq_block', ['BLOCK_TITLE' => $faq_block_titles[$i]]);
+        $template->assign_block_vars('faq_block_link', ['BLOCK_TITLE' => $faq_block_titles[$i]]);
+
+        for($j = 0; $j < $faq_block_i_count; $j++) {
 			$row_color = ( !($j % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($j % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-			$template->assign_block_vars('faq_block.faq_row', array(
-				'ROW_COLOR' => '#' . $row_color,
-				'ROW_CLASS' => $row_class,
-				'FAQ_QUESTION' => $faq_block[$i][$j]['question'], 
-				'FAQ_ANSWER' => $faq_block[$i][$j]['answer'], 
+			$faq_block_faq_row_data = [
+                'ROW_COLOR'    => '#' . $row_color,
+                'ROW_CLASS'    => $row_class,
+                'FAQ_QUESTION' => $faq_block[$i][$j]['question'],
+                'FAQ_ANSWER'   => $faq_block[$i][$j]['answer'],
 
-				'U_FAQ_ID' => $faq_block[$i][$j]['id'])
-			);
+                'U_FAQ_ID' => $faq_block[$i][$j]['id']
+            ];
 
-			$template->assign_block_vars('faq_block_link.faq_row_link', array(
-				'ROW_COLOR' => '#' . $row_color,
-				'ROW_CLASS' => $row_class,
-				'FAQ_LINK' => $faq_block[$i][$j]['question'], 
+            $template->assign_block_vars('faq_block.faq_row', $faq_block_faq_row_data);
 
-				'U_FAQ_LINK' => '#' . $faq_block[$i][$j]['id'])
-			);
-		}
-	}
+            $faq_block_link_faq_row_link_data = [
+                'ROW_COLOR' => '#' . $row_color,
+                'ROW_CLASS' => $row_class,
+                'FAQ_LINK'  => $faq_block[$i][$j]['question'],
+
+                'U_FAQ_LINK' => '#' . $faq_block[$i][$j]['id']
+            ];
+
+            $template->assign_block_vars('faq_block_link.faq_row_link', $faq_block_link_faq_row_link_data);
+        }
+    }
 }
 
 $template->pparse('body');

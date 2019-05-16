@@ -71,7 +71,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 			message_die(GENERAL_MESSAGE, $lang['No_user_id_specified'] );
 		}
 
-		if( $_POST['deleteuser'] && ( $userdata['user_id'] != $user_id ) )
+		if( $_POST['deleteuser'] && ($user_data['user_id'] != $user_id ) )
 		{
 			$sql = "SELECT g.group_id 
 				FROM " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g  
@@ -110,7 +110,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 			}
 			
 			$sql = "UPDATE " . GROUPS_TABLE . "
-				SET group_moderator = " . $userdata['user_id'] . "
+				SET group_moderator = " . $user_data['user_id'] . "
 				WHERE group_moderator = $user_id";
 			if( !$db->sql_query($sql) )
 			{
@@ -313,7 +313,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 					$error = TRUE;
 					$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $result['error_msg'];
 				}
-				else if ( strtolower(str_replace("\\'", "''", $username)) == strtolower($userdata['username']) )
+				else if ( strtolower(str_replace("\\'", "''", $username)) == strtolower($user_data['username']) )
 				{
 					$error = TRUE;
 					$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Username_taken'];

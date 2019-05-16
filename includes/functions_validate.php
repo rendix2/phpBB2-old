@@ -27,7 +27,7 @@
 //
 function validate_username($username)
 {
-	global $db, $lang, $userdata;
+	global $db, $lang, $user_data;
 
 	// Remove doubled up spaces
 	$username = preg_replace('#\s+#', ' ', trim($username)); 
@@ -39,7 +39,7 @@ function validate_username($username)
 	
 	if ($result = $db->sql_query($sql)) {
 		while ($row = $db->sql_fetchrow($result)) {
-			if (($userdata['session_logged_in'] && $row['username'] != $userdata['username']) || !$userdata['session_logged_in']) {
+			if (($user_data['session_logged_in'] && $row['username'] != $user_data['username']) || !$user_data['session_logged_in']) {
 				$db->sql_freeresult($result);
 				
 				return ['error' => true, 'error_msg' => $lang['Username_taken']];

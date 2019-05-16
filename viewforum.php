@@ -22,25 +22,25 @@
 
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
-include($phpbb_root_path . 'extension.inc');
-include($phpbb_root_path . 'common.php');
+include $phpbb_root_path . 'extension.inc';
+include $phpbb_root_path . 'common.php';
 
 //
 // Start initial var setup
 //
 if ( isset($_GET[POST_FORUM_URL]) || isset($_POST[POST_FORUM_URL]) ) {
-	$forum_id = ( isset($_GET[POST_FORUM_URL]) ) ? intval($_GET[POST_FORUM_URL]) : intval($_POST[POST_FORUM_URL]);
+	$forum_id = isset($_GET[POST_FORUM_URL]) ? (int)$_GET[POST_FORUM_URL] : (int)$_POST[POST_FORUM_URL];
 } else if ( isset($_GET['forum'])) {
-	$forum_id = intval($_GET['forum']);
+	$forum_id = (int)$_GET['forum'];
 } else {
 	$forum_id = '';
 }
 
-$start = ( isset($_GET['start']) ) ? intval($_GET['start']) : 0;
+$start = isset($_GET['start']) ? (int)$_GET['start'] : 0;
 $start = ($start < 0) ? 0 : $start;
 
 if ( isset($_GET['mark']) || isset($_POST['mark']) ) {
-	$mark_read = (isset($_POST['mark'])) ? $_POST['mark'] : $_GET['mark'];
+	$mark_read = isset($_POST['mark']) ? $_POST['mark'] : $_GET['mark'];
 } else {
 	$mark_read = '';
 }
@@ -90,7 +90,7 @@ $is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_row);
 
 if ( !$is_auth['auth_read'] || !$is_auth['auth_view'] ) {
 	if ( !$userdata['session_logged_in'] ) {
-		$redirect = POST_FORUM_URL . "=$forum_id" . ( ( isset($start) ) ? "&start=$start" : '' );
+		$redirect = POST_FORUM_URL . "=$forum_id" . ( isset($start) ? "&start=$start" : '' );
 		redirect(append_sid("login.php?redirect=viewforum.php&$redirect", true));
 	}
 	//
@@ -118,17 +118,15 @@ if ( $mark_read == 'topics' ) {
 		}
 
 		if ( $row = $db->sql_fetchrow($result) ) {
-			$tracking_forums = ( isset($_COOKIE[$board_config['cookie_name'] . '_f']) ) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_f']) : [];
-			$tracking_topics = ( isset($_COOKIE[$board_config['cookie_name'] . '_t']) ) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_t']) : [];
+			$tracking_forums = isset($_COOKIE[$board_config['cookie_name'] . '_f']) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_f']) : [];
+			$tracking_topics = isset($_COOKIE[$board_config['cookie_name'] . '_t']) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_t']) : [];
 
-			if ( ( count($tracking_forums) + count($tracking_topics) ) >= 150 && empty($tracking_forums[$forum_id]) )
-			{
-				asort($tracking_forums);
-				unset($tracking_forums[key($tracking_forums)]);
-			}
+            if ((count($tracking_forums) + count($tracking_topics)) >= 150 && empty($tracking_forums[$forum_id])) {
+                asort($tracking_forums);
+                unset($tracking_forums[key($tracking_forums)]);
+            }
 
-			if ( $row['last_post'] > $userdata['user_lastvisit'] )
-			{
+            if ($row['last_post'] > $userdata['user_lastvisit']) {
 				$tracking_forums[$forum_id] = time();
 
 				setcookie($board_config['cookie_name'] . '_f', serialize($tracking_forums), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
@@ -147,20 +145,18 @@ if ( $mark_read == 'topics' ) {
 // End handle marking posts
 //
 
-$tracking_topics = ( isset($_COOKIE[$board_config['cookie_name'] . '_t']) ) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_t']) : '';
-$tracking_forums = ( isset($_COOKIE[$board_config['cookie_name'] . '_f']) ) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_f']) : '';
+$tracking_topics = isset($_COOKIE[$board_config['cookie_name'] . '_t']) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_t']) : '';
+$tracking_forums = isset($_COOKIE[$board_config['cookie_name'] . '_f']) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_f']) : '';
 
 //
 // Do the forum Prune
 //
-if ( $is_auth['auth_mod'] && $board_config['prune_enable'] )
-{
-	if ( $forum_row['prune_next'] < time() && $forum_row['prune_enable'] )
-	{
-		include($phpbb_root_path . 'includes/prune.php');
-		require($phpbb_root_path . 'includes/functions_admin.php');
-		auto_prune($forum_id);
-	}
+if ($is_auth['auth_mod'] && $board_config['prune_enable']) {
+    if ($forum_row['prune_next'] < time() && $forum_row['prune_enable']) {
+        include $phpbb_root_path . 'includes/prune.php';
+        require $phpbb_root_path . 'includes/functions_admin.php';
+        auto_prune($forum_id);
+    }
 }
 //
 // End of forum prune
@@ -180,12 +176,14 @@ $sql = "SELECT u.user_id, u.username
 		AND u.user_id = ug.user_id 
 	GROUP BY u.user_id, u.username  
 	ORDER BY u.user_id";
+
 if ( !($result = $db->sql_query($sql)) )
 {
 	message_die(GENERAL_ERROR, 'Could not query forum moderator information', '', __LINE__, __FILE__, $sql);
 }
 
 $moderators = [];
+
 while( $row = $db->sql_fetchrow($result) )
 {
 	$moderators[] = '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . '">' . $row['username'] . '</a>';
@@ -211,7 +209,7 @@ while( $row = $db->sql_fetchrow($result) ) {
 }
 	
 $l_moderators = ( count($moderators) == 1 ) ? $lang['Moderator'] : $lang['Moderators'];
-$forum_moderators = ( count($moderators) ) ? implode(', ', $moderators) : $lang['None'];
+$forum_moderators = count($moderators) ? implode(', ', $moderators) : $lang['None'];
 unset($moderators);
 
 //
@@ -223,7 +221,7 @@ $previous_days = array(0, 1, 7, 14, 30, 90, 180, 364);
 $previous_days_text = array($lang['All_Topics'], $lang['1_Day'], $lang['7_Days'], $lang['2_Weeks'], $lang['1_Month'], $lang['3_Months'], $lang['6_Months'], $lang['1_Year']);
 
 if ( !empty($_POST['topicdays']) || !empty($_GET['topicdays']) ) {
-	$topic_days = ( !empty($_POST['topicdays']) ) ? intval($_POST['topicdays']) : intval($_GET['topicdays']);
+	$topic_days = !empty($_POST['topicdays']) ? (int)$_POST['topicdays'] : (int)$_GET['topicdays'];
 	$min_topic_time = time() - ($topic_days * 86400);
 
 	$sql = "SELECT COUNT(t.topic_id) AS forum_topics 
@@ -238,14 +236,14 @@ if ( !empty($_POST['topicdays']) || !empty($_GET['topicdays']) ) {
 	
 	$row = $db->sql_fetchrow($result);
 
-	$topics_count = ( $row['forum_topics'] ) ? $row['forum_topics'] : 1;
+	$topics_count = $row['forum_topics'] ? $row['forum_topics'] : 1;
 	$limit_topics_time = "AND p.post_time >= $min_topic_time";
 
 	if ( !empty($_POST['topicdays']) ) {
 		$start = 0;
 	}
 } else {
-	$topics_count = ( $forum_row['forum_topics'] ) ? $forum_row['forum_topics'] : 1;
+	$topics_count = $forum_row['forum_topics'] ? $forum_row['forum_topics'] : 1;
 
 	$limit_topics_time = '';
 	$topic_days = 0;
@@ -253,8 +251,7 @@ if ( !empty($_POST['topicdays']) || !empty($_GET['topicdays']) ) {
 
 $select_topic_days = '<select name="topicdays">';
 
-for($i = 0; $i < count($previous_days); $i++)
-{
+for($i = 0; $i < count($previous_days); $i++) {
 	$selected = ($topic_days == $previous_days[$i]) ? ' selected="selected"' : '';
 	$select_topic_days .= '<option value="' . $previous_days[$i] . '"' . $selected . '>' . $previous_days_text[$i] . '</option>';
 }
@@ -282,8 +279,7 @@ if ( !($result = $db->sql_query($sql)) ) {
 $topic_rowset = [];
 $total_announcements = 0;
 
-while( $row = $db->sql_fetchrow($result) )
-{
+while( $row = $db->sql_fetchrow($result) ) {
 	$topic_rowset[] = $row;
 	$total_announcements++;
 }
@@ -346,11 +342,11 @@ $template->assign_vars(array(
 //
 // User authorisation levels output
 //
-$s_auth_can = ( ( $is_auth['auth_post'] ) ? $lang['Rules_post_can'] : $lang['Rules_post_cannot'] ) . '<br />';
-$s_auth_can .= ( ( $is_auth['auth_reply'] ) ? $lang['Rules_reply_can'] : $lang['Rules_reply_cannot'] ) . '<br />';
-$s_auth_can .= ( ( $is_auth['auth_edit'] ) ? $lang['Rules_edit_can'] : $lang['Rules_edit_cannot'] ) . '<br />';
-$s_auth_can .= ( ( $is_auth['auth_delete'] ) ? $lang['Rules_delete_can'] : $lang['Rules_delete_cannot'] ) . '<br />';
-$s_auth_can .= ( ( $is_auth['auth_vote'] ) ? $lang['Rules_vote_can'] : $lang['Rules_vote_cannot'] ) . '<br />';
+$s_auth_can = ( $is_auth['auth_post'] ? $lang['Rules_post_can'] : $lang['Rules_post_cannot'] ) . '<br />';
+$s_auth_can .= ( $is_auth['auth_reply'] ? $lang['Rules_reply_can'] : $lang['Rules_reply_cannot'] ) . '<br />';
+$s_auth_can .= ( $is_auth['auth_edit'] ? $lang['Rules_edit_can'] : $lang['Rules_edit_cannot'] ) . '<br />';
+$s_auth_can .= ( $is_auth['auth_delete'] ? $lang['Rules_delete_can'] : $lang['Rules_delete_cannot'] ) . '<br />';
+$s_auth_can .= ( $is_auth['auth_vote'] ? $lang['Rules_vote_can'] : $lang['Rules_vote_cannot'] ) . '<br />';
 
 if ( $is_auth['auth_mod'] ) {
 	$s_auth_can .= sprintf($lang['Rules_moderate'], "<a href=\"modcp.php?" . POST_FORUM_URL . "=$forum_id&amp;start=" . $start . "&amp;sid=" . $userdata['session_id'] . '">', '</a>');
@@ -369,7 +365,7 @@ $nav_links['up'] = array(
 //
 define('SHOW_ONLINE', true);
 $page_title = $lang['View_forum'] . ' - ' . $forum_row['forum_name'];
-include($phpbb_root_path . 'includes/page_header.php');
+include $phpbb_root_path . 'includes/page_header.php';
 
 $template->set_filenames(array(
 	'body' => 'viewforum_body.tpl')
@@ -430,19 +426,19 @@ if ($total_topics) {
 	for ($i = 0; $i < $total_topics; $i++) {
 		$topic_id = $topic_rowset[$i]['topic_id'];
 
-		$topic_title = ( count($orig_word) ) ? preg_replace($orig_word, $replacement_word, $topic_rowset[$i]['topic_title']) : $topic_rowset[$i]['topic_title'];
+		$topic_title = count($orig_word) ? preg_replace($orig_word, $replacement_word, $topic_rowset[$i]['topic_title']) : $topic_rowset[$i]['topic_title'];
 
 		$replies = $topic_rowset[$i]['topic_replies'];
 
 		$topic_type = $topic_rowset[$i]['topic_type'];
 
-		if( $topic_type == POST_ANNOUNCE ) {
-			$topic_type = $lang['Topic_Announcement'] . ' ';
-		} else if( $topic_type == POST_STICKY ) {
-			$topic_type = $lang['Topic_Sticky'] . ' ';
-		} else {
-			$topic_type = '';		
-		}
+        if ($topic_type == POST_ANNOUNCE) {
+            $topic_type = $lang['Topic_Announcement'] . ' ';
+        } elseif ($topic_type == POST_STICKY) {
+            $topic_type = $lang['Topic_Sticky'] . ' ';
+        } else {
+            $topic_type = '';
+        }
 
 		if ( $topic_rowset[$i]['topic_vote'] ) {
 			$topic_type .= $lang['Topic_Poll'] . ' ';
@@ -456,13 +452,13 @@ if ($total_topics) {
 			$folder_alt = $lang['Topics_Moved'];
 			$newest_post_img = '';
 		} else {
-			if ( $topic_rowset[$i]['topic_type'] == POST_ANNOUNCE ) {
+            if ($topic_rowset[$i]['topic_type'] == POST_ANNOUNCE) {
 				$folder = $images['folder_announce'];
 				$folder_new = $images['folder_announce_new'];
-			} elseif ( $topic_rowset[$i]['topic_type'] == POST_STICKY ) {
+            } elseif ($topic_rowset[$i]['topic_type'] == POST_STICKY) {
 				$folder = $images['folder_sticky'];
 				$folder_new = $images['folder_sticky_new'];
-			} elseif ( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED ) {
+            } elseif ($topic_rowset[$i]['topic_status'] == TOPIC_LOCKED) {
 				$folder = $images['folder_locked'];
 				$folder_new = $images['folder_locked_new'];
 			} else {
@@ -602,10 +598,11 @@ if ($total_topics) {
 	$topics_count -= $total_announcements;
 
 	$template->assign_vars(array(
-		'PAGINATION' => generate_pagination("viewforum.php?" . POST_FORUM_URL . "=$forum_id&amp;topicdays=$topic_days", $topics_count, $board_config['topics_per_page'], $start),
-		'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $topics_count / $board_config['topics_per_page'] )), 
+            'PAGINATION' => generate_pagination("viewforum.php?" . POST_FORUM_URL . "=$forum_id&amp;topicdays=$topic_days", $topics_count, $board_config['topics_per_page'], $start),
+            'PAGE_NUMBER' => sprintf($lang['Page_of'],
+                floor( $start / $board_config['topics_per_page'] ) + 1, ceil( $topics_count / $board_config['topics_per_page'] )),
 
-		'L_GOTO_PAGE' => $lang['Goto_page'])
+            'L_GOTO_PAGE' => $lang['Goto_page'])
 	);
 } else {
 	//
@@ -628,6 +625,6 @@ $template->pparse('body');
 //
 // Page footer
 //
-include($phpbb_root_path . 'includes/page_tail.php');
+include $phpbb_root_path . 'includes/page_tail.php';
 
 ?>

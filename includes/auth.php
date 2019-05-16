@@ -120,6 +120,7 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 		$sql = "SELECT a.forum_id, $a_sql
 			FROM " . FORUMS_TABLE . " a
 			$forum_match_sql";
+
 		if ( !($result = $db->sql_query($sql)) )
 		{
 			message_die(GENERAL_ERROR, 'Failed obtaining forum access control lists', '', __LINE__, __FILE__, $sql);
@@ -130,9 +131,10 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 		if ( !($f_access = $db->$sql_fetchrow($result)) )
 		{
 			$db->sql_freeresult($result);
-			return array();
-		}
-		$db->sql_freeresult($result);
+
+            return [];
+        }
+        $db->sql_freeresult($result);
 	}
 
 	//
@@ -151,25 +153,19 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 				AND ug.user_pending = 0 
 				AND a.group_id = ug.group_id
 				$forum_match_sql";
-		if ( !($result = $db->sql_query($sql)) )
-		{
+
+		if ( !($result = $db->sql_query($sql)) ) {
 			message_die(GENERAL_ERROR, 'Failed obtaining forum access control lists', '', __LINE__, __FILE__, $sql);
 		}
 
-		if ( $row = $db->sql_fetchrow($result) )
-		{
-			do
-			{
-				if ( $forum_id != AUTH_LIST_ALL)
-				{
-					$u_access[] = $row;
-				}
-				else
-				{
-					$u_access[$row['forum_id']][] = $row;
-				}
-			}
-			while( $row = $db->sql_fetchrow($result) );
+		if ( $row = $db->sql_fetchrow($result) ) {
+            do {
+                if ($forum_id != AUTH_LIST_ALL) {
+                    $u_access[] = $row;
+                } else {
+                    $u_access[$row['forum_id']][] = $row;
+                }
+            } while ($row = $db->sql_fetchrow($result));
 		}
 		$db->sql_freeresult($result);
 	}
@@ -177,8 +173,7 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 	$is_admin = ( $userdata['user_level'] == ADMIN && $userdata['session_logged_in'] ) ? TRUE : 0;
 
 	$auth_user = [];
-	for($i = 0; $i < count($auth_fields); $i++)
-	{
+	for($i = 0; $i < count($auth_fields); $i++) {
 		$key = $auth_fields[$i];
 
 		//
@@ -192,12 +187,10 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 		// and admin automatically have access to an ACL forum, similarly we assume admins meet an
 		// auth requirement of MOD
 		//
-		if ( $forum_id != AUTH_LIST_ALL )
-		{
+		if ( $forum_id != AUTH_LIST_ALL ) {
 			$value = $f_access[$key];
 
-			switch( $value )
-			{
+			switch( $value ) {
 				case AUTH_ALL:
 					$auth_user[$key] = TRUE;
 					$auth_user[$key . '_type'] = $lang['Auth_Anonymous_Users'];
@@ -227,17 +220,13 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 					$auth_user[$key] = 0;
 					break;
 			}
-		}
-		else
-		{
-			for($k = 0; $k < count($f_access); $k++)
-			{
+		} else {
+			for($k = 0; $k < count($f_access); $k++) {
 				$value = $f_access[$k][$key];
 				$f_forum_id = $f_access[$k]['forum_id'];
 				$u_access[$f_forum_id] = isset($u_access[$f_forum_id]) ? $u_access[$f_forum_id] : array();
 
-				switch( $value )
-				{
+				switch( $value ) {
 					case AUTH_ALL:
 						$auth_user[$f_forum_id][$key] = TRUE;
 						$auth_user[$f_forum_id][$key . '_type'] = $lang['Auth_Anonymous_Users'];
@@ -274,14 +263,10 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 	//
 	// Is user a moderator?
 	//
-	if ( $forum_id != AUTH_LIST_ALL )
-	{
+	if ( $forum_id != AUTH_LIST_ALL ) {
 		$auth_user['auth_mod'] = ( $userdata['session_logged_in'] ) ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access, $is_admin) : 0;
-	}
-	else
-	{
-		for($k = 0; $k < count($f_access); $k++)
-		{
+	} else {
+		for($k = 0; $k < count($f_access); $k++) {
 			$f_forum_id = $f_access[$k]['forum_id'];
 			$u_access[$f_forum_id] = isset($u_access[$f_forum_id]) ? $u_access[$f_forum_id] : array();
 
@@ -296,13 +281,10 @@ function auth_check_user($type, $key, $u_access, $is_admin)
 {
 	$auth_user = 0;
 
-	if ( count($u_access) )
-	{
-		for($j = 0; $j < count($u_access); $j++)
-		{
+	if ( count($u_access) ) {
+		for($j = 0; $j < count($u_access); $j++) {
 			$result = 0;
-			switch($type)
-			{
+			switch($type) {
 				case AUTH_ACL:
 					$result = $u_access[$j][$key];
 
@@ -316,9 +298,7 @@ function auth_check_user($type, $key, $u_access, $is_admin)
 
 			$auth_user = $auth_user || $result;
 		}
-	}
-	else
-	{
+	} else {
 		$auth_user = $is_admin;
 	}
 
