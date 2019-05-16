@@ -48,12 +48,9 @@ if (isset($_POST['add_name']) ) {
 	if (!validate_username($disallowed_user) ) {
 		$message = $lang['Disallowed_already'];
 	} else {
-		$sql = "INSERT INTO " . DISALLOW_TABLE . " (disallow_username) 
-			VALUES('" . str_replace("\'", "''", $disallowed_user) . "')";
+		$result = dibi::insert(DISALLOW_TABLE, ['disallow_username' => $disallowed_user])->execute();
 
-		$result = $db->sql_query( $sql );
-
-		if ( !$result ) {
+        if (!$result) {
 			message_die(GENERAL_ERROR, "Could not add disallowed user.", "",__LINE__, __FILE__, $sql);
 		}
 		$message = $lang['Disallow_successful'];
@@ -64,10 +61,10 @@ if (isset($_POST['add_name']) ) {
 	message_die(GENERAL_MESSAGE, $message);
 } elseif (isset($_POST['delete_name']) ) {
 	$disallowed_id = isset($_POST['disallowed_id']) ? (int)$_POST['disallowed_id'] : (int)$_GET['disallowed_id'];
-	
-	$sql = "DELETE FROM " . DISALLOW_TABLE . " 
-		WHERE disallow_id = $disallowed_id";
-	$result = $db->sql_query($sql);
+
+    $result = dibi::delete(DISALLOW_TABLE)
+        ->where('disallow_id = %i', $disallowed_id)
+        ->execute();
 
 	if (!$result ) {
 		message_die(GENERAL_ERROR, "Couldn't removed disallowed user.", "",__LINE__, __FILE__, $sql);
@@ -76,21 +73,14 @@ if (isset($_POST['add_name']) ) {
 	$message .= $lang['Disallowed_deleted'] . "<br /><br />" . sprintf($lang['Click_return_disallowadmin'], "<a href=\"" . append_sid("admin_disallow.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
 
 	message_die(GENERAL_MESSAGE, $message);
-
 }
 
 //
 // Grab the current list of disallowed usernames...
 //
-$sql = "SELECT * 
-	FROM " . DISALLOW_TABLE;
-$result = $db->sql_query($sql);
-
-if (!$result ) {
-	message_die(GENERAL_ERROR, "Couldn't get disallowed users.", "", __LINE__, __FILE__, $sql );
-}
-
-$disallowed = $db->sql_fetchrowset($result);
+$disallowed = dibi::select('*')
+    ->from(DISALLOW_TABLE)
+    ->fetchPairs('disallow_id', 'disallow_username');
 
 //
 // Ok now generate the info for the template, which will be put out no matter
@@ -98,13 +88,14 @@ $disallowed = $db->sql_fetchrowset($result);
 //
 $disallow_select = '<select name="disallowed_id">';
 
-if (trim($disallowed) == "" ) {
+// TODO
+if (!count($disallowed)) {
 	$disallow_select .= '<option value="">' . $lang['no_disallowed'] . '</option>';
 } else {
 	$user = [];
 
-	for ($i = 0; $i < count($disallowed); $i++ ) {
-		$disallow_select .= '<option value="' . $disallowed[$i]['disallow_id'] . '">' . $disallowed[$i]['disallow_username'] . '</option>';
+    foreach ($disallowed as $disallow_id => $disallow_username) {
+		$disallow_select .= '<option value="' . $disallow_id . '">' . $disallow_username . '</option>';
 	}
 }
 
