@@ -102,9 +102,7 @@ if ( isset($_POST['submit']) ) {
 //
 include $phpbb_root_path . 'includes/page_header.php';
 
-$template->set_filenames(array(
-	'body' => 'profile_send_pass.tpl')
-);
+$template->set_filenames(['body' => 'profile_send_pass.tpl']);
 make_jumpbox('viewforum.php');
 
 $template->assign_vars(array(

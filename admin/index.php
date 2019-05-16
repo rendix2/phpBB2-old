@@ -68,18 +68,18 @@ if (isset($_GET['pane']) && $_GET['pane'] == 'left' )
 
 	include './page_header_admin.php';
 
-	$template->set_filenames(array("body" => "admin/index_navigate.tpl"));
+    $template->set_filenames(["body" => "admin/index_navigate.tpl"]);
 
-	$template->assign_vars(array(
-		"U_FORUM_INDEX" => append_sid("../index.php"),
-		"U_ADMIN_INDEX" => append_sid("index.php?pane=right"),
+    $template->assign_vars([
+            "U_FORUM_INDEX" => append_sid("../index.php"),
+            "U_ADMIN_INDEX" => append_sid("index.php?pane=right"),
 
-		"L_FORUM_INDEX" => $lang['Main_index'],
-		"L_ADMIN_INDEX" => $lang['Admin_Index'],
-		"L_PREVIEW_FORUM" => $lang['Preview_forum'])
-	);
+            "L_FORUM_INDEX"   => $lang['Main_index'],
+            "L_ADMIN_INDEX"   => $lang['Admin_Index'],
+            "L_PREVIEW_FORUM" => $lang['Preview_forum']
+        ]);
 
-	ksort($module);
+    ksort($module);
 
 	while (list($cat, $action_array) = each($module) ) {
 		$cat = !empty($lang[$cat]) ? $lang[$cat] : preg_replace("/_/", " ", $cat);
@@ -96,14 +96,16 @@ if (isset($_GET['pane']) && $_GET['pane'] == 'left' )
 
 			$action = !empty($lang[$action]) ? $lang[$action] : preg_replace("/_/", " ", $action);
 
-			$template->assign_block_vars("catrow.modulerow", array(
-				"ROW_COLOR" => "#" . $row_color,
-				"ROW_CLASS" => $row_class,
+            $template->assign_block_vars("catrow.modulerow",
+                [
+                    "ROW_COLOR" => "#" . $row_color,
+                    "ROW_CLASS" => $row_class,
 
-				"ADMIN_MODULE" => $action,
-				"U_ADMIN_MODULE" => append_sid($file))
-			);
-			$row_count++;
+                    "ADMIN_MODULE"   => $action,
+                    "U_ADMIN_MODULE" => append_sid($file)
+                ]
+            );
+            $row_count++;
 		}
 	}
 

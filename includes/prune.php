@@ -123,11 +123,11 @@ function prune($forum_id, $prune_date, $prune_all = false)
 
 			remove_search_post($sql_post);
 
-			return array ('topics' => $pruned_topics, 'posts' => $pruned_posts);
-		}
-	}
+            return ['topics' => $pruned_topics, 'posts' => $pruned_posts];
+        }
+    }
 
-	return array('topics' => 0, 'posts' => 0);
+    return ['topics' => 0, 'posts' => 0];
 }
 
 //

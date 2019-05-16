@@ -56,52 +56,58 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 	{
 		case AUTH_ALL:
 			$a_sql = 'a.auth_view, a.auth_read, a.auth_post, a.auth_reply, a.auth_edit, a.auth_delete, a.auth_sticky, a.auth_announce, a.auth_vote, a.auth_pollcreate';
-			$auth_fields = array('auth_view', 'auth_read', 'auth_post', 'auth_reply', 'auth_edit', 'auth_delete', 'auth_sticky', 'auth_announce', 'auth_vote', 'auth_pollcreate');
+			$auth_fields = ['auth_view', 'auth_read', 'auth_post', 'auth_reply', 'auth_edit', 'auth_delete', 'auth_sticky', 'auth_announce', 'auth_vote', 'auth_pollcreate'];
 			break;
 
 		case AUTH_VIEW:
 			$a_sql = 'a.auth_view';
-			$auth_fields = array('auth_view');
+			$auth_fields = ['auth_view'];
 			break;
 
 		case AUTH_READ:
 			$a_sql = 'a.auth_read';
-			$auth_fields = array('auth_read');
+			$auth_fields = ['auth_read'];
 			break;
+
 		case AUTH_POST:
 			$a_sql = 'a.auth_post';
-			$auth_fields = array('auth_post');
+			$auth_fields = ['auth_post'];
 			break;
+
 		case AUTH_REPLY:
 			$a_sql = 'a.auth_reply';
-			$auth_fields = array('auth_reply');
+			$auth_fields = ['auth_reply'];
 			break;
+
 		case AUTH_EDIT:
 			$a_sql = 'a.auth_edit';
-			$auth_fields = array('auth_edit');
-			break;
+			$auth_fields = ['auth_edit'];
+            break;
+
 		case AUTH_DELETE:
 			$a_sql = 'a.auth_delete';
-			$auth_fields = array('auth_delete');
-			break;
+			$auth_fields = ['auth_delete'];
+            break;
 
 		case AUTH_ANNOUNCE:
 			$a_sql = 'a.auth_announce';
-			$auth_fields = array('auth_announce');
-			break;
+			$auth_fields = ['auth_announce'];
+            break;
 		case AUTH_STICKY:
 			$a_sql = 'a.auth_sticky';
-			$auth_fields = array('auth_sticky');
-			break;
+			$auth_fields = ['auth_sticky'];
+            break;
 
 		case AUTH_POLLCREATE:
 			$a_sql = 'a.auth_pollcreate';
-			$auth_fields = array('auth_pollcreate');
-			break;
+			$auth_fields = ['auth_pollcreate'];
+            break;
+
 		case AUTH_VOTE:
 			$a_sql = 'a.auth_vote';
-			$auth_fields = array('auth_vote');
-			break;
+			$auth_fields = ['auth_vote'];
+            break;
+
 		case AUTH_ATTACH:
 			break;
 

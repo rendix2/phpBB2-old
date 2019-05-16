@@ -90,12 +90,10 @@ function topic_review($topic_id, $is_inline_review)
 		$page_title = $lang['Topic_review'] . ' - ' . $topic_title;
 		include $phpbb_root_path . 'includes/page_header.php';
 
-		$template->set_filenames(array(
-			'reviewbody' => 'posting_topic_review.tpl')
-		);
-	}
+        $template->set_filenames(['reviewbody' => 'posting_topic_review.tpl']);
+    }
 
-	//
+    //
 	// Go ahead and pull all data for this topic
 	//
 	$sql = "SELECT u.username, u.user_id, p.*,  pt.post_text, pt.post_subject, pt.bbcode_uid

@@ -608,23 +608,54 @@ if (isset($_GET['perform']) || isset($_POST['perform']) )
 			if ($error) {
 				include './page_header_admin.php';
 
-				$template->set_filenames(array(
-					"body" => "admin/admin_message_body.tpl")
-				);
+                $template->set_filenames(["body" => "admin/admin_message_body.tpl"]);
 
-				$template->assign_vars(array(
-					"MESSAGE_TITLE" => $lang['Information'],
-					"MESSAGE_TEXT" => $lang['Backups_not_supported'])
-				);
+                $template->assign_vars(
+                    [
+                        "MESSAGE_TITLE" => $lang['Information'],
+                        "MESSAGE_TEXT"  => $lang['Backups_not_supported']
+                    ]
+                );
 
-				$template->pparse("body");
+                $template->pparse("body");
 
 				include './page_footer_admin.php';
 			}
 
-			$tables = array('auth_access', 'banlist', 'categories', 'config', 'disallow', 'forums', 'forum_prune', 'groups', 'posts', 'posts_text', 'privmsgs', 'privmsgs_text', 'ranks', 'search_results', 'search_wordlist', 'search_wordmatch', 'sessions', 'smilies', 'themes', 'themes_name', 'topics', 'topics_watch', 'user_group', 'users', 'vote_desc', 'vote_results', 'vote_voters', 'words', 'confirm', 'sessions_keys');
+            $tables = [
+                'auth_access',
+                'banlist',
+                'categories',
+                'config',
+                'disallow',
+                'forums',
+                'forum_prune',
+                'groups',
+                'posts',
+                'posts_text',
+                'privmsgs',
+                'privmsgs_text',
+                'ranks',
+                'search_results',
+                'search_wordlist',
+                'search_wordmatch',
+                'sessions',
+                'smilies',
+                'themes',
+                'themes_name',
+                'topics',
+                'topics_watch',
+                'user_group',
+                'users',
+                'vote_desc',
+                'vote_results',
+                'vote_voters',
+                'words',
+                'confirm',
+                'sessions_keys'
+            ];
 
-			$additional_tables = isset($_POST['additional_tables']) ? $_POST['additional_tables'] : ( isset($_GET['additional_tables']) ? $_GET['additional_tables'] : "" );
+            $additional_tables = isset($_POST['additional_tables']) ? $_POST['additional_tables'] : ( isset($_GET['additional_tables']) ? $_GET['additional_tables'] : "" );
 
 			$backup_type = isset($_POST['backup_type']) ? $_POST['backup_type'] : ( isset($_GET['backup_type']) ? $_GET['backup_type'] : "" );
 
@@ -647,9 +678,8 @@ if (isset($_GET['perform']) || isset($_POST['perform']) )
 			if (!isset($_POST['backupstart']) && !isset($_GET['backupstart'])) {
 				include './page_header_admin.php';
 
-				$template->set_filenames(array(
-					"body" => "admin/db_utils_backup_body.tpl")
-				);	
+				$template->set_filenames(["body" => "admin/db_utils_backup_body.tpl"]);
+
 				$s_hidden_fields = "<input type=\"hidden\" name=\"perform\" value=\"backup\" /><input type=\"hidden\" name=\"drop\" value=\"1\" /><input type=\"hidden\" name=\"perform\" value=\"$perform\" />";
 
 				$template->assign_vars(array(
@@ -677,7 +707,7 @@ if (isset($_GET['perform']) || isset($_POST['perform']) )
 					$additional_tables = implode(',', $additional_tables);
 				}
 
-				$template->set_filenames(array("body" => "admin/admin_message_body.tpl"));
+				$template->set_filenames(["body" => "admin/admin_message_body.tpl"]);
 
 				$template->assign_vars(array(
 					"META" => '<meta http-equiv="refresh" content="2;url=' . append_sid("admin_db_utilities.php?perform=backup&additional_tables=" . quotemeta($additional_tables) . "&backup_type=$backup_type&drop=1&amp;backupstart=1&gzipcompress=$gzipcompress&startdownload=1") . '">',
@@ -702,7 +732,7 @@ if (isset($_GET['perform']) || isset($_POST['perform']) )
 
 				if ($phpver >= "4.0") {
 					if (extension_loaded("zlib")) {
-						$do_gzip_compress = TRUE;
+						$do_gzip_compress = true;
 					}
 				}
 			}
@@ -774,9 +804,7 @@ if (isset($_GET['perform']) || isset($_POST['perform']) )
 				//
 				include './page_header_admin.php';
 
-				$template->set_filenames(array(
-					"body" => "admin/db_utils_restore_body.tpl")
-				);
+				$template->set_filenames(["body" => "admin/db_utils_restore_body.tpl"]);
 
 				$s_hidden_fields = "<input type=\"hidden\" name=\"perform\" value=\"restore\" /><input type=\"hidden\" name=\"perform\" value=\"$perform\" />";
 

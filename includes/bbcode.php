@@ -329,17 +329,13 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 
 	$stack = [];
 
-	if (is_array($open_tag))
-	{
-		if (0 == count($open_tag))
-		{
+	if (is_array($open_tag)) {
+		if (0 == count($open_tag)) {
 			// No opening tags to match, so return.
 			return $text;
 		}
 		$open_tag_count = count($open_tag);
-	}
-	else
-	{
+	} else {
 		// only one opening tag. make it into a 1-element array.
 		$open_tag_temp = $open_tag;
 		$open_tag = [];

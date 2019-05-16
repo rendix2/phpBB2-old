@@ -92,21 +92,21 @@ if (isset($_POST['doprune']) ) {
 		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 	
-		$template->assign_block_vars('prune_results', array(
+		$template->assign_block_vars('prune_results', [
 			'ROW_COLOR' => '#' . $row_color, 
 			'ROW_CLASS' => $row_class, 
 			'FORUM_NAME' => $forum_rows[$i]['forum_name'],
 			'FORUM_TOPICS' => $p_result['topics'],
-			'FORUM_POSTS' => $p_result['posts'])
+			'FORUM_POSTS' => $p_result['posts']]
 		);
 	}
 
-	$template->assign_vars(array(
+	$template->assign_vars([
 		'L_FORUM_PRUNE' => $lang['Forum_Prune'],
 		'L_FORUM' => $lang['Forum'],
 		'L_TOPICS_PRUNED' => $lang['Topics_pruned'],
 		'L_POSTS_PRUNED' => $lang['Posts_pruned'],
-		'L_PRUNE_RESULT' => $lang['Prune_success'])
+		'L_PRUNE_RESULT' => $lang['Prune_success']]
 	);
 } else {
 	//
@@ -131,13 +131,13 @@ if (isset($_POST['doprune']) ) {
 		//
 		// Assign the template variables.
 		//
-		$template->assign_vars(array(
+		$template->assign_vars([
 			'L_FORUM_PRUNE' => $lang['Forum_Prune'],
 			'L_SELECT_FORUM' => $lang['Select_a_Forum'], 
 			'L_LOOK_UP' => $lang['Look_up_Forum'],
 
 			'S_FORUMPRUNE_ACTION' => append_sid("admin_forum_prune.php"),
-			'S_FORUMS_SELECT' => $select_list)
+			'S_FORUMS_SELECT' => $select_list]
 		);
 	}
 	else
@@ -147,9 +147,9 @@ if (isset($_POST['doprune']) ) {
 		//
 		// Output the form to retrieve Prune information.
 		//
-		$template->set_filenames(array('body' => 'admin/forum_prune_body.tpl'));
+        $template->set_filenames(['body' => 'admin/forum_prune_body.tpl']);
 
-		$forum_name = ( $forum_id == -1 ) ? $lang['All_Forums'] : $forum_rows[0]['forum_name'];
+        $forum_name = ( $forum_id == -1 ) ? $lang['All_Forums'] : $forum_rows[0]['forum_name'];
 
 		$prune_data = $lang['Prune_topics_not_posted'] . " "; 
 		$prune_data .= '<input class="post" type="text" name="prunedays" size="4"> ' . $lang['Days'];
@@ -159,17 +159,17 @@ if (isset($_POST['doprune']) ) {
 		//
 		// Assign the template variables.
 		//
-		$template->assign_vars(array(
+		$template->assign_vars([
 			'FORUM_NAME' => $forum_name,
 
-			'L_FORUM' => $lang['Forum'], 
-			'L_FORUM_PRUNE' => $lang['Forum_Prune'], 
-			'L_FORUM_PRUNE_EXPLAIN' => $lang['Forum_Prune_explain'], 
+			'L_FORUM' => $lang['Forum'],
+			'L_FORUM_PRUNE' => $lang['Forum_Prune'],
+			'L_FORUM_PRUNE_EXPLAIN' => $lang['Forum_Prune_explain'],
 			'L_DO_PRUNE' => $lang['Do_Prune'],
 
 			'S_FORUMPRUNE_ACTION' => append_sid("admin_forum_prune.php"),
 			'S_PRUNE_DATA' => $prune_data,
-			'S_HIDDEN_VARS' => $hidden_input)
+			'S_HIDDEN_VARS' => $hidden_input]
 		);
 	}
 }

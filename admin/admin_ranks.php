@@ -214,7 +214,7 @@ if ($mode != "" ) {
 
 		} elseif ($rank_id && !$confirm) {
 			// Present the confirmation screen to the user
-			$template->set_filenames(array('body' => 'admin/confirm_body.tpl'));
+			$template->set_filenames(['body' => 'admin/confirm_body.tpl']);
 
 			$hidden_fields = '<input type="hidden" name="mode" value="delete" /><input type="hidden" name="id" value="' . $rank_id . '" />';
 
@@ -283,7 +283,7 @@ for ($i = 0; $i < $rank_count; $i++) {
 
 	$rank_is_special = $special_rank ? $lang['Yes'] : $lang['No'];
 	
-	$template->assign_block_vars("ranks", array(
+	$template->assign_block_vars("ranks", [
 		"ROW_COLOR" => "#" . $row_color,
 		"ROW_CLASS" => $row_class,
 		"RANK" => $rank,
@@ -291,7 +291,7 @@ for ($i = 0; $i < $rank_count; $i++) {
 		"RANK_MIN" => $rank_min,
 
 		"U_RANK_EDIT" => append_sid("admin_ranks.php?mode=edit&amp;id=$rank_id"),
-		"U_RANK_DELETE" => append_sid("admin_ranks.php?mode=delete&amp;id=$rank_id"))
+		"U_RANK_DELETE" => append_sid("admin_ranks.php?mode=delete&amp;id=$rank_id")]
 	);
 }
 

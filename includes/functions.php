@@ -771,11 +771,13 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
             $template->set_filenames(['message_body' => 'admin/admin_message_body.tpl']);
         }
 
-        $template->assign_vars(array(
-			'MESSAGE_TITLE' => $msg_title,
-			'MESSAGE_TEXT' => $msg_text)
-		);
-		$template->pparse('message_body');
+        $template->assign_vars(
+            [
+                'MESSAGE_TITLE' => $msg_title,
+                'MESSAGE_TEXT'  => $msg_text
+            ]
+        );
+        $template->pparse('message_body');
 
         if (!defined('IN_ADMIN')) {
             include $phpbb_root_path . 'includes/page_tail.php';

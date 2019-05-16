@@ -821,9 +821,9 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 	//
 	include './page_header_admin.php';
 
-	$template->set_filenames(array("body" => 'admin/auth_ug_body.tpl'));
+    $template->set_filenames(["body" => 'admin/auth_ug_body.tpl']);
 
-	$adv_switch = empty($adv) ? 1 : 0;
+    $adv_switch = empty($adv) ? 1 : 0;
 	$u_ug_switch = ( $mode == 'user' ) ? POST_USERS_URL . "=" . $user_id : POST_GROUPS_URL . "=" . $group_id;
 	$switch_mode = append_sid("admin_ug_auth.php?mode=$mode&amp;" . $u_ug_switch . "&amp;adv=$adv_switch");
 	$switch_mode_text = empty($adv) ? $lang['Advanced_mode'] : $lang['Simple_mode'];
@@ -873,11 +873,9 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 	//
 	include './page_header_admin.php';
 
-	$template->set_filenames(array(
-		'body' => ( $mode == 'user' ) ? 'admin/user_select_body.tpl' : 'admin/auth_select_body.tpl')
-	);
+    $template->set_filenames(['body' => ($mode == 'user') ? 'admin/user_select_body.tpl' : 'admin/auth_select_body.tpl']);
 
-	if ( $mode == 'user' ) {
+    if ( $mode == 'user' ) {
 		$template->assign_vars(array(
 			'L_FIND_USERNAME' => $lang['Find_username'],
 

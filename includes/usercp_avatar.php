@@ -343,9 +343,40 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 		}
 	}
 
-	$params = array('coppa', 'user_id', 'username', 'email', 'current_email', 'cur_password', 'new_password', 'password_confirm', 'icq', 'aim', 'msn', 'yim', 'website', 'location', 'occupation', 'interests', 'signature', 'viewemail', 'notifypm', 'popup_pm', 'notifyreply', 'attachsig', 'allowhtml', 'allowbbcode', 'allowsmilies', 'hideonline', 'style', 'language', 'timezone', 'dateformat');
+    $params = [
+        'coppa',
+        'user_id',
+        'username',
+        'email',
+        'current_email',
+        'cur_password',
+        'new_password',
+        'password_confirm',
+        'icq',
+        'aim',
+        'msn',
+        'yim',
+        'website',
+        'location',
+        'occupation',
+        'interests',
+        'signature',
+        'viewemail',
+        'notifypm',
+        'popup_pm',
+        'notifyreply',
+        'attachsig',
+        'allowhtml',
+        'allowbbcode',
+        'allowsmilies',
+        'hideonline',
+        'style',
+        'language',
+        'timezone',
+        'dateformat'
+    ];
 
-	$s_hidden_vars = '<input type="hidden" name="sid" value="' . $session_id . '" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="avatarcatname" value="' . $category . '" />';
+    $s_hidden_vars = '<input type="hidden" name="sid" value="' . $session_id . '" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="avatarcatname" value="' . $category . '" />';
 
 	for ($i = 0; $i < count($params); $i++) {
 		$s_hidden_vars .= '<input type="hidden" name="' . $params[$i] . '" value="' . str_replace('"', '&quot;', $$params[$i]) . '" />';

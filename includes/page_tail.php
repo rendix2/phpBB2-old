@@ -31,14 +31,12 @@ global $do_gzip_compress;
 //
 $admin_link = ($userdata['user_level'] == ADMIN ) ? '<a href="admin/index.php?sid=' . $userdata['session_id'] . '">' . $lang['Admin_panel'] . '</a><br /><br />' : '';
 
-$template->set_filenames(array(
-	'overall_footer' => empty($gen_simple_header) ? 'overall_footer.tpl' : 'simple_footer.tpl')
-);
+$template->set_filenames(['overall_footer' => empty($gen_simple_header) ? 'overall_footer.tpl' : 'simple_footer.tpl']);
 
-$template->assign_vars(array(
+$template->assign_vars([
         'TRANSLATION_INFO' => isset($lang['TRANSLATION_INFO']) ? $lang['TRANSLATION_INFO'] : (isset($lang['TRANSLATION']) ? $lang['TRANSLATION'] : ''),
-        'ADMIN_LINK' => $admin_link)
-);
+        'ADMIN_LINK'       => $admin_link
+    ]);
 
 $template->pparse('overall_footer');
 

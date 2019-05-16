@@ -242,9 +242,9 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 	// Admin has selected to add a smiley.
 	//
 
-	$template->set_filenames(array("body" => "admin/smile_edit_body.tpl"));
+    $template->set_filenames(["body" => "admin/smile_edit_body.tpl"]);
 
-	$filename_list = "";
+    $filename_list = "";
 
 	for ($i = 0; $i < count($smiley_images); $i++ ) {
 		$filename_list .= '<option value="' . $smiley_images[$i] . '">' . $smiley_images[$i] . '</option>';

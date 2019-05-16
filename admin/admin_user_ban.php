@@ -285,9 +285,9 @@ if ( isset($_POST['submit']) ) {
 	message_die(GENERAL_MESSAGE, $message);
 
 } else {
-	$template->set_filenames(array('body' => 'admin/user_ban_body.tpl'));
+    $template->set_filenames(['body' => 'admin/user_ban_body.tpl']);
 
-	$template->assign_vars(array(
+    $template->assign_vars([
 		'L_BAN_TITLE' => $lang['Ban_control'],
 		'L_BAN_EXPLAIN' => $lang['Ban_explain'],
 		'L_BAN_EXPLAIN_WARN' => $lang['Ban_explain_warn'],
@@ -296,16 +296,16 @@ if ( isset($_POST['submit']) ) {
 		'L_SUBMIT' => $lang['Submit'],
 		'L_RESET' => $lang['Reset'],
 
-		'S_BANLIST_ACTION' => append_sid("admin_user_ban.php"))
+		'S_BANLIST_ACTION' => append_sid("admin_user_ban.php")]
 	);
 
-	$template->assign_vars(array(
+	$template->assign_vars([
 		'L_BAN_USER' => $lang['Ban_username'],
 		'L_BAN_USER_EXPLAIN' => $lang['Ban_username_explain'],
 		'L_BAN_IP' => $lang['Ban_IP'],
 		'L_BAN_IP_EXPLAIN' => $lang['Ban_IP_explain'],
 		'L_BAN_EMAIL' => $lang['Ban_email'],
-		'L_BAN_EMAIL_EXPLAIN' => $lang['Ban_email_explain'])
+		'L_BAN_EMAIL_EXPLAIN' => $lang['Ban_email_explain']]
 	);
 
 	$userban_count = 0;

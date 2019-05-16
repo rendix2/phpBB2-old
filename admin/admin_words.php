@@ -70,8 +70,8 @@ if ($mode != "" )
 
         $template->set_filenames(["body" => "admin/words_edit_body.tpl"]);
 
-        $word_info = array('word' => '', 'replacement' => '');
-		$s_hidden_fields = '';
+        $word_info = ['word' => '', 'replacement' => ''];
+        $s_hidden_fields = '';
 
 		if ($mode == "edit" ) {
 			if ($word_id ) {
@@ -214,16 +214,18 @@ if ($mode != "" )
 		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-		$template->assign_block_vars("words", array(
-			"ROW_COLOR" => "#" . $row_color,
-			"ROW_CLASS" => $row_class,
-			"WORD" => htmlspecialchars($word),
-			"REPLACEMENT" => htmlspecialchars($replacement),
+        $template->assign_block_vars("words",
+            [
+                "ROW_COLOR"   => "#" . $row_color,
+                "ROW_CLASS"   => $row_class,
+                "WORD"        => htmlspecialchars($word),
+                "REPLACEMENT" => htmlspecialchars($replacement),
 
-			"U_WORD_EDIT" => append_sid("admin_words.php?mode=edit&amp;id=$word_id"),
-			"U_WORD_DELETE" => append_sid("admin_words.php?mode=delete&amp;id=$word_id"))
-		);
-	}
+                "U_WORD_EDIT"   => append_sid("admin_words.php?mode=edit&amp;id=$word_id"),
+                "U_WORD_DELETE" => append_sid("admin_words.php?mode=delete&amp;id=$word_id")
+            ]
+        );
+    }
 }
 
 $template->pparse("body");

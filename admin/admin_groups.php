@@ -356,7 +356,7 @@ else
 
 	$template->set_filenames(['body' => 'admin/group_select_body.tpl']);
 
-	$template->assign_vars(array(
+	$template->assign_vars([
 		'L_GROUP_TITLE' => $lang['Group_administration'],
 		'L_GROUP_EXPLAIN' => $lang['Group_admin_explain'],
 		'L_GROUP_SELECT' => $lang['Select_group'],
@@ -364,7 +364,7 @@ else
 		'L_CREATE_NEW_GROUP' => $lang['New_group'],
 
 		'S_GROUP_ACTION' => append_sid("admin_groups.php"),
-		'S_GROUP_SELECT' => $select_list)
+		'S_GROUP_SELECT' => $select_list]
 	);
 
 	if ( $select_list != '' ) {

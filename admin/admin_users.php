@@ -613,15 +613,11 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 
 			message_die(GENERAL_MESSAGE, $message);
 		} else {
-			$template->set_filenames(array(
-				'reg_header' => 'error_body.tpl')
-			);
+            $template->set_filenames(['reg_header' => 'error_body.tpl']);
 
-			$template->assign_vars(array(
-				'ERROR_MESSAGE' => $error_msg)
-			);
+            $template->assign_vars(['ERROR_MESSAGE' => $error_msg]);
 
-			$template->assign_var_from_handle('ERROR_BOX', 'reg_header');
+            $template->assign_var_from_handle('ERROR_BOX', 'reg_header');
 
 			$username = htmlspecialchars(stripslashes($username));
 			$email = stripslashes($email);
@@ -811,22 +807,22 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 			$s_hidden_fields .= '<input type="hidden" name="user_allowavatar" value="' . $user_allowavatar . '" />';
 			$s_hidden_fields .= '<input type="hidden" name="user_rank" value="' . $user_rank . '" />';
 
-			$template->assign_vars(array(
-				"L_USER_TITLE" => $lang['User_admin'],
-				"L_USER_EXPLAIN" => $lang['User_admin_explain'],
-				"L_AVATAR_GALLERY" => $lang['Avatar_gallery'], 
-				"L_SELECT_AVATAR" => $lang['Select_avatar'], 
-				"L_RETURN_PROFILE" => $lang['Return_profile'], 
-				"L_CATEGORY" => $lang['Select_category'], 
-				"L_GO" => $lang['Go'],
+            $template->assign_vars([
+                    "L_USER_TITLE"     => $lang['User_admin'],
+                    "L_USER_EXPLAIN"   => $lang['User_admin_explain'],
+                    "L_AVATAR_GALLERY" => $lang['Avatar_gallery'],
+                    "L_SELECT_AVATAR"  => $lang['Select_avatar'],
+                    "L_RETURN_PROFILE" => $lang['Return_profile'],
+                    "L_CATEGORY"       => $lang['Select_category'],
+                    "L_GO"             => $lang['Go'],
 
-				"S_OPTIONS_CATEGORIES" => $s_categories, 
-				"S_COLSPAN" => $s_colspan, 
-				"S_PROFILE_ACTION" => append_sid("admin_users.php?mode=$mode"), 
-				"S_HIDDEN_FIELDS" => $s_hidden_fields)
-			);
-		}
-	} else {
+                    "S_OPTIONS_CATEGORIES" => $s_categories,
+                    "S_COLSPAN"            => $s_colspan,
+                    "S_PROFILE_ACTION"     => append_sid("admin_users.php?mode=$mode"),
+                    "S_HIDDEN_FIELDS"      => $s_hidden_fields
+                ]);
+        }
+    } else {
 		$s_hidden_fields = '<input type="hidden" name="mode" value="save" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';
 		$s_hidden_fields .= '<input type="hidden" name="id" value="' . $this_userdata['user_id'] . '" />';
 
@@ -1019,19 +1015,21 @@ else
 	//
     $template->set_filenames(['body' => 'admin/user_select_body.tpl']);
 
-    $template->assign_vars(array(
-		'L_USER_TITLE' => $lang['User_admin'],
-		'L_USER_EXPLAIN' => $lang['User_admin_explain'],
-		'L_USER_SELECT' => $lang['Select_a_User'],
-		'L_LOOK_UP' => $lang['Look_up_user'],
-		'L_FIND_USERNAME' => $lang['Find_username'],
+    $template->assign_vars(
+        [
+            'L_USER_TITLE'    => $lang['User_admin'],
+            'L_USER_EXPLAIN'  => $lang['User_admin_explain'],
+            'L_USER_SELECT'   => $lang['Select_a_User'],
+            'L_LOOK_UP'       => $lang['Look_up_user'],
+            'L_FIND_USERNAME' => $lang['Find_username'],
 
-		'U_SEARCH_USER' => append_sid("./../search.php?mode=searchuser"), 
+            'U_SEARCH_USER' => append_sid("./../search.php?mode=searchuser"),
 
-		'S_USER_ACTION' => append_sid("admin_users.php"),
-		'S_USER_SELECT' => $select_list)
-	);
-	$template->pparse('body');
+            'S_USER_ACTION' => append_sid("admin_users.php"),
+            'S_USER_SELECT' => $select_list
+        ]
+    );
+    $template->pparse('body');
 
 }
 

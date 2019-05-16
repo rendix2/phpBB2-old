@@ -801,15 +801,11 @@ if (isset($_POST['avatargallery']) && !$error ) {
 	$bbcode_status = ($userdata['user_allowbbcode'] && $board_config['allow_bbcode']  ) ? $lang['BBCode_is_ON'] : $lang['BBCode_is_OFF'];
 	$smilies_status = ($userdata['user_allowsmile'] && $board_config['allow_smilies']  ) ? $lang['Smilies_are_ON'] : $lang['Smilies_are_OFF'];
 
-	if ( $error ) {
-		$template->set_filenames(array(
-			'reg_header' => 'error_body.tpl')
-		);
-		$template->assign_vars(array(
-			'ERROR_MESSAGE' => $error_msg)
-		);
-		$template->assign_var_from_handle('ERROR_BOX', 'reg_header');
-	}
+    if ($error) {
+        $template->set_filenames(['reg_header' => 'error_body.tpl']);
+        $template->assign_vars(['ERROR_MESSAGE' => $error_msg]);
+        $template->assign_var_from_handle('ERROR_BOX', 'reg_header');
+    }
 
     $template->set_filenames(['body' => 'profile_add_body.tpl']);
 
@@ -822,7 +818,6 @@ if (isset($_POST['avatargallery']) && !$error ) {
     } else {
         $template->assign_block_vars('switch_namechange_disallowed', []);
     }
-
 
 	// Visual Confirmation
 	$confirm_image = '';

@@ -249,14 +249,10 @@ if (empty($forum_id) )
 
 		$simple_auth .= '</select>';
 
-		$template->assign_block_vars('forum_auth_titles', array(
-			'CELL_TITLE' => $lang['Simple_mode'])
-		);
-		$template->assign_block_vars('forum_auth_data', array(
-			'S_AUTH_LEVELS_SELECT' => $simple_auth)
-		);
+        $template->assign_block_vars('forum_auth_titles', ['CELL_TITLE' => $lang['Simple_mode']]);
+        $template->assign_block_vars('forum_auth_data', ['S_AUTH_LEVELS_SELECT' => $simple_auth]);
 
-		$s_column_span++;
+        $s_column_span++;
 	} else {
 		//
 		// Output values of individual
@@ -288,7 +284,7 @@ if (empty($forum_id) )
 
 	$s_hidden_fields = '<input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '">';
 
-	$template->assign_vars(array(
+	$template->assign_vars([
 		'FORUM_NAME' => $forum_name,
 
 		'L_FORUM' => $lang['Forum'], 
@@ -301,7 +297,7 @@ if (empty($forum_id) )
 
 		'S_FORUMAUTH_ACTION' => append_sid("admin_forumauth.php"),
 		'S_COLUMN_SPAN' => $s_column_span,
-		'S_HIDDEN_FIELDS' => $s_hidden_fields)
+		'S_HIDDEN_FIELDS' => $s_hidden_fields]
 	);
 
 }

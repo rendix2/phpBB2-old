@@ -55,9 +55,7 @@ $db->sql_freeresult($result);
 //
 // Output page header and profile_view template
 //
-$template->set_filenames(array(
-	'body' => 'profile_view_body.tpl')
-);
+$template->set_filenames(['body' => 'profile_view_body.tpl']);
 make_jumpbox('viewforum.php');
 
 //

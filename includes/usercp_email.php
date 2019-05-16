@@ -96,15 +96,17 @@ if ( $result = $db->sql_query($sql) ) {
 						$emailer->email_address($user_email);
 						$emailer->set_subject($subject);
 						$emailer->extra_headers($email_headers);
-	
-						$emailer->assign_vars(array(
-                                'SITENAME' => $board_config['sitename'],
-                                'BOARD_EMAIL' => $board_config['board_email'],
+
+                        $emailer->assign_vars(
+                            [
+                                'SITENAME'      => $board_config['sitename'],
+                                'BOARD_EMAIL'   => $board_config['board_email'],
                                 'FROM_USERNAME' => $userdata['username'],
-                                'TO_USERNAME' => $username,
-                                'MESSAGE' => $message)
-						);
-						$emailer->send();
+                                'TO_USERNAME'   => $username,
+                                'MESSAGE'       => $message
+                            ]
+                        );
+                        $emailer->send();
 						$emailer->reset();
 	
 						if ( !empty($_POST['cc_email']) ) {
@@ -139,19 +141,17 @@ if ( $result = $db->sql_query($sql) ) {
 			}
 	
 			include $phpbb_root_path . 'includes/page_header.php';
-	
-			$template->set_filenames(array(
-				'body' => 'profile_send_email.tpl')
-			);
-			make_jumpbox('viewforum.php');
-	
-			if ( $error ) {
+
+            $template->set_filenames(['body' => 'profile_send_email.tpl']);
+            make_jumpbox('viewforum.php');
+
+            if ($error) {
                 $template->set_filenames(['reg_header' => 'error_body.tpl']);
                 $template->assign_vars(['ERROR_MESSAGE' => $error_msg]);
                 $template->assign_var_from_handle('ERROR_BOX', 'reg_header');
             }
 
-            $template->assign_vars(array(
+            $template->assign_vars([
 				'USERNAME' => $username,
 	
 				'S_HIDDEN_FIELDS' => '', 
@@ -167,7 +167,7 @@ if ( $result = $db->sql_query($sql) ) {
 				'L_OPTIONS' => $lang['Options'],
 				'L_CC_EMAIL' => $lang['CC_email'], 
 				'L_SPELLCHECK' => $lang['Spellcheck'],
-				'L_SEND_EMAIL' => $lang['Send_email'])
+				'L_SEND_EMAIL' => $lang['Send_email']]
 			);
 	
 			$template->pparse('body');

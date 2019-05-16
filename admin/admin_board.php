@@ -142,9 +142,7 @@ $avatars_upload_no = ( !$new['allow_avatar_upload'] ) ? "checked=\"checked\"" : 
 $smtp_yes = $new['smtp_delivery'] ? "checked=\"checked\"" : "";
 $smtp_no = ( !$new['smtp_delivery'] ) ? "checked=\"checked\"" : "";
 
-$template->set_filenames(array(
-	"body" => "admin/board_config_body.tpl")
-);
+$template->set_filenames(["body" => "admin/board_config_body.tpl"]);
 
 //
 // Escape any quotes in the site description for proper display in the text
