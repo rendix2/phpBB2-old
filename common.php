@@ -1,4 +1,8 @@
 <?php
+
+use Dibi\Bridges\Tracy\Panel;
+use Tracy\Debugger;
+
 /***************************************************************************
  *                                common.php
  *                            -------------------
@@ -160,12 +164,25 @@ include $phpbb_root_path . 'includes/sessions.php';
 include $phpbb_root_path . 'includes/auth.php';
 include $phpbb_root_path . 'includes/functions.php';
 include $phpbb_root_path . 'includes/db.php';
-
 include $phpbb_root_path .'vendor/autoload.php';
 
-use Tracy\Debugger;
+// now we connect to database via dibi!
+$connection = dibi::connect([
+    'driver'   => 'PDO',
+    'username' => 'root',
+    'dsn' => 'mysql:host='.$dbhost.';dbname='.$dbname.';charset=utf8'
+]);
 
+$connection->connect();
+
+// enable tracy
 Debugger::enable();
+
+// adds dibi into tracy
+$panel = new Panel();
+$panel->explain = true;
+Panel::$maxLength = 10000;
+$panel->register($connection);
 
 // We do not need this any longer, unset for safety purposes
 unset($dbpasswd);
@@ -186,15 +203,13 @@ $user_ip = encode_ip($client_ip);
 // then we output a CRITICAL_ERROR since
 // basic forum information is not available
 //
-$sql = "SELECT *
-	FROM " . CONFIG_TABLE;
 
-if (!($result = $db->sql_query($sql)) ) {
-	message_die(CRITICAL_ERROR, "Could not query config information", "", __LINE__, __FILE__, $sql);
-}
+$board_config = dibi::select('*')
+    ->from(CONFIG_TABLE)
+    ->fetchPairs('config_name', 'config_value');
 
-while ( $row = $db->sql_fetchrow($result) ) {
-	$board_config[$row['config_name']] = $row['config_value'];
+if (!$board_config) {
+    message_die(CRITICAL_ERROR, "Could not query config information", "", __LINE__, __FILE__, $sql);
 }
 
 if (file_exists('install') || file_exists('contrib')) {
