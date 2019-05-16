@@ -64,7 +64,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 	//
 	if ( ( $mode == 'save' && isset( $_POST['submit'] ) ) || isset( $_POST['avatargallery'] ) || isset( $_POST['submitavatar'] ) || isset( $_POST['cancelavatar'] ) )
 	{
-		$user_id = intval($_POST['id']);
+		$user_id = (int)$_POST['id'];
 
 		if (!($this_userdata = get_userdata($user_id)))
 		{
@@ -239,11 +239,11 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 		$popuppm = isset( $_POST['popup_pm']) ? ($_POST['popup_pm'] ? TRUE : 0 ) : TRUE;
 		$attachsig = isset( $_POST['attachsig']) ? ($_POST['attachsig'] ? TRUE : 0 ) : 0;
 
-		$allowhtml = isset( $_POST['allowhtml']) ? intval($_POST['allowhtml'] ) : $board_config['allow_html'];
-		$allowbbcode = isset( $_POST['allowbbcode']) ? intval($_POST['allowbbcode'] ) : $board_config['allow_bbcode'];
-		$allowsmilies = isset( $_POST['allowsmilies']) ? intval($_POST['allowsmilies'] ) : $board_config['allow_smilies'];
+		$allowhtml = isset( $_POST['allowhtml']) ? (int)$_POST['allowhtml'] : $board_config['allow_html'];
+		$allowbbcode = isset( $_POST['allowbbcode']) ? (int)$_POST['allowbbcode'] : $board_config['allow_bbcode'];
+		$allowsmilies = isset( $_POST['allowsmilies']) ? (int)$_POST['allowsmilies'] : $board_config['allow_smilies'];
 
-		$user_style = isset( $_POST['style'] ) ? intval($_POST['style'] ) : $board_config['default_style'];
+		$user_style = isset( $_POST['style'] ) ? (int)$_POST['style'] : $board_config['default_style'];
 		$user_lang = $_POST['language'] ? $_POST['language'] : $board_config['default_lang'];
 		$user_timezone = isset( $_POST['timezone']) ? doubleval($_POST['timezone'] ) : $board_config['board_timezone'];
 		$user_dateformat = $_POST['dateformat'] ? trim($_POST['dateformat'] ) : $board_config['default_dateformat'];
@@ -261,10 +261,10 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 		$user_avatar = empty($user_avatar_loc) ? $this_userdata['user_avatar'] : '';
 		$user_avatar_type = empty($user_avatar_loc) ? $this_userdata['user_avatar_type'] : '';
 
-		$user_status = !empty($_POST['user_status']) ? intval($_POST['user_status'] ) : 0;
-		$user_allowpm = !empty($_POST['user_allowpm']) ? intval($_POST['user_allowpm'] ) : 0;
-		$user_rank = !empty($_POST['user_rank']) ? intval($_POST['user_rank'] ) : 0;
-		$user_allowavatar = !empty($_POST['user_allowavatar']) ? intval($_POST['user_allowavatar'] ) : 0;
+		$user_status = !empty($_POST['user_status']) ? (int)$_POST['user_status'] : 0;
+		$user_allowpm = !empty($_POST['user_allowpm']) ? (int)$_POST['user_allowpm'] : 0;
+		$user_rank = !empty($_POST['user_rank']) ? (int)$_POST['user_rank'] : 0;
+		$user_allowavatar = !empty($_POST['user_allowavatar']) ? (int)$_POST['user_allowavatar'] : 0;
 
 		if( isset( $_POST['avatargallery'] ) || isset( $_POST['submitavatar'] ) || isset( $_POST['cancelavatar'] ) )
 		{
@@ -732,7 +732,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 	{
 		if( isset( $_GET[POST_USERS_URL]) || isset( $_POST[POST_USERS_URL]) )
 		{
-			$user_id = isset( $_POST[POST_USERS_URL]) ? intval($_POST[POST_USERS_URL]) : intval($_GET[POST_USERS_URL]);
+			$user_id = isset( $_POST[POST_USERS_URL]) ? (int)$_POST[POST_USERS_URL] : (int)$_GET[POST_USERS_URL];
 			$this_userdata = get_userdata($user_id);
 			if( !$this_userdata )
 			{
@@ -802,7 +802,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 	{
 		if( !$error )
 		{
-			$user_id = intval($_POST['id']);
+			$user_id = (int)$_POST['id'];
 
 			$template->set_filenames(array(
 				"body" => "admin/user_avatar_gallery.tpl")

@@ -69,7 +69,7 @@ if( isset($_POST['add_name']) )
 }
 else if( isset($_POST['delete_name']) )
 {
-	$disallowed_id = isset($_POST['disallowed_id']) ? intval($_POST['disallowed_id'] ) : intval($_GET['disallowed_id'] );
+	$disallowed_id = isset($_POST['disallowed_id']) ? (int)$_POST['disallowed_id'] : (int)$_GET['disallowed_id'];
 	
 	$sql = "DELETE FROM " . DISALLOW_TABLE . " 
 		WHERE disallow_id = $disallowed_id";

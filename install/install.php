@@ -521,7 +521,7 @@ else if (!empty($_POST['ftp_file']))
 {
 	// Try to connect ...
 	$conn_id = @ftp_connect('localhost');
-	$login_result = @ftp_login($conn_id, "$ftp_user", "$ftp_pass");
+	$login_result = @ftp_login($conn_id, (string)$ftp_user, (string)$ftp_pass);
 
 	if (!$conn_id || !$login_result)
 	{

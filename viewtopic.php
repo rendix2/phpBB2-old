@@ -110,7 +110,7 @@ if ( isset($_GET['view']) && empty($_GET[POST_POST_URL]) ) {
 		}
 
 		if ( $row = $db->sql_fetchrow($result) ) {
-			$topic_id = intval($row['topic_id']);
+			$topic_id = (int)$row['topic_id'];
 		} else {
 			$message = ( $_GET['view'] == 'next' ) ? 'No_newer_topics' : 'No_older_topics';
 			message_die(GENERAL_MESSAGE, $message);
@@ -143,7 +143,7 @@ if ( !($forum_topic_data = $db->sql_fetchrow($result)) ) {
 	message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
 }
 
-$forum_id = intval($forum_topic_data['forum_id']);
+$forum_id = (int)$forum_topic_data['forum_id'];
 
 //
 // Start session management
@@ -177,11 +177,11 @@ if( !$is_auth['auth_view'] || !$is_auth['auth_read'] ) {
 
 $forum_name = $forum_topic_data['forum_name'];
 $topic_title = $forum_topic_data['topic_title'];
-$topic_id = intval($forum_topic_data['topic_id']);
+$topic_id = (int)$forum_topic_data['topic_id'];
 $topic_time = $forum_topic_data['topic_time'];
 
 if ($post_id) {
-	$start = floor(($forum_topic_data['prev_posts'] - 1) / intval($board_config['posts_per_page'])) * intval($board_config['posts_per_page']);
+	$start = floor(($forum_topic_data['prev_posts'] - 1) / (int)$board_config['posts_per_page']) * (int)$board_config['posts_per_page'];
 }
 
 //
@@ -291,7 +291,7 @@ if( !empty($_POST['postdays']) || !empty($_GET['postdays']) ) {
 		message_die(GENERAL_ERROR, "Could not obtain limited topics count information", '', __LINE__, __FILE__, $sql);
 	}
 
-	$total_replies = ( $row = $db->sql_fetchrow($result) ) ? intval($row['num_posts']) : 0;
+	$total_replies = ( $row = $db->sql_fetchrow($result) ) ? (int)$row['num_posts'] : 0;
 
 	$limit_posts_time = "AND p.post_time >= $min_post_time ";
 
@@ -299,7 +299,7 @@ if( !empty($_POST['postdays']) || !empty($_GET['postdays']) ) {
 		$start = 0;
 	}
 } else {
-	$total_replies = intval($forum_topic_data['topic_replies']) + 1;
+	$total_replies = (int)$forum_topic_data['topic_replies'] + 1;
 
 	$limit_posts_time = '';
 	$post_days = 0;
@@ -374,7 +374,7 @@ $resync = false;
 if ($forum_topic_data['topic_replies'] + 1 < $start + count($postrow))  { 
    $resync = true; 
 } elseif ($start + $board_config['posts_per_page'] > $forum_topic_data['topic_replies'])  { 
-   $row_id = intval($forum_topic_data['topic_replies']) % intval($board_config['posts_per_page']);
+   $row_id = (int)$forum_topic_data['topic_replies'] % (int)$board_config['posts_per_page'];
    
    if ($postrow[$row_id]['post_id'] != $forum_topic_data['topic_last_post_id'] || $start + count($postrow) < $forum_topic_data['topic_replies']) { 
        $resync = true; 
@@ -565,7 +565,7 @@ $template->assign_vars(array(
         'TOPIC_TITLE' => $topic_title,
         'PAGINATION' => $pagination,
         'PAGE_NUMBER' => sprintf($lang['Page_of'],
-            floor( $start / intval($board_config['posts_per_page']) ) + 1, ceil( $total_replies / intval($board_config['posts_per_page']) )),
+            floor( $start / intval($board_config['posts_per_page']) ) + 1, ceil( $total_replies / (int)$board_config['posts_per_page'])),
 
         'POST_IMG' => $post_img,
         'REPLY_IMG' => $reply_img,
@@ -630,7 +630,7 @@ if ( !empty($forum_topic_data['topic_vote']) ) {
 		$sql = "SELECT vote_id
 			FROM " . VOTE_USERS_TABLE . "
 			WHERE vote_id = $vote_id
-				AND vote_user_id = " . intval($userdata['user_id']);
+				AND vote_user_id = " . (int)$userdata['user_id'];
 		
 		if ( !($result = $db->sql_query($sql)) ) {
 			message_die(GENERAL_ERROR, "Could not obtain user vote data for this topic", '', __LINE__, __FILE__, $sql);

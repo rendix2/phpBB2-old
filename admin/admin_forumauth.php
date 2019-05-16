@@ -73,7 +73,7 @@ $forum_auth_const = array(AUTH_ALL, AUTH_REG, AUTH_ACL, AUTH_MOD, AUTH_ADMIN);
 
 if(isset($_GET[POST_FORUM_URL]) || isset($_POST[POST_FORUM_URL]))
 {
-	$forum_id = isset($_POST[POST_FORUM_URL]) ? intval($_POST[POST_FORUM_URL]) : intval($_GET[POST_FORUM_URL]);
+	$forum_id = isset($_POST[POST_FORUM_URL]) ? (int)$_POST[POST_FORUM_URL] : (int)$_GET[POST_FORUM_URL];
 	$forum_sql = "AND forum_id = $forum_id";
 }
 else
@@ -84,7 +84,7 @@ else
 
 if( isset($_GET['adv']) )
 {
-	$adv = intval($_GET['adv']);
+	$adv = (int)$_GET['adv'];
 }
 else
 {
@@ -102,7 +102,7 @@ if( isset($_POST['submit']) )
 	{
 		if(isset($_POST['simpleauth']))
 		{
-			$simple_ary = $simple_auth_ary[intval($_POST['simpleauth'])];
+			$simple_ary = $simple_auth_ary[(int)$_POST['simpleauth']];
 
 			for($i = 0; $i < count($simple_ary); $i++)
 			{
@@ -118,7 +118,7 @@ if( isset($_POST['submit']) )
 		{
 			for($i = 0; $i < count($forum_auth_fields); $i++)
 			{
-				$value = intval($_POST[$forum_auth_fields[$i]]);
+				$value = (int)$_POST[$forum_auth_fields[$i]];
 
 				if ( $forum_auth_fields[$i] == 'auth_vote' )
 				{

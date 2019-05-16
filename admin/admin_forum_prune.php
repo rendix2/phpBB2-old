@@ -51,7 +51,7 @@ if( isset($_GET[POST_FORUM_URL]) || isset($_POST[POST_FORUM_URL]) )
 	}
 	else
 	{
-		$forum_id = intval($forum_id);
+		$forum_id = (int)$forum_id;
 		$forum_sql = "AND forum_id = $forum_id";
 	}
 }
@@ -84,7 +84,7 @@ while( $row = $db->sql_fetchrow($result) )
 //
 if( isset($_POST['doprune']) )
 {
-	$prunedays = isset($_POST['prunedays']) ? intval($_POST['prunedays']) : 0;
+	$prunedays = isset($_POST['prunedays']) ? (int)$_POST['prunedays'] : 0;
 
 	// Convert days to seconds for timestamp functions...
 	$prunedate = time() - ( $prunedays * 86400 );
@@ -156,7 +156,7 @@ else
 	}
 	else
 	{
-		$forum_id = intval($_POST[POST_FORUM_URL]);
+		$forum_id = (int)$_POST[POST_FORUM_URL];
 		
 		//
 		// Output the form to retrieve Prune information.

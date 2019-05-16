@@ -84,7 +84,7 @@ $l_online_users = '';
 
 if (defined('SHOW_ONLINE')) {
 
-	$user_forum_sql = !empty($forum_id) ? "AND s.session_page = " . intval($forum_id) : '';
+	$user_forum_sql = !empty($forum_id) ? "AND s.session_page = " . (int)$forum_id : '';
 	$sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_level, s.session_logged_in, s.session_ip
 		FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s
 		WHERE u.user_id = s.session_user_id

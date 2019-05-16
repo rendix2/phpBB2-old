@@ -78,7 +78,7 @@ if( $mode != "" )
 		//
 		// They want to add a new rank, show the form.
 		//
-		$rank_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+		$rank_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 		
 		$s_hidden_fields = "";
 		
@@ -145,10 +145,10 @@ if( $mode != "" )
 		// Ok, they sent us our info, let's update it.
 		//
 		
-		$rank_id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+		$rank_id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
 		$rank_title = isset($_POST['title']) ? trim($_POST['title']) : "";
 		$special_rank = ( $_POST['special_rank'] == 1 ) ? TRUE : 0;
-		$min_posts = isset($_POST['min_posts']) ? intval($_POST['min_posts']) : -1;
+		$min_posts = isset($_POST['min_posts']) ? (int)$_POST['min_posts'] : -1;
 		$rank_image = isset($_POST['rank_image']) ? trim($_POST['rank_image']) : "";
 
 		if( $rank_title == "" )
@@ -218,7 +218,7 @@ if( $mode != "" )
 		
 		if( isset($_POST['id']) || isset($_GET['id']) )
 		{
-			$rank_id = isset($_POST['id']) ? intval($_POST['id']) : intval($_GET['id']);
+			$rank_id = isset($_POST['id']) ? (int)$_POST['id'] : (int)$_GET['id'];
 		}
 		else
 		{

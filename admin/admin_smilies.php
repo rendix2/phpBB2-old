@@ -320,7 +320,7 @@ else if ( $mode != "" )
 			//
 
 			$smiley_id = !empty($_POST['id']) ? $_POST['id'] : $_GET['id'];
-			$smiley_id = intval($smiley_id);
+			$smiley_id = (int)$smiley_id;
 
 			$confirm = isset($_POST['confirm']);
 
@@ -367,7 +367,7 @@ else if ( $mode != "" )
 			//
 
 			$smiley_id = !empty($_POST['id']) ? $_POST['id'] : $_GET['id'];
-			$smiley_id = intval($smiley_id);
+			$smiley_id = (int)$smiley_id;
 
 			$sql = "SELECT *
 				FROM " . SMILIES_TABLE . "
@@ -438,7 +438,7 @@ else if ( $mode != "" )
 			$smile_url = isset($_POST['smile_url']) ? trim($_POST['smile_url']) : '';
 			$smile_url = phpbb_ltrim(basename($smile_url), "'");
 			$smile_emotion = isset($_POST['smile_emotion']) ? htmlspecialchars(trim($_POST['smile_emotion'])) : '';
-			$smile_id = isset($_POST['smile_id']) ? intval($_POST['smile_id']) : 0;
+			$smile_id = isset($_POST['smile_id']) ? (int)$_POST['smile_id'] : 0;
 			$smile_code = trim($smile_code);
 			$smile_url = trim($smile_url);
 

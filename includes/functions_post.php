@@ -125,7 +125,7 @@ function prepare_post(&$mode, &$post_data, &$bbcode_on, &$html_on, &$smilies_on,
 	// Handle poll stuff
 	//
 	if ($mode == 'newtopic' || ($mode == 'editpost' && $post_data['first_post'])) {
-		$poll_length = isset($poll_length) ? max(0, intval($poll_length)) : 0;
+		$poll_length = isset($poll_length) ? max(0, (int)$poll_length) : 0;
 
 		if (!empty($poll_title)) {
 			$poll_title = htmlspecialchars(trim($poll_title));
@@ -138,7 +138,7 @@ function prepare_post(&$mode, &$post_data, &$bbcode_on, &$html_on, &$smilies_on,
 				$option_text = trim($option_text);
 
 				if (!empty($option_text)) {
-					$temp_option_text[intval($option_id)] = htmlspecialchars($option_text);
+                    $temp_option_text[(int)$option_id] = htmlspecialchars($option_text);
 				}
 			}
 			$option_text = $temp_option_text;

@@ -277,7 +277,7 @@ elseif( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 			FROM sysfiles"; 
 		if( $result = $db->sql_query($sql) )
 		{
-			$dbsize = ( $row = $db->sql_fetchrow($result) ) ? intval($row['dbsize']) : $lang['Not_available'];
+			$dbsize = ( $row = $db->sql_fetchrow($result) ) ? (int)$row['dbsize'] : $lang['Not_available'];
 		}
 		else
 		{

@@ -277,7 +277,7 @@ if ( isset($_POST['submit']) )
 		{
 			if ( $user_list[$i] != -1 )
 			{
-				$where_sql .= ( ( $where_sql != '' ) ? ', ' : '' ) . intval($user_list[$i]);
+				$where_sql .= ( ( $where_sql != '' ) ? ', ' : '' ) . (int)$user_list[$i];
 			}
 		}
 	}

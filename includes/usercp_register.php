@@ -99,7 +99,7 @@ if (
 	include $phpbb_root_path . 'includes/functions_post.php';
 
 	if ( $mode == 'editprofile' ) {
-		$user_id = intval($_POST['user_id']);
+		$user_id = (int)$_POST['user_id'];
 		$current_email = trim(htmlspecialchars($_POST['current_email']));
 	}
 
@@ -152,7 +152,7 @@ if (
 		$allowsmilies = isset($_POST['allowsmilies']) ? ($_POST['allowsmilies'] ? TRUE : 0 ) : $userdata['user_allowsmile'];
 	}
 
-	$user_style = isset($_POST['style']) ? intval($_POST['style']) : $board_config['default_style'];
+	$user_style = isset($_POST['style']) ? (int)$_POST['style'] : $board_config['default_style'];
 
 	if ( !empty($_POST['language']) ) {
 		if ( preg_match('/^[a-z_]+$/i', $_POST['language']) ) {

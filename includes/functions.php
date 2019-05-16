@@ -168,7 +168,7 @@ function get_userdata($user, $force_str = false)
     if (!is_numeric($user) || $force_str) {
         $user = phpbb_clean_username($user);
     } else {
-        $user = intval($user);
+        $user = (int)$user;
     }
 
 	$sql = "SELECT *

@@ -701,7 +701,7 @@ if( isset($_GET['perform']) || isset($_POST['perform']) )
 
 			$gzipcompress = !empty($_POST['gzipcompress']) ? $_POST['gzipcompress'] : ( !empty($_GET['gzipcompress']) ? $_GET['gzipcompress'] : 0 );
 
-			$drop = !empty($_POST['drop']) ? intval($_POST['drop']) : ( !empty($_GET['drop']) ? intval($_GET['drop']) : 0 );
+			$drop = !empty($_POST['drop']) ? (int)$_POST['drop'] : ( !empty($_GET['drop']) ? (int)$_GET['drop'] : 0 );
 
 			if(!empty($additional_tables))
 			{

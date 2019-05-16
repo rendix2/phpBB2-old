@@ -564,7 +564,7 @@ if( $refresh || isset($_POST['del_poll_option']) || $error_msg != '' )
 			if( isset($_POST['del_poll_option'][$option_id]) ) {
 				unset($poll_options[$option_id]);
 			} else if ( !empty($option_text) ) {
-				$poll_options[intval($option_id)] = htmlspecialchars(trim(stripslashes($option_text)));
+                $poll_options[(int)$option_id] = htmlspecialchars(trim(stripslashes($option_text)));
 			}
 		}
 	}

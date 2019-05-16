@@ -33,7 +33,7 @@ if (!$board_config['board_email_form']) {
 }
 
 if (!empty($_GET[POST_USERS_URL]) || !empty($_POST[POST_USERS_URL]))  {
-    $user_id = !empty($_GET[POST_USERS_URL]) ? intval($_GET[POST_USERS_URL]) : intval($_POST[POST_USERS_URL]);
+    $user_id = !empty($_GET[POST_USERS_URL]) ? (int)$_GET[POST_USERS_URL] : (int)$_POST[POST_USERS_URL];
 } else {
 	message_die(GENERAL_MESSAGE, $lang['No_user_specified']);
 }

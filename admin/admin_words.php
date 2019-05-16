@@ -76,7 +76,7 @@ if( $mode != "" )
 {
 	if( $mode == "edit" || $mode == "add" )
 	{
-		$word_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+		$word_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 		$template->set_filenames(array(
 			"body" => "admin/words_edit_body.tpl")
@@ -127,7 +127,7 @@ if( $mode != "" )
 	}
 	else if( $mode == "save" )
 	{
-		$word_id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+		$word_id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
 		$word = isset($_POST['word']) ? trim($_POST['word']) : "";
 		$replacement = isset($_POST['replacement']) ? trim($_POST['replacement']) : "";
 
@@ -164,7 +164,7 @@ if( $mode != "" )
 		if( isset($_POST['id']) ||  isset($_GET['id']) )
 		{
 			$word_id = isset($_POST['id']) ? $_POST['id'] : $_GET['id'];
-			$word_id = intval($word_id);
+			$word_id = (int)$word_id;
 		}
 		else
 		{

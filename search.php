@@ -75,12 +75,12 @@ if (isset($_POST['search_fields'])) {
     $search_fields = 0;
 }
 
-$return_chars = isset($_POST['return_chars']) ? intval($_POST['return_chars']) : 200;
+$return_chars = isset($_POST['return_chars']) ? (int)$_POST['return_chars'] : 200;
 
-$search_cat = isset($_POST['search_cat']) ? intval($_POST['search_cat']) : -1;
-$search_forum = isset($_POST['search_forum']) ? intval($_POST['search_forum']) : -1;
+$search_cat = isset($_POST['search_cat']) ? (int)$_POST['search_cat'] : -1;
+$search_forum = isset($_POST['search_forum']) ? (int)$_POST['search_forum'] : -1;
 
-$sort_by = isset($_POST['sort_by']) ? intval($_POST['sort_by']) : 0;
+$sort_by = isset($_POST['sort_by']) ? (int)$_POST['sort_by'] : 0;
 
 if (isset($_POST['sort_dir'])) {
     $sort_dir = ($_POST['sort_dir'] == 'DESC') ? 'DESC' : 'ASC';
@@ -89,14 +89,14 @@ if (isset($_POST['sort_dir'])) {
 }
 
 if ( !empty($_POST['search_time']) || !empty($_GET['search_time'])) {
-	$search_time = time() - ( ( !empty($_POST['search_time']) ? intval($_POST['search_time']) : intval($_GET['search_time']) ) * 86400 );
-	$topic_days = !empty($_POST['search_time']) ? intval($_POST['search_time']) : intval($_GET['search_time']);
+	$search_time = time() - ( ( !empty($_POST['search_time']) ? (int)$_POST['search_time'] : (int)$_GET['search_time']) * 86400 );
+	$topic_days = !empty($_POST['search_time']) ? (int)$_POST['search_time'] : (int)$_GET['search_time'];
 } else {
 	$search_time = 0;
 	$topic_days = 0;
 }
 
-$start = isset($_GET['start']) ? intval($_GET['start']) : 0;
+$start = isset($_GET['start']) ? (int)$_GET['start'] : 0;
 $start = ($start < 0) ? 0 : $start;
 
 $sort_by_types = array($lang['Sort_Time'], $lang['Sort_Post_Subject'], $lang['Sort_Topic_Title'], $lang['Sort_Author'], $lang['Sort_Forum']);
@@ -148,7 +148,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		{
 			if ($row = $db->sql_fetchrow($result))
 			{
-				if (intval($row['last_search_time']) > 0 && ($current_time - intval($row['last_search_time'])) < intval($board_config['search_flood_interval']))
+				if ((int)$row['last_search_time'] > 0 && ($current_time - (int)$row['last_search_time']) < (int)$board_config['search_flood_interval'])
 				{
 					message_die(GENERAL_MESSAGE, $lang['Search_Flood_Error']);
 				}
@@ -653,7 +653,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 	}
 	else
 	{
-		$search_id = intval($search_id);
+		$search_id = (int)$search_id;
 		if ( $search_id )
 		{
 			$sql = "SELECT search_array 

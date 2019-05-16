@@ -54,9 +54,9 @@ while( list($var, $param) = @each($params) )
 	}
 }
 
-$user_id = intval($user_id);
-$group_id = intval($group_id);
-$adv = intval($adv);
+$user_id = (int)$user_id;
+$group_id = (int)$group_id;
+$adv = (int)$adv;
 $mode = htmlspecialchars($mode);
 
 //
@@ -863,7 +863,7 @@ else if ( ( $mode == 'user' && ( isset($_POST['username']) || $user_id ) ) || ( 
 		if( ( $mode == 'user' && !$ug_info[$i]['group_single_user'] ) || $mode == 'group' )
 		{
 			$name[] = ( $mode == 'user' ) ? $ug_info[$i]['group_name'] :  $ug_info[$i]['username'];
-			$id[] = ( $mode == 'user' ) ? intval($ug_info[$i]['group_id']) : intval($ug_info[$i]['user_id']);
+			$id[] = ( $mode == 'user' ) ? (int)$ug_info[$i]['group_id'] : (int)$ug_info[$i]['user_id'];
 		}
 	}
 

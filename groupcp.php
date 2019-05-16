@@ -119,7 +119,7 @@ $server_port = ( $board_config['server_port'] <> 80 ) ? ':' . trim($board_config
 $server_url = $server_protocol . $server_name . $server_port . $script_name;
 
 if ( isset($_GET[POST_GROUPS_URL]) || isset($_POST[POST_GROUPS_URL]) ) {
-	$group_id = isset($_POST[POST_GROUPS_URL]) ? intval($_POST[POST_GROUPS_URL]) : intval($_GET[POST_GROUPS_URL]);
+	$group_id = isset($_POST[POST_GROUPS_URL]) ? (int)$_POST[POST_GROUPS_URL] : (int)$_GET[POST_GROUPS_URL];
 } else {
 	$group_id = '';
 }
@@ -134,7 +134,7 @@ if ( isset($_POST['mode']) || isset($_GET['mode']) ) {
 $confirm = isset($_POST['confirm']) ? TRUE : 0;
 $cancel = isset($_POST['cancel']) ? TRUE : 0;
 $sid = isset($_POST['sid']) ? $_POST['sid'] : '';
-$start = isset($_GET['start']) ? intval($_GET['start']) : 0;
+$start = isset($_GET['start']) ? (int)$_GET['start'] : 0;
 $start = ($start < 0) ? 0 : $start;
 
 //
@@ -168,7 +168,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 	}
 
 	$sql = "UPDATE " . GROUPS_TABLE . " 
-		SET group_type = " . intval($_POST['group_type']) . "
+		SET group_type = " . (int)$_POST['group_type'] . "
 		WHERE group_id = $group_id";
 
 	if ( !($result = $db->sql_query($sql)) ) {
@@ -544,7 +544,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 
 					$sql_in = '';
 					for($i = 0; $i < count($members); $i++) {
-						$sql_in .= ( ( $sql_in != '' ) ? ', ' : '' ) . intval($members[$i]);
+						$sql_in .= ( ( $sql_in != '' ) ? ', ' : '' ) . (int)$members[$i];
 					}
 
 					if ( isset($_POST['approve']) ) {

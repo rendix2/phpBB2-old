@@ -259,11 +259,11 @@ switch( $mode )
 			$updated_name['fontface2_name'] = $_POST['fontface2_name'];
 			$updated['fontface3'] = $_POST['fontface3'];
 			$updated_name['fontface3_name'] = $_POST['fontface3_name'];
-			$updated['fontsize1'] = intval($_POST['fontsize1']);
+			$updated['fontsize1'] = (int)$_POST['fontsize1'];
 			$updated_name['fontsize1_name'] = $_POST['fontsize1_name'];
-			$updated['fontsize2'] = intval($_POST['fontsize2']);
+			$updated['fontsize2'] = (int)$_POST['fontsize2'];
 			$updated_name['fontsize2_name'] = $_POST['fontsize2_name'];
-			$updated['fontsize3'] = intval($_POST['fontsize3']);
+			$updated['fontsize3'] = (int)$_POST['fontsize3'];
 			$updated_name['fontsize3_name'] = $_POST['fontsize3_name'];
 			$updated['fontcolor1'] = $_POST['fontcolor1'];
 			$updated_name['fontcolor1_name'] = $_POST['fontcolor1_name'];
@@ -277,7 +277,7 @@ switch( $mode )
 			$updated_name['span_class2_name'] = $_POST['span_class2_name'];
 			$updated['span_class3'] = $_POST['span_class3'];
 			$updated_name['span_class3_name'] = $_POST['span_class3_name'];
-			$style_id = intval($_POST['style_id']);
+			$style_id = (int)$_POST['style_id'];
 			//
 			// Wheeeew! Thank heavens for copy and paste and search and replace :D
 			//
@@ -407,7 +407,7 @@ switch( $mode )
 
 					if(stristr($key, "fontsize"))
 					{
-						$values[] = "$val";
+						$values[] = (string)$val;
 					}
 					else
 					{
@@ -492,7 +492,7 @@ switch( $mode )
 				$themes_title = $lang['Edit_theme'];
 				$themes_explain = $lang['Edit_theme_explain'];
 				
-				$style_id = intval($_GET['style_id']);
+				$style_id = (int)$_GET['style_id'];
 				
 				$selected_names = [];
 				$selected_values = [];
@@ -728,7 +728,7 @@ switch( $mode )
 			{
 				while(list($key, $val) = each($theme_rowset[$i]))
 				{
-					if(!intval($key) && $key != "0" && $key != "themes_id")
+					if(!(int)$key && $key != "0" && $key != "themes_id")
 					{
 						$theme_data .= '$' . $template_name . "[$i]['$key'] = \"" . addslashes($val) . "\";\n";
 					}
@@ -821,7 +821,7 @@ switch( $mode )
 		break;
 
 	case "delete":
-		$style_id = isset($_GET['style_id']) ? intval($_GET['style_id']) : intval($_POST['style_id']);
+		$style_id = isset($_GET['style_id']) ? (int)$_GET['style_id'] : (int)$_POST['style_id'];
 		
 		if( !$confirm )
 		{
