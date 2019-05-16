@@ -98,7 +98,7 @@ CREATE TABLE phpbb_config (
 CREATE TABLE phpbb_confirm (
   confirm_id char(32) DEFAULT '' NOT NULL,
   session_id char(32) DEFAULT '' NOT NULL,
-  code char(6) DEFAULT '' NOT NULL, 
+  code char(6) DEFAULT '' NOT NULL,
   PRIMARY KEY  (session_id,confirm_id)
 );
 
@@ -476,7 +476,7 @@ CREATE TABLE phpbb_topics_watch (
 # Table structure for table 'phpbb_users'
 #
 CREATE TABLE phpbb_users (
-   user_id mediumint(8) NOT NULL,
+   user_id INT(11) NOT NULL AUTO_INCREMENT,
    user_active tinyint(1) DEFAULT '1',
    username varchar(25) NOT NULL,
    user_password varchar(32) NOT NULL,
