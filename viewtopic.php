@@ -396,21 +396,11 @@ if ($resync) {
    $total_replies = $row['total']; 
 }
 
-$sql = "SELECT *
-	FROM " . RANKS_TABLE . "
-	ORDER BY rank_special, rank_min";
-
-if ( !($result = $db->sql_query($sql)) ) {
-	message_die(GENERAL_ERROR, "Could not obtain ranks information.", '', __LINE__, __FILE__, $sql);
-}
-
-$ranksrow = [];
-
-while ( $row = $db->sql_fetchrow($result) ) {
-	$ranksrow[] = $row;
-}
-
-$db->sql_freeresult($result);
+$ranks = dibi::select('*')
+    ->from(RANKS_TABLE)
+    ->orderBy('rank_special')
+    ->orderBy('rank_min')
+    ->fetchAll();
 
 //
 // Define censored word matches
@@ -803,19 +793,19 @@ for ($i = 0; $i < $total_posts; $i++) {
 	    // WHAT WAS THERE???????
 	}
 	elseif ( $postrow[$i]['user_rank'] ) {
-		for ($j = 0; $j < count($ranksrow); $j++) {
-			if ( $postrow[$i]['user_rank'] == $ranksrow[$j]['rank_id'] && $ranksrow[$j]['rank_special'] ) {
-				$poster_rank = $ranksrow[$j]['rank_title'];
-				$rank_image = $ranksrow[$j]['rank_image'] ? '<img src="' . $ranksrow[$j]['rank_image'] . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
-			}
-		}
+	    foreach ($ranks as $rank) {
+	        if ($postrow[$i]['user_rank'] === $rank->rank_id && $rank->rank_special) {
+	            $poster_rank = $rank->title;
+	            $rank_image = $rank->rank_image ? '<img src="' . $rank->rank_image . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
+            }
+        }
 	} else {
-		for ($j = 0; $j < count($ranksrow); $j++) {
-			if ( $postrow[$i]['user_posts'] >= $ranksrow[$j]['rank_min'] && !$ranksrow[$j]['rank_special'] ) {
-				$poster_rank = $ranksrow[$j]['rank_title'];
-				$rank_image = $ranksrow[$j]['rank_image'] ? '<img src="' . $ranksrow[$j]['rank_image'] . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
-			}
-		}
+		foreach ($ranks as $rank) {
+		    if ( $postrow[$i]['user_posts'] >= $rank->rank_min && !$rank->rank_special) {
+		        $poster_rank = $rank->rank_title;
+		        $rank_image = $rank->rank_image ? '<img src="' . $rank->rank_image . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
+            }
+        }
 	}
 
 	//
