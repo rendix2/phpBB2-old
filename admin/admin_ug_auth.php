@@ -40,7 +40,7 @@ $phpbb_root_path = "./../";
 require $phpbb_root_path . 'extension.inc';
 require './pagestart.php';
 
-$params = array('mode' => 'mode', 'user_id' => POST_USERS_URL, 'group_id' => POST_GROUPS_URL, 'adv' => 'adv');
+$params = ['mode' => 'mode', 'user_id' => POST_USERS_URL, 'group_id' => POST_GROUPS_URL, 'adv' => 'adv'];
 
 while (list($var, $param) = @each($params)) {
     if (!empty($_POST[$param]) || !empty($_GET[$param])) {
@@ -58,7 +58,18 @@ $mode = htmlspecialchars($mode);
 //
 // Start program - define vars
 //
-$forum_auth_fields = array('auth_view', 'auth_read', 'auth_post', 'auth_reply', 'auth_edit', 'auth_delete', 'auth_sticky', 'auth_announce', 'auth_vote', 'auth_pollcreate');
+$forum_auth_fields = [
+    'auth_view',
+    'auth_read',
+    'auth_post',
+    'auth_reply',
+    'auth_edit',
+    'auth_delete',
+    'auth_sticky',
+    'auth_announce',
+    'auth_vote',
+    'auth_pollcreate'
+];
 
 $auth_field_match = [
     'auth_view'       => AUTH_VIEW,
@@ -857,24 +868,26 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
         );
     }
 
-    $template->assign_vars(array(
-		'L_USER_OR_GROUPNAME' => ( $mode == 'user' ) ? $lang['Username'] : $lang['Group_name'],
+    $template->assign_vars(
+        [
+            'L_USER_OR_GROUPNAME' => ($mode == 'user') ? $lang['Username'] : $lang['Group_name'],
 
-		'L_AUTH_TITLE' => ( $mode == 'user' ) ? $lang['Auth_Control_User'] : $lang['Auth_Control_Group'],
-		'L_AUTH_EXPLAIN' => ( $mode == 'user' ) ? $lang['User_auth_explain'] : $lang['Group_auth_explain'],
-		'L_MODERATOR_STATUS' => $lang['Moderator_status'],
-		'L_PERMISSIONS' => $lang['Permissions'],
-		'L_SUBMIT' => $lang['Submit'],
-		'L_RESET' => $lang['Reset'], 
-		'L_FORUM' => $lang['Forum'], 
+            'L_AUTH_TITLE'       => ($mode == 'user') ? $lang['Auth_Control_User'] : $lang['Auth_Control_Group'],
+            'L_AUTH_EXPLAIN'     => ($mode == 'user') ? $lang['User_auth_explain'] : $lang['Group_auth_explain'],
+            'L_MODERATOR_STATUS' => $lang['Moderator_status'],
+            'L_PERMISSIONS'      => $lang['Permissions'],
+            'L_SUBMIT'           => $lang['Submit'],
+            'L_RESET'            => $lang['Reset'],
+            'L_FORUM'            => $lang['Forum'],
 
-		'U_USER_OR_GROUP' => append_sid("admin_ug_auth.php"),
-		'U_SWITCH_MODE' => $u_switch_mode,
+            'U_USER_OR_GROUP' => append_sid("admin_ug_auth.php"),
+            'U_SWITCH_MODE'   => $u_switch_mode,
 
-		'S_COLUMN_SPAN' => $s_column_span,
-		'S_AUTH_ACTION' => append_sid("admin_ug_auth.php"), 
-		'S_HIDDEN_FIELDS' => $s_hidden_fields)
-	);
+            'S_COLUMN_SPAN'   => $s_column_span,
+            'S_AUTH_ACTION'   => append_sid("admin_ug_auth.php"),
+            'S_HIDDEN_FIELDS' => $s_hidden_fields
+        ]
+    );
 } else {
 	//
 	// Select a user/group
@@ -918,16 +931,17 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 
 	$l_type = ( $mode == 'user' ) ? 'USER' : 'AUTH';
 
-	$template->assign_vars(array(
-		'L_' . $l_type . '_TITLE' => ( $mode == 'user' ) ? $lang['Auth_Control_User'] : $lang['Auth_Control_Group'],
-		'L_' . $l_type . '_EXPLAIN' => ( $mode == 'user' ) ? $lang['User_auth_explain'] : $lang['Group_auth_explain'],
-		'L_' . $l_type . '_SELECT' => ( $mode == 'user' ) ? $lang['Select_a_User'] : $lang['Select_a_Group'],
-		'L_LOOK_UP' => ( $mode == 'user' ) ? $lang['Look_up_User'] : $lang['Look_up_Group'],
+    $template->assign_vars(
+        [
+            'L_' . $l_type . '_TITLE'   => ($mode == 'user') ? $lang['Auth_Control_User'] : $lang['Auth_Control_Group'],
+            'L_' . $l_type . '_EXPLAIN' => ($mode == 'user') ? $lang['User_auth_explain'] : $lang['Group_auth_explain'],
+            'L_' . $l_type . '_SELECT'  => ($mode == 'user') ? $lang['Select_a_User'] : $lang['Select_a_Group'],
+            'L_LOOK_UP'                 => ($mode == 'user') ? $lang['Look_up_User'] : $lang['Look_up_Group'],
 
-		'S_HIDDEN_FIELDS' => $s_hidden_fields, 
-		'S_' . $l_type . '_ACTION' => append_sid("admin_ug_auth.php"))
-	);
-
+            'S_HIDDEN_FIELDS'          => $s_hidden_fields,
+            'S_' . $l_type . '_ACTION' => append_sid("admin_ug_auth.php")
+        ]
+    );
 }
 
 $template->pparse('body');

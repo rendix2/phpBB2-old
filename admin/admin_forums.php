@@ -502,19 +502,21 @@ if (!empty($mode) ) {
 
             $s_hidden_fields = '<input type="hidden" name="mode" value="' . $newmode . '" /><input type="hidden" name="' . POST_CAT_URL . '" value="' . $cat_id . '" />';
 
-			$template->assign_vars(array(
-				'CAT_TITLE' => $cat_title,
+            $template->assign_vars(
+                [
+                    'CAT_TITLE' => $cat_title,
 
-				'L_EDIT_CATEGORY' => $lang['Edit_Category'],
-				'L_EDIT_CATEGORY_EXPLAIN' => $lang['Edit_Category_explain'],
-				'L_CATEGORY' => $lang['Category'],
+                    'L_EDIT_CATEGORY'         => $lang['Edit_Category'],
+                    'L_EDIT_CATEGORY_EXPLAIN' => $lang['Edit_Category_explain'],
+                    'L_CATEGORY'              => $lang['Category'],
 
-				'S_HIDDEN_FIELDS' => $s_hidden_fields,
-				'S_SUBMIT_VALUE' => $buttonvalue,
-				'S_FORUM_ACTION' => append_sid("admin_forums.php"))
-			);
+                    'S_HIDDEN_FIELDS' => $s_hidden_fields,
+                    'S_SUBMIT_VALUE'  => $buttonvalue,
+                    'S_FORUM_ACTION'  => append_sid("admin_forums.php")
+                ]
+            );
 
-			$template->pparse("body");
+            $template->pparse("body");
 			break;
 
 		case 'modcat':
@@ -553,21 +555,23 @@ if (!empty($mode) ) {
 
             $s_hidden_fields = '<input type="hidden" name="mode" value="' . $newmode . '" /><input type="hidden" name="from_id" value="' . $forum_id . '" />';
 
-			$template->assign_vars(array(
-				'NAME' => $name,
+            $template->assign_vars(
+                [
+                    'NAME' => $name,
 
-				'L_FORUM_DELETE' => $lang['Forum_delete'],
-				'L_FORUM_DELETE_EXPLAIN' => $lang['Forum_delete_explain'],
-				'L_MOVE_CONTENTS' => $lang['Move_contents'],
-				'L_FORUM_NAME' => $lang['Forum_name'],
+                    'L_FORUM_DELETE'         => $lang['Forum_delete'],
+                    'L_FORUM_DELETE_EXPLAIN' => $lang['Forum_delete_explain'],
+                    'L_MOVE_CONTENTS'        => $lang['Move_contents'],
+                    'L_FORUM_NAME'           => $lang['Forum_name'],
 
-				"S_HIDDEN_FIELDS" => $s_hidden_fields,
-				'S_FORUM_ACTION' => append_sid("admin_forums.php"),
-				'S_SELECT_TO' => $select_to,
-				'S_SUBMIT_VALUE' => $buttonvalue)
-			);
+                    "S_HIDDEN_FIELDS" => $s_hidden_fields,
+                    'S_FORUM_ACTION'  => append_sid("admin_forums.php"),
+                    'S_SELECT_TO'     => $select_to,
+                    'S_SUBMIT_VALUE'  => $buttonvalue
+                ]
+            );
 
-			$template->pparse("body");
+            $template->pparse("body");
 			break;
 
 		case 'movedelforum':
@@ -764,21 +768,23 @@ if (!empty($mode) ) {
 
             $s_hidden_fields = '<input type="hidden" name="mode" value="' . $newmode . '" /><input type="hidden" name="from_id" value="' . $cat_id . '" />';
 
-			$template->assign_vars(array(
-				'NAME' => $name,
+            $template->assign_vars(
+                [
+                    'NAME' => $name,
 
-				'L_FORUM_DELETE' => $lang['Forum_delete'],
-				'L_FORUM_DELETE_EXPLAIN' => $lang['Forum_delete_explain'],
-				'L_MOVE_CONTENTS' => $lang['Move_contents'],
-				'L_FORUM_NAME' => $lang['Forum_name'],
+                    'L_FORUM_DELETE'         => $lang['Forum_delete'],
+                    'L_FORUM_DELETE_EXPLAIN' => $lang['Forum_delete_explain'],
+                    'L_MOVE_CONTENTS'        => $lang['Move_contents'],
+                    'L_FORUM_NAME'           => $lang['Forum_name'],
 
-				'S_HIDDEN_FIELDS' => $s_hidden_fields,
-				'S_FORUM_ACTION' => append_sid("admin_forums.php"),
-				'S_SELECT_TO' => $select_to,
-				'S_SUBMIT_VALUE' => $buttonvalue)
-			);
+                    'S_HIDDEN_FIELDS' => $s_hidden_fields,
+                    'S_FORUM_ACTION'  => append_sid("admin_forums.php"),
+                    'S_SELECT_TO'     => $select_to,
+                    'S_SUBMIT_VALUE'  => $buttonvalue
+                ]
+            );
 
-			$template->pparse("body");
+            $template->pparse("body");
 			break;
 
 		case 'movedelcat':
@@ -889,17 +895,19 @@ if (!empty($mode) ) {
 //
 $template->set_filenames(["body" => "admin/forum_admin_body.tpl"]);
 
-$template->assign_vars(array(
-	'S_FORUM_ACTION' => append_sid("admin_forums.php"),
-	'L_FORUM_TITLE' => $lang['Forum_admin'],
-	'L_FORUM_EXPLAIN' => $lang['Forum_admin_explain'],
-	'L_CREATE_FORUM' => $lang['Create_forum'],
-	'L_CREATE_CATEGORY' => $lang['Create_category'],
-	'L_EDIT' => $lang['Edit'],
-	'L_DELETE' => $lang['Delete'],
-	'L_MOVE_UP' => $lang['Move_up'],
-	'L_MOVE_DOWN' => $lang['Move_down'],
-	'L_RESYNC' => $lang['Resync'])
+$template->assign_vars(
+    [
+        'S_FORUM_ACTION'    => append_sid("admin_forums.php"),
+        'L_FORUM_TITLE'     => $lang['Forum_admin'],
+        'L_FORUM_EXPLAIN'   => $lang['Forum_admin_explain'],
+        'L_CREATE_FORUM'    => $lang['Create_forum'],
+        'L_CREATE_CATEGORY' => $lang['Create_category'],
+        'L_EDIT'            => $lang['Edit'],
+        'L_DELETE'          => $lang['Delete'],
+        'L_MOVE_UP'         => $lang['Move_up'],
+        'L_MOVE_DOWN'       => $lang['Move_down'],
+        'L_RESYNC'          => $lang['Resync']
+    ]
 );
 
 $sql = "SELECT cat_id, cat_title, cat_order
@@ -933,41 +941,45 @@ if ($category_count = $db->sql_numrows($q_categories) ) {
 	for ($i = 0; $i < $category_count; $i++) {
 		$cat_id = $category_rows[$i]['cat_id'];
 
-		$template->assign_block_vars("catrow", array(
-			'S_ADD_FORUM_SUBMIT' => "addforum[$cat_id]",
-			'S_ADD_FORUM_NAME' => "forumname[$cat_id]",
+        $template->assign_block_vars("catrow",
+            [
+                'S_ADD_FORUM_SUBMIT' => "addforum[$cat_id]",
+                'S_ADD_FORUM_NAME'   => "forumname[$cat_id]",
 
-			'CAT_ID' => $cat_id,
-			'CAT_DESC' => $category_rows[$i]['cat_title'],
+                'CAT_ID'   => $cat_id,
+                'CAT_DESC' => $category_rows[$i]['cat_title'],
 
-			'U_CAT_EDIT' => append_sid("admin_forums.php?mode=editcat&amp;" . POST_CAT_URL . "=$cat_id"),
-			'U_CAT_DELETE' => append_sid("admin_forums.php?mode=deletecat&amp;" . POST_CAT_URL . "=$cat_id"),
-			'U_CAT_MOVE_UP' => append_sid("admin_forums.php?mode=cat_order&amp;move=-15&amp;" . POST_CAT_URL . "=$cat_id"),
-			'U_CAT_MOVE_DOWN' => append_sid("admin_forums.php?mode=cat_order&amp;move=15&amp;" . POST_CAT_URL . "=$cat_id"),
-			'U_VIEWCAT' => append_sid($phpbb_root_path."index.php?" . POST_CAT_URL . "=$cat_id"))
-		);
+                'U_CAT_EDIT'      => append_sid("admin_forums.php?mode=editcat&amp;" . POST_CAT_URL . "=$cat_id"),
+                'U_CAT_DELETE'    => append_sid("admin_forums.php?mode=deletecat&amp;" . POST_CAT_URL . "=$cat_id"),
+                'U_CAT_MOVE_UP'   => append_sid("admin_forums.php?mode=cat_order&amp;move=-15&amp;" . POST_CAT_URL . "=$cat_id"),
+                'U_CAT_MOVE_DOWN' => append_sid("admin_forums.php?mode=cat_order&amp;move=15&amp;" . POST_CAT_URL . "=$cat_id"),
+                'U_VIEWCAT'       => append_sid($phpbb_root_path . "index.php?" . POST_CAT_URL . "=$cat_id")
+            ]
+        );
 
-		for ($j = 0; $j < $total_forums; $j++) {
+        for ($j = 0; $j < $total_forums; $j++) {
 			$forum_id = $forum_rows[$j]['forum_id'];
 
 			if ($forum_rows[$j]['cat_id'] == $cat_id) {
 
-				$template->assign_block_vars("catrow.forumrow",	array(
-					'FORUM_NAME' => $forum_rows[$j]['forum_name'],
-					'FORUM_DESC' => $forum_rows[$j]['forum_desc'],
-					'ROW_COLOR' => $row_color,
-					'NUM_TOPICS' => $forum_rows[$j]['forum_topics'],
-					'NUM_POSTS' => $forum_rows[$j]['forum_posts'],
+                $template->assign_block_vars("catrow.forumrow",
+                    [
+                        'FORUM_NAME' => $forum_rows[$j]['forum_name'],
+                        'FORUM_DESC' => $forum_rows[$j]['forum_desc'],
+                        'ROW_COLOR'  => $row_color,
+                        'NUM_TOPICS' => $forum_rows[$j]['forum_topics'],
+                        'NUM_POSTS'  => $forum_rows[$j]['forum_posts'],
 
-					'U_VIEWFORUM' => append_sid($phpbb_root_path."viewforum.php?" . POST_FORUM_URL . "=$forum_id"),
-					'U_FORUM_EDIT' => append_sid("admin_forums.php?mode=editforum&amp;" . POST_FORUM_URL . "=$forum_id"),
-					'U_FORUM_DELETE' => append_sid("admin_forums.php?mode=deleteforum&amp;" . POST_FORUM_URL . "=$forum_id"),
-					'U_FORUM_MOVE_UP' => append_sid("admin_forums.php?mode=forum_order&amp;move=-15&amp;" . POST_FORUM_URL . "=$forum_id"),
-					'U_FORUM_MOVE_DOWN' => append_sid("admin_forums.php?mode=forum_order&amp;move=15&amp;" . POST_FORUM_URL . "=$forum_id"),
-					'U_FORUM_RESYNC' => append_sid("admin_forums.php?mode=forum_sync&amp;" . POST_FORUM_URL . "=$forum_id"))
-				);
+                        'U_VIEWFORUM'       => append_sid($phpbb_root_path . "viewforum.php?" . POST_FORUM_URL . "=$forum_id"),
+                        'U_FORUM_EDIT'      => append_sid("admin_forums.php?mode=editforum&amp;" . POST_FORUM_URL . "=$forum_id"),
+                        'U_FORUM_DELETE'    => append_sid("admin_forums.php?mode=deleteforum&amp;" . POST_FORUM_URL . "=$forum_id"),
+                        'U_FORUM_MOVE_UP'   => append_sid("admin_forums.php?mode=forum_order&amp;move=-15&amp;" . POST_FORUM_URL . "=$forum_id"),
+                        'U_FORUM_MOVE_DOWN' => append_sid("admin_forums.php?mode=forum_order&amp;move=15&amp;" . POST_FORUM_URL . "=$forum_id"),
+                        'U_FORUM_RESYNC'    => append_sid("admin_forums.php?mode=forum_sync&amp;" . POST_FORUM_URL . "=$forum_id")
+                    ]
+                );
 
-			}// if ... forumid == catid
+            }// if ... forumid == catid
 
 		} // for ... forums
 

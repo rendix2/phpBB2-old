@@ -55,9 +55,10 @@ function validate_username($username)
 	if ($result = $db->sql_query($sql)) {
 		if ($row = $db->sql_fetchrow($result)) {
 			$db->sql_freeresult($result);
-			return array('error' => true, 'error_msg' => $lang['Username_taken']);
-		}
-	}
+
+            return ['error' => true, 'error_msg' => $lang['Username_taken']];
+        }
+    }
 	
 	$db->sql_freeresult($result);
 
@@ -87,8 +88,9 @@ function validate_username($username)
 			{
 				if (preg_match("#\b(" . str_replace("\*", ".*?", preg_quote($row['word'], '#')) . ")\b#i", $username)) {
 					$db->sql_freeresult($result);
-					return array('error' => true, 'error_msg' => $lang['Username_disallowed']);
-				}
+
+                    return ['error' => true, 'error_msg' => $lang['Username_disallowed']];
+                }
 			}
 			while ($row = $db->sql_fetchrow($result));
 		}
@@ -97,10 +99,10 @@ function validate_username($username)
 
 	// Don't allow " and ALT-255 in username.
 	if (strstr($username, '"') || strstr($username, '&quot;') || strstr($username, chr(160)) || strstr($username, chr(173))) {
-		return ['error' => true, 'error_msg' => $lang['Username_invalid']];
+        return ['error' => true, 'error_msg' => $lang['Username_invalid']];
 	}
 
-	return array('error' => false, 'error_msg' => '');
+    return ['error' => false, 'error_msg' => ''];
 }
 
 //
@@ -124,8 +126,9 @@ function validate_email($email)
 						
 						if (preg_match('/^' . $match_email . '$/is', $email)) {
 							$db->sql_freeresult($result);
-							return array('error' => true, 'error_msg' => $lang['Email_banned']);
-						}
+
+                            return ['error' => true, 'error_msg' => $lang['Email_banned']];
+                        }
 					}
 					while ($row = $db->sql_fetchrow($result));
 				}
@@ -142,16 +145,16 @@ function validate_email($email)
 			}
 		
 			if ($row = $db->sql_fetchrow($result)) {
-				return array('error' => true, 'error_msg' => $lang['Email_taken']);
-			}
+                return ['error' => true, 'error_msg' => $lang['Email_taken']];
+            }
 			
 			$db->sql_freeresult($result);
 
-			return array('error' => false, 'error_msg' => '');
-		}
-	}
+            return ['error' => false, 'error_msg' => ''];
+        }
+    }
 
-	return array('error' => true, 'error_msg' => $lang['Email_invalid']);
+    return ['error' => true, 'error_msg' => $lang['Email_invalid']];
 }
 
 //
@@ -160,9 +163,9 @@ function validate_email($email)
 //
 function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$location, &$occupation, &$interests, &$sig)
 {
-	$check_var_length = array('aim', 'msnm', 'yim', 'location', 'occupation', 'interests', 'sig');
+    $check_var_length = ['aim', 'msnm', 'yim', 'location', 'occupation', 'interests', 'sig'];
 
-	for ($i = 0; $i < count($check_var_length); $i++) {
+    for ($i = 0; $i < count($check_var_length); $i++) {
 		if (strlen($$check_var_length[$i]) < 2) {
 			$$check_var_length[$i] = '';
 		}
@@ -184,8 +187,6 @@ function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$loca
 			$website = '';
 		}
 	}
-
-	return;
 }
 
 ?>

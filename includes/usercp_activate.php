@@ -37,11 +37,13 @@ if ( !($result = $db->sql_query($sql)) ) {
 
 if ( $row = $db->sql_fetchrow($result) ) {
 	if ( $row['user_active'] && trim($row['user_actkey']) == '' ) {
-		$template->assign_vars(array(
-			'META' => '<meta http-equiv="refresh" content="10;url=' . append_sid("index.php") . '">')
-		);
+        $template->assign_vars(
+            [
+                'META' => '<meta http-equiv="refresh" content="10;url=' . append_sid("index.php") . '">'
+            ]
+        );
 
-		message_die(GENERAL_MESSAGE, $lang['Already_activated']);
+        message_die(GENERAL_MESSAGE, $lang['Already_activated']);
 	} elseif ((trim($row['user_actkey']) == trim($_GET['act_key'])) && (trim($row['user_actkey']) != '')) {
 		if ((int)$board_config['require_activation'] == USER_ACTIVATION_ADMIN && $row['user_newpasswd'] == '') {
 			if (!$userdata['session_logged_in']) {
@@ -72,26 +74,33 @@ if ( $row = $db->sql_fetchrow($result) ) {
 			$emailer->email_address($row['user_email']);
 			$emailer->set_subject($lang['Account_activated_subject']);
 
-			$emailer->assign_vars(array(
-				'SITENAME' => $board_config['sitename'], 
-				'USERNAME' => $row['username'],
-				'PASSWORD' => $password_confirm,
-				'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '')
-			);
-			$emailer->send();
+            $emailer->assign_vars(
+                [
+                    'SITENAME'  => $board_config['sitename'],
+                    'USERNAME'  => $row['username'],
+                    'PASSWORD'  => $password_confirm,
+                    'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n",
+                        "-- \n" . $board_config['board_email_sig']) : ''
+                ]
+            );
+            $emailer->send();
 			$emailer->reset();
 
-			$template->assign_vars(array(
-				'META' => '<meta http-equiv="refresh" content="10;url=' . append_sid("index.php") . '">')
-			);
+            $template->assign_vars(
+                [
+                    'META' => '<meta http-equiv="refresh" content="10;url=' . append_sid("index.php") . '">'
+                ]
+            );
 
-			message_die(GENERAL_MESSAGE, $lang['Account_active_admin']);
+            message_die(GENERAL_MESSAGE, $lang['Account_active_admin']);
 		} else {
-			$template->assign_vars(array(
-				'META' => '<meta http-equiv="refresh" content="10;url=' . append_sid("index.php") . '">')
-			);
+            $template->assign_vars(
+                [
+                    'META' => '<meta http-equiv="refresh" content="10;url=' . append_sid("index.php") . '">'
+                ]
+            );
 
-			$message = ( $sql_update_pass == '' ) ? $lang['Account_active'] : $lang['Password_activated']; 
+            $message = ( $sql_update_pass == '' ) ? $lang['Account_active'] : $lang['Password_activated'];
 			message_die(GENERAL_MESSAGE, $message);
 		}
 	} else {

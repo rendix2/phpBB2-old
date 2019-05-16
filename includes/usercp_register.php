@@ -52,19 +52,20 @@ function show_coppa()
 
     $template->set_filenames(['body' => 'agreement.tpl']);
 
-    $template->assign_vars(array(
-		'REGISTRATION' => $lang['Registration'],
-		'AGREEMENT' => $lang['Reg_agreement'],
-		"AGREE_OVER_13" => $lang['Agree_over_13'],
-		"AGREE_UNDER_13" => $lang['Agree_under_13'],
-		'DO_NOT_AGREE' => $lang['Agree_not'],
+    $template->assign_vars(
+        [
+            'REGISTRATION'   => $lang['Registration'],
+            'AGREEMENT'      => $lang['Reg_agreement'],
+            "AGREE_OVER_13"  => $lang['Agree_over_13'],
+            "AGREE_UNDER_13" => $lang['Agree_under_13'],
+            'DO_NOT_AGREE'   => $lang['Agree_not'],
 
-		"U_AGREE_OVER13" => append_sid("profile.php?mode=register&amp;agreed=true"),
-		"U_AGREE_UNDER13" => append_sid("profile.php?mode=register&amp;agreed=true&amp;coppa=true"))
-	);
+            "U_AGREE_OVER13"  => append_sid("profile.php?mode=register&amp;agreed=true"),
+            "U_AGREE_UNDER13" => append_sid("profile.php?mode=register&amp;agreed=true&amp;coppa=true")
+        ]
+    );
 
-	$template->pparse('body');
-
+    $template->pparse('body');
 }
 //
 // ---------------------------------------
@@ -263,7 +264,7 @@ if ( isset($_POST['submit']) )
 			if (!preg_match('/^[A-Za-z0-9]+$/', $confirm_id)) {
 				$confirm_id = '';
 			}
-			
+
 			$sql = 'SELECT code 
 				FROM ' . CONFIRM_TABLE . " 
 				WHERE confirm_id = '$confirm_id' 
@@ -469,11 +470,11 @@ if ( isset($_POST['submit']) )
  				if ( $board_config['require_activation'] != USER_ACTIVATION_ADMIN ) {
  					$emailer->from($board_config['board_email']);
  					$emailer->replyto($board_config['board_email']);
- 
+
  					$emailer->use_template('user_activate', stripslashes($user_lang));
  					$emailer->email_address($email);
  					$emailer->set_subject($lang['Reactivate']);
-  
+
  					$emailer->assign_vars(array(
                             'SITENAME' => $board_config['sitename'],
                             'USERNAME' => preg_replace($unhtml_specialchars_match, $unhtml_specialchars_replace, substr(str_replace("\'", "'", $username), 0, 25)),
@@ -487,23 +488,23 @@ if ( isset($_POST['submit']) )
  					$sql = 'SELECT user_email, user_lang 
  						FROM ' . USERS_TABLE . '
  						WHERE user_level = ' . ADMIN;
- 					
+
  					if ( !($result = $db->sql_query($sql)) ) {
  						message_die(GENERAL_ERROR, 'Could not select Administrators', '', __LINE__, __FILE__, $sql);
  					}
- 					
+
  					while ($row = $db->sql_fetchrow($result)) {
  						$emailer->from($board_config['board_email']);
  						$emailer->replyto($board_config['board_email']);
- 						
+
  						$emailer->email_address(trim($row['user_email']));
  						$emailer->use_template("admin_activate", $row['user_lang']);
  						$emailer->set_subject($lang['Reactivate']);
- 
+
  						$emailer->assign_vars(array(
  							'USERNAME' => preg_replace($unhtml_specialchars_match, $unhtml_specialchars_replace, substr(str_replace("\'", "'", $username), 0, 25)),
  							'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
- 
+
  							'U_ACTIVATE' => $server_url . '?mode=activate&' . POST_USERS_URL . '=' . $user_id . '&act_key=' . $user_actkey)
  						);
  						$emailer->send();
@@ -517,11 +518,13 @@ if ( isset($_POST['submit']) )
 				$message = $lang['Profile_updated'] . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . append_sid("index.php") . '">', '</a>');
 			}
 
-			$template->assign_vars(array(
-				"META" => '<meta http-equiv="refresh" content="5;url=' . append_sid("index.php") . '">')
-			);
+            $template->assign_vars(
+                [
+                    "META" => '<meta http-equiv="refresh" content="5;url=' . append_sid("index.php") . '">'
+                ]
+            );
 
-			message_die(GENERAL_MESSAGE, $message);
+            message_die(GENERAL_MESSAGE, $message);
 		} else {
 			$sql = "SELECT MAX(user_id) AS total
 				FROM " . USERS_TABLE;
@@ -633,15 +636,15 @@ if ( isset($_POST['submit']) )
 				$sql = "SELECT user_email, user_lang 
 					FROM " . USERS_TABLE . "
 					WHERE user_level = " . ADMIN;
-				
+
 				if ( !($result = $db->sql_query($sql)) ) {
 					message_die(GENERAL_ERROR, 'Could not select Administrators', '', __LINE__, __FILE__, $sql);
 				}
-				
+
 				while ($row = $db->sql_fetchrow($result)) {
 					$emailer->from($board_config['board_email']);
 					$emailer->replyto($board_config['board_email']);
-					
+
 					$emailer->email_address(trim($row['user_email']));
 					$emailer->use_template("admin_activate", $row['user_lang']);
 					$emailer->set_subject($lang['New_account_subject']);
@@ -748,18 +751,16 @@ if (isset($_POST['avatargallery']) && !$error ) {
 
 	$avatar_category = !empty($_POST['avatarcategory']) ? htmlspecialchars($_POST['avatarcategory']) : '';
 
-	$template->set_filenames(array(
-		'body' => 'profile_avatar_gallery.tpl')
-	);
+    $template->set_filenames(['body' => 'profile_avatar_gallery.tpl']);
 
-	$allowviewonline = !$allowviewonline;
+    $allowviewonline = !$allowviewonline;
 
 	display_avatar_gallery($mode, $avatar_category, $user_id, $email, $current_email, $coppa, $username, $email, $new_password, $cur_password, $password_confirm, $icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature, $viewemail, $notifypm, $popup_pm, $notifyreply, $attachsig, $allowhtml, $allowbbcode, $allowsmilies, $allowviewonline, $user_style, $user_lang, $user_timezone, $user_dateformat, $userdata['session_id']);
 } else {
 	include $phpbb_root_path . 'includes/functions_selects.php';
 
 	if ( !isset($coppa) ) {
-		$coppa = FALSE;
+		$coppa = false;
 	}
 
 	if ( !isset($user_style) ) {
@@ -836,7 +837,7 @@ if (isset($_POST['avatargallery']) && !$error ) {
 				$confirm_sql .= (($confirm_sql != '') ? ', ' : '') . "'" . $row['session_id'] . "'";
 			}
 			while ($row = $db->sql_fetchrow($result));
-		
+
 			$sql = 'DELETE FROM ' .  CONFIRM_TABLE . " 
 				WHERE session_id NOT IN ($confirm_sql)";
 
@@ -860,7 +861,7 @@ if (isset($_POST['avatargallery']) && !$error ) {
 			}
 		}
 		$db->sql_freeresult($result);
-		
+
 		// Generate the required confirmation code
 		// NB 0 (zero) could get confused with O (the letter) so we make change it
 		$code = dss_rand();
@@ -876,7 +877,7 @@ if (isset($_POST['avatargallery']) && !$error ) {
 		}
 
 		unset($code);
-		
+
 		$confirm_image = '<img src="' . append_sid("profile.php?mode=confirm&amp;id=$confirm_id") . '" alt="" title="" />';
 		$s_hidden_fields .= '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />';
 

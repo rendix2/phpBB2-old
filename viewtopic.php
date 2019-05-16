@@ -1037,69 +1037,75 @@ for ($i = 0; $i < $total_posts; $i++) {
 	$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 	$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-	$template->assign_block_vars('postrow', array(
-            'ROW_COLOR' => '#' . $row_color,
-            'ROW_CLASS' => $row_class,
-            'POSTER_NAME' => $poster,
-            'POSTER_RANK' => $poster_rank,
-            'RANK_IMAGE' => $rank_image,
-            'POSTER_JOINED' => $poster_joined,
-            'POSTER_POSTS' => $poster_posts,
-            'POSTER_FROM' => $poster_from,
-            'POSTER_AVATAR' => $poster_avatar,
-            'POST_DATE' => $post_date,
-            'POST_SUBJECT' => $post_subject,
-            'MESSAGE' => $message,
-            'SIGNATURE' => $user_sig,
+    $template->assign_block_vars('postrow',
+        [
+            'ROW_COLOR'      => '#' . $row_color,
+            'ROW_CLASS'      => $row_class,
+
+            'RANK_IMAGE'     => $rank_image,
+
+            'POSTER_NAME'    => $poster,
+            'POSTER_RANK'    => $poster_rank,
+            'POSTER_JOINED'  => $poster_joined,
+            'POSTER_POSTS'   => $poster_posts,
+            'POSTER_FROM'    => $poster_from,
+            'POSTER_AVATAR'  => $poster_avatar,
+
+            'POST_DATE'      => $post_date,
+            'POST_SUBJECT'   => $post_subject,
+
+            'MESSAGE'        => $message,
+            'SIGNATURE'      => $user_sig,
             'EDITED_MESSAGE' => $l_edited_by,
 
             'MINI_POST_IMG' => $mini_post_img,
 
             'PROFILE_IMG' => $profile_img,
-            'PROFILE' => $profile,
+            'PROFILE'     => $profile,
 
             'SEARCH_IMG' => $search_img,
-            'SEARCH' => $search,
+            'SEARCH'     => $search,
 
             'PM_IMG' => $pm_img,
-            'PM' => $pm,
+            'PM'     => $pm,
 
             'EMAIL_IMG' => $email_img,
-            'EMAIL' => $email,
+            'EMAIL'     => $email,
 
             'WWW_IMG' => $www_img,
-            'WWW' => $www,
+            'WWW'     => $www,
 
             'ICQ_STATUS_IMG' => $icq_status_img,
-            'ICQ_IMG' => $icq_img,
-            'ICQ' => $icq,
+            'ICQ_IMG'        => $icq_img,
+            'ICQ'            => $icq,
 
             'AIM_IMG' => $aim_img,
-            'AIM' => $aim,
+            'AIM'     => $aim,
 
             'MSN_IMG' => $msn_img,
-            'MSN' => $msn,
+            'MSN'     => $msn,
 
             'YIM_IMG' => $yim_img,
-            'YIM' => $yim,
+            'YIM'     => $yim,
 
             'EDIT_IMG' => $edit_img,
-            'EDIT' => $edit,
+            'EDIT'     => $edit,
 
             'QUOTE_IMG' => $quote_img,
-            'QUOTE' => $quote,
+            'QUOTE'     => $quote,
 
             'IP_IMG' => $ip_img,
-            'IP' => $ip,
+            'IP'     => $ip,
 
             'DELETE_IMG' => $delete_post_img,
-            'DELETE' => $delete_post,
+            'DELETE'     => $delete_post,
 
             'L_MINI_POST_ALT' => $mini_post_alt,
 
             'U_MINI_POST' => $mini_post_url,
-            'U_POST_ID' => $postrow[$i]['post_id'])
-	);
+            'U_POST_ID'   => $postrow[$i]['post_id']
+        ]
+    );
 }
 
 $template->pparse('body');

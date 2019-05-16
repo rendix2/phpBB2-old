@@ -542,12 +542,14 @@ if (isset($_GET['pane']) && $_GET['pane'] == 'left' )
 	
 	$version_info .= '<p>' . $lang['Mailing_list_subscribe_reminder'] . '</p>';
 
-	$template->assign_vars(array(
-		'VERSION_INFO'	=> $version_info,
-		'L_VERSION_INFORMATION'	=> $lang['Version_information'])
-	);
+    $template->assign_vars(
+        [
+            'VERSION_INFO'          => $version_info,
+            'L_VERSION_INFORMATION' => $lang['Version_information']
+        ]
+    );
 
-	$template->pparse("body");
+    $template->pparse("body");
 
 	include './page_footer_admin.php';
 } else {

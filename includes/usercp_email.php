@@ -115,23 +115,27 @@ if ( $result = $db->sql_query($sql) ) {
 							$emailer->use_template('profile_send_email');
 							$emailer->email_address($userdata['user_email']);
 							$emailer->set_subject($subject);
-	
-							$emailer->assign_vars(array(
-                                    'SITENAME' => $board_config['sitename'],
-                                    'BOARD_EMAIL' => $board_config['board_email'],
+
+                            $emailer->assign_vars(
+                                [
+                                    'SITENAME'      => $board_config['sitename'],
+                                    'BOARD_EMAIL'   => $board_config['board_email'],
                                     'FROM_USERNAME' => $userdata['username'],
-                                    'TO_USERNAME' => $username,
-                                    'MESSAGE' => $message)
-							);
-							$emailer->send();
+                                    'TO_USERNAME'   => $username,
+                                    'MESSAGE'       => $message
+                                ]
+                            );
+                            $emailer->send();
 							$emailer->reset();
 						}
-	
-						$template->assign_vars(array(
-							'META' => '<meta http-equiv="refresh" content="5;url=' . append_sid("index.php") . '">')
-						);
-	
-						$message = $lang['Email_sent'] . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . append_sid("index.php") . '">', '</a>');
+
+                        $template->assign_vars(
+                            [
+                                'META' => '<meta http-equiv="refresh" content="5;url=' . append_sid("index.php") . '">'
+                            ]
+                        );
+
+                        $message = $lang['Email_sent'] . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . append_sid("index.php") . '">', '</a>');
 	
 						message_die(GENERAL_MESSAGE, $message);
 					} else {

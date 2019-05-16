@@ -379,23 +379,25 @@ if ( isset($_POST['submit']) ) {
 	$select_iplist = '<select name="unban_ip[]" multiple="multiple" size="5">' . $select_iplist . '</select>';
 	$select_emaillist = '<select name="unban_email[]" multiple="multiple" size="5">' . $select_emaillist . '</select>';
 
-	$template->assign_vars(array(
-		'L_UNBAN_USER' => $lang['Unban_username'],
-		'L_UNBAN_USER_EXPLAIN' => $lang['Unban_username_explain'],
-		'L_UNBAN_IP' => $lang['Unban_IP'],
-		'L_UNBAN_IP_EXPLAIN' => $lang['Unban_IP_explain'],
-		'L_UNBAN_EMAIL' => $lang['Unban_email'],
-		'L_UNBAN_EMAIL_EXPLAIN' => $lang['Unban_email_explain'], 
-		'L_USERNAME' => $lang['Username'], 
-		'L_LOOK_UP' => $lang['Look_up_User'],
-		'L_FIND_USERNAME' => $lang['Find_username'],
+    $template->assign_vars(
+        [
+            'L_UNBAN_USER'          => $lang['Unban_username'],
+            'L_UNBAN_USER_EXPLAIN'  => $lang['Unban_username_explain'],
+            'L_UNBAN_IP'            => $lang['Unban_IP'],
+            'L_UNBAN_IP_EXPLAIN'    => $lang['Unban_IP_explain'],
+            'L_UNBAN_EMAIL'         => $lang['Unban_email'],
+            'L_UNBAN_EMAIL_EXPLAIN' => $lang['Unban_email_explain'],
+            'L_USERNAME'            => $lang['Username'],
+            'L_LOOK_UP'             => $lang['Look_up_User'],
+            'L_FIND_USERNAME'       => $lang['Find_username'],
 
-		'U_SEARCH_USER' => append_sid("./../search.php?mode=searchuser"), 
-		'S_UNBAN_USERLIST_SELECT' => $select_userlist,
-		'S_UNBAN_IPLIST_SELECT' => $select_iplist,
-		'S_UNBAN_EMAILLIST_SELECT' => $select_emaillist,
-		'S_BAN_ACTION' => append_sid("admin_user_ban.php"))
-	);
+            'U_SEARCH_USER'            => append_sid("./../search.php?mode=searchuser"),
+            'S_UNBAN_USERLIST_SELECT'  => $select_userlist,
+            'S_UNBAN_IPLIST_SELECT'    => $select_iplist,
+            'S_UNBAN_EMAILLIST_SELECT' => $select_emaillist,
+            'S_BAN_ACTION'             => append_sid("admin_user_ban.php")
+        ]
+    );
 }
 
 $template->pparse('body');

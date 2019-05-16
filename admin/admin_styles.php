@@ -144,29 +144,33 @@ switch( $mode )
 
                 $template->set_filenames(["body" => "admin/styles_addnew_body.tpl"]);
 
-                $template->assign_vars(array(
-					"L_STYLES_TITLE" => $lang['Styles_admin'],
-					"L_STYLES_ADD_TEXT" => $lang['Styles_addnew_explain'],
-					"L_STYLE" => $lang['Style'],
-					"L_TEMPLATE" => $lang['Template'],
-					"L_INSTALL" => $lang['Install'],
-					"L_ACTION" => $lang['Action'])
-				);
-					
-				for ($i = 0; $i < count($installable_themes); $i++) {
+                $template->assign_vars(
+                    [
+                        "L_STYLES_TITLE"    => $lang['Styles_admin'],
+                        "L_STYLES_ADD_TEXT" => $lang['Styles_addnew_explain'],
+                        "L_STYLE"           => $lang['Style'],
+                        "L_TEMPLATE"        => $lang['Template'],
+                        "L_INSTALL"         => $lang['Install'],
+                        "L_ACTION"          => $lang['Action']
+                    ]
+                );
+
+                for ($i = 0; $i < count($installable_themes); $i++) {
 					$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 					$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
-		
-					$template->assign_block_vars("styles", array(
-						"ROW_CLASS" => $row_class,
-						"ROW_COLOR" => "#" . $row_color,
-						"STYLE_NAME" => $installable_themes[$i]['style_name'],
-						"TEMPLATE_NAME" => $installable_themes[$i]['template_name'],
 
-						"U_STYLES_INSTALL" => append_sid("admin_styles.php?mode=addnew&amp;style=" . urlencode($installable_themes[$i]['style_name']) . "&amp;install_to=" . urlencode($installable_themes[$i]['template_name'])))
-					);
-				
-				}
+                    $template->assign_block_vars("styles",
+                        [
+                            "ROW_CLASS"     => $row_class,
+                            "ROW_COLOR"     => "#" . $row_color,
+                            "STYLE_NAME"    => $installable_themes[$i]['style_name'],
+                            "TEMPLATE_NAME" => $installable_themes[$i]['template_name'],
+
+                            "U_STYLES_INSTALL" => append_sid("admin_styles.php?mode=addnew&amp;style=" . urlencode($installable_themes[$i]['style_name']) . "&amp;install_to=" . urlencode($installable_themes[$i]['template_name']))
+                        ]
+                    );
+
+                }
 				$template->pparse("body");
 					
 			}
@@ -691,12 +695,14 @@ switch( $mode )
 
                 $template->set_filenames(["body" => "message_body.tpl"]);
 
-                $template->assign_vars(array(
-					"MESSAGE_TITLE" => $lang['Export_themes'],
-					"MESSAGE_TEXT" => $lang['Download_theme_cfg'] . "<br /><br />" . $download_form)
-				);
+                $template->assign_vars(
+                    [
+                        "MESSAGE_TITLE" => $lang['Export_themes'],
+                        "MESSAGE_TEXT"  => $lang['Download_theme_cfg'] . "<br /><br />" . $download_form
+                    ]
+                );
 
-				$template->pparse('body');
+                $template->pparse('body');
 				exit();
 			}
 
@@ -729,18 +735,20 @@ switch( $mode )
             } else {
                 message_die(GENERAL_MESSAGE, $lang['No_template_dir']);
             }
-			
-			$template->assign_vars(array(
-				"L_STYLE_EXPORTER" => $lang['Export_themes'],
-				"L_EXPORTER_EXPLAIN" => $lang['Export_explain'],
-				"L_TEMPLATE_SELECT" => $lang['Select_template'],
-				"L_SUBMIT" => $lang['Submit'], 
 
-				"S_EXPORTER_ACTION" => append_sid("admin_styles.php?mode=export"),
-				"S_TEMPLATE_SELECT" => $s_template_select)
-			);
-			
-			$template->pparse("body");
+            $template->assign_vars(
+                [
+                    "L_STYLE_EXPORTER"   => $lang['Export_themes'],
+                    "L_EXPORTER_EXPLAIN" => $lang['Export_explain'],
+                    "L_TEMPLATE_SELECT"  => $lang['Select_template'],
+                    "L_SUBMIT"           => $lang['Submit'],
+
+                    "S_EXPORTER_ACTION" => append_sid("admin_styles.php?mode=export"),
+                    "S_TEMPLATE_SELECT" => $s_template_select
+                ]
+            );
+
+            $template->pparse("body");
 			
 		}
 		break;
@@ -760,18 +768,20 @@ switch( $mode )
 			//
             $template->set_filenames(["confirm" => "admin/confirm_body.tpl"]);
 
-            $template->assign_vars(array(
-				"MESSAGE_TITLE" => $lang['Confirm'],
-				"MESSAGE_TEXT" => $lang['Confirm_delete_style'],
+            $template->assign_vars(
+                [
+                    "MESSAGE_TITLE" => $lang['Confirm'],
+                    "MESSAGE_TEXT"  => $lang['Confirm_delete_style'],
 
-				"L_YES" => $lang['Yes'],
-				"L_NO" => $lang['No'],
+                    "L_YES" => $lang['Yes'],
+                    "L_NO"  => $lang['No'],
 
-				"S_CONFIRM_ACTION" => append_sid("admin_styles.php"),
-				"S_HIDDEN_FIELDS" => $hidden_fields)
-			);
+                    "S_CONFIRM_ACTION" => append_sid("admin_styles.php"),
+                    "S_HIDDEN_FIELDS"  => $hidden_fields
+                ]
+            );
 
-			$template->pparse("confirm");
+            $template->pparse("confirm");
 
 		}
 		else
@@ -824,31 +834,35 @@ switch( $mode )
 
         $template->set_filenames(["body" => "admin/styles_list_body.tpl"]);
 
-        $template->assign_vars(array(
-			"L_STYLES_TITLE" => $lang['Styles_admin'],
-			"L_STYLES_TEXT" => $lang['Styles_explain'],
-			"L_STYLE" => $lang['Style'],
-			"L_TEMPLATE" => $lang['Template'],
-			"L_EDIT" => $lang['Edit'],
-			"L_DELETE" => $lang['Delete'])
-		);
-					
-		for ($i = 0; $i < count($style_rowset); $i++) {
+        $template->assign_vars(
+            [
+                "L_STYLES_TITLE" => $lang['Styles_admin'],
+                "L_STYLES_TEXT"  => $lang['Styles_explain'],
+                "L_STYLE"        => $lang['Style'],
+                "L_TEMPLATE"     => $lang['Template'],
+                "L_EDIT"         => $lang['Edit'],
+                "L_DELETE"       => $lang['Delete']
+            ]
+        );
+
+        for ($i = 0; $i < count($style_rowset); $i++) {
 			$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-			$template->assign_block_vars("styles", array(
-				"ROW_CLASS" => $row_class,
-				"ROW_COLOR" => $row_color,
-				"STYLE_NAME" => $style_rowset[$i]['style_name'],
-				"TEMPLATE_NAME" => $style_rowset[$i]['template_name'],
+            $template->assign_block_vars("styles",
+                [
+                    "ROW_CLASS"     => $row_class,
+                    "ROW_COLOR"     => $row_color,
+                    "STYLE_NAME"    => $style_rowset[$i]['style_name'],
+                    "TEMPLATE_NAME" => $style_rowset[$i]['template_name'],
 
-				"U_STYLES_EDIT" => append_sid("admin_styles.php?mode=edit&amp;style_id=" . $style_rowset[$i]['themes_id']),
-				"U_STYLES_DELETE" => append_sid("admin_styles.php?mode=delete&amp;style_id=" . $style_rowset[$i]['themes_id']))
-			);
-		}
-		
-		$template->pparse("body");	
+                    "U_STYLES_EDIT"   => append_sid("admin_styles.php?mode=edit&amp;style_id=" . $style_rowset[$i]['themes_id']),
+                    "U_STYLES_DELETE" => append_sid("admin_styles.php?mode=delete&amp;style_id=" . $style_rowset[$i]['themes_id'])
+                ]
+            );
+        }
+
+        $template->pparse("body");
 		break;
 }
 

@@ -196,9 +196,10 @@ switch( $mode )
 
 			include $phpbb_root_path . 'includes/functions_search.php';
 
-			$topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : array($topic_id);
+            $topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topic_id];
 
-			$topic_id_sql = '';
+            $topic_id_sql = '';
+
 			for ($i = 0; $i < count($topics); $i++) {
 				$topic_id_sql .= ( ( $topic_id_sql != '' ) ? ', ' : '' ) . (int)$topics[$i];
 			}
@@ -213,9 +214,11 @@ switch( $mode )
 			}
 			
 			$topic_id_sql = '';
+
 			while ($row = $db->sql_fetchrow($result)) {
 				$topic_id_sql .= (($topic_id_sql != '') ? ', ' : '') . (int)$row['topic_id'];
 			}
+
 			$db->sql_freeresult($result);
 
 			if ( $topic_id_sql == '') {
@@ -292,13 +295,12 @@ switch( $mode )
 				message_die(GENERAL_ERROR, 'Could not delete topics', '', __LINE__, __FILE__, $sql);
 			}
 
-			if ( $post_id_sql != '' )
-			{
+			if ( $post_id_sql != '' ) {
 				$sql = "DELETE 
 					FROM " . POSTS_TABLE . " 
 					WHERE post_id IN ($post_id_sql)";
-				if ( !$db->sql_query($sql) )
-				{
+
+				if ( !$db->sql_query($sql) ) {
 					message_die(GENERAL_ERROR, 'Could not delete posts', '', __LINE__, __FILE__, $sql);
 				}
 
@@ -349,13 +351,13 @@ switch( $mode )
 
 			sync('forum', $forum_id);
 
-			if ( !empty($topic_id) ) {
-				$redirect_page = "viewforum.php?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'];
-				$l_redirect = sprintf($lang['Click_return_forum'], '<a href="' . $redirect_page . '">', '</a>');
-			} else {
-				$redirect_page = "modcp.php?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'];
-				$l_redirect = sprintf($lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
-			}
+            if (!empty($topic_id)) {
+                $redirect_page = "viewforum.php?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'];
+                $l_redirect    = sprintf($lang['Click_return_forum'], '<a href="' . $redirect_page . '">', '</a>');
+            } else {
+                $redirect_page = "modcp.php?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'];
+                $l_redirect    = sprintf($lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
+            }
 
             $template->assign_vars(
                 [

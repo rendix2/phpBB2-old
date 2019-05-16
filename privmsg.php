@@ -572,38 +572,40 @@ if ( $mode == 'newpm' ) {
 	//
 	// Dump it to the templating engine
 	//
-	$template->assign_vars(array(
-		'MESSAGE_TO' => $username_to,
-		'MESSAGE_FROM' => $username_from,
-		'RANK_IMAGE' => $rank_image,
-		'POSTER_JOINED' => $poster_joined,
-		'POSTER_POSTS' => $poster_posts,
-		'POSTER_FROM' => $poster_from,
-		'POSTER_AVATAR' => $poster_avatar,
-		'POST_SUBJECT' => $post_subject,
-		'POST_DATE' => $post_date, 
-		'MESSAGE' => $private_message,
+    $template->assign_vars(
+        [
+            'MESSAGE_TO'    => $username_to,
+            'MESSAGE_FROM'  => $username_from,
+            'RANK_IMAGE'    => $rank_image,
+            'POSTER_JOINED' => $poster_joined,
+            'POSTER_POSTS'  => $poster_posts,
+            'POSTER_FROM'   => $poster_from,
+            'POSTER_AVATAR' => $poster_avatar,
+            'POST_SUBJECT'  => $post_subject,
+            'POST_DATE'     => $post_date,
+            'MESSAGE'       => $private_message,
 
-		'PROFILE_IMG' => $profile_img, 
-		'PROFILE' => $profile, 
-		'SEARCH_IMG' => $search_img,
-		'SEARCH' => $search,
-		'EMAIL_IMG' => $email_img,
-		'EMAIL' => $email,
-		'WWW_IMG' => $www_img,
-		'WWW' => $www,
-		'ICQ_STATUS_IMG' => $icq_status_img,
-		'ICQ_IMG' => $icq_img, 
-		'ICQ' => $icq, 
-		'AIM_IMG' => $aim_img,
-		'AIM' => $aim,
-		'MSN_IMG' => $msn_img,
-		'MSN' => $msn,
-		'YIM_IMG' => $yim_img,
-		'YIM' => $yim)
-	);
+            'PROFILE_IMG'    => $profile_img,
+            'PROFILE'        => $profile,
+            'SEARCH_IMG'     => $search_img,
+            'SEARCH'         => $search,
+            'EMAIL_IMG'      => $email_img,
+            'EMAIL'          => $email,
+            'WWW_IMG'        => $www_img,
+            'WWW'            => $www,
+            'ICQ_STATUS_IMG' => $icq_status_img,
+            'ICQ_IMG'        => $icq_img,
+            'ICQ'            => $icq,
+            'AIM_IMG'        => $aim_img,
+            'AIM'            => $aim,
+            'MSN_IMG'        => $msn_img,
+            'MSN'            => $msn,
+            'YIM_IMG'        => $yim_img,
+            'YIM'            => $yim
+        ]
+    );
 
-	$template->pparse('body');
+    $template->pparse('body');
 
 	include $phpbb_root_path . 'includes/page_tail.php';
 
@@ -1238,16 +1240,19 @@ if ( $mode == 'newpm' ) {
 				$emailer->use_template('privmsg_notify', $to_userdata['user_lang']);
 				$emailer->email_address($to_userdata['user_email']);
 				$emailer->set_subject($lang['Notification_subject']);
-					
-				$emailer->assign_vars(array(
-                        'USERNAME' => stripslashes($to_username),
-                        'SITENAME' => $board_config['sitename'],
-                        'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
 
-                        'U_INBOX' => $server_protocol . $server_name . $server_port . $script_name . '?folder=inbox')
-				);
+                $emailer->assign_vars(
+                    [
+                        'USERNAME'  => stripslashes($to_username),
+                        'SITENAME'  => $board_config['sitename'],
+                        'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n",
+                            "-- \n" . $board_config['board_email_sig']) : '',
 
-				$emailer->send();
+                        'U_INBOX' => $server_protocol . $server_name . $server_port . $script_name . '?folder=inbox'
+                    ]
+                );
+
+                $emailer->send();
 				$emailer->reset();
 			}
 		}
@@ -1483,25 +1488,28 @@ if ( $mode == 'newpm' ) {
 
         $template->set_filenames(["preview" => 'privmsgs_preview.tpl']);
 
-        $template->assign_vars(array(
-			'TOPIC_TITLE' => $preview_subject,
-			'POST_SUBJECT' => $preview_subject,
-			'MESSAGE_TO' => $to_username, 
-			'MESSAGE_FROM' => $userdata['username'], 
-			'POST_DATE' => create_date($board_config['default_dateformat'], time(), $board_config['board_timezone']),
-			'MESSAGE' => $preview_message,
+        $template->assign_vars(
+            [
+                'TOPIC_TITLE'  => $preview_subject,
+                'POST_SUBJECT' => $preview_subject,
+                'MESSAGE_TO'   => $to_username,
+                'MESSAGE_FROM' => $userdata['username'],
+                'POST_DATE'    => create_date($board_config['default_dateformat'], time(),
+                    $board_config['board_timezone']),
+                'MESSAGE'      => $preview_message,
 
-			'S_HIDDEN_FIELDS' => $s_hidden_fields,
+                'S_HIDDEN_FIELDS' => $s_hidden_fields,
 
-			'L_SUBJECT' => $lang['Subject'],
-			'L_DATE' => $lang['Date'],
-			'L_FROM' => $lang['From'],
-			'L_TO' => $lang['To'],
-			'L_PREVIEW' => $lang['Preview'],
-			'L_POSTED' => $lang['Posted'])
-		);
+                'L_SUBJECT' => $lang['Subject'],
+                'L_DATE'    => $lang['Date'],
+                'L_FROM'    => $lang['From'],
+                'L_TO'      => $lang['To'],
+                'L_PREVIEW' => $lang['Preview'],
+                'L_POSTED'  => $lang['Posted']
+            ]
+        );
 
-		$template->assign_var_from_handle('POST_PREVIEW_BOX', 'preview');
+        $template->assign_var_from_handle('POST_PREVIEW_BOX', 'preview');
 	}
 
 	//
@@ -1832,8 +1840,17 @@ $pm_all_total = ( $row = $db->sql_fetchrow($result) ) ? $row['total'] : 0;
 //
 // Build select box
 //
-$previous_days = array(0, 1, 7, 14, 30, 90, 180, 364);
-$previous_days_text = array($lang['All_Posts'], $lang['1_Day'], $lang['7_Days'], $lang['2_Weeks'], $lang['1_Month'], $lang['3_Months'], $lang['6_Months'], $lang['1_Year']);
+$previous_days = [0, 1, 7, 14, 30, 90, 180, 364];
+$previous_days_text = [
+    $lang['All_Posts'],
+    $lang['1_Day'],
+    $lang['7_Days'],
+    $lang['2_Weeks'],
+    $lang['1_Month'],
+    $lang['3_Months'],
+    $lang['6_Months'],
+    $lang['1_Year']
+];
 
 $select_msg_days = '';
 
@@ -1894,47 +1911,49 @@ if ( $folder != 'outbox' ) {
 //
 // Dump vars to template
 //
-$template->assign_vars(array(
-	'BOX_NAME' => $l_box_name, 
-	'INBOX_IMG' => $inbox_img, 
-	'SENTBOX_IMG' => $sentbox_img, 
-	'OUTBOX_IMG' => $outbox_img, 
-	'SAVEBOX_IMG' => $savebox_img, 
-	'INBOX' => $inbox_url, 
-	'SENTBOX' => $sentbox_url, 
-	'OUTBOX' => $outbox_url, 
-	'SAVEBOX' => $savebox_url, 
+$template->assign_vars(
+    [
+        'BOX_NAME'    => $l_box_name,
+        'INBOX_IMG'   => $inbox_img,
+        'SENTBOX_IMG' => $sentbox_img,
+        'OUTBOX_IMG'  => $outbox_img,
+        'SAVEBOX_IMG' => $savebox_img,
+        'INBOX'       => $inbox_url,
+        'SENTBOX'     => $sentbox_url,
+        'OUTBOX'      => $outbox_url,
+        'SAVEBOX'     => $savebox_url,
 
-	'POST_PM_IMG' => $post_pm_img, 
-	'POST_PM' => $post_pm, 
+        'POST_PM_IMG' => $post_pm_img,
+        'POST_PM'     => $post_pm,
 
-	'INBOX_LIMIT_IMG_WIDTH' => $inbox_limit_img_length, 
-	'INBOX_LIMIT_PERCENT' => $inbox_limit_pct, 
+        'INBOX_LIMIT_IMG_WIDTH' => $inbox_limit_img_length,
+        'INBOX_LIMIT_PERCENT'   => $inbox_limit_pct,
 
-	'BOX_SIZE_STATUS' => $l_box_size_status, 
+        'BOX_SIZE_STATUS' => $l_box_size_status,
 
-	'L_INBOX' => $lang['Inbox'],
-	'L_OUTBOX' => $lang['Outbox'],
-	'L_SENTBOX' => $lang['Sent'],
-	'L_SAVEBOX' => $lang['Saved'],
-	'L_MARK' => $lang['Mark'],
-	'L_FLAG' => $lang['Flag'],
-	'L_SUBJECT' => $lang['Subject'],
-	'L_DATE' => $lang['Date'],
-	'L_DISPLAY_MESSAGES' => $lang['Display_messages'],
-	'L_FROM_OR_TO' => ( $folder == 'inbox' || $folder == 'savebox' ) ? $lang['From'] : $lang['To'], 
-	'L_MARK_ALL' => $lang['Mark_all'], 
-	'L_UNMARK_ALL' => $lang['Unmark_all'], 
-	'L_DELETE_MARKED' => $lang['Delete_marked'], 
-	'L_DELETE_ALL' => $lang['Delete_all'], 
-	'L_SAVE_MARKED' => $lang['Save_marked'], 
+        'L_INBOX'            => $lang['Inbox'],
+        'L_OUTBOX'           => $lang['Outbox'],
+        'L_SENTBOX'          => $lang['Sent'],
+        'L_SAVEBOX'          => $lang['Saved'],
+        'L_MARK'             => $lang['Mark'],
+        'L_FLAG'             => $lang['Flag'],
+        'L_SUBJECT'          => $lang['Subject'],
+        'L_DATE'             => $lang['Date'],
+        'L_DISPLAY_MESSAGES' => $lang['Display_messages'],
+        'L_FROM_OR_TO'       => ($folder == 'inbox' || $folder == 'savebox') ? $lang['From'] : $lang['To'],
+        'L_MARK_ALL'         => $lang['Mark_all'],
+        'L_UNMARK_ALL'       => $lang['Unmark_all'],
+        'L_DELETE_MARKED'    => $lang['Delete_marked'],
+        'L_DELETE_ALL'       => $lang['Delete_all'],
+        'L_SAVE_MARKED'      => $lang['Save_marked'],
 
-	'S_PRIVMSGS_ACTION' => append_sid("privmsg.php?folder=$folder"),
-	'S_HIDDEN_FIELDS' => '',
-	'S_POST_NEW_MSG' => $post_new_mesg_url,
-	'S_SELECT_MSG_DAYS' => $select_msg_days,
+        'S_PRIVMSGS_ACTION' => append_sid("privmsg.php?folder=$folder"),
+        'S_HIDDEN_FIELDS'   => '',
+        'S_POST_NEW_MSG'    => $post_new_mesg_url,
+        'S_SELECT_MSG_DAYS' => $select_msg_days,
 
-	'U_POST_NEW_TOPIC' => append_sid("privmsg.php?mode=post"))
+        'U_POST_NEW_TOPIC' => append_sid("privmsg.php?mode=post")
+    ]
 );
 
 //

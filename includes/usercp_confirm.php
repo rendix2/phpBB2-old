@@ -41,7 +41,7 @@ if (empty($_GET['id']))
 $confirm_id = htmlspecialchars($_GET['id']);
 
 // Define available charset
-$chars = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',  'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9');
+$chars = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',  'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
 if (!preg_match('/^[A-Za-z0-9]+$/', $confirm_id)) {
 	$confirm_id = '';
@@ -52,6 +52,7 @@ $sql = 'SELECT code
 	FROM ' . CONFIRM_TABLE . " 
 	WHERE session_id = '" . $userdata['session_id'] . "' 
 		AND confirm_id = '$confirm_id'";
+
 $result = $db->sql_query($sql);
 
 // If we have a row then grab data else create a new id
@@ -135,7 +136,6 @@ echo $image;
 unset($image);
 unset($_png);
 exit;
-
 
 // This is designed to randomise the pixels of the image data within
 // certain limits so as to keep it readable. It also varies the image

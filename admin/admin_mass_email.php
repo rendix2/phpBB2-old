@@ -125,12 +125,14 @@ if ( isset($_POST['submit']) ) {
 		$emailer->set_subject($subject);
 		$emailer->extra_headers($email_headers);
 
-		$emailer->assign_vars(array(
-			'SITENAME' => $board_config['sitename'], 
-			'BOARD_EMAIL' => $board_config['board_email'], 
-			'MESSAGE' => $message)
-		);
-		$emailer->send();
+        $emailer->assign_vars(
+            [
+                'SITENAME'    => $board_config['sitename'],
+                'BOARD_EMAIL' => $board_config['board_email'],
+                'MESSAGE'     => $message
+            ]
+        );
+        $emailer->send();
 		$emailer->reset();
 
 		message_die(GENERAL_MESSAGE, $lang['Email_sent'] . '<br /><br />' . sprintf($lang['Click_return_admin_index'],  '<a href="' . append_sid("index.php?pane=right") . '">', '</a>'));
@@ -170,23 +172,25 @@ $select_list .= '</select>';
 //
 include './page_header_admin.php';
 
-$template->set_filenames(array('body' => 'admin/user_email_body.tpl'));
+$template->set_filenames(['body' => 'admin/user_email_body.tpl']);
 
-$template->assign_vars(array(
-	'MESSAGE' => $message,
-	'SUBJECT' => $subject, 
+$template->assign_vars(
+    [
+        'MESSAGE' => $message,
+        'SUBJECT' => $subject,
 
-	'L_EMAIL_TITLE' => $lang['Email'],
-	'L_EMAIL_EXPLAIN' => $lang['Mass_email_explain'],
-	'L_COMPOSE' => $lang['Compose'],
-	'L_RECIPIENTS' => $lang['Recipients'],
-	'L_EMAIL_SUBJECT' => $lang['Subject'],
-	'L_EMAIL_MSG' => $lang['Message'],
-	'L_EMAIL' => $lang['Email'],
-	'L_NOTICE' => $notice,
+        'L_EMAIL_TITLE'   => $lang['Email'],
+        'L_EMAIL_EXPLAIN' => $lang['Mass_email_explain'],
+        'L_COMPOSE'       => $lang['Compose'],
+        'L_RECIPIENTS'    => $lang['Recipients'],
+        'L_EMAIL_SUBJECT' => $lang['Subject'],
+        'L_EMAIL_MSG'     => $lang['Message'],
+        'L_EMAIL'         => $lang['Email'],
+        'L_NOTICE'        => $notice,
 
-	'S_USER_ACTION' => append_sid('admin_mass_email.php'),
-	'S_GROUP_SELECT' => $select_list)
+        'S_USER_ACTION'  => append_sid('admin_mass_email.php'),
+        'S_GROUP_SELECT' => $select_list
+    ]
 );
 
 $template->pparse('body');

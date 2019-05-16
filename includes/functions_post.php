@@ -25,11 +25,11 @@ if (!defined('IN_PHPBB'))
 	die('Hacking attempt');
 }
 
-$html_entities_match = array('#&(?!(\#[0-9]+;))#', '#<#', '#>#', '#"#');
-$html_entities_replace = array('&amp;', '&lt;', '&gt;', '&quot;');
+$html_entities_match   = ['#&(?!(\#[0-9]+;))#', '#<#', '#>#', '#"#'];
+$html_entities_replace = ['&amp;', '&lt;', '&gt;', '&quot;'];
 
-$unhtml_specialchars_match = array('#&gt;#', '#&lt;#', '#&quot;#', '#&amp;#');
-$unhtml_specialchars_replace = array('>', '<', '"', '&');
+$unhtml_specialchars_match   = ['#&gt;#', '#&lt;#', '#&quot;#', '#&amp;#'];
+$unhtml_specialchars_replace = ['>', '<', '"', '&'];
 
 //
 // This function will prepare a posted message for
@@ -59,8 +59,8 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 		$message = '';
 
 		foreach ($message_split as $part) {
-			$tag = array(array_shift($matches[0]), array_shift($matches[1]), array_shift($matches[2]));
-			$message .= preg_replace($html_entities_match, $html_entities_replace, $part) . clean_html($tag);
+            $tag     = [array_shift($matches[0]), array_shift($matches[1]), array_shift($matches[2])];
+            $message .= preg_replace($html_entities_match, $html_entities_replace, $part) . clean_html($tag);
 		}
 
 		$message = addslashes($message);
@@ -657,12 +657,10 @@ function generate_smilies($mode, $page_id)
 		$page_title = $lang['Emoticons'];
 		include $phpbb_root_path . 'includes/page_header.php';
 
-		$template->set_filenames(array(
-			'smiliesbody' => 'posting_smilies.tpl')
-		);
-	}
+        $template->set_filenames(['smiliesbody' => 'posting_smilies.tpl']);
+    }
 
-	$sql = "SELECT emoticon, code, smile_url   
+    $sql = "SELECT emoticon, code, smile_url   
 		FROM " . SMILIES_TABLE . " 
 		ORDER BY smilies_id";
 
@@ -691,44 +689,50 @@ function generate_smilies($mode, $page_id)
 					$template->assign_block_vars('smilies_row', []);
 				}
 
-				$template->assign_block_vars('smilies_row.smilies_col', array(
-					'SMILEY_CODE' => $data['code'],
-					'SMILEY_IMG' => $board_config['smilies_path'] . '/' . $smile_url,
-					'SMILEY_DESC' => $data['emoticon'])
-				);
+                $template->assign_block_vars('smilies_row.smilies_col',
+                    [
+                        'SMILEY_CODE' => $data['code'],
+                        'SMILEY_IMG'  => $board_config['smilies_path'] . '/' . $smile_url,
+                        'SMILEY_DESC' => $data['emoticon']
+                    ]
+                );
 
-				$s_colspan = max($s_colspan, $col + 1);
+                $s_colspan = max($s_colspan, $col + 1);
 
-				if ($col == $smilies_split_row) {
-					if ($mode == 'inline' && $row == $inline_rows - 1) {
-						break;
-					}
+                if ($col == $smilies_split_row) {
+                    if ($mode == 'inline' && $row == $inline_rows - 1) {
+                        break;
+                    }
 
-					$col = 0;
-					$row++;
-				} else {
-					$col++;
-				}
+                    $col = 0;
+                    $row++;
+                } else {
+                    $col++;
+                }
 			}
 
 			if ($mode == 'inline' && $num_smilies > $inline_rows * $inline_columns) {
 				$template->assign_block_vars('switch_smilies_extra', []);
 
-				$template->assign_vars(array(
-					'L_MORE_SMILIES' => $lang['More_emoticons'], 
-					'U_MORE_SMILIES' => append_sid("posting.php?mode=smilies"))
-				);
-			}
+                $template->assign_vars(
+                    [
+                        'L_MORE_SMILIES' => $lang['More_emoticons'],
+                        'U_MORE_SMILIES' => append_sid("posting.php?mode=smilies")
+                    ]
+                );
+            }
 
-			$template->assign_vars(array(
-				'L_EMOTICONS' => $lang['Emoticons'], 
-				'L_CLOSE_WINDOW' => $lang['Close_window'], 
-				'S_SMILIES_COLSPAN' => $s_colspan)
-			);
-		}
-	}
+            $template->assign_vars(
+                [
+                    'L_EMOTICONS'       => $lang['Emoticons'],
+                    'L_CLOSE_WINDOW'    => $lang['Close_window'],
+                    'S_SMILIES_COLSPAN' => $s_colspan
+                ]
+            );
+        }
+    }
 
-	if ($mode == 'window') {
+    if ($mode == 'window') {
 		$template->pparse('smiliesbody');
 
 		include $phpbb_root_path . 'includes/page_tail.php';
@@ -772,7 +776,7 @@ function clean_html($tag)
 				if (preg_match($disallowed_attributes, $test[1][$i])) {
 					continue;
 				}
-				$attributes .= ' ' . $test[1][$i] . '=' . $test[2][$i] . str_replace(array('[', ']'), array('&#91;', '&#93;'), htmlspecialchars($test[3][$i])) . $test[2][$i];
+				$attributes .= ' ' . $test[1][$i] . '=' . $test[2][$i] . str_replace(['[', ']'], ['&#91;', '&#93;'], htmlspecialchars($test[3][$i])) . $test[2][$i];
 			}
 		}
 

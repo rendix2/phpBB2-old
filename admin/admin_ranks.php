@@ -60,7 +60,7 @@ if (isset($_GET['mode']) || isset($_POST['mode']) ) {
 }
 
 // Restrict mode input to valid options
-$mode = in_array($mode, array('add', 'edit', 'save', 'delete')) ? $mode : '';
+$mode = in_array($mode, ['add', 'edit', 'save', 'delete']) ? $mode : '';
 
 if ($mode != "" ) {
 	if ($mode == "edit" || $mode == "add" ) {
@@ -96,28 +96,30 @@ if ($mode != "" ) {
 
 		$template->set_filenames(["body" => "admin/ranks_edit_body.tpl"]);
 
-		$template->assign_vars(array(
-                "RANK" => $rank_info['rank_title'],
-                "SPECIAL_RANK" => $rank_is_special,
-                "NOT_SPECIAL_RANK" => $rank_is_not_special,
-                "MINIMUM" => $rank_is_special ? "" : $rank_info['rank_min'],
-                "IMAGE" => ( $rank_info['rank_image'] != "" ) ? $rank_info['rank_image'] : "",
-                "IMAGE_DISPLAY" => ( $rank_info['rank_image'] != "" ) ? '<img src="../' . $rank_info['rank_image'] . '" />' : "",
+		$template->assign_vars(
+			[
+				"RANK"             => $rank_info['rank_title'],
+				"SPECIAL_RANK"     => $rank_is_special,
+				"NOT_SPECIAL_RANK" => $rank_is_not_special,
+				"MINIMUM"          => $rank_is_special ? "" : $rank_info['rank_min'],
+				"IMAGE"            => ($rank_info['rank_image'] != "") ? $rank_info['rank_image'] : "",
+				"IMAGE_DISPLAY"    => ($rank_info['rank_image'] != "") ? '<img src="../' . $rank_info['rank_image'] . '" />' : "",
 
-                "L_RANKS_TITLE" => $lang['Ranks_title'],
-                "L_RANKS_TEXT" => $lang['Ranks_explain'],
-                "L_RANK_TITLE" => $lang['Rank_title'],
-                "L_RANK_SPECIAL" => $lang['Rank_special'],
-                "L_RANK_MINIMUM" => $lang['Rank_minimum'],
-                "L_RANK_IMAGE" => $lang['Rank_image'],
-                "L_RANK_IMAGE_EXPLAIN" => $lang['Rank_image_explain'],
-                "L_SUBMIT" => $lang['Submit'],
-                "L_RESET" => $lang['Reset'],
-                "L_YES" => $lang['Yes'],
-                "L_NO" => $lang['No'],
+				"L_RANKS_TITLE"        => $lang['Ranks_title'],
+				"L_RANKS_TEXT"         => $lang['Ranks_explain'],
+				"L_RANK_TITLE"         => $lang['Rank_title'],
+				"L_RANK_SPECIAL"       => $lang['Rank_special'],
+				"L_RANK_MINIMUM"       => $lang['Rank_minimum'],
+				"L_RANK_IMAGE"         => $lang['Rank_image'],
+				"L_RANK_IMAGE_EXPLAIN" => $lang['Rank_image_explain'],
+				"L_SUBMIT"             => $lang['Submit'],
+				"L_RESET"              => $lang['Reset'],
+				"L_YES"                => $lang['Yes'],
+				"L_NO"                 => $lang['No'],
 
-                "S_RANK_ACTION" => append_sid("admin_ranks.php"),
-                "S_HIDDEN_FIELDS" => $s_hidden_fields)
+				"S_RANK_ACTION"   => append_sid("admin_ranks.php"),
+				"S_HIDDEN_FIELDS" => $s_hidden_fields
+			]
 		);
 	} elseif ($mode == "save" ) {
 		//
@@ -254,18 +256,20 @@ $rank_count = $db->sql_numrows($result);
 
 $rank_rows = $db->sql_fetchrowset($result);
 
-$template->assign_vars(array(
-	"L_RANKS_TITLE" => $lang['Ranks_title'],
-	"L_RANKS_TEXT" => $lang['Ranks_explain'],
-	"L_RANK" => $lang['Rank_title'],
-	"L_RANK_MINIMUM" => $lang['Rank_minimum'],
-	"L_SPECIAL_RANK" => $lang['Rank_special'],
-	"L_EDIT" => $lang['Edit'],
-	"L_DELETE" => $lang['Delete'],
-	"L_ADD_RANK" => $lang['Add_new_rank'],
-	"L_ACTION" => $lang['Action'],
-	
-	"S_RANKS_ACTION" => append_sid("admin_ranks.php"))
+$template->assign_vars(
+	[
+		"L_RANKS_TITLE"  => $lang['Ranks_title'],
+		"L_RANKS_TEXT"   => $lang['Ranks_explain'],
+		"L_RANK"         => $lang['Rank_title'],
+		"L_RANK_MINIMUM" => $lang['Rank_minimum'],
+		"L_SPECIAL_RANK" => $lang['Rank_special'],
+		"L_EDIT"         => $lang['Edit'],
+		"L_DELETE"       => $lang['Delete'],
+		"L_ADD_RANK"     => $lang['Add_new_rank'],
+		"L_ACTION"       => $lang['Action'],
+
+		"S_RANKS_ACTION" => append_sid("admin_ranks.php")
+	]
 );
 
 for ($i = 0; $i < $rank_count; $i++) {
@@ -282,16 +286,18 @@ for ($i = 0; $i < $rank_count; $i++) {
 	$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
 	$rank_is_special = $special_rank ? $lang['Yes'] : $lang['No'];
-	
-	$template->assign_block_vars("ranks", [
-		"ROW_COLOR" => "#" . $row_color,
-		"ROW_CLASS" => $row_class,
-		"RANK" => $rank,
-		"SPECIAL_RANK" => $rank_is_special,
-		"RANK_MIN" => $rank_min,
 
-		"U_RANK_EDIT" => append_sid("admin_ranks.php?mode=edit&amp;id=$rank_id"),
-		"U_RANK_DELETE" => append_sid("admin_ranks.php?mode=delete&amp;id=$rank_id")]
+	$template->assign_block_vars("ranks",
+		[
+			"ROW_COLOR"    => "#" . $row_color,
+			"ROW_CLASS"    => $row_class,
+			"RANK"         => $rank,
+			"SPECIAL_RANK" => $rank_is_special,
+			"RANK_MIN"     => $rank_min,
+
+			"U_RANK_EDIT"   => append_sid("admin_ranks.php?mode=edit&amp;id=$rank_id"),
+			"U_RANK_DELETE" => append_sid("admin_ranks.php?mode=delete&amp;id=$rank_id")
+		]
 	);
 }
 

@@ -195,15 +195,17 @@ function topic_review($topic_id, $is_inline_review)
 	
 	$db->sql_freeresult($result);
 
-	$template->assign_vars(array(
-		'L_AUTHOR' => $lang['Author'],
-		'L_MESSAGE' => $lang['Message'],
-		'L_POSTED' => $lang['Posted'],
-		'L_POST_SUBJECT' => $lang['Post_subject'], 
-		'L_TOPIC_REVIEW' => $lang['Topic_review'])
-	);
+    $template->assign_vars(
+        [
+            'L_AUTHOR'       => $lang['Author'],
+            'L_MESSAGE'      => $lang['Message'],
+            'L_POSTED'       => $lang['Posted'],
+            'L_POST_SUBJECT' => $lang['Post_subject'],
+            'L_TOPIC_REVIEW' => $lang['Topic_review']
+        ]
+    );
 
-	if ( !$is_inline_review ) {
+    if ( !$is_inline_review ) {
 		$template->pparse('reviewbody');
 		include $phpbb_root_path . 'includes/page_tail.php';
 	}

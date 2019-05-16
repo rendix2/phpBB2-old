@@ -112,20 +112,22 @@ $disallow_select .= '</select>';
 
 $template->set_filenames(["body" => "admin/disallow_body.tpl"]);
 
-$template->assign_vars(array(
-	"S_DISALLOW_SELECT" => $disallow_select,
-	"S_FORM_ACTION" => append_sid("admin_disallow.php"),
+$template->assign_vars(
+    [
+        "S_DISALLOW_SELECT" => $disallow_select,
+        "S_FORM_ACTION"     => append_sid("admin_disallow.php"),
 
-	"L_INFO" => $output_info,
-	"L_DISALLOW_TITLE" => $lang['Disallow_control'],
-	"L_DISALLOW_EXPLAIN" => $lang['Disallow_explain'],
-	"L_DELETE" => $lang['Delete_disallow'],
-	"L_DELETE_DISALLOW" => $lang['Delete_disallow_title'],
-	"L_DELETE_EXPLAIN" => $lang['Delete_disallow_explain'],
-	"L_ADD" => $lang['Add_disallow'],
-	"L_ADD_DISALLOW" => $lang['Add_disallow_title'],
-	"L_ADD_EXPLAIN" => $lang['Add_disallow_explain'],
-	"L_USERNAME" => $lang['Username'])
+        "L_INFO"             => $output_info,
+        "L_DISALLOW_TITLE"   => $lang['Disallow_control'],
+        "L_DISALLOW_EXPLAIN" => $lang['Disallow_explain'],
+        "L_DELETE"           => $lang['Delete_disallow'],
+        "L_DELETE_DISALLOW"  => $lang['Delete_disallow_title'],
+        "L_DELETE_EXPLAIN"   => $lang['Delete_disallow_explain'],
+        "L_ADD"              => $lang['Add_disallow'],
+        "L_ADD_DISALLOW"     => $lang['Add_disallow_title'],
+        "L_ADD_EXPLAIN"      => $lang['Add_disallow_explain'],
+        "L_USERNAME"         => $lang['Username']
+    ]
 );
 
 $template->pparse("body");

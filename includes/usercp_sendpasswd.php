@@ -79,11 +79,13 @@ if ( isset($_POST['submit']) ) {
 			$emailer->send();
 			$emailer->reset();
 
-			$template->assign_vars(array(
-				'META' => '<meta http-equiv="refresh" content="15;url=' . append_sid("index.php") . '">')
-			);
+            $template->assign_vars(
+                [
+                    'META' => '<meta http-equiv="refresh" content="15;url=' . append_sid("index.php") . '">'
+                ]
+            );
 
-			$message = $lang['Password_updated'] . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . append_sid("index.php") . '">', '</a>');
+            $message = $lang['Password_updated'] . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . append_sid("index.php") . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		} else {
@@ -105,18 +107,20 @@ include $phpbb_root_path . 'includes/page_header.php';
 $template->set_filenames(['body' => 'profile_send_pass.tpl']);
 make_jumpbox('viewforum.php');
 
-$template->assign_vars(array(
-	'USERNAME' => $username,
-	'EMAIL' => $email,
+$template->assign_vars
+([
+        'USERNAME' => $username,
+        'EMAIL'    => $email,
 
-	'L_SEND_PASSWORD' => $lang['Send_password'], 
-	'L_ITEMS_REQUIRED' => $lang['Items_required'],
-	'L_EMAIL_ADDRESS' => $lang['Email_address'],
-	'L_SUBMIT' => $lang['Submit'],
-	'L_RESET' => $lang['Reset'],
-	
-	'S_HIDDEN_FIELDS' => '', 
-	'S_PROFILE_ACTION' => append_sid("profile.php?mode=sendpassword"))
+        'L_SEND_PASSWORD'  => $lang['Send_password'],
+        'L_ITEMS_REQUIRED' => $lang['Items_required'],
+        'L_EMAIL_ADDRESS'  => $lang['Email_address'],
+        'L_SUBMIT'         => $lang['Submit'],
+        'L_RESET'          => $lang['Reset'],
+
+        'S_HIDDEN_FIELDS'  => '',
+        'S_PROFILE_ACTION' => append_sid("profile.php?mode=sendpassword")
+    ]
 );
 
 $template->pparse('body');

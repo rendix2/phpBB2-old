@@ -332,16 +332,20 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 		$s_colspan = max($s_colspan, count($avatar_images[$category][$i]));
 
 		for ($j = 0; $j < count($avatar_images[$category][$i]); $j++) {
-			$template->assign_block_vars('avatar_row.avatar_column', array(
-				"AVATAR_IMAGE" => $board_config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_images[$category][$i][$j], 
-				"AVATAR_NAME" => $avatar_name[$category][$i][$j])
-			);
+            $template->assign_block_vars('avatar_row.avatar_column',
+                [
+                    "AVATAR_IMAGE" => $board_config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_images[$category][$i][$j],
+                    "AVATAR_NAME"  => $avatar_name[$category][$i][$j]
+                ]
+            );
 
-			$template->assign_block_vars('avatar_row.avatar_option_column', array(
-				"S_OPTIONS_AVATAR" => $avatar_images[$category][$i][$j])
-			);
-		}
-	}
+            $template->assign_block_vars('avatar_row.avatar_option_column',
+                [
+                    "S_OPTIONS_AVATAR" => $avatar_images[$category][$i][$j]
+                ]
+            );
+        }
+    }
 
     $params = [
         'coppa',
@@ -381,20 +385,20 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 	for ($i = 0; $i < count($params); $i++) {
 		$s_hidden_vars .= '<input type="hidden" name="' . $params[$i] . '" value="' . str_replace('"', '&quot;', $$params[$i]) . '" />';
 	}
-	
-	$template->assign_vars(array(
-		'L_AVATAR_GALLERY' => $lang['Avatar_gallery'], 
-		'L_SELECT_AVATAR' => $lang['Select_avatar'], 
-		'L_RETURN_PROFILE' => $lang['Return_profile'], 
-		'L_CATEGORY' => $lang['Select_category'], 
 
-		'S_CATEGORY_SELECT' => $s_categories, 
-		'S_COLSPAN' => $s_colspan, 
-		'S_PROFILE_ACTION' => append_sid("profile.php?mode=$mode"), 
-		'S_HIDDEN_FIELDS' => $s_hidden_vars)
-	);
+    $template->assign_vars(
+        [
+            'L_AVATAR_GALLERY' => $lang['Avatar_gallery'],
+            'L_SELECT_AVATAR'  => $lang['Select_avatar'],
+            'L_RETURN_PROFILE' => $lang['Return_profile'],
+            'L_CATEGORY'       => $lang['Select_category'],
 
-	return;
+            'S_CATEGORY_SELECT' => $s_categories,
+            'S_COLSPAN'         => $s_colspan,
+            'S_PROFILE_ACTION'  => append_sid("profile.php?mode=$mode"),
+            'S_HIDDEN_FIELDS'   => $s_hidden_vars
+        ]
+    );
 }
 
 ?>

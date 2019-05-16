@@ -186,23 +186,25 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 
         $template->set_filenames(["body" => "admin/smile_import_body.tpl"]);
 
-        $template->assign_vars(array(
-			"L_SMILEY_TITLE" => $lang['smiley_title'],
-			"L_SMILEY_EXPLAIN" => $lang['smiley_import_inst'],
-			"L_SMILEY_IMPORT" => $lang['smiley_import'],
-			"L_SELECT_LBL" => $lang['choose_smile_pak'],
-			"L_IMPORT" => $lang['import'],
-			"L_CONFLICTS" => $lang['smile_conflicts'],
-			"L_DEL_EXISTING" => $lang['del_existing_smileys'], 
-			"L_REPLACE_EXISTING" => $lang['replace_existing'], 
-			"L_KEEP_EXISTING" => $lang['keep_existing'], 
+        $template->assign_vars(
+            [
+                "L_SMILEY_TITLE"     => $lang['smiley_title'],
+                "L_SMILEY_EXPLAIN"   => $lang['smiley_import_inst'],
+                "L_SMILEY_IMPORT"    => $lang['smiley_import'],
+                "L_SELECT_LBL"       => $lang['choose_smile_pak'],
+                "L_IMPORT"           => $lang['import'],
+                "L_CONFLICTS"        => $lang['smile_conflicts'],
+                "L_DEL_EXISTING"     => $lang['del_existing_smileys'],
+                "L_REPLACE_EXISTING" => $lang['replace_existing'],
+                "L_KEEP_EXISTING"    => $lang['keep_existing'],
 
-			"S_SMILEY_ACTION" => append_sid("admin_smilies.php"),
-			"S_SMILE_SELECT" => $smile_paks_select,
-			"S_HIDDEN_FIELDS" => $hidden_vars)
-		);
+                "S_SMILEY_ACTION" => append_sid("admin_smilies.php"),
+                "S_SMILE_SELECT"  => $smile_paks_select,
+                "S_HIDDEN_FIELDS" => $hidden_vars
+            ]
+        );
 
-		$template->pparse("body");
+        $template->pparse("body");
 	}
 } elseif (isset($_POST['export_pack']) || isset($_GET['export_pack']) ) {
 	//
@@ -252,25 +254,27 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 
 	$s_hidden_fields = '<input type="hidden" name="mode" value="savenew" />';
 
-	$template->assign_vars(array(
-		"L_SMILEY_TITLE" => $lang['smiley_title'],
-		"L_SMILEY_CONFIG" => $lang['smiley_config'],
-		"L_SMILEY_EXPLAIN" => $lang['smile_desc'],
-		"L_SMILEY_CODE" => $lang['smiley_code'],
-		"L_SMILEY_URL" => $lang['smiley_url'],
-		"L_SMILEY_EMOTION" => $lang['smiley_emot'],
-		"L_SUBMIT" => $lang['Submit'],
-		"L_RESET" => $lang['Reset'],
+    $template->assign_vars(
+        [
+            "L_SMILEY_TITLE"   => $lang['smiley_title'],
+            "L_SMILEY_CONFIG"  => $lang['smiley_config'],
+            "L_SMILEY_EXPLAIN" => $lang['smile_desc'],
+            "L_SMILEY_CODE"    => $lang['smiley_code'],
+            "L_SMILEY_URL"     => $lang['smiley_url'],
+            "L_SMILEY_EMOTION" => $lang['smiley_emot'],
+            "L_SUBMIT"         => $lang['Submit'],
+            "L_RESET"          => $lang['Reset'],
 
-		"SMILEY_IMG" => $phpbb_root_path . $board_config['smilies_path'] . '/' . $smiley_images[0], 
+            "SMILEY_IMG" => $phpbb_root_path . $board_config['smilies_path'] . '/' . $smiley_images[0],
 
-		"S_SMILEY_ACTION" => append_sid("admin_smilies.php"), 
-		"S_HIDDEN_FIELDS" => $s_hidden_fields, 
-		"S_FILENAME_OPTIONS" => $filename_list, 
-		"S_SMILEY_BASEDIR" => $phpbb_root_path . $board_config['smilies_path'])
-	);
+            "S_SMILEY_ACTION"    => append_sid("admin_smilies.php"),
+            "S_HIDDEN_FIELDS"    => $s_hidden_fields,
+            "S_FILENAME_OPTIONS" => $filename_list,
+            "S_SMILEY_BASEDIR"   => $phpbb_root_path . $board_config['smilies_path']
+        ]
+    );
 
-	$template->pparse("body");
+    $template->pparse("body");
 } elseif ( $mode != "" ) {
 	switch( $mode ) {
 		case 'delete':
@@ -302,17 +306,19 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 
                 $hidden_fields = '<input type="hidden" name="mode" value="delete" /><input type="hidden" name="id" value="' . $smiley_id . '" />';
 
-				$template->assign_vars(array(
-					'MESSAGE_TITLE' => $lang['Confirm'],
-					'MESSAGE_TEXT' => $lang['Confirm_delete_smiley'],
+                $template->assign_vars(
+                    [
+                        'MESSAGE_TITLE' => $lang['Confirm'],
+                        'MESSAGE_TEXT'  => $lang['Confirm_delete_smiley'],
 
-					'L_YES' => $lang['Yes'],
-					'L_NO' => $lang['No'],
+                        'L_YES' => $lang['Yes'],
+                        'L_NO'  => $lang['No'],
 
-					'S_CONFIRM_ACTION' => append_sid("admin_smilies.php"),
-					'S_HIDDEN_FIELDS' => $hidden_fields)
-				);
-				$template->pparse('body');
+                        'S_CONFIRM_ACTION' => append_sid("admin_smilies.php"),
+                        'S_HIDDEN_FIELDS'  => $hidden_fields
+                    ]
+                );
+                $template->pparse('body');
 			}
 			break;
 
@@ -353,28 +359,30 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 
             $s_hidden_fields = '<input type="hidden" name="mode" value="save" /><input type="hidden" name="smile_id" value="' . $smile_data['smilies_id'] . '" />';
 
-			$template->assign_vars(array(
-				"SMILEY_CODE" => $smile_data['code'],
-				"SMILEY_EMOTICON" => $smile_data['emoticon'],
+            $template->assign_vars(
+                [
+                    "SMILEY_CODE"     => $smile_data['code'],
+                    "SMILEY_EMOTICON" => $smile_data['emoticon'],
 
-				"L_SMILEY_TITLE" => $lang['smiley_title'],
-				"L_SMILEY_CONFIG" => $lang['smiley_config'],
-				"L_SMILEY_EXPLAIN" => $lang['smile_desc'],
-				"L_SMILEY_CODE" => $lang['smiley_code'],
-				"L_SMILEY_URL" => $lang['smiley_url'],
-				"L_SMILEY_EMOTION" => $lang['smiley_emot'],
-				"L_SUBMIT" => $lang['Submit'],
-				"L_RESET" => $lang['Reset'],
+                    "L_SMILEY_TITLE"   => $lang['smiley_title'],
+                    "L_SMILEY_CONFIG"  => $lang['smiley_config'],
+                    "L_SMILEY_EXPLAIN" => $lang['smile_desc'],
+                    "L_SMILEY_CODE"    => $lang['smiley_code'],
+                    "L_SMILEY_URL"     => $lang['smiley_url'],
+                    "L_SMILEY_EMOTION" => $lang['smiley_emot'],
+                    "L_SUBMIT"         => $lang['Submit'],
+                    "L_RESET"          => $lang['Reset'],
 
-				"SMILEY_IMG" => $phpbb_root_path . $board_config['smilies_path'] . '/' . $smiley_edit_img, 
+                    "SMILEY_IMG" => $phpbb_root_path . $board_config['smilies_path'] . '/' . $smiley_edit_img,
 
-				"S_SMILEY_ACTION" => append_sid("admin_smilies.php"),
-				"S_HIDDEN_FIELDS" => $s_hidden_fields, 
-				"S_FILENAME_OPTIONS" => $filename_list, 
-				"S_SMILEY_BASEDIR" => $phpbb_root_path . $board_config['smilies_path'])
-			);
+                    "S_SMILEY_ACTION"    => append_sid("admin_smilies.php"),
+                    "S_HIDDEN_FIELDS"    => $s_hidden_fields,
+                    "S_FILENAME_OPTIONS" => $filename_list,
+                    "S_SMILEY_BASEDIR"   => $phpbb_root_path . $board_config['smilies_path']
+                ]
+            );
 
-			$template->pparse("body");
+            $template->pparse("body");
 			break;
 
 		case "save":
@@ -482,24 +490,26 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 
     $template->set_filenames(["body" => "admin/smile_list_body.tpl"]);
 
-    $template->assign_vars(array(
-		"L_ACTION" => $lang['Action'],
-		"L_SMILEY_TITLE" => $lang['smiley_title'],
-		"L_SMILEY_TEXT" => $lang['smile_desc'],
-		"L_DELETE" => $lang['Delete'],
-		"L_EDIT" => $lang['Edit'],
-		"L_SMILEY_ADD" => $lang['smile_add'],
-		"L_CODE" => $lang['Code'],
-		"L_EMOT" => $lang['Emotion'],
-		"L_SMILE" => $lang['Smile'],
-		"L_IMPORT_PACK" => $lang['import_smile_pack'],
-		"L_EXPORT_PACK" => $lang['export_smile_pack'],
-		
-		"S_HIDDEN_FIELDS" => $s_hidden_fields, 
-		"S_SMILEY_ACTION" => append_sid("admin_smilies.php"))
-	);
+    $template->assign_vars(
+        [
+            "L_ACTION"       => $lang['Action'],
+            "L_SMILEY_TITLE" => $lang['smiley_title'],
+            "L_SMILEY_TEXT"  => $lang['smile_desc'],
+            "L_DELETE"       => $lang['Delete'],
+            "L_EDIT"         => $lang['Edit'],
+            "L_SMILEY_ADD"   => $lang['smile_add'],
+            "L_CODE"         => $lang['Code'],
+            "L_EMOT"         => $lang['Emotion'],
+            "L_SMILE"        => $lang['Smile'],
+            "L_IMPORT_PACK"  => $lang['import_smile_pack'],
+            "L_EXPORT_PACK"  => $lang['export_smile_pack'],
 
-	//
+            "S_HIDDEN_FIELDS" => $s_hidden_fields,
+            "S_SMILEY_ACTION" => append_sid("admin_smilies.php")
+        ]
+    );
+
+    //
 	// Loop throuh the rows of smilies setting block vars for the template.
 	//
 	for ($i = 0; $i < count($smilies); $i++) {
@@ -512,20 +522,22 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-		$template->assign_block_vars("smiles", array(
-			"ROW_COLOR" => "#" . $row_color,
-			"ROW_CLASS" => $row_class,
-			
-			"SMILEY_IMG" =>  $phpbb_root_path . $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'], 
-			"CODE" => $smilies[$i]['code'],
-			"EMOT" => $smilies[$i]['emoticon'],
-			
-			"U_SMILEY_EDIT" => append_sid("admin_smilies.php?mode=edit&amp;id=" . $smilies[$i]['smilies_id']), 
-			"U_SMILEY_DELETE" => append_sid("admin_smilies.php?mode=delete&amp;id=" . $smilies[$i]['smilies_id']))
-		);
-	}
+        $template->assign_block_vars("smiles",
+            [
+                "ROW_COLOR" => "#" . $row_color,
+                "ROW_CLASS" => $row_class,
 
-	//
+                "SMILEY_IMG" => $phpbb_root_path . $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'],
+                "CODE"       => $smilies[$i]['code'],
+                "EMOT"       => $smilies[$i]['emoticon'],
+
+                "U_SMILEY_EDIT"   => append_sid("admin_smilies.php?mode=edit&amp;id=" . $smilies[$i]['smilies_id']),
+                "U_SMILEY_DELETE" => append_sid("admin_smilies.php?mode=delete&amp;id=" . $smilies[$i]['smilies_id'])
+            ]
+        );
+    }
+
+    //
 	// Spit out the page.
 	//
 	$template->pparse("body");

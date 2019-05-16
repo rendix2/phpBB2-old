@@ -38,8 +38,8 @@ require $phpbb_root_path . 'includes/functions_post.php';
 require $phpbb_root_path . 'includes/functions_selects.php';
 require $phpbb_root_path . 'includes/functions_validate.php';
 
-$html_entities_match = array('#<#', '#>#');
-$html_entities_replace = array('&lt;', '&gt;');
+$html_entities_match   = ['#<#', '#>#'];
+$html_entities_replace = ['&lt;', '&gt;'];
 
 //
 // Set mode

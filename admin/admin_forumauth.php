@@ -149,10 +149,12 @@ if (isset($_POST['submit'])) {
 		$adv = 0;
 	}
 
-	$template->assign_vars(array(
-		'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("admin_forumauth.php?" . POST_FORUM_URL . "=$forum_id") . '">')
-	);
-	$message = $lang['Forum_auth_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumauth'],  '<a href="' . append_sid("admin_forumauth.php") . '">', "</a>");
+    $template->assign_vars(
+        [
+            'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("admin_forumauth.php?" . POST_FORUM_URL . "=$forum_id") . '">'
+        ]
+    );
+    $message = $lang['Forum_auth_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumauth'],  '<a href="' . append_sid("admin_forumauth.php") . '">', "</a>");
 	message_die(GENERAL_MESSAGE, $message);
 
 } // End of submit
@@ -182,27 +184,27 @@ if (empty($forum_id) )
 	// Output the selection table if no forum id was
 	// specified
 	//
-	$template->set_filenames(array(
-		'body' => 'admin/auth_select_body.tpl')
-	);
+    $template->set_filenames(['body' => 'admin/auth_select_body.tpl']);
 
-	$select_list = '<select name="' . POST_FORUM_URL . '">';
-	for ($i = 0; $i < count($forum_rows); $i++)
-	{
+    $select_list = '<select name="' . POST_FORUM_URL . '">';
+
+	for ($i = 0; $i < count($forum_rows); $i++) {
 		$select_list .= '<option value="' . $forum_rows[$i]['forum_id'] . '">' . $forum_rows[$i]['forum_name'] . '</option>';
 	}
+
 	$select_list .= '</select>';
 
-	$template->assign_vars(array(
-		'L_AUTH_TITLE' => $lang['Auth_Control_Forum'],
-		'L_AUTH_EXPLAIN' => $lang['Forum_auth_explain'],
-		'L_AUTH_SELECT' => $lang['Select_a_Forum'],
-		'L_LOOK_UP' => $lang['Look_up_Forum'],
+    $template->assign_vars(
+        [
+            'L_AUTH_TITLE'   => $lang['Auth_Control_Forum'],
+            'L_AUTH_EXPLAIN' => $lang['Forum_auth_explain'],
+            'L_AUTH_SELECT'  => $lang['Select_a_Forum'],
+            'L_LOOK_UP'      => $lang['Look_up_Forum'],
 
-		'S_AUTH_ACTION' => append_sid("admin_forumauth.php"),
-		'S_AUTH_SELECT' => $select_list)
-	);
-
+            'S_AUTH_ACTION' => append_sid("admin_forumauth.php"),
+            'S_AUTH_SELECT' => $select_list
+        ]
+    );
 } else {
 	//
 	// Output the authorisation details if an id was

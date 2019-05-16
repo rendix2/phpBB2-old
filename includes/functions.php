@@ -270,17 +270,17 @@ function make_jumpbox($action, $match_forum_id = 0)
 
     $template->set_filenames(['jumpbox' => 'jumpbox.tpl']);
 
-    $template->assign_vars(array(
-		'L_GO' => $lang['Go'],
-		'L_JUMP_TO' => $lang['Jump_to'],
-		'L_SELECT_FORUM' => $lang['Select_forum'],
+    $template->assign_vars(
+        [
+            'L_GO'           => $lang['Go'],
+            'L_JUMP_TO'      => $lang['Jump_to'],
+            'L_SELECT_FORUM' => $lang['Select_forum'],
 
-		'S_JUMPBOX_SELECT' => $boxstring,
-		'S_JUMPBOX_ACTION' => append_sid($action))
-	);
-	$template->assign_var_from_handle('JUMPBOX', 'jumpbox');
-
-	return;
+            'S_JUMPBOX_SELECT' => $boxstring,
+            'S_JUMPBOX_ACTION' => append_sid($action)
+        ]
+    );
+    $template->assign_var_from_handle('JUMPBOX', 'jumpbox');
 }
 
 //

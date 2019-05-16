@@ -580,44 +580,47 @@ if ($total_topics) {
 		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-		$template->assign_block_vars('topicrow', array(
-			'ROW_COLOR' => $row_color,
-			'ROW_CLASS' => $row_class,
-			'FORUM_ID' => $forum_id,
-			'TOPIC_ID' => $topic_id,
-			'TOPIC_FOLDER_IMG' => $folder_image, 
-			'TOPIC_AUTHOR' => $topic_author, 
-			'GOTO_PAGE' => $goto_page,
-			'REPLIES' => $replies,
-			'NEWEST_POST_IMG' => $newest_post_img, 
-			'TOPIC_TITLE' => $topic_title,
-			'TOPIC_TYPE' => $topic_type,
-			'VIEWS' => $views,
-			'FIRST_POST_TIME' => $first_post_time, 
-			'LAST_POST_TIME' => $last_post_time, 
-			'LAST_POST_AUTHOR' => $last_post_author, 
-			'LAST_POST_IMG' => $last_post_url, 
+        $template->assign_block_vars('topicrow',
+            [
+                'ROW_COLOR'        => $row_color,
+                'ROW_CLASS'        => $row_class,
+                'FORUM_ID'         => $forum_id,
+                'TOPIC_ID'         => $topic_id,
+                'TOPIC_FOLDER_IMG' => $folder_image,
+                'TOPIC_AUTHOR'     => $topic_author,
+                'GOTO_PAGE'        => $goto_page,
+                'REPLIES'          => $replies,
+                'NEWEST_POST_IMG'  => $newest_post_img,
+                'TOPIC_TITLE'      => $topic_title,
+                'TOPIC_TYPE'       => $topic_type,
+                'VIEWS'            => $views,
+                'FIRST_POST_TIME'  => $first_post_time,
+                'LAST_POST_TIME'   => $last_post_time,
+                'LAST_POST_AUTHOR' => $last_post_author,
+                'LAST_POST_IMG'    => $last_post_url,
 
-			'L_TOPIC_FOLDER_ALT' => $folder_alt, 
+                'L_TOPIC_FOLDER_ALT' => $folder_alt,
 
-			'U_VIEW_TOPIC' => $view_topic_url)
-		);
-	}
+                'U_VIEW_TOPIC' => $view_topic_url
+            ]
+        );
+    }
 
-	$topics_count -= $total_announcements;
+    $topics_count -= $total_announcements;
 
-	$template->assign_vars(array(
-            'PAGINATION' => generate_pagination("viewforum.php?" . POST_FORUM_URL . "=$forum_id&amp;topicdays=$topic_days", $topics_count, $board_config['topics_per_page'], $start),
-            'PAGE_NUMBER' => sprintf($lang['Page_of'],
-                floor( $start / $board_config['topics_per_page'] ) + 1, ceil( $topics_count / $board_config['topics_per_page'] )),
+    $template->assign_vars(
+        [
+            'PAGINATION'  => generate_pagination("viewforum.php?" . POST_FORUM_URL . "=$forum_id&amp;topicdays=$topic_days", $topics_count, $board_config['topics_per_page'], $start),
+            'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $board_config['topics_per_page']) + 1, ceil($topics_count / $board_config['topics_per_page'])),
 
-            'L_GOTO_PAGE' => $lang['Goto_page'])
-	);
+            'L_GOTO_PAGE' => $lang['Goto_page']
+        ]
+    );
 } else {
 	//
 	// No topics
 	//
-	$no_topics_msg = ( $forum_row['forum_status'] == FORUM_LOCKED ) ? $lang['Forum_locked'] : $lang['No_topics_post_one'];
+	$no_topics_msg = $forum_row['forum_status'] == FORUM_LOCKED ? $lang['Forum_locked'] : $lang['No_topics_post_one'];
     $template->assign_vars(['L_NO_TOPICS' => $no_topics_msg]);
 
     $template->assign_block_vars('switch_no_topics', []);

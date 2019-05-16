@@ -156,7 +156,7 @@ include $phpbb_root_path . 'includes/page_header.php';
 if (function_exists('get_html_translation_table')) {
 	$u_search_author = urlencode(strtr($profile_data['username'], array_flip(get_html_translation_table(HTML_ENTITIES))));
 } else {
-	$u_search_author = urlencode(str_replace(array('&amp;', '&#039;', '&quot;', '&lt;', '&gt;'), array('&', "'", '"', '<', '>'), $profile_data['username']));
+    $u_search_author = urlencode(str_replace(['&amp;', '&#039;', '&quot;', '&lt;', '&gt;'], ['&', "'", '"', '<', '>'], $profile_data['username']));
 }
 
 $template->assign_vars(array(
