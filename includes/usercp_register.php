@@ -860,12 +860,13 @@ if (isset($_POST['avatargallery']) && !$error ) {
 
 		$confirm_id = md5(uniqid($user_ip));
 
-		$sql = 'INSERT INTO ' . CONFIRM_TABLE . " (confirm_id, session_id, code) 
-			VALUES ('$confirm_id', '". $userdata['session_id'] . "', '$code')";
+		$confirm_insert_data = [
+		    'confirm_id' => $confirm_id,
+            'session_id' => $userdata['session_id'],
+            'code'       => $code
+        ];
 
-		if (!$db->sql_query($sql)) {
-			message_die(GENERAL_ERROR, 'Could not insert new confirm code information', '', __LINE__, __FILE__, $sql);
-		}
+		dibi::insert(CONFIRM_TABLE, $confirm_insert_data)->execute();
 
 		unset($code);
 

@@ -588,10 +588,6 @@ function obtain_word_list(&$orig_word, &$replacement_word)
         ->from(WORDS_TABLE)
         ->fetchPairs('word', 'replacement');
 
-	if (!count($words)) {
-        message_die(GENERAL_ERROR, 'Could not get censored words from database');
-    }
-
     foreach ($words as $word => $replacement) {
         $orig_word[] = '#\b(' . str_replace('\*', '\w*?', preg_quote($word, '#')) . ')\b#i';
         $replacement_word[] = $replacement;
