@@ -36,21 +36,11 @@ if (!$profile_data) {
 	message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
 }
 
-$sql = "SELECT *
-	FROM " . RANKS_TABLE . "
-	ORDER BY rank_special, rank_min";
-
-if ( !($result = $db->sql_query($sql)) ) {
-	message_die(GENERAL_ERROR, 'Could not obtain ranks information', '', __LINE__, __FILE__, $sql);
-}
-
-$ranksrow = [];
-
-while ( $row = $db->sql_fetchrow($result) ) {
-	$ranksrow[] = $row;
-}
-
-$db->sql_freeresult($result);
+$ranks = dibi::select('*')
+    ->from(RANKS_TABLE)
+    ->orderBy('rank_special')
+    ->orderBy('rank_min')
+    ->fetchAll();
 
 //
 // Output page header and profile_view template
@@ -91,20 +81,21 @@ if ($profile_data['user_avatar_type'] && $profile_data['user_allowavatar'] ) {
 
 $poster_rank = '';
 $rank_image = '';
+
 if ($profile_data['user_rank'] ) {
-	for ($i = 0; $i < count($ranksrow); $i++) {
-		if ($profile_data['user_rank'] == $ranksrow[$i]['rank_id'] && $ranksrow[$i]['rank_special'] ) {
-			$poster_rank = $ranksrow[$i]['rank_title'];
-			$rank_image = $ranksrow[$i]['rank_image'] ? '<img src="' . $ranksrow[$i]['rank_image'] . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
-		}
-	}
+    foreach ($ranks as $rank) {
+        if ($profile_data['user_rank'] === $rank->rank_id && $rank->rank_special ) {
+            $poster_rank = $rank->rank_title;
+            $rank_image = $rank->rank_image ? '<img src="' . $rank->rank_image . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
+        }
+    }
 } else {
-	for ($i = 0; $i < count($ranksrow); $i++) {
-		if ($profile_data['user_posts'] >= $ranksrow[$i]['rank_min'] && !$ranksrow[$i]['rank_special'] ) {
-			$poster_rank = $ranksrow[$i]['rank_title'];
-			$rank_image = $ranksrow[$i]['rank_image'] ? '<img src="' . $ranksrow[$i]['rank_image'] . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
-		}
-	}
+    foreach ($ranks as $rank) {
+        if ($profile_data['user_posts'] >= $rank->rank_min && !$rank->rank_special ) {
+            $poster_rank = $rank->rank_title;
+            $rank_image = $rank->rank_image ? '<img src="' . $rank->rank_image . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
+        }
+    }
 }
 
 $temp_url = append_sid("privmsg.php?mode=post&amp;" . POST_USERS_URL . "=" . $profile_data['user_id']);
