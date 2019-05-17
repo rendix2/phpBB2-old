@@ -787,7 +787,7 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
 				$highlight_active .= " " . $split_word;
 
 				for ($k = 0; $k < count($synonym_array); $k++) {
-					list($replace_synonym, $match_synonym) = split(' ', trim(strtolower($synonym_array[$k])));
+					list($replace_synonym, $match_synonym) = explode(' ', trim(strtolower($synonym_array[$k])));
 
 					if ( $replace_synonym == $split_word ) {
 						$highlight_match[] = '#\b(' . str_replace("*", "([\w]+)?", $replace_synonym) . ')\b#is';
