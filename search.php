@@ -267,7 +267,7 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
 
 			$split_search = [];
 			$stripped_keywords = stripslashes($search_keywords);
-			$split_search = ( !strstr($multibyte_charset, $lang['ENCODING']) ) ?  split_words(clean_words('search', $stripped_keywords, $stopword_array, $synonym_array), 'search') : split(' ', $search_keywords);	
+			$split_search = ( !strstr($multibyte_charset, $lang['ENCODING']) ) ?  split_words(clean_words('search', $stripped_keywords, $stopword_array, $synonym_array), 'search') : explode(' ', $search_keywords);
 			unset($stripped_keywords);
 
 			$search_msg_only = ( !$search_fields ) ? "AND m.title_match = 0" : ( strstr($multibyte_charset, $lang['ENCODING']) ? '' : '' );
@@ -787,7 +787,7 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
 				$highlight_active .= " " . $split_word;
 
 				for ($k = 0; $k < count($synonym_array); $k++) {
-					list($replace_synonym, $match_synonym) = split(' ', trim(strtolower($synonym_array[$k]))); 
+					list($replace_synonym, $match_synonym) = split(' ', trim(strtolower($synonym_array[$k])));
 
 					if ( $replace_synonym == $split_word ) {
 						$highlight_match[] = '#\b(' . str_replace("*", "([\w]+)?", $replace_synonym) . ')\b#is';
@@ -803,6 +803,8 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
 		$tracking_forums = isset($_COOKIE[$board_config['cookie_name'] . '_f']) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_f']) : [];
 
 		for ($i = 0; $i < count($searchset); $i++) {
+		    bdump($searchset[$i]);
+
 			$forum_url = append_sid("viewforum.php?" . POST_FORUM_URL . '=' . $searchset[$i]['forum_id']);
 			$topic_url = append_sid("viewtopic.php?" . POST_TOPIC_URL . '=' . $searchset[$i]['topic_id'] . "&amp;highlight=$highlight_active");
 			$post_url = append_sid("viewtopic.php?" . POST_POST_URL . '=' . $searchset[$i]['post_id'] . "&amp;highlight=$highlight_active") . '#' . $searchset[$i]['post_id'];
