@@ -30,19 +30,14 @@ function prune($forum_id, $prune_date, $prune_all = false)
 {
 	global $db, $lang;
 
-	// Before pruning, lets try to clean up the invalid topic entries
-	$sql = 'SELECT topic_id FROM ' . TOPICS_TABLE . '
-		WHERE topic_last_post_id = 0';
-	
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, 'Could not obtain lists of topics to sync', '', __LINE__, __FILE__, $sql);
-	}
+	$topics = dibi::select('topic_id')
+        ->from(TOPICS_TABLE)
+        ->where('topic_last_post_id = %i', 0)
+        ->fetchAll();
 
-	while ($row = $db->sql_fetchrow($result) ) {
-		sync('topic', $row['topic_id']);
-	}
-
-	$db->sql_freeresult($result);
+	foreach ($topics as $topic) {
+	    sync('topic', $topic->topic_id);
+    }
 
 	$prune_all = $prune_all ? '' : 'AND t.topic_vote = 0 AND t.topic_type <> ' . POST_ANNOUNCE;
 	//
@@ -136,35 +131,26 @@ function prune($forum_id, $prune_date, $prune_all = false)
 //
 function auto_prune($forum_id = 0)
 {
-	global $db, $lang;
+	$prune = dibi::select('*')
+        ->from(PRUNE_TABLE)
+        ->where('forum_id = %i', $forum_id)
+        ->fetch();
 
-	$sql = "SELECT *
-		FROM " . PRUNE_TABLE . "
-		WHERE forum_id = $forum_id";
-	
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, 'Could not read auto_prune table', '', __LINE__, __FILE__, $sql);
-	}
+    if (!$prune) {
+        return;
+    }
 
-	if ( $row = $db->sql_fetchrow($result) ) {
-		if ( $row['prune_freq'] && $row['prune_days'] ) {
-			$prune_date = time() - ( $row['prune_days'] * 86400 );
-			$next_prune = time() + ( $row['prune_freq'] * 86400 );
+    if ($prune->prune_freq && $prune->prune_days) {
+        $prune_date = time() - ($prune->prune_days * 86400);
+        $next_prune = time() + ($prune->prune_freq * 86400);
 
-			prune($forum_id, $prune_date);
-			sync('forum', $forum_id);
+        prune($forum_id, $prune_date);
+        sync('forum', $forum_id);
 
-			$sql = "UPDATE " . FORUMS_TABLE . " 
-				SET prune_next = $next_prune 
-				WHERE forum_id = $forum_id";
-			
-			if ( !$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, 'Could not update forum table', '', __LINE__, __FILE__, $sql);
-			}
-		}
-	}
-
-	return;
+        dibi::update(FORUMS_TABLE, ['prune_next' => $next_prune])
+            ->where('forum_id = %i', $forum_id)
+            ->execute();
+    }
 }
 
 ?>

@@ -321,13 +321,9 @@ function session_pagestart($user_ip, $thispage_id)
 					}
 
 					if ( $userdata['user_id'] != ANONYMOUS ) {
-						$sql = "UPDATE " . USERS_TABLE . " 
-							SET user_session_time = $current_time, user_session_page = $thispage_id
-							WHERE user_id = " . $userdata['user_id'];
-						
-						if ( !$db->sql_query($sql) ) {
-							message_die(CRITICAL_ERROR, 'Error updating sessions table', '', __LINE__, __FILE__, $sql);
-						}
+					    dibi::update(USERS_TABLE, ['user_session_time' => $current_time, 'user_session_page' => $thispage_id])
+                            ->where('user_id = %i', $userdata['user_id'])
+                            ->execute();
 					}
 
 					session_clean($userdata['session_id']);
@@ -395,13 +391,11 @@ function session_end($session_id, $user_id)
 	//
 	if ( isset($userdata['session_key']) && $userdata['session_key'] != '' ) {
 		$autologin_key = md5($userdata['session_key']);
-		$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
-			WHERE user_id = ' . (int) $user_id . "
-				AND key_id = '$autologin_key'";
-		
-		if ( !$db->sql_query($sql) ) {
-			message_die(CRITICAL_ERROR, 'Error removing auto-login key', '', __LINE__, __FILE__, $sql);
-		}
+
+		dibi::delete(SESSIONS_KEYS_TABLE)
+            ->where('user_id = %i',(int) $user_id)
+            ->where('key_id = %s', $autologin_key)
+            ->execute();
 	}
 
 	//
@@ -433,13 +427,10 @@ function session_clean($session_id)
 	//
 	// Delete expired sessions
 	//
-	$sql = 'DELETE FROM ' . SESSIONS_TABLE . ' 
-		WHERE session_time < ' . (time() - (int) $board_config['session_length']) . " 
-			AND session_id <> '$session_id'";
-	
-	if ( !$db->sql_query($sql) ) {
-		message_die(CRITICAL_ERROR, 'Error clearing sessions table', '', __LINE__, __FILE__, $sql);
-	}
+    dibi::delete(SESSIONS_TABLE)
+        ->where('session_time < %i', time() - (int) $board_config['session_length'])
+        ->where('session_id <> %s', $session_id)
+        ->execute();
 
 	//
 	// Delete expired auto-login keys
@@ -447,10 +438,9 @@ function session_clean($session_id)
 	// (same behaviour as old 2.0.x session code)
 	//
 	if (!empty($board_config['max_autologin_time']) && $board_config['max_autologin_time'] > 0) {
-		$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
-			WHERE last_login < ' . (time() - (86400 * (int) $board_config['max_autologin_time']));
-		
-		$db->sql_query($sql);
+	    dibi::delete(SESSIONS_KEYS_TABLE)
+            ->where('last_login < %i', (time() - (86400 * (int) $board_config['max_autologin_time'])))
+            ->execute();
 	}
 
 	return true;
