@@ -62,64 +62,59 @@ function sync($type, $id = false)
 
 	switch($type) {
 		case 'all forums':
-			$sql = "SELECT forum_id
-				FROM " . FORUMS_TABLE;
+		    $forums = dibi::select('forum_id')
+                ->from(FORUMS_TABLE)
+                ->fetchAll();
 
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, 'Could not get forum IDs', '', __LINE__, __FILE__, $sql);
-			}
-
-			while ($row = $db->sql_fetchrow($result) ) {
-				sync('forum', $row['forum_id']);
-			}
+		    foreach ($forums as $forum) {
+		        sync('forum', $forum->forum_id);
+            }
 		   	break;
 
 		case 'all topics':
-			$sql = "SELECT topic_id
-				FROM " . TOPICS_TABLE;
+		    $topics = dibi::select('topic_id')
+                ->from(TOPICS_TABLE)
+                ->fetchAll();
 
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, 'Could not get topic ID', '', __LINE__, __FILE__, $sql);
-			}
-
-			while ($row = $db->sql_fetchrow($result) ) {
-				sync('topic', $row['topic_id']);
-			}
+		    foreach ($topics as $topic) {
+		        sync('topic', $topic->topic_id);
+            }
 			break;
 
 	  	case 'forum':
-			$sql = "SELECT MAX(post_id) AS last_post, COUNT(post_id) AS total 
-				FROM " . POSTS_TABLE . "  
-				WHERE forum_id = $id";
+            $row = dibi::select('MAX(post_id)')
+                ->as('last_post')
+                ->select('COUNT(post_id)')
+                ->as('total')
+                ->from(POSTS_TABLE)
+                ->where('forum_id = %i', $id)
+                ->fetch();
 
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, 'Could not get post ID', '', __LINE__, __FILE__, $sql);
-			}
+            if (!$row) {
+                message_die(GENERAL_ERROR, 'Could not get posts by forum ID');
+            }
 
-			if ( $row = $db->sql_fetchrow($result) ) {
-				$last_post = $row['last_post'] ? $row['last_post'] : 0;
-				$total_posts = $row['total'] ? $row['total'] : 0;
-			} else {
-				$last_post = 0;
-				$total_posts = 0;
-			}
+            $last_post = $row->last_post;
+            $total_posts = $row->total;
 
-			$sql = "SELECT COUNT(topic_id) AS total
-				FROM " . TOPICS_TABLE . "
-				WHERE forum_id = $id";
+            $total_topics = dibi::select('COUNT(topic_id)')
+                ->as('total')
+                ->from(TOPICS_TABLE)
+                ->where('forum_id = %i', $id)
+                ->fetchSingle();
 
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, 'Could not get topic count', '', __LINE__, __FILE__, $sql);
-			}
+            if ( $total_topics === false ) {
+                message_die(GENERAL_ERROR, 'Could not get topic count', '', __LINE__, __FILE__, $sql);
+            }
 
-			$total_topics = ( $row = $db->sql_fetchrow($result) ) ? ( $row['total'] ? $row['total'] : 0 ) : 0;
+			$forums_update_data = [
+			    'forum_last_post_id' => $last_post,
+                'forum_posts'        => $total_posts,
+                'forum_topics'       => $total_topics
+            ];
 
-			$sql = "UPDATE " . FORUMS_TABLE . "
-				SET forum_last_post_id = $last_post, forum_posts = $total_posts, forum_topics = $total_topics
-				WHERE forum_id = $id";
-			if ( !$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, 'Could not update forum', '', __LINE__, __FILE__, $sql);
-			}
+			dibi::update(FORUMS_TABLE, $forums_update_data)->where('forum_id = %i', $id)->execute();
+
 			break;
 
 		case 'topic':
@@ -154,11 +149,7 @@ function sync($type, $id = false)
 
 					if ($row = $db->sql_fetchrow($result)) {
 						if (!$row['topic_moved_id']) {
-							$sql = 'DELETE FROM ' . TOPICS_TABLE . " WHERE topic_id = $id";
-			
-							if (!$db->sql_query($sql)) {
-								message_die(GENERAL_ERROR, 'Could not remove topic', '', __LINE__, __FILE__, $sql);
-							}
+						    dibi::delete(TOPICS_TABLE)->where('topic_id = %i', $id)->execute();
 						}
 					}
 
