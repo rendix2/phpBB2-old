@@ -22,11 +22,11 @@
 
 define('IN_PHPBB', 1);
 
-if ( !empty($setmodules) ) {
-	$filename = basename(__FILE__);
-	$module['Groups']['Manage'] = $filename;
+if (!empty($setmodules)) {
+    $filename = basename(__FILE__);
+    $module['Groups']['Manage'] = $filename;
 
-	return;
+    return;
 }
 
 //
@@ -36,17 +36,17 @@ $phpbb_root_path = './../';
 
 require './pagestart.php';
 
-if ( isset($_POST[POST_GROUPS_URL]) || isset($_GET[POST_GROUPS_URL]) ) {
-	$group_id = isset($_POST[POST_GROUPS_URL]) ? (int)$_POST[POST_GROUPS_URL] : (int)$_GET[POST_GROUPS_URL];
+if (isset($_POST[POST_GROUPS_URL]) || isset($_GET[POST_GROUPS_URL])) {
+    $group_id = isset($_POST[POST_GROUPS_URL]) ? (int)$_POST[POST_GROUPS_URL] : (int)$_GET[POST_GROUPS_URL];
 } else {
-	$group_id = 0;
+    $group_id = 0;
 }
 
 if (isset($_POST['mode']) || isset($_GET['mode'])) {
-	$mode = isset($_POST['mode']) ? $_POST['mode'] : $_GET['mode'];
-	$mode = htmlspecialchars($mode);
+    $mode = isset($_POST['mode']) ? $_POST['mode'] : $_GET['mode'];
+    $mode = htmlspecialchars($mode);
 } else {
-	$mode = '';
+    $mode = '';
 }
 
 if ( isset($_POST['edit']) || isset($_POST['new']) ) {
@@ -59,23 +59,19 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 		//
 		// They're editing. Grab the vars.
 		//
-		$sql = "SELECT *
-			FROM " . GROUPS_TABLE . "
-			WHERE group_single_user <> " . TRUE . "
-			AND group_id = $group_id";
+		$group_info = dibi::select('*')
+            ->from(GROUPS_TABLE)
+            ->where('group_single_user <> %i', 1)
+            ->where('group_id = %i', $group_id)
+            ->fetch();
 
-		if (!($result = $db->sql_query($sql))) {
-			message_die(GENERAL_ERROR, 'Error getting group information', '', __LINE__, __FILE__, $sql);
-		}
-
-		if (!($group_info = $db->sql_fetchrow($result))) {
+		if(!$group_info) {
 			message_die(GENERAL_MESSAGE, $lang['Group_not_exist']);
 		}
 
 		$mode = 'editgroup';
 		$template->assign_block_vars('group_edit', []);
-
-	} elseif ( isset($_POST['new']) ) {
+    } elseif (isset($_POST['new'])) {
 		$group_info = [
 			'group_name'        => '',
 			'group_description' => '',
@@ -92,19 +88,20 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 	// Ok, now we know everything about them, let's show the page.
 	//
 	if ($group_info['group_moderator'] != '') {
-		$sql = "SELECT user_id, username
-			FROM " . USERS_TABLE . "
-			WHERE user_id = " . $group_info['group_moderator'];
 
-		if (!($result = $db->sql_query($sql))) {
-			message_die(GENERAL_ERROR, 'Could not obtain user info for moderator list', '', __LINE__, __FILE__, $sql);
-		}
+	    // TODO i can be moderator!
+        //check this situation => i dont need query
 
-		if (!($row = $db->sql_fetchrow($result))) {
-			message_die(GENERAL_ERROR, 'Could not obtain user info for moderator list', '', __LINE__, __FILE__, $sql);
-		}
+	    $moderator = dibi::select(['user_id', 'username'])
+            ->from(USERS_TABLE)
+            ->where('user_id = %i', $group_info['group_moderator'])
+            ->fetch();
 
-		$group_moderator = $row['username'];
+	    if (!$moderator) {
+            message_die(GENERAL_ERROR, 'Could not obtain user info for moderator list');
+        }
+
+		$group_moderator = $moderator->username;
 	} else {
 		$group_moderator = '';
 	}
@@ -117,27 +114,30 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 
 	$template->assign_vars(
 		[
-			'GROUP_NAME'        => $group_info['group_name'],
-			'GROUP_DESCRIPTION' => $group_info['group_description'],
-			'GROUP_MODERATOR'   => $group_moderator,
+            'GROUP_NAME'        => $group_info['group_name'],
+            'GROUP_DESCRIPTION' => $group_info['group_description'],
+            'GROUP_MODERATOR'   => $group_moderator,
 
-			'L_GROUP_TITLE'              => $lang['Group_administration'],
-			'L_GROUP_EDIT_DELETE'        => isset($_POST['new']) ? $lang['New_group'] : $lang['Edit_group'],
-			'L_GROUP_NAME'               => $lang['group_name'],
-			'L_GROUP_DESCRIPTION'        => $lang['group_description'],
-			'L_GROUP_MODERATOR'          => $lang['group_moderator'],
-			'L_FIND_USERNAME'            => $lang['Find_username'],
-			'L_GROUP_STATUS'             => $lang['group_status'],
-			'L_GROUP_OPEN'               => $lang['group_open'],
-			'L_GROUP_CLOSED'             => $lang['group_closed'],
-			'L_GROUP_HIDDEN'             => $lang['group_hidden'],
-			'L_GROUP_DELETE'             => $lang['group_delete'],
-			'L_GROUP_DELETE_CHECK'       => $lang['group_delete_check'],
-			'L_SUBMIT'                   => $lang['Submit'],
-			'L_RESET'                    => $lang['Reset'],
-			'L_DELETE_MODERATOR'         => $lang['delete_group_moderator'],
-			'L_DELETE_MODERATOR_EXPLAIN' => $lang['delete_moderator_explain'],
-			'L_YES'                      => $lang['Yes'],
+            'L_GROUP_TITLE'        => $lang['Group_administration'],
+            'L_GROUP_EDIT_DELETE'  => isset($_POST['new']) ? $lang['New_group'] : $lang['Edit_group'],
+            'L_GROUP_NAME'         => $lang['group_name'],
+            'L_GROUP_DESCRIPTION'  => $lang['group_description'],
+            'L_GROUP_MODERATOR'    => $lang['group_moderator'],
+            'L_FIND_USERNAME'      => $lang['Find_username'],
+            'L_GROUP_STATUS'       => $lang['group_status'],
+            'L_GROUP_OPEN'         => $lang['group_open'],
+            'L_GROUP_CLOSED'       => $lang['group_closed'],
+            'L_GROUP_HIDDEN'       => $lang['group_hidden'],
+            'L_GROUP_DELETE'       => $lang['group_delete'],
+            'L_GROUP_DELETE_CHECK' => $lang['group_delete_check'],
+
+            'L_SUBMIT' => $lang['Submit'],
+            'L_RESET'  => $lang['Reset'],
+
+            'L_DELETE_MODERATOR'         => $lang['delete_group_moderator'],
+            'L_DELETE_MODERATOR_EXPLAIN' => $lang['delete_moderator_explain'],
+
+            'L_YES' => $lang['Yes'],
 
 			'U_SEARCH_USER' => append_sid("../search.php?mode=searchuser"),
 
@@ -154,52 +154,42 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 
 	$template->pparse('body');
 
-} elseif ( isset($_POST['group_update']) ) {
+} elseif (isset($_POST['group_update'])) {
 	//
 	// Ok, they are submitting a group, let's save the data based on if it's new or editing
 	//
-	if ( isset($_POST['group_delete']) ) {
+	if (isset($_POST['group_delete'])) {
 		//
 		// Reset User Moderator Level
 		//
+        $auth_mod = dibi::select('auth_mod')
+            ->from(AUTH_ACCESS_TABLE)
+            ->where('group_id = %i', $group_id)
+            ->fetchSingle();
 
-		// Is Group moderating a forum ?
-		$sql = "SELECT auth_mod FROM " . AUTH_ACCESS_TABLE . " 
-			WHERE group_id = " . $group_id;
-
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, 'Could not select auth_access', '', __LINE__, __FILE__, $sql);
-		}
-
-		$row = $db->sql_fetchrow($result);
-
-		if ((int)$row['auth_mod'] == 1) {
+		if ((int)$auth_mod == 1) {
 			// Yes, get the assigned users and update their Permission if they are no longer moderator of one of the forums
-			$sql = "SELECT user_id FROM " . USER_GROUP_TABLE . "
-				WHERE group_id = " . $group_id;
+			$users = dibi::select('user_id')
+                ->from(USER_GROUP_TABLE)
+                ->where('group_id = %i', $group_id)
+                ->fetchAll();
 
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, 'Could not select user_group', '', __LINE__, __FILE__, $sql);
-			}
-
-			$rows = $db->sql_fetchrowset($result);
-
-			for ($i = 0; $i < count($rows); $i++) {
+			// TODO improve first query and join USER_TABLE and check if user is MOD or not!
+            // dont check it in update query
+			foreach ($users as $user) {
 				$sql = "SELECT g.group_id FROM " . AUTH_ACCESS_TABLE . " a, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug
 				WHERE (a.auth_mod = 1) AND (g.group_id = a.group_id) AND (a.group_id = ug.group_id) AND (g.group_id = ug.group_id) 
-					AND (ug.user_id = " . (int)$rows[$i]['user_id'] . ") AND (ug.group_id <> " . $group_id . ")";
+					AND (ug.user_id = " . (int)$user->user_id . ") AND (ug.group_id <> " . $group_id . ")";
 
 				if ( !($result = $db->sql_query($sql)) ) {
 					message_die(GENERAL_ERROR, 'Could not obtain moderator permissions', '', __LINE__, __FILE__, $sql);
 				}
 
 				if ($db->sql_numrows($result) == 0) {
-					$sql = "UPDATE " . USERS_TABLE . " SET user_level = " . USER . " 
-					WHERE user_level = " . MOD . " AND user_id = " . (int)$rows[$i]['user_id'];
-					
-					if ( !$db->sql_query($sql) ) {
-						message_die(GENERAL_ERROR, 'Could not update moderator permissions', '', __LINE__, __FILE__, $sql);
-					}
+					dibi::update(USERS_TABLE, ['user_level' => USER])
+                        ->where('user_level = %i', MOD)
+                        ->where('user_id = %i', (int)$user->user_id)
+                        ->execute();
 				}
 			}
 		}
@@ -207,26 +197,18 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 		//
 		// Delete Group
 		//
-		$sql = "DELETE FROM " . GROUPS_TABLE . "
-			WHERE group_id = " . $group_id;
 
-		if ( !$db->sql_query($sql) ) {
-			message_die(GENERAL_ERROR, 'Could not update group', '', __LINE__, __FILE__, $sql);
-		}
+		dibi::delete(GROUPS_TABLE)
+            ->where('group_id = %i', $group_id)
+            ->execute();
 
-		$sql = "DELETE FROM " . USER_GROUP_TABLE . "
-			WHERE group_id = " . $group_id;
+		dibi::delete(USER_GROUP_TABLE)
+            ->where('group_id = %i', $group_id)
+            ->execute();
 
-		if ( !$db->sql_query($sql) ) {
-			message_die(GENERAL_ERROR, 'Could not update user_group', '', __LINE__, __FILE__, $sql);
-		}
-
-		$sql = "DELETE FROM " . AUTH_ACCESS_TABLE . "
-			WHERE group_id = " . $group_id;
-
-		if ( !$db->sql_query($sql) ) {
-			message_die(GENERAL_ERROR, 'Could not update auth_access', '', __LINE__, __FILE__, $sql);
-		}
+		dibi::delete(AUTH_ACCESS_TABLE)
+            ->where('group_id = %i', $group_id)
+            ->execute();
 
 		$message = $lang['Deleted_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . append_sid("admin_groups.php") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');
 
@@ -236,93 +218,90 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 		$group_name = isset($_POST['group_name']) ? htmlspecialchars(trim($_POST['group_name'])) : '';
 		$group_description = isset($_POST['group_description']) ? trim($_POST['group_description']) : '';
 		$group_moderator = isset($_POST['username']) ? $_POST['username'] : '';
-		$delete_old_moderator = isset($_POST['delete_old_moderator']) ? true : false;
+		$delete_old_moderator = isset($_POST['delete_old_moderator']);
 
-		if ( $group_name == '' ) {
-			message_die(GENERAL_MESSAGE, $lang['No_group_name']);
-		} elseif ( $group_moderator == '' ) {
-			message_die(GENERAL_MESSAGE, $lang['No_group_moderator']);
-		}
-		
+        if ($group_name == '') {
+            message_die(GENERAL_MESSAGE, $lang['No_group_name']);
+        } elseif ($group_moderator == '') {
+            message_die(GENERAL_MESSAGE, $lang['No_group_moderator']);
+        }
+
 		$this_userdata = get_userdata($group_moderator, true);
 		$group_moderator = $this_userdata['user_id'];
 
 		if ( !$group_moderator ) {
 			message_die(GENERAL_MESSAGE, $lang['No_group_moderator']);
 		}
-				
+
 		if ($mode == "editgroup" ) {
-			$sql = "SELECT *
-				FROM " . GROUPS_TABLE . "
-				WHERE group_single_user <> " . TRUE . "
-				AND group_id = " . $group_id;
+			$group_info = dibi::select('*')
+				->from(GROUPS_TABLE)
+				->where('group_single_user <> %i', 1)
+				->where('group_id = %i', $group_id)
+				->fetch();
 
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, 'Error getting group information', '', __LINE__, __FILE__, $sql);
-			}
-
-			if (!($group_info = $db->sql_fetchrow($result)) ) {
+			if (!$group_info) {
 				message_die(GENERAL_MESSAGE, $lang['Group_not_exist']);
 			}
-		
-			if ( $group_info['group_moderator'] != $group_moderator ) {
-				if ( $delete_old_moderator ) {
-					$sql = "DELETE FROM " . USER_GROUP_TABLE . "
-						WHERE user_id = " . $group_info['group_moderator'] . " 
-							AND group_id = " . $group_id;
 
-					if ( !$db->sql_query($sql) ) {
-						message_die(GENERAL_ERROR, 'Could not update group moderator', '', __LINE__, __FILE__, $sql);
-					}
-				}
+			if ($group_info->group_moderator !== $group_moderator) {
+                if ($delete_old_moderator) {
+                    dibi::delete(USER_GROUP_TABLE)
+                        ->where('user_id = %i', $group_info['group_moderator'])
+                        ->where('group_id = %i', $group_id)
+                        ->execute();
+                }
 
-				$sql = "SELECT user_id 
-					FROM " . USER_GROUP_TABLE . " 
-					WHERE user_id = $group_moderator 
-						AND group_id = $group_id";
+				$moderator = dibi::select('user_id')
+					->from(USER_GROUP_TABLE)
+					->where('user_id = %i', $group_moderator)
+					->where('group_id = %i', $group_id)
+					->fetch();
 
-				if ( !($result = $db->sql_query($sql)) ) {
-					message_die(GENERAL_ERROR, 'Failed to obtain current group moderator info', '', __LINE__, __FILE__, $sql);
-				}
+				if (!$moderator) {
+					$moderator_insert_data = [
+						'group_id'     => $group_id,
+						'user_id'      => $group_moderator,
+						'user_pending' => 0
+					];
 
-				if ( !($row = $db->sql_fetchrow($result)) ) {
-					$sql = "INSERT INTO " . USER_GROUP_TABLE . " (group_id, user_id, user_pending)
-						VALUES (" . $group_id . ", " . $group_moderator . ", 0)";
-
-					if ( !$db->sql_query($sql) ) {
-						message_die(GENERAL_ERROR, 'Could not update group moderator', '', __LINE__, __FILE__, $sql);
-					}
+					dibi::insert(USER_GROUP_TABLE, $moderator_insert_data)->execute();
 				}
 			}
 
-			$sql = "UPDATE " . GROUPS_TABLE . "
-				SET group_type = $group_type, group_name = '" . str_replace("\'", "''", $group_name) . "', group_description = '" . str_replace("\'", "''", $group_description) . "', group_moderator = $group_moderator 
-				WHERE group_id = $group_id";
+			$group_update_data = [
+				'group_type'        => $group_type,
+				'group_name'        => $group_name,
+				'group_description' => $group_description,
+				'group_moderator'   => $group_moderator
+			];
 
-			if ( !$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, 'Could not update group', '', __LINE__, __FILE__, $sql);
-			}
-	
+			dibi::update(GROUPS_TABLE, $group_update_data)
+				->where('group_id = %id', $group_id)
+				->execute();
+
 			$message = $lang['Updated_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . append_sid("admin_groups.php") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');;
 
 			message_die(GENERAL_MESSAGE, $message);
 		} elseif ($mode == 'newgroup' ) {
-			$sql = "INSERT INTO " . GROUPS_TABLE . " (group_type, group_name, group_description, group_moderator, group_single_user) 
-				VALUES ($group_type, '" . str_replace("\'", "''", $group_name) . "', '" . str_replace("\'", "''", $group_description) . "', $group_moderator,	'0')";
+			$group_insert_data = [
+				'group_type'        => $group_type,
+				'group_name'        => $group_name,
+				'group_description' => $group_description,
+				'group_moderator'   => $group_moderator,
+				'group_single_user' => 0
+			];
 
-			if ( !$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, 'Could not insert new group', '', __LINE__, __FILE__, $sql);
-			}
+			$new_group_id = dibi::insert(GROUPS_TABLE, $group_insert_data)->execute(dibi::IDENTIFIER);
 
-			$new_group_id = $db->sql_nextid();
+			$user_group_insert_data = [
+				'group_id' => $new_group_id,
+				'user_id'  => $group_moderator,
+				'user_pending' => 0
+			];
 
-			$sql = "INSERT INTO " . USER_GROUP_TABLE . " (group_id, user_id, user_pending)
-				VALUES ($new_group_id, $group_moderator, 0)";
+			dibi::insert(USER_GROUP_TABLE, $user_group_insert_data)->execute();
 
-			if ( !$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, 'Could not insert new user-group info', '', __LINE__, __FILE__, $sql);
-			}
-			
 			$message = $lang['Added_new_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . append_sid("admin_groups.php") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');;
 
 			message_die(GENERAL_MESSAGE, $message);
@@ -330,49 +309,50 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 			message_die(GENERAL_MESSAGE, $lang['No_group_action']);
 		}
 	}
-}
-else
-{
-	$sql = "SELECT group_id, group_name
-		FROM " . GROUPS_TABLE . "
-		WHERE group_single_user <> " . TRUE . "
-		ORDER BY group_name";
+} else {
+	$groups = dibi::select(['group_id', 'group_name'])
+		->from(GROUPS_TABLE)
+		->where('group_single_user <> %i', 1)
+		->orderBy('group_name')
+		->fetchPairs('group_id', 'group_name');
 
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, 'Could not obtain group list', '', __LINE__, __FILE__, $sql);
-	}
-
+	$group_count = count($groups);
 	$select_list = '';
 
-	if ( $row = $db->sql_fetchrow($result) ) {
+	if ($group_count) {
 		$select_list .= '<select name="' . POST_GROUPS_URL . '">';
 
-		do {
-			$select_list .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
+		foreach ($groups as $group_id => $group_name) {
+			$select_list .= '<option value="' . $group_id . '">' . $group_name . '</option>';
 		}
-		while ( $row = $db->sql_fetchrow($result) );
 
 		$select_list .= '</select>';
 	}
 
 	$template->set_filenames(['body' => 'admin/group_select_body.tpl']);
 
-	$template->assign_vars([
-		'L_GROUP_TITLE' => $lang['Group_administration'],
-		'L_GROUP_EXPLAIN' => $lang['Group_admin_explain'],
-		'L_GROUP_SELECT' => $lang['Select_group'],
-		'L_LOOK_UP' => $lang['Look_up_group'],
-		'L_CREATE_NEW_GROUP' => $lang['New_group'],
+    $template->assign_vars(
+        [
+            'L_GROUP_TITLE'   => $lang['Group_administration'],
+            'L_GROUP_EXPLAIN' => $lang['Group_admin_explain'],
+            'L_GROUP_SELECT'  => $lang['Select_group'],
 
-		'S_GROUP_ACTION' => append_sid("admin_groups.php"),
-		'S_GROUP_SELECT' => $select_list]
-	);
+            'L_LOOK_UP' => $lang['Look_up_group'],
 
-	if ( $select_list != '' ) {
-		$template->assign_block_vars('select_box', []);
-	}
+            'L_CREATE_NEW_GROUP' => $lang['New_group'],
 
-	$template->pparse('body');
+            'S_GROUP_ACTION' => append_sid("admin_groups.php"),
+            'S_GROUP_SELECT' => $select_list
+        ]
+    );
+
+    // TODO!!!!
+    // it was if ( $select_list != '' ) {
+    if ($group_count) {
+        $template->assign_block_vars('select_box', []);
+    }
+
+    $template->pparse('body');
 }
 
 include './page_footer_admin.php';
