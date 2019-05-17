@@ -548,22 +548,22 @@ if ( isset($_POST['submit']) )
 
 			$user_id = $db->sql_nextid();
 
-			$sql = "INSERT INTO " . GROUPS_TABLE . " (group_name, group_description, group_single_user, group_moderator)
-				VALUES ('', 'Personal User', 1, 0)";
+            $group_insert_data = [
+                'group_name'        => '',
+                'group_description' => 'Personal User',
+                'group_single_user' => 1,
+                'group_moderator'   => 0
+            ];
 
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, 'Could not insert data into groups table', '', __LINE__, __FILE__, $sql);
-			}
+            $group_id = dibi::insert(GROUPS_TABLE, $group_insert_data)->execute(dibi::IDENTIFIER);
 
-			$group_id = $db->sql_nextid();
-
-			$group_data_insert = [
+			$user_group_data_insert = [
 			   'user_id' => $user_id,
                'group_id' => $group_id,
                'user_pending' => 0
             ];
 
-			dibi::insert(USER_GROUP_TABLE, $group_data_insert)->execute();
+			dibi::insert(USER_GROUP_TABLE, $user_group_data_insert)->execute();
 
 			if ( $coppa ) {
 				$message = $lang['COPPA'];
@@ -838,20 +838,16 @@ if (isset($_POST['avatargallery']) && !$error ) {
 		}
 		$db->sql_freeresult($result);
 
-		$sql = 'SELECT COUNT(session_id) AS attempts 
-			FROM ' . CONFIRM_TABLE . " 
-			WHERE session_id = '" . $userdata['session_id'] . "'";
+        $attempts = dibi::select('COUNT(session_id)')
+            ->as('attempts')
+            ->from(CONFIRM_TABLE)
+            ->where('session_id = %s', $userdata['session_id'])
+            ->fetchSingle();
 
-		if (!($result = $db->sql_query($sql))) {
-			message_die(GENERAL_ERROR, 'Could not obtain confirm code count', '', __LINE__, __FILE__, $sql);
-		}
-
-		if ($row = $db->sql_fetchrow($result)) {
-			if ($row['attempts'] > 3) {
-				message_die(GENERAL_MESSAGE, $lang['Too_many_registers']);
-			}
-		}
-		$db->sql_freeresult($result);
+        // TODO use constant
+        if ($attempts > 3) {
+            message_die(GENERAL_MESSAGE, $lang['Too_many_registers']);
+        }
 
 		// Generate the required confirmation code
 		// NB 0 (zero) could get confused with O (the letter) so we make change it
