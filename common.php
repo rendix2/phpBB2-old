@@ -28,6 +28,11 @@ if ( !defined('IN_PHPBB') )
 	die("Hacking attempt");
 }
 
+/**
+ * enable working with session.... it was STILL MISSING
+ */
+session_start();
+
 //
 error_reporting  (E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
 set_magic_quotes_runtime(0); // Disable magic_quotes_runtime
