@@ -557,12 +557,13 @@ if ( isset($_POST['submit']) )
 
 			$group_id = $db->sql_nextid();
 
-			$sql = "INSERT INTO " . USER_GROUP_TABLE . " (user_id, group_id, user_pending)
-				VALUES ($user_id, $group_id, 0)";
+			$group_data_insert = [
+			   'user_id' => $user_id,
+               'group_id' => $group_id,
+               'user_pending' => 0
+            ];
 
-			if (!($result = $db->sql_query($sql, END_TRANSACTION)) ) {
-				message_die(GENERAL_ERROR, 'Could not insert data into user_group table', '', __LINE__, __FILE__, $sql);
-			}
+			dibi::insert(USER_GROUP_TABLE, $group_data_insert)->execute();
 
 			if ( $coppa ) {
 				$message = $lang['COPPA'];
@@ -623,20 +624,21 @@ if ( isset($_POST['submit']) )
 			$emailer->reset();
 
 			if ( $board_config['require_activation'] == USER_ACTIVATION_ADMIN ) {
-				$sql = "SELECT user_email, user_lang 
-					FROM " . USERS_TABLE . "
-					WHERE user_level = " . ADMIN;
+			    $admins = dibi::select(['user_email', 'user_lang'])
+                    ->from(USERS_TABLE)
+                    ->where('user_level = %i', ADMIN)
+                    ->fetchAll();
 
-				if ( !($result = $db->sql_query($sql)) ) {
+				if ( !count($admins) ) {
 					message_die(GENERAL_ERROR, 'Could not select Administrators', '', __LINE__, __FILE__, $sql);
 				}
 
-				while ($row = $db->sql_fetchrow($result)) {
+                foreach ($admins as $admin) {
 					$emailer->from($board_config['board_email']);
 					$emailer->replyto($board_config['board_email']);
 
-					$emailer->email_address(trim($row['user_email']));
-					$emailer->use_template("admin_activate", $row['user_lang']);
+					$emailer->email_address(trim($admin->user_email));
+					$emailer->use_template("admin_activate", $admin->user_lang);
 					$emailer->set_subject($lang['New_account_subject']);
 
 					$emailer->assign_vars(array(
@@ -648,7 +650,6 @@ if ( isset($_POST['submit']) )
 					$emailer->send();
 					$emailer->reset();
 				}
-				$db->sql_freeresult($result);
 			}
 
 			$message = $message . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . append_sid("index.php") . '">', '</a>');

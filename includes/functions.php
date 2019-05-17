@@ -398,49 +398,33 @@ function init_userprefs($userdata)
 
 function setup_style($style)
 {
-	global $db, $board_config, $template, $images, $phpbb_root_path;
+	global $board_config, $template, $images, $phpbb_root_path;
 
-	$sql = 'SELECT *
-		FROM ' . THEMES_TABLE . '
-		WHERE themes_id = ' . (int) $style;
+	$theme = dibi::select('*')
+        ->from(THEMES_TABLE)
+        ->where('themes_id = %i', (int) $style)
+        ->fetch();
 
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(CRITICAL_ERROR, 'Could not query database for theme info');
-	}
+	if ( !$theme ) {
+        if ($board_config['default_style'] === $style) {
+            message_die(CRITICAL_ERROR, "Could not set up default theme");
+        }
 
-	if ( !($row = $db->sql_fetchrow($result)) ) {
-		// We are trying to setup a style which does not exist in the database
-		// Try to fallback to the board default (if the user had a custom style)
-		// and then any users using this style to the default if it succeeds
-		if ( $style != $board_config['default_style']) {
-			$sql = 'SELECT *
-				FROM ' . THEMES_TABLE . '
-				WHERE themes_id = ' . (int) $board_config['default_style'];
+	    $default_theme = dibi::select('*')->from(THEMES_TABLE)
+            ->where('themes_id = %i',(int) $board_config['default_style'])
+            ->fetch();
 
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(CRITICAL_ERROR, 'Could not query database for theme info');
-			}
-
-			if ( $row = $db->sql_fetchrow($result) ) {
-				$db->sql_freeresult($result);
-
-				$sql = 'UPDATE ' . USERS_TABLE . '
-					SET user_style = ' . (int) $board_config['default_style'] . "
-					WHERE user_style = $style";
-
-				if ( !($result = $db->sql_query($sql)) ) {
-					message_die(CRITICAL_ERROR, 'Could not update user theme info');
-				}
-			} else {
-				message_die(CRITICAL_ERROR, "Could not get theme data for themes_id [$style]");
-			}
-		} else {
-			message_die(CRITICAL_ERROR, "Could not get theme data for themes_id [$style]");
-		}
+	    if ($default_theme) {
+	        dibi::update(USERS_TABLE, ['user_style' => (int) $board_config['default_style']])
+                ->where('user_style = %s', $style)
+                ->execute();
+        } else {
+            message_die(CRITICAL_ERROR, "Could not get theme data for themes_id [$style]");
+        }
 	}
 
 	$template_path = 'templates/' ;
-	$template_name = $row['template_name'] ;
+	$template_name = $theme->template_name;
 
 	$template = new Template($phpbb_root_path . $template_path . $template_name);
 
@@ -461,7 +445,7 @@ function setup_style($style)
 		}
 	}
 
-	return $row;
+	return $theme;
 }
 
 function encode_ip($dotquad_ip)
@@ -597,24 +581,20 @@ function phpbb_preg_quote($str, $delimiter)
 //
 function obtain_word_list(&$orig_word, &$replacement_word)
 {
-	global $db;
-
 	//
 	// Define censored word matches
 	//
-	$sql = "SELECT word, replacement
-		FROM  " . WORDS_TABLE;
+	$words = dibi::select(['word', 'replacement'])
+        ->from(WORDS_TABLE)
+        ->fetchPairs('word', 'replacement');
 
-	if (!($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, 'Could not get censored words from database', '', __LINE__, __FILE__, $sql);
-	}
+	if (!count($words)) {
+        message_die(GENERAL_ERROR, 'Could not get censored words from database');
+    }
 
-	if ( $row = $db->sql_fetchrow($result) ) {
-		do {
-			$orig_word[] = '#\b(' . str_replace('\*', '\w*?', preg_quote($row['word'], '#')) . ')\b#i';
-			$replacement_word[] = $row['replacement'];
-		}
-		while ( $row = $db->sql_fetchrow($result) );
+    foreach ($words as $word => $replacement) {
+        $orig_word[] = '#\b(' . str_replace('\*', '\w*?', preg_quote($word, '#')) . ')\b#i';
+        $replacement_word[] = $replacement;
 	}
 
 	return true;

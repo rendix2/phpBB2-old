@@ -62,22 +62,22 @@ function language_select($default, $select_name = "language", $dirname="language
 //
 function style_select($default_style, $select_name = "style", $dirname = "templates")
 {
-	global $db;
+    $themes = dibi::select(['themes_id', 'style_name'])
+        ->from(THEMES_TABLE)
+        ->orderBy('template_name')
+        ->orderBy('themes_id')
+        ->fetchPairs('themes_id', 'style_name');
 
-	$sql = "SELECT themes_id, style_name
-		FROM " . THEMES_TABLE . "
-		ORDER BY template_name, themes_id";
-
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, "Couldn't query themes table", "", __LINE__, __FILE__, $sql);
+	if ( !count($themes) ) {
+		message_die(GENERAL_ERROR, 'Could not query themes table.');
 	}
 
 	$style_select = '<select name="' . $select_name . '">';
 
-	while ( $row = $db->sql_fetchrow($result) ) {
-		$selected = ( $row['themes_id'] == $default_style ) ? ' selected="selected"' : '';
+	foreach ($themes as $themes_id => $style_name) {
+		$selected = ( $themes_id == $default_style ) ? ' selected="selected"' : '';
 
-		$style_select .= '<option value="' . $row['themes_id'] . '"' . $selected . '>' . $row['style_name'] . '</option>';
+		$style_select .= '<option value="' . $themes_id . '"' . $selected . '>' . $style_name . '</option>';
 	}
 
 	$style_select .= "</select>";

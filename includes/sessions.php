@@ -118,16 +118,14 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 		$sessiondata['userid'] = $user_id = ANONYMOUS;
 		$enable_autologin = $login = 0;
 
-		$sql = 'SELECT *
-			FROM ' . USERS_TABLE . '
-			WHERE user_id = ' . (int) $user_id;
-		
-		if (!($result = $db->sql_query($sql))) {
-			message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch', '', __LINE__, __FILE__, $sql);
-		}
+		$userdata = dibi::select('*')
+            ->from(USERS_TABLE)
+            ->where('user_id = %i', $user_id)
+            ->fetch();
 
-		$userdata = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		if (!$userdata) {
+			message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch');
+		}
 	}
 
 	//
@@ -279,16 +277,17 @@ function session_pagestart($user_ip, $thispage_id)
 		// session_id exists so go ahead and attempt to grab all
 		// data in preparation
 		//
-		$sql = "SELECT u.*, s.*
-			FROM " . SESSIONS_TABLE . " s, " . USERS_TABLE . " u
-			WHERE s.session_id = '$session_id'
-				AND u.user_id = s.session_user_id";
-		
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch', '', __LINE__, __FILE__, $sql);
-		}
+        $userdata = dibi::select('u.*, s.*')
+            ->from(SESSIONS_TABLE)
+            ->as('s')
+            ->from(USERS_TABLE)
+            ->as('u')
+            ->where('session_id = %s', $session_id)
+            ->fetch();
 
-		$userdata = $db->sql_fetchrow($result);
+        if (!$userdata) {
+            message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch');
+        }
 
 		//
 		// Did the session exist in the DB?
@@ -384,13 +383,11 @@ function session_end($session_id, $user_id)
 	//
 	// Delete existing session
 	//
-	$sql = 'DELETE FROM ' . SESSIONS_TABLE . " 
-		WHERE session_id = '$session_id' 
-			AND session_user_id = $user_id";
-	
-	if ( !$db->sql_query($sql) ) {
-		message_die(CRITICAL_ERROR, 'Error removing user session', '', __LINE__, __FILE__, $sql);
-	}
+
+    dibi::delete(SESSIONS_TABLE)
+        ->where('session_id = %s', $session_id)
+        ->where('session_user_id = %i', $user_id)
+        ->execute();
 
 	//
 	// Remove this auto-login entry (if applicable)
@@ -410,19 +407,14 @@ function session_end($session_id, $user_id)
 	// We expect that message_die will be called after this function,
 	// but just in case it isn't, reset $userdata to the details for a guest
 	//
-	$sql = 'SELECT *
-		FROM ' . USERS_TABLE . '
-		WHERE user_id = ' . ANONYMOUS;
-	
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(CRITICAL_ERROR, 'Error obtaining user details', '', __LINE__, __FILE__, $sql);
-	}
-	
-	if ( !($userdata = $db->sql_fetchrow($result)) ) {
-		message_die(CRITICAL_ERROR, 'Error obtaining user details', '', __LINE__, __FILE__, $sql);
-	}
-	
-	$db->sql_freeresult($result);
+    $userdata = dibi::select('*')
+        ->from(USERS_TABLE)
+        ->where('user_id = %i', ANONYMOUS)
+        ->fetch();
+
+    if (!$userdata) {
+        message_die(CRITICAL_ERROR, 'Error obtaining user details');
+    }
 
 	setcookie($cookiename . '_data', '', $current_time - 31536000, $cookiepath, $cookiedomain, $cookiesecure);
 	setcookie($cookiename . '_sid', '', $current_time - 31536000, $cookiepath, $cookiedomain, $cookiesecure);
