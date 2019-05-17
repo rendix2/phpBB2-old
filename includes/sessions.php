@@ -90,17 +90,15 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 			$sessiondata['autologinid'] = '';
 			$sessiondata['userid'] = $user_id;
 
-			$sql = 'SELECT *
-				FROM ' . USERS_TABLE . '
-				WHERE user_id = ' . (int) $user_id . '
-					AND user_active = 1';
+			$userdata = dibi::select('*')
+                ->from(USERS_TABLE)
+                ->where('user_id = %i', (int) $user_id)
+                ->where('user_active = %i', 1)
+                ->fetch();
 			
-			if (!($result = $db->sql_query($sql))) {
+			if (!$userdata) {
 				message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch', '', __LINE__, __FILE__, $sql);
 			}
-
-			$userdata = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
 
 			$login = 1;
 		}
@@ -177,13 +175,15 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 		$last_visit = ( $userdata['user_session_time'] > 0 ) ? $userdata['user_session_time'] : $current_time; 
 
 		if (!$admin) {
-			$sql = "UPDATE " . USERS_TABLE . " 
-				SET user_session_time = $current_time, user_session_page = $page_id, user_lastvisit = $last_visit
-				WHERE user_id = $user_id";
-			
-			if ( !$db->sql_query($sql) ) {
-				message_die(CRITICAL_ERROR, 'Error updating last visit time', '', __LINE__, __FILE__, $sql);
-			}
+		    $update_data = [
+		        'user_session_time' => $current_time,
+                'user_session_page' => $page_id,
+                'user_lastvisit'    => $last_visit
+            ];
+
+		    dibi::update(USERS_TABLE, $update_data)
+                ->where('user_id = %i', $user_id)
+                ->execute();
 		}
 
 		$userdata['user_lastvisit'] = $last_visit;
@@ -195,16 +195,24 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 			$auto_login_key = dss_rand() . dss_rand();
 			
 			if (isset($sessiondata['autologinid']) && (string) $sessiondata['autologinid'] != '') {
-				$sql = 'UPDATE ' . SESSIONS_KEYS_TABLE . "
-					SET last_ip = '$user_ip', key_id = '" . md5($auto_login_key) . "', last_login = $current_time
-					WHERE key_id = '" . md5($sessiondata['autologinid']) . "'";
-			} else {
-				$sql = 'INSERT INTO ' . SESSIONS_KEYS_TABLE . "(key_id, user_id, last_ip, last_login)
-					VALUES ('" . md5($auto_login_key) . "', $user_id, '$user_ip', $current_time)";
-			}
+			    $update_data = [
+			       'last_ip' =>  $user_ip,
+                    'key_id' => md5($auto_login_key),
+                    'last_login' => $current_time
+                ];
 
-			if ( !$db->sql_query($sql) ) {
-				message_die(CRITICAL_ERROR, 'Error updating session key', '', __LINE__, __FILE__, $sql);
+			    dibi::update(SESSIONS_KEYS_TABLE, $update_data)
+                    ->where('key_id = %s', md5($sessiondata['autologinid']))
+                    ->execute();
+			} else {
+			    $insert_data = [
+			        'key_id'     => md5($auto_login_key),
+                    'user_id'    => $user_id,
+                    'last_ip'    => $user_ip,
+                    'last_login' => $current_time
+                ];
+
+			    dibi::insert(SESSIONS_KEYS_TABLE, $insert_data)->execute();
 			}
 			
 			$sessiondata['autologinid'] = $auto_login_key;

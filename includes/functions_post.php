@@ -192,33 +192,85 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	if ($mode == 'newtopic' || ($mode == 'editpost' && $post_data['first_post'])) {
 		$topic_vote = (!empty($poll_title) && count($poll_options) >= 2) ? 1 : 0;
 
-		$sql  = ($mode != "editpost") ? "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_status, topic_type, topic_vote) VALUES ('$post_subject', " . $userdata['user_id'] . ", $current_time, $forum_id, " . TOPIC_UNLOCKED . ", $topic_type, $topic_vote)" : "UPDATE " . TOPICS_TABLE . " SET topic_title = '$post_subject', topic_type = $topic_type " . (($post_data['edit_vote'] || !empty($poll_title)) ? ", topic_vote = " . $topic_vote : "") . " WHERE topic_id = $topic_id";
+		if ($mode != "editpost") {
+            $insert_data = [
+                'topic_title' => $post_subject,
+                'topic_poster' => $userdata['user_id'],
+                'topic_time'   =>  $current_time,
+                'forum_id'     => $forum_id,
+                'topic_status' => TOPIC_UNLOCKED,
+                'topic_type'   => $topic_type,
+                'topic_vote'   => $topic_vote
+            ];
 
-		if (!$db->sql_query($sql)) {
-			message_die(GENERAL_ERROR, 'Error in posting', '', __LINE__, __FILE__, $sql);
-		}
+            $topic_id = dibi::insert(TOPICS_TABLE, $insert_data)->execute(dibi::IDENTIFIER);
+        } else {
+		    $update_data = [
+		        'topic_title' => $post_subject,
+                'topic_type' => $topic_type
+            ];
 
-		if ($mode == 'newtopic') {
-			$topic_id = $db->sql_nextid();
-		}
+		    if ($post_data['edit_vote'] || !empty($poll_title)) {
+		        $update_data['topic_vote'] = $topic_vote;
+            }
+
+		    dibi::update(TOPICS_TABLE, $update_data)
+                ->where('topic_id = %i', $topic_id)
+                ->execute();
+        }
 	}
 
-	$edited_sql = ($mode == 'editpost' && !$post_data['last_post'] && $post_data['poster_post']) ? ", post_edit_time = $current_time, post_edit_count = post_edit_count + 1 " : "";
-	$sql = ($mode != "editpost") ? "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, post_username, post_time, poster_ip, enable_bbcode, enable_html, enable_smilies, enable_sig) VALUES ($topic_id, $forum_id, " . $userdata['user_id'] . ", '$post_username', $current_time, '$user_ip', $bbcode_on, $html_on, $smilies_on, $attach_sig)" : "UPDATE " . POSTS_TABLE . " SET post_username = '$post_username', enable_bbcode = $bbcode_on, enable_html = $html_on, enable_smilies = $smilies_on, enable_sig = $attach_sig" . $edited_sql . " WHERE post_id = $post_id";
+	if ($mode != "editpost") {
+        $insert_data = [
+            'topic_id'       => $topic_id,
+            'forum_id'       => $forum_id,
+            'poster_id'      => $userdata['user_id'],
+            'post_username'  => $post_username,
+            'post_time'      => $current_time,
+            'poster_ip'      => $user_ip, 'enable_bbcode'  => $bbcode_on,
+            'enable_html'    => $html_on,
+            'enable_smilies' => $smilies_on,
+            'enable_sig'     => $attach_sig
+        ];
 
-	if (!$db->sql_query($sql, BEGIN_TRANSACTION)) {
-		message_die(GENERAL_ERROR, 'Error in posting', '', __LINE__, __FILE__, $sql);
-	}
+        $post_id = dibi::insert(POSTS_TABLE, $insert_data)->execute(dibi::IDENTIFIER);
 
-	if ($mode != 'editpost') {
-		$post_id = $db->sql_nextid();
-	}
+        $insert_data = [
+            'post_id'      => $post_id,
+            'post_subject' => $post_subject,
+            'bbcode_uid'   => $bbcode_uid,
+            'post_text'    => $post_message
+        ];
 
-	$sql = ($mode != 'editpost') ? "INSERT INTO " . POSTS_TEXT_TABLE . " (post_id, post_subject, bbcode_uid, post_text) VALUES ($post_id, '$post_subject', '$bbcode_uid', '$post_message')" : "UPDATE " . POSTS_TEXT_TABLE . " SET post_text = '$post_message',  bbcode_uid = '$bbcode_uid', post_subject = '$post_subject' WHERE post_id = $post_id";
+        dibi::insert(POSTS_TEXT_TABLE, $insert_data)->execute();
+    } else {
+        $update_data = [
+            'post_username'  => $post_username,
+            'enable_bbcode'  => $bbcode_on,
+            'enable_html'    => $html_on,
+            'enable_smilies' => $smilies_on,
+            'enable_sig'     => $attach_sig
+        ];
 
-	if (!$db->sql_query($sql)) {
-		message_die(GENERAL_ERROR, 'Error in posting', '', __LINE__, __FILE__, $sql);
-	}
+        if ($mode == 'editpost' && !$post_data['last_post'] && $post_data['poster_post']) {
+            $update_data['post_edit_time'] = $current_time;
+            $update_data['post_edit_count%sql'] = 'post_edit_count + 1';
+        }
+
+        dibi::update(POSTS_TABLE, $update_data)
+            ->where('post_id = %i', $post_id)
+            ->execute();
+
+        $update_data = [
+            'post_text'  => $post_message,
+            'bbcode_uid' => $bbcode_uid,
+            'post_subject' => $post_subject
+        ];
+
+        dibi::update(POSTS_TEXT_TABLE, $update_data)
+            ->where('post_id = %i', $post_id)
+            ->execute();
+    }
 
 	add_search_words('single', $post_id, stripslashes($post_message), stripslashes($post_subject));
 
@@ -403,19 +455,13 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	if ($mode != 'poll_delete') {
 		include $phpbb_root_path . 'includes/functions_search.php';
 
-		$sql = "DELETE FROM " . POSTS_TABLE . " 
-			WHERE post_id = $post_id";
+		dibi::delete(POSTS_TABLE)
+            ->where('post_id = %i', $post_id)
+            ->execute();
 
-		if (!$db->sql_query($sql)) {
-			message_die(GENERAL_ERROR, 'Error in deleting post', '', __LINE__, __FILE__, $sql);
-		}
-
-		$sql = "DELETE FROM " . POSTS_TEXT_TABLE . " 
-			WHERE post_id = $post_id";
-
-		if (!$db->sql_query($sql)) {
-			message_die(GENERAL_ERROR, 'Error in deleting post', '', __LINE__, __FILE__, $sql);
-		}
+		dibi::delete(POSTS_TEXT_TABLE)
+            ->where('post_id = %i', $post_id)
+            ->execute();
 
 		if ($post_data['last_post']) {
 			if ($post_data['first_post']) {
@@ -441,26 +487,17 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	}
 
 	if ($mode == 'poll_delete' || ($mode == 'delete' && $post_data['first_post'] && $post_data['last_post']) && $post_data['has_poll'] && $post_data['edit_poll']) {
-		$sql = "DELETE FROM " . VOTE_DESC_TABLE . " 
-			WHERE topic_id = $topic_id";
+		dibi::delete(VOTE_DESC_TABLE)
+            ->where('topic_id = %i', $topic_id)
+            ->execute();
 
-		if (!$db->sql_query($sql)) {
-			message_die(GENERAL_ERROR, 'Error in deleting poll', '', __LINE__, __FILE__, $sql);
-		}
+		dibi::delete(VOTE_RESULTS_TABLE)
+            ->where('vote_id = %i', $poll_id)
+            ->execute();
 
-		$sql = "DELETE FROM " . VOTE_RESULTS_TABLE . " 
-			WHERE vote_id = $poll_id";
-
-		if (!$db->sql_query($sql)) {
-			message_die(GENERAL_ERROR, 'Error in deleting poll', '', __LINE__, __FILE__, $sql);
-		}
-
-		$sql = "DELETE FROM " . VOTE_USERS_TABLE . " 
-			WHERE vote_id = $poll_id";
-
-		if (!$db->sql_query($sql)) {
-			message_die(GENERAL_ERROR, 'Error in deleting poll', '', __LINE__, __FILE__, $sql);
-		}
+		dibi::delete(VOTE_USERS_TABLE)
+            ->where('vote_id = %i', $poll_id)
+            ->execute();
 	}
 
 	if ($mode == 'delete' && $post_data['first_post'] && $post_data['last_post']) {
@@ -604,32 +641,25 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 			}
 		}
 
-		$sql = "SELECT topic_id 
-			FROM " . TOPICS_WATCH_TABLE . "
-			WHERE topic_id = $topic_id
-				AND user_id = " . $userdata['user_id'];
+		$topic_watch = dibi::select('topic_id')
+            ->from(TOPICS_WATCH_TABLE)
+            ->where('topic_id = %i', $topic_id)
+            ->where('user_id = %i', $userdata['user_id'])
+            ->fetchSingle();
 
-		if (!($result = $db->sql_query($sql))) {
-			message_die(GENERAL_ERROR, 'Could not obtain topic watch information', '', __LINE__, __FILE__, $sql);
-		}
+		if (!$notify_user && $topic_watch) {
+		    dibi::delete(TOPICS_WATCH_TABLE)
+                ->where('topic_id = %i', $topic_id)
+                ->where('user_id = %i', $userdata['user_id'])
+                ->execute();
+		} elseif ($notify_user && $topic_watch === false) {
+		    $insert_data = [
+		        'user_id'  => $userdata['user_id'],
+                'topic_id' => $topic_id,
+                'notify_status' => 0
+            ];
 
-		$row = $db->sql_fetchrow($result);
-
-		if (!$notify_user && !empty($row['topic_id'])) {
-			$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
-				WHERE topic_id = $topic_id
-					AND user_id = " . $userdata['user_id'];
-
-			if (!$db->sql_query($sql)) {
-				message_die(GENERAL_ERROR, 'Could not delete topic watch information', '', __LINE__, __FILE__, $sql);
-			}
-		} elseif ($notify_user && empty($row['topic_id'])) {
-			$sql = "INSERT INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id, notify_status)
-				VALUES (" . $userdata['user_id'] . ", $topic_id, 0)";
-
-			if (!$db->sql_query($sql)) {
-				message_die(GENERAL_ERROR, 'Could not insert topic watch information', '', __LINE__, __FILE__, $sql);
-			}
+		    dibi::insert(TOPICS_WATCH_TABLE, $insert_data)->execute();
 		}
 	}
 }

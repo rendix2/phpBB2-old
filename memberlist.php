@@ -36,10 +36,10 @@ init_userprefs($userdata);
 $start = isset($_GET['start']) ? (int)$_GET['start'] : 0;
 $start = $start < 0 ? 0 : $start;
 
-if ( isset($_GET['mode']) || isset($_POST['mode']) ) {
+if (isset($_GET['mode']) || isset($_POST['mode'])) {
     $mode = isset($_POST['mode']) ? htmlspecialchars($_POST['mode']) : htmlspecialchars($_GET['mode']);
 } else {
-	$mode = 'joined';
+    $mode = 'joined';
 }
 
 if (isset($_POST['order'])) {
@@ -47,7 +47,7 @@ if (isset($_POST['order'])) {
 } elseif (isset($_GET['order'])) {
     $sort_order = ($_GET['order'] == 'ASC') ? 'ASC' : 'DESC';
 } else {
-	$sort_order = 'ASC';
+    $sort_order = 'ASC';
 }
 
 //
@@ -119,71 +119,100 @@ $template->assign_vars(
     ]
 );
 
-switch( $mode ) {
-	case 'joined':
-		$order_by = "user_regdate $sort_order LIMIT $start, " . $board_config['topics_per_page'];
-		break;
-	case 'username':
-		$order_by = "username $sort_order LIMIT $start, " . $board_config['topics_per_page'];
-		break;
-	case 'location':
-		$order_by = "user_from $sort_order LIMIT $start, " . $board_config['topics_per_page'];
-		break;
-	case 'posts':
-		$order_by = "user_posts $sort_order LIMIT $start, " . $board_config['topics_per_page'];
-		break;
-	case 'email':
-		$order_by = "user_email $sort_order LIMIT $start, " . $board_config['topics_per_page'];
-		break;
-	case 'website':
-		$order_by = "user_website $sort_order LIMIT $start, " . $board_config['topics_per_page'];
-		break;
-	case 'topten':
-		$order_by = "user_posts $sort_order LIMIT 10";
-		break;
-	default:
-		$order_by = "user_regdate $sort_order LIMIT $start, " . $board_config['topics_per_page'];
-		break;
+$columns = [
+    'username',
+    'user_id',
+    'user_viewemail',
+    'user_posts',
+    'user_regdate',
+    'user_from',
+    'user_website',
+    'user_email',
+    'user_icq',
+    'user_aim',
+    'user_yim',
+    'user_msnm',
+    'user_avatar',
+    'user_avatar_type',
+    'user_allowavatar'
+];
+
+$users = dibi::select($columns)
+    ->from(USERS_TABLE)
+    ->where('user_id <> %i', ANONYMOUS);
+
+switch ($mode) {
+    case 'joined':
+        $users->orderBy('user_regdate', $sort_order)
+        ->limit($board_config['topics_per_page'])
+        ->offset($start);
+        break;
+    case 'username':
+        $users->orderBy('username', $sort_order)
+            ->limit($board_config['topics_per_page'])
+            ->offset($start);
+        break;
+    case 'location':
+        $users->orderBy('user_from', $sort_order)
+            ->limit($board_config['topics_per_page'])
+            ->offset($start);
+        break;
+    case 'posts':
+        $users->orderBy('user_posts', $sort_order)
+            ->limit($board_config['topics_per_page'])
+            ->offset($start);
+        break;
+    case 'email':
+        $users->orderBy('user_email', $sort_order)
+            ->limit($board_config['topics_per_page'])
+            ->offset($start);
+        break;
+    case 'website':
+        $users->orderBy('user_website', $sort_order)
+            ->limit($board_config['topics_per_page'])
+            ->offset($start);
+        break;
+    case 'topten':
+        $users->orderBy('user_posts', $sort_order)
+            ->limit($board_config['topics_per_page']);
+        break;
+    default:
+        $users->orderBy('user_regdate', $sort_order)
+            ->limit($board_config['topics_per_page'])
+            ->offset($start);
+        break;
 }
 
-$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar 
-	FROM " . USERS_TABLE . "
-	WHERE user_id <> " . ANONYMOUS . "
-	ORDER BY $order_by";
+$users = $users->fetchAll();
 
-if (!($result = $db->sql_query($sql)) ) {
-	message_die(GENERAL_ERROR, 'Could not query users', '', __LINE__, __FILE__, $sql);
-}
-
-if ( $row = $db->sql_fetchrow($result) ) {
 	$i = 0;
 	
-	do {
-		$username = $row['username'];
-		$user_id = $row['user_id'];
+	foreach ($users as $user) {
+		$username = $user->username;
+		$user_id = $user->user_id;
 
-		$from = !empty($row['user_from']) ? $row['user_from'] : '&nbsp;';
-		$joined = create_date($lang['DATE_FORMAT'], $row['user_regdate'], $board_config['board_timezone']);
-		$posts = $row['user_posts'] ? $row['user_posts'] : 0;
+		$from = !empty($user->user_from) ? $user->user_from : '&nbsp;';
+		$joined = create_date($lang['DATE_FORMAT'], $user->user_regdate, $board_config['board_timezone']);
+		$posts = $user->user_posts ? $user->user_posts : 0;
 
 		$poster_avatar = '';
 		
-		if ( $row['user_avatar_type'] && $user_id != ANONYMOUS && $row['user_allowavatar'] ) {
-			switch( $row['user_avatar_type'] ) {
+		if ( $user->user_avatar_type && $user_id != ANONYMOUS && $user->user_allowavatar ) {
+			switch( $user->user_avatar_type ) {
 				case USER_AVATAR_UPLOAD:
-					$poster_avatar = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $row['user_avatar'] . '" alt="" border="0" />' : '';
+					$poster_avatar = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $user->user_avatar . '" alt="" border="0" />' : '';
 					break;
 				case USER_AVATAR_REMOTE:
-					$poster_avatar = $board_config['allow_avatar_remote'] ? '<img src="' . $row['user_avatar'] . '" alt="" border="0" />' : '';
+					$poster_avatar = $board_config['allow_avatar_remote'] ? '<img src="' . $user->user_avatar . '" alt="" border="0" />' : '';
 					break;
 				case USER_AVATAR_GALLERY:
-					$poster_avatar = $board_config['allow_avatar_local'] ? '<img src="' . $board_config['avatar_gallery_path'] . '/' . $row['user_avatar'] . '" alt="" border="0" />' : '';
+					$poster_avatar = $board_config['allow_avatar_local'] ? '<img src="' . $board_config['avatar_gallery_path'] . '/' . $user->user_avatar . '" alt="" border="0" />' : '';
 					break;
 			}
 		}
 
-		if ( !empty($row['user_viewemail']) || $userdata['user_level'] == ADMIN ) {
-			$email_uri = $board_config['board_email_form'] ? append_sid("profile.php?mode=email&amp;" . POST_USERS_URL .'=' . $user_id) : 'mailto:' . $row['user_email'];
+		if ( !empty($user->user_viewemail) || $userdata['user_level'] == ADMIN ) {
+			$email_uri = $board_config['board_email_form'] ? append_sid("profile.php?mode=email&amp;" . POST_USERS_URL .'=' . $user_id) : 'mailto:' . $user->user_email;
 
 			$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
 			$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
@@ -200,29 +229,29 @@ if ( $row = $db->sql_fetchrow($result) ) {
 		$pm_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
 		$pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
 
-		$www_img = $row['user_website'] ? '<a href="' . $row['user_website'] . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
-		$www = $row['user_website'] ? '<a href="' . $row['user_website'] . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
+		$www_img = $user->user_website ? '<a href="' . $user->user_website . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
+		$www = $user->user_website ? '<a href="' . $user->user_website . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
 
-		if ( !empty($row['user_icq']) )
+		if ( !empty($user->user_icq) )
 		{
-			$icq_status_img = '<a href="http://wwp.icq.com/' . $row['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $row['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
-			$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row['user_icq'] . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
-			$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row['user_icq'] . '">' . $lang['ICQ'] . '</a>';
+			$icq_status_img = '<a href="http://wwp.icq.com/' . $user->user_icq . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $user->user_icq . '&img=5" width="18" height="18" border="0" /></a>';
+			$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $user->user_icq . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
+			$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $user->user_icq . '">' . $lang['ICQ'] . '</a>';
 		} else {
 			$icq_status_img = '';
 			$icq_img = '';
 			$icq = '';
 		}
 
-		$aim_img = $row['user_aim'] ? '<a href="aim:goim?screenname=' . $row['user_aim'] . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
-		$aim = $row['user_aim'] ? '<a href="aim:goim?screenname=' . $row['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
+		$aim_img = $user->user_aim ? '<a href="aim:goim?screenname=' . $user->user_aim . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
+		$aim = $user->user_aim ? '<a href="aim:goim?screenname=' . $user->user_aim . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
 
 		$temp_url = append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id");
-		$msn_img = $row['user_msnm'] ? '<a href="' . $temp_url . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
-		$msn = $row['user_msnm'] ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
+		$msn_img = $user->user_msnm ? '<a href="' . $temp_url . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
+		$msn = $user->user_msnm ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
 
-		$yim_img = $row['user_yim'] ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
-		$yim = $row['user_yim'] ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
+		$yim_img = $user->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $user->user_yim . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
+		$yim = $user->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $user->user_yim . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
 
 		$temp_url = append_sid("search.php?search_author=" . urlencode($username) . "&amp;showresults=posts");
 		$search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $username) . '" title="' . sprintf($lang['Search_user_posts'], $username) . '" border="0" /></a>';
@@ -267,30 +296,25 @@ if ( $row = $db->sql_fetchrow($result) ) {
 
         $i++;
 	}
-	while ( $row = $db->sql_fetchrow($result) );
 	
 	$db->sql_freeresult($result);
-}
 
-if ( $mode != 'topten' || $board_config['topics_per_page'] < 10 ) {
-	$sql = "SELECT count(*) AS total
-		FROM " . USERS_TABLE . "
-		WHERE user_id <> " . ANONYMOUS;
 
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, 'Error getting total users', '', __LINE__, __FILE__, $sql);
-	}
+if ($mode != 'topten' || $board_config['topics_per_page'] < 10) {
+    $total_members = dibi::select('COUNT(*)')
+        ->as('total')
+        ->from(USERS_TABLE)
+        ->where('user_id <> %i', ANONYMOUS)
+        ->fetchSingle();
 
-	if ( $total = $db->sql_fetchrow($result) ) {
-		$total_members = $total['total'];
+    if ($total_members) {
+        $pagination = generate_pagination("memberlist.php?mode=$mode&amp;order=$sort_order", $total_members, $board_config['topics_per_page'], $start) . '&nbsp;';
+    }
 
-		$pagination = generate_pagination("memberlist.php?mode=$mode&amp;order=$sort_order", $total_members, $board_config['topics_per_page'], $start). '&nbsp;';
-	}
-	
-	$db->sql_freeresult($result);
+    $db->sql_freeresult($result);
 } else {
-	$pagination = '&nbsp;';
-	$total_members = 10;
+    $pagination = '&nbsp;';
+    $total_members = 10;
 }
 
 $template->assign_vars(

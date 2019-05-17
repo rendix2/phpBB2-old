@@ -351,17 +351,13 @@ if (($submit || $refresh) && $is_auth['auth_read']) {
 } else {
 	if ( $mode != 'newtopic' && $userdata['session_logged_in'] && $is_auth['auth_read'] )
 	{
-		$sql = "SELECT topic_id 
-			FROM " . TOPICS_WATCH_TABLE . "
-			WHERE topic_id = $topic_id 
-				AND user_id = " . $userdata['user_id'];
+        $notify_user = dibi::select('topic_id')
+            ->from(TOPICS_WATCH_TABLE)
+            ->where('topic_id = %i', $topic_id)
+            ->where('user_id = %i', $userdata['user_id'])
+            ->fetchSingle();
 
-        if (!($result = $db->sql_query($sql))) {
-            message_die(GENERAL_ERROR, 'Could not obtain topic watch information', '', __LINE__, __FILE__, $sql);
-        }
-
-		$notify_user = $db->sql_fetchrow($result) ? TRUE : $userdata['user_notify'];
-		$db->sql_freeresult($result);
+		$notify_user = (bool)$notify_user;
     } else {
         $notify_user = ( $userdata['session_logged_in'] && $is_auth['auth_read'] ) ? $userdata['user_notify'] : 0;
 	}
@@ -406,74 +402,66 @@ if (($delete || $poll_delete || $mode == 'delete') && !$confirm) {
 
 	include $phpbb_root_path . 'includes/page_tail.php';
 } elseif ($mode == 'vote') {
-	//
-	// Vote in a poll
-	//
-	if ( !empty($_POST['vote_id']) ) {
-		$vote_option_id = (int)$_POST['vote_id'];
-
-		$sql = "SELECT vd.vote_id    
-			FROM " . VOTE_DESC_TABLE . " vd, " . VOTE_RESULTS_TABLE . " vr
-			WHERE vd.topic_id = $topic_id 
-				AND vr.vote_id = vd.vote_id 
-				AND vr.vote_option_id = $vote_option_id
-			GROUP BY vd.vote_id";
-
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, 'Could not obtain vote data for this topic', '', __LINE__, __FILE__, $sql);
-		}
-
-		if ( $vote_info = $db->sql_fetchrow($result) ) {
-			$vote_id = $vote_info['vote_id'];
-
-			$sql = "SELECT * 
-				FROM " . VOTE_USERS_TABLE . "  
-				WHERE vote_id = $vote_id 
-					AND vote_user_id = " . $userdata['user_id'];
-
-			if ( !($result2 = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, 'Could not obtain user vote data for this topic', '', __LINE__, __FILE__, $sql);
-			}
-
-			if ( !($row = $db->sql_fetchrow($result2)) ) {
-				$sql = "UPDATE " . VOTE_RESULTS_TABLE . " 
-					SET vote_result = vote_result + 1 
-					WHERE vote_id = $vote_id 
-						AND vote_option_id = $vote_option_id";
-
-				if ( !$db->sql_query($sql, BEGIN_TRANSACTION) ) {
-					message_die(GENERAL_ERROR, 'Could not update poll result', '', __LINE__, __FILE__, $sql);
-				}
-
-				$sql = "INSERT INTO " . VOTE_USERS_TABLE . " (vote_id, vote_user_id, vote_user_ip) 
-					VALUES ($vote_id, " . $userdata['user_id'] . ", '$user_ip')";
-
-				if ( !$db->sql_query($sql, END_TRANSACTION) ) {
-					message_die(GENERAL_ERROR, "Could not insert user_id for poll", "", __LINE__, __FILE__, $sql);
-				}
-
-				$message = $lang['Vote_cast'];
-            } else {
-                $message = $lang['Already_voted'];
-            }
-
-			$db->sql_freeresult($result2);
-        } else {
-            $message = $lang['No_vote_option'];
-        }
-		$db->sql_freeresult($result);
-
-        $template->assign_vars(
-            [
-                'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id") . '">'
-            ]
-        );
-
-        $message .=  '<br /><br />' . sprintf($lang['Click_view_message'], '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id") . '">', '</a>');
-		message_die(GENERAL_MESSAGE, $message);
-    } else {
+    //
+    // Vote in a poll
+    //
+    if (empty($_POST['vote_id'])) {
         redirect(append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id", true));
     }
+
+    $vote_option_id = (int)$_POST['vote_id'];
+
+    $vote_info = dibi::select('vd.vote_id')
+        ->from(VOTE_DESC_TABLE)
+        ->as('vd')
+        ->from(VOTE_RESULTS_TABLE)
+        ->as('vr')
+        ->where('vd.topic_id = %i', $topic_id)
+        ->where('vr.vote_id = vd.vote_id')
+        ->where('vr.vote_option_id = %i', $vote_option_id)
+        ->groupBy('vd.vote_id')
+        ->fetch();
+
+    if (!$vote_info) {
+        message_die(GENERAL_MESSAGE, $lang['No_vote_option']);
+    }
+
+    $vote_id = $vote_info->vote_id;
+
+    $row = dibi::select('*')
+        ->from(VOTE_USERS_TABLE)
+        ->where('vote_id = %i', $vote_id)
+        ->where('vote_user_id = %i', $userdata['user_id'])
+        ->fetch();
+
+    if (!$row) {
+        message_die(GENERAL_MESSAGE, $lang['Already_voted']);
+    }
+
+    dibi::update(VOTE_RESULTS_TABLE, ['vote_result%sql' => 'vote_result + 1'])
+        ->where('vote_id = %i', $vote_id)
+        ->where('vote_option_id = %i', $vote_option_id)
+        ->execute();
+
+    $insert_data = [
+        'vote_id' => $vote_id,
+        'vote_user_id' => $userdata['user_id'],
+        'vote_user_ip' => $user_ip
+    ];
+
+    dibi::insert(VOTE_USERS_TABLE, $insert_data)->execute();
+
+    $template->assign_vars(
+        [
+            'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id") . '">'
+        ]
+    );
+
+    $message = $lang['Vote_cast'];
+    $message .= '<br /><br />' . sprintf($lang['Click_view_message'], '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id") . '">', '</a>');
+
+    message_die(GENERAL_MESSAGE, $message);
+
 } elseif ($submit || $confirm) {
 	//
 	// Submit post/vote (newtopic, edit, reply, etc.)
