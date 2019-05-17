@@ -153,21 +153,13 @@ if (defined('SHOW_ONLINE')) {
 		$board_config['record_online_users'] = $total_online_users;
 		$board_config['record_online_date'] = time();
 
-		$sql = "UPDATE " . CONFIG_TABLE . "
-			SET config_value = '$total_online_users'
-			WHERE config_name = 'record_online_users'";
-		
-		if ( !$db->sql_query($sql) ) {
-			message_die(GENERAL_ERROR, 'Could not update online user record (nr of users)', '', __LINE__, __FILE__, $sql);
-		}
+		dibi::update(CONFIG_TABLE, ['config_value' => $total_online_users])
+            ->where('config_name = %s', 'record_online_users')
+            ->execute();
 
-		$sql = "UPDATE " . CONFIG_TABLE . "
-			SET config_value = '" . $board_config['record_online_date'] . "'
-			WHERE config_name = 'record_online_date'";
-		
-		if ( !$db->sql_query($sql) ) {
-			message_die(GENERAL_ERROR, 'Could not update online user record (date)', '', __LINE__, __FILE__, $sql);
-		}
+		dibi::update(CONFIG_TABLE, ['config_value' => $board_config['record_online_date']])
+            ->where('config_name = %s', 'record_online_date')
+            ->execute();
 	}
 
 	if ( $total_online_users == 0 ) {
@@ -219,13 +211,9 @@ if ( $userdata['session_logged_in'] && empty($gen_simple_header)) {
 		$l_privmsgs_text = sprintf($l_message_new, $userdata['user_new_privmsg']);
 
 		if ($userdata['user_last_privmsg'] > $userdata['user_lastvisit'] ) {
-			$sql = "UPDATE " . USERS_TABLE . "
-				SET user_last_privmsg = " . $userdata['user_lastvisit'] . "
-				WHERE user_id = " . $userdata['user_id'];
-			
-			if ( !$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, 'Could not update private message new/read time for user', '', __LINE__, __FILE__, $sql);
-			}
+		    dibi::update(USERS_TABLE, ['user_last_privmsg' => $userdata['user_lastvisit']])
+                ->where('user_id = %i', $userdata['user_id'])
+                ->execute();
 
 			$s_privmsg_new = 1;
 			$icon_pm = $images['pm_new_msg'];
