@@ -664,7 +664,9 @@ if (isset($_GET['perform']) || isset($_POST['perform']) )
 			$drop = !empty($_POST['drop']) ? (int)$_POST['drop'] : ( !empty($_GET['drop']) ? (int)$_GET['drop'] : 0 );
 
 			if (!empty($additional_tables)) {
-				if (ereg(",", $additional_tables)) {
+				// TODO i think we should not use preg_match and than explode().. just do explode()
+
+				if (preg_match("#,#", $additional_tables)) {
 					$additional_tables = explode(",", $additional_tables);
 
 					for ($i = 0; $i < count($additional_tables); $i++) {

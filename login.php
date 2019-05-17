@@ -183,7 +183,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 
 				if (count($forward_match) > 1) {
 					for ($i = 1; $i < count($forward_match); $i++) {
-						if (!ereg("sid=", $forward_match[$i]) ) {
+						if (!preg_match("/sid=/", $forward_match[$i]) ) {
 							if ($forward_page != '' ) {
 								$forward_page .= '&';
 							}
