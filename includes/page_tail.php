@@ -44,6 +44,7 @@ $template->pparse('overall_footer');
 // Close our DB connection.
 //
 $db->sql_close();
+dibi::disconnect();
 
 //
 // Compress buffered output if required and send to browser

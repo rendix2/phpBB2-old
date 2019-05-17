@@ -277,7 +277,7 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 			];
 
 			dibi::update(GROUPS_TABLE, $group_update_data)
-				->where('group_id = %id', $group_id)
+				->where('group_id = %i', $group_id)
 				->execute();
 
 			$message = $lang['Updated_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . append_sid("admin_groups.php") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');;
