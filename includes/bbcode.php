@@ -649,7 +649,7 @@ function undo_make_clickable($text)
 
 	return $text;
 
-}}
+}
 
 /**
  * This is used to change a [*] tag into a [*:$uid] tag as part

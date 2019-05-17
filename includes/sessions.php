@@ -283,6 +283,7 @@ function session_pagestart($user_ip, $thispage_id)
             ->from(USERS_TABLE)
             ->as('u')
             ->where('session_id = %s', $session_id)
+            ->where('u.user_id = s.session_user_id')
             ->fetch();
 
         if (!$userdata) {
