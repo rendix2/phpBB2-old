@@ -517,7 +517,6 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 						{
 							$match = array_pop($stack);
 							$curr_pos = $match['pos'];
-//							bbcode_array_push($stack, $match);
 //							++$curr_pos;
 						}
 						else
@@ -650,22 +649,7 @@ function undo_make_clickable($text)
 
 	return $text;
 
-}
-
-/**
- * Nathan Codding - August 24, 2000.
- * Takes a string, and does the reverse of the PHP standard function
- * htmlspecialchars().
- */
-function undo_htmlspecialchars($input)
-{
-	$input = preg_replace("/&gt;/i", ">", $input);
-	$input = preg_replace("/&lt;/i", "<", $input);
-	$input = preg_replace("/&quot;/i", "\"", $input);
-	$input = preg_replace("/&amp;/i", "&", $input);
-
-	return $input;
-}
+}}
 
 /**
  * This is used to change a [*] tag into a [*:$uid] tag as part
@@ -678,57 +662,6 @@ function replace_listitems($text, $uid)
 	$text = str_replace("[*]", "[*:$uid]", $text);
 
 	return $text;
-}
-
-/**
- * Escapes the "/" character with "\/". This is useful when you need
- * to stick a runtime string into a PREG regexp that is being delimited
- * with slashes.
- */
-function escape_slashes($input)
-{
-	$output = str_replace('/', '\/', $input);
-	return $output;
-}
-
-/**
- * This function does exactly what the PHP4 function array_push() does
- * however, to keep phpBB compatable with PHP 3 we had to come up with our own
- * method of doing it.
- * This function was deprecated in phpBB 2.0.18
- */
-function bbcode_array_push(&$stack, $value)
-{
-   $stack[] = $value;
-   return count($stack);
-}
-
-/**
- * This function does exactly what the PHP4 function array_pop() does
- * however, to keep phpBB compatable with PHP 3 we had to come up with our own
- * method of doing it.
- * This function was deprecated in phpBB 2.0.18
- */
-function bbcode_array_pop(&$stack)
-{
-   $arrSize = count($stack);
-   $x = 1;
-
-   while (list($key, $val) = each($stack))
-   {
-      if ($x < count($stack))
-      {
-	 		$tmpArr[] = $val;
-      }
-      else
-      {
-	 		$return_val = $val;
-      }
-      $x++;
-   }
-   $stack = $tmpArr;
-
-   return $return_val;
 }
 
 //
