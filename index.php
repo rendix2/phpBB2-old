@@ -109,7 +109,7 @@ if ($total_users == 0) {
 // Start page proper
 //
 
-$categories = dibi::select('cat_id, cat_title, cat_order')
+$categories = dibi::select(['cat_id', 'cat_title', 'cat_order'])
     ->from(CATEGORIES_TABLE)
     ->orderBy('cat_order')
     ->fetchAll();

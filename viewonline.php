@@ -60,16 +60,9 @@ $template->assign_vars(
 //
 // Forum info
 //
-$sql = "SELECT forum_name, forum_id
-	FROM " . FORUMS_TABLE;
-
-if ($result = $db->sql_query($sql)) {
-    while ($row = $db->sql_fetchrow($result)) {
-        $forum_data[$row['forum_id']] = $row['forum_name'];
-    }
-} else {
-    message_die(GENERAL_ERROR, 'Could not obtain user/online forums information', '', __LINE__, __FILE__, $sql);
-}
+$forum_data = dibi::select(['forum_id', 'forum_name'])
+    ->from(FORUMS_TABLE)
+    ->fetchPairs('forum_id', 'forum_name');
 
 //
 // Get auth data

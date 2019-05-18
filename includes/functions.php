@@ -145,13 +145,9 @@ function dss_rand()
 	$board_config['rand_seed'] = md5($board_config['rand_seed'] . $val . 'a');
 
     if ($dss_seeded !== true) {
-        $sql = "UPDATE " . CONFIG_TABLE . " SET
-			config_value = '" . $board_config['rand_seed'] . "'
-			WHERE config_name = 'rand_seed'";
-
-        if (!$db->sql_query($sql)) {
-            message_die(GENERAL_ERROR, "Unable to reseed PRNG", "", __LINE__, __FILE__, $sql);
-        }
+        dibi::update(CONFIG_TABLE, ['config_value' => $board_config['rand_seed']])
+            ->where('config_name = %s', 'rand_seed')
+            ->execute();
 
         $dss_seeded = true;
     }

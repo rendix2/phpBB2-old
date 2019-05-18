@@ -390,12 +390,13 @@ if (!empty($mode) ) {
 					message_die(GENERAL_MESSAGE, $lang['Set_prune_data']);
 				}
 
-				$sql = "INSERT INTO " . PRUNE_TABLE . " (forum_id, prune_days, prune_freq)
-					VALUES('" . $next_id . "', " . (int)$_POST['prune_days'] . ", " . (int)$_POST['prune_freq'] . ")";
+				$insert_data = [
+				    'forum_id' => $next_id,
+                    'prune_days' => (int)$_POST['prune_days'],
+                    'prune_freq' => (int)$_POST['prune_freq']
+                ];
 
-				if (!$result = $db->sql_query($sql) ) {
-					message_die(GENERAL_ERROR, "Couldn't insert row in prune table", "", __LINE__, __FILE__, $sql);
-				}
+				dibi::insert(PRUNE_TABLE, $insert_data)->execute();
 			}
 
 			$message = $lang['Forums_updated'] . "<br /><br />" . sprintf($lang['Click_return_forumadmin'], "<a href=\"" . append_sid("admin_forums.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
@@ -474,12 +475,13 @@ if (!empty($mode) ) {
 			//
 			// There is no problem having duplicate forum names so we won't check for it.
 			//
-			$sql = "INSERT INTO " . CATEGORIES_TABLE . " (cat_title, cat_order)
-				VALUES ('" . str_replace("\'", "''", $_POST['categoryname']) . "', $next_order)";
 
-			if (!$result = $db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, "Couldn't insert row in categories table", "", __LINE__, __FILE__, $sql);
-			}
+            $insert_data = [
+                'cat_title' => $_POST['categoryname'],
+                'cat_order' => $next_order
+            ];
+
+            dibi::insert(CATEGORIES_TABLE, $insert_data)->execute();
 
 			$message = $lang['Forums_updated'] . "<br /><br />" . sprintf($lang['Click_return_forumadmin'], "<a href=\"" . append_sid("admin_forums.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
 

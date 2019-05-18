@@ -167,13 +167,9 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 		message_die(GENERAL_MESSAGE, $message);
 	}
 
-	$sql = "UPDATE " . GROUPS_TABLE . " 
-		SET group_type = " . (int)$_POST['group_type'] . "
-		WHERE group_id = $group_id";
-
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, 'Could not obtain user and group information', '', __LINE__, __FILE__, $sql);
-	}
+	dibi::update(GROUPS_TABLE, ['group_type' => (int)$_POST['group_type'] ])
+        ->where('group_id = %i', $group_id)
+        ->execute();
 
     $template->assign_vars(
         [
@@ -237,12 +233,13 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 		message_die(GENERAL_MESSAGE, $lang['No_groups_exist']); 
 	}
 
-	$sql = "INSERT INTO " . USER_GROUP_TABLE . " (group_id, user_id, user_pending) 
-		VALUES ($group_id, " . $userdata['user_id'] . ", 1)";
+	$insert_data = [
+	   'group_id' => $group_id,
+        'user_id' => $userdata['user_id'],
+        'user_pending' => 1
+    ];
 
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, "Error inserting user group subscription", "", __LINE__, __FILE__, $sql);
-	}
+	dibi::insert(USER_GROUP_TABLE, $insert_data)->execute();
 
 	$sql = "SELECT u.user_email, u.username, u.user_lang, g.group_name 
 		FROM ".USERS_TABLE . " u, " . GROUPS_TABLE . " g 
@@ -298,13 +295,10 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 	}
 
 	if ( $confirm ) {
-		$sql = "DELETE FROM " . USER_GROUP_TABLE . " 
-			WHERE user_id = " . $userdata['user_id'] . " 
-				AND group_id = $group_id";
-
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, 'Could not delete group memebership data', '', __LINE__, __FILE__, $sql);
-		}
+	    dibi::delete(USER_GROUP_TABLE)
+            ->where('user_id = %i', $userdata['user_id'])
+            ->where('group_id = %i', $group_id)
+            ->execute();
 
 		if ( $userdata['user_level'] != ADMIN && $userdata['user_level'] == MOD ) {
 			$sql = "SELECT COUNT(auth_mod) AS is_auth_mod 
@@ -318,13 +312,9 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 			}
 
 			if ( !($row = $db->sql_fetchrow($result)) || $row['is_auth_mod'] == 0 ) {
-				$sql = "UPDATE " . USERS_TABLE . " 
-					SET user_level = " . USER . " 
-					WHERE user_id = " . $userdata['user_id'];
-
-				if ( !($result = $db->sql_query($sql)) ) {
-					message_die(GENERAL_ERROR, 'Could not update user level', '', __LINE__, __FILE__, $sql);
-				}
+			    dibi::update(USERS_TABLE, ['user_level' => USER])
+                    ->where('user_id = %i', $userdata['user_id'])
+                    ->execute();
 			}
 		}
 
@@ -494,12 +484,14 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 				}
 
 				if ( !$db->sql_fetchrow($result)) {
-					$sql = "INSERT INTO " . USER_GROUP_TABLE . " (user_id, group_id, user_pending) 
-						VALUES (" . $row['user_id'] . ", $group_id, 0)";
 
-					if ( !$db->sql_query($sql) ) {
-						message_die(GENERAL_ERROR, 'Could not add user to group', '', __LINE__, __FILE__, $sql);
-					}
+				    $insert_data = [
+				        'user_id' => $row['user_id'],
+                        'group_id' =>$group_id,
+                        'user_pending' => 0
+                    ];
+
+				    dibi::insert(USER_GROUP_TABLE, $insert_data)->execute();
 					
 					if ( $row['user_level'] != ADMIN && $row['user_level'] != MOD && $group_info['auth_mod'] ) {
 						$sql = "UPDATE " . USERS_TABLE . " 
@@ -587,9 +579,11 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 							SET user_pending = 0 
 							WHERE user_id IN ($sql_in) 
 								AND group_id = $group_id";
+
 						$sql_select = "SELECT user_email 
 							FROM ". USERS_TABLE . " 
-							WHERE user_id IN ($sql_in)"; 
+							WHERE user_id IN ($sql_in)";
+
 					} elseif ( isset($_POST['deny']) || isset($_POST['remove']) ) {
 						if ( $group_info['auth_mod'] ) {
 							$sql = "SELECT ug.user_id, ug.group_id 
@@ -663,12 +657,16 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 							FROM " . GROUPS_TABLE . " 
 							WHERE group_id = $group_id";
 
-						if ( !($result = $db->sql_query($group_sql)) ) {
-							message_die(GENERAL_ERROR, 'Could not get group information', '', __LINE__, __FILE__, $group_sql);
+						$group_name_row = dibi::select('group_name')
+                            ->from(GROUPS_TABLE)
+                            ->where('group_id = %i', $group_id)
+                            ->fetchSingle();
+
+						if ($group_name_row === false ) {
+							message_die(GENERAL_ERROR, 'Could not get group information');
 						}
 
-						$group_name_row = $db->sql_fetchrow($result);
-						$group_name = $group_name_row['group_name'];
+						$group_name = $group_name_row;
 
 						include $phpbb_root_path . 'includes/emailer.php';
 						$emailer = new emailer($board_config['smtp_delivery']);

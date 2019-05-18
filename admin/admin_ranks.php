@@ -150,13 +150,9 @@ if ($mode != "" ) {
 
 		if ($rank_id) {
 			if (!$special_rank) {
-				$sql = "UPDATE " . USERS_TABLE . " 
-					SET user_rank = 0 
-					WHERE user_rank = $rank_id";
-
-				if (!$result = $db->sql_query($sql) ) {
-					message_die(GENERAL_ERROR, $lang['No_update_ranks'], "", __LINE__, __FILE__, $sql);
-				}
+				dibi::update(USERS_TABLE, ['user_rank' => 0])
+					->where('user_rank = %i', $rank_id)
+					->execute();
 			}
 
 			$sql = "UPDATE " . RANKS_TABLE . "
@@ -193,19 +189,16 @@ if ($mode != "" ) {
 		$confirm = isset($_POST['confirm']);
 		
 		if ($rank_id && $confirm ) {
-			$sql = "DELETE FROM " . RANKS_TABLE . "
-				WHERE rank_id = $rank_id";
-			
-			if (!$result = $db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, "Couldn't delete rank data", "", __LINE__, __FILE__, $sql);
-			}
-			
-			$sql = "UPDATE " . USERS_TABLE . " 
-				SET user_rank = 0 
-				WHERE user_rank = $rank_id";
+			dibi::delete(RANKS_TABLE)
+				->where('rank_id = %i', $rank_id)
+				->execute();
 
-			if (!$result = $db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, $lang['No_update_ranks'], "", __LINE__, __FILE__, $sql);
+			$result = dibi::update(USERS_TABLE, ['user_rank' => 0])
+				->where('user_rank = %i', $rank_id)
+				->execute();
+
+			if (!$result) {
+				message_die(GENERAL_ERROR, $lang['No_update_ranks'];
 			}
 
 			$message = $lang['Rank_removed'] . "<br /><br />" . sprintf($lang['Click_return_rankadmin'], "<a href=\"" . append_sid("admin_ranks.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");

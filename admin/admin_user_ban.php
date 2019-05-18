@@ -169,12 +169,8 @@ if ( isset($_POST['submit']) ) {
 		if ( !$in_banlist ) {
 			$kill_session_sql .= ( ( $kill_session_sql != '' ) ? ' OR ' : '' ) . "session_user_id = " . $user_list[$i];
 
-			$sql = "INSERT INTO " . BANLIST_TABLE . " (ban_userid)
-				VALUES (" . $user_list[$i] . ")";
-
-			if ( !$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, "Couldn't insert ban_userid info into database", "", __LINE__, __FILE__, $sql);
-			}
+			dibi::insert(BANLIST_TABLE, ['ban_userid' => $user_list[$i] ])
+                ->execute();
 		}
 	}
 
@@ -196,12 +192,7 @@ if ( isset($_POST['submit']) ) {
 
 			$kill_session_sql .= ( ( $kill_session_sql != '' ) ? ' OR ' : '' ) . $kill_ip_sql;
 
-			$sql = "INSERT INTO " . BANLIST_TABLE . " (ban_ip)
-				VALUES ('" . $ip_list[$i] . "')";
-
-			if ( !$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, "Couldn't insert ban_ip info into database", "", __LINE__, __FILE__, $sql);
-			}
+			dibi::insert(BANLIST_TABLE, ['ban_ip' => $ip_list[$i]])->execute();
 		}
 	}
 
@@ -229,12 +220,8 @@ if ( isset($_POST['submit']) ) {
 		}
 
 		if ( !$in_banlist ) {
-			$sql = "INSERT INTO " . BANLIST_TABLE . " (ban_email)
-				VALUES ('" . str_replace("\'", "''", $email_list[$i]) . "')";
-
-			if ( !$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, "Couldn't insert ban_email info into database", "", __LINE__, __FILE__, $sql);
-			}
+		    dibi::insert(BANLIST_TABLE, ['ban_email' => $email_list[$i]])
+                ->execute();
 		}
 	}
 

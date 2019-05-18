@@ -109,68 +109,44 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 				message_die(GENERAL_ERROR, 'Could not update group moderators', '', __LINE__, __FILE__, $sql);
 			}
 
-			$sql = "DELETE FROM " . USERS_TABLE . "
-				WHERE user_id = $user_id";
+			dibi::delete(USERS_TABLE)
+                ->where('user_id = %i', $user_id)
+                ->execute();
 
-			if (!$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, 'Could not delete user', '', __LINE__, __FILE__, $sql);
-			}
+            dibi::delete(USER_GROUP_TABLE)
+                ->where('user_id = %i', $user_id)
+                ->execute();
 
-			$sql = "DELETE FROM " . USER_GROUP_TABLE . "
-				WHERE user_id = $user_id";
+            dibi::delete(GROUPS_TABLE)
+                ->where('group_id = %i', $row['group_id'])
+                ->execute();
 
-			if (!$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, 'Could not delete user from user_group table', '', __LINE__, __FILE__, $sql);
-			}
+            dibi::delete(AUTH_ACCESS_TABLE)
+                ->where('group_id = %i', $row['group_id'])
+                ->execute();
 
-			$sql = "DELETE FROM " . GROUPS_TABLE . "
-				WHERE group_id = " . $row['group_id'];
+            dibi::delete(TOPICS_WATCH_TABLE)
+                ->where('user_id = %i', $user_id)
+                ->execute();
 
-			if (!$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, 'Could not delete group for this user', '', __LINE__, __FILE__, $sql);
-			}
+            dibi::delete(BANLIST_TABLE)
+                ->where('ban_userid = %i', $user_id)
+                ->execute();
 
-			$sql = "DELETE FROM " . AUTH_ACCESS_TABLE . "
-				WHERE group_id = " . $row['group_id'];
+            dibi::delete(SESSIONS_TABLE)
+                ->where('session_user_id = %i', $user_id)
+                ->execute();
 
-			if (!$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, 'Could not delete group for this user', '', __LINE__, __FILE__, $sql);
-			}
-
-			$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
-				WHERE user_id = $user_id";
-
-			if ( !$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, 'Could not delete user from topic watch table', '', __LINE__, __FILE__, $sql);
-			}
-			
-			$sql = "DELETE FROM " . BANLIST_TABLE . "
-				WHERE ban_userid = $user_id";
-
-			if ( !$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, 'Could not delete user from banlist table', '', __LINE__, __FILE__, $sql);
-			}
-
-			$sql = "DELETE FROM " . SESSIONS_TABLE . "
-				WHERE session_user_id = $user_id";
-
-			if ( !$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, 'Could not delete sessions for this user', '', __LINE__, __FILE__, $sql);
-			}
-			
-			$sql = "DELETE FROM " . SESSIONS_KEYS_TABLE . "
-				WHERE user_id = $user_id";
-
-			if ( !$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, 'Could not delete auto-login keys for this user', '', __LINE__, __FILE__, $sql);
-			}
+            dibi::delete(SESSIONS_KEYS_TABLE)
+                ->where('user_id = %i', $user_id)
+                ->execute();
 
 			$sql = "SELECT privmsgs_id
 				FROM " . PRIVMSGS_TABLE . "
 				WHERE privmsgs_from_userid = $user_id 
 					OR privmsgs_to_userid = $user_id";
-			if ( !($result = $db->sql_query($sql)) )
-			{
+
+			if ( !($result = $db->sql_query($sql)) ) {
 				message_die(GENERAL_ERROR, 'Could not select all users private messages', '', __LINE__, __FILE__, $sql);
 			}
 
@@ -589,12 +565,9 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 				
 				// Delete user session, to prevent the user navigating the forum (if logged in) when disabled
 				if (!$user_status) {
-					$sql = "DELETE FROM " . SESSIONS_TABLE . " 
-						WHERE session_user_id = " . $user_id;
-
-					if ( !$db->sql_query($sql) ) {
-						message_die(GENERAL_ERROR, 'Error removing user session', '', __LINE__, __FILE__, $sql);
-					}
+				    dibi::delete(SESSIONS_TABLE)
+                        ->where('session_user_id = %i', $user_id)
+                        ->execute();
 				}
 
 				// We remove all stored login keys since the password has been updated
