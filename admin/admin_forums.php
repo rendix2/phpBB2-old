@@ -707,26 +707,17 @@ if (!empty($mode) ) {
 
 			$db->sql_freeresult($result2);
 
-			$sql = "DELETE FROM " . FORUMS_TABLE . "
-				WHERE forum_id = $from_id";
+            dibi::delete(FORUMS_TABLE)
+                ->where('forum_id = %i', $from_id)
+                ->execute();
 
-			if (!$result = $db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, "Couldn't delete forum", "", __LINE__, __FILE__, $sql);
-			}
+			dibi::delete(AUTH_ACCESS_TABLE)
+                ->where('forum_id = %i', $from_id)
+                ->execute();
 
-			$sql = "DELETE FROM " . AUTH_ACCESS_TABLE . "
-				WHERE forum_id = $from_id";
-
-			if (!$result = $db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, "Couldn't delete forum", "", __LINE__, __FILE__, $sql);
-			}
-
-			$sql = "DELETE FROM " . PRUNE_TABLE . "
-				WHERE forum_id = $from_id";
-
-			if (!$result = $db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, "Couldn't delete forum prune information!", "", __LINE__, __FILE__, $sql);
-			}
+            dibi::delete(PRUNE_TABLE)
+                ->where('forum_id = %i', $from_id)
+                ->execute();
 
 			$message = $lang['Forums_updated'] . "<br /><br />" . sprintf($lang['Click_return_forumadmin'], "<a href=\"" . append_sid("admin_forums.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
 
@@ -819,12 +810,9 @@ if (!empty($mode) ) {
 				}
 			}
 
-			$sql = "DELETE FROM " . CATEGORIES_TABLE ."
-				WHERE cat_id = $from_id";
-
-			if (!$result = $db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, "Couldn't delete category", "", __LINE__, __FILE__, $sql);
-			}
+			dibi::delete(CATEGORIES_TABLE)
+                ->where('cat_id = %i', $from_id)
+                ->execute();
 
 			$message = $lang['Forums_updated'] . "<br /><br />" . sprintf($lang['Click_return_forumadmin'], "<a href=\"" . append_sid("admin_forums.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
 

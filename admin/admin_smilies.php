@@ -286,14 +286,9 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 			$confirm = isset($_POST['confirm']);
 
 			if ($confirm ) {
-				$sql = "DELETE FROM " . SMILIES_TABLE . "
-					WHERE smilies_id = " . $smiley_id;
-
-				$result = $db->sql_query($sql);
-
-				if (!$result ) {
-					message_die(GENERAL_ERROR, "Couldn't delete smiley", "", __LINE__, __FILE__, $sql);
-				}
+			    dibi::delete(SMILIES_TABLE)
+                    ->where('smilies_id = %i', $smiley_id)
+                    ->execute();
 
 				$message = $lang['smiley_del_success'] . "<br /><br />" . sprintf($lang['Click_return_smileadmin'], "<a href=\"" . append_sid("admin_smilies.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
 

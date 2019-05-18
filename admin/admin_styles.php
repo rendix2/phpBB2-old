@@ -789,29 +789,21 @@ switch( $mode )
 			// The user has confirmed the delete. Remove the style, the style element
 			// names and update any users who might be using this style
 			//
-			$sql = "DELETE FROM " . THEMES_TABLE . " 
-				WHERE themes_id = $style_id";
-
-			if (!$result = $db->sql_query($sql, BEGIN_TRANSACTION)) {
-				message_die(GENERAL_ERROR, "Could not remove style data!", "", __LINE__, __FILE__, $sql);
-			}
+            dibi::delete(THEMES_TABLE)
+                ->where('themes_id = %i', $style_id)
+                ->execute();
 			
 			//
 			// There may not be any theme name data so don't throw an error
 			// if the SQL dosan't work
 			//
-			$sql = "DELETE FROM " . THEMES_NAME_TABLE . " 
-				WHERE themes_id = $style_id";
+            dibi::delete(THEMES_NAME_TABLE)
+                ->where('themes_id = %i', $style_id)
+                ->execute();
 
-			$db->sql_query($sql);
-
-			$sql = "UPDATE " . USERS_TABLE . " 
-				SET user_style = " . $board_config['default_style'] . " 
-				WHERE user_style = $style_id";
-
-			if (!$result = $db->sql_query($sql, END_TRANSACTION)) {
-				message_die(GENERAL_ERROR, "Could not update user style information", "", __LINE__, __FILE__, $sql);
-			}
+            dibi::update(USERS_TABLE, ['user_style' => $board_config['default_style']])
+                ->where('user_style = %i', $style_id)
+                ->execute();
 			
 			$message = $lang['Style_removed'] . "<br /><br />" . sprintf($lang['Click_return_styleadmin'], "<a href=\"" . append_sid("admin_styles.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
 

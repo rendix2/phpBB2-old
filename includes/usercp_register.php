@@ -279,13 +279,10 @@ if ( isset($_POST['submit']) )
 					$error = TRUE;
 					$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Confirm_code_wrong'];
 				} else {
-					$sql = 'DELETE FROM ' . CONFIRM_TABLE . " 
-						WHERE confirm_id = '$confirm_id' 
-							AND session_id = '" . $userdata['session_id'] . "'";
-
-					if (!$db->sql_query($sql)) {
-						message_die(GENERAL_ERROR, 'Could not delete confirmation code', '', __LINE__, __FILE__, $sql);
-					}
+				    dibi::delete(CONFIRM_TABLE)
+                        ->where('confirm_id = %i', $confirm_id)
+                        ->where('session_id = %s', $userdata['session_id'])
+                        ->execute();
 				}
 			} else {
 				$error = TRUE;

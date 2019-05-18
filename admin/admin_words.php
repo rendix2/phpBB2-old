@@ -148,12 +148,9 @@ if ($mode != "" )
 		$confirm = isset($_POST['confirm']);
 
 		if ($word_id && $confirm ) {
-			$sql = "DELETE FROM " . WORDS_TABLE . " 
-				WHERE word_id = $word_id";
-
-			if (!$result = $db->sql_query($sql)) {
-				message_die(GENERAL_ERROR, "Could not remove data from words table", $lang['Error'], __LINE__, __FILE__, $sql);
-			}
+		    dibi::delete(WORDS_TABLE)
+                ->where('word_id = %i', $word_id)
+                ->execute();
 
 			$message = $lang['Word_removed'] . "<br /><br />" . sprintf($lang['Click_return_wordadmin'], "<a href=\"" . append_sid("admin_words.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
 

@@ -474,12 +474,9 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 					message_die(GENERAL_ERROR, 'Error in deleting post', '', __LINE__, __FILE__, $sql);
 				}
 
-				$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
-					WHERE topic_id = $topic_id";
-
-				if (!$db->sql_query($sql)) {
-					message_die(GENERAL_ERROR, 'Error in deleting post', '', __LINE__, __FILE__, $sql);
-				}
+				dibi::delete(TOPICS_WATCH_TABLE)
+                    ->where('topic_id = %i', $topic_id)
+                    ->execute();
 			}
 		}
 

@@ -174,13 +174,10 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 				message_die(GENERAL_ERROR, 'Could not update user level', '', __LINE__, __FILE__, $sql);
 			}
 
-			$sql = "DELETE FROM " . AUTH_ACCESS_TABLE . "
-				WHERE group_id = $group_id 
-					AND auth_mod = 0";
-
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, "Couldn't delete auth access info", "", __LINE__, __FILE__, $sql);
-			}
+			dibi::delete(AUTH_ACCESS_TABLE)
+                ->where('group_id = %i', $group_id)
+                ->where('auth_mod = %i', 0)
+                ->execute();
 
 			//
 			// Delete any entries in auth_access, they are not required if user is becoming an
