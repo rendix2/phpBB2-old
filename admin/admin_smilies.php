@@ -456,13 +456,14 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 			//
 			// Save the data to the smiley table.
 			//
-			$sql = "INSERT INTO " . SMILIES_TABLE . " (code, smile_url, emoticon)
-				VALUES ('" . str_replace("\'", "''", $smile_code) . "', '" . str_replace("\'", "''", $smile_url) . "', '" . str_replace("\'", "''", $smile_emotion) . "')";
-			$result = $db->sql_query($sql);
 
-            if (!$result) {
-				message_die(GENERAL_ERROR, "Couldn't insert new smiley", "", __LINE__, __FILE__, $sql);
-			}
+            $insert_data = [
+                'code' => $smile_code,
+                'smile_url' => $smile_url,
+                'emoticon' => $smile_emotion
+            ];
+
+            dibi::insert(SMILIES_TABLE, $insert_data)->execute();
 
 			$message = $lang['smiley_add_success'] . "<br /><br />" . sprintf($lang['Click_return_smileadmin'], "<a href=\"" . append_sid("admin_smilies.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
 

@@ -649,17 +649,26 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
 		mt_srand ((double) microtime() * 1000000);
 		$search_id = mt_rand();
 
-		$sql = "UPDATE " . SEARCH_TABLE . " 
-			SET search_id = $search_id, search_time = $current_time, search_array = '" . str_replace("\'", "''", $result_array) . "'
-			WHERE session_id = '" . $userdata['session_id'] . "'";
+        $update_data = [
+            'search_id' => $search_id,
+            'search_time' => $current_time,
+            'search_array' => $result_array
+        ];
 
-        if (!($result = $db->sql_query($sql)) || !$db->sql_affectedrows()) {
-			$sql = "INSERT INTO " . SEARCH_TABLE . " (search_id, session_id, search_time, search_array) 
-				VALUES($search_id, '" . $userdata['session_id'] . "', $current_time, '" . str_replace("\'", "''", $result_array) . "')";
+		dibi::update(SEARCH_TABLE, $update_data)
+            ->where('session_id = %s', $userdata['session_id'])
+            ->execute();
 
-            if (!($result = $db->sql_query($sql))) {
-                message_die(GENERAL_ERROR, 'Could not insert search results', '', __LINE__, __FILE__, $sql);
-            }
+        if (!dibi::getAffectedRows()) {
+            $insert_data = [
+                'search_id' => $search_id,
+                'session_id' => $userdata['session_id'],
+                'search_time' => $current_time,
+                'search_array' => $result_array
+
+            ];
+
+            dibi::insert(SEARCH_TABLE, $insert_data)->execute();
 		}
 	}
 	else

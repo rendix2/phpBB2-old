@@ -184,12 +184,12 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 						$value_sql .= ( ( $value_sql != '' ) ? ' UNION ALL ' : '' ) . "SELECT '" . $word[$i] . "', 0";
 						break;
 					default:
-						$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text, word_common) 
-							VALUES ('" . $word[$i] . "', 0)";
+					    $insert_data = [
+					        'word_text' => $word[$i],
+                            'word_common' => 0
+                        ];
 
-						if (!$db->sql_query($sql) ) {
-							message_die(GENERAL_ERROR, 'Could not insert new word', '', __LINE__, __FILE__, $sql);
-						}
+					    dibi::insert(SEARCH_WORD_TABLE, $insert_data)->execute();
 						break;
 				}
 			}

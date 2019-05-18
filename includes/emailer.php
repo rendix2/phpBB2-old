@@ -215,13 +215,9 @@ class emailer
 			{
 				$to = ' ';
 
-				$sql = "UPDATE " . CONFIG_TABLE . " 
-					SET config_value = '1'
-					WHERE config_name = 'sendmail_fix'";
-				if (!$db->sql_query($sql))
-				{
-					message_die(GENERAL_ERROR, 'Unable to update config table', '', __LINE__, __FILE__, $sql);
-				}
+				dibi::update(CONFIG_TABLE, ['config_value' => 1])
+                    ->where('config_name =  %s', 'sendmail_fix')
+                    ->execute();
 
 				$board_config['sendmail_fix'] = 1;
 				$result = @mail($to, $this->subject, preg_replace("#(?<!\r)\n#s", "\n", $this->msg), $this->extra_headers);

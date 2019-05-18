@@ -167,7 +167,7 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
     ];
 
 	dibi::update(SESSIONS_TABLE, $update_data)
-        ->where('session_ip = %i', $user_ip)
+        ->where('session_ip = %s', $user_ip)
         ->where('session_ip = %s', $user_ip)
         ->execute();
 
@@ -335,15 +335,14 @@ function session_pagestart($user_ip, $thispage_id)
 				//
 				if ( $current_time - $userdata['session_time'] > 60 ) {
 					// A little trick to reset session_admin on session re-usage
-					$update_admin = (!defined('IN_ADMIN') && $current_time - $userdata['session_time'] > ($board_config['session_length']+60)) ? ', session_admin = 0' : '';
 
-					$sql = "UPDATE " . SESSIONS_TABLE . " 
-						SET session_time = $current_time, session_page = $thispage_id$update_admin
-						WHERE session_id = '" . $userdata['session_id'] . "'";
-					
-					if ( !$db->sql_query($sql) ) {
-						message_die(CRITICAL_ERROR, 'Error updating sessions table', '', __LINE__, __FILE__, $sql);
-					}
+					if (!defined('IN_ADMIN') && $current_time - $userdata['session_time'] > ($board_config['session_length']+60)) {
+                        $update_data['session_admin'] = 0;
+                    }
+
+					dibi::update(SESSIONS_TABLE, $update_data)
+                        ->where('session_id = %s', $userdata['session_id'])
+                        ->execute();
 
 					if ( $userdata['user_id'] != ANONYMOUS ) {
 					    dibi::update(USERS_TABLE, ['user_session_time' => $current_time, 'user_session_page' => $thispage_id])

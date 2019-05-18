@@ -1182,12 +1182,38 @@ if ( $mode == 'newpm' ) {
 				}
 			}
 
-			$sql_info = "INSERT INTO " . PRIVMSGS_TABLE . " (privmsgs_type, privmsgs_subject, privmsgs_from_userid, privmsgs_to_userid, privmsgs_date, privmsgs_ip, privmsgs_enable_html, privmsgs_enable_bbcode, privmsgs_enable_smilies, privmsgs_attach_sig)
-				VALUES (" . PRIVMSGS_NEW_MAIL . ", '" . str_replace("\'", "''", $privmsg_subject) . "', " . $userdata['user_id'] . ", " . $to_userdata['user_id'] . ", $msg_time, '$user_ip', $html_on, $bbcode_on, $smilies_on, $attach_sig)";
+            $insert_data = [
+                'privmsgs_type' => PRIVMSGS_NEW_MAIL,
+                'privmsgs_subject' => $privmsg_subject,
+                'privmsgs_from_userid' => $userdata['user_id'],
+                'privmsgs_to_userid' => $to_userdata['user_id'],
+                'privmsgs_date' => $msg_time,
+                'privmsgs_ip' => $user_ip,
+                'privmsgs_enable_html' => $html_on,
+                'privmsgs_enable_bbcode' => $bbcode_on,
+                'privmsgs_enable_smilies' => $smilies_on,
+                'privmsgs_attach_sig' => $attach_sig
+            ];
+
+			dibi::insert(PRIVMSGS_TABLE, $insert_data)
+                ->execute();
 		} else {
-			$sql_info = "UPDATE " . PRIVMSGS_TABLE . "
-				SET privmsgs_type = " . PRIVMSGS_NEW_MAIL . ", privmsgs_subject = '" . str_replace("\'", "''", $privmsg_subject) . "', privmsgs_from_userid = " . $userdata['user_id'] . ", privmsgs_to_userid = " . $to_userdata['user_id'] . ", privmsgs_date = $msg_time, privmsgs_ip = '$user_ip', privmsgs_enable_html = $html_on, privmsgs_enable_bbcode = $bbcode_on, privmsgs_enable_smilies = $smilies_on, privmsgs_attach_sig = $attach_sig 
-				WHERE privmsgs_id = $privmsg_id";
+		    $update_data = [
+		        'privmsgs_type' => PRIVMSGS_NEW_MAIL,
+                'privmsgs_subject' => $privmsg_subject,
+                'privmsgs_from_userid' => $userdata['user_id'],
+                'privmsgs_to_userid' => $to_userdata['user_id'],
+                'privmsgs_date' => $msg_time,
+                'privmsgs_ip' => $user_ip,
+                'privmsgs_enable_html' => $html_on,
+                'privmsgs_enable_bbcode' => $bbcode_on,
+                'privmsgs_enable_smilies' => $smilies_on,
+                'privmsgs_attach_sig' => $attach_sig
+            ];
+
+		    dibi::update(PRIVMSGS_TABLE, $update_data)
+                ->where('privmsgs_id = %i', $privmsg_id)
+                ->execute();
 		}
 
 		if ( !($result = $db->sql_query($sql_info, BEGIN_TRANSACTION)) ) {
@@ -1197,18 +1223,23 @@ if ( $mode == 'newpm' ) {
 		if ( $mode != 'edit' ) {
 			$privmsg_sent_id = $db->sql_nextid();
 
-			$sql = "INSERT INTO " . PRIVMSGS_TEXT_TABLE . " (privmsgs_text_id, privmsgs_bbcode_uid, privmsgs_text)
-				VALUES ($privmsg_sent_id, '" . $bbcode_uid . "', '" . str_replace("\'", "''", $privmsg_message) . "')";
-		} else {
-			$sql = "UPDATE " . PRIVMSGS_TEXT_TABLE . "
-				SET privmsgs_text = '" . str_replace("\'", "''", $privmsg_message) . "', privmsgs_bbcode_uid = '$bbcode_uid' 
-				WHERE privmsgs_text_id = $privmsg_id";
-		}
+			$insert_data = [
+			    'privmsgs_text_id' => $privmsg_sent_id,
+                'privmsgs_bbcode_uid' => $bbcode_uid,
+                'privmsgs_text' => $privmsg_message
+            ];
 
-        if (!$db->sql_query($sql, END_TRANSACTION)) {
-            message_die(GENERAL_ERROR, "Could not insert/update private message sent text.", "", __LINE__, __FILE__,
-                $sql);
-        }
+			dibi::insert(PRIVMSGS_TEXT_TABLE, $insert_data)->execute();
+		} else {
+		    $update_data = [
+		        'privmsgs_text' =>   $privmsg_message,
+                'privmsgs_bbcode_uid' => $bbcode_uid
+            ];
+
+		    dibi::update(PRIVMSGS_TEXT_TABLE, $update_data)
+                ->where('privmsgs_text_id = %i', $privmsg_id)
+                ->execute();
+		}
 
 		if ( $mode != 'edit' ) {
 			//
@@ -1702,14 +1733,10 @@ if (!$db->sql_query($sql)) {
         $sql);
 }
 
-$sql = "UPDATE " . PRIVMSGS_TABLE . "
-	SET privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " 
-	WHERE privmsgs_type = " . PRIVMSGS_NEW_MAIL . " 
-		AND privmsgs_to_userid = " . $userdata['user_id'];
-
-if (!$db->sql_query($sql)) {
-	message_die(GENERAL_ERROR, 'Could not update private message new/read status (2) for user', '', __LINE__, __FILE__, $sql);
-}
+dibi::update(PRIVMSGS_TABLE, ['privmsgs_type' => PRIVMSGS_UNREAD_MAIL])
+    ->where('privmsgs_type = %i', PRIVMSGS_NEW_MAIL)
+    ->where('privmsgs_to_userid = %i', $userdata['user_id'])
+    ->execute();
 
 //
 // Reset PM counters

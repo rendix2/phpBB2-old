@@ -207,7 +207,7 @@ if ($mode != "" ) {
 				->execute();
 
 			if (!$result) {
-				message_die(GENERAL_ERROR, $lang['No_update_ranks'];
+				message_die(GENERAL_ERROR, $lang['No_update_ranks']);
 			}
 
 			$message = $lang['Rank_removed'] . "<br /><br />" . sprintf($lang['Click_return_rankadmin'], "<a href=\"" . append_sid("admin_ranks.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");

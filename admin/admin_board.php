@@ -63,13 +63,9 @@ if (!$result = $db->sql_query($sql)) {
 		}
 
 		if (isset($_POST['submit']) ) {
-			$sql = "UPDATE " . CONFIG_TABLE . " SET
-				config_value = '" . str_replace("\'", "''", $new[$config_name]) . "'
-				WHERE config_name = '$config_name'";
-
-			if (!$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, "Failed to update general configuration for $config_name", "", __LINE__, __FILE__, $sql);
-			}
+			dibi::update(CONFIG_TABLE, ['config_value' => $new[$config_name]])
+				->where('config_name = %s', $config_name)
+				->execute();
 		}
 	}
 

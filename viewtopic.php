@@ -730,13 +730,9 @@ if ( !empty($forum_topic_data['topic_vote']) ) {
 //
 // Update the topic view counter
 //
-$sql = "UPDATE " . TOPICS_TABLE . "
-	SET topic_views = topic_views + 1
-	WHERE topic_id = $topic_id"; 
-
-if ( !$db->sql_query($sql) ) {
-	message_die(GENERAL_ERROR, "Could not update topic views.", '', __LINE__, __FILE__, $sql);
-}
+dibi::update(TOPICS_TABLE, ['topic_views%sql' => 'topic_views + 1'])
+    ->where('topic_id = %i', $topic_id)
+    ->execute();
 
 //
 // Okay, let's do the loop, yeah come on baby let's do the loop

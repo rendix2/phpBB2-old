@@ -59,16 +59,19 @@ if ((int)$board_config['require_activation'] == USER_ACTIVATION_ADMIN && $row['u
     }
 }
 
-$sql_update_pass = ($row['user_newpasswd'] != '') ? ", user_password = '" . str_replace("\'", "''",
-        $row['user_newpasswd']) . "', user_newpasswd = ''" : '';
+$update_data = [
+    'user_active' => 1,
+    'user_actkey' => ''
+];
 
-$sql = "UPDATE " . USERS_TABLE . "
-			SET user_active = 1, user_actkey = ''" . $sql_update_pass . " 
-			WHERE user_id = " . $row['user_id'];
-
-if (!($result = $db->sql_query($sql))) {
-    message_die(GENERAL_ERROR, 'Could not update users table', '', __LINE__, __FILE__, $sql_update);
+if ($row['user_newpasswd'] != '') {
+    $update_data['user_password'] = $row['user_newpasswd'];
+    $update_data['user_newpasswd'] = '';
 }
+
+dibi::update(USERS_TABLE, $update_data)
+    ->where('user_id = %i', $row['user_id'])
+    ->execute();
 
 if ((int)$board_config['require_activation'] == USER_ACTIVATION_ADMIN && $sql_update_pass == '') {
     include $phpbb_root_path . 'includes/emailer.php';

@@ -413,13 +413,17 @@ if (!empty($mode) ) {
 				}
 			}
 
-			$sql = "UPDATE " . FORUMS_TABLE . "
-				SET forum_name = '" . str_replace("\'", "''", $_POST['forumname']) . "', cat_id = " . (int)$_POST[POST_CAT_URL] . ", forum_desc = '" . str_replace("\'", "''", $_POST['forumdesc']) . "', forum_status = " . (int)$_POST['forumstatus'] . ", prune_enable = " . (int)$_POST['prune_enable'] . "
-				WHERE forum_id = " . (int)$_POST[POST_FORUM_URL];
+			$update_data = [
+			    'forum_name'   => $_POST['forumname'],
+                'cat_id'       => (int)$_POST[POST_CAT_URL],
+                'forum_desc'   => $_POST['forumdesc'],
+                'forum_status' => (int)$_POST['forumstatus'],
+                'prune_enable' => (int)$_POST['prune_enable']
+            ];
 
-			if (!$result = $db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, "Couldn't update forum information", "", __LINE__, __FILE__, $sql);
-			}
+			dibi::update($update_data, FORUMS_TABLE)
+                ->where('forum_id = %i', (int)$_POST[POST_FORUM_URL])
+                ->execute();
 
 			if ($_POST['prune_enable'] == 1 ) {
 				if ($_POST['prune_days'] == "" || $_POST['prune_freq'] == "" ) {

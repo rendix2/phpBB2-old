@@ -494,13 +494,9 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 				    dibi::insert(USER_GROUP_TABLE, $insert_data)->execute();
 					
 					if ( $row['user_level'] != ADMIN && $row['user_level'] != MOD && $group_info['auth_mod'] ) {
-						$sql = "UPDATE " . USERS_TABLE . " 
-							SET user_level = " . MOD . " 
-							WHERE user_id = " . $row['user_id'];
-
-						if ( !$db->sql_query($sql) ) {
-							message_die(GENERAL_ERROR, 'Could not update user level', '', __LINE__, __FILE__, $sql);
-						}
+					    dibi::update(USERS_TABLE, ['user_level' => MOD])
+                            ->where('user_id = %i', $row['user_id'])
+                            ->execute();
 					}
 
 					//
