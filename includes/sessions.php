@@ -95,10 +95,13 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
                 ->where('user_id = %i', (int) $user_id)
                 ->where('user_active = %i', 1)
                 ->fetch();
-			
+
 			if (!$userdata) {
 				message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch', '', __LINE__, __FILE__, $sql);
 			}
+
+			// we need it as array, no object.. :(
+			$userdata = $userdata->toArray();
 
 			$login = 1;
 		}
