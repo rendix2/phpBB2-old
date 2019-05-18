@@ -129,13 +129,15 @@ function sync($type, $id = false)
 			if ( $row = $db->sql_fetchrow($result) ) {
 				if ($row['total_posts']) {
 					// Correct the details of this topic
-					$sql = 'UPDATE ' . TOPICS_TABLE . ' 
-						SET topic_replies = ' . ($row['total_posts'] - 1) . ', topic_first_post_id = ' . $row['first_post'] . ', topic_last_post_id = ' . $row['last_post'] . "
-						WHERE topic_id = $id";
+                    $update_data = [
+                        'topic_replies' => $row['total_posts'] - 1,
+                        'topic_first_post_id' => $row['first_post'],
+                        'topic_last_post_id' => $row['last_post']
+                    ];
 
-					if (!$db->sql_query($sql)) {
-						message_die(GENERAL_ERROR, 'Could not update topic', '', __LINE__, __FILE__, $sql);
-					}
+                    dibi::update(TOPICS_TABLE, $update_data)
+                        ->where('topic_id = %i', $id)
+                        ->execute();
 				} else {
 					// There are no replies to this topic
 					// Check if it is a move stub

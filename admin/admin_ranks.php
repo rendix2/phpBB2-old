@@ -155,20 +155,29 @@ if ($mode != "" ) {
 					->execute();
 			}
 
-			$sql = "UPDATE " . RANKS_TABLE . "
-				SET rank_title = '" . str_replace("\'", "''", $rank_title) . "', rank_special = $special_rank, rank_min = $min_posts, rank_image = '" . str_replace("\'", "''", $rank_image) . "'
-				WHERE rank_id = $rank_id";
+			$update_data = [
+				'rank_title' => $rank_title,
+				'rank_special' => $special_rank,
+				'rank_min' => $min_posts,
+				'rank_image' => $rank_image
+			];
+
+			dibi::update(RANKS_TABLE, $update_data)
+				->where('rank_id = %i', $rank_id)
+				->execute();
 
 			$message = $lang['Rank_updated'];
 		} else {
-			$sql = "INSERT INTO " . RANKS_TABLE . " (rank_title, rank_special, rank_min, rank_image)
-				VALUES ('" . str_replace("\'", "''", $rank_title) . "', $special_rank, $min_posts, '" . str_replace("\'", "''", $rank_image) . "')";
+			$insert_data = [
+				'rank_title' => $rank_title,
+				'rank_special' => $special_rank,
+				'rank_min' => $min_posts,
+				'rank_image' => $rank_image
+			];
+
+			dibi::insert(RANKS_TABLE, $insert_data)->execute();
 
 			$message = $lang['Rank_added'];
-		}
-		
-		if (!$result = $db->sql_query($sql) ) {
-			message_die(GENERAL_ERROR, "Couldn't update/insert into ranks table", "", __LINE__, __FILE__, $sql);
 		}
 
 		$message .= "<br /><br />" . sprintf($lang['Click_return_rankadmin'], "<a href=\"" . append_sid("admin_ranks.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");

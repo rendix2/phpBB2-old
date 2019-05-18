@@ -141,24 +141,25 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 
 				if ($smiles[$k] == 1 ) {
 					if (!empty($replace_existing) ) {
-						$sql = "UPDATE " . SMILIES_TABLE . " 
-							SET smile_url = '" . str_replace("\'", "''", $smile_data[0]) . "', emoticon = '" . str_replace("\'", "''", $smile_data[1]) . "' 
-							WHERE code = '" . str_replace("\'", "''", $smile_data[$j]) . "'";
-					} else {
-						$sql = '';
+					    $update_data = [
+                            'smile_url' => $smile_data[0],
+                            'emoticon' => $smile_data[1],
+                        ];
+
+					    dibi::update(SMILIES_TABLE, $update_data)
+                            ->where('code = %s', $smile_data[$j])
+                            ->execute();
 					}
 				} else {
-					$sql = "INSERT INTO " . SMILIES_TABLE . " (code, smile_url, emoticon)
-						VALUES('" . str_replace("\'", "''", $smile_data[$j]) . "', '" . str_replace("\'", "''", $smile_data[0]) . "', '" . str_replace("\'", "''", $smile_data[1]) . "')";
+				    $insert_data = [
+				        'code' => $smile_data[$j],
+                        'smile_url' => $smile_data[0],
+                        'emoticon' => $smile_data[1]
+                    ];
+
+				    dibi::insert(SMILIES_TABLE, $insert_data)->execute();
 				}
 
-				if ($sql != '' ) {
-					$result = $db->sql_query($sql);
-
-					if (!$result ) {
-						message_die(GENERAL_ERROR, "Couldn't update smilies!", "", __LINE__, __FILE__, $sql);
-					}
-				}
 			}
 		}
 
@@ -409,13 +410,16 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 			//
 			// Proceed with updating the smiley table.
 			//
-			$sql = "UPDATE " . SMILIES_TABLE . "
-				SET code = '" . str_replace("\'", "''", $smile_code) . "', smile_url = '" . str_replace("\'", "''", $smile_url) . "', emoticon = '" . str_replace("\'", "''", $smile_emotion) . "'
-				WHERE smilies_id = $smile_id";
 
-            if (!($result = $db->sql_query($sql))) {
-                message_die(GENERAL_ERROR, "Couldn't update smilies info", "", __LINE__, __FILE__, $sql);
-            }
+            $update_data = [
+                'code' => $smile_code,
+                'smile_url' => $smile_url,
+                'emoticon' =>$smile_emotion
+            ];
+
+            dibi::update(SMILIES_TABLE, $update_data)
+                ->where('smilies_id = %i', $smiley_id)
+                ->execute();
 
 			$message = $lang['smiley_edit_success'] . "<br /><br />" . sprintf($lang['Click_return_smileadmin'], "<a href=\"" . append_sid("admin_smilies.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
 

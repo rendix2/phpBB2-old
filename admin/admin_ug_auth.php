@@ -166,13 +166,9 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 		// Make user an admin (if already user)
 		//
 		if ($userdata['user_id'] != $user_id ) {
-			$sql = "UPDATE " . USERS_TABLE . "
-				SET user_level = " . ADMIN . "
-				WHERE user_id = $user_id";
-
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, 'Could not update user level', '', __LINE__, __FILE__, $sql);
-			}
+		    dibi::update(USERS_TABLE, ['user_level' => ADMIN])
+                ->where('user_id = %i', $user_id)
+                ->execute();
 
 			dibi::delete(AUTH_ACCESS_TABLE)
                 ->where('group_id = %i', $group_id)
@@ -184,13 +180,20 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 			// admin
 			//
 
-			$sql = "UPDATE " . AUTH_ACCESS_TABLE . "
-				SET auth_view = 0, auth_read = 0, auth_post = 0, auth_reply = 0, auth_edit = 0, auth_delete = 0, auth_sticky = 0, auth_announce = 0
-				WHERE group_id = $group_id";
+            $update_data = [
+                'auth_view' => 0,
+                'auth_read' => 0,
+                'auth_post' => 0,
+                'auth_reply' => 0,
+                'auth_edit' => 0,
+                'auth_delete' => 0,
+                'auth_sticky' => 0,
+                'auth_announce' => 0
+            ];
 
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, "Couldn't update auth access", "", __LINE__, __FILE__, $sql);
-			}
+            dibi::update(AUTH_ACCESS_TABLE, $update_data)
+                ->where('group_id = %i', $group_id)
+                ->execute();
 		}
 
 		$message = $lang['Auth_updated'] . '<br /><br />' . sprintf($lang['Click_return_userauth'], '<a href="' . append_sid("admin_ug_auth.php?mode=$mode") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');
@@ -202,24 +205,27 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 			// to change yourself from an admin to user!
 			//
 			if ($userdata['user_id'] != $user_id ) {
-				$sql = "UPDATE " . AUTH_ACCESS_TABLE . "
-					SET auth_view = 0, auth_read = 0, auth_post = 0, auth_reply = 0, auth_edit = 0, auth_delete = 0, auth_sticky = 0, auth_announce = 0
-					WHERE group_id = $group_id";
+                $update_data = [
+                    'auth_view' => 0,
+                    'auth_read' => 0,
+                    'auth_post' => 0,
+                    'auth_reply' => 0,
+                    'auth_edit' => 0,
+                    'auth_delete' => 0,
+                    'auth_sticky' => 0,
+                    'auth_announce' => 0
+                ];
 
-				if ( !($result = $db->sql_query($sql)) ) {
-					message_die(GENERAL_ERROR, 'Could not update auth access', '', __LINE__, __FILE__, $sql);
-				}
+                dibi::update(AUTH_ACCESS_TABLE, $update_data)
+                    ->where('group_id = %i', $group_id)
+                    ->execute();
 
-				//
-				// Update users level, reset to USER
-				//
-				$sql = "UPDATE " . USERS_TABLE . "
-					SET user_level = " . USER . "
-					WHERE user_id = $user_id";
-
-				if ( !($result = $db->sql_query($sql)) ) {
-					message_die(GENERAL_ERROR, 'Could not update user level', '', __LINE__, __FILE__, $sql);
-				}
+                //
+                // Update users level, reset to USER
+                //
+				dibi::update(USERS_TABLE, ['user_level' => USER])
+                    ->where('user_id = %i', $user_id)
+                    ->execute();
 			}
 
 			$message = $lang['Auth_updated'] . '<br /><br />' . sprintf($lang['Click_return_userauth'], '<a href="' . append_sid("admin_ug_auth.php?mode=$mode") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');

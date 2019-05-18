@@ -119,19 +119,25 @@ if ($mode != "" )
 		}
 
 		if ($word_id ) {
-			$sql = "UPDATE " . WORDS_TABLE . " 
-				SET word = '" . str_replace("\'", "''", $word) . "', replacement = '" . str_replace("\'", "''", $replacement) . "' 
-				WHERE word_id = $word_id";
+		    $update_data = [
+		        'word' => $word,
+                'replacement' => $replacement
+            ];
+
+            dibi::update(WORDS_TABLE, $update_data)
+                ->where('word_id = %i', $word_id)
+                ->execute();
 
 			$message = $lang['Word_updated'];
 		} else {
-			$sql = "INSERT INTO " . WORDS_TABLE . " (word, replacement) 
-				VALUES ('" . str_replace("\'", "''", $word) . "', '" . str_replace("\'", "''", $replacement) . "')";
-			$message = $lang['Word_added'];
-		}
+		    $insert_data = [
+		        'word' => $word,
+                'replacement' => $replacement
+            ];
 
-		if (!$result = $db->sql_query($sql)) {
-			message_die(GENERAL_ERROR, "Could not insert data into words table", $lang['Error'], __LINE__, __FILE__, $sql);
+		    dibi::insert(WORDS_TABLE, $insert_data)->execute();
+
+			$message = $lang['Word_added'];
 		}
 
 		$message .= "<br /><br />" . sprintf($lang['Click_return_wordadmin'], "<a href=\"" . append_sid("admin_words.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");

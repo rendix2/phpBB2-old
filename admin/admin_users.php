@@ -76,38 +76,28 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 			}
 
 			$row = $db->sql_fetchrow($result);
-			
-			$sql = "UPDATE " . POSTS_TABLE . "
-				SET poster_id = " . DELETED . ", post_username = '" . str_replace("\\'", "''", addslashes($this_userdata['username'])) . "' 
-				WHERE poster_id = $user_id";
 
-			if (!$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, 'Could not update posts for this user', '', __LINE__, __FILE__, $sql);
-			}
+			 $update_data = [
+                'poster_id' => DELETED,
+                 'post_username' => $this_userdata['username']
+             ];
 
-			$sql = "UPDATE " . TOPICS_TABLE . "
-				SET topic_poster = " . DELETED . " 
-				WHERE topic_poster = $user_id";
+            dibi::update(POSTS_TABLE, $update_data)
+                ->where('poster_id = %i', $user_id)
+                ->execute();
 
-			if (!$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, 'Could not update topics for this user', '', __LINE__, __FILE__, $sql);
-			}
-			
-			$sql = "UPDATE " . VOTE_USERS_TABLE . "
-				SET vote_user_id = " . DELETED . "
-				WHERE vote_user_id = $user_id";
 
-			if (!$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, 'Could not update votes for this user', '', __LINE__, __FILE__, $sql);
-			}
-			
-			$sql = "UPDATE " . GROUPS_TABLE . "
-				SET group_moderator = " . $userdata['user_id'] . "
-				WHERE group_moderator = $user_id";
+            dibi::update(TOPICS_TABLE, ['topic_poster' => DELETED])
+                ->where('topic_poster = %i', $user_id)
+                ->execute();
 
-			if (!$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, 'Could not update group moderators', '', __LINE__, __FILE__, $sql);
-			}
+            dibi::update(VOTE_USERS_TABLE, ['vote_user_id' => DELETED])
+                ->where('vote_user_id = %i', $user_id)
+                ->execute();
+
+            dibi::update(GROUPS_TABLE, ['group_moderator' => DELETED])
+                ->where('group_moderator = %i', $user_id)
+                ->execute();
 
 			dibi::delete(USERS_TABLE)
                 ->where('user_id = %i', $user_id)
@@ -548,19 +538,26 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 		// Update entry in DB
 		//
 		if (!$error ) {
+
+		    /*
+		    $update_data = [
+
+            ];
+
+		    dibi::update(USERS_TABLE, $update_data)
+                ->where('user_id = %i', $user_id)
+                ->execute();
+		    */
+
 			$sql = "UPDATE " . USERS_TABLE . "
 				SET " . $username_sql . $passwd_sql . "user_email = '" . str_replace("\'", "''", $email) . "', user_icq = '" . str_replace("\'", "''", $icq) . "', user_website = '" . str_replace("\'", "''", $website) . "', user_occ = '" . str_replace("\'", "''", $occupation) . "', user_from = '" . str_replace("\'", "''", $location) . "', user_interests = '" . str_replace("\'", "''", $interests) . "', user_sig = '" . str_replace("\'", "''", $signature) . "', user_viewemail = $viewemail, user_aim = '" . str_replace("\'", "''", $aim) . "', user_yim = '" . str_replace("\'", "''", $yim) . "', user_msnm = '" . str_replace("\'", "''", $msn) . "', user_attachsig = $attachsig, user_sig_bbcode_uid = '$signature_bbcode_uid', user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowavatar = $user_allowavatar, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_notify = $notifyreply, user_allow_pm = $user_allowpm, user_notify_pm = $notifypm, user_popup_pm = $popuppm, user_lang = '" . str_replace("\'", "''", $user_lang) . "', user_style = $user_style, user_timezone = $user_timezone, user_dateformat = '" . str_replace("\'", "''", $user_dateformat) . "', user_active = $user_status, user_rank = $user_rank" . $avatar_sql . "
 				WHERE user_id = $user_id";
 
 			if ($result = $db->sql_query($sql) ) {
 				if (isset($rename_user) ) {
-					$sql = "UPDATE " . GROUPS_TABLE . "
-						SET group_name = '".str_replace("\'", "''", $rename_user)."'
-						WHERE group_name = '".str_replace("'", "''", $this_userdata['username'] )."'";
-
-					if (!$result = $db->sql_query($sql) ) {
-						message_die(GENERAL_ERROR, 'Could not rename users group', '', __LINE__, __FILE__, $sql);
-					}
+				    dibi::update(GROUPS_TABLE, ['group_name' => $rename_user])
+                        ->where('group_name = %s', $this_userdata['username'])
+                        ->execute();
 				}
 				
 				// Delete user session, to prevent the user navigating the forum (if logged in) when disabled

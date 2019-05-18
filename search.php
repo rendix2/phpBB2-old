@@ -803,8 +803,6 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
 		$tracking_forums = isset($_COOKIE[$board_config['cookie_name'] . '_f']) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_f']) : [];
 
 		for ($i = 0; $i < count($searchset); $i++) {
-		    bdump($searchset[$i]);
-
 			$forum_url = append_sid("viewforum.php?" . POST_FORUM_URL . '=' . $searchset[$i]['forum_id']);
 			$topic_url = append_sid("viewtopic.php?" . POST_TOPIC_URL . '=' . $searchset[$i]['topic_id'] . "&amp;highlight=$highlight_active");
 			$post_url = append_sid("viewtopic.php?" . POST_POST_URL . '=' . $searchset[$i]['post_id'] . "&amp;highlight=$highlight_active") . '#' . $searchset[$i]['post_id'];
@@ -923,8 +921,7 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
 				$poster .= ( $searchset[$i]['user_id'] != ANONYMOUS ) ? $searchset[$i]['username'] : ( ( $searchset[$i]['post_username'] != "" ) ? $searchset[$i]['post_username'] : $lang['Guest'] );
 				$poster .= ( $searchset[$i]['user_id'] != ANONYMOUS ) ? '</a>' : '';
 
-				if ( $userdata['session_logged_in'] && $searchset[$i]['post_time'] > $userdata['user_lastvisit'] )
-				{
+                if ($userdata['session_logged_in'] && $searchset[$i]['post_time'] > $userdata['user_lastvisit']) {
                     if (!empty($tracking_topics[$topic_id]) && !empty($tracking_forums[$forum_id])) {
                         $topic_last_read = ($tracking_topics[$topic_id] > $tracking_forums[$forum_id]) ? $tracking_topics[$topic_id] : $tracking_forums[$forum_id];
                     } elseif (!empty($tracking_topics[$topic_id]) || !empty($tracking_forums[$forum_id])) {
@@ -965,11 +962,11 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
             } else {
 				$message = '';
 
-				if ( count($orig_word) ) {
-					$topic_title = preg_replace($orig_word, $replacement_word, $searchset[$i]['topic_title']);
-				}
+                if (count($orig_word)) {
+                    $topic_title = preg_replace($orig_word, $replacement_word, $searchset[$i]['topic_title']);
+                }
 
-				$topic_type = $searchset[$i]['topic_type'];
+                $topic_type = $searchset[$i]['topic_type'];
 
                 if ($topic_type == POST_ANNOUNCE) {
                     $topic_type = $lang['Topic_Announcement'] . ' ';
@@ -996,13 +993,13 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
 					for ($j = 0; $j < $replies + 1; $j += $board_config['posts_per_page']) {
 						$goto_page .= '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=" . $topic_id . "&amp;start=$j") . '">' . $times . '</a>';
 
-						if ( $times == 1 && $total_pages > 4 ) {
-							$goto_page .= ' ... ';
-							$times = $total_pages - 3;
-							$j += ( $total_pages - 4 ) * $board_config['posts_per_page'];
-						} elseif ( $times < $total_pages ) {
-							$goto_page .= ', ';
-						}
+                        if ($times == 1 && $total_pages > 4) {
+                            $goto_page .= ' ... ';
+                            $times = $total_pages - 3;
+                            $j += ($total_pages - 4) * $board_config['posts_per_page'];
+                        } elseif ($times < $total_pages) {
+                            $goto_page .= ', ';
+                        }
 
 						$times++;
 					}
@@ -1062,18 +1059,18 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
                                     }
                                 }
 
-								if ( $unread_topics ) {
-									$folder_image = $folder_new;
-									$folder_alt = $lang['New_posts'];
+                                if ($unread_topics) {
+                                    $folder_image = $folder_new;
+                                    $folder_alt = $lang['New_posts'];
 
-									$newest_post_img = '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
-								} else {
-									$folder_alt = ( $searchset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
+                                    $newest_post_img = '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
+                                } else {
+                                    $folder_alt = ($searchset[$i]['topic_status'] == TOPIC_LOCKED) ? $lang['Topic_locked'] : $lang['No_new_posts'];
 
-									$folder_image = $folder;
-									$folder_alt = $folder_alt;
-									$newest_post_img = '';
-								}
+                                    $folder_image = $folder;
+                                    $folder_alt = $folder_alt;
+                                    $newest_post_img = '';
+                                }
 
 							} elseif ( $searchset[$i]['post_time'] > $userdata['user_lastvisit'] )  {
 								$folder_image = $folder_new;

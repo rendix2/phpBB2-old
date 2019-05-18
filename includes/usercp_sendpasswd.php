@@ -49,14 +49,15 @@ if ( isset($_POST['submit']) ) {
 			$key_len = ($key_len > 6) ? $key_len : 6;
 			$user_actkey = substr($user_actkey, 0, $key_len);
 			$user_password = gen_rand_string(false);
-			
-			$sql = "UPDATE " . USERS_TABLE . " 
-				SET user_newpasswd = '" . md5($user_password) . "', user_actkey = '$user_actkey'  
-				WHERE user_id = " . $row['user_id'];
-			
-			if ( !$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, 'Could not update new password information', '', __LINE__, __FILE__, $sql);
-			}
+
+			$update_data = [
+			    'user_newpasswd' => md5($user_password),
+                'user_actkey' => $user_actkey
+            ];
+
+			dibi::update(USERS_TABLE, $update_data)
+                ->where('user_id = %i', $row['user_id'])
+                ->execute();
 
 			include $phpbb_root_path . 'includes/emailer.php';
 			$emailer = new emailer($board_config['smtp_delivery']);

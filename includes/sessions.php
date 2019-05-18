@@ -157,22 +157,36 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 	//
 	// Create or update the session
 	//
-	$sql = "UPDATE " . SESSIONS_TABLE . "
-		SET session_user_id = $user_id, session_start = $current_time, session_time = $current_time, session_page = $page_id, session_logged_in = $login, session_admin = $admin
-		WHERE session_id = '" . $session_id . "' 
-			AND session_ip = '$user_ip'";
-	
-	if ( !$db->sql_query($sql) || !$db->sql_affectedrows() ) {
-		$session_id = md5(dss_rand());
+    $update_data = [
+        'session_user_id' => $user_id,
+        'session_start' => $current_time,
+        'session_time' => $current_time,
+        'session_page' => $page_id,
+        'session_logged_in' => $login,
+        'session_admin' => $admin
+    ];
 
-		$sql = "INSERT INTO " . SESSIONS_TABLE . "
-			(session_id, session_user_id, session_start, session_time, session_ip, session_page, session_logged_in, session_admin)
-			VALUES ('$session_id', $user_id, $current_time, $current_time, '$user_ip', $page_id, $login, $admin)";
-		
-		if ( !$db->sql_query($sql) ) {
-			message_die(CRITICAL_ERROR, 'Error creating new session', '', __LINE__, __FILE__, $sql);
-		}
-	}
+	dibi::update(SESSIONS_TABLE, $update_data)
+        ->where('session_ip = %i', $user_ip)
+        ->where('session_ip = %s', $user_ip)
+        ->execute();
+
+    if(!dibi::getAffectedRows()) {
+        $session_id = md5(dss_rand());
+
+        $insert_data = [
+            'session_id' => $session_id,
+            'session_user_id' => $user_id,
+            'session_start' => $current_time,
+            'session_time' => $current_time,
+            'session_ip' => $user_ip,
+            'session_page' => $page_id,
+            'session_logged_in' => $login,
+            'session_admin' => $admin
+        ];
+
+        dibi::insert(SESSIONS_TABLE, $insert_data)->execute();
+    }
 
 	if ( $user_id != ANONYMOUS ) {
 		$last_visit = ( $userdata['user_session_time'] > 0 ) ? $userdata['user_session_time'] : $current_time; 

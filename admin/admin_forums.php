@@ -435,16 +435,22 @@ if (!empty($mode) ) {
 				}
 
 				if ($db->sql_numrows($result) > 0 ) {
-					$sql = "UPDATE " . PRUNE_TABLE . "
-						SET	prune_days = " . (int)$_POST['prune_days'] . ",	prune_freq = " . (int)$_POST['prune_freq'] . "
-				 		WHERE forum_id = " . (int)$_POST[POST_FORUM_URL];
-				} else {
-					$sql = "INSERT INTO " . PRUNE_TABLE . " (forum_id, prune_days, prune_freq)
-						VALUES(" . (int)$_POST[POST_FORUM_URL] . ", " . (int)$_POST['prune_days'] . ", " . (int)$_POST['prune_freq'] . ")";
-				}
+				    $update_data = [
+				        'prune_days' => (int)$_POST['prune_days'],
+                        'prune_freq' => (int)$_POST['prune_freq']
+                    ];
 
-				if (!$result = $db->sql_query($sql) ) {
-					message_die(GENERAL_ERROR, "Couldn't Update Forum Prune Information","",__LINE__, __FILE__, $sql);
+				    dibi::update(PRUNE_TABLE, $update_data)
+                        ->where('forum_id = %i', (int)$_POST[POST_FORUM_URL])
+                        ->execute();
+				} else {
+				    $insert_data = [
+				        'forum_id' => (int)$_POST[POST_FORUM_URL],
+                        'prune_days' => (int)$_POST['prune_days'],
+                        'prune_freq' => (int)$_POST['prune_freq']
+                    ];
+
+				    dibi::insert(PRUNE_TABLE, $insert_data)->execute();
 				}
 			}
 
@@ -460,16 +466,15 @@ if (!empty($mode) ) {
 				message_die(GENERAL_ERROR, "Can't create a category without a name");
 			}
 
-			$sql = "SELECT MAX(cat_order) AS max_order
-				FROM " . CATEGORIES_TABLE;
+			$max_order = dibi::select('MAX(cat_order)')
+                ->as('max_order')
+                ->from(CATEGORIES_TABLE)
+                ->fetchSingle();
 
-			if (!$result = $db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, "Couldn't get order number from categories table", "", __LINE__, __FILE__, $sql);
-			}
+			if (!$max_order) {
+                message_die(GENERAL_ERROR, "Couldn't get order number from categories table", "", __LINE__, __FILE__, $sql);
+            }
 
-			$row = $db->sql_fetchrow($result);
-
-			$max_order = $row['max_order'];
 			$next_order = $max_order + 10;
 
 			//
@@ -523,14 +528,10 @@ if (!empty($mode) ) {
 			break;
 
 		case 'modcat':
-			// Modify a category in the DB
-			$sql = "UPDATE " . CATEGORIES_TABLE . "
-				SET cat_title = '" . str_replace("\'", "''", $_POST['cat_title']) . "'
-				WHERE cat_id = " . (int)$_POST[POST_CAT_URL];
-
-			if (!$result = $db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, "Couldn't update forum information", "", __LINE__, __FILE__, $sql);
-			}
+            // Modify a category in the DB
+		    dibi::update(CATEGORIES_TABLE, ['cat_title' => $_POST['cat_title']])
+                ->where('cat_id = %i', (int)$_POST[POST_CAT_URL])
+                ->execute();
 
 			$message = $lang['Forums_updated'] . "<br /><br />" . sprintf($lang['Click_return_forumadmin'], "<a href=\"" . append_sid("admin_forums.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
 
@@ -637,21 +638,13 @@ if (!empty($mode) ) {
 					message_die(GENERAL_ERROR, "Ambiguous forum ID's", "", __LINE__, __FILE__);
 				}
 
-				$sql = "UPDATE " . TOPICS_TABLE . "
-					SET forum_id = $to_id
-					WHERE forum_id = $from_id";
+				dibi::update(TOPICS_TABLE, ['forum_id' => $to_id])
+                    ->where('forum_id = %i', $from_id)
+                    ->execute();
 
-				if (!$result = $db->sql_query($sql) ) {
-					message_die(GENERAL_ERROR, "Couldn't move topics to other forum", "", __LINE__, __FILE__, $sql);
-				}
-
-				$sql = "UPDATE " . POSTS_TABLE . "
-					SET	forum_id = $to_id
-					WHERE forum_id = $from_id";
-
-				if (!$result = $db->sql_query($sql) ) {
-					message_die(GENERAL_ERROR, "Couldn't move posts to other forum", "", __LINE__, __FILE__, $sql);
-				}
+				dibi::update(POSTS_TABLE, ['forum_id' => $to_id])
+                    ->where('forum_id = %i', $from_id)
+                    ->execute();
 
 				sync('forum', $to_id);
 			}
@@ -801,13 +794,9 @@ if (!empty($mode) ) {
 					message_die(GENERAL_ERROR, "Ambiguous category ID's", "", __LINE__, __FILE__);
 				}
 
-				$sql = "UPDATE " . FORUMS_TABLE . "
-					SET cat_id = $to_id
-					WHERE cat_id = $from_id";
-
-				if (!$result = $db->sql_query($sql) ) {
-					message_die(GENERAL_ERROR, "Couldn't move forums to other category", "", __LINE__, __FILE__, $sql);
-				}
+				dibi::update(FORUMS_TABLE, ['cat_id' => $to_id])
+                    ->where('cat_id = %i', $from_id)
+                    ->execute();
 			}
 
 			dibi::delete(CATEGORIES_TABLE)
