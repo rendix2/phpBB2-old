@@ -653,10 +653,6 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 						//
 						// Get the group name
 						//
-						$group_sql = "SELECT group_name 
-							FROM " . GROUPS_TABLE . " 
-							WHERE group_id = $group_id";
-
 						$group_name_row = dibi::select('group_name')
                             ->from(GROUPS_TABLE)
                             ->where('group_id = %i', $group_id)
