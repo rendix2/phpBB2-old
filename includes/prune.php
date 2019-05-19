@@ -39,84 +39,60 @@ function prune($forum_id, $prune_date, $prune_all = false)
 	    sync('topic', $topic->topic_id);
     }
 
-	$prune_all = $prune_all ? '' : 'AND t.topic_vote = 0 AND t.topic_type <> ' . POST_ANNOUNCE;
 	//
 	// Those without polls and announcements ... unless told otherwise!
 	//
+    $topic_query = dibi::select('t.topic_id')
+        ->from(POSTS_TABLE)
+        ->as('p')
+        ->from(TOPICS_TABLE)
+        ->as('t')
+        ->where('t.forum_id = %i', $forum_id);
+
+    if (!$prune_all) {
+        $topic_query->where('t.topic_vote = %i', 0)
+            ->where('t.topic_type <> %i', POST_ANNOUNCE);
+    }
+
+    $topic_query->where('p.post_id = t.topic_last_post_id"');
+
 	$sql = "SELECT t.topic_id 
 		FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t
 		WHERE t.forum_id = $forum_id
 			$prune_all 
 			AND p.post_id = t.topic_last_post_id";
-	
-	if ( $prune_date != '' ) {
-		$sql .= " AND p.post_time < $prune_date";
-	}
 
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, 'Could not obtain lists of topics to prune', '', __LINE__, __FILE__, $sql);
-	}
+	if ($prune_date) {
+	    $topic_query->where('p.post_time < %i', $prune_date);
+    }
 
-	$sql_topics = '';
-	
-	while ($row = $db->sql_fetchrow($result) ) {
-		$sql_topics .= ( ( $sql_topics != '' ) ? ', ' : '' ) . $row['topic_id'];
-	}
-	
-	$db->sql_freeresult($result);
+	$topic_data = $topic_query->fetchPairs(null, 'topic_id');
 		
-	if ($sql_topics != '' ) {
-		$sql = "SELECT post_id
-			FROM " . POSTS_TABLE . " 
-			WHERE forum_id = $forum_id 
-				AND topic_id IN ($sql_topics)";
-		
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, 'Could not obtain list of posts to prune', '', __LINE__, __FILE__, $sql);
-		}
+	if (count($topic_data)) {
+	    $post_ids = dibi::select('post_id')
+            ->from(POSTS_TABLE)
+            ->where('forum_id = %i', $forum_id)
+            ->where('topic_id IN %in', $topic_data)
+            ->fetchPairs(null, 'post_id');
 
-		$sql_post = '';
-		
-		while ( $row = $db->sql_fetchrow($result) ) {
-			$sql_post .= ( ( $sql_post != '' ) ? ', ' : '' ) . $row['post_id'];
-		}
-		
-		$db->sql_freeresult($result);
+		if ( count($post_ids) ) {
+		    dibi::delete(TOPICS_WATCH_TABLE)
+                ->where('topic_id IN %in', $topic_data)
+                ->execute();
 
-		if ( $sql_post != '' ) {
-			$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . " 
-				WHERE topic_id IN ($sql_topics)";
-			
-			if ( !$db->sql_query($sql, BEGIN_TRANSACTION) ) {
-				message_die(GENERAL_ERROR, 'Could not delete watched topics during prune', '', __LINE__, __FILE__, $sql);
-			}
+            $pruned_topics = dibi::delete(TOPICS_TABLE)
+                ->where('topic_id IN %in', $topic_data)
+                ->execute(dibi::AFFECTED_ROWS);
 
-			$sql = "DELETE FROM " . TOPICS_TABLE . " 
-				WHERE topic_id IN ($sql_topics)";
-			
-			if ( !$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, 'Could not delete topics during prune', '', __LINE__, __FILE__, $sql);
-			}
+            $pruned_posts = dibi::delete(POSTS_TABLE)
+                ->where('post_id IN %in', $post_ids)
+                ->execute(dibi::AFFECTED_ROWS);
 
-			$pruned_topics = $db->sql_affectedrows();
+            dibi::delete(POSTS_TEXT_TABLE)
+                ->where('post_id IN %in', $post_ids)
+                ->execute(dibi::AFFECTED_ROWS);
 
-			$sql = "DELETE FROM " . POSTS_TABLE . " 
-				WHERE post_id IN ($sql_post)";
-			
-			if ( !$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, 'Could not delete post_text during prune', '', __LINE__, __FILE__, $sql);
-			}
-
-			$pruned_posts = $db->sql_affectedrows();
-
-			$sql = "DELETE FROM " . POSTS_TEXT_TABLE . " 
-				WHERE post_id IN ($sql_post)";
-			
-			if ( !$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, 'Could not delete post during prune', '', __LINE__, __FILE__, $sql);
-			}
-
-			remove_search_post($sql_post);
+			remove_search_post($post_ids);
 
             return ['topics' => $pruned_topics, 'posts' => $pruned_posts];
         }

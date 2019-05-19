@@ -480,14 +480,12 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 
 		if ($post_data['last_post']) {
 			if ($post_data['first_post']) {
+			    // TODO
 				$forum_update_sql .= ', forum_topics = forum_topics - 1';
-				$sql = "DELETE FROM " . TOPICS_TABLE . " 
-					WHERE topic_id = $topic_id 
-						OR topic_moved_id = $topic_id";
 
-				if (!$db->sql_query($sql)) {
-					message_die(GENERAL_ERROR, 'Error in deleting post', '', __LINE__, __FILE__, $sql);
-				}
+				dibi::delete(TOPICS_TABLE)
+                    ->where('topic_id = %i OR topic_moved_id = %i', $topic_id, $topic_id)
+                    ->execute();
 
 				dibi::delete(TOPICS_WATCH_TABLE)
                     ->where('topic_id = %i', $topic_id)
