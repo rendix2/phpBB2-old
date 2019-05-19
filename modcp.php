@@ -561,59 +561,42 @@ switch( $mode )
 		$page_title = $lang['Mod_CP'];
 		include $phpbb_root_path . 'includes/page_header.php';
 
-		$post_id_sql = '';
+        $posts = [];
 
 		if (isset($_POST['split_type_all']) || isset($_POST['split_type_beyond'])) {
 			$posts = $_POST['post_id_list'];
-
-			for ($i = 0; $i < count($posts); $i++) {
-				$post_id_sql .= (($post_id_sql != '') ? ', ' : '') . (int)$posts[$i];
-			}
 		}
 
-		if ($post_id_sql != '') {
-			$sql = "SELECT post_id 
-				FROM " . POSTS_TABLE . "
-				WHERE post_id IN ($post_id_sql)
-					AND forum_id = $forum_id";
+		if (count($posts)) {
+		    $post_ids = dibi::select('post_id')
+                ->from(POSTS_TABLE)
+                ->where('post_id IN %in', $posts)
+                ->where('forum_id = %i', $forum_id)
+                ->fetchPairs(null, 'post_id');
 
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, 'Could not get post id information', '', __LINE__, __FILE__, $sql);
-			}
-			
-			$post_id_sql = '';
-
-			while ($row = $db->sql_fetchrow($result)) {
-				$post_id_sql .= (($post_id_sql != '') ? ', ' : '') . (int)$row['post_id'];
-			}
-
-			$db->sql_freeresult($result);
-
-			if ($post_id_sql == '') {
+			if (!count($post_ids)) {
 				message_die(GENERAL_MESSAGE, $lang['None_selected']);
 			}
 
-			$sql = "SELECT post_id, poster_id, topic_id, post_time
-				FROM " . POSTS_TABLE . "
-				WHERE post_id IN ($post_id_sql) 
-				ORDER BY post_time ASC";
+			// TODO!!!!!!!!
+			$posts_dibi = dibi::select(['post_id', 'poster_id', 'topic_id', 'post_time'])
+                ->from(POSTS_TABLE)
+                ->where('post_id IN %in', $post_ids)
+                ->orderBy('post_time', dibi::ASC)
+                ->fetchAll();
 
-			if (!($result = $db->sql_query($sql))) {
-				message_die(GENERAL_ERROR, 'Could not get post information', '', __LINE__, __FILE__, $sql);
-			}
+			if ($posts_dibi) {
+				$first_poster = $posts_dibi[0]->poster_id;
+				$topic_id = $posts_dibi[0]->topic_id;
+				$post_time = $posts_dibi[0]->post_time;
 
-			if ($row = $db->sql_fetchrow($result)) {
-				$first_poster = $row['poster_id'];
-				$topic_id = $row['topic_id'];
-				$post_time = $row['post_time'];
+				$user_ids_sql = [];
+				$post_ids_sql = [];
 
-				$user_id_sql = '';
-				$post_id_sql = '';
-                do {
-                    $user_id_sql .= (($user_id_sql != '') ? ', ' : '') . (int)$row['poster_id'];
-                    $post_id_sql .= (($post_id_sql != '') ? ', ' : '') . (int)$row['post_id'];;
+				foreach ($posts_dibi as $post_dibi) {
+				    $user_ids_sql[] = $post_dibi->post_id;
+                    $post_ids_sql[] = $post_dibi->post_id;
                 }
-				while ($row = $db->sql_fetchrow($result));
 
 				$post_subject = trim(htmlspecialchars($_POST['subject']));
 
@@ -623,48 +606,47 @@ switch( $mode )
 
 				$new_forum_id = (int)$_POST['new_forum_id'];
 				$topic_time = time();
-				
-				$sql = 'SELECT forum_id FROM ' . FORUMS_TABLE . '
-					WHERE forum_id = ' . $new_forum_id;
 
-				if ( !($result = $db->sql_query($sql)) ) {
-					message_die(GENERAL_ERROR, 'Could not select from forums table', '', __LINE__, __FILE__, $sql);
-				}
+				$check_forum_id = dibi::select('forum_id')
+                    ->from(FORUMS_TABLE)
+                    ->where('forum_id = %i', $new_forum_id)
+                    ->fetchSingle();
 			
-				if (!$db->sql_fetchrow($result)) {
+				if (!$check_forum_id) {
 					message_die(GENERAL_MESSAGE, 'New forum does not exist');
 				}
 
 				$db->sql_freeresult($result);
 
-				$sql  = "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_status, topic_type)
-					VALUES ('" . str_replace("\'", "''", $post_subject) . "', $first_poster, " . $topic_time . ", $new_forum_id, " . TOPIC_UNLOCKED . ", " . POST_NORMAL . ")";
+				$insert_data = [
+				    'topic_title'  => $post_subject,
+                    'topic_poster' => $first_poster,
+                    'topic_time'   => $topic_time,
+                    'forum_id'     => $new_forum_id,
+                    'topic_status' => TOPIC_UNLOCKED,
+                    'topic_type'   => POST_NORMAL
+                ];
 
-				if (!$db->sql_query($sql, BEGIN_TRANSACTION)) {
-					message_die(GENERAL_ERROR, 'Could not insert new topic', '', __LINE__, __FILE__, $sql);
-				}
-
-				$new_topic_id = $db->sql_nextid();
+                $new_topic_id = dibi::insert(TOPICS_TABLE, $insert_data)->execute(dibi::IDENTIFIER);
 
 				// Update topic watch table, switch users whose posts
 				// have moved, over to watching the new topic
-				$sql = "UPDATE " . TOPICS_WATCH_TABLE . " 
-					SET topic_id = $new_topic_id 
-					WHERE topic_id = $topic_id 
-						AND user_id IN ($user_id_sql)";
-				if (!$db->sql_query($sql)) {
-					message_die(GENERAL_ERROR, 'Could not update topics watch table', '', __LINE__, __FILE__, $sql);
-				}
 
-				$sql_where = !empty($_POST['split_type_beyond']) ? " post_time >= $post_time AND topic_id = $topic_id" : "post_id IN ($post_id_sql)";
+                dibi::update(TOPICS_WATCH_TABLE, ['topic_id' => $new_topic_id])
+                    ->where('topic_id = %i', $topic_id)
+                    ->where('user_id IN %in', $user_ids_sql)
+                    ->execute();
 
-				$sql = 	"UPDATE " . POSTS_TABLE . "
-					SET topic_id = $new_topic_id, forum_id = $new_forum_id 
-					WHERE $sql_where";
-
-				if (!$db->sql_query($sql, END_TRANSACTION)) {
-					message_die(GENERAL_ERROR, 'Could not update posts table', '', __LINE__, __FILE__, $sql);
-				}
+                if (!empty($_POST['split_type_beyond'])) {
+                    dibi::update(POSTS_TABLE, ['topic_id' => $new_topic_id, 'forum_id' => $new_forum_id])
+                        ->where('post_time >= %i', $post_time)
+                        ->where('topic_id = %i', $topic_id)
+                        ->execute();
+                } else {
+                    dibi::update(POSTS_TABLE, ['topic_id' => $new_topic_id, 'forum_id' => $new_forum_id])
+                        ->where('post_id IN %in', $post_ids_sql)
+                        ->execute();
+                }
 
 				sync('topic', $new_topic_id);
 				sync('topic', $topic_id);

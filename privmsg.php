@@ -253,13 +253,8 @@ if ( $mode == 'newpm' ) {
 			message_die(GENERAL_ERROR, 'Could not update private message read status for user', '', __LINE__, __FILE__, $sql);
 		}
 
-		$sql = "UPDATE " . PRIVMSGS_TABLE . "
-			SET privmsgs_type = " . PRIVMSGS_READ_MAIL . "
-			WHERE privmsgs_id = " . $privmsg['privmsgs_id'];
-		
-		if ( !$db->sql_query($sql) ) {
-			message_die(GENERAL_ERROR, 'Could not update private message read status', '', __LINE__, __FILE__, $sql);
-		}
+		dibi::update(PRIVMSGS_TABLE, ['privmsgs_type' => PRIVMSGS_READ_MAIL])
+            ->where('privmsgs_id = %i', $privmsg['privmsgs_id']);
 
 		// Check to see if the poster has a 'full' sent box
 		$sql = "SELECT COUNT(privmsgs_id) AS sent_items, MIN(privmsgs_date) AS oldest_post_time 
@@ -286,20 +281,16 @@ if ( $mode == 'newpm' ) {
 				
 				$old_privmsgs_id = $db->sql_fetchrow($result);
 				$old_privmsgs_id = $old_privmsgs_id['privmsgs_id'];
-			
-				$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TABLE . " 
-					WHERE privmsgs_id = $old_privmsgs_id";
-				
-				if ( !$db->sql_query($sql) ) {
-					message_die(GENERAL_ERROR, 'Could not delete oldest privmsgs (sent)', '', __LINE__, __FILE__, $sql);
-				}
 
-				$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TEXT_TABLE . " 
-					WHERE privmsgs_text_id = $old_privmsgs_id";
-				
-				if ( !$db->sql_query($sql) ) {
-					message_die(GENERAL_ERROR, 'Could not delete oldest privmsgs text (sent)', '', __LINE__, __FILE__, $sql);
-				}
+				dibi::delete(PRIVMSGS_TABLE)
+                    ->setFlag($sql_priority)
+                    ->where('privmsgs_id = %i', $old_privmsgs_id)
+                    ->execute();
+
+                dibi::delete(PRIVMSGS_TEXT_TABLE)
+                    ->setFlag($sql_priority)
+                    ->where('privmsgs_text_id = %i', $old_privmsgs_id)
+                    ->execute();
 			}
 		}
 
@@ -856,20 +847,16 @@ if ( $mode == 'newpm' ) {
 				}
 				$old_privmsgs_id = $db->sql_fetchrow($result);
 				$old_privmsgs_id = $old_privmsgs_id['privmsgs_id'];
-			
-				$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TABLE . " 
-					WHERE privmsgs_id = $old_privmsgs_id";
-				
-				if ( !$db->sql_query($sql) ) {
-					message_die(GENERAL_ERROR, 'Could not delete oldest privmsgs (save)', '', __LINE__, __FILE__, $sql);
-				}
 
-				$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TEXT_TABLE . " 
-					WHERE privmsgs_text_id = $old_privmsgs_id";
-				
-				if ( !$db->sql_query($sql) ) {
-					message_die(GENERAL_ERROR, 'Could not delete oldest privmsgs text (save)', '', __LINE__, __FILE__, $sql);
-				}
+				dibi::delete(PRIVMSGS_TABLE)
+                    ->setFlag($sql_priority)
+                    ->where('privmsgs_id = %i', $old_privmsgs_id)
+                    ->execute();
+
+                dibi::delete(PRIVMSGS_TEXT_TABLE)
+                    ->setFlag($sql_priority)
+                    ->where('privmsgs_text_id = %i', $old_privmsgs_id)
+                    ->execute();
 			}
 		}
 	
@@ -1165,20 +1152,16 @@ if ( $mode == 'newpm' ) {
 					}
 					$old_privmsgs_id = $db->sql_fetchrow($result);
 					$old_privmsgs_id = $old_privmsgs_id['privmsgs_id'];
-				
-					$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TABLE . " 
-						WHERE privmsgs_id = $old_privmsgs_id";
-					if ( !$db->sql_query($sql) )
-					{
-						message_die(GENERAL_ERROR, 'Could not delete oldest privmsgs (inbox)'.$sql, '', __LINE__, __FILE__, $sql);
-					}
 
-					$sql = "DELETE $sql_priority FROM " . PRIVMSGS_TEXT_TABLE . " 
-						WHERE privmsgs_text_id = $old_privmsgs_id";
-					if ( !$db->sql_query($sql) )
-					{
-						message_die(GENERAL_ERROR, 'Could not delete oldest privmsgs text (inbox)', '', __LINE__, __FILE__, $sql);
-					}
+                    dibi::delete(PRIVMSGS_TABLE)
+                        ->setFlag($sql_priority)
+                        ->where('privmsgs_id = %i', $old_privmsgs_id)
+                        ->execute();
+
+                    dibi::delete(PRIVMSGS_TEXT_TABLE)
+                        ->setFlag($sql_priority)
+                        ->where('privmsgs_text_id = %i', $old_privmsgs_id)
+                        ->execute();
 				}
 			}
 
@@ -1216,10 +1199,6 @@ if ( $mode == 'newpm' ) {
                 ->execute();
 		}
 
-		if ( !($result = $db->sql_query($sql_info, BEGIN_TRANSACTION)) ) {
-			message_die(GENERAL_ERROR, "Could not insert/update private message sent info.", "", __LINE__, __FILE__, $sql_info);
-		}
-
 		if ( $mode != 'edit' ) {
 			$privmsg_sent_id = $db->sql_nextid();
 
@@ -1245,14 +1224,15 @@ if ( $mode == 'newpm' ) {
 			//
 			// Add to the users new pm counter
 			//
-			$sql = "UPDATE " . USERS_TABLE . "
-				SET user_new_privmsg = user_new_privmsg + 1, user_last_privmsg = " . time() . "  
-				WHERE user_id = " . $to_userdata['user_id'];
 
-            if (!$status = $db->sql_query($sql)) {
-                message_die(GENERAL_ERROR, 'Could not update private message new/read status for user', '', __LINE__,
-                    __FILE__, $sql);
-            }
+            $update_data = [
+                'user_new_privmsg%sql' => 'user_new_privmsg + 1',
+                'user_last_privmsg' => time()
+            ];
+
+            dibi::update(USERS_TABLE, $update_data)
+                ->where('user_id = %i', $to_userdata['user_id'])
+                ->execute();
 
 			if ( $to_userdata['user_notify_pm'] && !empty($to_userdata['user_email']) && $to_userdata['user_active'] ) {
 				$script_name = preg_replace('/^\/?(.*?)\/?$/', "\\1", trim($board_config['script_path']));
@@ -1724,14 +1704,15 @@ if (!$userdata['session_logged_in']) {
 //
 // Update unread status 
 //
-$sql = "UPDATE " . USERS_TABLE . "
-	SET user_unread_privmsg = user_unread_privmsg + user_new_privmsg, user_new_privmsg = 0, user_last_privmsg = " . $userdata['session_start'] . " 
-	WHERE user_id = " . $userdata['user_id'];
+$update_data = [
+    'user_unread_privmsg%sql' => 'user_unread_privmsg + user_new_privmsg',
+    'user_new_privmsg' => 0,
+    'user_last_privmsg' => $userdata['session_start']
+];
 
-if (!$db->sql_query($sql)) {
-    message_die(GENERAL_ERROR, 'Could not update private message new/read status for user', '', __LINE__, __FILE__,
-        $sql);
-}
+dibi::update(USERS_TABLE, $update_data)
+    ->where('user_id = %i', $userdata['user_id'])
+    ->execute();
 
 dibi::update(PRIVMSGS_TABLE, ['privmsgs_type' => PRIVMSGS_UNREAD_MAIL])
     ->where('privmsgs_type = %i', PRIVMSGS_NEW_MAIL)

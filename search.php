@@ -606,12 +606,9 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
 		//
 		// Delete old data from the search result table
 		//
-		$sql = 'DELETE FROM ' . SEARCH_TABLE . '
-			WHERE search_time < ' . ($current_time - (int) $board_config['session_length']);
-
-        if (!$result = $db->sql_query($sql)) {
-            message_die(GENERAL_ERROR, 'Could not delete old search id sessions', '', __LINE__, __FILE__, $sql);
-        }
+        dibi::delete(SEARCH_TABLE)
+            ->where('search_time < %i', ($current_time - (int) $board_config['session_length']))
+            ->execute();
 
 		//
 		// Store new result data
