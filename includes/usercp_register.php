@@ -241,7 +241,6 @@ if ( isset($_POST['submit']) )
 		$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Session_invalid'];
 	}
 
-	$passwd_sql = '';
 	if ( $mode == 'editprofile' ) {
 		if ( $user_id != $userdata['user_id'] ) {
 			$error = true;
@@ -280,7 +279,7 @@ if ( isset($_POST['submit']) )
 					$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Confirm_code_wrong'];
 				} else {
 				    dibi::delete(CONFIRM_TABLE)
-                        ->where('confirm_id = %i', $confirm_id)
+                        ->where('confirm_id = %s', $confirm_id)
                         ->where('session_id = %s', $userdata['session_id'])
                         ->execute();
 				}
@@ -292,7 +291,7 @@ if ( isset($_POST['submit']) )
 		}
 	}
 
-	$passwd_sql = '';
+	$user_password_data = [];
 
 	if ( !empty($new_password) && !empty($password_confirm) ) {
 		if ( $new_password != $password_confirm ) {
@@ -320,7 +319,7 @@ if ( isset($_POST['submit']) )
 
 			if ( !$error ) {
 				$new_password = md5($new_password);
-				$passwd_sql = "user_password = '$new_password', ";
+                $user_password_data = ['user_password' => $new_password];
 			}
 		}
 	} elseif ( ( empty($new_password) && !empty($password_confirm) ) || ( !empty($new_password) && empty($password_confirm) ) ) {
@@ -362,7 +361,7 @@ if ( isset($_POST['submit']) )
 		}
 	}
 
-	$username_sql = '';
+	$username_data = [];
 	if ( $board_config['allow_namechange'] || $mode == 'register' ) {
 		if ( empty($username) ) {
 			// Error is already triggered, since one field is empty.
@@ -378,7 +377,7 @@ if ( isset($_POST['submit']) )
 			}
 
 			if (!$error) {
-				$username_sql = "username = '" . str_replace("\'", "''", $username) . "', ";
+				$username_data =  ['username' => $username];
 			}
 		}
 	}
@@ -399,14 +398,14 @@ if ( isset($_POST['submit']) )
 		rawurlencode($website);
 	}
 
-	$avatar_sql = '';
+	$avatar_data = [];
 
 	if ( isset($_POST['avatardel']) && $mode == 'editprofile' ) {
-		$avatar_sql = user_avatar_delete($userdata['user_avatar_type'], $userdata['user_avatar']);
+		$avatar_data = user_avatar_delete($userdata['user_avatar_type'], $userdata['user_avatar']);
 	} elseif ( ( !empty($user_avatar_upload) || !empty($user_avatar_name) ) && $board_config['allow_avatar_upload'] ) {
 		if ( !empty($user_avatar_upload) ) {
 			$avatar_mode = empty($user_avatar_name) ? 'remote' : 'local';
-			$avatar_sql = user_avatar_upload($mode, $avatar_mode, $userdata['user_avatar'], $userdata['user_avatar_type'], $error, $error_msg, $user_avatar_upload, $user_avatar_name, $user_avatar_size, $user_avatar_filetype);
+			$avatar_data = user_avatar_upload($mode, $avatar_mode, $userdata['user_avatar'], $userdata['user_avatar_type'], $error, $error_msg, $user_avatar_upload, $user_avatar_name, $user_avatar_size, $user_avatar_filetype);
 		} elseif ( !empty($user_avatar_name) ) {
 			$l_avatar_size = sprintf($lang['Avatar_filesize'], round($board_config['avatar_filesize'] / 1024));
 
@@ -415,16 +414,19 @@ if ( isset($_POST['submit']) )
 		}
 	} elseif ( $user_avatar_remoteurl != '' && $board_config['allow_avatar_remote'] ) {
 		user_avatar_delete($userdata['user_avatar_type'], $userdata['user_avatar']);
-		$avatar_sql = user_avatar_url($mode, $error, $error_msg, $user_avatar_remoteurl);
+		$avatar_data = user_avatar_url($mode, $error, $error_msg, $user_avatar_remoteurl);
 	} elseif ( $user_avatar_local != '' && $board_config['allow_avatar_local'] ) {
 		user_avatar_delete($userdata['user_avatar_type'], $userdata['user_avatar']);
-		$avatar_sql = user_avatar_gallery($mode, $error, $error_msg, $user_avatar_local, $user_avatar_category);
+		$avatar_data = user_avatar_gallery($mode, $error, $error_msg, $user_avatar_local, $user_avatar_category);
 	}
 
 	if ( !$error ) {
+	    /*
+	     * TODO
 		if ( $avatar_sql == '' ) {
 			$avatar_sql = ( $mode == 'editprofile' ) ? '' : "'', " . USER_AVATAR_NONE;
 		}
+	    */
 
 		if ( $mode == 'editprofile' ) {
 			if ( $email != $userdata['user_email'] && $board_config['require_activation'] != USER_ACTIVATION_NONE && $userdata['user_level'] != ADMIN ) {
@@ -443,17 +445,44 @@ if ( isset($_POST['submit']) )
 				$user_actkey = '';
 			}
 
-			$sql = "UPDATE " . USERS_TABLE . "
-				SET " . $username_sql . $passwd_sql . "user_email = '" . str_replace("\'", "''", $email) ."', user_icq = '" . str_replace("\'", "''", $icq) . "', user_website = '" . str_replace("\'", "''", $website) . "', user_occ = '" . str_replace("\'", "''", $occupation) . "', user_from = '" . str_replace("\'", "''", $location) . "', user_interests = '" . str_replace("\'", "''", $interests) . "', user_sig = '" . str_replace("\'", "''", $signature) . "', user_sig_bbcode_uid = '$signature_bbcode_uid', user_viewemail = $viewemail, user_aim = '" . str_replace("\'", "''", str_replace(' ', '+', $aim)) . "', user_yim = '" . str_replace("\'", "''", $yim) . "', user_msnm = '" . str_replace("\'", "''", $msn) . "', user_attachsig = $attachsig, user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_notify = $notifyreply, user_notify_pm = $notifypm, user_popup_pm = $popup_pm, user_timezone = $user_timezone, user_dateformat = '" . str_replace("\'", "''", $user_dateformat) . "', user_lang = '" . str_replace("\'", "''", $user_lang) . "', user_style = $user_style, user_active = $user_active, user_actkey = '" . str_replace("\'", "''", $user_actkey) . "'" . $avatar_sql . "
-				WHERE user_id = $user_id";
+			$update_data = [
+			    'user_email' => $email,
+               'user_icq'    => $icq,
+                'user_website' => $website,
+                'user_occ'     => $occupation,
+                'user_from'    => $location,
+                'user_interests' => $interests,
+                'user_sig'       => $signature,
+                'user_sig_bbcode_uid' => $signature_bbcode_uid,
+                'user_viewemail'      => $viewemail,
+                'user_aim'            => str_replace(' ', '+', $aim),
+                'user_yim'            => $yim,
+                'user_msnm'           => $msn,
+                'user_attachsig'      => $attachsig,
+                'user_allowsmile'     => $allowsmilies,
+                'user_allowhtml'      => $allowhtml,
+                'user_allowbbcode'    => $allowbbcode,
+                'user_allow_viewonline' => $allowviewonline,
+                'user_notify'           => $notifyreply,
+                'user_notify_pm'        => $notifypm,
+                'user_popup_pm'         => $popup_pm,
+                'user_timezone'         => $user_timezone,
+                'user_dateformat'       => $user_dateformat,
+                'user_lang'             => $user_lang,
+                'user_style'            => $user_style,
+                'user_active'           => $user_active,
+                'user_actkey'           => $user_actkey
+            ];
 
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, 'Could not update users table', '', __LINE__, __FILE__, $sql);
-			}
+			$update_data = array_merge($update_data, $avatar_data, $username_data, $user_password_data);
+
+			dibi::update(USERS_TABLE, $update_data)
+                ->where('user_id = %i', $user_id)
+                ->execute();
 
 			// We remove all stored login keys since the password has been updated
 			// and change the current one (if applicable)
-			if ( !empty($passwd_sql) ) {
+			if ( count($user_password_data) ) {
 				session_reset_keys($user_id, $user_ip);
 			}
 
@@ -526,24 +555,58 @@ if ( isset($_POST['submit']) )
 			//
 			// Get current date
 			//
-			$sql = "INSERT INTO " . USERS_TABLE . "	(username, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_sig_bbcode_uid, user_avatar, user_avatar_type, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_viewonline, user_notify, user_notify_pm, user_popup_pm, user_timezone, user_dateformat, user_lang, user_style, user_level, user_allow_pm, user_active, user_actkey)
-				VALUES ('" . str_replace("\'", "''", $username) . "', " . time() . ", '" . str_replace("\'", "''", $new_password) . "', '" . str_replace("\'", "''", $email) . "', '" . str_replace("\'", "''", $icq) . "', '" . str_replace("\'", "''", $website) . "', '" . str_replace("\'", "''", $occupation) . "', '" . str_replace("\'", "''", $location) . "', '" . str_replace("\'", "''", $interests) . "', '" . str_replace("\'", "''", $signature) . "', '$signature_bbcode_uid', $avatar_sql, $viewemail, '" . str_replace("\'", "''", str_replace(' ', '+', $aim)) . "', '" . str_replace("\'", "''", $yim) . "', '" . str_replace("\'", "''", $msn) . "', $attachsig, $allowsmilies, $allowhtml, $allowbbcode, $allowviewonline, $notifyreply, $notifypm, $popup_pm, $user_timezone, '" . str_replace("\'", "''", $user_dateformat) . "', '" . str_replace("\'", "''", $user_lang) . "', $user_style, 0, 1, ";
+
+            $insert_data = [
+                'username' => $username,
+                'user_regdate' => time(),
+                'user_password' => $new_password,
+                'user_email' => $email,
+                'user_icq' => $icq,
+                'user_website' => $website,
+                'user_occ' =>  $occupation,
+                'user_from' => $location,
+                'user_interests' => $interests,
+                'user_sig' => $signature,
+                'user_sig_bbcode_uid' => $signature_bbcode_uid,
+                //'user_avatar' => null, // TODO $avatar_sql,
+                //'user_avatar_type' => null, // TODO $avatar_sql,
+                'user_viewemail' => $viewemail,
+                'user_aim' => str_replace(' ', '+', $aim), // TODO what is aim?
+                'user_yim' => $yim, // TODO what is yim?
+                'user_msnm' => $msn,
+                'user_attachsig' => $attachsig,
+                'user_allowsmile' => $allowsmilies,
+                'user_allowhtml' => $allowhtml,
+                'user_allowbbcode' => $allowbbcode,
+                'user_allow_viewonline' => $allowviewonline,
+                'user_notify' => $notifyreply,
+                'user_popup_pm' => $popup_pm,
+                'user_timezone' => $user_timezone,
+                'user_dateformat' => $user_dateformat,
+                'user_lang' => $user_lang,
+                'user_style' => $user_style,
+                'user_level' => USER,
+                'user_allow_pm' => 1,
+                'user_active' => null,
+                'user_actkey' => null
+            ];
+
+            $insert_data = array_merge($insert_data, $avatar_data);
 
 			if ( $board_config['require_activation'] == USER_ACTIVATION_SELF || $board_config['require_activation'] == USER_ACTIVATION_ADMIN || $coppa ) {
 				$user_actkey = gen_rand_string(true);
 				$key_len = 54 - strlen($server_url);
 				$key_len = ( $key_len > 6 ) ? $key_len : 6;
 				$user_actkey = substr($user_actkey, 0, $key_len);
-				$sql .= "0, '" . str_replace("\'", "''", $user_actkey) . "')";
+
+                $insert_data['user_active'] = 0;
+                $insert_data['user_actkey'] = $user_actkey;
 			} else {
-				$sql .= "1, '')";
+			    $insert_data['user_active'] = 1;
+			    $insert_data['user_actkey'] = '';
 			}
 
-			if ( !($result = $db->sql_query($sql, BEGIN_TRANSACTION)) ) {
-				message_die(GENERAL_ERROR, 'Could not insert data into users table', '', __LINE__, __FILE__, $sql);
-			}
-
-			$user_id = $db->sql_nextid();
+			$user_id = dibi::insert(USERS_TABLE, $insert_data)->execute();
 
             $group_insert_data = [
                 'group_name'        => '',

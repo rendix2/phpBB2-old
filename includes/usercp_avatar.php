@@ -58,9 +58,17 @@ function user_avatar_delete($avatar_type, $avatar_file)
 		}
 	}
 
-	return ", user_avatar = '', user_avatar_type = " . USER_AVATAR_NONE;
+	return ['user_avatar' => '', 'user_avatar_type' => USER_AVATAR_NONE];
 }
 
+/**
+ * @param string $mode
+ * @param $error
+ * @param string $error_msg
+ * @param string $avatar_filename
+ * @param $avatar_category
+ * @return array
+ */
 function user_avatar_gallery($mode, &$error, &$error_msg, $avatar_filename, $avatar_category)
 {
 	global $board_config;
@@ -69,19 +77,18 @@ function user_avatar_gallery($mode, &$error, &$error_msg, $avatar_filename, $ava
 	$avatar_category = phpbb_ltrim(basename($avatar_category), "'");
 	
 	if (!preg_match('/(\.gif$|\.png$|\.jpg|\.jpeg)$/is', $avatar_filename)) {
-		return '';
+		return [];
 	}
 
 	if ($avatar_filename == "" || $avatar_category == "") {
-		return '';
+		return [];
 	} 
 
 	if ( file_exists(@phpbb_realpath($board_config['avatar_gallery_path'] . '/' . $avatar_category . '/' . $avatar_filename)) && ($mode == 'editprofile') ) {
-		$return = ", user_avatar = '" . str_replace("\'", "''", $avatar_category . '/' . $avatar_filename) . "', user_avatar_type = " . USER_AVATAR_GALLERY;
+	    return ['user_avatar' => $avatar_category . '/' . $avatar_filename, 'user_avatar_type' => USER_AVATAR_GALLERY];
 	} else {
-		$return = '';
+		return [];
 	}
-	return $return;
 }
 
 function user_avatar_url($mode, &$error, &$error_msg, $avatar_filename)
@@ -97,10 +104,10 @@ function user_avatar_url($mode, &$error, &$error_msg, $avatar_filename)
 	if ( !preg_match("#^((ht|f)tp://)([^ \?&=\#\"\n\r\t<]*?(\.(jpg|jpeg|gif|png))$)#is", $avatar_filename) ) {
 		$error = true;
 		$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $lang['Wrong_remote_avatar_format'] : $lang['Wrong_remote_avatar_format'];
-		return;
+		return [];
 	}
 
-	return ( $mode == 'editprofile' ) ? ", user_avatar = '" . str_replace("\'", "''", $avatar_filename) . "', user_avatar_type = " . USER_AVATAR_REMOTE : '';
+	return ( $mode == 'editprofile' ) ? ['user_avatar' => $avatar_filename, 'user_avatar_type' => USER_AVATAR_REMOTE] : [];;
 
 }
 
@@ -117,7 +124,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 		if ( empty($url_ary[4]) ) {
 			$error = true;
 			$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $lang['Incomplete_URL'] : $lang['Incomplete_URL'];
-			return;
+			return [];
 		}
 
 		$base_get = '/' . $url_ary[4];
@@ -126,7 +133,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 		if ( !($fsock = @fsockopen($url_ary[2], $port, $errno, $errstr)) ) {
 			$error = true;
 			$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $lang['No_connection_URL'] : $lang['No_connection_URL'];
-			return;
+			return [];
 		}
 
 		@fwrite($fsock, "GET $base_get HTTP/1.1\r\n");
@@ -144,7 +151,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 		if (!preg_match('#Content-Length\: ([0-9]+)[^ /][\s]+#i', $avatar_data, $file_data1) || !preg_match('#Content-Type\: image/[x\-]*([a-z]+)[\s]+#i', $avatar_data, $file_data2)) {
 			$error = true;
 			$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $lang['File_no_data'] : $lang['File_no_data'];
-			return;
+			return [];
 		}
 
 		$avatar_filesize = $file_data1[1]; 
@@ -181,14 +188,14 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 
 			$error = true;
 			$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $l_avatar_size : $l_avatar_size;
-			return;
+			return [];
 		}
 
 		list($width, $height, $type) = @getimagesize($avatar_filename);
 	}
 
 	if ( !($imgtype = check_image_type($avatar_filetype, $error, $error_msg)) ) {
-		return;
+		return [];
 	}
 
 	switch ($type) {
@@ -258,15 +265,15 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 
 		@chmod('./' . $board_config['avatar_path'] . "/$new_filename", 0777);
 
-		$avatar_sql = ( $mode == 'editprofile' ) ? ", user_avatar = '$new_filename', user_avatar_type = " . USER_AVATAR_UPLOAD : "'$new_filename', " . USER_AVATAR_UPLOAD;
+		return ['user_avatar' => $new_filename, 'user_avatar_type' => USER_AVATAR_UPLOAD];
 	} else {
 		$l_avatar_size = sprintf($lang['Avatar_imagesize'], $board_config['avatar_max_width'], $board_config['avatar_max_height']);
 
 		$error = true;
 		$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $l_avatar_size : $l_avatar_size;
-	}
 
-	return $avatar_sql;
+		return [];
+	}
 }
 
 function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current_email, &$coppa, &$username, &$email, &$new_password, &$cur_password, &$password_confirm, &$icq, &$aim, &$msn, &$yim, &$website, &$location, &$occupation, &$interests, &$signature, &$viewemail, &$notifypm, &$popup_pm, &$notifyreply, &$attachsig, &$allowhtml, &$allowbbcode, &$allowsmilies, &$hideonline, &$style, &$language, &$timezone, &$dateformat, &$session_id)

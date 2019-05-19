@@ -337,12 +337,10 @@ function session_pagestart($user_ip, $thispage_id)
 					// A little trick to reset session_admin on session re-usage
 
 					if (!defined('IN_ADMIN') && $current_time - $userdata['session_time'] > ($board_config['session_length']+60)) {
-                        $update_data['session_admin'] = 0;
+                        dibi::update(SESSIONS_TABLE, ['session_admin' => 0])
+                            ->where('session_id = %s', $userdata['session_id'])
+                            ->execute();
                     }
-
-					dibi::update(SESSIONS_TABLE, $update_data)
-                        ->where('session_id = %s', $userdata['session_id'])
-                        ->execute();
 
 					if ( $userdata['user_id'] != ANONYMOUS ) {
 					    dibi::update(USERS_TABLE, ['user_session_time' => $current_time, 'user_session_page' => $thispage_id])
