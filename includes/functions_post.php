@@ -186,7 +186,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	}
 
 	if ($mode == 'editpost') {
-		remove_search_post($post_id);
+		remove_search_post([$post_id]);
 	}
 
 	if ($mode == 'newtopic' || ($mode == 'editpost' && $post_data['first_post'])) {
@@ -278,11 +278,26 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	// Add poll
 	// 
 	if (($mode == 'newtopic' || ($mode == 'editpost' && $post_data['edit_poll'])) && !empty($poll_title) && count($poll_options) >= 2) {
-		$sql = (!$post_data['has_poll']) ? "INSERT INTO " . VOTE_DESC_TABLE . " (topic_id, vote_text, vote_start, vote_length) VALUES ($topic_id, '$poll_title', $current_time, " . ($poll_length * 86400) . ")" : "UPDATE " . VOTE_DESC_TABLE . " SET vote_text = '$poll_title', vote_length = " . ($poll_length * 86400) . " WHERE topic_id = $topic_id";
+	    if (!$post_data['has_poll']) {
+	        $insert_data = [
+	            'topic_id' => $topic_id,
+                'vote_text' => $poll_title,
+                'vote_start' => $current_time,
+                'vote_length' => ($poll_length * 86400)
+            ];
 
-		if (!$db->sql_query($sql)) {
-			message_die(GENERAL_ERROR, 'Error in posting', '', __LINE__, __FILE__, $sql);
-		}
+	        dibi::insert(VOTE_DESC_TABLE, $insert_data)->execute();
+        } else {
+            $update_data = [
+                'vote_text' => $poll_title,
+                'vote_length' => $poll_length * 86400,
+                ''
+            ];
+
+	        dibi::update(VOTE_DESC_TABLE, $update_data)
+                ->where('topic_id = %i', $topic_id)
+                ->execute();
+        }
 
 		$delete_option_sql = '';
 		$old_poll_result = [];
@@ -480,7 +495,7 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 			}
 		}
 
-		remove_search_post($post_id);
+		remove_search_post([$post_id]);
 	}
 
 	if ($mode == 'poll_delete' || ($mode == 'delete' && $post_data['first_post'] && $post_data['last_post']) && $post_data['has_poll'] && $post_data['edit_poll']) {

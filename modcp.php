@@ -198,156 +198,79 @@ switch( $mode )
 
             $topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topic_id];
 
-            $topic_id_sql = '';
+			$topic_ids = dibi::select('topic_id')
+                ->from(TOPICS_TABLE)
+                ->where('topic_id IN %in', $topics)
+                ->where('forum_id = %i', $forum_id)
+                ->fetchPairs(null, 'topic_id');
 
-			for ($i = 0; $i < count($topics); $i++) {
-				$topic_id_sql .= ( ( $topic_id_sql != '' ) ? ', ' : '' ) . (int)$topics[$i];
-			}
-
-			$sql = "SELECT topic_id 
-				FROM " . TOPICS_TABLE . "
-				WHERE topic_id IN ($topic_id_sql)
-					AND forum_id = $forum_id";
-
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, 'Could not get topic id information', '', __LINE__, __FILE__, $sql);
-			}
-			
-			$topic_id_sql = '';
-
-			while ($row = $db->sql_fetchrow($result)) {
-				$topic_id_sql .= (($topic_id_sql != '') ? ', ' : '') . (int)$row['topic_id'];
-			}
-
-			$db->sql_freeresult($result);
-
-			if ( $topic_id_sql == '') {
+			if (!count($topic_ids)) {
 				message_die(GENERAL_MESSAGE, $lang['None_selected']);
 			}
 
-			$sql = "SELECT poster_id, COUNT(post_id) AS posts 
-				FROM " . POSTS_TABLE . " 
-				WHERE topic_id IN ($topic_id_sql) 
-				GROUP BY poster_id";
+			$posters_of_topic = dibi::select('poster_id')
+                ->select('COUNT(post_id)')
+                ->as('posts')
+                ->from(POSTS_TABLE)
+                ->where('topic_id IN %in', $topic_ids)
+                ->groupBy('poster_id')
+                ->fetchAll();
 
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, 'Could not get poster id information', '', __LINE__, __FILE__, $sql);
-			}
+			foreach ($posters_of_topic as $poster) {
+                dibi::update(USERS_TABLE, ['user_posts%sql' => 'user_posts - ' . $poster['posts']])
+                    ->where('user_id = %i', $poster->poster_id)
+                    ->execute();
+            }
 
-			$count_sql = [];
-
-			while ( $row = $db->sql_fetchrow($result) ) {
-				$count_sql[] = "UPDATE " . USERS_TABLE . " 
-					SET user_posts = user_posts - " . $row['posts'] . " 
-					WHERE user_id = " . $row['poster_id'];
-			}
-
-			$db->sql_freeresult($result);
-
-			if ( count($count_sql) ) {
-				for ($i = 0; $i < count($count_sql); $i++) {
-					if ( !$db->sql_query($count_sql[$i]) ) {
-						message_die(GENERAL_ERROR, 'Could not update user post count information', '', __LINE__, __FILE__, $sql);
-					}
-				}
-			}
-			
-			$sql = "SELECT post_id 
-				FROM " . POSTS_TABLE . " 
-				WHERE topic_id IN ($topic_id_sql)";
-			
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, 'Could not get post id information', '', __LINE__, __FILE__, $sql);
-			}
-
-			$post_id_sql = '';
-
-			while ( $row = $db->sql_fetchrow($result) ) {
-				$post_id_sql .= ( ( $post_id_sql != '' ) ? ', ' : '' ) . (int)$row['post_id'];
-			}
-			$db->sql_freeresult($result);
-
-			$sql = "SELECT vote_id 
-				FROM " . VOTE_DESC_TABLE . " 
-				WHERE topic_id IN ($topic_id_sql)";
-
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, 'Could not get vote id information', '', __LINE__, __FILE__, $sql);
-			}
-
-			$vote_id_sql = '';
-
-			while ( $row = $db->sql_fetchrow($result) ) {
-				$vote_id_sql .= ( ( $vote_id_sql != '' ) ? ', ' : '' ) . $row['vote_id'];
-			}
+			$posts_of_topic = dibi::select('post_id')
+                ->from(POSTS_TABLE)
+                ->where('topic_id IN %in', $topic_ids)
+                ->fetchPairs(null, 'post_id');
 
 			$db->sql_freeresult($result);
+
+			$votes = dibi::select('vote_id')
+                ->from(VOTE_DESC_TABLE)
+                ->where('topic_id IN %in', $topic_ids)
+                ->fetchPairs(null, 'vote_id');
 
 			//
 			// Got all required info so go ahead and start deleting everything
 			//
-			$sql = "DELETE 
-				FROM " . TOPICS_TABLE . " 
-				WHERE topic_id IN ($topic_id_sql) 
-					OR topic_moved_id IN ($topic_id_sql)";
 
-			if ( !$db->sql_query($sql, BEGIN_TRANSACTION) ) {
-				message_die(GENERAL_ERROR, 'Could not delete topics', '', __LINE__, __FILE__, $sql);
-			}
+            dibi::delete(TOPICS_TABLE)
+                ->where('topic_id IN %in OR topic_moved_in', $topic_ids, $topic_ids)
+                ->execute();
 
-			if ( $post_id_sql != '' ) {
-				$sql = "DELETE 
-					FROM " . POSTS_TABLE . " 
-					WHERE post_id IN ($post_id_sql)";
+            if (count($posts_of_topic)) {
+                dibi::delete(POSTS_TABLE)
+                    ->where('post_id IN %in', $posts_of_topic)
+                    ->execute();
 
-				if ( !$db->sql_query($sql) ) {
-					message_die(GENERAL_ERROR, 'Could not delete posts', '', __LINE__, __FILE__, $sql);
-				}
+                dibi::delete(POSTS_TEXT_TABLE)
+                    ->where('post_id IN %in', $posts_of_topic)
+                    ->execute();
 
-				$sql = "DELETE 
-					FROM " . POSTS_TEXT_TABLE . " 
-					WHERE post_id IN ($post_id_sql)";
+                remove_search_post($posts_of_topic);
+            }
 
-				if ( !$db->sql_query($sql) ) {
-					message_die(GENERAL_ERROR, 'Could not delete posts text', '', __LINE__, __FILE__, $sql);
-				}
+            if (count($votes)) {
+                dibi::delete(VOTE_DESC_TABLE)
+                    ->where('vote_id IN %in', $votes)
+                    ->execute();
 
-				remove_search_post($post_id_sql);
-			}
+                dibi::delete(VOTE_RESULTS_TABLE)
+                    ->where('vote_id IN %in', $votes)
+                    ->execute();
 
-			if ( $vote_id_sql != '' ) {
-				$sql = "DELETE 
-					FROM " . VOTE_DESC_TABLE . " 
-					WHERE vote_id IN ($vote_id_sql)";
+                dibi::delete(VOTE_USERS_TABLE)
+                    ->where('vote_id IN %in', $votes)
+                    ->execute();
+            }
 
-				if ( !$db->sql_query($sql) ) {
-					message_die(GENERAL_ERROR, 'Could not delete vote descriptions', '', __LINE__, __FILE__, $sql);
-				}
-
-				$sql = "DELETE 
-					FROM " . VOTE_RESULTS_TABLE . " 
-					WHERE vote_id IN ($vote_id_sql)";
-
-				if ( !$db->sql_query($sql) ) {
-					message_die(GENERAL_ERROR, 'Could not delete vote results', '', __LINE__, __FILE__, $sql);
-				}
-
-				$sql = "DELETE 
-					FROM " . VOTE_USERS_TABLE . " 
-					WHERE vote_id IN ($vote_id_sql)";
-
-				if ( !$db->sql_query($sql) ) {
-					message_die(GENERAL_ERROR, 'Could not delete vote users', '', __LINE__, __FILE__, $sql);
-				}
-			}
-
-			$sql = "DELETE 
-				FROM " . TOPICS_WATCH_TABLE . " 
-				WHERE topic_id IN ($topic_id_sql)";
-
-			if ( !$db->sql_query($sql, END_TRANSACTION) ) {
-				message_die(GENERAL_ERROR, 'Could not delete watched post list', '', __LINE__, __FILE__, $sql);
-			}
+            dibi::delete(TOPICS_WATCH_TABLE)
+                ->where('topic_id IN %in', $topic_ids)
+                ->execute();
 
 			sync('forum', $forum_id);
 
@@ -892,24 +815,20 @@ switch( $mode )
 		//
         $template->set_filenames(['viewip' => 'modcp_viewip.tpl']);
 
-        // Look up relevent data for this post
-		$sql = "SELECT poster_ip, poster_id 
-			FROM " . POSTS_TABLE . " 
-			WHERE post_id = $post_id
-				AND forum_id = $forum_id";
+        $post_row = dibi::select(['poster_ip', 'poster_id'])
+            ->from(POSTS_TABLE)
+            ->where('post_id = %i', $post_id)
+            ->where('forum_id = %i', $forum_id)
+            ->fetch();
 
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, 'Could not get poster IP information', '', __LINE__, __FILE__, $sql);
-		}
-		
-		if ( !($post_row = $db->sql_fetchrow($result)) ) {
-			message_die(GENERAL_MESSAGE, $lang['No_such_post']);
-		}
+        if (!$post_row) {
+            message_die(GENERAL_MESSAGE, $lang['No_such_post']);
+        }
 
-		$ip_this_post = decode_ip($post_row['poster_ip']);
+		$ip_this_post = decode_ip($post_row->poster_ip);
 		$ip_this_post = ( $rdns_ip_num == $ip_this_post ) ? htmlspecialchars(gethostbyaddr($ip_this_post)) : $ip_this_post;
 
-		$poster_id = $post_row['poster_id'];
+		$poster_id = $post_row->poster_id;
 
         $template->assign_vars(
             [

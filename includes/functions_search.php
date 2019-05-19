@@ -245,73 +245,63 @@ function remove_common($mode, $fraction, $word_id_list = [])
 {
 	global $db;
 
-	$sql = "SELECT COUNT(post_id) AS total_posts 
-		FROM " . POSTS_TABLE;
+	$total_posts = dibi::select('COUNT(post_id)')
+        ->as('total_posts')
+        ->from(POSTS_TABLE)
+        ->fetchSingle();
 
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, 'Could not obtain post count', '', __LINE__, __FILE__, $sql);
+	if ( $total_posts === false ) {
+		message_die(GENERAL_ERROR, 'Could not obtain post count');
 	}
 
-	$row = $db->sql_fetchrow($result);
-
-	if ( $row['total_posts'] >= 100 )
+	if ( $total_posts >= 100 )
 	{
-		$common_threshold = floor($row['total_posts'] * $fraction);
+		$common_threshold = floor($total_posts * $fraction);
 
 		if ( $mode == 'single' && count($word_id_list) ) {
-			$word_id_sql = '';
-
-			for ($i = 0; $i < count($word_id_list); $i++) {
-				$word_id_sql .= ( ( $word_id_sql != '' ) ? ', ' : '' ) . "'" . $word_id_list[$i] . "'";
-			}
-
-			$sql = "SELECT m.word_id 
-				FROM " . SEARCH_MATCH_TABLE . " m, " . SEARCH_WORD_TABLE . " w 
-				WHERE w.word_text IN ($word_id_sql)  
-					AND m.word_id = w.word_id 
-				GROUP BY m.word_id 
-				HAVING COUNT(m.word_id) > $common_threshold";
+            $word_ids = dibi::select('m.word_id')
+                ->from(SEARCH_MATCH_TABLE)
+                ->as('m')
+                ->from('SEARCH_WORD_TABLE')
+                ->as('w')
+                ->where('w.word_text IN %in', $word_id_list)
+                ->where('m.word_id = w.word_id ')
+                ->groupBy('m.word_id')
+                ->having('COUNT(m.word_id) > %i', $common_threshold)
+                ->fetchAll();
 		} else {
-			$sql = "SELECT word_id 
-				FROM " . SEARCH_MATCH_TABLE . " 
-				GROUP BY word_id 
-				HAVING COUNT(word_id) > $common_threshold";
+		    $word_ids = dibi::select('word_id')
+                ->from(SEARCH_MATCH_TABLE)
+                ->groupBy('word_id')
+                ->having('COUNT(word_id) > %i', $common_threshold)
+                ->fetchAll();
 		}
 
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, 'Could not obtain common word list', '', __LINE__, __FILE__, $sql);
-		}
+		$common_word_id = [];
 
-		$common_word_id = '';
+		foreach ($word_ids as $word_id) {
+		    $common_word_id[] = $word_id->word_id;
+        }
 
-		while ( $row = $db->sql_fetchrow($result) ) {
-			$common_word_id .= ( ( $common_word_id != '' ) ? ', ' : '' ) . $row['word_id'];
-		}
+		if ( count($common_word_id) ) {
+		    dibi::update(SEARCH_WORD_TABLE, ['word_common' => 1])
+                ->where('word_id IN %in', $common_word_id)
+                ->execute();
 
-		$db->sql_freeresult($result);
-
-		if ( $common_word_id != '' ) {
-			$sql = "UPDATE " . SEARCH_WORD_TABLE . "
-				SET word_common = " . TRUE . " 
-				WHERE word_id IN ($common_word_id)";
-			if ( !$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, 'Could not delete word list entry', '', __LINE__, __FILE__, $sql);
-			}
-
-			$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . "  
-				WHERE word_id IN ($common_word_id)";
-
-			if ( !$db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, 'Could not delete word match entry', '', __LINE__, __FILE__, $sql);
-			}
+		    dibi::delete(SEARCH_MATCH_TABLE)
+                ->where('word_id IN %in', $common_word_id)
+                ->execute();
 		}
 	}
 
 	return;
 }
 
-function remove_search_post($post_id_sql)
+/**
+ * @param array $post_id_sql
+ * @return int
+ */
+function remove_search_post(array $post_id_sql)
 {
 	global $db;
 
@@ -320,43 +310,26 @@ function remove_search_post($post_id_sql)
 	switch ( SQL_LAYER ) {
 		case 'mysql':
 		case 'mysql4':
-			$sql = "SELECT word_id 
-				FROM " . SEARCH_MATCH_TABLE . " 
-				WHERE post_id IN ($post_id_sql) 
-				GROUP BY word_id";
+        $words = dibi::select('word_id')
+            ->from(SEARCH_MATCH_TABLE)
+            ->where('post_id IN %in', $post_id_sql)
+            ->groupBy('word_id')
+            ->fetchPairs(null, 'word_id');
 
-			if ( $result = $db->sql_query($sql) ) {
-				$word_id_sql = '';
+        if (count($words)) {
+            $words_match = dibi::select('word_id')
+                ->from(SEARCH_MATCH_TABLE)
+                ->where('word_id IN %in', $words)
+                ->groupBy('word_id')
+                ->having('COUNT(word_id) = 1')
+                ->fetchPairs(null, 'word_id');
 
-				while ( $row = $db->sql_fetchrow($result) ) {
-					$word_id_sql .= ( $word_id_sql != '' ) ? ', ' . $row['word_id'] : $row['word_id']; 
-				}
-
-				$sql = "SELECT word_id 
-					FROM " . SEARCH_MATCH_TABLE . " 
-					WHERE word_id IN ($word_id_sql) 
-					GROUP BY word_id 
-					HAVING COUNT(word_id) = 1";
-
-				if ( $result = $db->sql_query($sql) ) {
-					$word_id_sql = '';
-
-					while ( $row = $db->sql_fetchrow($result) ) {
-						$word_id_sql .= ( $word_id_sql != '' ) ? ', ' . $row['word_id'] : $row['word_id']; 
-					}
-
-					if ( $word_id_sql != '' ) {
-						$sql = "DELETE FROM " . SEARCH_WORD_TABLE . " 
-							WHERE word_id IN ($word_id_sql)";
-
-						if ( !$db->sql_query($sql) ) {
-							message_die(GENERAL_ERROR, 'Could not delete word list entry', '', __LINE__, __FILE__, $sql);
-						}
-
-						$words_removed = $db->sql_affectedrows();
-					}
-				}
-			}
+            if (count($words_match)) {
+                $words_removed = dibi::delete(SEARCH_WORD_TABLE)
+                    ->where('word_id IN %in', $words_match)
+                    ->execute(dibi::AFFECTED_ROWS);
+            }
+        }
 			break;
 
 		default:
@@ -383,12 +356,9 @@ function remove_search_post($post_id_sql)
 			break;
 	}
 
-	$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . "  
-		WHERE post_id IN ($post_id_sql)";
-
-	if ( !$db->sql_query($sql) ) {
-		message_die(GENERAL_ERROR, 'Error in deleting post', '', __LINE__, __FILE__, $sql);
-	}
+	dibi::delete(SEARCH_MATCH_TABLE)
+        ->where('post_id IN = %in', $post_id_sql)
+        ->execute();
 
 	return $words_removed;
 }
