@@ -372,22 +372,22 @@ function init_userprefs($userdata)
 	// Defined here to correctly assign the Language Variables
 	// and be able to change the variables within code.
 	//
-	$nav_links['top'] = array (
-		'url' => append_sid($phpbb_root_path . 'index.php'),
-		'title' => sprintf($lang['Forum_Index'], $board_config['sitename'])
-	);
-	$nav_links['search'] = array (
-		'url' => append_sid($phpbb_root_path . 'search.php'),
-		'title' => $lang['Search']
-	);
-	$nav_links['help'] = array (
-		'url' => append_sid($phpbb_root_path . 'faq.php'),
-		'title' => $lang['FAQ']
-	);
-	$nav_links['author'] = array (
-		'url' => append_sid($phpbb_root_path . 'memberlist.php'),
-		'title' => $lang['Memberlist']
-	);
+    $nav_links['top'] = [
+        'url' => append_sid($phpbb_root_path . 'index.php'),
+        'title' => sprintf($lang['Forum_Index'], $board_config['sitename'])
+    ];
+    $nav_links['search'] = [
+        'url' => append_sid($phpbb_root_path . 'search.php'),
+        'title' => $lang['Search']
+    ];
+    $nav_links['help'] = [
+        'url' => append_sid($phpbb_root_path . 'faq.php'),
+        'title' => $lang['FAQ']
+    ];
+    $nav_links['author'] = [
+        'url' => append_sid($phpbb_root_path . 'memberlist.php'),
+        'title' => $lang['Memberlist']
+    ];
 
 	return;
 }
