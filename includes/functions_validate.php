@@ -27,75 +27,55 @@
 //
 function validate_username($username)
 {
-	global $db, $lang, $userdata;
+	global $lang, $userdata;
 
 	// Remove doubled up spaces
 	$username = preg_replace('#\s+#', ' ', trim($username)); 
 	$username = phpbb_clean_username($username);
 
-	$sql = "SELECT username 
-		FROM " . USERS_TABLE . "
-		WHERE LOWER(username) = '" . strtolower($username) . "'";
-	
-	if ($result = $db->sql_query($sql)) {
-		while ($row = $db->sql_fetchrow($result)) {
-			if (($userdata['session_logged_in'] && $row['username'] != $userdata['username']) || !$userdata['session_logged_in']) {
-				$db->sql_freeresult($result);
-				
-				return ['error' => true, 'error_msg' => $lang['Username_taken']];
-			}
-		}
-	}
-	$db->sql_freeresult($result);
+	$lower_user_name = mb_strtolower($username);
 
-	$sql = "SELECT group_name
-		FROM " . GROUPS_TABLE . " 
-		WHERE LOWER(group_name) = '" . strtolower($username) . "'";
-	
-	if ($result = $db->sql_query($sql)) {
-		if ($row = $db->sql_fetchrow($result)) {
-			$db->sql_freeresult($result);
+	$db_user_name = dibi::select('username')
+        ->from(USERS_TABLE)
+        ->where('LOWER(username) = %s', $lower_user_name)
+        ->fetch();
+
+	if ($db_user_name) {
+        if (($userdata['session_logged_in'] && $db_user_name->username != $userdata['username']) || !$userdata['session_logged_in']) {
 
             return ['error' => true, 'error_msg' => $lang['Username_taken']];
         }
     }
-	
-	$db->sql_freeresult($result);
 
-	$sql = "SELECT disallow_username
-		FROM " . DISALLOW_TABLE;
-	
-	if ($result = $db->sql_query($sql)) {
-		if ($row = $db->sql_fetchrow($result)) {
-			do
-			{
-				if (preg_match("#\b(" . str_replace("\*", ".*?", preg_quote($row['disallow_username'], '#')) . ")\b#i", $username)) {
-					$db->sql_freeresult($result);
-					return ['error' => true, 'error_msg' => $lang['Username_disallowed']];
-				}
-			}
-			while ($row = $db->sql_fetchrow($result));
-		}
-	}
-	$db->sql_freeresult($result);
+	$db_group_name = dibi::select('group_name')
+        ->from(GROUPS_TABLE)
+        ->where('LOWER(group_name) = %s', $lower_user_name)
+        ->fetch();
 
-	$sql = "SELECT word 
-		FROM  " . WORDS_TABLE;
-	
-	if ($result = $db->sql_query($sql)) {
-		if ($row = $db->sql_fetchrow($result)) {
-			do
-			{
-				if (preg_match("#\b(" . str_replace("\*", ".*?", preg_quote($row['word'], '#')) . ")\b#i", $username)) {
-					$db->sql_freeresult($result);
+	if ($db_group_name) {
+        return ['error' => true, 'error_msg' => $lang['Username_taken']];
+    }
 
-                    return ['error' => true, 'error_msg' => $lang['Username_disallowed']];
-                }
-			}
-			while ($row = $db->sql_fetchrow($result));
-		}
-	}
-	$db->sql_freeresult($result);
+	$disallows = dibi::select('disallow_username')
+        ->from(DISALLOW_TABLE)
+        ->fetchAll();
+
+	foreach ($disallows as $disallow) {
+        if (preg_match("#\b(" . str_replace("\*", ".*?", preg_quote($disallow->disallow_username, '#')) . ")\b#i", $username)) {
+            return ['error' => true, 'error_msg' => $lang['Username_disallowed']];
+        }
+    }
+
+	$words = dibi::select('word')
+        ->from(WORDS_TABLE)
+        ->fetchAll();
+
+	foreach ($words as $word) {
+        if (preg_match("#\b(" . str_replace("\*", ".*?", preg_quote($word->word, '#')) . ")\b#i", $username)) {
+
+            return ['error' => true, 'error_msg' => $lang['Username_disallowed']];
+        }
+    }
 
 	// Don't allow " and ALT-255 in username.
 	if (strstr($username, '"') || strstr($username, '&quot;') || strstr($username, chr(160)) || strstr($username, chr(173))) {
@@ -111,44 +91,32 @@ function validate_username($username)
 //
 function validate_email($email)
 {
-	global $db, $lang;
+	global $lang;
 
 	if ($email != '') {
 		if (preg_match('/^[a-z0-9&\'\.\-_\+]+@[a-z0-9\-]+\.([a-z0-9\-]+\.)*?[a-z]+$/is', $email)) {
-			$sql = "SELECT ban_email
-				FROM " . BANLIST_TABLE;
-			
-			if ($result = $db->sql_query($sql)) {
-				if ($row = $db->sql_fetchrow($result)) {
-					do
-					{
-						$match_email = str_replace('*', '.*?', $row['ban_email']);
-						
-						if (preg_match('/^' . $match_email . '$/is', $email)) {
-							$db->sql_freeresult($result);
 
-                            return ['error' => true, 'error_msg' => $lang['Email_banned']];
-                        }
-					}
-					while ($row = $db->sql_fetchrow($result));
-				}
-			}
-			
-			$db->sql_freeresult($result);
+		    $bans = dibi::select('ban_email')
+                ->from(BANLIST_TABLE)
+                ->fetchAll();
 
-			$sql = "SELECT user_email
-				FROM " . USERS_TABLE . "
-				WHERE user_email = '" . str_replace("\'", "''", $email) . "'";
-			
-			if (!($result = $db->sql_query($sql))) {
-				message_die(GENERAL_ERROR, "Couldn't obtain user email information.", "", __LINE__, __FILE__, $sql);
-			}
+		    foreach ($bans as $ban) {
+                $match_email = str_replace('*', '.*?', $ban->ban_email);
+
+                if (preg_match('/^' . $match_email . '$/is', $email)) {
+
+                    return ['error' => true, 'error_msg' => $lang['Email_banned']];
+                }
+            }
+
+			$db_email = dibi::select('user_email')
+                ->from(USERS_TABLE)
+                ->where('user_email = %s', $email)
+                ->fetch();
 		
-			if ($row = $db->sql_fetchrow($result)) {
+			if ($db_email) {
                 return ['error' => true, 'error_msg' => $lang['Email_taken']];
             }
-			
-			$db->sql_freeresult($result);
 
             return ['error' => false, 'error_msg' => ''];
         }

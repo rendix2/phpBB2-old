@@ -1,6 +1,7 @@
 {
     "require": {
         "tracy/tracy": "^2.5",
-        "dibi/dibi": "^3.2"
+        "dibi/dibi": "^3.2",
+        "ext-mbstring": "*"
     }
 }
