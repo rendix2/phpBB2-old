@@ -66,7 +66,10 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 			} else {
 				// If the last login is more than x minutes ago, then reset the login tries/time
 				if ($row['user_last_login_try'] && $board_config['login_reset_time'] && $row['user_last_login_try'] < (time() - ($board_config['login_reset_time'] * 60))) {
-					$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_login_tries = 0, user_last_login_try = 0 WHERE user_id = ' . $row['user_id']);
+                    dibi::update(USERS_TABLE, ['user_login_tries' => 0, 'user_last_login_try' => 0])
+                        ->where('user_id = %i', $row['user_id'])
+                        ->execute();
+
 					$row['user_last_login_try'] = $row['user_login_tries'] = 0;
 				}
 				
@@ -84,7 +87,10 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 					$session_id = session_begin($row['user_id'], $user_ip, PAGE_INDEX, FALSE, $autologin, $admin);
 
 					// Reset login tries
-					$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_login_tries = 0, user_last_login_try = 0 WHERE user_id = ' . $row['user_id']);
+
+                    dibi::update(USERS_TABLE, ['user_login_tries' => 0, 'user_last_login_try' => 0])
+                        ->where('user_id = %i', $row['user_id'])
+                        ->execute();
 
 					if ($session_id ) {
 						$url = !empty($_POST['redirect']) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : "index.php";
@@ -97,11 +103,11 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 				elseif ($row['user_active'] ) {
 					// Save login tries and last login
 					if ($row['user_id'] != ANONYMOUS) {
-						$sql = 'UPDATE ' . USERS_TABLE . '
-							SET user_login_tries = user_login_tries + 1, user_last_login_try = ' . time() . '
-							WHERE user_id = ' . $row['user_id'];
-						
-						$db->sql_query($sql);
+                        $update_data = ['user_login_tries%sql' => 'user_login_tries + 1', 'user_last_login_try' => time()];
+
+                        dibi::update(USERS_TABLE, $update_data)
+                            ->where('user_id = %i', $row['user_id'])
+                            ->execute();
 					}
 				}
 

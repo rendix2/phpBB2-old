@@ -203,14 +203,13 @@ if ($userdata['session_logged_in'] ) {
 			if ( $_GET['unwatch'] == 'topic' ) {
 				$is_watching_topic = 0;
 
-				$sql_priority = (SQL_LAYER == "mysql") ? "LOW_PRIORITY" : '';
-				$sql = "DELETE $sql_priority FROM " . TOPICS_WATCH_TABLE . "
-					WHERE topic_id = $topic_id
-						AND user_id = " . $userdata['user_id'];
+				$sql_priority = (SQL_LAYER == 'mysql') ? 'LOW_PRIORITY' : '';
 
-				if ( !($result = $db->sql_query($sql)) ) {
-					message_die(GENERAL_ERROR, "Could not delete topic watch information", '', __LINE__, __FILE__, $sql);
-				}
+				dibi::delete(TOPICS_WATCH_TABLE)
+                    ->setFlag($sql_priority)
+                    ->where('topic_id = %i', $topic_id)
+                    ->where('user_id = %i', $userdata['user_id'])
+                    ->execute();
 			}
 
             $template->assign_vars(
@@ -225,15 +224,13 @@ if ($userdata['session_logged_in'] ) {
 			$is_watching_topic = TRUE;
 
 			if ( $row['notify_status'] ) {
-				$sql_priority = (SQL_LAYER == "mysql") ? "LOW_PRIORITY" : '';
-				$sql = "UPDATE $sql_priority " . TOPICS_WATCH_TABLE . "
-					SET notify_status = 0
-					WHERE topic_id = $topic_id
-						AND user_id = " . $userdata['user_id'];
+                $sql_priority = (SQL_LAYER == 'mysql') ? 'LOW_PRIORITY' : '';
 
-				if ( !($result = $db->sql_query($sql)) ) {
-					message_die(GENERAL_ERROR, "Could not update topic watch information", '', __LINE__, __FILE__, $sql);
-				}
+				dibi::update(TOPICS_WATCH_TABLE, ['notify_status' => 0])
+                    ->setFlag($sql_priority)
+                    ->where('topic_id = %i', $topic_id)
+                    ->where('user_id = %i', $userdata['user_id'])
+                    ->execute();
 			}
 		}
 	} else {
@@ -241,13 +238,17 @@ if ($userdata['session_logged_in'] ) {
 			if ( $_GET['watch'] == 'topic' ) {
 				$is_watching_topic = TRUE;
 
-				$sql_priority = (SQL_LAYER == "mysql") ? "LOW_PRIORITY" : '';
-				$sql = "INSERT $sql_priority INTO " . TOPICS_WATCH_TABLE . " (user_id, topic_id, notify_status)
-					VALUES (" . $userdata['user_id'] . ", $topic_id, 0)";
+				$sql_priority = (SQL_LAYER == 'mysql') ? 'LOW_PRIORITY' : '';
 
-				if ( !($result = $db->sql_query($sql)) ) {
-					message_die(GENERAL_ERROR, "Could not insert topic watch information", '', __LINE__, __FILE__, $sql);
-				}
+                $insert_data = [
+                    'user_id' => $userdata['user_id'],
+                    'topic_id' => $topic_id,
+                    'notify_status' => 0
+                ];
+
+				dibi::insert(TOPICS_WATCH_TABLE, $insert_data)
+                    ->setFlag($sql_priority)
+                    ->execute();
 			}
 
             $template->assign_vars(
@@ -389,11 +390,13 @@ if ($forum_topic_data['topic_replies'] + 1 < $start + count($postrow))  {
 
 if ($resync) { 
    include $phpbb_root_path . 'includes/functions_admin.php';
-   sync('topic', $topic_id); 
+   sync('topic', $topic_id);
 
-   $result = $db->sql_query('SELECT COUNT(post_id) AS total FROM ' . POSTS_TABLE . ' WHERE topic_id = ' . $topic_id); 
-   $row = $db->sql_fetchrow($result); 
-   $total_replies = $row['total']; 
+    $total_replies = dibi::select('COUNT(post_id)')
+        ->as('total')
+        ->from(POSTS_TABLE)
+        ->where('topic_id = %i', $topic_id)
+        ->fetchSingle();
 }
 
 $ranks = dibi::select('*')

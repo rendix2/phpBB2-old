@@ -48,19 +48,15 @@ if (!preg_match('/^[A-Za-z0-9]+$/', $confirm_id)) {
 }
 
 // Try and grab code for this id and session
-$sql = 'SELECT code  
-	FROM ' . CONFIRM_TABLE . " 
-	WHERE session_id = '" . $userdata['session_id'] . "' 
-		AND confirm_id = '$confirm_id'";
-
-$result = $db->sql_query($sql);
+$code = dibi::select('code')
+    ->from(CONFIRM_TABLE)
+    ->where('session_id = %s', $userdata['session_id'])
+    ->where('confirm_id = %s', $confirm_id)
+    ->fetch();
 
 // If we have a row then grab data else create a new id
-if ($row = $db->sql_fetchrow($result)) {
-	$db->sql_freeresult($result);
-	$code = $row['code'];
-} else {
-	exit;
+if (!$code) {
+    exit;
 }
 
 // We can we will generate a single filtered png 

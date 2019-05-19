@@ -499,14 +499,16 @@ function session_reset_keys($user_id, $user_ip)
 		$auto_login_key = dss_rand() . dss_rand();
 
 		$current_time = time();
-		
-		$sql = 'UPDATE ' . SESSIONS_KEYS_TABLE . "
-			SET last_ip = '$user_ip', key_id = '" . md5($auto_login_key) . "', last_login = $current_time
-			WHERE key_id = '" . md5($userdata['session_key']) . "'";
-		
-		if ( !$db->sql_query($sql) ) {
-			message_die(CRITICAL_ERROR, 'Error updating session key', '', __LINE__, __FILE__, $sql);
-		}
+
+		$update_data = [
+		    'last_ip' => $user_ip,
+            'key_id' => md5($auto_login_key),
+            'last_login' => $current_time
+        ];
+
+		dibi::update(SESSIONS_KEYS_TABLE, $update_data)
+            ->where('key_id = %s', md5($userdata['session_key']))
+            ->execute();
 
 		// And now rebuild the cookie
 		$sessiondata['userid'] = $user_id;
