@@ -1,9 +1,13 @@
+- clone this repo
+- run composer install
+
+
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html">
 <meta http-equiv="Content-Style-Type" content="text/css">
-<title>phpBB 2.0.x :: Readme</title>
 <link rel="stylesheet" href="../templates/subSilver/subSilver.css" type="text/css" />
 <style type="text/css">
 <!--
@@ -211,7 +215,7 @@ For this reason we do not support PHP 5 as platform for phpBB. It has been repor
 
 <a name="disclaimer"></a><h2 class="h2"><u>8. Copyright and disclaimer</u></h2>
 
-<p>This application is opensource software released under the <a href="http://www.gnu.org/licenses/gpl.html" target="_new">GPL</a>. Please see source code and the Docs directory for more details. This package and its contents are Copyright © 2002 <a href="http://www.phpbb.com/" target="_new">phpBB Group</a>, All Rights Reserved.</p>
+<p>This application is opensource software released under the <a href="http://www.gnu.org/licenses/gpl.html" target="_new">GPL</a>. Please see source code and the Docs directory for more details. This package and its contents are Copyright Â© 2002 <a href="http://www.phpbb.com/" target="_new">phpBB Group</a>, All Rights Reserved.</p>
 <!-- END DOCUMENT -->
 
 				</td>
