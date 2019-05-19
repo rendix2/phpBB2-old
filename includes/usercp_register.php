@@ -264,17 +264,15 @@ if ( isset($_POST['submit']) )
 				$confirm_id = '';
 			}
 
-			$sql = 'SELECT code 
-				FROM ' . CONFIRM_TABLE . " 
-				WHERE confirm_id = '$confirm_id' 
-					AND session_id = '" . $userdata['session_id'] . "'";
+			// todo maybe fetchSingle()??
+			$row = dibi::select('code')
+                ->from(CONFIRM_TABLE)
+                ->where('confirm_id = %s', $confirm_id)
+                ->where('session_id = %s', $userdata['session_id'])
+                ->fetch();
 
-			if (!($result = $db->sql_query($sql))) {
-				message_die(GENERAL_ERROR, 'Could not obtain confirmation code', '', __LINE__, __FILE__, $sql);
-			}
-
-			if ($row = $db->sql_fetchrow($result)) {
-				if ($row['code'] != $confirm_code) {
+			if ($row) {
+				if ($row->code != $confirm_code) {
 					$error = TRUE;
 					$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Confirm_code_wrong'];
 				} else {
@@ -287,7 +285,6 @@ if ( isset($_POST['submit']) )
 				$error = TRUE;
 				$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Confirm_code_wrong'];
 			}
-			$db->sql_freeresult($result);
 		}
 	}
 
@@ -302,16 +299,16 @@ if ( isset($_POST['submit']) )
 			$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Password_long'];
 		} else {
 			if ( $mode == 'editprofile' ) {
-				$sql = "SELECT user_password
-					FROM " . USERS_TABLE . "
-					WHERE user_id = $user_id";
-				if ( !($result = $db->sql_query($sql)) ) {
-					message_die(GENERAL_ERROR, 'Could not obtain user_password information', '', __LINE__, __FILE__, $sql);
-				}
+			    $db_password = dibi::select('user_password')
+                    ->from(USERS_TABLE)
+                    ->where('user_id = %i', $user_id)
+                    ->fetchSingle();
 
-				$row = $db->sql_fetchrow($result);
+                if (!$db_password) {
+                    message_die(GENERAL_ERROR, 'Could not obtain user_password information');
+                }
 
-				if ( $row['user_password'] != md5($cur_password) ) {
+				if ( $db_password != md5($cur_password) ) {
 					$error = TRUE;
 					$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Current_password_mismatch'];
 				}
@@ -342,17 +339,16 @@ if ( isset($_POST['submit']) )
 		}
 
 		if ( $mode == 'editprofile' ) {
-			$sql = "SELECT user_password
-				FROM " . USERS_TABLE . "
-				WHERE user_id = $user_id";
+            $db_password = dibi::select('user_password')
+                ->from(USERS_TABLE)
+                ->where('user_id = %i', $user_id)
+                ->fetchSingle();
 
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, 'Could not obtain user_password information', '', __LINE__, __FILE__, $sql);
-			}
+            if (!$db_password) {
+                message_die(GENERAL_ERROR, 'Could not obtain user_password information');
+            }
 
-			$row = $db->sql_fetchrow($result);
-
-			if ( $row['user_password'] != md5($cur_password) ) {
+			if ( $db_password != md5($cur_password) ) {
 				$email = $userdata['user_email'];
 
 				$error = TRUE;
@@ -511,32 +507,28 @@ if ( isset($_POST['submit']) )
  					$emailer->send();
  					$emailer->reset();
  				} elseif ( $board_config['require_activation'] == USER_ACTIVATION_ADMIN ) {
- 					$sql = 'SELECT user_email, user_lang 
- 						FROM ' . USERS_TABLE . '
- 						WHERE user_level = ' . ADMIN;
+ 				    $admins = dibi::select(['user_email', 'user_lang'])
+                        ->from(USERS_TABLE)
+                        ->where('user_level = %i', ADMIN)
+                        ->fetchAll();
 
- 					if ( !($result = $db->sql_query($sql)) ) {
- 						message_die(GENERAL_ERROR, 'Could not select Administrators', '', __LINE__, __FILE__, $sql);
- 					}
+                    foreach ($admins as $admin) {
+                        $emailer->from($board_config['board_email']);
+                        $emailer->replyto($board_config['board_email']);
 
- 					while ($row = $db->sql_fetchrow($result)) {
- 						$emailer->from($board_config['board_email']);
- 						$emailer->replyto($board_config['board_email']);
+                        $emailer->email_address(trim($admin->user_email));
+                        $emailer->use_template("admin_activate", $admin->user_lang);
+                        $emailer->set_subject($lang['Reactivate']);
 
- 						$emailer->email_address(trim($row['user_email']));
- 						$emailer->use_template("admin_activate", $row['user_lang']);
- 						$emailer->set_subject($lang['Reactivate']);
+                        $emailer->assign_vars(array(
+                                'USERNAME' => preg_replace($unhtml_specialchars_match, $unhtml_specialchars_replace, substr(str_replace("\'", "'", $username), 0, 25)),
+                                'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
 
- 						$emailer->assign_vars(array(
- 							'USERNAME' => preg_replace($unhtml_specialchars_match, $unhtml_specialchars_replace, substr(str_replace("\'", "'", $username), 0, 25)),
- 							'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
-
- 							'U_ACTIVATE' => $server_url . '?mode=activate&' . POST_USERS_URL . '=' . $user_id . '&act_key=' . $user_actkey)
- 						);
- 						$emailer->send();
- 						$emailer->reset();
- 					}
- 					$db->sql_freeresult($result);
+                                'U_ACTIVATE' => $server_url . '?mode=activate&' . POST_USERS_URL . '=' . $user_id . '&act_key=' . $user_actkey)
+                        );
+                        $emailer->send();
+                        $emailer->reset();
+                    }
  				}
 
 				$message = $lang['Profile_updated_inactive'] . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . append_sid("index.php") . '">', '</a>');
@@ -688,10 +680,6 @@ if ( isset($_POST['submit']) )
                     ->from(USERS_TABLE)
                     ->where('user_level = %i', ADMIN)
                     ->fetchAll();
-
-				if ( !count($admins) ) {
-					message_die(GENERAL_ERROR, 'Could not select Administrators', '', __LINE__, __FILE__, $sql);
-				}
 
                 foreach ($admins as $admin) {
 					$emailer->from($board_config['board_email']);
@@ -874,29 +862,15 @@ if (isset($_POST['avatargallery']) && !$error ) {
 	// Visual Confirmation
 	$confirm_image = '';
 	if (!empty($board_config['enable_confirm']) && $mode == 'register') {
-		$sql = 'SELECT session_id 
-			FROM ' . SESSIONS_TABLE;
+	    $sessions = dibi::select('session_id')
+            ->from(SESSIONS_TABLE)
+            ->fetchPairs(null, 'session_id');
 
-		if (!($result = $db->sql_query($sql))) {
-			message_die(GENERAL_ERROR, 'Could not select session data', '', __LINE__, __FILE__, $sql);
-		}
-
-		if ($row = $db->sql_fetchrow($result)) {
-			$confirm_sql = '';
-
-			do {
-				$confirm_sql .= (($confirm_sql != '') ? ', ' : '') . "'" . $row['session_id'] . "'";
-			}
-			while ($row = $db->sql_fetchrow($result));
-
-			$sql = 'DELETE FROM ' .  CONFIRM_TABLE . " 
-				WHERE session_id NOT IN ($confirm_sql)";
-
-			if (!$db->sql_query($sql)) {
-				message_die(GENERAL_ERROR, 'Could not delete stale confirm data', '', __LINE__, __FILE__, $sql);
-			}
-		}
-		$db->sql_freeresult($result);
+	    if (count($sessions)) {
+	        dibi::delete(CONFIRM_TABLE)
+                ->where('session_id NOT IN %in', $sessions)
+                ->execute();
+        }
 
         $attempts = dibi::select('COUNT(session_id)')
             ->as('attempts')

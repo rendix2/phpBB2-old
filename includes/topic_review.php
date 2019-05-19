@@ -84,7 +84,7 @@ function topic_review($topic_id, $is_inline_review)
 	// Dump out the page header and load viewtopic body template
 	//
 	if ( !$is_inline_review ) {
-		$gen_simple_header = tru;
+		$gen_simple_header = true;
 
 		$page_title = $lang['Topic_review'] . ' - ' . $topic_title;
 		include $phpbb_root_path . 'includes/page_header.php';

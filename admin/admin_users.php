@@ -131,37 +131,20 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
                 ->where('user_id = %i', $user_id)
                 ->execute();
 
-			$sql = "SELECT privmsgs_id
-				FROM " . PRIVMSGS_TABLE . "
-				WHERE privmsgs_from_userid = $user_id 
-					OR privmsgs_to_userid = $user_id";
+            $privmsgs_ids = dibi::select('privmsgs_id')
+                ->from(PRIVMSGS_TABLE)
+                ->where('privmsgs_from_userid = %i OR privmsgs_to_userid = %i', $user_id, $user_id)
+                ->fetchPairs(null, 'privmsgs_id');
 
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, 'Could not select all users private messages', '', __LINE__, __FILE__, $sql);
-			}
+            if (count($privmsgs_ids)) {
+                dibi::delete(PRIVMSGS_TABLE)
+                    ->where('privmsgs_id IN %in', $privmsgs_ids)
+                    ->execute();
 
-			// This little bit of code directly from the private messaging section.
-			while ( $row_privmsgs = $db->sql_fetchrow($result) ) {
-				$mark_list[] = $row_privmsgs['privmsgs_id'];
-			}
-			
-			if ( count($mark_list) ) {
-				$delete_sql_id = implode(', ', $mark_list);
-				
-				$delete_text_sql = "DELETE FROM " . PRIVMSGS_TEXT_TABLE . "
-					WHERE privmsgs_text_id IN ($delete_sql_id)";
-
-				$delete_sql = "DELETE FROM " . PRIVMSGS_TABLE . "
-					WHERE privmsgs_id IN ($delete_sql_id)";
-				
-				if ( !$db->sql_query($delete_sql) ) {
-					message_die(GENERAL_ERROR, 'Could not delete private message info', '', __LINE__, __FILE__, $delete_sql);
-				}
-				
-				if ( !$db->sql_query($delete_text_sql) ) {
-					message_die(GENERAL_ERROR, 'Could not delete private message text', '', __LINE__, __FILE__, $delete_text_sql);
-				}
-			}
+                dibi::delete(PRIVMSGS_TEXT_TABLE)
+                    ->where('privmsgs_text_id IN %in', $privmsgs_ids)
+                    ->execute();
+            }
 
 			$message = $lang['User_deleted'] . '<br /><br />' . sprintf($lang['Click_return_useradmin'], '<a href="' . append_sid("admin_users.php") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');
 

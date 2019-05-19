@@ -58,8 +58,6 @@ function make_forum_select($box_name, $ignore_forum = false, $select_forum = '')
 //
 function sync($type, $id = false)
 {
-	global $db;
-
 	switch($type) {
 		case 'all forums':
 		    $forums = dibi::select('forum_id')
@@ -118,21 +116,23 @@ function sync($type, $id = false)
 			break;
 
 		case 'topic':
-			$sql = "SELECT MAX(post_id) AS last_post, MIN(post_id) AS first_post, COUNT(post_id) AS total_posts
-				FROM " . POSTS_TABLE . "
-				WHERE topic_id = $id";
+		    $row = dibi::select('MAX(post_id)')
+                ->as('last_post')
+                ->select('MIN(post_id)')
+                ->as('first_post')
+                ->select('COUNT(post_id)')
+                ->as('total_posts')
+                ->from(POSTS_TABLE)
+                ->where('topic_id = %i', $id)
+                ->fetch();
 
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, 'Could not get post ID', '', __LINE__, __FILE__, $sql);
-			}
-
-			if ( $row = $db->sql_fetchrow($result) ) {
-				if ($row['total_posts']) {
+            if ($row) {
+				if ($row->total_posts) {
 					// Correct the details of this topic
                     $update_data = [
-                        'topic_replies' => $row['total_posts'] - 1,
-                        'topic_first_post_id' => $row['first_post'],
-                        'topic_last_post_id' => $row['last_post']
+                        'topic_replies' => $row->total_posts - 1,
+                        'topic_first_post_id' => $row->first_post,
+                        'topic_last_post_id' => $row->last_post
                     ];
 
                     dibi::update(TOPICS_TABLE, $update_data)
@@ -141,21 +141,16 @@ function sync($type, $id = false)
 				} else {
 					// There are no replies to this topic
 					// Check if it is a move stub
-					$sql = 'SELECT topic_moved_id 
-						FROM ' . TOPICS_TABLE . " 
-						WHERE topic_id = $id";
+					$topic_moved_id = dibi::select('topic_moved_id')
+                        ->from(TOPICS_TABLE)
+                        ->where('topic_id = %i', $id)
+                        ->fetch();
 
-					if (!($result = $db->sql_query($sql))) {
-						message_die(GENERAL_ERROR, 'Could not get topic ID', '', __LINE__, __FILE__, $sql);
-					}
-
-					if ($row = $db->sql_fetchrow($result)) {
-						if (!$row['topic_moved_id']) {
+					if ($topic_moved_id) {
+						if (!$topic_moved_id->topic_moved_id) {
 						    dibi::delete(TOPICS_TABLE)->where('topic_id = %i', $id)->execute();
 						}
 					}
-
-					$db->sql_freeresult($result);
 				}
 			}
 			break;
