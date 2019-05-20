@@ -227,14 +227,14 @@ if (isset($_GET['pane']) && $_GET['pane'] == 'left' )
             $dbsize = $lang['Not_available'];
         }
 	} elseif (preg_match("/^mssql/", SQL_LAYER) ) {
-		$sql = "SELECT ((SUM(size) * 8.0) * 1024.0) as dbsize 
-			FROM sysfiles";
+        $dbsize = dibi::select('((SUM(size) * 8.0) * 1024.0)')
+            ->as('dbsize')
+            ->from('sysfiles')
+            ->fetchSingle();
 
-        if ($result = $db->sql_query($sql)) {
-			$dbsize = ( $row = $db->sql_fetchrow($result) ) ? (int)$row['dbsize'] : $lang['Not_available'];
-		} else {
-			$dbsize = $lang['Not_available'];
-		}
+        if (!$dbsize) {
+            $lang['Not_available'] ;
+        }
 	} else {
 		$dbsize = $lang['Not_available'];
 	}

@@ -212,41 +212,25 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
 					$search_author = '';
 				}
 
-				$sql = "SELECT user_id
-					FROM " . USERS_TABLE . "
-					WHERE username LIKE '" . str_replace("\'", "''", $search_author) . "'";
-				if ( !($result = $db->sql_query($sql)) )
-				{
-					message_die(GENERAL_ERROR, "Couldn't obtain list of matching users (searching for: $search_author)", "", __LINE__, __FILE__, $sql);
-				}
+                $matching_userids = dibi::select('user_id')
+                    ->from(USERS_TABLE)
+                    ->where('username LIKE %like', $search_author)
+                    ->fetchPairs(null, 'user_id');
 
-                $matching_userids = '';
-                if ($row = $db->sql_fetchrow($result)) {
-                    do {
-                        $matching_userids .= (($matching_userids != '') ? ', ' : '') . $row['user_id'];
-                    } while ($row = $db->sql_fetchrow($result));
-                } else {
+				if (!count($matching_userids)) {
                     message_die(GENERAL_MESSAGE, $lang['No_search_match']);
                 }
 
-				$sql = "SELECT post_id 
-					FROM " . POSTS_TABLE . " 
-					WHERE poster_id IN ($matching_userids)";
+                $search_ids = dibi::select('post_id')
+                    ->from(POSTS_TABLE)
+                    ->where('poster_id IN %in', $matching_userids);
 
                 if ($search_time) {
-                    $sql .= " AND post_time >= " . $search_time;
+                    $search_ids->where('post_time >= %i', $search_time);
                 }
+
+                $search_ids = $search_ids->fetchPairs(null, 'post_id');
 			}
-
-            if (!($result = $db->sql_query($sql))) {
-                message_die(GENERAL_ERROR, 'Could not obtain matched posts list', '', __LINE__, __FILE__, $sql);
-            }
-
-			$search_ids = [];
-            while ($row = $db->sql_fetchrow($result)) {
-                $search_ids[] = $row['post_id'];
-            }
-			$db->sql_freeresult($result);
 
 			$total_match_count = count($search_ids);
 
@@ -260,8 +244,6 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
 			$stripped_keywords = stripslashes($search_keywords);
 			$split_search = ( !strstr($multibyte_charset, $lang['ENCODING']) ) ?  split_words(clean_words('search', $stripped_keywords, $stopword_array, $synonym_array), 'search') : explode(' ', $search_keywords);
 			unset($stripped_keywords);
-
-			$search_msg_only = ( !$search_fields ) ? "AND m.title_match = 0" : ( strstr($multibyte_charset, $lang['ENCODING']) ? '' : '' );
 
 			$word_count = 0;
 			$current_match_type = 'or';
@@ -293,48 +275,60 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
                             $current_match_type = 'and';
                         }
 
-						if ( !strstr($multibyte_charset, $lang['ENCODING']) )
-						{
-							$match_word = str_replace('*', '%', $split_search[$i]);
-							$sql = "SELECT m.post_id 
-								FROM " . SEARCH_WORD_TABLE . " w, " . SEARCH_MATCH_TABLE . " m 
-								WHERE w.word_text LIKE '$match_word' 
-									AND m.word_id = w.word_id 
-									AND w.word_common <> 1 
-									$search_msg_only";
-						}
-						else
-						{
-							$match_word =  addslashes('%' . str_replace('*', '', $split_search[$i]) . '%');
-							$search_msg_only = $search_fields ? "OR post_subject LIKE '$match_word'" : '';
-							$sql = "SELECT post_id
-								FROM " . POSTS_TEXT_TABLE . "
-								WHERE post_text LIKE '$match_word'
-								$search_msg_only";
+						if ( !strstr($multibyte_charset, $lang['ENCODING']) ) {
 
+							$match_word = str_replace('*', '%', $split_search[$i]);
+
+							// TODO THERE WAS LIKE 'awwdawd' WITHOUT LIKE '%%'
+							$post_ids = dibi::select('m.post_id')
+                                ->from(SEARCH_WORD_TABLE)
+                                ->as('w')
+                                ->from(SEARCH_MATCH_TABLE)
+                                ->as('m')
+                                ->where('w.word_text LIKE %~like~', $match_word)
+                                ->where('m.word_id = w.word_id')
+                                ->where('w.word_common <> %i', 1);
+
+                            if (!$search_fields) {
+                                $post_ids->where('m.title_match = %i', 0);
+                            }
+
+                            $post_ids = $post_ids->fetchPairs(null, 'post_id');
+						} else {
+							$match_word =  addslashes('%' . str_replace('*', '', $split_search[$i]) . '%');
+
+                            // TODO THERE WAS LIKE 'awwdawd' WITHOUT LIKE '%%'
+                            if ($search_fields) {
+                                $post_ids = dibi::select('post_id')
+                                    ->from(POSTS_TEXT_TABLE)
+                                    ->where('post_text LIKE ~%like~ OR post_subject LIKE %~like~', $match_word, $match_word);
+                            } else {
+                                $post_ids = dibi::select('post_id')
+                                    ->from(POSTS_TEXT_TABLE)
+                                    ->where('post_text LIKE %like', $match_word);
+                            }
+
+                            $post_ids = $post_ids->fetchPairs(null, 'post_id');
 						}
-                        if (!($result = $db->sql_query($sql))) {
-                            message_die(GENERAL_ERROR, 'Could not obtain matched posts list', '', __LINE__, __FILE__, $sql);
-                        }
 
                         $row = [];
 
-                        while ($temp_row = $db->sql_fetchrow($result)) {
-                            $row[$temp_row['post_id']] = 1;
+						foreach ($post_ids as $post_id) {
+                            $row[$post_id] = 1;
 
                             if (!$word_count) {
-                                $result_list[$temp_row['post_id']] = 1;
+                                $result_list[$post_id] = 1;
                             } elseif ($current_match_type == 'or') {
-                                $result_list[$temp_row['post_id']] = 1;
+                                $result_list[$post_id] = 1;
                             } elseif ($current_match_type == 'not') {
-                                $result_list[$temp_row['post_id']] = 0;
+                                $result_list[$post_id] = 0;
                             }
                         }
 
                         if ($current_match_type == 'and' && $word_count) {
                             @reset($result_list);
 
-                            while (list($post_id, $match_count) = @each($result_list)) {
+                            foreach ($result_list as $post_id => $match_count) {
                                 if (!$row[$post_id]) {
                                     $result_list[$post_id] = 0;
                                 }
@@ -342,15 +336,14 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
                         }
 
 						$word_count++;
-
-						$db->sql_freeresult($result);
 					}
 			}
 
 			@reset($result_list);
 
 			$search_ids = [];
-            while (list($post_id, $matches) = each($result_list)) {
+
+			foreach ($result_list as $post_id => $matches) {
                 if ($matches) {
                     $search_ids[] = $post_id;
                 }
@@ -644,21 +637,16 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
 		$search_id = (int)$search_id;
 
 		if ( $search_id ) {
-			$sql = "SELECT search_array 
-				FROM " . SEARCH_TABLE . " 
-				WHERE search_id = $search_id  
-					AND session_id = '". $userdata['session_id'] . "'";
+            $row = dibi::select('search_array')
+                ->from(SEARCH_TABLE)
+                ->where('search_id = %i', $search_id)
+                ->where('session_id %s', $userdata['session_id'])
+                ->fetch();
 
-            if (!($result = $db->sql_query($sql))) {
-                message_die(GENERAL_ERROR, 'Could not obtain search results', '', __LINE__, __FILE__, $sql);
-            }
+            $search_data = unserialize($row->search_array);
 
-            if ($row = $db->sql_fetchrow($result)) {
-                $search_data = unserialize($row['search_array']);
-
-                for ($i = 0; $i < count($store_vars); $i++) {
-                    $$store_vars[$i] = $search_data[$store_vars[$i]];
-                }
+            for ($i = 0; $i < count($store_vars); $i++) {
+                $$store_vars[$i] = $search_data[$store_vars[$i]];
             }
 		}
 	}
@@ -1143,42 +1131,42 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
 //
 // Search forum
 //
-$sql = "SELECT c.cat_title, c.cat_id, f.forum_name, f.forum_id  
-	FROM " . CATEGORIES_TABLE . " c, " . FORUMS_TABLE . " f
-	WHERE f.cat_id = c.cat_id 
-	ORDER BY c.cat_order, f.forum_order";
-
-$result = $db->sql_query($sql);
-
-if ( !$result ) {
-	message_die(GENERAL_ERROR, 'Could not obtain forum_name/forum_id', '', __LINE__, __FILE__, $sql);
-}
+$result = dibi::select(['c.cat_title', 'c.cat_id', 'f.forum_name', 'f.forum_id'])
+    ->from(CATEGORIES_TABLE)
+    ->as('c')
+    ->from(FORUMS_TABLE)
+    ->as('f')
+    ->where('f.cat_id = c.cat_id')
+    ->orderBy('c.cat_order')
+    ->orderBy('f.forum_order')
+    ->fetchAll();
 
 $is_auth_ary = auth(AUTH_READ, AUTH_LIST_ALL, $userdata);
 
 $s_forums = '';
+$list_cat = [];
 
-while ($row = $db->sql_fetchrow($result) ) {
-	if ( $is_auth_ary[$row['forum_id']]['auth_read'] ) {
-		$s_forums .= '<option value="' . $row['forum_id'] . '">' . $row['forum_name'] . '</option>';
-		
-		if ( empty($list_cat[$row['cat_id']]) ) {
-			$list_cat[$row['cat_id']] = $row['cat_title'];
-		}
-	}
+foreach ($result as $row) {
+    if ( $is_auth_ary[$row->forum_id]['auth_read'] ) {
+        $s_forums .= '<option value="' . $row->forum_id . '">' . $row->forum_name . '</option>';
+
+        if ( empty($list_cat[$row->cat_id]) ) {
+            $list_cat[$row->cat_id] = $row->cat_title;
+        }
+    }
 }
 
-if ( $s_forums != '' ) {
+if ( count($list_cat) ) {
 	$s_forums = '<option value="-1">' . $lang['All_available'] . '</option>' . $s_forums;
 
 	//
 	// Category to search
 	//
 	$s_categories = '<option value="-1">' . $lang['All_available'] . '</option>';
-	
-	while (list($cat_id, $cat_title) = @each($list_cat)) {
-		$s_categories .= '<option value="' . $cat_id . '">' . $cat_title . '</option>';
-	}
+
+	foreach ($list_cat as $cat_id => $cat_title) {
+        $s_categories .= '<option value="' . $cat_id . '">' . $cat_title . '</option>';
+    }
 } else {
 	message_die(GENERAL_MESSAGE, $lang['No_searchable_forums']);
 }

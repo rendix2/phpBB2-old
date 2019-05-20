@@ -1026,14 +1026,14 @@ if ( $mode == 'newpm' ) {
 		//
 		// Flood control
 		//
-		$sql = "SELECT MAX(privmsgs_date) AS last_post_time
-			FROM " . PRIVMSGS_TABLE . "
-			WHERE privmsgs_from_userid = " . $userdata['user_id'];
-		
-		if ( $result = $db->sql_query($sql) ) {
-			$db_row = $db->sql_fetchrow($result);
 
-			$last_post_time = $db_row['last_post_time'];
+        $last_post_time = dibi::select('MAX(privmsgs_date)')
+            ->as('MAX(privmsgs_date)')
+            ->from(PRIVMSGS_TABLE)
+            ->where('privmsgs_from_userid = %i', $userdata['user_id'])
+            ->fetchSingle();
+
+        if ($last_post_time) {
 			$current_time = time();
 
 			if ( ( $current_time - $last_post_time ) < $board_config['flood_interval']) {
@@ -1046,20 +1046,15 @@ if ( $mode == 'newpm' ) {
 	}
 
 	if ($submit && $mode == 'edit') {
-		$sql = 'SELECT privmsgs_from_userid
-			FROM ' . PRIVMSGS_TABLE . '
-			WHERE privmsgs_id = ' . (int) $privmsg_id . '
-				AND privmsgs_from_userid = ' . $userdata['user_id'];
+	    $row = dibi::select('privmsgs_from_userid')
+            ->from(PRIVMSGS_TABLE)
+            ->where('privmsgs_id = %i', (int) $privmsg_id)
+            ->where('privmsgs_from_userid = %i', $userdata['user_id'])
+            ->fetch();
 
-		if (!($result = $db->sql_query($sql))) {
-			message_die(GENERAL_ERROR, "Could not obtain message details", "", __LINE__, __FILE__, $sql);
-		}
-
-		if (!($row = $db->sql_fetchrow($result))) {
+		if (!$row) {
 			message_die(GENERAL_MESSAGE, $lang['No_such_post']);
 		}
-		
-		$db->sql_freeresult($result);
 
 		unset($row);
 	}
@@ -1074,20 +1069,17 @@ if ( $mode == 'newpm' ) {
 		if ( !empty($_POST['username']) ) {
 			$to_username = phpbb_clean_username($_POST['username']);
 
-			$sql = "SELECT user_id, user_notify_pm, user_email, user_lang, user_active 
-				FROM " . USERS_TABLE . "
-				WHERE username = '" . str_replace("\'", "''", $to_username) . "'
-					AND user_id <> " . ANONYMOUS;
+            $to_userdata = dibi::select(['user_id', 'user_notify_pm', 'user_email', 'user_lang', 'user_active'])
+                ->from(USERS_TABLE)
+                ->where('username = %s', $to_username)
+                ->fetch();
 
-			if ( !($result = $db->sql_query($sql)) ) {
+			if ( !$to_userdata) {
                 $error = true;
 				$error_msg = $lang['No_such_user'];
 			}
 
-			if (!($to_userdata = $db->sql_fetchrow($result))) {
-                $error = true;
-				$error_msg = $lang['No_such_user'];
-			}
+            $to_userdata = $to_userdata->toArray();
         } else {
 			$error = TRUE;
 			$error_msg .= ( !empty($error_msg) ? '<br />' : '' ) . $lang['No_to_user'];
@@ -1312,27 +1304,23 @@ if ( $mode == 'newpm' ) {
 			$page_title = $lang['Post_reply_pm'];
 
 			$user_sig = ( $userdata['user_sig'] != '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : '';
-		}
-		elseif ( $mode == 'edit' )
-		{
+		} elseif ( $mode == 'edit' ) {
 			$page_title = $lang['Edit_pm'];
 
-			$sql = "SELECT u.user_id, u.user_sig 
-				FROM " . PRIVMSGS_TABLE . " pm, " . USERS_TABLE . " u 
-				WHERE pm.privmsgs_id = $privmsg_id 
-					AND u.user_id = pm.privmsgs_from_userid";
+            $postrow = dibi::select(['u.user_id', 'u.user_sig'])
+                ->from(PRIVMSGS_TABLE)
+                ->as('pm')
+                ->from(USERS_TABLE)
+                ->as('u')
+                ->where('pm.privmsgs_id = %i', $privmsg_id)
+                ->where('u.user_id = pm.privmsgs_from_userid')
+                ->fetch();
 
-            if (!($result = $db->sql_query($sql))) {
-                message_die(GENERAL_ERROR, "Could not obtain post and post text", "", __LINE__, __FILE__, $sql);
+            if ($userdata['user_id'] != $postrow->user_id) {
+                message_die(GENERAL_MESSAGE, $lang['Edit_own_posts']);
             }
 
-            if ($postrow = $db->sql_fetchrow($result)) {
-                if ($userdata['user_id'] != $postrow['user_id']) {
-                    message_die(GENERAL_MESSAGE, $lang['Edit_own_posts']);
-                }
-
-                $user_sig = ($postrow['user_sig'] != '' && $board_config['allow_sig']) ? $postrow['user_sig'] : '';
-            }
+            $user_sig = ($postrow->user_sig != '' && $board_config['allow_sig']) ? $postrow->user_sig : '';
 		}
 	} else {
         if (!$privmsg_id && ($mode == 'reply' || $mode == 'edit' || $mode == 'quote')) {
@@ -1342,18 +1330,17 @@ if ( $mode == 'newpm' ) {
 		if ( !empty($_GET[POST_USERS_URL]) ) {
 			$user_id = (int)$_GET[POST_USERS_URL];
 
-			$sql = "SELECT username
-				FROM " . USERS_TABLE . "
-				WHERE user_id = $user_id
-					AND user_id <> " . ANONYMOUS;
+			$user_check = dibi::select('username')
+                ->from(USERS_TABLE)
+                ->where('user_id = %i', $user_id)
+                ->where('user_id <> %i', ANONYMOUS)
+                ->fetch();
 
-            if (!($result = $db->sql_query($sql))) {
+			if ($user_check) {
+			    $to_username = $user_check->username;
+            } else {
                 $error     = true;
                 $error_msg = $lang['No_such_user'];
-            }
-
-            if ($row = $db->sql_fetchrow($result)) {
-                $to_username = $row['username'];
             }
 		} elseif ( $mode == 'edit' ) {
 			$sql = "SELECT pm.*, pmt.privmsgs_bbcode_uid, pmt.privmsgs_text, u.username, u.user_id, u.user_sig 
