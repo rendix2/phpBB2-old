@@ -241,16 +241,14 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 
 	dibi::insert(USER_GROUP_TABLE, $insert_data)->execute();
 
-	$sql = "SELECT u.user_email, u.username, u.user_lang, g.group_name 
-		FROM ".USERS_TABLE . " u, " . GROUPS_TABLE . " g 
-		WHERE u.user_id = g.group_moderator 
-			AND g.group_id = $group_id";
-
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, "Error getting group moderator data", "", __LINE__, __FILE__, $sql);
-	}
-
-	$moderator = $db->sql_fetchrow($result);
+    $moderator = dibi::select(['u.user_email', 'u.username', 'u.user_lang', 'g.group_name'])
+        ->from(USERS_TABLE)
+        ->as('u')
+        ->from(GROUPS_TABLE)
+        ->as('g')
+        ->where('u.user_id = g.group_moderator ')
+        ->where('g.group_id = %i', $group_id)
+        ->fetch();
 
 	include $phpbb_root_path . 'includes/emailer.php';
 	$emailer = new emailer($board_config['smtp_delivery']);
@@ -258,13 +256,13 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 	$emailer->from($board_config['board_email']);
 	$emailer->replyto($board_config['board_email']);
 
-	$emailer->use_template('group_request', $moderator['user_lang']);
-	$emailer->email_address($moderator['user_email']);
+	$emailer->use_template('group_request', $moderator->user_lang);
+	$emailer->email_address($moderator->user_email);
 	$emailer->set_subject($lang['Group_request']);
 
 	$emailer->assign_vars([
             'SITENAME' => $board_config['sitename'],
-            'GROUP_MODERATOR' => $moderator['username'],
+            'GROUP_MODERATOR' => $moderator->username,
             'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
 
             'U_GROUPCP' => $server_url . '?' . POST_GROUPS_URL . "=$group_id&validate=true"]
@@ -301,17 +299,18 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
             ->execute();
 
 		if ( $userdata['user_level'] != ADMIN && $userdata['user_level'] == MOD ) {
-			$sql = "SELECT COUNT(auth_mod) AS is_auth_mod 
-				FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug 
-				WHERE ug.user_id = " . $userdata['user_id'] . " 
-					AND aa.group_id = ug.group_id 
-					AND aa.auth_mod = 1";
+            $is_auth_mod = dibi::select('COUNT(auth_mod)')
+                ->as('is_auth_mod')
+                ->from(AUTH_ACCESS_TABLE)
+                ->as('aa')
+                ->from(USER_GROUP_TABLE)
+                ->as('ug')
+                ->where('ug.user_id = %i', $userdata['user_id'] )
+                ->where('aa.group_id = ug.group_id ')
+                ->where('aa.auth_mod = %i', 1)
+                ->fetchSingle();
 
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, 'Could not obtain moderator status', '', __LINE__, __FILE__, $sql);
-			}
-
-			if ( !($row = $db->sql_fetchrow($result)) || $row['is_auth_mod'] == 0 ) {
+            if (!$is_auth_mod) {
 			    dibi::update(USERS_TABLE, ['user_level' => USER])
                     ->where('user_id = %i', $userdata['user_id'])
                     ->execute();
@@ -503,17 +502,15 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 					// Get the group name
 					// Email the user and tell them they're in the group
 					//
-					$group_sql = "SELECT group_name 
-						FROM " . GROUPS_TABLE . " 
-						WHERE group_id = $group_id";
+                    $group_name =  dibi::select('group_name')
+                        ->from(GROUPS_TABLE)
+                        ->where('group_id = %i', $group_id)
+                        ->fetchSingle();
 
-					if ( !($result = $db->sql_query($group_sql)) ) {
-						message_die(GENERAL_ERROR, 'Could not get group information', '', __LINE__, __FILE__, $group_sql);
+					// TODO group not exists
+					if ( !$group_name ) {
+						message_die(GENERAL_ERROR, 'Could not get group information');
 					}
-
-					$group_name_row = $db->sql_fetchrow($result);
-
-					$group_name = $group_name_row['group_name'];
 
 					include $phpbb_root_path . 'includes/emailer.php';
 					$emailer = new emailer($board_config['smtp_delivery']);
@@ -698,31 +695,38 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 	//
 	// Get group details
 	//
-	$sql = "SELECT *
-		FROM " . GROUPS_TABLE . "
-		WHERE group_id = $group_id
-			AND group_single_user = 0";
+    $group_info = dibi::select('*')
+        ->from(GROUPS_TABLE)
+        ->where('group_id = %i', $group_id)
+        ->where('group_single_user = %i', 0)
+        ->fetch();
 
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, 'Error getting group information', '', __LINE__, __FILE__, $sql);
-	}
-
-	if ( !($group_info = $db->sql_fetchrow($result)) ) {
-		message_die(GENERAL_MESSAGE, $lang['Group_not_exist']); 
-	}
+    if (!$group_info) {
+        message_die(GENERAL_MESSAGE, $lang['Group_not_exist']);
+    }
 
 	//
 	// Get moderator details for this group
 	//
-	$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm  
-		FROM " . USERS_TABLE . " 
-		WHERE user_id = " . $group_info['group_moderator'];
+    $columns = [
+        'username',
+        'user_id',
+        'user_viewemail',
+        'user_posts',
+        'user_regdate',
+        'user_from',
+        'user_website',
+        'user_email',
+        'user_icq',
+        'user_aim',
+        'user_yim',
+        'user_msnm'
+    ];
 
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, 'Error getting user list for group', '', __LINE__, __FILE__, $sql);
-	}
-
-	$group_moderator = $db->sql_fetchrow($result); 
+    $group_moderator = dibi::select($columns)
+        ->from(USERS_TABLE)
+        ->where('user_id = %i', $group_info->group_moderator)
+        ->fetch();
 
 	//
 	// Get user information for this group
@@ -782,7 +786,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
         $is_moderator = true;
 	}
 
-	if ( $userdata['user_id'] == $group_info['group_moderator'] ) {
+	if ( $userdata['user_id'] == $group_info->group_moderator ) {
 		$is_moderator = true;
 
 		$group_details =  $lang['Are_group_moderator'];
@@ -798,15 +802,15 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 		$group_details =  $lang['Login_to_join'];
 		$s_hidden_fields = '';
 	} else {
-		if ( $group_info['group_type'] == GROUP_OPEN ) {
+		if ( $group_info->group_type == GROUP_OPEN ) {
 		    $template->assign_block_vars('switch_subscribe_group_input', []);
 
 			$group_details =  $lang['This_open_group'];
 			$s_hidden_fields = '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
-		} elseif ( $group_info['group_type'] == GROUP_CLOSED ) {
+		} elseif ( $group_info->group_type == GROUP_CLOSED ) {
 			$group_details =  $lang['This_closed_group'];
 			$s_hidden_fields = '';
-		} elseif ( $group_info['group_type'] == GROUP_HIDDEN ) {
+		} elseif ( $group_info->group_type == GROUP_HIDDEN ) {
 			$group_details =  $lang['This_hidden_group'];
 			$s_hidden_fields = '';
 		}
@@ -866,8 +870,8 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 		'L_ADD_MEMBER' => $lang['Add_member'],
 		'L_FIND_USERNAME' => $lang['Find_username'],
 
-		'GROUP_NAME' => $group_info['group_name'],
-		'GROUP_DESC' => $group_info['group_description'],
+		'GROUP_NAME' => $group_info->group_name,
+		'GROUP_DESC' => $group_info->group_description,
 		'GROUP_DETAILS' => $group_details,
 		'MOD_ROW_COLOR' => '#' . $theme['td_color1'],
 		'MOD_ROW_CLASS' => $theme['td_class1'],
@@ -902,9 +906,9 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 		'S_GROUP_OPEN_TYPE' => GROUP_OPEN,
 		'S_GROUP_CLOSED_TYPE' => GROUP_CLOSED,
 		'S_GROUP_HIDDEN_TYPE' => GROUP_HIDDEN,
-		'S_GROUP_OPEN_CHECKED' => ( $group_info['group_type'] == GROUP_OPEN ) ? ' checked="checked"' : '',
-		'S_GROUP_CLOSED_CHECKED' => ( $group_info['group_type'] == GROUP_CLOSED ) ? ' checked="checked"' : '',
-		'S_GROUP_HIDDEN_CHECKED' => ( $group_info['group_type'] == GROUP_HIDDEN ) ? ' checked="checked"' : '',
+		'S_GROUP_OPEN_CHECKED' => ( $group_info->group_type == GROUP_OPEN ) ? ' checked="checked"' : '',
+		'S_GROUP_CLOSED_CHECKED' => ( $group_info->group_type == GROUP_CLOSED ) ? ' checked="checked"' : '',
+		'S_GROUP_HIDDEN_CHECKED' => ( $group_info->group_type == GROUP_HIDDEN ) ? ' checked="checked"' : '',
 		'S_HIDDEN_FIELDS' => $s_hidden_fields, 
 		'S_MODE_SELECT' => $select_sort_mode,
 		'S_ORDER_SELECT' => $select_sort_order,
@@ -920,7 +924,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 
 		generate_user_info($group_members[$i], $board_config['default_dateformat'], $is_moderator, $from, $posts, $joined, $poster_avatar, $profile_img, $profile, $search_img, $search, $pm_img, $pm, $email_img, $email, $www_img, $www, $icq_status_img, $icq_img, $icq, $aim_img, $aim, $msn_img, $msn, $yim_img, $yim);
 
-		if ( $group_info['group_type'] != GROUP_HIDDEN || $is_group_member || $is_moderator ) {
+		if ( $group_info->group_type != GROUP_HIDDEN || $is_group_member || $is_moderator ) {
 			$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
@@ -987,7 +991,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
         ]
     );
 
-    if ( $group_info['group_type'] == GROUP_HIDDEN && !$is_group_member && !$is_moderator ) {
+    if ( $group_info->group_type == GROUP_HIDDEN && !$is_group_member && !$is_moderator ) {
 		//
 		// No group members
 		//

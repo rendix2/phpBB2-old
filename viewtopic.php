@@ -61,25 +61,25 @@ if ( isset($_GET['view']) && empty($_GET[POST_POST_URL]) ) {
             }
 
 			if ( $session_id ) {
-				$sql = "SELECT p.post_id
-					FROM " . POSTS_TABLE . " p, " . SESSIONS_TABLE . " s,  " . USERS_TABLE . " u
-					WHERE s.session_id = '$session_id'
-						AND u.user_id = s.session_user_id
-						AND p.topic_id = $topic_id
-						AND p.post_time >= u.user_lastvisit
-					ORDER BY p.post_time ASC
-					LIMIT 1";
+			    $session_post_id = dibi::select('p.post_id')
+                    ->from(POSTS_TABLE)
+                    ->as('p')
+                    ->from(SESSIONS_TABLE)
+                    ->as('s')
+                    ->from(USERS_TABLE)
+                    ->as('u')
+                    ->where('s.session_id = %s', $session_id)
+                    ->where('u.user_id = s.session_user_id')
+                    ->where('p.topic_id = %i', $topic_id)
+                    ->where('p.post_time >= u.user_lastvisit')
+                    ->orderBy('p.post_time', dibi::ASC)
+                    ->fetch();
 
-                if (!($result = $db->sql_query($sql))) {
-                    message_die(GENERAL_ERROR, 'Could not obtain newer/older topic information', '', __LINE__, __FILE__,
-                        $sql);
-                }
-
-                if (!($row = $db->sql_fetchrow($result))) {
+                if (!$session_post_id) {
                     message_die(GENERAL_MESSAGE, 'No_new_posts_last_visit');
                 }
 
-				$post_id = $row['post_id'];
+				$post_id = $session_post_id->post_id;
 
                 if (isset($_GET['sid'])) {
                     redirect("viewtopic.php?sid=$session_id&" . POST_POST_URL . "=$post_id#$post_id");
@@ -94,22 +94,24 @@ if ( isset($_GET['view']) && empty($_GET[POST_POST_URL]) ) {
 		$sql_condition = ( $_GET['view'] == 'next' ) ? '>' : '<';
 		$sql_ordering = ( $_GET['view'] == 'next' ) ? 'ASC' : 'DESC';
 
-		$sql = "SELECT t.topic_id
-			FROM " . TOPICS_TABLE . " t, " . TOPICS_TABLE . " t2
-			WHERE
-				t2.topic_id = $topic_id
-				AND t.forum_id = t2.forum_id
-				AND t.topic_moved_id = 0
-				AND t.topic_last_post_id $sql_condition t2.topic_last_post_id
-			ORDER BY t.topic_last_post_id $sql_ordering
-			LIMIT 1";
+		$row = dibi::select('t.topic_id')
+            ->from(TOPICS_TABLE)
+            ->as('t')
+            ->from(TOPICS_TABLE)
+            ->as('t2')
+            ->where('t2.topic_id = %i', $topic_id)
+            ->where('t.forum_id = t2.forum_id')
+            ->where('t.topic_moved_id = %i', 0)
+            ->where('t.topic_last_post_id '. $sql_condition . ' t2.topic_last_post_id')
+            ->orderBy('t.topic_last_post_id', $sql_ordering)
+            ->fetch();
 
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, "Could not obtain newer/older topic information", '', __LINE__, __FILE__, $sql);
+		if ( !$row ) {
+			message_die(GENERAL_ERROR, "Could not obtain newer/older topic information");
 		}
 
 		if ( $row = $db->sql_fetchrow($result) ) {
-			$topic_id = (int)$row['topic_id'];
+			$topic_id = (int)$row->topic_id;
 		} else {
 			$message = ( $_GET['view'] == 'next' ) ? 'No_newer_topics' : 'No_older_topics';
 			message_die(GENERAL_MESSAGE, $message);
