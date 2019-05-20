@@ -296,8 +296,6 @@ $users = $users->fetchAll();
 
         $i++;
 	}
-	
-	$db->sql_freeresult($result);
 
 
 if ($mode != 'topten' || $board_config['topics_per_page'] < 10) {
@@ -310,8 +308,6 @@ if ($mode != 'topten' || $board_config['topics_per_page'] < 10) {
     if ($total_members) {
         $pagination = generate_pagination("memberlist.php?mode=$mode&amp;order=$sort_order", $total_members, $board_config['topics_per_page'], $start) . '&nbsp;';
     }
-
-    $db->sql_freeresult($result);
 } else {
     $pagination = '&nbsp;';
     $total_members = 10;

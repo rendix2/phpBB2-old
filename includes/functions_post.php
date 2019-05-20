@@ -182,7 +182,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
             $max_post_time->where('poster_id = %i', $userdata['user_id']);
         }
 
-        $max_post_time->fetchSingle();
+        $max_post_time = $max_post_time->fetchSingle();
 
 		if ($max_post_time) {
             if ((int)$max_post_time > 0 && ($current_time - $max_post_time) < (int)$board_config['flood_interval']) {
