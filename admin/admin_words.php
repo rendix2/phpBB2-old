@@ -74,15 +74,15 @@ if ($mode != "" )
 
 		if ($mode == "edit" ) {
 			if ($word_id ) {
-				$sql = "SELECT * 
-					FROM " . WORDS_TABLE . " 
-					WHERE word_id = $word_id";
+                $word_info = dibi::select('*')
+                    ->from(WORDS_TABLE)
+                    ->where('word_id = %i', $word_id)
+                    ->fetch();
 
-				if (!$result = $db->sql_query($sql)) {
+				if (!$word_info) {
 					message_die(GENERAL_ERROR, "Could not query words table", "Error", __LINE__, __FILE__, $sql);
 				}
 
-				$word_info = $db->sql_fetchrow($result);
 				$s_hidden_fields .= '<input type="hidden" name="id" value="' . $word_id . '" />';
 			} else {
 				message_die(GENERAL_MESSAGE, $lang['No_word_selected']);

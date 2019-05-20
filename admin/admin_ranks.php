@@ -74,14 +74,15 @@ if ($mode != "" ) {
 				message_die(GENERAL_MESSAGE, $lang['Must_select_rank']);
 			}
 
-			$sql = "SELECT * FROM " . RANKS_TABLE . "
-				WHERE rank_id = $rank_id";
+			$rank_info = dibi::select('*')
+				->from(RANKS_TABLE)
+				->where('rank_id = %i', $rank_id)
+				->fetch();
 
-			if (!$result = $db->sql_query($sql)) {
-				message_die(GENERAL_ERROR, "Couldn't obtain rank data", "", __LINE__, __FILE__, $sql);
+			if (!$rank_info) {
+				message_die(GENERAL_ERROR, "Couldn't obtain rank data");
 			}
-			
-			$rank_info = $db->sql_fetchrow($result);
+
 			$s_hidden_fields .= '<input type="hidden" name="id" value="' . $rank_id . '" />';
 		} else {
 			$rank_info['rank_special'] = 0;
@@ -89,19 +90,19 @@ if ($mode != "" ) {
 
 		$s_hidden_fields .= '<input type="hidden" name="mode" value="save" />';
 
-		$rank_is_special = $rank_info['rank_special'] ? "checked=\"checked\"" : "";
-		$rank_is_not_special = ( !$rank_info['rank_special'] ) ? "checked=\"checked\"" : "";
+		$rank_is_special = $rank_info->rank_special ? "checked=\"checked\"" : "";
+		$rank_is_not_special = ( !$rank_info->rank_special ) ? "checked=\"checked\"" : "";
 
 		$template->set_filenames(["body" => "admin/ranks_edit_body.tpl"]);
 
 		$template->assign_vars(
 			[
-				"RANK"             => $rank_info['rank_title'],
+				"RANK"             => $rank_info->rank_title,
 				"SPECIAL_RANK"     => $rank_is_special,
 				"NOT_SPECIAL_RANK" => $rank_is_not_special,
-				"MINIMUM"          => $rank_is_special ? "" : $rank_info['rank_min'],
-				"IMAGE"            => ($rank_info['rank_image'] != "") ? $rank_info['rank_image'] : "",
-				"IMAGE_DISPLAY"    => ($rank_info['rank_image'] != "") ? '<img src="../' . $rank_info['rank_image'] . '" />' : "",
+				"MINIMUM"          => $rank_is_special ? "" : $rank_info->rank_min,
+				"IMAGE"            => ($rank_info->rank_image != "") ? $rank_info->rank_image : "",
+				"IMAGE_DISPLAY"    => ($rank_info->rank_image != "") ? '<img src="../' . $rank_info->rank_image . '" />' : "",
 
 				"L_RANKS_TITLE"        => $lang['Ranks_title'],
 				"L_RANKS_TEXT"         => $lang['Ranks_explain'],

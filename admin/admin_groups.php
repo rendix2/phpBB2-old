@@ -177,15 +177,22 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 			// TODO improve first query and join USER_TABLE and check if user is MOD or not!
             // dont check it in update query
 			foreach ($users as $user) {
-				$sql = "SELECT g.group_id FROM " . AUTH_ACCESS_TABLE . " a, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug
-				WHERE (a.auth_mod = 1) AND (g.group_id = a.group_id) AND (a.group_id = ug.group_id) AND (g.group_id = ug.group_id) 
-					AND (ug.user_id = " . (int)$user->user_id . ") AND (ug.group_id <> " . $group_id . ")";
+			    $group_ids = dibi::select('g.group_id')
+                    ->from(AUTH_ACCESS_TABLE)
+                    ->as('a')
+                    ->from(GROUPS_TABLE)
+                    ->as('g')
+                    ->from(USER_GROUP_TABLE)
+                    ->as('ug')
+                    ->where('a.auth_mod = %i', 1)
+                    ->where('g.group_id = a.group_id')
+                    ->where('a.group_id = ug.group_id')
+                    ->where('g.group_id = ug.group_id')
+                    ->where('ug.user_id = %i',(int)$user->user_id)
+                    ->where('ug.group_id <> %i', $group_id)
+                    ->fetchAll();
 
-				if ( !($result = $db->sql_query($sql)) ) {
-					message_die(GENERAL_ERROR, 'Could not obtain moderator permissions', '', __LINE__, __FILE__, $sql);
-				}
-
-				if ($db->sql_numrows($result) == 0) {
+				if (count($group_ids) === 0) {
 					dibi::update(USERS_TABLE, ['user_level' => USER])
                         ->where('user_level = %i', MOD)
                         ->where('user_id = %i', (int)$user->user_id)

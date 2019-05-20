@@ -261,15 +261,15 @@ if (!empty($mode) ) {
 				//
 				if ($row['prune_enable'] ) {
 					$prune_enabled = "checked=\"checked\"";
-					$sql = "SELECT *
-               			FROM " . PRUNE_TABLE . "
-               			WHERE forum_id = $forum_id";
 
-                    if (!$pr_result = $db->sql_query($sql)) {
+					$pr_row = dibi::select('*')
+                        ->from(PRUNE_TABLE)
+                        ->where('forum_id = %i', $forum_id)
+                        ->fetch();
+
+                    if (!$pr_row) {
 						 message_die(GENERAL_ERROR, "Auto-Prune: Couldn't read auto_prune table.", __LINE__, __FILE__);
         			}
-
-					$pr_row = $db->sql_fetchrow($pr_result);
 				} else {
 					$prune_enabled = '';
 				}
@@ -322,8 +322,8 @@ if (!empty($mode) ) {
                 'L_PRUNE_FREQ'        => $lang['prune_freq'],
                 'L_DAYS'              => $lang['Days'],
 
-                'PRUNE_DAYS'  => isset($pr_row['prune_days']) ? $pr_row['prune_days'] : 7,
-                'PRUNE_FREQ'  => isset($pr_row['prune_freq']) ? $pr_row['prune_freq'] : 1,
+                'PRUNE_DAYS'  => isset($pr_row['prune_days']) ? $pr_row->prune_days : 7,
+                'PRUNE_FREQ'  => isset($pr_row['prune_freq']) ? $pr_row->prune_freq : 1,
                 'FORUM_NAME'  => $forumname,
                 'DESCRIPTION' => $forumdesc
             ]
@@ -339,29 +339,27 @@ if (!empty($mode) ) {
 				message_die(GENERAL_ERROR, "Can't create a forum without a name");
 			}
 
-			$sql = "SELECT MAX(forum_order) AS max_order
-				FROM " . FORUMS_TABLE . "
-				WHERE cat_id = " . (int)$_POST[POST_CAT_URL];
+            $max_order = dibi::select('MAX(forum_order)')
+                ->as('max_order')
+                ->from(FORUMS_TABLE)
+                ->where('cat_id = %i', (int)$_POST[POST_CAT_URL])
+                ->fetchSingle();
 
-			if (!$result = $db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, "Couldn't get order number from forums table", "", __LINE__, __FILE__, $sql);
+			if ($max_order === false) {
+				message_die(GENERAL_ERROR, "Couldn't get order number from forums table");
 			}
 
-			$row = $db->sql_fetchrow($result);
-
-			$max_order = $row['max_order'];
 			$next_order = $max_order + 10;
 
-			$sql = "SELECT MAX(forum_id) AS max_id
-				FROM " . FORUMS_TABLE;
+            $max_id = dibi::select('MAX(forum_id)')
+                ->as('max_id')
+                ->from(FORUMS_TABLE)
+                ->fetchSingle();
 
-			if (!$result = $db->sql_query($sql) ) {
+			if ($max_id === false) {
 				message_die(GENERAL_ERROR, "Couldn't get order number from forums table", "", __LINE__, __FILE__, $sql);
 			}
 
-			$row = $db->sql_fetchrow($result);
-
-			$max_id = $row['max_id'];
 			$next_id = $max_id + 1;
 
 			//
@@ -430,15 +428,18 @@ if (!empty($mode) ) {
 					message_die(GENERAL_MESSAGE, $lang['Set_prune_data']);
 				}
 
-				$sql = "SELECT *
-					FROM " . PRUNE_TABLE . "
-					WHERE forum_id = " . (int)$_POST[POST_FORUM_URL];
+				// little improvement
+				$prune_count = dibi::select('COUNT(*)')
+                    ->as('prune_count')
+                    ->from(PRUNE_TABLE)
+                    ->where('forum_id = %i', (int)$_POST[POST_FORUM_URL])
+                    ->fetchSingle();
 
-				if (!$result = $db->sql_query($sql) ) {
-					message_die(GENERAL_ERROR, "Couldn't get forum Prune Information","",__LINE__, __FILE__, $sql);
+				if ($prune_count === false) {
+					message_die(GENERAL_ERROR, "Couldn't get forum Prune Information");
 				}
 
-				if ($db->sql_numrows($result) > 0 ) {
+				if ($prune_count > 0 ) {
 				    $update_data = [
 				        'prune_days' => (int)$_POST['prune_days'],
                         'prune_freq' => (int)$_POST['prune_freq']
@@ -593,52 +594,39 @@ if (!empty($mode) ) {
 			// Either delete or move all posts in a forum
 			if ($to_id == -1) {
 				// Delete polls in this forum
-				$sql = "SELECT v.vote_id 
-					FROM " . VOTE_DESC_TABLE . " v, " . TOPICS_TABLE . " t 
-					WHERE t.forum_id = $from_id 
-						AND v.topic_id = t.topic_id";
 
-				if (!($result = $db->sql_query($sql))) {
-					message_die(GENERAL_ERROR, "Couldn't obtain list of vote ids", "", __LINE__, __FILE__, $sql);
-				}
+                $vode_ids = dibi::select('v.vote_id')
+                    ->from(VOTE_DESC_TABLE)
+                    ->as('v')
+                    ->from(TOPICS_TABLE)
+                    ->as('t')
+                    ->where('t.forum_id = %i', $from_id)
+                    ->where('v.topic_id = t.topic_id')
+                    ->fetchPairs(null, 'vote_id');
 
-				if ($row = $db->sql_fetchrow($result)) {
-					$vote_ids = '';
-					do {
-						$vote_ids .= (($vote_ids != '') ? ', ' : '') . $row['vote_id'];
-					}
-					while ($row = $db->sql_fetchrow($result));
+                if (count($vode_ids)) {
+                    dibi::delete(VOTE_DESC_TABLE)
+                        ->where('vote_id IN %in', $vode_ids)
+                        ->execute();
 
-					$sql = "DELETE FROM " . VOTE_DESC_TABLE . " 
-						WHERE vote_id IN ($vote_ids)";
+                    dibi::delete(VOTE_RESULTS_TABLE)
+                        ->where('vote_id IN %in', $vode_ids)
+                        ->execute();
 
-					$db->sql_query($sql);
-
-					$sql = "DELETE FROM " . VOTE_RESULTS_TABLE . " 
-						WHERE vote_id IN ($vote_ids)";
-
-					$db->sql_query($sql);
-
-					$sql = "DELETE FROM " . VOTE_USERS_TABLE . " 
-						WHERE vote_id IN ($vote_ids)";
-
-					$db->sql_query($sql);
-				}
-
-				$db->sql_freeresult($result);
+                    dibi::delete(VOTE_USERS_TABLE)
+                        ->where('vote_id IN %in', $vode_ids)
+                        ->execute();
+                }
 
 				include $phpbb_root_path . "includes/prune.php";
 				prune($from_id, 0, true); // Delete everything from forum
 			} else {
-				$sql = "SELECT *
-					FROM " . FORUMS_TABLE . "
-					WHERE forum_id IN ($from_id, $to_id)";
+			    $forums_exists = dibi::select('*')
+                    ->from(FORUMS_TABLE)
+                    ->where('forum_id IN %in', [$from_id, $to_id])
+                    ->fetchAll();
 
-				if (!$result = $db->sql_query($sql) ) {
-					message_die(GENERAL_ERROR, "Couldn't verify existence of forums", "", __LINE__, __FILE__, $sql);
-				}
-
-				if ($db->sql_numrows($result) != 2) {
+				if (count($forums_exists) !== 2) {
 					message_die(GENERAL_ERROR, "Ambiguous forum ID's", "", __LINE__, __FILE__);
 				}
 
@@ -653,56 +641,36 @@ if (!empty($mode) ) {
 				sync('forum', $to_id);
 			}
 
-			// Alter Mod level if appropriate - 2.0.4
-			$sql = "SELECT ug.user_id 
-				FROM " . AUTH_ACCESS_TABLE . " a, " . USER_GROUP_TABLE . " ug 
-				WHERE a.forum_id <> $from_id 
-					AND a.auth_mod = 1
-					AND ug.group_id = a.group_id";
+            // Alter Mod level if appropriate - 2.0.4
+			$user_mods_ids = dibi::select('ug.user_id')
+                ->from(AUTH_ACCESS_TABLE)
+                ->as('a')
+                ->from(USER_GROUP_TABLE)
+                ->as('ug')
+                ->where('a.forum_id <> %i', $from_id)
+                ->where('a.auth_mod = %i', 1)
+                ->where('ug.group_id = a.group_id')
+                ->fetchPairs(null, 'user_id');
 
-			if (!$result = $db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, "Couldn't obtain moderator list", "", __LINE__, __FILE__, $sql);
-			}
+			if(count($user_mods_ids)) {
+                $user_ids = dibi::select('ug.user_id')
+                    ->from(AUTH_ACCESS_TABLE)
+                    ->as('a')
+                    ->from(USER_GROUP_TABLE)
+                    ->as('ug')
+                    ->where('a.forum_id = %i', $from_id)
+                    ->where('a.auth_mod = %i', 1)
+                    ->where('ug.group_id = a.group_id')
+                    ->where('ug.user_id NOT IN %in', $user_mods_ids)
+                    ->fetchPairs(null, 'user_id');
 
-			if ($row = $db->sql_fetchrow($result)) {
-				$user_ids = '';
-
-				do {
-					$user_ids .= (($user_ids != '') ? ', ' : '' ) . $row['user_id'];
-				}
-				while ($row = $db->sql_fetchrow($result));
-
-				$sql = "SELECT ug.user_id 
-					FROM " . AUTH_ACCESS_TABLE . " a, " . USER_GROUP_TABLE . " ug 
-					WHERE a.forum_id = $from_id 
-						AND a.auth_mod = 1 
-						AND ug.group_id = a.group_id
-						AND ug.user_id NOT IN ($user_ids)";
-
-				if (!$result2 = $db->sql_query($sql) ) {
-					message_die(GENERAL_ERROR, "Couldn't obtain moderator list", "", __LINE__, __FILE__, $sql);
-				}
-
-				if ($row = $db->sql_fetchrow($result2)) {
-					$user_ids = '';
-
-					do {
-						$user_ids .= (($user_ids != '') ? ', ' : '' ) . $row['user_id'];
-					}
-					while ($row = $db->sql_fetchrow($result2));
-
-					$sql = "UPDATE " . USERS_TABLE . " 
-						SET user_level = " . USER . " 
-						WHERE user_id IN ($user_ids) 
-							AND user_level <> " . ADMIN;
-
-					$db->sql_query($sql);
-				}
-				$db->sql_freeresult($result);
-
-			}
-
-			$db->sql_freeresult($result2);
+                if (count($user_ids)) {
+                    dibi::update(USERS_TABLE, ['user_level' => USER])
+                        ->where('user_id IN %in', $user_ids)
+                        ->where('user_level <> %i', ADMIN)
+                        ->execute();
+                }
+            }
 
             dibi::delete(FORUMS_TABLE)
                 ->where('forum_id = %i', $from_id)
@@ -734,15 +702,14 @@ if (!empty($mode) ) {
 			$name = $catinfo['cat_title'];
 
 			if ($catinfo['number'] == 1) {
-				$sql = "SELECT count(*) as total
-					FROM ". FORUMS_TABLE;
+                $count = dibi::select('COUNT(*)')
+                    ->select('total')
+                    ->from(FORUMS_TABLE)
+                    ->fetchSingle();
 
-				if (!$result = $db->sql_query($sql) ) {
+				if ($count === false) {
 					message_die(GENERAL_ERROR, "Couldn't get Forum count", "", __LINE__, __FILE__, $sql);
 				}
-
-				$count = $db->sql_fetchrow($result);
-				$count = $count['total'];
 
 				if ($count > 0) {
 					message_die(GENERAL_ERROR, $lang['Must_delete_forums']);
@@ -786,15 +753,12 @@ if (!empty($mode) ) {
 			$to_id = (int)$_POST['to_id'];
 
 			if (!empty($to_id)) {
-				$sql = "SELECT *
-					FROM " . CATEGORIES_TABLE . "
-					WHERE cat_id IN ($from_id, $to_id)";
+			    $cat_exists = dibi::select('*')
+                    ->from(CATEGORIES_TABLE)
+                    ->where('cat_id IN %in', [$from_id, $to_id])
+                    ->fetchAll();
 
-				if (!$result = $db->sql_query($sql) ) {
-					message_die(GENERAL_ERROR, "Couldn't verify existence of categories", "", __LINE__, __FILE__, $sql);
-				}
-
-				if ($db->sql_numrows($result) != 2) {
+				if (count($cat_exists) !== 2) {
 					message_die(GENERAL_ERROR, "Ambiguous category ID's", "", __LINE__, __FILE__);
 				}
 

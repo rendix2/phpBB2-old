@@ -148,20 +148,15 @@ if ($error) {
 // Initial selection
 //
 
-$sql = "SELECT group_id, group_name 
-	FROM ".GROUPS_TABLE . "  
-	WHERE group_single_user <> 1";
-
-if ( !($result = $db->sql_query($sql)) ) {
-	message_die(GENERAL_ERROR, 'Could not obtain list of groups', '', __LINE__, __FILE__, $sql);
-}
+$groups = dibi::select(['group_id', 'group_name'])
+    ->from(GROUPS_TABLE)
+    ->where('group_single_user <> %i', 1)
+    ->fetchPairs('group_id', 'group_name');
 
 $select_list = '<select name = "' . POST_GROUPS_URL . '"><option value = "-1">' . $lang['All_users'] . '</option>';
-if ( $row = $db->sql_fetchrow($result) ) {
-	do {
-		$select_list .= '<option value = "' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
-	}
-	while ( $row = $db->sql_fetchrow($result) );
+
+foreach ($groups as $group_id => $group_name) {
+    $select_list .= '<option value = "' . $group_id . '">' . $group_name . '</option>';
 }
 
 $select_list .= '</select>';
