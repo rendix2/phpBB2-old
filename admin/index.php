@@ -30,23 +30,6 @@ $phpbb_root_path = "./../";
 
 require './pagestart.php';
 
-// ---------------
-// Begin functions
-//
-function inarray($needle, $haystack)
-{
-    for ($i = 0; $i < count($haystack); $i++) {
-        if ($haystack[$i] == $needle) {
-            return true;
-        }
-    }
-
-    return false;
-}
-//
-// End functions
-// -------------
-
 //
 // Generate relevant output
 //
@@ -317,7 +300,7 @@ if (isset($_GET['pane']) && $_GET['pane'] == 'left' )
 
         //for ($i = 0; $i < count($onlinerow_reg); $i++) {
         foreach ($onlinerow_reg as $online_user) {
-            if (!inarray($online_user->user_id, $reg_userid_ary)) {
+            if (!in_array($online_user->user_id, $reg_userid_ary)) {
 				$reg_userid_ary[] = $online_user->user_id;
 
 				$username = $online_user->username;

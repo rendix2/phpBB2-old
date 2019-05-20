@@ -492,7 +492,7 @@ if ( !empty($next) )
 			// Check what tables we need to CREATE
 			while (list($table, $definition) = each($table_def) )
 			{
-				if ( !inarray($table, $currenttables) )
+				if ( !in_array($table, $currenttables) )
 				{
 					print " * Creating $table :: ";
 
@@ -560,7 +560,7 @@ if ( !empty($next) )
 					continue;
 				}
 
-				if ( !inarray($name, $ignore_configs) )
+				if ( !in_array($name, $ignore_configs) )
 				{
 					$name = !empty($rename_configs[$name]) ? $rename_configs[$name] : $name;
 					
@@ -1464,7 +1464,7 @@ if ( !empty($next) )
 
 					$oldfield = isset($rename[$table][$field]) ? $rename[$table][$field] : $field;
 
-					if ( !inarray($field, $current_fields) && $oldfield == $field )
+					if ( !in_array($field, $current_fields) && $oldfield == $field )
 					{
 						// If the current is not a key of $current_def and it is not a field that is 
 						// to be renamed then the field doesn't currently exist.
@@ -1493,7 +1493,7 @@ if ( !empty($next) )
 				
 				while ( list($key_name, $key_field) = each($key_def[$table]) )
 				{
-					if ( !inarray($key_name, $indices) )
+					if ( !in_array($key_name, $indices) )
 					{
 						$alter_sql .= ($key_name == 'PRIMARY') ? ", ADD PRIMARY KEY ($key_field)" : ", ADD INDEX $key_name ($key_field)";
 					}
