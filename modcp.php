@@ -97,39 +97,34 @@ if (!empty($_POST['sid']) || !empty($_GET['sid'])) {
 // Obtain relevant data
 //
 if ( !empty($topic_id) ) {
-	$sql = "SELECT f.forum_id, f.forum_name, f.forum_topics
-		FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f
-		WHERE t.topic_id = " . $topic_id . "
-			AND f.forum_id = t.forum_id";
-
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
-	}
-
-	$topic_row = $db->sql_fetchrow($result);
+    $topic_row = dibi::select(['f.forum_id','f.forum_name', 'f.forum_topics'])
+        ->from(TOPICS_TABLE)
+        ->as('t')
+        ->from(FORUMS_TABLE)
+        ->as('t')
+        ->where('t.topic_id = %i', $topic_id)
+        ->where('f.forum_id = t.forum_id')
+        ->fetch();
 
     if (!$topic_row) {
         message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
     }
 
-	$forum_topics = ( $topic_row['forum_topics'] == 0 ) ? 1 : $topic_row['forum_topics'];
-	$forum_id = $topic_row['forum_id'];
-	$forum_name = $topic_row['forum_name'];
+	$forum_topics = ( $topic_row->forum_topics == 0 ) ? 1 : $topic_row->forum_topics;
+	$forum_id = $topic_row->forum_id;
+	$forum_name = $topic_row->forum_name;
 } elseif ( !empty($forum_id) ) {
-	$sql = "SELECT forum_name, forum_topics
-		FROM " . FORUMS_TABLE . "
-		WHERE forum_id = " . $forum_id;
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_MESSAGE, 'Forum_not_exist');
-	}
-	$topic_row = $db->sql_fetchrow($result);
+    $topic_row = dibi::select(['forum_name', 'forum_topics'])
+        ->from(FORUMS_TABLE)
+        ->where('forum_id = %i', $forum_id)
+        ->fetch();
 
-	if (!$topic_row) {
-		message_die(GENERAL_MESSAGE, 'Forum_not_exist');
-	}
+    if (!$topic_row) {
+        message_die(GENERAL_MESSAGE, 'Forum_not_exist');
+    }
 
-	$forum_topics = ( $topic_row['forum_topics'] == 0 ) ? 1 : $topic_row['forum_topics'];
-	$forum_name = $topic_row['forum_name'];
+	$forum_topics = ( $topic_row->forum_topics == 0 ) ? 1 : $topic_row->forum_topics;
+	$forum_name = $topic_row->forum_name;
 } else {
 	message_die(GENERAL_MESSAGE, 'Forum_not_exist');
 }
@@ -391,20 +386,13 @@ switch( $mode )
 						}
 					}
 
-					$sql = "UPDATE " . TOPICS_TABLE . " 
-						SET forum_id = $new_forum_id  
-						WHERE topic_id = $topic_id";
+					dibi::update(TOPICS_TABLE, ['forum_id' => $new_forum_id])
+                        ->where('topic_id = %i', $topic_id)
+                        ->execute();
 
-					if ( !$db->sql_query($sql) ) {
-						message_die(GENERAL_ERROR, 'Could not update old topic', '', __LINE__, __FILE__, $sql);
-					}
-
-					$sql = "UPDATE " . POSTS_TABLE . " 
-						SET forum_id = $new_forum_id 
-						WHERE topic_id = $topic_id";
-					if ( !$db->sql_query($sql) ) {
-						message_die(GENERAL_ERROR, 'Could not update post topic ids', '', __LINE__, __FILE__, $sql);
-					}
+					dibi::update(POSTS_TABLE, ['forum_id' => $new_forum_id])
+                        ->where('topic_id = %i', $topic_id)
+                        ->execute();
 				}
 
 				// Sync the forum indexes

@@ -474,28 +474,29 @@ function session_clean($session_id)
 */
 function session_reset_keys($user_id, $user_ip)
 {
-	global $db, $userdata, $board_config;
+	global $userdata, $board_config;
 
-	$key_sql = ($user_id == $userdata['user_id'] && !empty($userdata['session_key'])) ? "AND key_id != '" . md5($userdata['session_key']) . "'" : '';
+    $key_sql = $user_id == $userdata['user_id'] && !empty($userdata['session_key']);
 
-	$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
-		WHERE user_id = ' . (int) $user_id . "
-			$key_sql";
+	$delete_session_keys = dibi::delete(SESSIONS_KEYS_TABLE)
+        ->where('user_id = %i', $user_id);
 
-	if ( !$db->sql_query($sql) ) {
-		message_die(CRITICAL_ERROR, 'Error removing auto-login keys', '', __LINE__, __FILE__, $sql);
-	}
+	if ($key_sql) {
+	    $delete_session_keys->where('key_id != %s', md5($userdata['session_key']));
+    }
 
-	$where_sql = 'session_user_id = ' . (int) $user_id;
-	$where_sql .= ($user_id == $userdata['user_id']) ? " AND session_id <> '" . $userdata['session_id'] . "'" : '';
-	$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
-		WHERE $where_sql";
-	
-	if ( !$db->sql_query($sql) ) {
-		message_die(CRITICAL_ERROR, 'Error removing user session(s)', '', __LINE__, __FILE__, $sql);
-	}
+    $delete_session_keys->execute();
 
-	if ( !empty($key_sql) ) {
+    $delete_session = dibi::delete(SESSIONS_TABLE)
+        ->where('session_user_id = %i', $user_id);
+
+    if ($user_id == $userdata['user_id']) {
+        $delete_session->where('session_id <> %s', $userdata['session_id']);
+    }
+
+    $delete_session->execute();
+
+	if ($key_sql) {
 		$auto_login_key = dss_rand() . dss_rand();
 
 		$current_time = time();

@@ -32,26 +32,41 @@ function topic_review($topic_id, $is_inline_review)
 			message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
 		}
 
-		//
-		// Get topic info ...
-		//
-		$sql = "SELECT t.topic_title, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_sticky, f.auth_announce, f.auth_pollcreate, f.auth_vote, f.auth_attachments 
-			FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f 
-			WHERE t.topic_id = $topic_id
-				AND f.forum_id = t.forum_id";
-		
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, 'Could not obtain topic information', '', __LINE__, __FILE__, $sql);
-		}
+		$columns = [
+		    't.topic_title',
+            'f.forum_id',
+            'f.auth_view',
+            'f.auth_read',
+            'f.auth_post',
+            'f.auth_reply',
+            'f.auth_edit',
+            'f.auth_delete',
+            'f.auth_sticky',
+            'f.auth_announce',
+            'f.auth_pollcreate',
+            'f.auth_vote',
+            'f.auth_attachments'
+        ];
 
-		if ( !($forum_row = $db->sql_fetchrow($result)) ) {
-			message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
-		}
-		
-		$db->sql_freeresult($result);
+        //
+        // Get topic info ...
+        //
+        $forum_row = dibi::select($columns)
+            ->from(TOPICS_TABLE)
+            ->as('t')
+            ->from(FORUMS_TABLE)
+            ->as('f')
+            ->where('t.topic_id = %i', $topic_id)
+            ->where('f.forum_id = t.forum_id')
+            ->fetch();
 
-		$forum_id = $forum_row['forum_id'];
-		$topic_title = $forum_row['topic_title'];
+        if (!$forum_row) {
+            message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
+        }
+
+
+		$forum_id = $forum_row->forum_id;
+		$topic_title = $forum_row->topic_title;
 		
 		//
 		// Start session management
@@ -63,7 +78,8 @@ function topic_review($topic_id, $is_inline_review)
 		//
 
 		$is_auth = [];
-		$is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_row);
+		// TODO for now to arrary
+		$is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_row->toArray());
 
 		if ( !$is_auth['auth_read'] ) {
 			message_die(GENERAL_MESSAGE, sprintf($lang['Sorry_auth_read'], $is_auth['auth_read_type']));

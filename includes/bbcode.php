@@ -674,25 +674,20 @@ function smilies_pass($message)
 
 	if (!isset($orig))
 	{
-		global $db, $board_config;
+		global $board_config;
 		$orig = $repl = [];
 
-		$sql = 'SELECT * FROM ' . SMILIES_TABLE;
-		if (!$result = $db->sql_query($sql) )
-		{
-			message_die(GENERAL_ERROR, "Couldn't obtain smilies data", "", __LINE__, __FILE__, $sql);
-		}
-		$smilies = $db->sql_fetchrowset($result);
+		$smilies = dibi::select('*')
+            ->from(SMILIES_TABLE)
+            ->fetchAll();
 
-		if (count($smilies))
-		{
+		if (count($smilies)) {
 			usort($smilies, 'smiley_sort');
-		}
 
-		for ($i = 0; $i < count($smilies); $i++)
-		{
-			$orig[] = "/(?<=.\W|\W.|^\W)" . preg_quote($smilies[$i]['code'], "/") . "(?=.\W|\W.|\W$)/";
-			$repl[] = '<img src="'. $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'] . '" alt="' . $smilies[$i]['emoticon'] . '" border="0" />';
+			foreach ($smilies as $smiley) {
+                $orig[] = "/(?<=.\W|\W.|^\W)" . preg_quote($smiley->code, "/") . "(?=.\W|\W.|\W$)/";
+                $repl[] = '<img src="'. $board_config['smilies_path'] . '/' . $smiley->smile_url . '" alt="' . $smiley->emoticon . '" border="0" />';
+            }
 		}
 	}
 
@@ -707,12 +702,11 @@ function smilies_pass($message)
 
 function smiley_sort($a, $b)
 {
-	if ( strlen($a['code']) == strlen($b['code']) )
-	{
+	if ( strlen($a->code) == strlen($b->code) ) {
 		return 0;
 	}
 
-	return ( strlen($a['code']) > strlen($b['code']) ) ? -1 : 1;
+	return ( strlen($a->code) > strlen($b->code) ) ? -1 : 1;
 }
 
 ?>

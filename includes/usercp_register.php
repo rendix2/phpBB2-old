@@ -168,15 +168,13 @@ if (
 
 	$user_timezone = isset($_POST['timezone']) ? (float)$_POST['timezone'] : $board_config['board_timezone'];
 
-	$sql = "SELECT config_value
-		FROM " . CONFIG_TABLE . "
-		WHERE config_name = 'default_dateformat'";
+	// TODO i think i have this value already in $board_config, why i get it again???
+	$board_default_dateformat = dibi::select('config_value')
+        ->from(CONFIG_TABLE)
+        ->where('config_name = %s', 'default_dateformat')
+        ->fetchSingle();
 
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, 'Could not select default dateformat', '', __LINE__, __FILE__, $sql);
-	}
-	$row = $db->sql_fetchrow($result);
-	$board_config['default_dateformat'] = $row['config_value'];
+	$board_config['default_dateformat'] = $board_default_dateformat;
 	$user_dateformat = !empty($_POST['dateformat']) ? trim(htmlspecialchars($_POST['dateformat'])) : $board_config['default_dateformat'];
 
 	$user_avatar_local = ( isset($_POST['avatarselect']) && !empty($_POST['submitavatar']) && $board_config['allow_avatar_local'] ) ? htmlspecialchars($_POST['avatarselect']) : ( isset($_POST['avatarlocal']) ? htmlspecialchars($_POST['avatarlocal']) : '' );

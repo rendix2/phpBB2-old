@@ -44,34 +44,33 @@ if (isset($_GET[POST_FORUM_URL]) || isset($_POST[POST_FORUM_URL]) )
 	$forum_id = isset($_POST[POST_FORUM_URL]) ? $_POST[POST_FORUM_URL] : $_GET[POST_FORUM_URL];
 
     if ($forum_id == -1) {
-        $forum_sql = '';
+        $forum_sql = false;
     } else {
         $forum_id = (int)$forum_id;
-        $forum_sql = "AND forum_id = $forum_id";
+        $forum_sql = true;
     }
 } else {
 	$forum_id = '';
-	$forum_sql = '';
+	$forum_sql = false;
 }
 //
 // Get a list of forum's or the data for the forum that we are pruning.
 //
-$sql = "SELECT f.*
-	FROM " . FORUMS_TABLE . " f, " . CATEGORIES_TABLE . " c
-	WHERE c.cat_id = f.cat_id
-	$forum_sql
-	ORDER BY c.cat_order ASC, f.forum_order ASC";
 
-if (!($result = $db->sql_query($sql)) ) {
-	message_die(GENERAL_ERROR, 'Could not obtain list of forums for pruning', '', __LINE__, __FILE__, $sql);
+$forums = dibi::select('f.*')
+    ->from(FORUMS_TABLE)
+    ->as('f')
+    ->from(CATEGORIES_TABLE)
+    ->as('c')
+    ->where('c.cat_id = f.cat_id');
+
+if ($forums) {
+    $forums->where('forum_id = %i', $forum_id);
 }
 
-$forum_rows = [];
-
-while ($row = $db->sql_fetchrow($result) )
-{
-	$forum_rows[] = $row;
-}
+$forums->orderBy('c.cat_order', dibi::ASC)
+    ->orderBy('f.forum_order', dibi::ASC)
+    ->fetchAll();
 
 //
 // Check for submit to be equal to Prune. If so then proceed with the pruning.
@@ -84,21 +83,21 @@ if (isset($_POST['doprune']) ) {
 
     $template->set_filenames(['body' => 'admin/forum_prune_result_body.tpl']);
 
-    for ($i = 0; $i < count($forum_rows); $i++) {
-		$p_result = prune($forum_rows[$i]['forum_id'], $prunedate);
-		sync('forum', $forum_rows[$i]['forum_id']);
-	
-		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
-	
-		$template->assign_block_vars('prune_results', [
-			'ROW_COLOR' => '#' . $row_color, 
-			'ROW_CLASS' => $row_class, 
-			'FORUM_NAME' => $forum_rows[$i]['forum_name'],
-			'FORUM_TOPICS' => $p_result['topics'],
-			'FORUM_POSTS' => $p_result['posts']]
-		);
-	}
+    foreach ($forums as $forum) {
+        $p_result = prune($forum->forum_id, $prunedate);
+        sync('forum', $forum->forum_id);
+
+        $row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
+        $row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+
+        $template->assign_block_vars('prune_results', [
+                'ROW_COLOR' => '#' . $row_color,
+                'ROW_CLASS' => $row_class,
+                'FORUM_NAME' => $forum->forum_name,
+                'FORUM_TOPICS' => $p_result['topics'],
+                'FORUM_POSTS' => $p_result['posts']]
+        );   
+    }
 
 	$template->assign_vars([
 		'L_FORUM_PRUNE' => $lang['Forum_Prune'],
@@ -121,9 +120,9 @@ if (isset($_POST['doprune']) ) {
         $select_list = '<select name="' . POST_FORUM_URL . '">';
 		$select_list .= '<option value="-1">' . $lang['All_Forums'] . '</option>';
 
-		for ($i = 0; $i < count($forum_rows); $i++) {
-			$select_list .= '<option value="' . $forum_rows[$i]['forum_id'] . '">' . $forum_rows[$i]['forum_name'] . '</option>';
-		}
+		foreach ($forums as $forum) {
+            $select_list .= '<option value="' . $forum->forum_id . '">' . $forum->forum_name . '</option>';
+        }
 
 		$select_list .= '</select>';
 

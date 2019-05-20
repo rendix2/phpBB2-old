@@ -172,17 +172,23 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 		//
 		// Flood control
 		//
-		$where_sql = ($userdata['user_id'] == ANONYMOUS) ? "poster_ip = '$user_ip'" : 'poster_id = ' . $userdata['user_id'];
-		$sql = "SELECT MAX(post_time) AS last_post_time
-			FROM " . POSTS_TABLE . "
-			WHERE $where_sql";
-		if ($result = $db->sql_query($sql)) {
-			if ($row = $db->sql_fetchrow($result)) {
-				if ((int)$row['last_post_time'] > 0 && ($current_time - (int)$row['last_post_time']) < (int)$board_config['flood_interval']) {
-					message_die(GENERAL_MESSAGE, $lang['Flood_Error']);
-				}
-			}
-		}
+		$max_post_time = dibi::select('MAX(post_time)')
+            ->select('last_post_time')
+            ->from(POSTS_TABLE);
+
+		if ($userdata['user_id'] == ANONYMOUS) {
+		    $max_post_time->where('poster_ip = %s', $user_ip);
+        } else {
+            $max_post_time->where('poster_id = %i', $userdata['user_id']);
+        }
+
+        $max_post_time->fetchSingle();
+
+		if ($max_post_time) {
+            if ((int)$max_post_time > 0 && ($current_time - $max_post_time) < (int)$board_config['flood_interval']) {
+                message_die(GENERAL_MESSAGE, $lang['Flood_Error']);
+            }
+        }
 	}
 
 	if ($mode == 'editpost') {
@@ -286,7 +292,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
                 'vote_length' => ($poll_length * 86400)
             ];
 
-	        dibi::insert(VOTE_DESC_TABLE, $insert_data)->execute();
+            $poll_id = dibi::insert(VOTE_DESC_TABLE, $insert_data)->execute(dibi::IDENTIFIER);
         } else {
             $update_data = [
                 'vote_text' => $poll_title,
@@ -299,57 +305,66 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
                 ->execute();
         }
 
-		$delete_option_sql = '';
+		$delete_option_sql = [];
 		$old_poll_result = [];
 
 		if ($mode == 'editpost' && $post_data['has_poll']) {
-			$sql = "SELECT vote_option_id, vote_result  
-				FROM " . VOTE_RESULTS_TABLE . " 
-				WHERE vote_id = $poll_id 
-				ORDER BY vote_option_id ASC";
+		    $votes = dibi::select(['vote_option_id', 'vote_result'])
+                ->from(VOTE_RESULTS_TABLE)
+                ->where('vote_id = %i', $poll_id)
+                ->orderBy('vote_option_id', dibi::ASC)
+                ->fetchPairs('vote_option_id', 'vote_result');
 
-			if (!($result = $db->sql_query($sql))) {
-				message_die(GENERAL_ERROR, 'Could not obtain vote data results for this topic', '', __LINE__, __FILE__, $sql);
-			}
+		    foreach ($votes as $vote_option_id => $vote_result) {
+                $old_poll_result[$vote_option_id] = $vote_result;
 
-			while ($row = $db->sql_fetchrow($result)) {
-				$old_poll_result[$row['vote_option_id']] = $row['vote_result'];
-
-				if (!isset($poll_options[$row['vote_option_id']])) {
-					$delete_option_sql .= ($delete_option_sql != '') ? ', ' . $row['vote_option_id'] : $row['vote_option_id'];
-				}
-			}
-		} else {
-			$poll_id = $db->sql_nextid();
+                if (!isset($poll_options[$vote_option_id])) {
+                    $delete_option_sql[] = $vote_option_id;
+                }
+            }
 		}
 
+		//todo i think we dont need this
 		@reset($poll_options);
 
 		$poll_option_id = 1;
 
-		while (list($option_id, $option_text) = each($poll_options)) {
-			if (!empty($option_text)) {
-				$option_text = str_replace("\'", "''", htmlspecialchars($option_text));
-				$poll_result = ($mode == "editpost" && isset($old_poll_result[$option_id])) ? $old_poll_result[$option_id] : 0;
+        foreach ($poll_options as $option_id => $option_text) {
+            if (!empty($option_text)) {
+                $option_text = str_replace("\'", "''", htmlspecialchars($option_text));
+                $poll_result = ($mode == "editpost" && isset($old_poll_result[$option_id])) ? $old_poll_result[$option_id] : 0;
 
-				$sql = ($mode != "editpost" || !isset($old_poll_result[$option_id])) ? "INSERT INTO " . VOTE_RESULTS_TABLE . " (vote_id, vote_option_id, vote_option_text, vote_result) VALUES ($poll_id, $poll_option_id, '$option_text', $poll_result)" : "UPDATE " . VOTE_RESULTS_TABLE . " SET vote_option_text = '$option_text', vote_result = $poll_result WHERE vote_option_id = $option_id AND vote_id = $poll_id";
+                if ($mode != "editpost" || !isset($old_poll_result[$option_id])) {
+                    $insert_data = [
+                        'vote_id' => $poll_id,
+                        'vote_option_id' => $poll_option_id,
+                        'vote_option_text' => $option_text,
+                        'vote_result' => $poll_result
 
-				if (!$db->sql_query($sql)) {
-					message_die(GENERAL_ERROR, 'Error in posting', '', __LINE__, __FILE__, $sql);
-				}
+                    ];
 
-				$poll_option_id++;
-			}
-		}
+                    dibi::insert(VOTE_RESULTS_TABLE, $insert_data)->execute();
+                } else {
+                    $update_data = [
+                        'vote_option_text' => $option_text,
+                        'vote_result' => $poll_result
+                    ];
 
-		if ($delete_option_sql != '') {
-			$sql = "DELETE FROM " . VOTE_RESULTS_TABLE . " 
-				WHERE vote_option_id IN ($delete_option_sql) 
-					AND vote_id = $poll_id";
+                    dibi::update(VOTE_RESULTS_TABLE, $update_data)
+                        ->where('vote_option_id = %i', $option_id)
+                        ->where('vote_id = %i', $poll_id)
+                        ->execute();
+                }
 
-			if (!$db->sql_query($sql)) {
-				message_die(GENERAL_ERROR, 'Error deleting pruned poll options', '', __LINE__, __FILE__, $sql);
-			}
+                $poll_option_id++;
+            }
+        }
+
+        if (count($delete_option_sql)) {
+            dibi::delete(VOTE_RESULTS_TABLE)
+                ->where('vote_option_id IN %in', $delete_option_sql)
+                ->where('vote_id = %i', $poll_id)
+                ->execute();
 		}
 	}
 
@@ -535,46 +550,37 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 
 	if ($mode != 'delete') {
 		if ($mode == 'reply') {
-			$sql = "SELECT ban_userid 
-				FROM " . BANLIST_TABLE;
+		    $user_ids = dibi::select('ban_userid')
+                ->from(BANLIST_TABLE)
+                ->fetchPairs(null, 'ban_userid');
 
-			if (!($result = $db->sql_query($sql))) {
-				message_die(GENERAL_ERROR, 'Could not obtain banlist', '', __LINE__, __FILE__, $sql);
-			}
+		    $topic_not_id = array_merge([$userdata['user_id']], [ANONYMOUS], $user_ids);
 
-			$user_id_sql = '';
-			while ($row = $db->sql_fetchrow($result)) {
-				if (isset($row['ban_userid']) && !empty($row['ban_userid'])) {
-					$user_id_sql .= ', ' . $row['ban_userid'];
-				}
-			}
+		    $users = dibi::select(['u.user_id', 'u.user_email','u.user_lang'])
+                ->from(TOPICS_WATCH_TABLE)
+                ->as('tw')
+                ->from(USERS_TABLE)
+                ->as('u')
+                ->where('tw.topic_id = %i', $topic_id)
+                ->where('tw.user_id NOT IN %in', $topic_not_id)
+                ->where('tw.notify_status = %i', TOPIC_WATCH_UN_NOTIFIED)
+                ->where('u.user_id = tw.user_id')
+                ->fetchAll();
 
-			$sql = "SELECT u.user_id, u.user_email, u.user_lang 
-				FROM " . TOPICS_WATCH_TABLE . " tw, " . USERS_TABLE . " u 
-				WHERE tw.topic_id = $topic_id 
-					AND tw.user_id NOT IN (" . $userdata['user_id'] . ", " . ANONYMOUS . $user_id_sql . ") 
-					AND tw.notify_status = " . TOPIC_WATCH_UN_NOTIFIED . " 
-					AND u.user_id = tw.user_id";
-
-			if (!($result = $db->sql_query($sql))) {
-				message_die(GENERAL_ERROR, 'Could not obtain list of topic watchers', '', __LINE__, __FILE__, $sql);
-			}
-
-			$update_watched_sql = '';
+			$update_watched_sql = [];
 			$bcc_list_ary = [];
 			
-			if ($row = $db->sql_fetchrow($result)) {
+			if (count($users)) {
 				// Sixty second limit
 				@set_time_limit(60);
 
-				do {
-					if ($row['user_email'] != '') {
-						$bcc_list_ary[$row['user_lang']][] = $row['user_email'];
-					}
+				foreach ($users as $user) {
+                    if ($user->user_email != '') {
+                        $bcc_list_ary[$user->user_lang][] = $user->user_email;
+                    }
 
-					$update_watched_sql .= ($update_watched_sql != '') ? ', ' . $row['user_id'] : $row['user_id'];
-				}
-				while ($row = $db->sql_fetchrow($result));
+                    $update_watched_sql[] = $user->user_id;
+                }
 
 				//
 				// Let's do some checking to make sure that mass mail functions
@@ -612,7 +618,7 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 
 					while (list($user_lang, $bcc_list) = each($bcc_list_ary)) {
 						$emailer->use_template('topic_notify', $user_lang);
-		
+
 						for ($i = 0; $i < count($bcc_list); $i++) {
 							$emailer->bcc($bcc_list[$i]);
 						}
@@ -640,15 +646,13 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 					}
 				}
 			}
-			$db->sql_freeresult($result);
 
-			if ($update_watched_sql != '') {
-				$sql = "UPDATE " . TOPICS_WATCH_TABLE . "
-					SET notify_status = " . TOPIC_WATCH_NOTIFIED . "
-					WHERE topic_id = $topic_id
-						AND user_id IN ($update_watched_sql)";
-				$db->sql_query($sql);
-			}
+            if (count($update_watched_sql)) {
+                dibi::update(TOPICS_WATCH_TABLE, ['notify_status' => TOPIC_WATCH_NOTIFIED])
+                    ->where('topic_id = %i', $topic_id)
+                    ->where('user_id IN %in', $update_watched_sql)
+                    ->execute();
+            }
 		}
 
 		$topic_watch = dibi::select('topic_id')
@@ -700,21 +704,22 @@ function generate_smilies($mode, $page_id)
         $template->set_filenames(['smiliesbody' => 'posting_smilies.tpl']);
     }
 
-    $sql = "SELECT emoticon, code, smile_url   
-		FROM " . SMILIES_TABLE . " 
-		ORDER BY smilies_id";
+	$smilies = dibi::select(['emoticon', 'code', 'smile_url'])
+        ->from(SMILIES_TABLE)
+        ->orderBy('smilies_id')
+        ->fetchAll();
 
-	if ($result = $db->sql_query($sql)) {
+	if (count($smilies)) {
 		$num_smilies = 0;
 		$rowset = [];
 
-		while ($row = $db->sql_fetchrow($result)) {
-			if (empty($rowset[$row['smile_url']])) {
-				$rowset[$row['smile_url']]['code'] = str_replace("'", "\\'", str_replace('\\', '\\\\', $row['code']));
-				$rowset[$row['smile_url']]['emoticon'] = $row['emoticon'];
-				$num_smilies++;
-			}
-		}
+		foreach ($smilies as $smiley) {
+            if (empty($rowset[$smiley->smile_url])) {
+                $rowset[$smiley->smile_url]['code'] = str_replace("'", "\\'", str_replace('\\', '\\\\', $smiley->code));
+                $rowset[$smiley->smile_url]['emoticon'] = $smiley->emoticon;
+                $num_smilies++;
+            }
+        }
 
 		if ($num_smilies) {
 			$smilies_count = ($mode == 'inline') ? min(19, $num_smilies) : $num_smilies;

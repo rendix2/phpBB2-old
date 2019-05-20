@@ -30,50 +30,50 @@ include $phpbb_root_path . 'includes/functions_selects.php';
 //
 // Pull all config data
 //
-$sql = "SELECT *
-	FROM " . CONFIG_TABLE;
+// todo i think we already have this data
+$configs = dibi::select('*')
+	->from(CONFIG_TABLE)
+	->fetchAll();
 
-if (!$result = $db->sql_query($sql)) {
-	message_die(CRITICAL_ERROR, "Could not query config information in admin_board", "", __LINE__, __FILE__, $sql);
-} else {
-	while ($row = $db->sql_fetchrow($result) ) {
-		$config_name = $row['config_name'];
-		$config_value = $row['config_value'];
-		$default_config[$config_name] = isset($_POST['submit']) ? str_replace("'", "\'", $config_value) : $config_value;
-		
-		$new[$config_name] = isset($_POST[$config_name]) ? $_POST[$config_name] : $default_config[$config_name];
+// todo check tis logic.. its strange...
+foreach ($configs as $config) {
+	$config_name = $config->config_name;
+	$config_value = $config->config_value;
 
-		if ($config_name == 'cookie_name') {
-			$new['cookie_name'] = str_replace('.', '_', $new['cookie_name']);
-		}
+	$default_config[$config_name] = isset($_POST['submit']) ? str_replace("'", "\'", $config_value) : $config_value;
 
-		// Attempt to prevent a common mistake with this value,
-		// http:// is the protocol and not part of the server name
-		if ($config_name == 'server_name') {
-			$new['server_name'] = str_replace('http://', '', $new['server_name']);
-		}
+	$new[$config_name] = isset($_POST[$config_name]) ? $_POST[$config_name] : $default_config[$config_name];
 
-		// Attempt to prevent a mistake with this value.
-		if ($config_name == 'avatar_path') {
-			$new['avatar_path'] = trim($new['avatar_path']);
+	if ($config_name == 'cookie_name') {
+		$new['cookie_name'] = str_replace('.', '_', $new['cookie_name']);
+	}
 
-			if (strstr($new['avatar_path'], "\0") || !is_dir($phpbb_root_path . $new['avatar_path']) || !is_writable($phpbb_root_path . $new['avatar_path'])) {
-				$new['avatar_path'] = $default_config['avatar_path'];
-			}
-		}
+	// Attempt to prevent a common mistake with this value,
+	// http:// is the protocol and not part of the server name
+	if ($config_name == 'server_name') {
+		$new['server_name'] = str_replace('http://', '', $new['server_name']);
+	}
 
-		if (isset($_POST['submit']) ) {
-			dibi::update(CONFIG_TABLE, ['config_value' => $new[$config_name]])
-				->where('config_name = %s', $config_name)
-				->execute();
+	// Attempt to prevent a mistake with this value.
+	if ($config_name == 'avatar_path') {
+		$new['avatar_path'] = trim($new['avatar_path']);
+
+		if (strstr($new['avatar_path'], "\0") || !is_dir($phpbb_root_path . $new['avatar_path']) || !is_writable($phpbb_root_path . $new['avatar_path'])) {
+			$new['avatar_path'] = $default_config['avatar_path'];
 		}
 	}
 
 	if (isset($_POST['submit']) ) {
-		$message = $lang['Config_updated'] . "<br /><br />" . sprintf($lang['Click_return_config'], "<a href=\"" . append_sid("admin_board.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
-
-		message_die(GENERAL_MESSAGE, $message);
+		dibi::update(CONFIG_TABLE, ['config_value' => $new[$config_name]])
+			->where('config_name = %s', $config_name)
+			->execute();
 	}
+}
+
+if (isset($_POST['submit']) ) {
+	$message = $lang['Config_updated'] . "<br /><br />" . sprintf($lang['Click_return_config'], "<a href=\"" . append_sid("admin_board.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
+
+	message_die(GENERAL_MESSAGE, $message);
 }
 
 $style_select = style_select($new['default_style'], 'default_style', "../templates");

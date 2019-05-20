@@ -595,7 +595,7 @@ if (!empty($mode) ) {
 			if ($to_id == -1) {
 				// Delete polls in this forum
 
-                $vode_ids = dibi::select('v.vote_id')
+                $vote_ids = dibi::select('v.vote_id')
                     ->from(VOTE_DESC_TABLE)
                     ->as('v')
                     ->from(TOPICS_TABLE)
@@ -604,17 +604,17 @@ if (!empty($mode) ) {
                     ->where('v.topic_id = t.topic_id')
                     ->fetchPairs(null, 'vote_id');
 
-                if (count($vode_ids)) {
+                if (count($vote_ids)) {
                     dibi::delete(VOTE_DESC_TABLE)
-                        ->where('vote_id IN %in', $vode_ids)
+                        ->where('vote_id IN %in', $vote_ids)
                         ->execute();
 
                     dibi::delete(VOTE_RESULTS_TABLE)
-                        ->where('vote_id IN %in', $vode_ids)
+                        ->where('vote_id IN %in', $vote_ids)
                         ->execute();
 
                     dibi::delete(VOTE_USERS_TABLE)
-                        ->where('vote_id IN %in', $vode_ids)
+                        ->where('vote_id IN %in', $vote_ids)
                         ->execute();
                 }
 

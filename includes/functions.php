@@ -23,55 +23,31 @@
 
 function get_db_stat($mode)
 {
-	global $db;
-
-	switch( $mode )
-	{
+	switch( $mode ) {
 		case 'usercount':
-			$sql = "SELECT COUNT(user_id) AS total
-				FROM " . USERS_TABLE . "
-				WHERE user_id <> " . ANONYMOUS;
-			break;
+		    return dibi::select('COUNT(user_id)')
+                ->as('total')
+                ->from(USERS_TABLE)
+                ->where('user_id <> =i', ANONYMOUS)
+                ->fetchSingle();
 
 		case 'newestuser':
-			$sql = "SELECT user_id, username
-				FROM " . USERS_TABLE . "
-				WHERE user_id <> " . ANONYMOUS . "
-				ORDER BY user_id DESC
-				LIMIT 1";
-			break;
+		    return dibi::select(['user_id', 'username'])
+                ->from(USERS_TABLE)
+                ->where('user_id <> %i', ANONYMOUS)
+                ->orderBy('user_id', dibi::DESC)
+                ->fetch();
 
 		case 'postcount':
+            return dibi::select('SUM(forum_topics)')->as('topic_total')
+                ->from(FORUMS_TABLE)
+                ->fetchSingle();
+
 		case 'topiccount':
-			$sql = "SELECT SUM(forum_topics) AS topic_total, SUM(forum_posts) AS post_total
-				FROM " . FORUMS_TABLE;
-			break;
+		   return dibi::select('SUM(forum_topics)')->as('topic_total')
+                ->from(FORUMS_TABLE)
+                ->fetchSingle();
 	}
-
-	if ( !($result = $db->sql_query($sql)) )
-	{
-		return false;
-	}
-
-	$row = $db->sql_fetchrow($result);
-
-	switch ( $mode )
-	{
-		case 'usercount':
-			return $row['total'];
-			break;
-		case 'newestuser':
-			return $row;
-			break;
-		case 'postcount':
-			return $row['post_total'];
-			break;
-		case 'topiccount':
-			return $row['topic_total'];
-			break;
-	}
-
-	return false;
 }
 
 // added at phpBB 2.0.11 to properly format the username
@@ -322,23 +298,15 @@ function init_userprefs($userdata)
 	// If we've had to change the value in any way then let's write it back to the database
 	// before we go any further since it means there is something wrong with it
 	if ( $userdata['user_id'] != ANONYMOUS && $userdata['user_lang'] !== $default_lang ) {
-		$sql = 'UPDATE ' . USERS_TABLE . "
-			SET user_lang = '" . $default_lang . "'
-			WHERE user_lang = '" . $userdata['user_lang'] . "'";
-
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(CRITICAL_ERROR, 'Could not update user language info');
-		}
+	    dibi::update(USERS_TABLE, ['user_lang' => $default_lang])
+            ->where('user_lang = %s', $userdata['user_lang'])
+            ->execute();
 
 		$userdata['user_lang'] = $default_lang;
 	} elseif ( $userdata['user_id'] == ANONYMOUS && $board_config['default_lang'] !== $default_lang ) {
-		$sql = 'UPDATE ' . CONFIG_TABLE . "
-			SET config_value = '" . $default_lang . "'
-			WHERE config_name = 'default_lang'";
-
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(CRITICAL_ERROR, 'Could not update user language info');
-		}
+        dibi::update(CONFIG_TABLE, ['config_value' => $default_lang])
+            ->where('config_name = %s', 'default_lang')
+            ->execute();
 	}
 
 	$board_config['default_lang'] = $default_lang;
