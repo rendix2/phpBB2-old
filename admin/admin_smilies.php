@@ -100,26 +100,20 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 		// The user has already selected a smile_pak file.. Import it.
 		//
 		if (!empty($clear_current)  ) {
-			$sql = "DELETE 
-				FROM " . SMILIES_TABLE;
 
-			if (!$result = $db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, "Couldn't delete current smilies", "", __LINE__, __FILE__, $sql);
-			}
+		    // TODO really without where???!
+		    dibi::delete(SMILIES_TABLE)
+                ->execute();
 		} else {
-			$sql = "SELECT code 
-				FROM ". SMILIES_TABLE;
+            $smiles_dibi = dibi::select('code')
+                ->from(SMILIES_TABLE)
+                ->fetchAll();
 
-			if (!$result = $db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, "Couldn't get current smilies", "", __LINE__, __FILE__, $sql);
-			}
+            $smiles = [];
 
-			$cur_smilies = $db->sql_fetchrowset($result);
-
-            for ($i = 0; $i < count($cur_smilies); $i++) {
-				$k = $cur_smilies[$i]['code'];
-				$smiles[$k] = 1;
-			}
+            foreach ($smiles_dibi as $smilie) {
+                $smiles[$smilie->code] = 1;
+            }
 		}
 
 		$fcontents = @file($phpbb_root_path . $board_config['smilies_path'] . '/'. $smile_pak);
@@ -210,21 +204,17 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 	// Export our smiley config as a smiley pak...
 	//
 	if ( $_GET['export_pack'] == "send" ) {
-		$sql = "SELECT * 
-			FROM " . SMILIES_TABLE;
+        $resultset = dibi::select('*')
+            ->from(SMILIES_TABLE)
+            ->fetchAll();
 
-		if (!$result = $db->sql_query($sql) ) {
-			message_die(GENERAL_ERROR, "Could not get smiley list", "", __LINE__, __FILE__, $sql);
-		}
-
-		$resultset = $db->sql_fetchrowset($result);
 		$smile_pak = "";
 
-		for ($i = 0; $i < count($resultset); $i++ ) {
-			$smile_pak .= $resultset[$i]['smile_url'] . $delimeter;
-			$smile_pak .= $resultset[$i]['emoticon'] . $delimeter;
-			$smile_pak .= $resultset[$i]['code'] . "\n";
-		}
+		foreach ($resultset as $value) {
+            $smile_pak .= $value->smile_url . $delimeter;
+            $smile_pak .= $value->emoticon . $delimeter;
+            $smile_pak .= $value->code . "\n";
+        }
 
 		header("Content-Type: text/x-delimtext; name=\"smiles.pak\"");
 		header("Content-disposition: attachment; filename=smiles.pak");
@@ -324,22 +314,19 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 			$smiley_id = !empty($_POST['id']) ? $_POST['id'] : $_GET['id'];
 			$smiley_id = (int)$smiley_id;
 
-			$sql = "SELECT *
-				FROM " . SMILIES_TABLE . "
-				WHERE smilies_id = " . $smiley_id;
+            $smile_data = dibi::select('*')
+                ->from(SMILIES_TABLE)
+                ->where('smilies_id = %i', $smiley_id)
+                ->fetch();
 
-			$result = $db->sql_query($sql);
-
-			if (!$result ) {
-				message_die(GENERAL_ERROR, 'Could not obtain emoticon information', "", __LINE__, __FILE__, $sql);
-			}
-
-			$smile_data = $db->sql_fetchrow($result);
+            if (!$smile_data) {
+                message_die(GENERAL_ERROR, 'Could not obtain emoticon information');
+            }
 
 			$filename_list = "";
 
 			for ($i = 0; $i < count($smiley_images); $i++ ) {
-				if ($smiley_images[$i] == $smile_data['smile_url'] ) {
+				if ($smiley_images[$i] == $smile_data->smile_url ) {
 					$smiley_selected = "selected=\"selected\"";
 					$smiley_edit_img = $smiley_images[$i];
 				} else {
@@ -351,12 +338,12 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 
             $template->set_filenames(["body" => "admin/smile_edit_body.tpl"]);
 
-            $s_hidden_fields = '<input type="hidden" name="mode" value="save" /><input type="hidden" name="smile_id" value="' . $smile_data['smilies_id'] . '" />';
+            $s_hidden_fields = '<input type="hidden" name="mode" value="save" /><input type="hidden" name="smile_id" value="' . $smile_data->smilies_id . '" />';
 
             $template->assign_vars(
                 [
-                    "SMILEY_CODE"     => $smile_data['code'],
-                    "SMILEY_EMOTICON" => $smile_data['emoticon'],
+                    "SMILEY_CODE"     => $smile_data->code,
+                    "SMILEY_EMOTICON" => $smile_data->emoticon,
 
                     "L_SMILEY_TITLE"   => $lang['smiley_title'],
                     "L_SMILEY_CONFIG"  => $lang['smiley_config'],
@@ -418,7 +405,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
             ];
 
             dibi::update(SMILIES_TABLE, $update_data)
-                ->where('smilies_id = %i', $smiley_id)
+                ->where('smilies_id = %i', $smile_id)
                 ->execute();
 
 			$message = $lang['smiley_edit_success'] . "<br /><br />" . sprintf($lang['Click_return_smileadmin'], "<a href=\"" . append_sid("admin_smilies.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
@@ -476,15 +463,9 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 	// This is the main display of the page before the admin has selected
 	// any options.
 	//
-	$sql = "SELECT *
-		FROM " . SMILIES_TABLE;
-	$result = $db->sql_query($sql);
-
-    if (!$result) {
-        message_die(GENERAL_ERROR, "Couldn't obtain smileys from database", "", __LINE__, __FILE__, $sql);
-    }
-
-	$smilies = $db->sql_fetchrowset($result);
+    $smilies = dibi::select('*')
+        ->from(SMILIES_TABLE)
+        ->fetchAll();
 
     $template->set_filenames(["body" => "admin/smile_list_body.tpl"]);
 
@@ -510,29 +491,27 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
     //
 	// Loop throuh the rows of smilies setting block vars for the template.
 	//
-	for ($i = 0; $i < count($smilies); $i++) {
-		//
-		// Replace htmlentites for < and > with actual character.
-		//
-		$smilies[$i]['code'] = str_replace('&lt;', '<', $smilies[$i]['code']);
-		$smilies[$i]['code'] = str_replace('&gt;', '>', $smilies[$i]['code']);
-		
-		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+    foreach ($smilies as $smiley) {
+        //
+        // Replace htmlentites for < and > with actual character.
+        //
+        $smiley->code = str_replace('&lt;', '<', $smiley->code);
+        $smiley->code = str_replace('&gt;', '>', $smiley->code);
 
-        $template->assign_block_vars("smiles",
-            [
+        $row_color = (!($i % 2)) ? $theme['td_color1'] : $theme['td_color2'];
+        $row_class = (!($i % 2)) ? $theme['td_class1'] : $theme['td_class2'];
+
+        $template->assign_block_vars("smiles", [
                 "ROW_COLOR" => "#" . $row_color,
                 "ROW_CLASS" => $row_class,
 
-                "SMILEY_IMG" => $phpbb_root_path . $board_config['smilies_path'] . '/' . $smilies[$i]['smile_url'],
-                "CODE"       => $smilies[$i]['code'],
-                "EMOT"       => $smilies[$i]['emoticon'],
+                "SMILEY_IMG" => $phpbb_root_path . $board_config['smilies_path'] . '/' . $smiley->smile_url,
+                "CODE"       => $smiley->code,
+                "EMOT"       => $smiley->emoticon,
 
-                "U_SMILEY_EDIT"   => append_sid("admin_smilies.php?mode=edit&amp;id=" . $smilies[$i]['smilies_id']),
-                "U_SMILEY_DELETE" => append_sid("admin_smilies.php?mode=delete&amp;id=" . $smilies[$i]['smilies_id'])
-            ]
-        );
+                "U_SMILEY_EDIT"   => append_sid("admin_smilies.php?mode=edit&amp;id=" . $smiley->smilies_id),
+                "U_SMILEY_DELETE" => append_sid("admin_smilies.php?mode=delete&amp;id=" . $smiley->smilies_id)
+            ]);
     }
 
     //

@@ -519,45 +519,35 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 			}
 		}
 
-		$sql = 'SELECT user_id FROM ' . USER_GROUP_TABLE . "
-			WHERE group_id = $group_id";
-		$result = $db->sql_query($sql);
+        $group_user = dibi::select('user_id')
+            ->from(USER_GROUP_TABLE)
+            ->where('group_id = %i', $group_id)
+            ->fetchPairs('user_id', 'user_id');
 
-		$group_user = [];
+		$rows = dibi::select('ug.user_id')
+            ->select('COUNT(auth_mod)')
+            ->as('is_auth_mod')
+            ->from(AUTH_ACCESS_TABLE)
+            ->as('aa')
+            ->from(USER_GROUP_TABLE)
+            ->as('ug')
+            ->where('ug.user_id IN %in', $group_user)
+            ->where('aa.group_id = ug.group_id')
+            ->where('aa.auth_mod = %i', 1)
+            ->groupBy('ug.user_id')
+            ->fetchPairs(null, 'user_id');
 
-		while ($row = $db->sql_fetchrow($result)) {
-			$group_user[$row['user_id']] = $row['user_id'];
-		}
-
-		$db->sql_freeresult($result);
-
-		$sql = "SELECT ug.user_id, COUNT(auth_mod) AS is_auth_mod 
-			FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug 
-			WHERE ug.user_id IN (" . implode(', ', $group_user) . ") 
-				AND aa.group_id = ug.group_id 
-				AND aa.auth_mod = 1
-			GROUP BY ug.user_id";
-
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, 'Could not obtain moderator status', '', __LINE__, __FILE__, $sql);
-		}
-
-		while ($row = $db->sql_fetchrow($result)) {
-			if ($row['is_auth_mod']) {
-				unset($group_user[$row['user_id']]);
-			}
-		}
-
-		$db->sql_freeresult($result);
+		foreach ($rows as $row) {
+            if ($row->is_auth_mod) {
+                unset($group_user[$row->user_id]);
+            }
+        }
 
 		if (count($group_user)) {
-			$sql = "UPDATE " . USERS_TABLE . " 
-				SET user_level = " . USER . " 
-				WHERE user_id IN (" . implode(', ', $group_user) . ") AND user_level = " . MOD;
-
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, 'Could not update user level', '', __LINE__, __FILE__, $sql);
-			}
+		    dibi::update(USERS_TABLE, ['user_level' => USER])
+                ->where('user_id IN %in', $group_user)
+                ->where('user_level = %i', MOD)
+                ->execute();
 		}
 
 		message_die(GENERAL_MESSAGE, $message);
