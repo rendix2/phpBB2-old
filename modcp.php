@@ -222,8 +222,6 @@ switch( $mode )
                 ->where('topic_id IN %in', $topic_ids)
                 ->fetchPairs(null, 'post_id');
 
-			$db->sql_freeresult($result);
-
 			$votes = dibi::select('vote_id')
                 ->from(VOTE_DESC_TABLE)
                 ->where('topic_id IN %in', $topic_ids)
@@ -589,8 +587,6 @@ switch( $mode )
 				if (!$check_forum_id) {
 					message_die(GENERAL_MESSAGE, 'New forum does not exist');
 				}
-
-				$db->sql_freeresult($result);
 
 				$insert_data = [
 				    'topic_title'  => $post_subject,

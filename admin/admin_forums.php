@@ -858,36 +858,29 @@ $template->assign_vars(
     ]
 );
 
-$sql = "SELECT cat_id, cat_title, cat_order
-	FROM " . CATEGORIES_TABLE . "
-	ORDER BY cat_order";
+$categories = dibi::select(['cat_id', 'cat_title', 'cat_order'])
+    ->from(CATEGORIES_TABLE)
+    ->orderBy(CATEGORIES_TABLE)
+    ->fetchAll();
 
-if (!$q_categories = $db->sql_query($sql) ) {
-	message_die(GENERAL_ERROR, "Could not query categories list", "", __LINE__, __FILE__, $sql);
-}
+$category_count = count($categories);
 
-if ($category_count = $db->sql_numrows($q_categories) ) {
-	$category_rows = $db->sql_fetchrowset($q_categories);
+if ($category_count) {
+    $forums = dibi::select('*')
+        ->from(FORUMS_TABLE)
+        ->orderBy('cat_id')
+        ->orderBy('forum_order')
+        ->fetchAll();
 
-	$sql = "SELECT *
-		FROM " . FORUMS_TABLE . "
-		ORDER BY cat_id, forum_order";
-
-	if (!$q_forums = $db->sql_query($sql)) {
-		message_die(GENERAL_ERROR, "Could not query forums information", "", __LINE__, __FILE__, $sql);
-	}
-
-	if ($total_forums = $db->sql_numrows($q_forums) ) {
-		$forum_rows = $db->sql_fetchrowset($q_forums);
-	}
+    $total_forums = $count($total_forums);
 
 	//
 	// Okay, let's build the index
 	//
 	$gen_cat = [];
 
-	for ($i = 0; $i < $category_count; $i++) {
-		$cat_id = $category_rows[$i]['cat_id'];
+    foreach ($categories as $category) {
+		$cat_id = $category->cat_id;
 
         $template->assign_block_vars("catrow",
             [
@@ -895,7 +888,7 @@ if ($category_count = $db->sql_numrows($q_categories) ) {
                 'S_ADD_FORUM_NAME'   => "forumname[$cat_id]",
 
                 'CAT_ID'   => $cat_id,
-                'CAT_DESC' => $category_rows[$i]['cat_title'],
+                'CAT_DESC' => $category->cat_title,
 
                 'U_CAT_EDIT'      => append_sid("admin_forums.php?mode=editcat&amp;" . POST_CAT_URL . "=$cat_id"),
                 'U_CAT_DELETE'    => append_sid("admin_forums.php?mode=deletecat&amp;" . POST_CAT_URL . "=$cat_id"),
@@ -905,18 +898,18 @@ if ($category_count = $db->sql_numrows($q_categories) ) {
             ]
         );
 
-        for ($j = 0; $j < $total_forums; $j++) {
-			$forum_id = $forum_rows[$j]['forum_id'];
+        foreach ($forums as $forum) {
+			$forum_id = $forum->forum_id;
 
-			if ($forum_rows[$j]['cat_id'] == $cat_id) {
+			if ($forum->cat_id == $cat_id) {
 
                 $template->assign_block_vars("catrow.forumrow",
                     [
-                        'FORUM_NAME' => $forum_rows[$j]['forum_name'],
-                        'FORUM_DESC' => $forum_rows[$j]['forum_desc'],
+                        'FORUM_NAME' => $forum->forum_name,
+                        'FORUM_DESC' => $forum->forum_desc,
                         'ROW_COLOR'  => $row_color,
-                        'NUM_TOPICS' => $forum_rows[$j]['forum_topics'],
-                        'NUM_POSTS'  => $forum_rows[$j]['forum_posts'],
+                        'NUM_TOPICS' => $forum->forum_topics,
+                        'NUM_POSTS'  => $forum->forum_posts,
 
                         'U_VIEWFORUM'       => append_sid($phpbb_root_path . "viewforum.php?" . POST_FORUM_URL . "=$forum_id"),
                         'U_FORUM_EDIT'      => append_sid("admin_forums.php?mode=editforum&amp;" . POST_FORUM_URL . "=$forum_id"),

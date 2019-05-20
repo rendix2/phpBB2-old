@@ -71,19 +71,18 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 
 	if ($user_id != ANONYMOUS) {
 		if (isset($sessiondata['autologinid']) && (string) $sessiondata['autologinid'] != '' && $user_id) {
-			$sql = 'SELECT u.* 
-				FROM ' . USERS_TABLE . ' u, ' . SESSIONS_KEYS_TABLE . ' k
-				WHERE u.user_id = ' . (int) $user_id . "
-					AND u.user_active = 1
-					AND k.user_id = u.user_id
-					AND k.key_id = '" . md5($sessiondata['autologinid']) . "'";
-			
-			if (!($result = $db->sql_query($sql))) {
-				message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch', '', __LINE__, __FILE__, $sql);
-			}
+            $userdata = dibi::select('u.*')
+                ->from(USERS_TABLE)
+                ->as('u')
+                ->from(SESSIONS_KEYS_TABLE)
+                ->as('k')
+                ->where('u.user_id = %i', (int) $user_id)
+                ->where('u.user_active = %i', 1)
+                ->where('k.user_id = u.user_id')
+                ->where('k.key_id = %s', md5($sessiondata['autologinid']))
+                ->fetch();
 
-			$userdata = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$userdata = $userdata->toArray();
 		
 			$enable_autologin = $login = 1;
 		} elseif (!$auto_create) {

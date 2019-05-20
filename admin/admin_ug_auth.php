@@ -431,27 +431,21 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 
 		//
 		// Update user level to mod for appropriate users
-		// 
-		$sql = "SELECT u.user_id 
-			FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . USERS_TABLE . " u  
-			WHERE ug.group_id = aa.group_id 
-				AND u.user_id = ug.user_id 
-				AND ug.user_pending = 0
-				AND u.user_level NOT IN (" . MOD . ", " . ADMIN . ") 
-			GROUP BY u.user_id 
-			HAVING SUM(aa.auth_mod) > 0";
-
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, "Couldn't obtain user/group permissions", "", __LINE__, __FILE__, $sql);
-		}
-
-		$set_mod = '';
-
-		while ($row = $db->sql_fetchrow($result) ) {
-			$set_mod .= ( ( $set_mod != '' ) ? ', ' : '' ) . $row['user_id'];
-		}
-
-		$db->sql_freeresult($result);
+		//
+        $set_mod = dibi::select('u.user_id')
+            ->from(AUTH_ACCESS_TABLE)
+            ->as('aa')
+            ->from(USER_GROUP_TABLE)
+            ->as('ug')
+            ->from(USERS_TABLE)
+            ->as('u')
+            ->where('ug.group_id = aa.group_id')
+            ->where('u.user_id = ug.user_id')
+            ->where('ug.user_pending = %i', 0)
+            ->where('u.user_level NOT IN %in', [MOD, ADMIN])
+            ->groupBy('u.user_id')
+            ->having('SUM(aa.auth_mod) > %i', 0)
+            ->fetchPairs(null, 'user_id');
 
 		//
 		// Update user level to user for appropriate users
@@ -488,47 +482,34 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 					HAVING SUM(aa.auth_mod) = 0";
 				break;
 			default:
-				$sql = "SELECT u.user_id 
-					FROM ( ( " . USERS_TABLE . " u  
-					LEFT JOIN " . USER_GROUP_TABLE . " ug ON ug.user_id = u.user_id ) 
-					LEFT JOIN " . AUTH_ACCESS_TABLE . " aa ON aa.group_id = ug.group_id ) 
-					WHERE u.user_level NOT IN (" . USER . ", " . ADMIN . ")
-					GROUP BY u.user_id 
-					HAVING SUM(aa.auth_mod) = 0";
+                $unset_mod = dibi::select('u.user_id')
+                    ->from(USERS_TABLE)
+                    ->as('u')
+                    ->leftJoin(USER_GROUP_TABLE)
+                    ->as('ug')
+                    ->on('ug.user_id = u.user_id')
+                    ->leftJoin(AUTH_ACCESS_TABLE)
+                    ->as('aa')
+                    ->on('aa.group_id = ug.group_id')
+                    ->where('u.user_level NOT IN %in', [USER, ADMIN])
+                    ->groupBy('u.user_id')
+                    ->having('SUM(aa.auth_mod) = %i', 0)
+                    ->fetchPairs('null', 'user_id');
 				break;
-		}
-
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, "Couldn't obtain user/group permissions", "", __LINE__, __FILE__, $sql);
-		}
-
-		$unset_mod = "";
-
-		while ($row = $db->sql_fetchrow($result) ) {
-			$unset_mod .= ( ( $unset_mod != '' ) ? ', ' : '' ) . $row['user_id'];
 		}
 
 		$db->sql_freeresult($result);
 
-		if ( $set_mod != '' ) {
-			$sql = "UPDATE " . USERS_TABLE . " 
-				SET user_level = " . MOD . " 
-				WHERE user_id IN ($set_mod)";
-
-			if (!($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, "Couldn't update user level", "", __LINE__, __FILE__, $sql);
-			}
+        if (count($set_mod)) {
+            dibi::update(USERS_TABLE, ['user_level' => MOD])
+                ->where('user_id IN %in', $set_mod)
+                ->execute();
 		}
 
-		if ( $unset_mod != '' )
-		{
-			$sql = "UPDATE " . USERS_TABLE . " 
-				SET user_level = " . USER . " 
-				WHERE user_id IN ($unset_mod)";
-
-			if (!($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, "Couldn't update user level", "", __LINE__, __FILE__, $sql);
-			}
+		if (count($unset_mod)) {
+		    dibi::update(USERS_TABLE, ['user_level' => USER])
+                ->where('user_id IN %in', $unset_mod)
+                ->execute();
 		}
 
         $group_user = dibi::select('user_id')
