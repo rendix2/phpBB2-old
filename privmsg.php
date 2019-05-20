@@ -238,19 +238,15 @@ if ( $mode == 'newpm' ) {
 		// Update appropriate counter
 		switch ($privmsg['privmsgs_type']) {
 			case PRIVMSGS_NEW_MAIL:
-				$sql = "user_new_privmsg = user_new_privmsg - 1";
+			    dibi::update(USERS_TABLE, ['user_new_privmsg%sql' => 'user_new_privmsg - 1'])
+                    ->where('user_id = %i', $userdata['user_id'])
+                    ->execute();
 				break;
 			case PRIVMSGS_UNREAD_MAIL:
-				$sql = "user_unread_privmsg = user_unread_privmsg - 1";
+                dibi::update(USERS_TABLE, ['user_unread_privmsg%sql' => 'user_unread_privmsg - 1'])
+                    ->where('user_id = %i', $userdata['user_id'])
+                    ->execute();
 				break;
-		}
-
-		$sql = "UPDATE " . USERS_TABLE . " 
-			SET $sql 
-			WHERE user_id = " . $userdata['user_id'];
-		
-		if ( !$db->sql_query($sql) ) {
-			message_die(GENERAL_ERROR, 'Could not update private message read status for user', '', __LINE__, __FILE__, $sql);
 		}
 
 		dibi::update(PRIVMSGS_TABLE, ['privmsgs_type' => PRIVMSGS_READ_MAIL])
@@ -1026,9 +1022,8 @@ if ( $mode == 'newpm' ) {
 		//
 		// Flood control
 		//
-
         $last_post_time = dibi::select('MAX(privmsgs_date)')
-            ->as('MAX(privmsgs_date)')
+            ->as('last_post_time')
             ->from(PRIVMSGS_TABLE)
             ->where('privmsgs_from_userid = %i', $userdata['user_id'])
             ->fetchSingle();
