@@ -379,6 +379,18 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 						$sql_field .= ( ( $sql_field != '' ) ? ', ' : '' ) . 'auth_mod';
 						$sql_value .= ( ( $sql_value != '' ) ? ', ' : '' ) . ( !isset($update_mod_status[$forum_id]) ? 0 : $update_mod_status[$forum_id]);
 
+						/*
+						 * TODO
+						 *
+						$insert_data = [
+						    'forum_id' => $forum_id,
+                            'group_id' => $group_id,
+                            $sql_field => $sql_value
+                        ];
+
+						dibi::insert(AUTH_ACCESS_TABLE, $insert_data)->execute();
+						*/
+
 						$sql = "INSERT INTO " . AUTH_ACCESS_TABLE . " (forum_id, group_id, $sql_field) 
 							VALUES ($forum_id, $group_id, $sql_value)";
 					} else {
