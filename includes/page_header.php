@@ -61,7 +61,7 @@ $template->set_filenames(['overall_header' => empty($gen_simple_header) ? 'overa
 // Generate logged in/logged out status
 //
 if ($userdata['session_logged_in'] ) {
-	$u_login_logout = 'login.php.?logout=true&amp;sid=' . $userdata['session_id'];
+	$u_login_logout = 'login.php?logout=true&amp;sid=' . $userdata['session_id'];
 	$l_login_logout = $lang['Logout'] . ' [ ' . $userdata['username'] . ' ]';
 } else {
 	$u_login_logout = 'login.php';

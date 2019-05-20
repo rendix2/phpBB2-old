@@ -449,7 +449,9 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 
 		//
 		// Update user level to user for appropriate users
-		// 
+		//
+
+        // TODO
 		switch ( SQL_LAYER ) {
 			case 'postgresql':
 				$sql = "SELECT u.user_id 
