@@ -214,7 +214,7 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
 
                 $matching_userids = dibi::select('user_id')
                     ->from(USERS_TABLE)
-                    ->where('username LIKE %like', $search_author)
+                    ->where('username LIKE %~like~', $search_author)
                     ->fetchPairs(null, 'user_id');
 
 				if (!count($matching_userids)) {

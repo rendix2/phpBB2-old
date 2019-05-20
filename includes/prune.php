@@ -28,8 +28,6 @@ require $phpbb_root_path . 'includes/functions_search.php';
 
 function prune($forum_id, $prune_date, $prune_all = false)
 {
-	global $db, $lang;
-
 	$topics = dibi::select('topic_id')
         ->from(TOPICS_TABLE)
         ->where('topic_last_post_id = %i', 0)
@@ -54,13 +52,7 @@ function prune($forum_id, $prune_date, $prune_all = false)
             ->where('t.topic_type <> %i', POST_ANNOUNCE);
     }
 
-    $topic_query->where('p.post_id = t.topic_last_post_id"');
-
-	$sql = "SELECT t.topic_id 
-		FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t
-		WHERE t.forum_id = $forum_id
-			$prune_all 
-			AND p.post_id = t.topic_last_post_id";
+    $topic_query->where('p.post_id = t.topic_last_post_id');
 
 	if ($prune_date) {
 	    $topic_query->where('p.post_time < %i', $prune_date);

@@ -64,11 +64,11 @@ $forums = dibi::select('f.*')
     ->as('c')
     ->where('c.cat_id = f.cat_id');
 
-if ($forums) {
+if ($forum_sql) {
     $forums->where('forum_id = %i', $forum_id);
 }
 
-$forums->orderBy('c.cat_order', dibi::ASC)
+$forums = $forums->orderBy('c.cat_order', dibi::ASC)
     ->orderBy('f.forum_order', dibi::ASC)
     ->fetchAll();
 

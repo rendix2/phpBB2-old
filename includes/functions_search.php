@@ -357,7 +357,7 @@ function remove_search_post(array $post_id_sql)
 	}
 
 	dibi::delete(SEARCH_MATCH_TABLE)
-        ->where('post_id IN = %in', $post_id_sql)
+        ->where('post_id IN %in', $post_id_sql)
         ->execute();
 
 	return $words_removed;
