@@ -173,7 +173,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 		// Flood control
 		//
 		$max_post_time = dibi::select('MAX(post_time)')
-            ->select('last_post_time')
+            ->as('last_post_time')
             ->from(POSTS_TABLE);
 
 		if ($userdata['user_id'] == ANONYMOUS) {
