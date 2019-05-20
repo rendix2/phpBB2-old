@@ -338,18 +338,14 @@ switch( $mode )
 			$new_forum_id = (int)$_POST['new_forum'];
 			$old_forum_id = $forum_id;
 
-			$sql = 'SELECT forum_id FROM ' . FORUMS_TABLE . '
-				WHERE forum_id = ' . $new_forum_id;
-
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, 'Could not select from forums table', '', __LINE__, __FILE__, $sql);
-			}
+			$check_forum_id = dibi::select('forum_id')
+                ->from(FORUMS_TABLE)
+                ->where('forum_id = %i', $new_forum_id)
+                ->fetchSingle();
 			
-			if (!$db->sql_fetchrow($result)) {
+			if (!$check_forum_id) {
 				message_die(GENERAL_MESSAGE, 'New forum does not exist');
 			}
-
-			$db->sql_freeresult($result);
 
 			if ( $new_forum_id != $old_forum_id ) {
                 $topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topic_id];
@@ -360,30 +356,34 @@ switch( $mode )
 					$topic_list .= ( ( $topic_list != '' ) ? ', ' : '' ) . (int)$topics[$i];
 				}
 
-				$sql = "SELECT * 
-					FROM " . TOPICS_TABLE . " 
-					WHERE topic_id IN ($topic_list)
-						AND forum_id = $old_forum_id
-						AND topic_status <> " . TOPIC_MOVED;
+				$topic_rows = dibi::select('*')
+                    ->from(TOPICS_TABLE)
+                    ->where('topic_id IN %in', $topics)
+                    ->where('forum_id = %i', $old_forum_id)
+                    ->where('topic_status <> %i', TOPIC_MOVED)
+                    ->fetchAll();
 
-				if ( !($result = $db->sql_query($sql, BEGIN_TRANSACTION)) ) {
-					message_die(GENERAL_ERROR, 'Could not select from topic table', '', __LINE__, __FILE__, $sql);
-				}
-
-				$row = $db->sql_fetchrowset($result);
-				$db->sql_freeresult($result);
-
-				for ($i = 0; $i < count($row); $i++) {
+                foreach ($topic_rows as $topic_row) {
 					$topic_id = $row[$i]['topic_id'];
 					
 					if ( isset($_POST['move_leave_shadow']) ) {
-						// Insert topic in the old forum that indicates that the forum has moved.
-						$sql = "INSERT INTO " . TOPICS_TABLE . " (forum_id, topic_title, topic_poster, topic_time, topic_status, topic_type, topic_vote, topic_views, topic_replies, topic_first_post_id, topic_last_post_id, topic_moved_id)
-							VALUES ($old_forum_id, '" . addslashes(str_replace("\'", "''", $row[$i]['topic_title'])) . "', '" . str_replace("\'", "''", $row[$i]['topic_poster']) . "', " . $row[$i]['topic_time'] . ", " . TOPIC_MOVED . ", " . POST_NORMAL . ", " . $row[$i]['topic_vote'] . ", " . $row[$i]['topic_views'] . ", " . $row[$i]['topic_replies'] . ", " . $row[$i]['topic_first_post_id'] . ", " . $row[$i]['topic_last_post_id'] . ", $topic_id)";
+					    $insert_data = [
+					        'forum_id' => $old_forum_id,
+                            'topic_title' => $topic_row->topic_title,
+                            'topic_poster' => $topic_row->topic_poster,
+                            'topic_time' => $topic_row->topic_time,
+                            'topic_status' => TOPIC_MOVED,
+                            'topic_type' => POST_NORMAL,
+                            'topic_vote' => $topic_row->topic_vote,
+                            'topic_views' => $topic_row->topic_views,
+                            'topic_replies' => $topic_row->topic_replies,
+                            'topic_first_post_id' => $topic_row->topic_first_post_id,
+                            'topic_last_post_id' => $topic_row->topic_last_post_id,
+                            'topic_moved_id' => $topic_id,
 
-						if ( !$db->sql_query($sql) ) {
-							message_die(GENERAL_ERROR, 'Could not insert shadow topic', '', __LINE__, __FILE__, $sql);
-						}
+                        ];
+
+					    dibi::insert(TOPICS_TABLE, $insert_data)->execute();
 					}
 
 					dibi::update(TOPICS_TABLE, ['forum_id' => $new_forum_id])
