@@ -65,17 +65,15 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 		}
 
 		if ($_POST['deleteuser'] && ($userdata['user_id'] != $user_id ) ) {
-			$sql = "SELECT g.group_id 
-				FROM " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g  
-				WHERE ug.user_id = $user_id 
-					AND g.group_id = ug.group_id 
-					AND g.group_single_user = 1";
-
-			if (!($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, 'Could not obtain group information for this user', '', __LINE__, __FILE__, $sql);
-			}
-
-			$row = $db->sql_fetchrow($result);
+            $row =  dibi::select('g.group_id')
+                ->from(USER_GROUP_TABLE)
+                ->as('ug')
+                ->from(GROUPS_TABLE)
+                ->as('g')
+                ->where('ug.user_id = %i', $user_id)
+                ->where('g.group_id = ug.group_id')
+                ->where('g.group_single_user = %i', 1)
+                ->fetch();
 
 			 $update_data = [
                 'poster_id' => DELETED,
@@ -108,11 +106,11 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
                 ->execute();
 
             dibi::delete(GROUPS_TABLE)
-                ->where('group_id = %i', $row['group_id'])
+                ->where('group_id = %i', $row->group_id)
                 ->execute();
 
             dibi::delete(AUTH_ACCESS_TABLE)
-                ->where('group_id = %i', $row['group_id'])
+                ->where('group_id = %i', $row->group_id)
                 ->execute();
 
             dibi::delete(TOPICS_WATCH_TABLE)
@@ -799,22 +797,17 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 			$avatar = "";
 		}
 
-		$sql = "SELECT * FROM " . RANKS_TABLE . "
-			WHERE rank_special = 1
-			ORDER BY rank_title";
-
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, 'Could not obtain ranks data', '', __LINE__, __FILE__, $sql);
-		}
+		$ranks = dibi::select('*')
+            ->from(RANKS_TABLE)
+            ->where('rank_special = %i', 1)
+            ->orderBy('rank_title')
+            ->fetchAll();
 
 		$rank_select_box = '<option value="0">' . $lang['No_assigned_rank'] . '</option>';
 
-		while ($row = $db->sql_fetchrow($result) ) {
-			$rank = $row['rank_title'];
-			$rank_id = $row['rank_id'];
-			
-			$selected = ( $this_userdata['user_rank'] == $rank_id ) ? ' selected="selected"' : '';
-			$rank_select_box .= '<option value="' . $rank_id . '"' . $selected . '>' . $rank . '</option>';
+		foreach ($ranks as $rank) {
+			$selected = ( $this_userdata['user_rank'] == $rank->rank_id ) ? ' selected="selected"' : '';
+			$rank_select_box .= '<option value="' . $rank->rank_id . '"' . $selected . '>' . $rank->rank_title . '</option>';
 		}
 
         $template->set_filenames(["body" => "admin/user_edit_body.tpl"]);

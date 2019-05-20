@@ -145,14 +145,10 @@ if ( isset($_POST['submit']) ) {
 		}
 	}
 
-	$sql = "SELECT *
-		FROM " . BANLIST_TABLE;
+    $bans = dibi::select('*')
+        ->from(BANLIST_TABLE)
+        ->fetchAll();
 
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, "Couldn't obtain banlist information", "", __LINE__, __FILE__, $sql);
-	}
-
-	$current_banlist = $db->sql_fetchrowset($result);
 	$db->sql_freeresult($result);
 
 	$kill_session_sql = '';
@@ -160,11 +156,11 @@ if ( isset($_POST['submit']) ) {
 	for ($i = 0; $i < count($user_list); $i++) {
 		$in_banlist = false;
 
-		for ($j = 0; $j < count($current_banlist); $j++) {
-			if ( $user_list[$i] == $current_banlist[$j]['ban_userid'] ) {
-				$in_banlist = true;
-			}
-		}
+		foreach ($bans as $ban) {
+            if ($user_list[$i] == $ban->ban_userid) {
+                $in_banlist = true;
+            }
+        }
 
 		if ( !$in_banlist ) {
 			$kill_session_sql .= ( ( $kill_session_sql != '' ) ? ' OR ' : '' ) . "session_user_id = " . $user_list[$i];
@@ -177,11 +173,11 @@ if ( isset($_POST['submit']) ) {
 	for ($i = 0; $i < count($ip_list); $i++) {
 		$in_banlist = false;
 
-		for ($j = 0; $j < count($current_banlist); $j++) {
-			if ( $ip_list[$i] == $current_banlist[$j]['ban_ip'] ) {
-				$in_banlist = true;
-			}
-		}
+		foreach ($bans as $ban) {
+		    if ($ip_list[$i] == $ban->ban_ip) {
+		        $in_banlist = true;
+            }
+        }
 
 		if ( !$in_banlist ) {
 			if ( preg_match('/(ff\.)|(\.ff)/is', chunk_split($ip_list[$i], 2, '.')) ) {
@@ -213,11 +209,11 @@ if ( isset($_POST['submit']) ) {
 	for ($i = 0; $i < count($email_list); $i++) {
 		$in_banlist = false;
 
-		for ($j = 0; $j < count($current_banlist); $j++) {
-			if ( $email_list[$i] == $current_banlist[$j]['ban_email'] ) {
-				$in_banlist = true;
-			}
-		}
+		foreach ($bans as $ban) {
+            if ( $email_list[$i] == $ban->ban_email ) {
+                $in_banlist = true;
+            }
+        }
 
 		if ( !$in_banlist ) {
 		    dibi::insert(BANLIST_TABLE, ['ban_email' => $email_list[$i]])

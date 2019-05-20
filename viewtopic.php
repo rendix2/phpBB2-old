@@ -60,8 +60,7 @@ if ( isset($_GET['view']) && empty($_GET[POST_POST_URL]) ) {
                 $session_id = '';
             }
 
-			if ( $session_id )
-			{
+			if ( $session_id ) {
 				$sql = "SELECT p.post_id
 					FROM " . POSTS_TABLE . " p, " . SESSIONS_TABLE . " s,  " . USERS_TABLE . " u
 					WHERE s.session_id = '$session_id'

@@ -485,20 +485,12 @@ switch( $mode )
 
         $topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topic_id];
 
-        $topic_id_sql = '';
-
-		for ($i = 0; $i < count($topics); $i++) {
-			$topic_id_sql .= ( ( $topic_id_sql != '' ) ? ', ' : '' ) . (int)$topics[$i];
-		}
-
-		$sql = "UPDATE " . TOPICS_TABLE . " 
-			SET topic_status = " . TOPIC_LOCKED . " 
-			WHERE topic_id IN ($topic_id_sql) 
-				AND forum_id = $forum_id
-				AND topic_moved_id = 0";
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, 'Could not update topics table', '', __LINE__, __FILE__, $sql);
-		}
+        // TODO there is no check if ids exists
+		dibi::update(TOPICS_TABLE, ['topic_status' => TOPIC_LOCKED])
+            ->where('topic_id IN %in', $topics)
+            ->where('forum_id = %i', $forum_id)
+            ->where('topic_moved_id = %i', 0)
+            ->execute();
 
 		if ( !empty($topic_id) ) {
 			$redirect_page = "viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'];
@@ -523,19 +515,13 @@ switch( $mode )
 
         $topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topic_id];
 
-        $topic_id_sql = '';
-		for ($i = 0; $i < count($topics); $i++) {
-			$topic_id_sql .= ( ( $topic_id_sql != "") ? ', ' : '' ) . (int)$topics[$i];
-		}
 
-		$sql = "UPDATE " . TOPICS_TABLE . " 
-			SET topic_status = " . TOPIC_UNLOCKED . " 
-			WHERE topic_id IN ($topic_id_sql) 
-				AND forum_id = $forum_id
-				AND topic_moved_id = 0";
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, 'Could not update topics table', '', __LINE__, __FILE__, $sql);
-		}
+		// TODO there is no check if ids exists
+        dibi::update(TOPICS_TABLE, ['topic_status' => TOPIC_UNLOCKED])
+            ->where('topic_id IN %in', $topics)
+            ->where('forum_id = %i', $forum_id)
+            ->where('topic_moved_id = %i', 0)
+            ->execute();
 
 		if ( !empty($topic_id) ) {
 			$redirect_page = "viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'];

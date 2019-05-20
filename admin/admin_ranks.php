@@ -248,16 +248,13 @@ if ($mode != "" ) {
 //
 $template->set_filenames(["body" => "admin/ranks_list_body.tpl"]);
 
-$sql = "SELECT * FROM " . RANKS_TABLE . "
-	ORDER BY rank_min ASC, rank_special ASC";
+$ranks  = dibi::select('*')
+    ->from(RANKS_TABLE)
+    ->orderBy('rank_min', dibi::ASC)
+    ->orderBy('rank_special', dibi::ASC)
+    ->fetchAll();
 
-if (!$result = $db->sql_query($sql) ) {
-	message_die(GENERAL_ERROR, "Couldn't obtain ranks data", "", __LINE__, __FILE__, $sql);
-}
-
-$rank_count = $db->sql_numrows($result);
-
-$rank_rows = $db->sql_fetchrowset($result);
+$rank_count = count($ranks);
 
 $template->assign_vars(
 	[
@@ -275,11 +272,10 @@ $template->assign_vars(
 	]
 );
 
-for ($i = 0; $i < $rank_count; $i++) {
-	$rank = $rank_rows[$i]['rank_title'];
-	$special_rank = $rank_rows[$i]['rank_special'];
-	$rank_id = $rank_rows[$i]['rank_id'];
-	$rank_min = $rank_rows[$i]['rank_min'];
+foreach ($ranks as $rank) {
+	$special_rank = $rank->rank_special;
+	$rank_id = $rank->rank_id;
+	$rank_min = $rank->rank_min;
 	
 	if ($special_rank == 1 ) {
 		$rank_min = $rank_max = "-";
@@ -294,7 +290,7 @@ for ($i = 0; $i < $rank_count; $i++) {
 		[
 			"ROW_COLOR"    => "#" . $row_color,
 			"ROW_CLASS"    => $row_class,
-			"RANK"         => $rank,
+			"RANK"         => $rank->rank_title,
 			"SPECIAL_RANK" => $rank_is_special,
 			"RANK_MIN"     => $rank_min,
 

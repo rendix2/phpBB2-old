@@ -186,17 +186,10 @@ if ($mode != "" )
 } else {
     $template->set_filenames(["body" => "admin/words_list_body.tpl"]);
 
-    $sql = "SELECT * 
-		FROM " . WORDS_TABLE . " 
-		ORDER BY word";
-
-	if (!$result = $db->sql_query($sql) ) {
-		message_die(GENERAL_ERROR, "Could not query words table", $lang['Error'], __LINE__, __FILE__, $sql);
-	}
-
-	$word_rows = $db->sql_fetchrowset($result);
-	$db->sql_freeresult($result);
-	$word_count = count($word_rows);
+     $words = dibi::select('*')
+         ->from(WORDS_TABLE)
+         ->orderBy('word')
+         ->fetchAll();
 
     $template->assign_vars(
         [
@@ -214,10 +207,8 @@ if ($mode != "" )
         ]
     );
 
-    for ($i = 0; $i < $word_count; $i++) {
-		$word = $word_rows[$i]['word'];
-		$replacement = $word_rows[$i]['replacement'];
-		$word_id = $word_rows[$i]['word_id'];
+    foreach ($words as $word) {
+		$word_id = $word->word_id;
 
 		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
@@ -226,8 +217,8 @@ if ($mode != "" )
             [
                 "ROW_COLOR"   => "#" . $row_color,
                 "ROW_CLASS"   => $row_class,
-                "WORD"        => htmlspecialchars($word),
-                "REPLACEMENT" => htmlspecialchars($replacement),
+                "WORD"        => htmlspecialchars($word->word),
+                "REPLACEMENT" => htmlspecialchars($word->replacement),
 
                 "U_WORD_EDIT"   => append_sid("admin_words.php?mode=edit&amp;id=$word_id"),
                 "U_WORD_DELETE" => append_sid("admin_words.php?mode=delete&amp;id=$word_id")
