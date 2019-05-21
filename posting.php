@@ -234,30 +234,30 @@ if ( ($result = $db->sql_query($sql)) && ($post_info = $db->sql_fetchrow($result
 
 		if ( $post_data['first_post'] && $post_data['has_poll'] )
 		{
-			$sql = "SELECT * 
-				FROM " . VOTE_DESC_TABLE . " vd, " . VOTE_RESULTS_TABLE . " vr 
-				WHERE vd.topic_id = $topic_id 
-					AND vr.vote_id = vd.vote_id 
-				ORDER BY vr.vote_option_id";
-
-            if (!($result = $db->sql_query($sql))) {
-                message_die(GENERAL_ERROR, 'Could not obtain vote data for this topic', '', __LINE__, __FILE__, $sql);
-            }
+		    $votes = dibi::select('*')
+                ->from(VOTE_DESC_TABLE)
+                ->as('vd')
+                ->from(VOTE_RESULTS_TABLE)
+                ->as('vr')
+                ->where('vd.topic_id = %i', $topic_id)
+                ->where('vr.vote_id = vd.vote_id')
+                ->orderBy('vr.vote_option_id')
+                ->fetchAssoc();
 
 			$poll_options = [];
 			$poll_results_sum = 0;
 
-            if ($row = $db->sql_fetchrow($result)) {
-                $poll_title  = $row['vote_text'];
-                $poll_id     = $row['vote_id'];
-                $poll_length = $row['vote_length'] / 86400;
+			if (count($votes)) {
+                $poll_title  = $votes[0]->vote_text;
+                $poll_id     = $votes[0]->vote_id;
+                $poll_length = $votes[0]->vote_length / 86400;
 
-                do {
-                    $poll_options[$row['vote_option_id']] = $row['vote_option_text'];
-                    $poll_results_sum                     += $row['vote_result'];
-                } while ($row = $db->sql_fetchrow($result));
+                foreach ($votes as $vote) {
+                    $poll_options[$vote->vote_option_id] = $vote->vote_option_text;
+
+                    $poll_results_sum += $vote->vote_result;
+                }
             }
-			$db->sql_freeresult($result);
 
 			$post_data['edit_poll'] = ( ( !$poll_results_sum || $is_auth['auth_mod'] ) && $post_data['first_post'] ) ? true : 0;
 		} else {

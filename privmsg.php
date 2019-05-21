@@ -266,17 +266,12 @@ if ( $mode == 'newpm' ) {
 
 		if ( $sent_info = $db->sql_fetchrow($result) ) {
 			if ($board_config['max_sentbox_privmsgs'] && $sent_info['sent_items'] >= $board_config['max_sentbox_privmsgs']) {
-				$sql = "SELECT privmsgs_id FROM " . PRIVMSGS_TABLE . " 
-					WHERE privmsgs_type = " . PRIVMSGS_SENT_MAIL . " 
-						AND privmsgs_date = " . $sent_info['oldest_post_time'] . " 
-						AND privmsgs_from_userid = " . $privmsg['privmsgs_from_userid'];
-				
-				if ( !$result = $db->sql_query($sql) ) {
-					message_die(GENERAL_ERROR, 'Could not find oldest privmsgs', '', __LINE__, __FILE__, $sql);
-				}
-				
-				$old_privmsgs_id = $db->sql_fetchrow($result);
-				$old_privmsgs_id = $old_privmsgs_id['privmsgs_id'];
+                $old_privmsgs_id = dibi::select('privmsgs_id')
+                    ->from(PRIVMSGS_TABLE)
+                    ->where('privmsgs_type = %i', PRIVMSGS_SENT_MAIL)
+                    ->where('privmsgs_date = %i', $sent_info['oldest_post_time'])
+                    ->where('privmsgs_from_userid = %i', $privmsg['privmsgs_from_userid'])
+                    ->fetchSingle();
 
 				dibi::delete(PRIVMSGS_TABLE)
                     ->setFlag($sql_priority)
@@ -1136,18 +1131,12 @@ if ( $mode == 'newpm' ) {
 			{
 				if ($board_config['max_inbox_privmsgs'] && $inbox_info['inbox_items'] >= $board_config['max_inbox_privmsgs'])
 				{
-					$sql = "SELECT privmsgs_id FROM " . PRIVMSGS_TABLE . " 
-						WHERE ( privmsgs_type = " . PRIVMSGS_NEW_MAIL . " 
-								OR privmsgs_type = " . PRIVMSGS_READ_MAIL . " 
-								OR privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . "  ) 
-							AND privmsgs_date = " . $inbox_info['oldest_post_time'] . " 
-							AND privmsgs_to_userid = " . $to_userdata['user_id'];
-					if ( !$result = $db->sql_query($sql) )
-					{
-						message_die(GENERAL_ERROR, 'Could not find oldest privmsgs (inbox)', '', __LINE__, __FILE__, $sql);
-					}
-					$old_privmsgs_id = $db->sql_fetchrow($result);
-					$old_privmsgs_id = $old_privmsgs_id['privmsgs_id'];
+                    $old_privmsgs_id = dibi::select('privmsgs_id')
+                        ->from(PRIVMSGS_TABLE)
+                        ->where('(privmsgs_type = %i OR privmsgs_type = %i OR privmsgs_type)', PRIVMSGS_NEW_MAIL, PRIVMSGS_READ_MAIL, PRIVMSGS_UNREAD_MAIL)
+                        ->where('privmsgs_date = %i', $inbox_info['oldest_post_time'])
+                        ->where('privmsgs_to_userid = %i', $to_userdata['user_id'])
+                        ->fetchSingle();
 
                     dibi::delete(PRIVMSGS_TABLE)
                         ->setFlag($sql_priority)

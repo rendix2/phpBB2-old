@@ -145,17 +145,12 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 		redirect(append_sid("login.php?redirect=groupcp.php&" . POST_GROUPS_URL . "=$group_id", true));
 	}
 
-	$sql = "SELECT group_moderator 
-		FROM " . GROUPS_TABLE . "  
-		WHERE group_id = $group_id";
+    $group_moderator = dibi::select('group_moderator')
+        ->from(GROUPS_TABLE)
+        ->where('group_id = %i', $group_id)
+        ->fetchSingle();
 
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, 'Could not obtain user and group information', '', __LINE__, __FILE__, $sql);
-	}
-
-	$row = $db->sql_fetchrow($result);
-
-	if ( $row['group_moderator'] != $userdata['user_id'] && $userdata['user_level'] != ADMIN ) {
+    if ($group_moderator != $userdata['user_id'] && $userdata['user_level'] != ADMIN) {
         $template->assign_vars(
             [
                 'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.php") . '">'

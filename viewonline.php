@@ -73,11 +73,18 @@ $is_auth_ary = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
 //
 // Get user list
 //
-$sql = "SELECT u.user_id, u.username, u.user_allow_viewonline, u.user_level, s.session_logged_in, s.session_time, s.session_page, s.session_ip
-	FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s
-	WHERE u.user_id = s.session_user_id
-		AND s.session_time >= ".( time() - 300 ) . "
-	ORDER BY u.username ASC, s.session_ip ASC";
+$columns = ['u.user_id', 'u.username', 'u.user_allow_viewonline', 'u.user_level', 's.session_logged_in', 's.session_time', 's.session_page', 's.session_ip'];
+
+$rows = dibi::select($columns)
+    ->from(USERS_TABLE)
+    ->as('u')
+    ->from(SESSIONS_TABLE)
+    ->as('s')
+    ->where('u.user_id = s.session_user_id')
+    ->where('s.session_time >= %i', time() - 30)
+    ->orderBy('u.username', dibi::ASC)
+    ->orderBy('s.session_ip', dibi::ASC)
+    ->fetchAll();
 
 if ( !($result = $db->sql_query($sql)) ) {
 	message_die(GENERAL_ERROR, 'Could not obtain regd user/online information', '', __LINE__, __FILE__, $sql);
@@ -92,23 +99,23 @@ $guest_counter = 0;
 $prev_user = 0;
 $prev_ip = '';
 
-while ( $row = $db->sql_fetchrow($result) ) {
+foreach ($rows as $row) {
 	$view_online = false;
 
-	if ( $row['session_logged_in'] )  {
-		$user_id = $row['user_id'];
+	if ( $row->session_logged_in )  {
+		$user_id = $row->user_id;
 
 		if ( $user_id != $prev_user ) {
-			$username = $row['username'];
+			$username = $row->username;
 
 			$style_color = '';
-			if ( $row['user_level'] == ADMIN ) {
+			if ( $row->user_level == ADMIN ) {
 				$username = '<b style="color:#' . $theme['fontcolor3'] . '">' . $username . '</b>';
-			} elseif ( $row['user_level'] == MOD ) {
+			} elseif ( $row->user_level == MOD ) {
 				$username = '<b style="color:#' . $theme['fontcolor2'] . '">' . $username . '</b>';
 			}
 
-			if ( !$row['user_allow_viewonline'] ) {
+            if (!$row->user_allow_viewonline) {
 				$view_online = ( $userdata['user_level'] == ADMIN ) ? true : false;
 				$hidden_users++;
 
@@ -124,7 +131,7 @@ while ( $row = $db->sql_fetchrow($result) ) {
 		}
 	}
 	else {
-		if ( $row['session_ip'] != $prev_ip ) {
+		if ( $row->session_ip != $prev_ip ) {
 			$username = $lang['Guest'];
 			$view_online = true;
 			$guest_users++;
@@ -136,9 +143,9 @@ while ( $row = $db->sql_fetchrow($result) ) {
 
 	$prev_ip = $row['session_ip'];
 
-	if ( $view_online ) {
-		if ( $row['session_page'] < 1 || !$is_auth_ary[$row['session_page']]['auth_view'] ) {
-			switch( $row['session_page'] ) {
+    if ($view_online) {
+        if ($row->session_page < 1 || !$is_auth_ary[$row->session_page]['auth_view']) {
+            switch ($row->session_page) {
 				case PAGE_INDEX:
 					$location = $lang['Forum_index'];
 					$location_url = "index.php";
@@ -180,8 +187,8 @@ while ( $row = $db->sql_fetchrow($result) ) {
 					$location_url = "index.php";
 			}
 		} else {
-			$location_url = append_sid("viewforum.php?" . POST_FORUM_URL . '=' . $row['session_page']);
-			$location = $forum_data[$row['session_page']];
+			$location_url = append_sid("viewforum.php?" . POST_FORUM_URL . '=' . $row->session_page);
+			$location = $forum_data[$row->session_page];
 		}
 
 		$row_color = ( $$which_counter % 2 ) ? $theme['td_color1'] : $theme['td_color2'];
@@ -192,7 +199,7 @@ while ( $row = $db->sql_fetchrow($result) ) {
                 'ROW_COLOR'      => '#' . $row_color,
                 'ROW_CLASS'      => $row_class,
                 'USERNAME'       => $username,
-                'LASTUPDATE'     => create_date($board_config['default_dateformat'], $row['session_time'], $board_config['board_timezone']),
+                'LASTUPDATE'     => create_date($board_config['default_dateformat'], $row->session_time, $board_config['board_timezone']),
                 'FORUM_LOCATION' => $location,
 
                 'U_USER_PROFILE'   => append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . '=' . $user_id),

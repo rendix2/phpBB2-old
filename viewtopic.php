@@ -623,17 +623,14 @@ if ( !empty($forum_topic_data['topic_vote']) ) {
 		$vote_id = $vote_info[0]['vote_id'];
 		$vote_title = $vote_info[0]['vote_text'];
 
-		$sql = "SELECT vote_id
-			FROM " . VOTE_USERS_TABLE . "
-			WHERE vote_id = $vote_id
-				AND vote_user_id = " . (int)$userdata['user_id'];
-		
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, "Could not obtain user vote data for this topic", '', __LINE__, __FILE__, $sql);
-		}
-
-		$user_voted = ( $row = $db->sql_fetchrow($result) ) ? TRUE : 0;
-		$db->sql_freeresult($result);
+        /**
+         * check if user voted
+         */
+        $user_voted = dibi::select('vote_id')
+            ->from(VOTE_USERS_TABLE)
+            ->where('vote_id = %i', $vote_id)
+            ->where('vote_user_id = %i', (int)$userdata['user_id'])
+            ->fetch();
 
 		if ( isset($_GET['vote']) || isset($_POST['vote']) ) {
 			$view_result = ( ( isset($_GET['vote']) ? $_GET['vote'] : $_POST['vote'] ) == 'viewresult' ) ? true : 0;
