@@ -258,7 +258,7 @@ if ( $mode == 'newpm' ) {
             ->as('oldest_post_time')
             ->from(PRIVMSGS_TABLE)
             ->where('privmsgs_type = %i', PRIVMSGS_SENT_MAIL)
-            ->where('privmsgs_from_userid', $privmsg['privmsgs_from_userid'])
+            ->where('privmsgs_from_userid = %i', $privmsg['privmsgs_from_userid'])
             ->fetch();
 
 		$sql_priority = ( SQL_LAYER == 'mysql' ) ? 'LOW_PRIORITY' : '';
@@ -1164,8 +1164,8 @@ if ( $mode == 'newpm' ) {
                 'privmsgs_attach_sig' => $attach_sig
             ];
 
-			dibi::insert(PRIVMSGS_TABLE, $insert_data)
-                ->execute();
+            $privmsg_sent_id = dibi::insert(PRIVMSGS_TABLE, $insert_data)
+                ->execute(dibi::IDENTIFIER);
 		} else {
 		    $update_data = [
 		        'privmsgs_type' => PRIVMSGS_NEW_MAIL,
@@ -1186,8 +1186,6 @@ if ( $mode == 'newpm' ) {
 		}
 
 		if ( $mode != 'edit' ) {
-			$privmsg_sent_id = $db->sql_nextid();
-
 			$insert_data = [
 			    'privmsgs_text_id' => $privmsg_sent_id,
                 'privmsgs_bbcode_uid' => $bbcode_uid,
