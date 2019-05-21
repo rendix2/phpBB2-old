@@ -112,7 +112,7 @@ foreach ($rows as $row) {
 			}
 
             if (!$row->user_allow_viewonline) {
-				$view_online = ( $userdata['user_level'] == ADMIN ) ? true : false;
+				$view_online = $userdata['user_level'] == ADMIN;
 				$hidden_users++;
 
 				$username = '<i>' . $username . '</i>';

@@ -37,7 +37,7 @@ if (!empty($setmodules) ) {
 
 $phpbb_root_path = "./../";
 
-$cancel = ( isset($_POST['cancel']) || isset($_POST['cancel']) ) ? true : false;
+$cancel = isset($_POST['cancel']);
 $no_page_header = $cancel;
 
 //

@@ -39,15 +39,12 @@ if (!empty($setmodules) ) {
 //
 $phpbb_root_path = "./../";
 
-$confirm = (isset($_POST['confirm']) || isset($_POST['confirm'])) ? TRUE : FALSE;
-$cancel = (isset($_POST['cancel']) || isset($_POST['cancel'])) ? TRUE : FALSE;
+$confirm = isset($_POST['confirm']);
+$cancel = isset($_POST['cancel']);
 
-$no_page_header = (!empty($_POST['send_file']) || !empty($_POST['send_file']) || $cancel) ? TRUE : FALSE;
+$no_page_header = !empty($_POST['send_file']) || !empty($_POST['send_file']) || $cancel;
 
 require './pagestart.php';
-
-$confirm = isset($_POST['confirm']) ? TRUE : FALSE;
-$cancel = isset($_POST['cancel']) ? TRUE : FALSE;
 
 if ($cancel) {
     redirect('admin/' . append_sid("admin_styles.php", true));

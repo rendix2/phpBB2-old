@@ -224,10 +224,10 @@ if ( ($result = $db->sql_query($sql)) && ($post_info = $db->sql_fetchrow($result
 	{
 		$topic_id = $post_info['topic_id'];
 
-		$post_data['poster_post'] = ( $post_info['poster_id'] == $userdata['user_id'] ) ? true : false;
-		$post_data['first_post'] = ( $post_info['topic_first_post_id'] == $post_id ) ? true : false;
-		$post_data['last_post'] = ( $post_info['topic_last_post_id'] == $post_id ) ? true : false;
-		$post_data['last_topic'] = ( $post_info['forum_last_post_id'] == $post_id ) ? true : false;
+		$post_data['poster_post'] = $post_info['poster_id'] == $userdata['user_id'];
+		$post_data['first_post'] = $post_info['topic_first_post_id'] == $post_id;
+		$post_data['last_post'] = $post_info['topic_last_post_id'] == $post_id;
+		$post_data['last_topic'] = $post_info['forum_last_post_id'] == $post_id;
 		$post_data['has_poll'] = $post_info['topic_vote'] ? true : false;
 		$post_data['topic_type'] = $post_info['topic_type'];
 		$post_data['poster_id'] = $post_info['poster_id'];
@@ -259,9 +259,9 @@ if ( ($result = $db->sql_query($sql)) && ($post_info = $db->sql_fetchrow($result
                 }
             }
 
-			$post_data['edit_poll'] = ( ( !$poll_results_sum || $is_auth['auth_mod'] ) && $post_data['first_post'] ) ? true : 0;
+			$post_data['edit_poll'] = ( ( !$poll_results_sum || $is_auth['auth_mod'] ) && $post_data['first_post'] );
 		} else {
-			$post_data['edit_poll'] = ($post_data['first_post'] && $is_auth['auth_pollcreate']) ? true : false;
+			$post_data['edit_poll'] = $post_data['first_post'] && $is_auth['auth_pollcreate'];
 		}
 
 		//

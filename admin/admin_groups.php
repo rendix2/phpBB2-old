@@ -287,7 +287,7 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 				->where('group_id = %i', $group_id)
 				->execute();
 
-			$message = $lang['Updated_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . append_sid("admin_groups.php") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');;
+			$message = $lang['Updated_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . append_sid("admin_groups.php") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		} elseif ($mode == 'newgroup' ) {
@@ -309,7 +309,7 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 
 			dibi::insert(USER_GROUP_TABLE, $user_group_insert_data)->execute();
 
-			$message = $lang['Added_new_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . append_sid("admin_groups.php") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');;
+			$message = $lang['Added_new_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . append_sid("admin_groups.php") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		} else {

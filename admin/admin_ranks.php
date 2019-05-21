@@ -32,7 +32,7 @@ define('IN_PHPBB', 1);
 //
 $phpbb_root_path = "./../";
 
-$cancel = ( isset($_POST['cancel']) || isset($_POST['cancel']) ) ? true : false;
+$cancel = isset($_POST['cancel']);
 $no_page_header = $cancel;
 
 require './pagestart.php';
