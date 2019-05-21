@@ -234,6 +234,8 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 
 		$error = FALSE;
 
+        $username_sql = [];
+
 		if (stripslashes($username) != $this_userdata['username']) {
 			unset($rename_user);
 
@@ -250,12 +252,13 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 			}
 
 			if (!$error) {
-				$username_sql = "username = '" . str_replace("\\'", "''", $username) . "', ";
+                $username_sql['username'] = $username;
 				$rename_user = $username; // Used for renaming usergroup
 			}
 		}
 
-		$passwd_sql = '';
+		$passwd_sql = [];
+
 		if (!empty($password) && !empty($password_confirm) ) {
 			//
 			// Awww, the user wants to change their password, isn't that cute..
@@ -265,7 +268,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 				$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Password_mismatch'];
 			} else {
 				$password = md5($password);
-				$passwd_sql = "user_password = '$password', ";
+                $passwd_sql['user_password'] = $password;
 			}
 		} elseif ($password && !$password_confirm ) {
 			$error = TRUE;
@@ -298,7 +301,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 		//
 		// Avatar stuff
 		//
-		$avatar_sql = "";
+		$avatar_sql = [];
 
 		if (isset($_POST['avatardel']) ) {
 			if ($this_userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] != "" ) {
@@ -307,7 +310,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 				}
 			}
 
-			$avatar_sql = ", user_avatar = '', user_avatar_type = " . USER_AVATAR_NONE;
+			$avatar_sql = ['user_avatar' => '', 'user_avatar_type' => USER_AVATAR_NONE];
 		} elseif (( $user_avatar_loc != "" || !empty($user_avatar_url) ) && !$error ) {
 			//
 			// Only allow one type of upload, either a
@@ -367,7 +370,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 								}
 								@copy($user_avatar_loc, "./../" . $board_config['avatar_path'] . "/$avatar_filename");
 
-								$avatar_sql = ", user_avatar = '$avatar_filename', user_avatar_type = " . USER_AVATAR_UPLOAD;
+                                $avatar_sql[] = ['user_avatar' => $avatar_filename, 'user_avatar_type' => USER_AVATAR_UPLOAD];
 							} else {
 								$l_avatar_size = sprintf($lang['Avatar_imagesize'], $board_config['avatar_max_width'], $board_config['avatar_max_height']);
 
@@ -461,7 +464,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 										@copy($tmp_filename, "./../" . $board_config['avatar_path'] . "/$avatar_filename");
 										@unlink($tmp_filename);
 
-										$avatar_sql = ", user_avatar = '$avatar_filename', user_avatar_type = " . USER_AVATAR_UPLOAD;
+                                        $avatar_sql = ['user_avatar' => $avatar_filename, 'user_avatar_type' => USER_AVATAR_UPLOAD];
 									} else {
 										$l_avatar_size = sprintf($lang['Avatar_imagesize'], $board_config['avatar_max_width'], $board_config['avatar_max_height']);
 
@@ -500,65 +503,85 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 				$error = true;
 				$error_msg = !empty($error_msg) ? $error_msg . "<br />" . $l_avatar_size : $l_avatar_size;
 			}
-		} elseif ($user_avatar_remoteurl != "" && $avatar_sql == "" && !$error ) {
+		} elseif ($user_avatar_remoteurl != "" && count($avatar_sql) === 0 && !$error ) {
 			if (!preg_match("#^http:\/\/#i", $user_avatar_remoteurl) ) {
 				$user_avatar_remoteurl = "http://" . $user_avatar_remoteurl;
 			}
 
 			if (preg_match("#^(http:\/\/[a-z0-9\-]+?\.([a-z0-9\-]+\.)*[a-z]+\/.*?\.(gif|jpg|png)$)#is", $user_avatar_remoteurl) ) {
-				$avatar_sql = ", user_avatar = '" . str_replace("\'", "''", $user_avatar_remoteurl) . "', user_avatar_type = " . USER_AVATAR_REMOTE;
+                $avatar_sql = ['user_avatar' => $user_avatar_remoteurl, 'user_avatar_type' =>USER_AVATAR_REMOTE];
 			} else {
 				$error = true;
 				$error_msg = !empty($error_msg) ? $error_msg . "<br />" . $lang['Wrong_remote_avatar_format'] : $lang['Wrong_remote_avatar_format'];
 			}
-		} elseif ($user_avatar_local != "" && $avatar_sql == "" && !$error ) {
-			$avatar_sql = ", user_avatar = '" . str_replace("\'", "''", phpbb_ltrim(basename($user_avatar_category), "'") . '/' . phpbb_ltrim(basename($user_avatar_local), "'")) . "', user_avatar_type = " . USER_AVATAR_GALLERY;
+		} elseif ($user_avatar_local != "" && count($avatar_sql) === 0 && !$error ) {
+		    $avatar_sql = [
+		        'user_avatar'      => phpbb_ltrim(basename($user_avatar_category), "'") . '/' . phpbb_ltrim(basename($user_avatar_local), "'"),
+                'user_avatar_type' => USER_AVATAR_GALLERY
+            ];
 		}
 	
 		//
 		// Update entry in DB
 		//
-		if (!$error ) {
-
-		    /*
+        if (!$error) {
 		    $update_data = [
-
+                'user_email' => $email,
+                'user_icq'   => $icq,
+                'user_website' => $website,
+                'user_occ'     => $occupation,
+                'user_from'    => $location,
+                'user_interests' => $interests,
+                'user_sig'       => $signature,
+                'user_viewemail' => $viewemail,
+                'user_aim'       => $aim,
+                'user_yim'       => $yim,
+                'user_msnm'      => $msn,
+                'user_attachsig' => $attachsig,
+                'user_sig_bbcode_uid' => $signature_bbcode_uid,
+                'user_allowsmile' => $allowsmilies,
+                'user_allowhtml'  => $allowhtml,
+                'user_allowavatar' => $user_allowavatar,
+                'user_allowbbcode' => $allowbbcode,
+                'user_allow_viewonline' => $allowviewonline,
+                'user_notify'           => $notifyreply,
+                'user_allow_pm'         => $user_allowpm,
+                'user_notify_pm'        => $notifypm,
+                'user_popup_pm'         => $popuppm,
+                'user_lang' => $user_lang,
+                'user_style' => $user_style,
+                'user_timezone' => $user_timezone,
+                'user_dateformat' => $user_dateformat,
+                'user_active' =>  $user_status,
+                'user_rank' => $user_rank,
             ];
 
-		    dibi::update(USERS_TABLE, $update_data)
+		    $update_data = array_merge($update_data, $username_sql, $passwd_sql, $avatar_sql);
+
+		    $result = dibi::update(USERS_TABLE, $update_data)
                 ->where('user_id = %i', $user_id)
                 ->execute();
-		    */
 
-			$sql = "UPDATE " . USERS_TABLE . "
-				SET " . $username_sql . $passwd_sql . "user_email = '" . str_replace("\'", "''", $email) . "', user_icq = '" . str_replace("\'", "''", $icq) . "', user_website = '" . str_replace("\'", "''", $website) . "', user_occ = '" . str_replace("\'", "''", $occupation) . "', user_from = '" . str_replace("\'", "''", $location) . "', user_interests = '" . str_replace("\'", "''", $interests) . "', user_sig = '" . str_replace("\'", "''", $signature) . "', user_viewemail = $viewemail, user_aim = '" . str_replace("\'", "''", $aim) . "', user_yim = '" . str_replace("\'", "''", $yim) . "', user_msnm = '" . str_replace("\'", "''", $msn) . "', user_attachsig = $attachsig, user_sig_bbcode_uid = '$signature_bbcode_uid', user_allowsmile = $allowsmilies, user_allowhtml = $allowhtml, user_allowavatar = $user_allowavatar, user_allowbbcode = $allowbbcode, user_allow_viewonline = $allowviewonline, user_notify = $notifyreply, user_allow_pm = $user_allowpm, user_notify_pm = $notifypm, user_popup_pm = $popuppm, user_lang = '" . str_replace("\'", "''", $user_lang) . "', user_style = $user_style, user_timezone = $user_timezone, user_dateformat = '" . str_replace("\'", "''", $user_dateformat) . "', user_active = $user_status, user_rank = $user_rank" . $avatar_sql . "
-				WHERE user_id = $user_id";
+            if (isset($rename_user)) {
+                dibi::update(GROUPS_TABLE, ['group_name' => $rename_user])
+                    ->where('group_name = %s', $this_userdata['username'])
+                    ->execute();
+            }
 
-			if ($result = $db->sql_query($sql) ) {
-				if (isset($rename_user) ) {
-				    dibi::update(GROUPS_TABLE, ['group_name' => $rename_user])
-                        ->where('group_name = %s', $this_userdata['username'])
-                        ->execute();
-				}
-				
-				// Delete user session, to prevent the user navigating the forum (if logged in) when disabled
-				if (!$user_status) {
-				    dibi::delete(SESSIONS_TABLE)
-                        ->where('session_user_id = %i', $user_id)
-                        ->execute();
-				}
+            // Delete user session, to prevent the user navigating the forum (if logged in) when disabled
+            if (!$user_status) {
+                dibi::delete(SESSIONS_TABLE)
+                    ->where('session_user_id = %i', $user_id)
+                    ->execute();
+            }
 
-				// We remove all stored login keys since the password has been updated
-				// and change the current one (if applicable)
-				if ( !empty($passwd_sql) ) {
-					session_reset_keys($user_id, $user_ip);
-				}
-				
-				$message .= $lang['Admin_user_updated'];
-			} else {
-				message_die(GENERAL_ERROR, 'Admin_user_fail', '', __LINE__, __FILE__, $sql);
-			}
+            // We remove all stored login keys since the password has been updated
+            // and change the current one (if applicable)
+            if (count($passwd_sql)) {
+                session_reset_keys($user_id, $user_ip);
+            }
 
+            $message .= $lang['Admin_user_updated'];
 			$message .= '<br /><br />' . sprintf($lang['Click_return_useradmin'], '<a href="' . append_sid("admin_users.php") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
