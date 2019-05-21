@@ -638,22 +638,24 @@ switch( $mode )
 			//
             $template->set_filenames(['split_body' => 'modcp_split.tpl']);
 
-            $sql = "SELECT u.username, p.*, pt.post_text, pt.bbcode_uid, pt.post_subject, p.post_username
-				FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
-				WHERE p.topic_id = $topic_id
-					AND p.poster_id = u.user_id
-					AND p.post_id = pt.post_id
-				ORDER BY p.post_time ASC";
+            $posts = dibi::select(['u.username', 'p.*', 'pt.post_text', 'pt.bbcode_uid', 'pt.post_subject', 'p.post_username'])
+                ->from(POSTS_TABLE)
+                ->as('p')
+                ->from(USERS_TABLE)
+                ->as('u')
+                ->from(POSTS_TEXT_TABLE)
+                ->as('pt')
+                ->where('p.topic_id = %i', $topic_id)
+                ->where('p.poster_id = u.user_id')
+                ->where('p.post_id = pt.post_id')
+                ->orderBy('p.post_time', dibi::ASC)
+                ->fetchAll();
 
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, 'Could not get topic/post information', '', __LINE__, __FILE__, $sql);
-			}
+            $total_posts = count($posts);
 
 			$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" /><input type="hidden" name="' . POST_TOPIC_URL . '" value="' . $topic_id . '" /><input type="hidden" name="mode" value="split" />';
 
-			if (( $total_posts = $db->sql_numrows($result) ) > 0 ) {
-				$postrow = $db->sql_fetchrowset($result);
-
+			if ($total_posts) {
                 $template->assign_vars(
                     [
                         'L_SPLIT_TOPIC'         => $lang['Split_Topic'],
@@ -689,39 +691,39 @@ switch( $mode )
 				$replacement_word = [];
 				obtain_word_list($orig_word, $replacement_word);
 
-				for ($i = 0; $i < $total_posts; $i++) {
-					$post_id = $postrow[$i]['post_id'];
-					$poster_id = $postrow[$i]['poster_id'];
-					$poster = $postrow[$i]['username'];
+				foreach ($posts as $post) {
+					$post_id = $post->post_id;
+					$poster_id = $post->poster_id;
+					$poster = $post->username;
 
-					$post_date = create_date($board_config['default_dateformat'], $postrow[$i]['post_time'], $board_config['board_timezone']);
+					$post_date = create_date($board_config['default_dateformat'], $post->post_time, $board_config['board_timezone']);
 
-					$bbcode_uid = $postrow[$i]['bbcode_uid'];
-					$message = $postrow[$i]['post_text'];
-					$post_subject = ( $postrow[$i]['post_subject'] != '' ) ? $postrow[$i]['post_subject'] : $topic_title;
+					$bbcode_uid = $post->bbcode_uid;
+					$message = $post->post_text;
+					$post_subject = ( $post->post_subject != '' ) ? $post->post_subject : $topic_title;
 
 					//
 					// If the board has HTML off but the post has HTML
 					// on then we process it, else leave it alone
 					//
-					if ( !$board_config['allow_html'] ) {
-						if ( $postrow[$i]['enable_html'] ) {
-							$message = preg_replace('#(<)([\/]?.*?)(>)#is', '&lt;\\2&gt;', $message);
-						}
-					}
+                    if (!$board_config['allow_html']) {
+                        if ($post->enable_html) {
+                            $message = preg_replace('#(<)([\/]?.*?)(>)#is', '&lt;\\2&gt;', $message);
+                        }
+                    }
 
-					if ( $bbcode_uid != '' ) {
+                    if ($bbcode_uid != '') {
 						$message = $board_config['allow_bbcode'] ? bbencode_second_pass($message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
 					}
 
-					if ( count($orig_word) ) {
+                    if (count($orig_word)) {
 						$post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
 						$message = preg_replace($orig_word, $replacement_word, $message);
 					}
 
 					$message = make_clickable($message);
 
-					if ( $board_config['allow_smilies'] && $postrow[$i]['enable_smilies'] ) {
+					if ( $board_config['allow_smilies'] && $post->enable_smilies ) {
 						$message = smilies_pass($message);
 					}
 
@@ -802,88 +804,91 @@ switch( $mode )
         //
 		// Get other IP's this user has posted under
 		//
-		$sql = "SELECT poster_ip, COUNT(*) AS postings 
-			FROM " . POSTS_TABLE . " 
-			WHERE poster_id = $poster_id 
-			GROUP BY poster_ip 
-			ORDER BY " . (( SQL_LAYER == 'msaccess' ) ? 'COUNT(*)' : 'postings' ) . " DESC";
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, 'Could not get IP information for this user', '', __LINE__, __FILE__, $sql);
-		}
+        $order_by = SQL_LAYER == 'msaccess' ? 'COUNT(*)' : 'postings';
 
-		if ( $row = $db->sql_fetchrow($result) ) {
-			$i = 0;
+        $rows = dibi::select('poster_ip')
+            ->select('COUNT(*)')
+            ->as('postings')
+            ->from(POSTS_TABLE)
+            ->where('poster_id = %i', $poster_id)
+            ->groupBy('poster_ip')
+            ->orderBy($order_by, dibi::DESC)
+            ->fetchAll();
 
-			do {
-				if ( $row['poster_ip'] == $post_row['poster_ip'] ) {
-                    $template->assign_vars(
-                        [
-                            'POSTS' => $row['postings'] . ' ' . (($row['postings'] == 1) ? $lang['Post'] : $lang['Posts'])
-                        ]
-                    );
-                    continue;
-				}
+        $i = 0;
 
-				$ip = decode_ip($row['poster_ip']);
-				$ip = ( $rdns_ip_num == $row['poster_ip'] || $rdns_ip_num == 'all') ? htmlspecialchars(gethostbyaddr($ip)) : $ip;
-
-				$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-				$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
-
-                $template->assign_block_vars('iprow',
+        foreach ($rows as $row) {
+            if ( $row->poster_ip == $post_row->poster_ip ) {
+                $template->assign_vars(
                     [
-                        'ROW_COLOR' => '#' . $row_color,
-                        'ROW_CLASS' => $row_class,
-                        'IP'        => $ip,
-                        'POSTS'     => $row['postings'] . ' ' . (($row['postings'] == 1) ? $lang['Post'] : $lang['Posts']),
-
-                        'U_LOOKUP_IP' => "modcp.php?mode=ip&amp;" . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=" . $row['poster_ip'] . "&amp;sid=" . $userdata['session_id']
+                        'POSTS' => $row->postings . ' ' . (($row->postings == 1) ? $lang['Post'] : $lang['Posts'])
                     ]
                 );
+                continue;
+            }
 
-                $i++;
-			}
-			while ( $row = $db->sql_fetchrow($result) );
-		}
+            $ip = decode_ip($row->poster_ip);
+            $ip = ( $rdns_ip_num == $row->poster_ip || $rdns_ip_num == 'all') ? htmlspecialchars(gethostbyaddr($ip)) : $ip;
+
+            $row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
+            $row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+
+            $template->assign_block_vars('iprow',
+                [
+                    'ROW_COLOR' => '#' . $row_color,
+                    'ROW_CLASS' => $row_class,
+                    'IP'        => $ip,
+                    'POSTS'     => $row->postings . ' ' . (($row->postings == 1) ? $lang['Post'] : $lang['Posts']),
+
+                    'U_LOOKUP_IP' => "modcp.php?mode=ip&amp;" . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=" . $row->poster_ip . "&amp;sid=" . $userdata['session_id']
+                ]
+            );
+
+            $i++;
+        }
 
 		//
 		// Get other users who've posted under this IP
 		//
-		$sql = "SELECT u.user_id, u.username, COUNT(*) as postings 
-			FROM " . USERS_TABLE ." u, " . POSTS_TABLE . " p 
-			WHERE p.poster_id = u.user_id 
-				AND p.poster_ip = '" . $post_row['poster_ip'] . "'
-			GROUP BY u.user_id, u.username
-			ORDER BY " . (( SQL_LAYER == 'msaccess' ) ? 'COUNT(*)' : 'postings' ) . " DESC";
+        $order_by = SQL_LAYER == 'msaccess' ? 'COUNT(*)' : 'postings';
 
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, 'Could not get posters information based on IP', '', __LINE__, __FILE__, $sql);
-		}
+        $rows = dibi::select('u.user_id')
+            ->select('u.username')
+            ->select('COUNT(*)')
+            ->as('postings')
+            ->from(USERS_TABLE)
+            ->as('u')
+            ->from(POSTS_TABLE)
+            ->as('p')
+            ->where('p.poster_id = u.user_id')
+            ->where('poster_ip = %s', $post_row->poster_ip)
+            ->groupBy('u.user_id')
+            ->groupBy('u.username')
+            ->orderBy($order_by, dibi::DESC)
+            ->fetchAll();
 
-		if ( $row = $db->sql_fetchrow($result) ) {
-			$i = 0;
-			do {
-				$id = $row['user_id'];
-				$username = ( $id == ANONYMOUS ) ? $lang['Guest'] : $row['username'];
+        $i = 0;
 
-				$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-				$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+        foreach ($rows as $row) {
+            $id = $row->user_id;
+            $username = ( $id == ANONYMOUS ) ? $lang['Guest'] : $row->username;
 
-                $template->assign_block_vars('userrow', [
-                        'ROW_COLOR'      => '#' . $row_color,
-                        'ROW_CLASS'      => $row_class,
-                        'USERNAME'       => $username,
-                        'POSTS'          => $row['postings'] . ' ' . (($row['postings'] == 1) ? $lang['Post'] : $lang['Posts']),
-                        'L_SEARCH_POSTS' => sprintf($lang['Search_user_posts'], $username),
+            $row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
+            $row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-                        'U_PROFILE'     => ($id == ANONYMOUS) ? "modcp.php?mode=ip&amp;" . POST_POST_URL . "=" . $post_id . "&amp;" . POST_TOPIC_URL . "=" . $topic_id . "&amp;sid=" . $userdata['session_id'] : append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$id"),
-                        'U_SEARCHPOSTS' => append_sid("search.php?search_author=" . (($id == ANONYMOUS) ? 'Anonymous' : urlencode($username)) . "&amp;showresults=topics")
-                    ]);
+            $template->assign_block_vars('userrow', [
+                'ROW_COLOR'      => '#' . $row_color,
+                'ROW_CLASS'      => $row_class,
+                'USERNAME'       => $username,
+                'POSTS'          => $row->postings . ' ' . (($row->postings == 1) ? $lang['Post'] : $lang['Posts']),
+                'L_SEARCH_POSTS' => sprintf($lang['Search_user_posts'], $username),
 
-                $i++;
-			}
-			while ( $row = $db->sql_fetchrow($result) );
-		}
+                'U_PROFILE'     => ($id == ANONYMOUS) ? "modcp.php?mode=ip&amp;" . POST_POST_URL . "=" . $post_id . "&amp;" . POST_TOPIC_URL . "=" . $topic_id . "&amp;sid=" . $userdata['session_id'] : append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$id"),
+                'U_SEARCHPOSTS' => append_sid("search.php?search_author=" . (($id == ANONYMOUS) ? 'Anonymous' : urlencode($username)) . "&amp;showresults=topics")
+            ]);
+
+            $i++;
+        }
 
 		$template->pparse('viewip');
 
@@ -924,29 +929,33 @@ switch( $mode )
 		$replacement_word = [];
 		obtain_word_list($orig_word, $replacement_word);
 
-		$sql = "SELECT t.*, u.username, u.user_id, p.post_time
-			FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p
-			WHERE t.forum_id = $forum_id
-				AND t.topic_poster = u.user_id
-				AND p.post_id = t.topic_last_post_id
-			ORDER BY t.topic_type DESC, p.post_time DESC
-			LIMIT $start, " . $board_config['topics_per_page'];
+		$rows = dibi::select(['t.*', 'u.username', 'u.user_id', 'p.post_time'])
+            ->from(TOPICS_TABLE)
+            ->as('t')
+            ->from(USERS_TABLE)
+            ->as('u')
+            ->from(POSTS_TABLE)
+            ->as('p')
+            ->where('t.forum_id = %i', $forum_id)
+            ->where('t.topic_poster = u.user_id')
+            ->where('p.post_id = t.topic_last_post_id')
+            ->orderBy('t.topic_type', dibi::DESC)
+            ->orderBy('p.post_time', dibi::DESC)
+            ->limit($board_config['topics_per_page'])
+            ->offset($start)
+            ->fetchAll();
 
-		if ( !($result = $db->sql_query($sql)) ) {
-	   		message_die(GENERAL_ERROR, 'Could not obtain topic information', '', __LINE__, __FILE__, $sql);
-		}
-
-		while ( $row = $db->sql_fetchrow($result) ) {
+        foreach ($rows as $row) {
 			$topic_title = '';
 
-            if ($row['topic_status'] == TOPIC_LOCKED) {
+            if ($row->topic_status == TOPIC_LOCKED) {
                 $folder_img = $images['folder_locked'];
                 $folder_alt = $lang['Topic_locked'];
             } else {
-                if ($row['topic_type'] == POST_ANNOUNCE) {
+                if ($row->topic_type == POST_ANNOUNCE) {
                     $folder_img = $images['folder_announce'];
                     $folder_alt = $lang['Topic_Announcement'];
-                } elseif ($row['topic_type'] == POST_STICKY) {
+                } elseif ($row->topic_type == POST_STICKY) {
                     $folder_img = $images['folder_sticky'];
                     $folder_alt = $lang['Topic_Sticky'];
                 } else {
@@ -955,9 +964,9 @@ switch( $mode )
                 }
             }
 
-			$topic_id = $row['topic_id'];
-			$topic_type = $row['topic_type'];
-			$topic_status = $row['topic_status'];
+			$topic_id = $row->topic_id;
+			$topic_type = $row->topic_type;
+			$topic_status = $row->topic_status;
 
             if ($topic_type == POST_ANNOUNCE) {
                 $topic_type = $lang['Topic_Announcement'] . ' ';
@@ -969,20 +978,20 @@ switch( $mode )
                 $topic_type = '';
             }
 
-            if ($row['topic_vote']) {
+            if ($row->topic_vote) {
                 $topic_type .= $lang['Topic_Poll'] . ' ';
             }
 
-            $topic_title = $row['topic_title'];
+            $topic_title = $row->topic_title;
 
             if (count($orig_word)) {
                 $topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
             }
 
 			$u_view_topic = "modcp.php?mode=split&amp;" . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'];
-			$topic_replies = $row['topic_replies'];
+			$topic_replies = $row->topic_replies;
 
-			$last_post_time = create_date($board_config['default_dateformat'], $row['post_time'], $board_config['board_timezone']);
+			$last_post_time = create_date($board_config['default_dateformat'], $row->post_time, $board_config['board_timezone']);
 
             $template->assign_block_vars('topicrow',
                 [
