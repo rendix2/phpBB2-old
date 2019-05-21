@@ -382,96 +382,92 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
 	global $db;
 
 	$sign = ($mode == 'delete') ? '- 1' : '+ 1';
-	$forum_update_sql = "forum_posts = forum_posts $sign";
-	$topic_update_sql = '';
+
+	$forum_update_sql = ['forum_posts%sql' => 'forum_posts ' . $sign];
+	$topic_update_sql = [];
 
 	if ($mode == 'delete') {
 		if ($post_data['last_post']) {
 			if ($post_data['first_post']) {
-				$forum_update_sql .= ', forum_topics = forum_topics - 1';
+				$forum_update_sql['forum_topics%sql'] = 'forum_topics - 1';
 			} else {
+				$topic_update_sql['topic_replies%sql'] = 'topic_replies - 1';
 
-				$topic_update_sql .= 'topic_replies = topic_replies - 1';
+				$last_post_id = dibi::select('MAX(post_id)')
+                    ->as('last_post_id')
+                    ->from(POSTS_TABLE)
+                    ->where('topic_id = %i', $topic_id)
+                    ->fetchSingle();
 
-				$sql = "SELECT MAX(post_id) AS last_post_id
-					FROM " . POSTS_TABLE . " 
-					WHERE topic_id = $topic_id";
-
-                if (!($result = $db->sql_query($sql))) {
+                if ($last_post_id) {
+                    $topic_update_sql['topic_last_post_id'] = $last_post_id;
+                } else {
                     message_die(GENERAL_ERROR, 'Error in deleting post', '', __LINE__, __FILE__, $sql);
-                }
-
-                if ($row = $db->sql_fetchrow($result)) {
-                    $topic_update_sql .= ', topic_last_post_id = ' . $row['last_post_id'];
                 }
 			}
 
 			if ($post_data['last_topic']) {
-				$sql = "SELECT MAX(post_id) AS last_post_id
-					FROM " . POSTS_TABLE . " 
-					WHERE forum_id = $forum_id";
+                $last_post_id = dibi::select('MAX(post_id)')
+                    ->as('last_post_id')
+                    ->from(POSTS_TABLE)
+                    ->where('forum_id = %i', $forum_id)
+                    ->fetchSingle();
 
-				if (!($result = $db->sql_query($sql))) {
-					message_die(GENERAL_ERROR, 'Error in deleting post', '', __LINE__, __FILE__, $sql);
-				}
-
-				if ($row = $db->sql_fetchrow($result)) {
-					$forum_update_sql .= $row['last_post_id'] ? ', forum_last_post_id = ' . $row['last_post_id'] : ', forum_last_post_id = 0';
-				}
+                if ($last_post_id) {
+                    $forum_update_sql['forum_last_post_id'] = $last_post_id;
+                } else {
+                    $forum_update_sql['forum_last_post_id'] = 0;
+                }
 			}
 		} elseif ($post_data['first_post']) {
-			$sql = "SELECT MIN(post_id) AS first_post_id
-				FROM " . POSTS_TABLE . " 
-				WHERE topic_id = $topic_id";
+            $first_post_id = dibi::select('MIN(post_id)')
+                ->as('first_post_id')
+                ->from(POSTS_TABLE)
+                ->where('topic_id = %i', $topic_id)
+                ->fetchSingle();
 
-			if (!($result = $db->sql_query($sql))) {
-				message_die(GENERAL_ERROR, 'Error in deleting post', '', __LINE__, __FILE__, $sql);
-			}
-
-			if ($row = $db->sql_fetchrow($result)) {
-				$topic_update_sql .= 'topic_replies = topic_replies - 1, topic_first_post_id = ' . $row['first_post_id'];
+			if ($first_post_id) {
+                $topic_update_sql['topic_replies=sql'] = 'topic_replies - 1';
+                $topic_update_sql['topic_first_post_id=sql'] = $first_post_id;
 			}
 		} else {
-			$topic_update_sql .= 'topic_replies = topic_replies - 1';
+			$topic_update_sql['topic_replies=sql'] = 'topic_replies - 1';
 		}
 	} elseif ($mode != 'poll_delete') {
-		$forum_update_sql .= ", forum_last_post_id = $post_id" . (($mode == 'newtopic') ? ", forum_topics = forum_topics $sign" : ""); 
-		$topic_update_sql = "topic_last_post_id = $post_id" . (($mode == 'reply') ? ", topic_replies = topic_replies $sign" : ", topic_first_post_id = $post_id");
+        $forum_update_sql['forum_last_post_id'] = $post_id;
+
+        if ($mode == 'newtopic') {
+            $forum_update_sql['forum_topics%sql'] = 'forum_topics ' . $sign;
+        }
+
+		$topic_update_sql['topic_last_post_id'] = $post_id;
+
+		if ($mode == 'reply') {
+            $topic_update_sql['topic_replies%sql'] = 'topic_replies ' . $sign;
+        } else {
+            $topic_update_sql['topic_first_post_id'] = $post_id;
+        }
 	} else {
-		$topic_update_sql .= 'topic_vote = 0';
+	    $topic_update_sql['topic_vote'] = 0;
 	}
 
 	if ($mode != 'poll_delete') {
-		$sql = "UPDATE " . FORUMS_TABLE . " SET 
-			$forum_update_sql 
-			WHERE forum_id = $forum_id";
-
-		if (!$db->sql_query($sql)) {
-			message_die(GENERAL_ERROR, 'Error in posting', '', __LINE__, __FILE__, $sql);
-		}
+	    dibi::update(FORUMS_TABLE, $forum_update_sql)
+            ->where('forum_id = %i', $forum_id)
+            ->execute();
 	}
 
-	if ($topic_update_sql != '') {
-		$sql = "UPDATE " . TOPICS_TABLE . " SET 
-			$topic_update_sql 
-			WHERE topic_id = $topic_id";
-
-		if (!$db->sql_query($sql)) {
-			message_die(GENERAL_ERROR, 'Error in posting', '', __LINE__, __FILE__, $sql);
-		}
+	if (count($topic_update_sql)) {
+	    dibi::update(TOPICS_TABLE, $topic_update_sql)
+            ->where('topic_id = %i', $topic_id)
+            ->execute();
 	}
 
 	if ($mode != 'poll_delete') {
-		$sql = "UPDATE " . USERS_TABLE . "
-			SET user_posts = user_posts $sign 
-			WHERE user_id = $user_id";
-
-		if (!$db->sql_query($sql, END_TRANSACTION)) {
-			message_die(GENERAL_ERROR, 'Error in posting', '', __LINE__, __FILE__, $sql);
-		}
+	    dibi::update(USERS_TABLE, ['user_posts%sql' => 'user_posts ' . $sign])
+            ->where('user_id = %i', $user_id)
+            ->execute();
 	}
-
-	return;
 }
 
 //
