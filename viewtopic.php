@@ -191,15 +191,13 @@ if ($post_id) {
 if ($userdata['session_logged_in'] ) {
 	$can_watch_topic = TRUE;
 
-	$sql = "SELECT notify_status
-		FROM " . TOPICS_WATCH_TABLE . "
-		WHERE topic_id = $topic_id
-			AND user_id = " . $userdata['user_id'];
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, "Could not obtain topic watch information", '', __LINE__, __FILE__, $sql);
-	}
+	$row = dibi::select('notify_status')
+        ->from(TOPICS_WATCH_TABLE)
+        ->where('topic_id = %i', $topic_id)
+        ->where('user_id = %i', $userdata['user_id'])
+        ->fetch();
 
-	if ( $row = $db->sql_fetchrow($result) ) {
+    if ($row) {
 		if ( isset($_GET['unwatch']) ) {
 			if ( $_GET['unwatch'] == 'topic' ) {
 				$is_watching_topic = 0;
@@ -224,7 +222,7 @@ if ($userdata['session_logged_in'] ) {
 		} else {
 			$is_watching_topic = TRUE;
 
-			if ( $row['notify_status'] ) {
+            if ($row->notify_status) {
                 $sql_priority = (SQL_LAYER == 'mysql') ? 'LOW_PRIORITY' : '';
 
 				dibi::update(TOPICS_WATCH_TABLE, ['notify_status' => 0])
@@ -287,17 +285,16 @@ if (!empty($_POST['postdays']) || !empty($_GET['postdays']) ) {
 	$post_days =  !empty($_POST['postdays']) ? (int)$_POST['postdays'] : (int)$_GET['postdays'];
 	$min_post_time = time() - ($post_days * 86400);
 
-	$sql = "SELECT COUNT(p.post_id) AS num_posts
-		FROM " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p
-		WHERE t.topic_id = $topic_id
-			AND p.topic_id = t.topic_id
-			AND p.post_time >= $min_post_time";
-	
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, "Could not obtain limited topics count information", '', __LINE__, __FILE__, $sql);
-	}
-
-	$total_replies = ( $row = $db->sql_fetchrow($result) ) ? (int)$row['num_posts'] : 0;
+    $total_replies = dibi::select('COUNT(p.post_id)')
+        ->as('num_posts')
+        ->from(TOPICS_TABLE)
+        ->as('t')
+        ->from(POSTS_TABLE)
+        ->as('p')
+        ->where('t.topic_id = %i', $topic_id)
+        ->where('p.topic_id = t.topic_id')
+        ->where('p.post_time >= %i', $min_post_time)
+        ->fetchSingle();
 
 	$limit_posts_time = "AND p.post_time >= $min_post_time ";
 
