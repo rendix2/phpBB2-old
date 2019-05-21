@@ -260,7 +260,7 @@ if (!empty($_POST['topicdays']) || !empty($_GET['topicdays']) ) {
         ->fetchSingle();
 
 	$topics_count = $forum_topics ? $forum_topics : 1;
-	$limit_topics_time = "AND p.post_time >= $min_topic_time";
+	$limit_topics_time = true;
 
 	if ( !empty($_POST['topicdays']) ) {
 		$start = 0;
@@ -268,7 +268,7 @@ if (!empty($_POST['topicdays']) || !empty($_GET['topicdays']) ) {
 } else {
 	$topics_count = $forum_row['forum_topics'] ? $forum_row['forum_topics'] : 1;
 
-	$limit_topics_time = '';
+	$limit_topics_time = false;
 	$topic_days = 0;
 }
 
@@ -286,57 +286,74 @@ $select_topic_days .= '</select>';
 // All announcement data, this keeps announcements
 // on each viewforum page ...
 //
-$sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_time, p.post_username
-	FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . USERS_TABLE . " u2
-	WHERE t.forum_id = $forum_id 
-		AND t.topic_poster = u.user_id
-		AND p.post_id = t.topic_last_post_id
-		AND p.poster_id = u2.user_id
-		AND t.topic_type = " . POST_ANNOUNCE . " 
-	ORDER BY t.topic_last_post_id DESC ";
- 
-if ( !($result = $db->sql_query($sql)) ) {
-   message_die(GENERAL_ERROR, 'Could not obtain topic information', '', __LINE__, __FILE__, $sql);
-}
+$topic_rowset = dibi::select(['t.*', 'u.username', 'u.user_id'])
+    ->select('u2.username')
+    ->as('user2')
+    ->select('u2.user_id')
+    ->as('id2')
+    ->select(['p.post_time', 'p.post_username'])
+    ->from(TOPICS_TABLE)
+    ->as('t')
+    ->from(USERS_TABLE)
+    ->as('u')
+    ->from(POSTS_TABLE)
+    ->as('p')
+    ->from(USERS_TABLE)
+    ->as('u2')
+    ->where('t.forum_id = %i', $forum_id)
+    ->where('t.topic_poster = u.user_id')
+    ->where('p.post_id = t.topic_last_post_id')
+    ->where('p.poster_id = u2.user_id')
+    ->where('t.topic_type = %i', POST_ANNOUNCE)
+    ->orderBy('t.topic_last_post_id', dibi::DESC)
+    ->fetchAll();
 
 $topic_rowset = [];
-$total_announcements = 0;
-
-while ($row = $db->sql_fetchrow($result) ) {
-	$topic_rowset[] = $row;
-	$total_announcements++;
-}
-
-$db->sql_freeresult($result);
+$total_announcements = count($topic_rowset);
 
 //
 // Grab all the basic data (all topics except announcements)
 // for this forum
 //
-$sql = "SELECT t.*, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_username, p2.post_username AS post_username2, p2.post_time 
-	FROM " . TOPICS_TABLE . " t, " . USERS_TABLE . " u, " . POSTS_TABLE . " p, " . POSTS_TABLE . " p2, " . USERS_TABLE . " u2
-	WHERE t.forum_id = $forum_id
-		AND t.topic_poster = u.user_id
-		AND p.post_id = t.topic_first_post_id
-		AND p2.post_id = t.topic_last_post_id
-		AND u2.user_id = p2.poster_id 
-		AND t.topic_type <> " . POST_ANNOUNCE . " 
-		$limit_topics_time
-	ORDER BY t.topic_type DESC, t.topic_last_post_id DESC 
-	LIMIT $start, ".$board_config['topics_per_page'];
+$temp_topics = dibi::select(['t.*', 'u.username', 'u.user_id'])
+    ->select('u2.username')
+    ->as('user2')
+    ->select('u2.user_id')
+    ->as('id2')
+    ->select('p.post_username')
+    ->select('p2.post_username')
+    ->as('post_username2')
+    ->select('p2.post_time ')
+    ->from(TOPICS_TABLE)
+    ->as('t')
+    ->from(USERS_TABLE)
+    ->as('u')
+    ->from(POSTS_TABLE)
+    ->as('p')
+    ->from(POSTS_TABLE)
+    ->as('p2')
+    ->from(USERS_TABLE)
+    ->as('u2')
+    ->where('t.forum_id = %i', $forum_id)
+    ->where('t.topic_poster = u.user_id')
+    ->where('p.post_id = t.topic_first_post_id')
+    ->where('p2.post_id = t.topic_last_post_id')
+    ->where('u2.user_id = p2.poster_id')
+    ->where('t.topic_type <> %i', POST_ANNOUNCE);
 
-if ( !($result = $db->sql_query($sql)) ) {
-   message_die(GENERAL_ERROR, 'Could not obtain topic information', '', __LINE__, __FILE__, $sql);
-}
+    if ($limit_topics_time) {
+        $temp_topics->where('p.post_time >= %i', $min_topic_time);
+    }
 
-$total_topics = 0;
+    $temp_topics = $temp_topics->orderBy('t.topic_type', dibi::DESC)
+        ->orderBy('t.topic_last_post_id', dibi::DESC)
+        ->limit($board_config['topics_per_page'])
+        ->offset($start)
+        ->fetchAll();
 
-while ($row = $db->sql_fetchrow($result) ) {
-	$topic_rowset[] = $row;
-	$total_topics++;
-}
+$total_topics = count($temp_topics);
 
-$db->sql_freeresult($result);
+$topic_rowset = array_merge($topic_rowset, $temp_topics);
 
 //
 // Total topics ...
@@ -444,14 +461,12 @@ $template->assign_vars(array(
 // Okay, lets dump out the page ...
 //
 if ($total_topics) {
-	for ($i = 0; $i < $total_topics; $i++) {
-		$topic_id = $topic_rowset[$i]['topic_id'];
+    foreach ($topic_rowset as $topic) {
+		$topic_id = $topic->topic_id;
 
-		$topic_title = count($orig_word) ? preg_replace($orig_word, $replacement_word, $topic_rowset[$i]['topic_title']) : $topic_rowset[$i]['topic_title'];
-
-		$replies = $topic_rowset[$i]['topic_replies'];
-
-		$topic_type = $topic_rowset[$i]['topic_type'];
+		$topic_title = count($orig_word) ? preg_replace($orig_word, $replacement_word, $topic->topic_title) : $topic->topic_title;
+		$replies = $topic->topic_replies;
+		$topic_type = $topic->topic_type;
 
         if ($topic_type == POST_ANNOUNCE) {
             $topic_type = $lang['Topic_Announcement'] . ' ';
@@ -461,25 +476,25 @@ if ($total_topics) {
             $topic_type = '';
         }
 
-		if ( $topic_rowset[$i]['topic_vote'] ) {
+		if ( $topic->topic_vote ) {
 			$topic_type .= $lang['Topic_Poll'] . ' ';
 		}
 		
-		if ( $topic_rowset[$i]['topic_status'] == TOPIC_MOVED ) {
+		if ( $topic->topic_status == TOPIC_MOVED ) {
 			$topic_type = $lang['Topic_Moved'] . ' ';
-			$topic_id = $topic_rowset[$i]['topic_moved_id'];
+			$topic_id = $topic->topic_moved_id;
 
 			$folder_image =  $images['folder'];
 			$folder_alt = $lang['Topics_Moved'];
 			$newest_post_img = '';
 		} else {
-            if ($topic_rowset[$i]['topic_type'] == POST_ANNOUNCE) {
+            if ($topic->topic_type == POST_ANNOUNCE) {
 				$folder = $images['folder_announce'];
 				$folder_new = $images['folder_announce_new'];
-            } elseif ($topic_rowset[$i]['topic_type'] == POST_STICKY) {
+            } elseif ($topic->topic_type == POST_STICKY) {
 				$folder = $images['folder_sticky'];
 				$folder_new = $images['folder_sticky_new'];
-            } elseif ($topic_rowset[$i]['topic_status'] == TOPIC_LOCKED) {
+            } elseif ($topic->topic_status == TOPIC_LOCKED) {
 				$folder = $images['folder_locked'];
 				$folder_new = $images['folder_locked_new'];
 			} else {
@@ -494,24 +509,24 @@ if ($total_topics) {
 
 			$newest_post_img = '';
 			if ($userdata['session_logged_in'] ) {
-				if ($topic_rowset[$i]['post_time'] > $userdata['user_lastvisit'] )  {
+				if ($topic->post_time > $userdata['user_lastvisit'] )  {
 					if (!empty($tracking_topics) || !empty($tracking_forums) || isset($_COOKIE[$forum_all_cookie_name]) ) {
 						$unread_topics = true;
 
 						if (!empty($tracking_topics[$topic_id]) ) {
-							if ($tracking_topics[$topic_id] >= $topic_rowset[$i]['post_time'] ) {
+							if ($tracking_topics[$topic_id] >= $topic->post_time ) {
 								$unread_topics = false;
 							}
 						}
 
 						if (!empty($tracking_forums[$forum_id]) ) {
-							if ($tracking_forums[$forum_id] >= $topic_rowset[$i]['post_time'] ) {
+							if ($tracking_forums[$forum_id] >= $topic->post_time ) {
 								$unread_topics = false;
 							}
 						}
 
 						if (isset($_COOKIE[$forum_all_cookie_name]) ) {
-							if ($_COOKIE[$forum_all_cookie_name] >= $topic_rowset[$i]['post_time'] ) {
+							if ($_COOKIE[$forum_all_cookie_name] >= $topic->post_time ) {
 								$unread_topics = false;
 							}
 						}
@@ -523,25 +538,25 @@ if ($total_topics) {
 							$newest_post_img = '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
 						} else {
 							$folder_image = $folder;
-							$folder_alt = ( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
+							$folder_alt = ( $topic->topic_status == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
 
 							$newest_post_img = '';
 						}
 					} else {
 						$folder_image = $folder_new;
-						$folder_alt = ( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['New_posts'];
+						$folder_alt = ( $topic->topic_status == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['New_posts'];
 
 						$newest_post_img = '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
 					}
 				} else {
 					$folder_image = $folder;
-					$folder_alt = ( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
+					$folder_alt = ( $topic->topic_status == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
 
 					$newest_post_img = '';
 				}
 			} else {
 				$folder_image = $folder;
-				$folder_alt = ( $topic_rowset[$i]['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
+				$folder_alt = ( $topic->topic_status == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
 
 				$newest_post_img = '';
 			}
@@ -574,20 +589,20 @@ if ($total_topics) {
 		
 		$view_topic_url = append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id");
 
-		$topic_author = ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . '=' . $topic_rowset[$i]['user_id']) . '">' : '';
-		$topic_author .= ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? $topic_rowset[$i]['username'] : ( ( $topic_rowset[$i]['post_username'] != '' ) ? $topic_rowset[$i]['post_username'] : $lang['Guest'] );
+		$topic_author = ( $topic->user_id != ANONYMOUS ) ? '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . '=' . $topic->user_id) . '">' : '';
+		$topic_author .= ( $topic->user_id != ANONYMOUS ) ? $topic->username : ( ( $topic->post_username != '' ) ? $topic->post_username : $lang['Guest'] );
 
-		$topic_author .= ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ? '</a>' : '';
+		$topic_author .= ( $topic->user_id != ANONYMOUS ) ? '</a>' : '';
 
-		$first_post_time = create_date($board_config['default_dateformat'], $topic_rowset[$i]['topic_time'], $board_config['board_timezone']);
+		$first_post_time = create_date($board_config['default_dateformat'], $topic->topic_time, $board_config['board_timezone']);
 
-		$last_post_time = create_date($board_config['default_dateformat'], $topic_rowset[$i]['post_time'], $board_config['board_timezone']);
+		$last_post_time = create_date($board_config['default_dateformat'], $topic->post_time, $board_config['board_timezone']);
 
-		$last_post_author = ( $topic_rowset[$i]['id2'] == ANONYMOUS ) ? ( ($topic_rowset[$i]['post_username2'] != '' ) ? $topic_rowset[$i]['post_username2'] . ' ' : $lang['Guest'] . ' ' ) : '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . '='  . $topic_rowset[$i]['id2']) . '">' . $topic_rowset[$i]['user2'] . '</a>';
+		$last_post_author = ( $topic->id2 == ANONYMOUS ) ? ( ($topic->post_username2 != '' ) ? $topic->post_username2 . ' ' : $lang['Guest'] . ' ' ) : '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . '='  . $topic->id2) . '">' . $topic->user2 . '</a>';
 
-		$last_post_url = '<a href="' . append_sid("viewtopic.php?"  . POST_POST_URL . '=' . $topic_rowset[$i]['topic_last_post_id']) . '#' . $topic_rowset[$i]['topic_last_post_id'] . '"><img src="' . $images['icon_latest_reply'] . '" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" border="0" /></a>';
+		$last_post_url = '<a href="' . append_sid("viewtopic.php?"  . POST_POST_URL . '=' . $topic->topic_last_post_id) . '#' . $topic->topic_last_post_id . '"><img src="' . $images['icon_latest_reply'] . '" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" border="0" /></a>';
 
-		$views = $topic_rowset[$i]['topic_views'];
+		$views = $topic->topic_views;
 		
 		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
