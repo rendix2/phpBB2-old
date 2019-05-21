@@ -67,26 +67,31 @@ if ( isset($_POST['submit']) ) {
 
 	$group_id = (int)$_POST[POST_GROUPS_URL];
 
-	$sql = ( $group_id != -1 ) ? "SELECT u.user_email FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug WHERE ug.group_id = $group_id AND ug.user_pending <> " . TRUE . " AND u.user_id = ug.user_id" : "SELECT user_email FROM " . USERS_TABLE;
+    if ($group_id != -1) {
+        $bcc_list = dibi::select('u.user_email')
+            ->from(USERS_TABLE)
+            ->as('u')
+            ->from(USER_GROUP_TABLE)
+            ->as('ug')
+            ->where('ug.group_id = %i', $group_id)
+            ->where('ug.user_pending <> %i', 1)
+            ->where('u.user_id = ug.user_id')
+            ->fetchPairs(null, 'user_email');
+    } else {
+        $bbc_list = dibi::select('user_email')
+            ->from(USERS_TABLE)
+            ->fetchPairs(null, 'user_email');
+    }
+
+    if (!count($bcc_list)) {
+        $message = ( $group_id != -1 ) ? $lang['Group_not_exist'] : $lang['No_such_user'];
+
+        $error = true;
+        $error_msg .= !empty($error_msg) ? '<br />' . $message : $message;
+    }
 
 	if ( !($result = $db->sql_query($sql)) ) {
 		message_die(GENERAL_ERROR, 'Could not select group members', '', __LINE__, __FILE__, $sql);
-	}
-
-	if ( $row = $db->sql_fetchrow($result) ) {
-		$bcc_list = [];
-
-		do {
-			$bcc_list[] = $row['user_email'];
-		}
-		while ( $row = $db->sql_fetchrow($result) );
-
-		$db->sql_freeresult($result);
-	} else {
-		$message = ( $group_id != -1 ) ? $lang['Group_not_exist'] : $lang['No_such_user'];
-
-		$error = true;
-		$error_msg .= !empty($error_msg) ? '<br />' . $message : $message;
 	}
 
 	if ( !$error ) {
@@ -110,9 +115,9 @@ if ( isset($_POST['submit']) ) {
 		$emailer->from($board_config['board_email']);
 		$emailer->replyto($board_config['board_email']);
 
-		for ($i = 0; $i < count($bcc_list); $i++) {
-			$emailer->bcc($bcc_list[$i]);
-		}
+		foreach ($bbc_list as $email) {
+            $emailer->bcc($email);
+        }
 
 		$email_headers = 'X-AntiAbuse: Board servername - ' . $board_config['server_name'] . "\n";
 		$email_headers .= 'X-AntiAbuse: User_id - ' . $userdata['user_id'] . "\n";

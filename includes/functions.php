@@ -748,6 +748,7 @@ function redirect($url)
 	global $db, $board_config;
 
 	if (!empty($db)) {
+	    dibi::disconnect();
 		$db->sql_close();
 	}
 

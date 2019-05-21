@@ -86,10 +86,6 @@ $rows = dibi::select($columns)
     ->orderBy('s.session_ip', dibi::ASC)
     ->fetchAll();
 
-if ( !($result = $db->sql_query($sql)) ) {
-	message_die(GENERAL_ERROR, 'Could not obtain regd user/online information', '', __LINE__, __FILE__, $sql);
-}
-
 $guest_users = 0;
 $registered_users = 0;
 $hidden_users = 0;

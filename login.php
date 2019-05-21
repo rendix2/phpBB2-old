@@ -52,44 +52,52 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 		$username = isset($_POST['username']) ? phpbb_clean_username($_POST['username']) : '';
 		$password = isset($_POST['password']) ? $_POST['password'] : '';
 
-		$sql = "SELECT user_id, username, user_password, user_active, user_level, user_login_tries, user_last_login_try
-			FROM " . USERS_TABLE . "
-			WHERE username = '" . str_replace("\\'", "''", $username) . "'";
-		
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, 'Error in obtaining userdata', '', __LINE__, __FILE__, $sql);
-		}
+        $columns = [
+            'user_id',
+            'username',
+            'user_password',
+            'user_active',
+            'user_level',
+            'user_login_tries',
+            'user_last_login_try'
+        ];
 
-		if ($row = $db->sql_fetchrow($result) ) {
-            if ($row['user_level'] != ADMIN && $board_config['board_disable'] ) {
+		$row = dibi::select($columns)
+            ->from(USERS_TABLE)
+            ->where('username = %s', $username)
+            ->fetch();
+
+		if ($row) {
+            if ($row->user_level != ADMIN && $board_config['board_disable'] ) {
 				redirect(append_sid("index.php", true));
 			} else {
 				// If the last login is more than x minutes ago, then reset the login tries/time
-				if ($row['user_last_login_try'] && $board_config['login_reset_time'] && $row['user_last_login_try'] < (time() - ($board_config['login_reset_time'] * 60))) {
+				if ($row->user_last_login_try && $board_config['login_reset_time'] && $row->user_last_login_try < (time() - ($board_config['login_reset_time'] * 60))) {
                     dibi::update(USERS_TABLE, ['user_login_tries' => 0, 'user_last_login_try' => 0])
-                        ->where('user_id = %i', $row['user_id'])
+                        ->where('user_id = %i', $row->user_id)
                         ->execute();
 
-					$row['user_last_login_try'] = $row['user_login_tries'] = 0;
+					$row->user_last_login_try = $row->user_login_tries = 0;
 				}
 				
 				// Check to see if user is allowed to login again... if his tries are exceeded
-				if ($row['user_last_login_try'] && $board_config['login_reset_time'] && $board_config['max_login_attempts'] && 
-					$row['user_last_login_try'] >= (time() - ($board_config['login_reset_time'] * 60)) && $row['user_login_tries'] >= $board_config['max_login_attempts'] && $userdata['user_level'] != ADMIN)
+				if ($row->user_last_login_try && $board_config['login_reset_time'] && $board_config['max_login_attempts'] &&
+					$row->user_last_login_try >= (time() - ($board_config['login_reset_time'] * 60)) &&
+					$row->user_login_tries >= $board_config['max_login_attempts'] && $userdata['user_level'] != ADMIN)
 				{
 					message_die(GENERAL_MESSAGE, sprintf($lang['Login_attempts_exceeded'], $board_config['max_login_attempts'], $board_config['login_reset_time']));
 				}
 
-				if (md5($password) == $row['user_password'] && $row['user_active'] ) {
+				if (md5($password) == $row->user_password && $row->user_active ) {
 					$autologin = isset($_POST['autologin']) ? TRUE : 0;
 
 					$admin = isset($_POST['admin']) ? 1 : 0;
-					$session_id = session_begin($row['user_id'], $user_ip, PAGE_INDEX, FALSE, $autologin, $admin);
+					$session_id = session_begin($row->user_id, $user_ip, PAGE_INDEX, FALSE, $autologin, $admin);
 
 					// Reset login tries
 
                     dibi::update(USERS_TABLE, ['user_login_tries' => 0, 'user_last_login_try' => 0])
-                        ->where('user_id = %i', $row['user_id'])
+                        ->where('user_id = %i', $row->user_id)
                         ->execute();
 
 					if ($session_id ) {
@@ -100,13 +108,13 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 					}
 				}
 				// Only store a failed login attempt for an active user - inactive users can't login even with a correct password
-				elseif ($row['user_active'] ) {
+				elseif ($row->user_active ) {
 					// Save login tries and last login
-					if ($row['user_id'] != ANONYMOUS) {
+					if ($row->user_id != ANONYMOUS) {
                         $update_data = ['user_login_tries%sql' => 'user_login_tries + 1', 'user_last_login_try' => time()];
 
                         dibi::update(USERS_TABLE, $update_data)
-                            ->where('user_id = %i', $row['user_id'])
+                            ->where('user_id = %i', $row->user_id)
                             ->execute();
 					}
 				}

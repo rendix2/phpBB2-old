@@ -788,13 +788,12 @@ if (!empty($mode) ) {
 
 			$cat_id = $forum_info['cat_id'];
 
-			$sql = "UPDATE " . FORUMS_TABLE . "
-				SET forum_order = forum_order + $move
-				WHERE forum_id = $forum_id";
-
-			if (!$result = $db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, "Couldn't change category order", "", __LINE__, __FILE__, $sql);
-			}
+            /**
+             * TODO check if it work with negative values
+             */
+			dibi::update(FORUMS_TABLE, ['forum_order%sql' => 'forum_order + ' . $move])
+                ->where('forum_id = %i', $forum_id)
+                ->execute();
 
 			renumber_order('forum', $forum_info['cat_id']);
 			$show_index = TRUE;
@@ -808,13 +807,12 @@ if (!empty($mode) ) {
 			$move = (int)$_GET['move'];
 			$cat_id = (int)$_GET[POST_CAT_URL];
 
-			$sql = "UPDATE " . CATEGORIES_TABLE . "
-				SET cat_order = cat_order + $move
-				WHERE cat_id = $cat_id";
-
-			if (!$result = $db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, "Couldn't change category order", "", __LINE__, __FILE__, $sql);
-			}
+            /**
+             * TODO check if it work with negative values
+             */
+            dibi::update(FORUMS_TABLE, ['cat_order%sql' => 'cat_order + ' . $move])
+                ->where('cat_id = %i', $cat_id)
+                ->execute();
 
 			renumber_order('category');
 			$show_index = TRUE;
