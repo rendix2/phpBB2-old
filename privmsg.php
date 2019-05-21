@@ -252,24 +252,23 @@ if ( $mode == 'newpm' ) {
 		dibi::update(PRIVMSGS_TABLE, ['privmsgs_type' => PRIVMSGS_READ_MAIL])
             ->where('privmsgs_id = %i', $privmsg['privmsgs_id']);
 
-		// Check to see if the poster has a 'full' sent box
-		$sql = "SELECT COUNT(privmsgs_id) AS sent_items, MIN(privmsgs_date) AS oldest_post_time 
-			FROM " . PRIVMSGS_TABLE . " 
-			WHERE privmsgs_type = " . PRIVMSGS_SENT_MAIL . " 
-				AND privmsgs_from_userid = " . $privmsg['privmsgs_from_userid'];
-		
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, 'Could not obtain sent message info for sendee', '', __LINE__, __FILE__, $sql);
-		}
+        $sent_info = dibi::select('COUNT(privmsgs_id)')
+            ->as('sent_items')
+            ->select('MIN(privmsgs_date)')
+            ->as('oldest_post_time')
+            ->from(PRIVMSGS_TABLE)
+            ->where('privmsgs_type = %i', PRIVMSGS_SENT_MAIL)
+            ->where('privmsgs_from_userid', $privmsg['privmsgs_from_userid'])
+            ->fetch();
 
 		$sql_priority = ( SQL_LAYER == 'mysql' ) ? 'LOW_PRIORITY' : '';
 
-		if ( $sent_info = $db->sql_fetchrow($result) ) {
-			if ($board_config['max_sentbox_privmsgs'] && $sent_info['sent_items'] >= $board_config['max_sentbox_privmsgs']) {
+        if ($sent_info) {
+			if ($board_config['max_sentbox_privmsgs'] && $sent_info->sent_items >= $board_config['max_sentbox_privmsgs']) {
                 $old_privmsgs_id = dibi::select('privmsgs_id')
                     ->from(PRIVMSGS_TABLE)
                     ->where('privmsgs_type = %i', PRIVMSGS_SENT_MAIL)
-                    ->where('privmsgs_date = %i', $sent_info['oldest_post_time'])
+                    ->where('privmsgs_date = %i', $sent_info->oldest_post_time)
                     ->where('privmsgs_from_userid = %i', $privmsg['privmsgs_from_userid'])
                     ->fetchSingle();
 
@@ -291,6 +290,7 @@ if ( $mode == 'newpm' ) {
 		// set limits on numbers of storable posts for users ... hopefully!
 		//
 
+        // TODO duplicate key
         $insert_data = [
            'privmsgs_type' => PRIVMSGS_SENT_MAIL,
             'privmsgs_subject' => $privmsg['privmsgs_subject'],
@@ -821,32 +821,34 @@ if ( $mode == 'newpm' ) {
 	
 	if (count($mark_list)) {
 		// See if recipient is at their savebox limit
-		$sql = "SELECT COUNT(privmsgs_id) AS savebox_items, MIN(privmsgs_date) AS oldest_post_time 
-			FROM " . PRIVMSGS_TABLE . " 
-			WHERE ( ( privmsgs_to_userid = " . $userdata['user_id'] . " 
-					AND privmsgs_type = " . PRIVMSGS_SAVED_IN_MAIL . " )
-				OR ( privmsgs_from_userid = " . $userdata['user_id'] . " 
-					AND privmsgs_type = " . PRIVMSGS_SAVED_OUT_MAIL . ") )";
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, 'Could not obtain sent message info for sendee', '', __LINE__, __FILE__, $sql);
-		}
+        $saved_info = dibi::select('COUNT(privmsgs_id)')
+            ->as('savebox_items')
+            ->select('MIN(privmsgs_date)')
+            ->as('oldest_post_time')
+            ->from(PRIVMSGS_TABLE)
+            ->where(
+                '((privmsgs_to_userid = %i AND privmsgs_type = %i) OR (privmsgs_from_userid = %i AND privmsgs_type = %i))',
+                $userdata['user_id'],
+                PRIVMSGS_SAVED_IN_MAIL,
+                $userdata['user_id'],
+                PRIVMSGS_SAVED_OUT_MAIL
+            )->fetch();
 
 		$sql_priority = ( SQL_LAYER == 'mysql' ) ? 'LOW_PRIORITY' : '';
 
-		if ( $saved_info = $db->sql_fetchrow($result) ) {
-			if ($board_config['max_savebox_privmsgs'] && $saved_info['savebox_items'] >= $board_config['max_savebox_privmsgs'] ) {
-				$sql = "SELECT privmsgs_id FROM " . PRIVMSGS_TABLE . " 
-					WHERE ( ( privmsgs_to_userid = " . $userdata['user_id'] . " 
-								AND privmsgs_type = " . PRIVMSGS_SAVED_IN_MAIL . " )
-							OR ( privmsgs_from_userid = " . $userdata['user_id'] . " 
-								AND privmsgs_type = " . PRIVMSGS_SAVED_OUT_MAIL . ") ) 
-						AND privmsgs_date = " . $saved_info['oldest_post_time'];
-				
-				if ( !$result = $db->sql_query($sql) ) {
-					message_die(GENERAL_ERROR, 'Could not find oldest privmsgs (save)', '', __LINE__, __FILE__, $sql);
-				}
-				$old_privmsgs_id = $db->sql_fetchrow($result);
-				$old_privmsgs_id = $old_privmsgs_id['privmsgs_id'];
+        if ($saved_info) {
+			if ($board_config['max_savebox_privmsgs'] && $saved_info->savebox_items >= $board_config['max_savebox_privmsgs'] ) {
+			    $old_privmsgs_id = dibi::select('privmsgs_id')
+                    ->from(PRIVMSGS_TABLE)
+                    ->where(
+                        '((privmsgs_to_userid = %i AND privmsgs_type = %i) OR (privmsgs_from_userid = %i AND privmsgs_type = %i))',
+                        $userdata['user_id'],
+                        PRIVMSGS_SAVED_IN_MAIL,
+                        $userdata['user_id'],
+                        PRIVMSGS_SAVED_OUT_MAIL
+                    )
+                    ->where('privmsgs_date = %i', $saved_info->oldest_post_time)
+                    ->fetchSingle();
 
 				dibi::delete(PRIVMSGS_TABLE)
                     ->setFlag($sql_priority)
@@ -1114,41 +1116,40 @@ if ( $mode == 'newpm' ) {
 			//
 			// See if recipient is at their inbox limit
 			//
-			$sql = "SELECT COUNT(privmsgs_id) AS inbox_items, MIN(privmsgs_date) AS oldest_post_time 
-				FROM " . PRIVMSGS_TABLE . " 
-				WHERE ( privmsgs_type = " . PRIVMSGS_NEW_MAIL . " 
-						OR privmsgs_type = " . PRIVMSGS_READ_MAIL . "  
-						OR privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " ) 
-					AND privmsgs_to_userid = " . $to_userdata['user_id'];
-			if ( !($result = $db->sql_query($sql)) )
-			{
-				message_die(GENERAL_MESSAGE, $lang['No_such_user']);
-			}
 
-			$sql_priority = ( SQL_LAYER == 'mysql' ) ? 'LOW_PRIORITY' : '';
+            $inbox_info = dibi::select('COUNT(privmsgs_id)')
+                ->as('inbox_items')
+                ->select('MIN(privmsgs_date)')
+                ->as('oldest_post_time')
+                ->from(PRIVMSGS_TABLE)
+                ->where('(privmsgs_type = %i OR privmsgs_type = %i OR privmsgs_type = %i)', PRIVMSGS_NEW_MAIL, PRIVMSGS_READ_MAIL, PRIVMSGS_UNREAD_MAIL)
+                ->where('privmsgs_to_userid = %i', $to_userdata['user_id'])
+                ->fetch();
 
-			if ( $inbox_info = $db->sql_fetchrow($result) )
-			{
-				if ($board_config['max_inbox_privmsgs'] && $inbox_info['inbox_items'] >= $board_config['max_inbox_privmsgs'])
-				{
-                    $old_privmsgs_id = dibi::select('privmsgs_id')
-                        ->from(PRIVMSGS_TABLE)
-                        ->where('(privmsgs_type = %i OR privmsgs_type = %i OR privmsgs_type)', PRIVMSGS_NEW_MAIL, PRIVMSGS_READ_MAIL, PRIVMSGS_UNREAD_MAIL)
-                        ->where('privmsgs_date = %i', $inbox_info['oldest_post_time'])
-                        ->where('privmsgs_to_userid = %i', $to_userdata['user_id'])
-                        ->fetchSingle();
+            if (!$inbox_info) {
+                message_die(GENERAL_MESSAGE, $lang['No_such_user']);
+            }
 
-                    dibi::delete(PRIVMSGS_TABLE)
-                        ->setFlag($sql_priority)
-                        ->where('privmsgs_id = %i', $old_privmsgs_id)
-                        ->execute();
+            $sql_priority = (SQL_LAYER == 'mysql') ? 'LOW_PRIORITY' : '';
 
-                    dibi::delete(PRIVMSGS_TEXT_TABLE)
-                        ->setFlag($sql_priority)
-                        ->where('privmsgs_text_id = %i', $old_privmsgs_id)
-                        ->execute();
-				}
-			}
+            if ($board_config['max_inbox_privmsgs'] && $inbox_info->inbox_items >= $board_config['max_inbox_privmsgs']) {
+                $old_privmsgs_id = dibi::select('privmsgs_id')
+                    ->from(PRIVMSGS_TABLE)
+                    ->where('(privmsgs_type = %i OR privmsgs_type = %i OR privmsgs_type)', PRIVMSGS_NEW_MAIL, PRIVMSGS_READ_MAIL, PRIVMSGS_UNREAD_MAIL)
+                    ->where('privmsgs_date = %i', $inbox_info->oldest_post_time)
+                    ->where('privmsgs_to_userid = %i', $to_userdata['user_id'])
+                    ->fetchSingle();
+
+                dibi::delete(PRIVMSGS_TABLE)
+                    ->setFlag($sql_priority)
+                    ->where('privmsgs_id = %i', $old_privmsgs_id)
+                    ->execute();
+
+                dibi::delete(PRIVMSGS_TEXT_TABLE)
+                    ->setFlag($sql_priority)
+                    ->where('privmsgs_text_id = %i', $old_privmsgs_id)
+                    ->execute();
+            }
 
             $insert_data = [
                 'privmsgs_type' => PRIVMSGS_NEW_MAIL,
@@ -1327,28 +1328,37 @@ if ( $mode == 'newpm' ) {
                 $error_msg = $lang['No_such_user'];
             }
 		} elseif ( $mode == 'edit' ) {
-			$sql = "SELECT pm.*, pmt.privmsgs_bbcode_uid, pmt.privmsgs_text, u.username, u.user_id, u.user_sig 
-				FROM " . PRIVMSGS_TABLE . " pm, " . PRIVMSGS_TEXT_TABLE . " pmt, " . USERS_TABLE . " u
-				WHERE pm.privmsgs_id = $privmsg_id
-					AND pmt.privmsgs_text_id = pm.privmsgs_id
-					AND pm.privmsgs_from_userid = " . $userdata['user_id'] . "
-					AND ( pm.privmsgs_type = " . PRIVMSGS_NEW_MAIL . " 
-						OR pm.privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " ) 
-					AND u.user_id = pm.privmsgs_to_userid";
+		    $columns = [
+		        'pm.*',
+                'pmt.privmsgs_bbcode_uid',
+                'pmt.privmsgs_text',
+                'u.username',
+                'u.user_id',
+                'u.user_sig '
+            ];
 
-            if (!($result = $db->sql_query($sql))) {
-                message_die(GENERAL_ERROR, 'Could not obtain private message for editing', '', __LINE__, __FILE__,
-                    $sql);
-            }
+            $privmsg = dibi::select($columns)
+                ->from(PRIVMSGS_TABLE)
+                ->as('pm')
+                ->from(PRIVMSGS_TEXT_TABLE)
+                ->as('pmt')
+                ->from(USERS_TABLE)
+                ->as('u')
+                ->where('pm.privmsgs_id = %i', $privmsg_id)
+                ->where('pmt.privmsgs_text_id = pm.privmsgs_id')
+                ->where('pm.privmsgs_from_userid = %i', $userdata['user_id'])
+                ->where('(pm.privmsgs_type = %i OR privmsgs_type = %i)', PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL)
+                ->where('u.user_id = pm.privmsgs_to_userid"')
+                ->fetch();
 
-            if (!($privmsg = $db->sql_fetchrow($result))) {
+            if (!$privmsg) {
                 redirect(append_sid("privmsg.php?folder=$folder", true));
             }
 
-			$privmsg_subject = $privmsg['privmsgs_subject'];
-			$privmsg_message = $privmsg['privmsgs_text'];
-			$privmsg_bbcode_uid = $privmsg['privmsgs_bbcode_uid'];
-			$privmsg_bbcode_enabled = ($privmsg['privmsgs_enable_bbcode'] == 1);
+			$privmsg_subject = $privmsg->privmsgs_subject;
+			$privmsg_message = $privmsg->privmsgs_text;
+			$privmsg_bbcode_uid = $privmsg->privmsgs_bbcode_uid;
+			$privmsg_bbcode_enabled = $privmsg->privmsgs_enable_bbcode == 1;
 
             if ($privmsg_bbcode_enabled) {
                 $privmsg_message = preg_replace("/\:(([a-z0-9]:)?)$privmsg_bbcode_uid/si", '', $privmsg_message);
@@ -1357,47 +1367,58 @@ if ( $mode == 'newpm' ) {
 			$privmsg_message = str_replace('<br />', "\n", $privmsg_message);
 			// $privmsg_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $privmsg_message);
 
-			$user_sig = $board_config['allow_sig'] ? (($privmsg['privmsgs_type'] == PRIVMSGS_NEW_MAIL) ? $user_sig : $privmsg['user_sig']) : '';
+			$user_sig = $board_config['allow_sig'] ? (($privmsg->privmsgs_type == PRIVMSGS_NEW_MAIL) ? $user_sig : $privmsg->user_sig) : '';
 
-			$to_username = $privmsg['username'];
-			$to_userid = $privmsg['user_id'];
+			$to_username = $privmsg->username;
+			$to_userid = $privmsg->user_id;
 
 		} elseif ( $mode == 'reply' || $mode == 'quote' ) {
+            $columns = [
+                'pm.privmsgs_subject',
+                'pm.privmsgs_date',
+                'pmt.privmsgs_bbcode_uid',
+                'pmt.privmsgs_text',
+                'u.username',
+                'u.user_id',
+            ];
 
-			$sql = "SELECT pm.privmsgs_subject, pm.privmsgs_date, pmt.privmsgs_bbcode_uid, pmt.privmsgs_text, u.username, u.user_id
-				FROM " . PRIVMSGS_TABLE . " pm, " . PRIVMSGS_TEXT_TABLE . " pmt, " . USERS_TABLE . " u
-				WHERE pm.privmsgs_id = $privmsg_id
-					AND pmt.privmsgs_text_id = pm.privmsgs_id
-					AND pm.privmsgs_to_userid = " . $userdata['user_id'] . "
-					AND u.user_id = pm.privmsgs_from_userid";
 
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, 'Could not obtain private message for editing', '', __LINE__, __FILE__, $sql);
-			}
+            $privmsg = dibi::select($columns)
+                ->from(PRIVMSGS_TABLE)
+                ->as('pm')
+                ->from(PRIVMSGS_TEXT_TABLE)
+                ->as('pmt')
+                ->from(USERS_TABLE)
+                ->as('u')
+                ->where('pm.privmsgs_id = %i', $privmsg_id)
+                ->where('pmt.privmsgs_text_id = pm.privmsgs_id')
+                ->where('pm.privmsgs_to_userid = %i', $userdata['user_id'])
+                ->where('u.user_id = pm.privmsgs_from_userid')
+                ->fetch();
 
-			if ( !($privmsg = $db->sql_fetchrow($result)) ) {
-				redirect(append_sid("privmsg.php?folder=$folder", true));
-			}
+            if (!$privmsg) {
+                redirect(append_sid("privmsg.php?folder=$folder", true));
+            }
 
 			$orig_word = $replacement_word = [];
 			obtain_word_list($orig_word, $replacement_word);
 
-			$privmsg_subject = ( ( !preg_match('/^Re:/', $privmsg['privmsgs_subject']) ) ? 'Re: ' : '' ) . $privmsg['privmsgs_subject'];
+			$privmsg_subject = ( ( !preg_match('/^Re:/', $privmsg->privmsgs_subject) ) ? 'Re: ' : '' ) . $privmsg->privmsgs_subject;
 			$privmsg_subject = preg_replace($orig_word, $replacement_word, $privmsg_subject);
 
-			$to_username = $privmsg['username'];
-			$to_userid = $privmsg['user_id'];
+			$to_username = $privmsg->username;
+			$to_userid = $privmsg->user_id;
 
 			if ( $mode == 'quote' ) {
-				$privmsg_message = $privmsg['privmsgs_text'];
-				$privmsg_bbcode_uid = $privmsg['privmsgs_bbcode_uid'];
+				$privmsg_message = $privmsg->privmsgs_text;
+				$privmsg_bbcode_uid = $privmsg->privmsgs_bbcode_uid;
 
 				$privmsg_message = preg_replace("/\:(([a-z0-9]:)?)$privmsg_bbcode_uid/si", '', $privmsg_message);
 				$privmsg_message = str_replace('<br />', "\n", $privmsg_message);
 				// $privmsg_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $privmsg_message);
 				$privmsg_message = preg_replace($orig_word, $replacement_word, $privmsg_message);
 				
-				$msg_date =  create_date($board_config['default_dateformat'], $privmsg['privmsgs_date'], $board_config['board_timezone']); 
+				$msg_date =  create_date($board_config['default_dateformat'], $privmsg->privmsgs_date, $board_config['board_timezone']);
 
 				$privmsg_message = '[quote="' . $to_username . '"]' . $privmsg_message . '[/quote]';
 
