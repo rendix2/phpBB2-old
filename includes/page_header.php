@@ -89,6 +89,22 @@ if (defined('SHOW_ONLINE')) {
 			AND s.session_time >= ".( time() - 300 ) . "
 			$user_forum_sql
 		ORDER BY u.username ASC, s.session_ip ASC";
+
+	$rows = dibi::select(['u.username', 'u.user_id', 'u.user_allow_viewonline', 'u.user_level', 's.session_logged_in', 's.session_ip'])
+        ->from(USERS_TABLE)
+        ->as('u')
+        ->from(SESSIONS_TABLE)
+        ->as('s')
+        ->where('u.user_id = s.session_user_id')
+        ->where('s.session_time >= %i', time() - 300);
+
+	if (!empty($forum_id)) {
+	    $rows->where('s.session_page = %i', $forum_id);
+    }
+
+	$rows = $rows->orderBy('u.username', dibi::ASC)
+        ->orderBy('s.session_ip', dibi::ASC)
+        ->fetchAll();
 	
 	if (!($result = $db->sql_query($sql)) ) {
 		message_die(GENERAL_ERROR, 'Could not obtain user/online information', '', __LINE__, __FILE__, $sql);
@@ -100,46 +116,44 @@ if (defined('SHOW_ONLINE')) {
 	$prev_user_id = 0;
 	$prev_user_ip = $prev_session_ip = '';
 
-	while ($row = $db->sql_fetchrow($result) ) {
+	foreach ($rows as $row) {
 		// User is logged in and therefor not a guest
-		if ( $row['session_logged_in'] ) {
+		if ( $row->session_logged_in ) {
 			// Skip multiple sessions for one user
-			if ( $row['user_id'] != $prev_user_id ) {
+			if ( $row->user_id != $prev_user_id ) {
 				$style_color = '';
 				
-				if ( $row['user_level'] == ADMIN ) {
-					$row['username'] = '<b>' . $row['username'] . '</b>';
+				if ( $row->user_level == ADMIN ) {
+					$row->username = '<b>' . $row->username . '</b>';
 					$style_color = 'style="color:#' . $theme['fontcolor3'] . '"';
-				} elseif ( $row['user_level'] == MOD ) {
-					$row['username'] = '<b>' . $row['username'] . '</b>';
+				} elseif ( $row->user_level == MOD ) {
+					$row->username = '<b>' . $row->username . '</b>';
 					$style_color = 'style="color:#' . $theme['fontcolor2'] . '"';
 				}
 
-				if ( $row['user_allow_viewonline'] ) {
-					$user_online_link = '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . '"' . $style_color .'>' . $row['username'] . '</a>';
+				if ( $row->user_allow_viewonline ) {
+					$user_online_link = '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row->user_id) . '"' . $style_color .'>' . $row->username . '</a>';
 					$logged_visible_online++;
 				} else {
-					$user_online_link = '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . '"' . $style_color .'><i>' . $row['username'] . '</i></a>';
+					$user_online_link = '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row->user_id) . '"' . $style_color .'><i>' . $row->username . '</i></a>';
 					$logged_hidden_online++;
 				}
 
-				if ( $row['user_allow_viewonline'] || $userdata['user_level'] == ADMIN ) {
+				if ( $row->user_allow_viewonline || $userdata['user_level'] == ADMIN ) {
 					$online_userlist .= ( $online_userlist != '' ) ? ', ' . $user_online_link : $user_online_link;
 				}
 			}
 
-			$prev_user_id = $row['user_id'];
+			$prev_user_id = $row->user_id;
 		} else {
 			// Skip multiple sessions for one user
-			if ( $row['session_ip'] != $prev_session_ip ) {
+			if ( $row->session_ip != $prev_session_ip ) {
 				$guests_online++;
 			}
 		}
 
-		$prev_session_ip = $row['session_ip'];
+		$prev_session_ip = $row->session_ip;
 	}
-	
-	$db->sql_freeresult($result);
 
 	if ( empty($online_userlist) ) {
 		$online_userlist = $lang['None'];

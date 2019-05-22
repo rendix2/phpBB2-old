@@ -21,83 +21,78 @@
  *
  ***************************************************************************/
 
-if ( !defined('IN_PHPBB') ) {
-	die('Hacking attempt');
-	exit;
+if (!defined('IN_PHPBB')) {
+    die('Hacking attempt');
 }
 
-if ( isset($_POST['submit']) ) {
+if (isset($_POST['submit'])) {
 	$username = !empty($_POST['username']) ? phpbb_clean_username($_POST['username']) : '';
-	$email = !empty($_POST['email']) ? trim(strip_tags(htmlspecialchars($_POST['email']))) : '';
+	$email    = !empty($_POST['email']) ? trim(strip_tags(htmlspecialchars($_POST['email']))) : '';
 
-	$sql = "SELECT user_id, username, user_email, user_active, user_lang 
-		FROM " . USERS_TABLE . " 
-		WHERE user_email = '" . str_replace("\'", "''", $email) . "' 
-			AND username = '" . str_replace("\'", "''", $username) . "'";
-	
-	if ( $result = $db->sql_query($sql) ) {
-		if ( $row = $db->sql_fetchrow($result) ) {
-			if ( !$row['user_active'] ) {
-				message_die(GENERAL_MESSAGE, $lang['No_send_account_inactive']);
-			}
+	$row = dibi::select(['user_id', 'username', 'user_email', 'user_active', 'user_lang'])
+        ->from(USERS_TABLE)
+        ->where('user_email = %s', $email)
+        ->where('username = %s', $username)
+        ->fetch();
 
-			$username = $row['username'];
-			$user_id = $row['user_id'];
+	if (!$row) {
+        message_die(GENERAL_MESSAGE, $lang['No_email_match']);
+    }
 
-			$user_actkey = gen_rand_string(true);
-			$key_len = 54 - strlen($server_url);
-			$key_len = ($key_len > 6) ? $key_len : 6;
-			$user_actkey = substr($user_actkey, 0, $key_len);
-			$user_password = gen_rand_string(false);
+    if (!$row->user_active) {
+        message_die(GENERAL_MESSAGE, $lang['No_send_account_inactive']);
+    }
 
-			$update_data = [
-			    'user_newpasswd' => md5($user_password),
-                'user_actkey' => $user_actkey
-            ];
+    $username = $row->username;
+    $user_id  = $row->user_id;
 
-			dibi::update(USERS_TABLE, $update_data)
-                ->where('user_id = %i', $row['user_id'])
-                ->execute();
+    $user_actkey   = gen_rand_string(true);
+    $key_len       = 54 - strlen($server_url);
+    $key_len       = $key_len > 6 ? $key_len : 6;
+    $user_actkey   = substr($user_actkey, 0, $key_len);
+    $user_password = gen_rand_string(false);
 
-			include $phpbb_root_path . 'includes/emailer.php';
-			$emailer = new emailer($board_config['smtp_delivery']);
+    $update_data = [
+        'user_newpasswd' => md5($user_password),
+        'user_actkey'    => $user_actkey
+    ];
 
-			$emailer->from($board_config['board_email']);
-			$emailer->replyto($board_config['board_email']);
+    dibi::update(USERS_TABLE, $update_data)
+        ->where('user_id = %i', $row->user_id)
+        ->execute();
 
-			$emailer->use_template('user_activate_passwd', $row['user_lang']);
-			$emailer->email_address($row['user_email']);
-			$emailer->set_subject($lang['New_password_activation']);
+    include $phpbb_root_path . 'includes/emailer.php';
+    $emailer = new emailer($board_config['smtp_delivery']);
 
-			$emailer->assign_vars(array(
-                    'SITENAME' => $board_config['sitename'],
-                    'USERNAME' => $username,
-                    'PASSWORD' => $user_password,
-                    'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
+    $emailer->from($board_config['board_email']);
+    $emailer->replyto($board_config['board_email']);
 
-                    'U_ACTIVATE' => $server_url . '?mode=activate&' . POST_USERS_URL . '=' . $user_id . '&act_key=' . $user_actkey)
-			);
-			$emailer->send();
-			$emailer->reset();
+    $emailer->use_template('user_activate_passwd', $row->user_lang);
+    $emailer->email_address($row->user_email);
+    $emailer->set_subject($lang['New_password_activation']);
 
-            $template->assign_vars(
-                [
-                    'META' => '<meta http-equiv="refresh" content="15;url=' . append_sid("index.php") . '">'
-                ]
-            );
+    $emailer->assign_vars(
+        [
+            'SITENAME'  => $board_config['sitename'],
+            'USERNAME'  => $username,
+            'PASSWORD'  => $user_password,
+            'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
 
-            $message = $lang['Password_updated'] . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . append_sid("index.php") . '">', '</a>');
+            'U_ACTIVATE' => $server_url . '?mode=activate&' . POST_USERS_URL . '=' . $user_id . '&act_key=' . $user_actkey
+        ]
+    );
+    $emailer->send();
+    $emailer->reset();
 
-			message_die(GENERAL_MESSAGE, $message);
-		} else {
-			message_die(GENERAL_MESSAGE, $lang['No_email_match']);
-		}
-	} else {
-		message_die(GENERAL_ERROR, 'Could not obtain user information for sendpassword', '', __LINE__, __FILE__, $sql);
-	}
-} else {
-	$username = '';
-	$email = '';
+    $template->assign_vars(
+        [
+            'META' => '<meta http-equiv="refresh" content="15;url=' . append_sid("index.php") . '">'
+        ]
+    );
+
+    $message = $lang['Password_updated'] . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
+
+    message_die(GENERAL_MESSAGE, $message);
 }
 
 //
@@ -108,8 +103,8 @@ include $phpbb_root_path . 'includes/page_header.php';
 $template->set_filenames(['body' => 'profile_send_pass.tpl']);
 make_jumpbox('viewforum.php');
 
-$template->assign_vars
-([
+$template->assign_vars(
+    [
         'USERNAME' => $username,
         'EMAIL'    => $email,
 

@@ -162,67 +162,54 @@ function make_jumpbox($action, $match_forum_id = 0)
 
 //	$is_auth = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
 
-	$sql = "SELECT c.cat_id, c.cat_title, c.cat_order
-		FROM " . CATEGORIES_TABLE . " c, " . FORUMS_TABLE . " f
-		WHERE f.cat_id = c.cat_id
-		GROUP BY c.cat_id, c.cat_title, c.cat_order
-		ORDER BY c.cat_order";
+    $categories = dibi::select(['c.cat_id', 'c.cat_title', 'c.cat_order'])
+        ->from(CATEGORIES_TABLE)
+        ->as('c')
+        ->from(FORUMS_TABLE)
+        ->as('f')
+        ->where('f.cat_id = c.cat_id')
+        ->groupBy('c.cat_id')
+        ->groupBy('c.cat_title')
+        ->groupBy(' c.cat_order')
+        ->orderBy('c.cat_order')
+        ->fetchAll();
 
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, "Couldn't obtain category list.", "", __LINE__, __FILE__, $sql);
-	}
-	
-	$category_rows = [];
-
-	while ( $row = $db->sql_fetchrow($result) ) {
-		$category_rows[] = $row;
-	}
-
-	if ( $total_categories = count($category_rows) ) {
-		$sql = "SELECT *
-			FROM " . FORUMS_TABLE . "
-			ORDER BY cat_id, forum_order";
-
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, 'Could not obtain forums information', '', __LINE__, __FILE__, $sql);
-		}
+    if (count($categories)) {
+        $forums = dibi::select('*')
+            ->from(FORUMS_TABLE)
+            ->orderBy('cat_id')
+            ->orderBy('forum_order')
+            ->fetchAll();
 
 		$boxstring = '<select name="' . POST_FORUM_URL . '" onchange="if (this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $lang['Select_forum'] . '</option>';
 
-		$forum_rows = [];
-
-		while ( $row = $db->sql_fetchrow($result) ) {
-			$forum_rows[] = $row;
-		}
-
-		if ( $total_forums = count($forum_rows) ) {
-			for ($i = 0; $i < $total_categories; $i++) {
+        if (count($forums)) {
+            foreach ($categories as $category) {
 				$boxstring_forums = '';
 
-				for ($j = 0; $j < $total_forums; $j++) {
-					if ( $forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $forum_rows[$j]['auth_view'] <= AUTH_REG ) {
+				foreach ($forums as $forum) {
+					if ( $forum->cat_id == $category->cat_id && $forum->auth_view <= AUTH_REG ) {
 
 //					if ( $forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $is_auth[$forum_rows[$j]['forum_id']]['auth_view'] )
 //					{
-						$selected = ( $forum_rows[$j]['forum_id'] == $match_forum_id ) ? 'selected="selected"' : '';
-						$boxstring_forums .=  '<option value="' . $forum_rows[$j]['forum_id'] . '"' . $selected . '>' . $forum_rows[$j]['forum_name'] . '</option>';
+						$selected = ( $forum->forum_id == $match_forum_id ) ? 'selected="selected"' : '';
+						$boxstring_forums .=  '<option value="' . $forum->forum_id . '"' . $selected . '>' . $forum->forum_name . '</option>';
 
 						//
 						// Add an array to $nav_links for the Mozilla navigation bar.
 						// 'chapter' and 'forum' can create multiple items, therefore we are using a nested array.
 						//
-						$nav_links['chapter forum'][$forum_rows[$j]['forum_id']] = array (
-							'url' => append_sid("viewforum.php?" . POST_FORUM_URL . "=" . $forum_rows[$j]['forum_id']),
-							'title' => $forum_rows[$j]['forum_name']
+						$nav_links['chapter forum'][$forum->forum_id] = array (
+							'url' => append_sid("viewforum.php?" . POST_FORUM_URL . "=" . $forum->forum_id),
+							'title' => $forum->forum_name
 						);
-								
 					}
 				}
 
 				if ( $boxstring_forums != '' )
 				{
 					$boxstring .= '<option value="-1">&nbsp;</option>';
-					$boxstring .= '<option value="-1">' . $category_rows[$i]['cat_title'] . '</option>';
+					$boxstring .= '<option value="-1">' . $category->cat_title . '</option>';
 					$boxstring .= '<option value="-1">----------------</option>';
 					$boxstring .= $boxstring_forums;
 				}

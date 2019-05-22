@@ -111,73 +111,75 @@ function topic_review($topic_id, $is_inline_review)
     //
 	// Go ahead and pull all data for this topic
 	//
-	$sql = "SELECT u.username, u.user_id, p.*,  pt.post_text, pt.post_subject, pt.bbcode_uid
-		FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
-		WHERE p.topic_id = $topic_id
-			AND p.poster_id = u.user_id
-			AND p.post_id = pt.post_id
-		ORDER BY p.post_time DESC
-		LIMIT " . $board_config['posts_per_page'];
-	
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, 'Could not obtain post/user information', '', __LINE__, __FILE__, $sql);
-	}
+    $rows = dibi::select(['u.username', 'u.user_id', 'p.*', 'pt.post_text', 'pt.post_subject', 'pt.bbcode_uid'])
+        ->from(POSTS_TABLE)
+        ->select('p')
+        ->from(USERS_TABLE)
+        ->as('u')
+        ->from(POSTS_TEXT_TABLE)
+        ->as('pt')
+        ->where('p.topic_id = %i', $topic_id)
+        ->where('p.poster_id = u.user_id')
+        ->where('p.post_id = pt.post_id')
+        ->orderBy('p.post_time', dibi::DESC)
+        ->limit($board_config['posts_per_page'])
+        ->fetchAll();
 
 	//
 	// Okay, let's do the loop, yeah come on baby let's do the loop
 	// and it goes like this ...
 	//
-	if ( $row = $db->sql_fetchrow($result) ) {
+    if (count($rows)) {
 		$mini_post_img = $images['icon_minipost'];
 		$mini_post_alt = $lang['Post'];
 
 		$i = 0;
 		
-		do
-		{
-			$poster_id = $row['user_id'];
-			$poster = $row['username'];
+		foreach ($rows as $row) {
+			$poster_id = $row->user_id;
+			$poster = $row->username;
 
-			$post_date = create_date($board_config['default_dateformat'], $row['post_time'], $board_config['board_timezone']);
+			$post_date = create_date($board_config['default_dateformat'], $row->post_time,
+			$board_config['board_timezone']);
 
 			//
 			// Handle anon users posting with usernames
 			//
-			if ($poster_id == ANONYMOUS && $row['post_username'] != '' ) {
-				$poster = $row['post_username'];
+            if ($poster_id == ANONYMOUS && $row->post_username != '') {
+				$poster = $row->post_username;
 				$poster_rank = $lang['Guest'];
-			} elseif ( $poster_id == ANONYMOUS ) {
+            } elseif ($poster_id == ANONYMOUS) {
 				$poster = $lang['Guest'];
 				$poster_rank = '';
 			}
 
-			$post_subject = ( $row['post_subject'] != '' ) ? $row['post_subject'] : '';
+			$post_subject = ( $row->post_subject != '' ) ? $row->post_subject : '';
 
-			$message = $row['post_text'];
-			$bbcode_uid = $row['bbcode_uid'];
+			$message = $row->post_text;
+			$bbcode_uid = $row->bbcode_uid;
 
 			//
 			// If the board has HTML off but the post has HTML
 			// on then we process it, else leave it alone
 			//
-			if ( !$board_config['allow_html'] && $row['enable_html'] ) {
-				$message = preg_replace('#(<)([\/]?.*?)(>)#is', '&lt;\2&gt;', $message);
-			}
+            if (!$board_config['allow_html'] && $row->enable_html) {
+                $message = preg_replace('#(<)([\/]?.*?)(>)#is', '&lt;\2&gt;', $message);
+            }
 
-			if ( $bbcode_uid != "" ) {
-				$message = $board_config['allow_bbcode'] ? bbencode_second_pass($message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
-			}
+            if ($bbcode_uid != "") {
+                $message = $board_config['allow_bbcode'] ? bbencode_second_pass($message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
+            }
 
 			$message = make_clickable($message);
 
-			if ( count($orig_word) ) {
-				$post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
-				$message = preg_replace($orig_word, $replacement_word, $message);
-			}
+            if (count($orig_word)) {
+                $post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
+                $message      = preg_replace($orig_word, $replacement_word, $message);
+            }
 
-			if ( $board_config['allow_smilies'] && $row['enable_smilies'] ) {
-				$message = smilies_pass($message);
-			}
+            if ($board_config['allow_smilies'] && $row->enable_smilies) {
+                $message = smilies_pass($message);
+            }
 
 			$message = str_replace("\n", '<br />', $message);
 
@@ -203,12 +205,9 @@ function topic_review($topic_id, $is_inline_review)
 
 			$i++;
 		}
-		while ( $row = $db->sql_fetchrow($result) );
 	} else {
 		message_die(GENERAL_MESSAGE, 'Topic_post_not_exist', '', __LINE__, __FILE__, $sql);
 	}
-	
-	$db->sql_freeresult($result);
 
     $template->assign_vars(
         [
@@ -220,10 +219,10 @@ function topic_review($topic_id, $is_inline_review)
         ]
     );
 
-    if ( !$is_inline_review ) {
-		$template->pparse('reviewbody');
-		include $phpbb_root_path . 'includes/page_tail.php';
-	}
+    if (!$is_inline_review) {
+        $template->pparse('reviewbody');
+        include $phpbb_root_path . 'includes/page_tail.php';
+    }
 }
 
 ?>
