@@ -549,33 +549,26 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 	//
 	// Front end
 	//
-	$sql = "SELECT f.* 
-		FROM " . FORUMS_TABLE . " f, " . CATEGORIES_TABLE . " c
-		WHERE f.cat_id = c.cat_id
-		ORDER BY c.cat_order, f.forum_order ASC";
-
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, "Couldn't obtain forum information", "", __LINE__, __FILE__, $sql);
-	}
-
-	$forum_access = [];
-
-	while ($row = $db->sql_fetchrow($result) ) {
-		$forum_access[] = $row;
-	}
-
-	$db->sql_freeresult($result);
+    $forum_access = dibi::select('f.*')
+        ->from(FORUMS_TABLE)
+        ->as('f')
+        ->from(CATEGORIES_TABLE)
+        ->as('c')
+        ->where('f.cat_id = c.cat_id')
+        ->orderBy('c.cat_order', dibi::ASC)
+        ->orderBy('f.forum_order', dibi::ASC)
+        ->fetchAll();
 
 	if (empty($adv) ) {
-		for ($i = 0; $i < count($forum_access); $i++) {
-			$forum_id = $forum_access[$i]['forum_id'];
+		foreach ($forum_access as $access) {
+			$forum_id = $access->forum_id;
 
 			$forum_auth_level[$forum_id] = AUTH_ALL;
 
 			for ($j = 0; $j < count($forum_auth_fields); $j++) {
-				$forum_access[$i][$forum_auth_fields[$j]] . ' :: ';
+                $access->{$forum_auth_fields[$j]} . ' :: ';
 
-                if ($forum_access[$i][$forum_auth_fields[$j]] == AUTH_ACL) {
+                if ($access->{$forum_auth_fields[$j]} == AUTH_ACL) {
 					$forum_auth_level[$forum_id] = AUTH_ACL;
 					$forum_auth_level_fields[$forum_id][] = $forum_auth_fields[$j];
 				}
@@ -880,24 +873,18 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
             ]
         );
     } else {
-		$sql = "SELECT group_id, group_name
-			FROM " . GROUPS_TABLE . "
-			WHERE group_single_user <> " . TRUE;
+        $groups = dibi::select(['group_id', 'group_name'])
+            ->from(GROUPS_TABLE)
+            ->where('group_single_user <> %i', 1)
+            ->fetchPairs('group_id', 'group_name');
 
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, "Couldn't get group list", "", __LINE__, __FILE__, $sql);
-		}
-
-		if ( $row = $db->sql_fetchrow($result) ) {
 			$select_list = '<select name="' . POST_GROUPS_URL . '">';
 
-			do {
-				$select_list .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
-			}
-			while ( $row = $db->sql_fetchrow($result) );
+			foreach ($groups as $group_id => $group_name) {
+                $select_list .= '<option value="' . $group_id . '">' . $group_name . '</option>';
+            }
 
 			$select_list .= '</select>';
-		}
 
         $template->assign_vars(['S_AUTH_SELECT' => $select_list]);
     }

@@ -296,25 +296,22 @@ if ( isset($_POST['submit']) ) {
 	$ipban_count = 0;
 	$emailban_count = 0;
 
-	$sql = "SELECT b.ban_id, u.user_id, u.username
-		FROM " . BANLIST_TABLE . " b, " . USERS_TABLE . " u
-		WHERE u.user_id = b.ban_userid
-			AND b.ban_userid <> 0
-			AND u.user_id <> " . ANONYMOUS . "
-		ORDER BY u.user_id ASC";
+    $user_list = dibi::select(['b.ban_id', 'u.user_id', 'u.username'])
+        ->from(BANLIST_TABLE)
+        ->as('b')
+        ->from(USERS_TABLE)
+        ->as('u')
+        ->where('u.user_id = b.ban_userid')
+        ->where('b.ban_userid <> 0')
+        ->where('u.user_id <> %i', ANONYMOUS)
+        ->orderBy('u.user_id', dibi::ASC)
+        ->fetchAll();
 
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, 'Could not select current user_id ban list', '', __LINE__, __FILE__, $sql);
-	}
-
-	$user_list = $db->sql_fetchrowset($result);
-	$db->sql_freeresult($result);
-
+    $userban_count = count($user_list);
 	$select_userlist = '';
 
-	for ($i = 0; $i < count($user_list); $i++) {
-		$select_userlist .= '<option value="' . $user_list[$i]['ban_id'] . '">' . $user_list[$i]['username'] . '</option>';
-		$userban_count++;
+	foreach ($user_list as $user_item) {
+		$select_userlist .= '<option value="' . $user_item->ban_id . '">' . $user_item->username . '</option>';
 	}
 
 	if ($select_userlist == '' ) {
@@ -323,28 +320,22 @@ if ( isset($_POST['submit']) ) {
 
 	$select_userlist = '<select name="unban_user[]" multiple="multiple" size="5">' . $select_userlist . '</select>';
 
-	$sql = "SELECT ban_id, ban_ip, ban_email
-		FROM " . BANLIST_TABLE;
-
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, 'Could not select current ip ban list', '', __LINE__, __FILE__, $sql);
-	}
-
-	$banlist = $db->sql_fetchrowset($result);
-	$db->sql_freeresult($result);
+    $banlist = dibi::select(['ban_id', 'ban_ip', 'ban_email'])
+        ->from(BANLIST_TABLE)
+        ->fetchAll();
 
 	$select_iplist = '';
 	$select_emaillist = '';
 
-	for ($i = 0; $i < count($banlist); $i++) {
-		$ban_id = $banlist[$i]['ban_id'];
+	foreach ($banlist as $ban) {
+		$ban_id = $ban->ban_id;
 
-		if ( !empty($banlist[$i]['ban_ip']) ) {
-			$ban_ip = str_replace('255', '*', decode_ip($banlist[$i]['ban_ip']));
+		if ( !empty($ban->ban_ip) ) {
+			$ban_ip = str_replace('255', '*', decode_ip($ban->ban_ip));
 			$select_iplist .= '<option value="' . $ban_id . '">' . $ban_ip . '</option>';
 			$ipban_count++;
-		} elseif ( !empty($banlist[$i]['ban_email']) ) {
-			$ban_email = $banlist[$i]['ban_email'];
+		} elseif ( !empty($ban->ban_email) ) {
+			$ban_email = $ban->ban_email;
 			$select_emaillist .= '<option value="' . $ban_id . '">' . $ban_email . '</option>';
 			$emailban_count++;
 		}
