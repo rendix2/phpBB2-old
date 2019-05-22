@@ -53,7 +53,7 @@ if (isset($_POST['submit'])) {
     $user_password = gen_rand_string(false);
 
     $update_data = [
-        'user_newpasswd' => md5($user_password),
+        'user_newpasswd' => password_hash($user_password, PASSWORD_BCRYPT),
         'user_actkey'    => $user_actkey
     ];
 

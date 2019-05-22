@@ -306,14 +306,14 @@ if ( isset($_POST['submit']) )
                     message_die(GENERAL_ERROR, 'Could not obtain user_password information');
                 }
 
-				if ( $db_password != md5($cur_password) ) {
+				if ( !password_verify($cur_password, PASSWORD_BCRYPT) ) {
 					$error = TRUE;
 					$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Current_password_mismatch'];
 				}
 			}
 
 			if ( !$error ) {
-				$new_password = md5($new_password);
+				$new_password = password_hash($new_password, PASSWORD_BCRYPT);
                 $user_password_data = ['user_password' => $new_password];
 			}
 		}
@@ -346,7 +346,7 @@ if ( isset($_POST['submit']) )
                 message_die(GENERAL_ERROR, 'Could not obtain user_password information');
             }
 
-			if ( $db_password != md5($cur_password) ) {
+			if ( !password_verify($cur_password, $db_password) ) {
 				$email = $userdata['user_email'];
 
 				$error = TRUE;

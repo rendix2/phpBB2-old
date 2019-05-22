@@ -267,7 +267,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 				$error = TRUE;
 				$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Password_mismatch'];
 			} else {
-				$password = md5($password);
+				$password = password_hash($password, PASSWORD_BCRYPT);
                 $passwd_sql['user_password'] = $password;
 			}
 		} elseif ($password && !$password_confirm ) {

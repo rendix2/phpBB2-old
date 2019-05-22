@@ -88,7 +88,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 					message_die(GENERAL_MESSAGE, sprintf($lang['Login_attempts_exceeded'], $board_config['max_login_attempts'], $board_config['login_reset_time']));
 				}
 
-				if (md5($password) == $row->user_password && $row->user_active ) {
+				if (password_verify($password, $row->user_password) && $row->user_active ) {
 					$autologin = isset($_POST['autologin']) ? TRUE : 0;
 
 					$admin = isset($_POST['admin']) ? 1 : 0;
