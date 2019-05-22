@@ -280,21 +280,27 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
                 ->where('f.cat_id = c.cat_id')
                 ->orderBy('c.cat_order')
                 ->orderBy('f.forum_order')
-                ->fetchAll();
+                ->fetchAssoc('forum_id');
 
-			$sql = ( $mode == 'user' ) ? "SELECT aa.* FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE. " g WHERE ug.user_id = $user_id AND g.group_id = ug.group_id AND aa.group_id = ug.group_id AND g.group_single_user = " . TRUE : "SELECT * FROM " . AUTH_ACCESS_TABLE . " WHERE group_id = $group_id";
-
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, "Couldn't obtain user/group permissions", "", __LINE__, __FILE__, $sql);
-			}
-
-			$auth_access = [];
-
-			while ($row = $db->sql_fetchrow($result) ) {
-				$auth_access[$row['forum_id']] = $row;
-			}
-
-			$db->sql_freeresult($result);
+            if ($mode == 'user') {
+                $auth_access = dibi::select('aa.* ')
+                    ->from(AUTH_ACCESS_TABLE)
+                    ->as('aa')
+                    ->from(USER_GROUP_TABLE)
+                    ->as('ug')
+                    ->from(GROUPS_TABLE)
+                    ->as('g')
+                    ->where('ug.user_id = %i', $user_id)
+                    ->where('g.group_id = ug.group_id')
+                    ->where('aa.group_id = ug.group_id')
+                    ->where('g.group_single_user = %i', 1)
+                    ->fetchAll();
+            } else {
+                $auth_access = dibi::select('*')
+                    ->from(AUTH_ACCESS_TABLE)
+                    ->where('group_id = %i', $group_id)
+                    ->fetchAssoc('forum_id');
+            }
 
 			$forum_auth_action = [];
 			$update_acl_status = [];
