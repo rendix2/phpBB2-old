@@ -165,12 +165,12 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
         'session_admin' => $admin
     ];
 
-	dibi::update(SESSIONS_TABLE, $update_data)
+	$result = dibi::update(SESSIONS_TABLE, $update_data)
         ->where('session_id = %s', $session_id)
         ->where('session_ip = %s', $user_ip)
         ->execute();
 
-    if(!dibi::getAffectedRows()) {
+	if(!$result || !dibi::getAffectedRows()) {
         $session_id = md5(dss_rand());
 
         $insert_data = [
@@ -309,10 +309,6 @@ function session_pagestart($user_ip, $thispage_id)
             ->where('session_id = %s', $session_id)
             ->where('u.user_id = s.session_user_id')
             ->fetch();
-
-        if (!$userdata) {
-            message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch');
-        }
 
 		//
 		// Did the session exist in the DB?
