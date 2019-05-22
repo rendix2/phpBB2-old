@@ -139,23 +139,22 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 		//
 		// Get group_id for this user_id
 		//
-		$sql = "SELECT g.group_id, u.user_level
-			FROM " . USER_GROUP_TABLE . " ug, " . USERS_TABLE . " u, " . GROUPS_TABLE . " g
-			WHERE u.user_id = $user_id 
-				AND ug.user_id = u.user_id 
-				AND g.group_id = ug.group_id 
-				AND g.group_single_user = " . TRUE;
 
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, 'Could not select info from user/user_group table', '', __LINE__, __FILE__, $sql);
-		}
+        $row = dibi::select(['g.group_id', 'u.user_level'])
+            ->from(USER_GROUP_TABLE)
+            ->as('ug')
+            ->from(USERS_TABLE)
+            ->as('u')
+            ->from(GROUPS_TABLE)
+            ->as('g')
+            ->where('u.user_id = %i', $user_id)
+            ->where('ug.user_id = u.user_id')
+            ->where('g.group_id = ug.group_id ')
+            ->where('g.group_single_user = %i', 1)
+            ->fetch();
 
-		$row = $db->sql_fetchrow($result);
-
-		$group_id = $row['group_id'];
-		$user_level = $row['user_level'];
-
-		$db->sql_freeresult($result);
+		$group_id = $row->group_id;
+		$user_level = $row->user_level;
 	}
 
 	//
@@ -234,27 +233,23 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 			$change_mod_list = isset($_POST['moderator']) ? $_POST['moderator'] : [];
 
 			if ( empty($adv) ) {
-				$sql = "SELECT f.* 
-					FROM " . FORUMS_TABLE . " f, " . CATEGORIES_TABLE . " c
-					WHERE f.cat_id = c.cat_id
-					ORDER BY c.cat_order, f.forum_order ASC";
+                $forum_access = dibi::select('f.* ')
+                    ->from(FORUMS_TABLE)
+                    ->as('f')
+                    ->from(CATEGORIES_TABLE)
+                    ->as('c')
+                    ->where('f.cat_id = c.cat_id')
+                    ->orderBy('c.cat_order', dibi::ASC)
+                    ->orderBy('f.forum_order', dibi::ASC)
+                    ->fetchAll();
 
-				if ( !($result = $db->sql_query($sql)) ) {
-					message_die(GENERAL_ERROR, "Couldn't obtain forum information", "", __LINE__, __FILE__, $sql);
-				}
+				$forum_auth_level_fields = [];
 
-				$forum_access = $forum_auth_level_fields = [];
+                foreach ($forum_access as $access) {
+					$forum_id = $access->forum_id;
 
-				while ($row = $db->sql_fetchrow($result) ) {
-					$forum_access[] = $row;
-				}
-				$db->sql_freeresult($result);
-
-				for ($i = 0; $i < count($forum_access); $i++) {
-					$forum_id = $forum_access[$i]['forum_id'];
-
-					for ($j = 0; $j < count($forum_auth_fields); $j++) {
-						$forum_auth_level_fields[$forum_id][$forum_auth_fields[$j]] = $forum_access[$i][$forum_auth_fields[$j]] == AUTH_ACL;
+					foreach ($forum_auth_fields as $field) {
+						$forum_auth_level_fields[$forum_id][$field] = $access->{$field} == AUTH_ACL;
 					}
 				}
 
@@ -268,8 +263,8 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 			} else {
 				$change_acl_list = [];
 
-				for ($j = 0; $j < count($forum_auth_fields); $j++) {
-					$auth_field = $forum_auth_fields[$j];
+                foreach ($forum_auth_fields as $field) {
+					$auth_field = $field;
 
 					while (list($forum_id, $value) = @each($_POST['private_' . $auth_field]) ) {
 						$change_acl_list[$forum_id][$auth_field] = $value;
@@ -277,22 +272,15 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 				}
 			}
 
-			$sql = 'SELECT f.* 
-				FROM ' . FORUMS_TABLE . ' f, ' . CATEGORIES_TABLE . ' c
-				WHERE f.cat_id = c.cat_id
-				ORDER BY c.cat_order, f.forum_order';
-
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, "Couldn't obtain forum information", "", __LINE__, __FILE__, $sql);
-			}
-
-			$forum_access = [];
-
-			while ($row = $db->sql_fetchrow($result) ) {
-				$forum_access[] = $row;
-			}
-
-			$db->sql_freeresult($result);
+            $forum_access = dibi::select('f.*')
+                ->from(FORUMS_TABLE)
+                ->as('f')
+                ->from(CATEGORIES_TABLE)
+                ->as('c')
+                ->where('f.cat_id = c.cat_id')
+                ->orderBy('c.cat_order')
+                ->orderBy('f.forum_order')
+                ->fetchAll();
 
 			$sql = ( $mode == 'user' ) ? "SELECT aa.* FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE. " g WHERE ug.user_id = $user_id AND g.group_id = ug.group_id AND aa.group_id = ug.group_id AND g.group_single_user = " . TRUE : "SELECT * FROM " . AUTH_ACCESS_TABLE . " WHERE group_id = $group_id";
 
@@ -312,8 +300,8 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 			$update_acl_status = [];
 			$update_mod_status = [];
 
-			for ($i = 0; $i < count($forum_access); $i++) {
-				$forum_id = $forum_access[$i]['forum_id'];
+			foreach ($forum_access as $access) {
+				$forum_id = $access->forum_id;
 
 				if ( 
 					( isset($auth_access[$forum_id]['auth_mod']) && $change_mod_list[$forum_id] != $auth_access[$forum_id]['auth_mod'] ) || 
@@ -333,7 +321,7 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 				for ($j = 0; $j < count($forum_auth_fields); $j++) {
 					$auth_field = $forum_auth_fields[$j];
 
-					if ($forum_access[$i][$auth_field] == AUTH_ACL && isset($change_acl_list[$forum_id][$auth_field]) ) {
+					if ($access->{$auth_field} == AUTH_ACL && isset($change_acl_list[$forum_id][$auth_field]) ) {
 						if ( ( empty($auth_access[$forum_id]['auth_mod']) && 
 							( isset($auth_access[$forum_id][$auth_field]) && $change_acl_list[$forum_id][$auth_field] != $auth_access[$forum_id][$auth_field] ) || 
 							( !isset($auth_access[$forum_id][$auth_field]) && !empty($change_acl_list[$forum_id][$auth_field]) ) ) ||

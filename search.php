@@ -148,8 +148,7 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
 	//
 	// Cycle through options ...
 	//
-	if ( $search_id == 'newposts' || $search_id == 'egosearch' || $search_id == 'unanswered' || $search_keywords != '' || $search_author != '' )
-	{
+	if ( $search_id == 'newposts' || $search_id == 'egosearch' || $search_id == 'unanswered' || $search_keywords != '' || $search_author != '' ) {
 		//
 		// Flood control
 		//
@@ -167,48 +166,37 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
             }
         }
 
-		if ( $search_id == 'newposts' || $search_id == 'egosearch' || ( $search_author != '' && $search_keywords == '' )  )
-		{
-			if ( $search_id == 'newposts' )
-			{
-				if ( $userdata['session_logged_in'] )
-				{
-					$sql = "SELECT post_id 
-						FROM " . POSTS_TABLE . " 
-						WHERE post_time >= " . $userdata['user_lastvisit'];
-				}
-				else
-				{
+		if ( $search_id == 'newposts' || $search_id == 'egosearch' || ( $search_author != '' && $search_keywords == '' )  ) {
+			if ( $search_id == 'newposts' ) {
+				if ( $userdata['session_logged_in'] ) {
+                    $search_ids = dibi::select('post_id')
+                        ->from(POSTS_TABLE)
+                        ->where('post_time >= %i', $userdata['user_lastvisit'])
+                        ->fetchPairs(null, 'post_id');
+				} else {
 					redirect(append_sid("login.php?redirect=search.php&search_id=newposts", true));
 				}
 
 				$show_results = 'topics';
 				$sort_by = 0;
 				$sort_dir = 'DESC';
-			}
-			elseif ( $search_id == 'egosearch' )
-			{
-				if ( $userdata['session_logged_in'] )
-				{
-					$sql = "SELECT post_id 
-						FROM " . POSTS_TABLE . " 
-						WHERE poster_id = " . $userdata['user_id'];
-				}
-				else
-				{
-					redirect(append_sid("login.php?redirect=search.php&search_id=egosearch", true));
-				}
+			} elseif ( $search_id == 'egosearch' ) {
+                if ($userdata['session_logged_in']) {
+                    $search_ids = dibi::select('post_id')
+                        ->from(POSTS_TABLE)
+                        ->where('poster_id = %i', $userdata['user_id'])
+                        ->fetchPairs(null, 'post_id');
+                } else {
+                    redirect(append_sid("login.php?redirect=search.php&search_id=egosearch", true));
+                }
 
 				$show_results = 'topics';
 				$sort_by = 0;
 				$sort_dir = 'DESC';
-			}
-			else
-			{
+			} else {
 				$search_author = str_replace('*', '%', trim($search_author));
 
-				if (( strpos($search_author, '%') !== false ) && ( strlen(str_replace('%', '', $search_author)) < $board_config['search_min_chars'] ) )
-				{
+				if (( strpos($search_author, '%') !== false ) && ( strlen(str_replace('%', '', $search_author)) < $board_config['search_min_chars'] ) ) {
 					$search_author = '';
 				}
 
@@ -217,7 +205,7 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
                     ->where('username LIKE %~like~', $search_author)
                     ->fetchPairs(null, 'user_id');
 
-				if (!count($matching_userids)) {
+                if (!count($matching_userids)) {
                     message_die(GENERAL_MESSAGE, $lang['No_search_match']);
                 }
 
@@ -234,9 +222,7 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
 
 			$total_match_count = count($search_ids);
 
-		}
-		elseif ( $search_keywords != '' )
-		{
+		} elseif ( $search_keywords != '' ) {
 			$stopword_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/search_stopwords.txt'); 
 			$synonym_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/search_synonyms.txt'); 
 

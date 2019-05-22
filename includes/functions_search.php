@@ -378,24 +378,20 @@ function username_search($search_match)
 	if ( !empty($search_match) ) {
 		$username_search = preg_replace('/\*/', '%', phpbb_clean_username($search_match));
 
-		$sql = "SELECT username 
-			FROM " . USERS_TABLE . " 
-			WHERE username LIKE '" . str_replace("\'", "''", $username_search) . "' AND user_id <> " . ANONYMOUS . "
-			ORDER BY username";
+		$usernames = dibi::select('username')
+            ->from(USERS_TABLE)
+            ->where('username LIKE %~like~', $username_search)
+            ->where('user_id <> %i', ANONYMOUS)
+            ->orderBy('username')
+            ->fetchPairs(null, 'username');
 
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, 'Could not obtain search results', '', __LINE__, __FILE__, $sql);
-		}
-
-		if ( $row = $db->sql_fetchrow($result) ) {
-			do {
-				$username_list .= '<option value="' . $row['username'] . '">' . $row['username'] . '</option>';
-			}
-			while ( $row = $db->sql_fetchrow($result) );
-		} else {
-			$username_list .= '<option>' . $lang['No_match']. '</option>';
-		}
-		$db->sql_freeresult($result);
+		if (count($usernames)) {
+		    foreach ($usernames as $username) {
+                $username_list .= '<option value="' . $username . '">' . $username . '</option>';
+            }
+        } else {
+            $username_list .= '<option>' . $lang['No_match']. '</option>';
+        }
 	}
 
 	$page_title = $lang['Search'];

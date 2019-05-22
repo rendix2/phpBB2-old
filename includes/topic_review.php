@@ -113,7 +113,7 @@ function topic_review($topic_id, $is_inline_review)
 	//
     $rows = dibi::select(['u.username', 'u.user_id', 'p.*', 'pt.post_text', 'pt.post_subject', 'pt.bbcode_uid'])
         ->from(POSTS_TABLE)
-        ->select('p')
+        ->as('p')
         ->from(USERS_TABLE)
         ->as('u')
         ->from(POSTS_TEXT_TABLE)
@@ -190,20 +190,22 @@ function topic_review($topic_id, $is_inline_review)
 			$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-			$template->assign_block_vars('postrow', array(
-				'ROW_COLOR' => '#' . $row_color, 
-				'ROW_CLASS' => $row_class, 
+            $template->assign_block_vars('postrow',
+                [
+                    'ROW_COLOR' => '#' . $row_color,
+                    'ROW_CLASS' => $row_class,
 
-				'MINI_POST_IMG' => $mini_post_img, 
-				'POSTER_NAME' => $poster, 
-				'POST_DATE' => $post_date, 
-				'POST_SUBJECT' => $post_subject, 
-				'MESSAGE' => $message,
-					
-				'L_MINI_POST_ALT' => $mini_post_alt)
-			);
+                    'MINI_POST_IMG' => $mini_post_img,
+                    'POSTER_NAME'   => $poster,
+                    'POST_DATE'     => $post_date,
+                    'POST_SUBJECT'  => $post_subject,
+                    'MESSAGE'       => $message,
 
-			$i++;
+                    'L_MINI_POST_ALT' => $mini_post_alt
+                ]
+            );
+
+            $i++;
 		}
 	} else {
 		message_die(GENERAL_MESSAGE, 'Topic_post_not_exist', '', __LINE__, __FILE__, $sql);
