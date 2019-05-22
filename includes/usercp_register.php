@@ -306,7 +306,7 @@ if ( isset($_POST['submit']) )
                     message_die(GENERAL_ERROR, 'Could not obtain user_password information');
                 }
 
-				if ( !password_verify($cur_password, PASSWORD_BCRYPT) ) {
+				if ( !password_verify($cur_password, $db_password) ) {
 					$error = TRUE;
 					$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Current_password_mismatch'];
 				}
