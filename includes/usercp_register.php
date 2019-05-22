@@ -270,7 +270,9 @@ if ( isset($_POST['submit']) )
                 ->fetch();
 
 			if ($row) {
-				if ($row->code != $confirm_code) {
+                // IT WAS LOOKE
+                //if ($row->code != $confirm_code) {
+				if ($row->code != $_POST['confirm_code']) {
 					$error = TRUE;
 					$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Confirm_code_wrong'];
 				} else {
