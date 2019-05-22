@@ -31,7 +31,7 @@ if ( !defined('IN_PHPBB') )
 /**
  * enable working with session.... it was STILL MISSING
  */
-session_start();
+//session_start();
 
 //
 error_reporting  (E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables

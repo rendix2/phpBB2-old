@@ -187,46 +187,45 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 		message_die(GENERAL_ERROR, $lang['Session_invalid']);
 	}
 
-	$sql = "SELECT ug.user_id, g.group_type
-		FROM " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g 
-		WHERE g.group_id = $group_id 
-			AND g.group_type <> " . GROUP_HIDDEN . " 
-			AND ug.group_id = g.group_id";
+    $rows = dibi::select(['ug.user_id', 'g.group_type'])
+        ->from(USER_GROUP_TABLE)
+        ->as('ug')
+        ->from(GROUPS_TABLE)
+        ->as('g')
+        ->where('g.group_id = %i', $group_id)
+        ->where('g.group_type <> %i', GROUP_HIDDEN)
+        ->where('ug.group_id = g.group_id')
+        ->fetchAll();
 
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, 'Could not obtain user and group information', '', __LINE__, __FILE__, $sql);
-	}
+	if (!count($rows)) {
+        message_die(GENERAL_MESSAGE, $lang['No_groups_exist']);
+    }
 
-	if ( $row = $db->sql_fetchrow($result)) {
-		if ( $row['group_type'] == GROUP_OPEN ) {
-			do
-			{
-				if ( $userdata['user_id'] == $row['user_id'] ) {
-                    $template->assign_vars(
-                        [
-                            'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.php") . '">'
-                        ]
-                    );
+    if ($row[0]->group_type == GROUP_OPEN) {
+        foreach ($rows as $row) {
+            if ($userdata['user_id'] == $row->user_id) {
+                $template->assign_vars(
+                    [
+                        'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.php") . '">'
+                    ]
+                );
 
-                    $message = $lang['Already_member_group'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
+                $message = $lang['Already_member_group'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
 
-					message_die(GENERAL_MESSAGE, $message);
-				}
-			} while ( $row = $db->sql_fetchrow($result) );
-		} else {
-            $template->assign_vars(
-                [
-                    'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.php") . '">'
-                ]
-            );
+                message_die(GENERAL_MESSAGE, $message);
+            }
+        }
+    } else {
+        $template->assign_vars(
+            [
+                'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.php") . '">'
+            ]
+        );
 
-            $message = $lang['This_closed_group'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
+        $message = $lang['This_closed_group'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
 
-			message_die(GENERAL_MESSAGE, $message);
-		}
-	} else {
-		message_die(GENERAL_MESSAGE, $lang['No_groups_exist']); 
-	}
+        message_die(GENERAL_MESSAGE, $message);
+    }
 
 	$insert_data = [
 	   'group_id' => $group_id,
@@ -684,6 +683,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 		// END approve or deny
 		//
 	} else {
+	    bdump('b');
 		message_die(GENERAL_MESSAGE, $lang['No_groups_exist']);
 	}
 
@@ -1187,6 +1187,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 
         $template->pparse('user');
 	} else{
+	    bdump('c');
 		message_die(GENERAL_MESSAGE, $lang['No_groups_exist']);
 	}
 }

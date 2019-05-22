@@ -52,7 +52,7 @@ $code = dibi::select('code')
     ->from(CONFIRM_TABLE)
     ->where('session_id = %s', $userdata['session_id'])
     ->where('confirm_id = %s', $confirm_id)
-    ->fetch();
+    ->fetchSingle();
 
 // If we have a row then grab data else create a new id
 if (!$code) {
