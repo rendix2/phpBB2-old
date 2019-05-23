@@ -382,14 +382,28 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 			break;
 
 		case 'oracle':
-			$sql = "SELECT g.group_moderator, g.group_type, aa.auth_mod 
-				FROM " . GROUPS_TABLE . " g, " . AUTH_ACCESS_TABLE . " aa 
-				WHERE g.group_id = $group_id
-					AND aa.group_id (+) = g.group_id
-				ORDER BY aa.auth_mod DESC";
+            $group_info = dibi::select(['g.group_moderator', 'g.group_type', 'aa.auth_mod'])
+                ->from(AUTH_ACCESS_TABLE)
+                ->as('g')
+                ->from(AUTH_ACCESS_TABLE)
+                ->as('aa')
+                ->where('g.group_id = %i', $group_id)
+                ->where('aa.group_id (+) = g.group_id')
+                ->orderBy('aa.auth_mod', dibi::DESC)
+                ->fetch();
 			break;
 
 		default:
+            $group_info = dibi::select(['g.group_moderator', 'g.group_type', 'aa.auth_mod'])
+                ->from(AUTH_ACCESS_TABLE)
+                ->as('g')
+                ->leftJoin(AUTH_ACCESS_TABLE)
+                ->as('aa')
+                ->on('aa.group_id = g.group_id')
+                ->where('g.group_id = %i', $group_id)
+                ->orderBy('aa.auth_mod', dibi::DESC)
+                ->fetch();
+
 			$sql = "SELECT g.group_moderator, g.group_type, aa.auth_mod 
 				FROM ( " . GROUPS_TABLE . " g 
 				LEFT JOIN " . AUTH_ACCESS_TABLE . " aa ON aa.group_id = g.group_id )
@@ -402,8 +416,8 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 		message_die(GENERAL_ERROR, 'Could not get moderator information', '', __LINE__, __FILE__, $sql);
 	}
 
-	if ( $group_info = $db->sql_fetchrow($result) ) {
-		$group_moderator = $group_info['group_moderator'];
+    if ($group_info) {
+		$group_moderator = $group_info->group_moderator;
 	
 		if ( $group_moderator == $userdata['user_id'] || $userdata['user_level'] == ADMIN ) {
 			$is_moderator = TRUE;
@@ -433,16 +447,13 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 
 			if ( isset($_POST['add']) ) {
 				$username = isset($_POST['username']) ? phpbb_clean_username($_POST['username']) : '';
-				
-				$sql = "SELECT user_id, user_email, user_lang, user_level  
-					FROM " . USERS_TABLE . " 
-					WHERE username = '" . str_replace("\'", "''", $username) . "'";
 
-				if ( !($result = $db->sql_query($sql)) ) {
-					message_die(GENERAL_ERROR, "Could not get user information", $lang['Error'], __LINE__, __FILE__, $sql);
-				}
+				$row = dibi::select(['user_id', 'user_email', 'user_lang', 'user_level'])
+                    ->from(USERS_TABLE)
+                    ->where('username = %s', $username)
+                    ->fetch();
 
-				if ( !($row = $db->sql_fetchrow($result)) ) {
+                if (!$row) {
                     $template->assign_vars(
                         [
                             'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">'
@@ -454,7 +465,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 					message_die(GENERAL_MESSAGE, $message);
 				}
 
-				if ( $row['user_id'] == ANONYMOUS ) {
+				if ( $row->user_id == ANONYMOUS ) {
                     $template->assign_vars(
                         [
                             'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">'
@@ -465,19 +476,28 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 
 					message_die(GENERAL_MESSAGE, $message);
 				}
-				
-				$sql = "SELECT ug.user_id, u.user_level 
-					FROM " . USER_GROUP_TABLE . " ug, " . USERS_TABLE . " u 
-					WHERE u.user_id = " . $row['user_id'] . " 
-						AND ug.user_id = u.user_id 
-						AND ug.group_id = $group_id";
 
-				if ( !($result = $db->sql_query($sql)) ) {
-					message_die(GENERAL_ERROR, 'Could not get user information', '', __LINE__, __FILE__, $sql);
-				}
+				$member = dibi::select(['ug.user_id', 'u.user_level'])
+                    ->from(USER_GROUP_TABLE)
+                    ->as('ug')
+                    ->from(USERS_TABLE)
+                    ->as('u')
+                    ->where('u.user_id = %i', $row->user_id)
+                    ->where('ug.user_id = u.user_id')
+                    ->where('ug.group_id = %i', $group_id)
+                    ->fetch();
 
-				if ( !$db->sql_fetchrow($result)) {
+				if ($member) {
+                    $template->assign_vars(
+                        [
+                            'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">'
+                        ]
+                    );
 
+                    $message = $lang['User_is_member_group'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
+
+                    message_die(GENERAL_MESSAGE, $message);
+                } else {
 				    $insert_data = [
 				        'user_id' => $row['user_id'],
                         'group_id' =>$group_id,
@@ -486,9 +506,9 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 
 				    dibi::insert(USER_GROUP_TABLE, $insert_data)->execute();
 					
-					if ( $row['user_level'] != ADMIN && $row['user_level'] != MOD && $group_info['auth_mod'] ) {
+					if ( $row->user_level != ADMIN && $row->user_level != MOD && $group_info->auth_mod ) {
 					    dibi::update(USERS_TABLE, ['user_level' => MOD])
-                            ->where('user_id = %i', $row['user_id'])
+                            ->where('user_id = %i', $row->user_id)
                             ->execute();
 					}
 
@@ -512,8 +532,8 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 					$emailer->from($board_config['board_email']);
 					$emailer->replyto($board_config['board_email']);
 
-					$emailer->use_template('group_added', $row['user_lang']);
-					$emailer->email_address($row['user_email']);
+					$emailer->use_template('group_added', $row->user_lang);
+					$emailer->email_address($row->user_email);
 					$emailer->set_subject($lang['Group_added']);
 
                     $emailer->assign_vars(
@@ -528,94 +548,66 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
                     );
                     $emailer->send();
 					$emailer->reset();
-				} else {
-                    $template->assign_vars(
-                        [
-                            'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">'
-                        ]
-                    );
-
-                    $message = $lang['User_is_member_group'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
-
-					message_die(GENERAL_MESSAGE, $message);
 				}
 			} else {
 				if ( ( ( isset($_POST['approve']) || isset($_POST['deny']) ) && isset($_POST['pending_members']) ) || ( isset($_POST['remove']) && isset($_POST['members']) ) ) {
-
 					$members = ( isset($_POST['approve']) || isset($_POST['deny']) ) ? $_POST['pending_members'] : $_POST['members'];
 
-					$sql_in = '';
-
-					for ($i = 0; $i < count($members); $i++) {
-						$sql_in .= ( ( $sql_in != '' ) ? ', ' : '' ) . (int)$members[$i];
-					}
-
 					if ( isset($_POST['approve']) ) {
-						if ( $group_info['auth_mod'] ) {
-							$sql = "UPDATE " . USERS_TABLE . " 
-								SET user_level = " . MOD . " 
-								WHERE user_id IN ($sql_in) 
-									AND user_level NOT IN (" . MOD . ", " . ADMIN . ")";
-
-							if ( !$db->sql_query($sql) ) {
-								message_die(GENERAL_ERROR, 'Could not update user level', '', __LINE__, __FILE__, $sql);
-							}
+						if ( $group_info->auth_mod ) {
+						    dibi::update(USERS_TABLE, ['user_level' => MOD])
+                                ->where('user_id IN %in', $members)
+                                ->where('user_level NOT IN %in', [MOD, ADMIN])
+                                ->execute();
 						}
 
-						$sql = "UPDATE " . USER_GROUP_TABLE . " 
-							SET user_pending = 0 
-							WHERE user_id IN ($sql_in) 
-								AND group_id = $group_id";
-
-						$sql_select = "SELECT user_email 
-							FROM ". USERS_TABLE . " 
-							WHERE user_id IN ($sql_in)";
+						dibi::update(USER_GROUP_TABLE, ['user_pending' => 0])
+                            ->where('user_id IN %in', $members)
+                            ->where('group_id = %i', $group_id)
+                            ->execute();
 
 					} elseif ( isset($_POST['deny']) || isset($_POST['remove']) ) {
-						if ( $group_info['auth_mod'] ) {
-							$sql = "SELECT ug.user_id, ug.group_id 
-								FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug 
-								WHERE ug.user_id IN  ($sql_in) 
-									AND aa.group_id = ug.group_id 
-									AND aa.auth_mod = 1 
-								GROUP BY ug.user_id, ug.group_id 
-								ORDER BY ug.user_id, ug.group_id";
+						if ( $group_info->auth_mod ) {
+                            $group_check = dibi::select(['ug.user_id', 'ug.group_id '])
+                                ->from(AUTH_ACCESS_TABLE)
+                                ->as('aa')
+                                ->from(USER_GROUP_TABLE)
+                                ->as('ug')
+                                ->where('ug.user_id IN %in', $members)
+                                ->where('aa.group_id = ug.group_id')
+                                ->where('aa.auth_mod = %i', 1)
+                                ->groupBy('ug.user_id')
+                                ->groupBy('ug.group_id')
+                                ->orderBy('ug.user_id')
+                                ->orderBy('ug.group_id')
+                                ->fetchPairs('user_id', 'group_id');
 
-							if ( !($result = $db->sql_query($sql)) ) {
-								message_die(GENERAL_ERROR, 'Could not obtain moderator status', '', __LINE__, __FILE__, $sql);
-							}
+                            /**
+                             * TODO check whats this query returns
+                             * i think we dont need to foreach over $group_check and check count($group_id) == 1
+                             * i think it does not make any sense....
+                             */
+                            if (count($group_check)) {
+								$remove_mod_sql = [];
+								foreach ($group_check as $user_id => $group_id) {
+                                    if (count($group_id) == 1) {
+                                        $remove_mod_sql[] = $user_id;
+                                    }
+                                }
 
-							if ( $row = $db->sql_fetchrow($result) ) {
-								$group_check = [];
-								$remove_mod_sql = '';
-
-								do {
-									$group_check[$row['user_id']][] = $row['group_id'];
-								}
-								while ( $row = $db->sql_fetchrow($result) );
-
-								while (list($user_id, $group_list) = @each($group_check) ) {
-									if ( count($group_list) == 1 ) {
-										$remove_mod_sql .= ( ( $remove_mod_sql != '' ) ? ', ' : '' ) . $user_id;
-									}
-								}
-
-								if ( $remove_mod_sql != '' ) {
-									$sql = "UPDATE " . USERS_TABLE . " 
-										SET user_level = " . USER . " 
-										WHERE user_id IN ($remove_mod_sql) 
-											AND user_level NOT IN (" . ADMIN . ")";
-
-									if ( !$db->sql_query($sql) ) {
-										message_die(GENERAL_ERROR, 'Could not update user level', '', __LINE__, __FILE__, $sql);
-									}
+								if (count($remove_mod_sql)) {
+								    dibi::update(USERS_TABLE, ['user_level' => USER])
+                                        ->where('user_id IN %in', $remove_mod_sql)
+                                        ->where('user_level <> %i', ADMIN)
+                                        ->execute();
 								}
 							}
 						}
 
-						$sql = "DELETE FROM " . USER_GROUP_TABLE . " 
-							WHERE user_id IN ($sql_in) 
-								AND group_id = $group_id";
+						dibi::delete(USER_GROUP_TABLE)
+                            ->where('user_id IN %in', $members)
+                            ->where('group_id = %i', $group_id)
+                            ->execute();
 					}
 
 					if ( !$db->sql_query($sql) ) {
@@ -626,16 +618,11 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 					// Email users when they are approved
 					//
 					if ( isset($_POST['approve']) ) {
-						if ( !($result = $db->sql_query($sql_select)) ) {
-							message_die(GENERAL_ERROR, 'Could not get user email information', '', __LINE__, __FILE__, $sql);
-						}
 
-						$bcc_list = [];
-
-						while ($row = $db->sql_fetchrow($result))
-						{
-							$bcc_list[] = $row['user_email'];
-						}
+                        $bcc_list = dibi::select('user_email')
+                            ->from(USERS_TABLE)
+                            ->where('user_id IN %in', $members)
+                            ->fetchPairs(null, 'user_email');
 
 						//
 						// Get the group name
@@ -657,8 +644,8 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 						$emailer->from($board_config['board_email']);
 						$emailer->replyto($board_config['board_email']);
 
-						for ($i = 0; $i < count($bcc_list); $i++) {
-							$emailer->bcc($bcc_list[$i]);
+						foreach($bcc_list as $bcc_value) {
+							$emailer->bcc($bcc_value);
 						}
 
 						$emailer->use_template('group_approved');
