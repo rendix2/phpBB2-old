@@ -469,7 +469,7 @@ CREATE TABLE phpbb_users (
    user_active int2,
    username varchar(25) DEFAULT '' NOT NULL,
    user_regdate int4 DEFAULT '0' NOT NULL,
-   user_password varchar(511) DEFAULT '' NOT NULL,
+   user_password varchar(512) DEFAULT '' NOT NULL,
    user_session_time int4 DEFAULT '0' NOT NULL,
    user_session_page int2 DEFAULT '0' NOT NULL,
    user_lastvisit int4 DEFAULT '0' NOT NULL,
@@ -511,7 +511,7 @@ CREATE TABLE phpbb_users (
    user_popup_pm int2 DEFAULT '0' NOT NULL,
    user_notify int2,
    user_actkey varchar(32),
-   user_newpasswd varchar(32),
+   user_newpasswd varchar(512),
    CONSTRAINT phpbb_users_pkey PRIMARY KEY (user_id)
 );
 

@@ -371,7 +371,7 @@ CREATE TABLE [phpbb_users] (
 	[user_msnm] [varchar] (255) NULL ,
 	[user_interests] [varchar] (255) NULL ,
 	[user_actkey] [varchar] (32) NULL ,
-	[user_newpasswd] [varchar] (32) NULL ,
+	[user_newpasswd] [varchar] (512) NULL ,
 	[user_notify] [smallint] NOT NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
