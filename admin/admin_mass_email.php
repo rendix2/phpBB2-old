@@ -90,10 +90,6 @@ if ( isset($_POST['submit']) ) {
         $error_msg .= !empty($error_msg) ? '<br />' . $message : $message;
     }
 
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, 'Could not select group members', '', __LINE__, __FILE__, $sql);
-	}
-
 	if ( !$error ) {
 		include $phpbb_root_path . 'includes/emailer.php';
 
