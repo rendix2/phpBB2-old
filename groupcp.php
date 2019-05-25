@@ -31,28 +31,32 @@ function generate_user_info(&$row, $date_format, $group_mod, &$from, &$posts, &$
 {
 	global $lang, $images, $board_config;
 
-	$from = !empty($row['user_from']) ? $row['user_from'] : '&nbsp;';
-	$joined = create_date($date_format, $row['user_regdate'], $board_config['board_timezone']);
-	$posts = $row['user_posts'] ? $row['user_posts'] : 0;
+	$from = !empty($row->user_from) ? $row->user_from : '&nbsp;';
+	$joined = create_date($date_format, $row->user_regdate, $board_config['board_timezone']);
+	$posts = $row->user_posts ? $row->user_posts : 0;
 	$poster_avatar = '';
 
-	if ( $row['user_avatar_type'] && $row['user_id'] != ANONYMOUS && $row['user_allowavatar'] ) {
-		switch( $row['user_avatar_type'] ) {
+    /**
+     * TODO this never be true
+     * add this columns into selects
+     */
+	if ( $row->user_avatar_type && $row->user_id != ANONYMOUS && $row->user_allowavatar ) {
+		switch( $row->user_avatar_type ) {
 			case USER_AVATAR_UPLOAD:
-				$poster_avatar = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $row['user_avatar'] . '" alt="" border="0" />' : '';
+				$poster_avatar = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $row->user_avatar . '" alt="" border="0" />' : '';
 				break;
 			case USER_AVATAR_REMOTE:
-				$poster_avatar = $board_config['allow_avatar_remote'] ? '<img src="' . $row['user_avatar'] . '" alt="" border="0" />' : '';
+				$poster_avatar = $board_config['allow_avatar_remote'] ? '<img src="' . $row->user_avatar . '" alt="" border="0" />' : '';
 				break;
 			case USER_AVATAR_GALLERY:
-				$poster_avatar = $board_config['allow_avatar_local'] ? '<img src="' . $board_config['avatar_gallery_path'] . '/' . $row['user_avatar'] . '" alt="" border="0" />' : '';
+				$poster_avatar = $board_config['allow_avatar_local'] ? '<img src="' . $board_config['avatar_gallery_path'] . '/' . $row->user_avatar . '" alt="" border="0" />' : '';
 				break;
 		}
 	}
 
-	if ( !empty($row['user_viewemail']) || $group_mod )
+	if ( !empty($row->user_viewemail) || $group_mod )
 	{
-		$email_uri = $board_config['board_email_form'] ? append_sid("profile.php?mode=email&amp;" . POST_USERS_URL .'=' . $row['user_id']) : 'mailto:' . $row['user_email'];
+		$email_uri = $board_config['board_email_form'] ? append_sid("profile.php?mode=email&amp;" . POST_USERS_URL .'=' . $row->user_id) : 'mailto:' . $row->user_email;
 
 		$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
 		$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
@@ -61,40 +65,41 @@ function generate_user_info(&$row, $date_format, $group_mod, &$from, &$posts, &$
 		$email = '&nbsp;';
 	}
 
-	$temp_url = append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']);
+	$temp_url = append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row->user_id);
 	$profile_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_profile'] . '" alt="' . $lang['Read_profile'] . '" title="' . $lang['Read_profile'] . '" border="0" /></a>';
 	$profile = '<a href="' . $temp_url . '">' . $lang['Read_profile'] . '</a>';
 
-	$temp_url = append_sid("privmsg.php?mode=post&amp;" . POST_USERS_URL . "=" . $row['user_id']);
+	$temp_url = append_sid("privmsg.php?mode=post&amp;" . POST_USERS_URL . "=" . $row->user_id);
 	$pm_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
 	$pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
 
-	$www_img = $row['user_website'] ? '<a href="' . $row['user_website'] . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
-	$www = $row['user_website'] ? '<a href="' . $row['user_website'] . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
+	$www_img = $row->user_website ? '<a href="' . $row->user_website . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
+	$www = $row->user_website ? '<a href="' . $row->user_website . '" target="_userwww">' . $lang['Visit_website']
+	 . '</a>' : '';
 
-	if ( !empty($row['user_icq']) ) {
-		$icq_status_img = '<a href="http://wwp.icq.com/' . $row['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $row['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
-		$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row['user_icq'] . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
-		$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row['user_icq'] . '">' . $lang['ICQ'] . '</a>';
+	if ( !empty($row->user_icq) ) {
+		$icq_status_img = '<a href="http://wwp.icq.com/' . $row->user_icq . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $row->user_icq . '&img=5" width="18" height="18" border="0" /></a>';
+		$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row->user_icq . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
+		$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row->user_icq . '">' . $lang['ICQ'] . '</a>';
 	} else {
 		$icq_status_img = '';
 		$icq_img = '';
 		$icq = '';
 	}
 
-	$aim_img = $row['user_aim'] ? '<a href="aim:goim?screenname=' . $row['user_aim'] . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
-	$aim = $row['user_aim'] ? '<a href="aim:goim?screenname=' . $row['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
+	$aim_img = $row->user_aim ? '<a href="aim:goim?screenname=' . $row->user_aim . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
+	$aim = $row->user_aim ? '<a href="aim:goim?screenname=' . $row->user_aim . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
 
-	$temp_url = append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']);
-	$msn_img = $row['user_msnm'] ? '<a href="' . $temp_url . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
-	$msn = $row['user_msnm'] ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
+	$temp_url = append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row->user_id);
+	$msn_img = $row->user_msnm ? '<a href="' . $temp_url . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
+	$msn = $row->user_msnm ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
 
-	$yim_img = $row['user_yim'] ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
-	$yim = $row['user_yim'] ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
+	$yim_img = $row->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $row->user_yim . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
+	$yim = $row->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $row->user_yim . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
 
-	$temp_url = append_sid("search.php?search_author=" . urlencode($row['username']) . "&amp;showresults=posts");
-	$search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $row['username']) . '" title="' . sprintf($lang['Search_user_posts'], $row['username']) . '" border="0" /></a>';
-	$search = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $row['username']) . '</a>';
+	$temp_url = append_sid("search.php?search_author=" . urlencode($row->username) . "&amp;showresults=posts");
+	$search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $row->username) . '" title="' . sprintf($lang['Search_user_posts'], $row->username) . '" border="0" /></a>';
+	$search = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $row->username) . '</a>';
 }
 //
 // --------------------------
@@ -382,19 +387,27 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 			break;
 
 		case 'oracle':
-			$sql = "SELECT g.group_moderator, g.group_type, aa.auth_mod 
-				FROM " . GROUPS_TABLE . " g, " . AUTH_ACCESS_TABLE . " aa 
-				WHERE g.group_id = $group_id
-					AND aa.group_id (+) = g.group_id
-				ORDER BY aa.auth_mod DESC";
+            $group_info = dibi::select(['g.group_moderator', 'g.group_type', 'aa.auth_mod'])
+                ->from(AUTH_ACCESS_TABLE)
+                ->as('g')
+                ->from(AUTH_ACCESS_TABLE)
+                ->as('aa')
+                ->where('g.group_id = %i', $group_id)
+                ->where('aa.group_id (+) = g.group_id')
+                ->orderBy('aa.auth_mod', dibi::DESC)
+                ->fetch();
 			break;
 
 		default:
-			$sql = "SELECT g.group_moderator, g.group_type, aa.auth_mod 
-				FROM ( " . GROUPS_TABLE . " g 
-				LEFT JOIN " . AUTH_ACCESS_TABLE . " aa ON aa.group_id = g.group_id )
-				WHERE g.group_id = $group_id
-				ORDER BY aa.auth_mod DESC";
+            $group_info = dibi::select(['g.group_moderator', 'g.group_type', 'aa.auth_mod'])
+                ->from(AUTH_ACCESS_TABLE)
+                ->as('g')
+                ->leftJoin(AUTH_ACCESS_TABLE)
+                ->as('aa')
+                ->on('aa.group_id = g.group_id')
+                ->where('g.group_id = %i', $group_id)
+                ->orderBy('aa.auth_mod', dibi::DESC)
+                ->fetch();
 			break;
 	}
 
@@ -402,8 +415,8 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 		message_die(GENERAL_ERROR, 'Could not get moderator information', '', __LINE__, __FILE__, $sql);
 	}
 
-	if ( $group_info = $db->sql_fetchrow($result) ) {
-		$group_moderator = $group_info['group_moderator'];
+    if ($group_info) {
+		$group_moderator = $group_info->group_moderator;
 	
 		if ( $group_moderator == $userdata['user_id'] || $userdata['user_level'] == ADMIN ) {
 			$is_moderator = TRUE;
@@ -433,16 +446,13 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 
 			if ( isset($_POST['add']) ) {
 				$username = isset($_POST['username']) ? phpbb_clean_username($_POST['username']) : '';
-				
-				$sql = "SELECT user_id, user_email, user_lang, user_level  
-					FROM " . USERS_TABLE . " 
-					WHERE username = '" . str_replace("\'", "''", $username) . "'";
 
-				if ( !($result = $db->sql_query($sql)) ) {
-					message_die(GENERAL_ERROR, "Could not get user information", $lang['Error'], __LINE__, __FILE__, $sql);
-				}
+				$row = dibi::select(['user_id', 'user_email', 'user_lang', 'user_level'])
+                    ->from(USERS_TABLE)
+                    ->where('username = %s', $username)
+                    ->fetch();
 
-				if ( !($row = $db->sql_fetchrow($result)) ) {
+                if (!$row) {
                     $template->assign_vars(
                         [
                             'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">'
@@ -454,7 +464,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 					message_die(GENERAL_MESSAGE, $message);
 				}
 
-				if ( $row['user_id'] == ANONYMOUS ) {
+				if ( $row->user_id == ANONYMOUS ) {
                     $template->assign_vars(
                         [
                             'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">'
@@ -465,19 +475,28 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 
 					message_die(GENERAL_MESSAGE, $message);
 				}
-				
-				$sql = "SELECT ug.user_id, u.user_level 
-					FROM " . USER_GROUP_TABLE . " ug, " . USERS_TABLE . " u 
-					WHERE u.user_id = " . $row['user_id'] . " 
-						AND ug.user_id = u.user_id 
-						AND ug.group_id = $group_id";
 
-				if ( !($result = $db->sql_query($sql)) ) {
-					message_die(GENERAL_ERROR, 'Could not get user information', '', __LINE__, __FILE__, $sql);
-				}
+				$member = dibi::select(['ug.user_id', 'u.user_level'])
+                    ->from(USER_GROUP_TABLE)
+                    ->as('ug')
+                    ->from(USERS_TABLE)
+                    ->as('u')
+                    ->where('u.user_id = %i', $row->user_id)
+                    ->where('ug.user_id = u.user_id')
+                    ->where('ug.group_id = %i', $group_id)
+                    ->fetch();
 
-				if ( !$db->sql_fetchrow($result)) {
+				if ($member) {
+                    $template->assign_vars(
+                        [
+                            'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">'
+                        ]
+                    );
 
+                    $message = $lang['User_is_member_group'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
+
+                    message_die(GENERAL_MESSAGE, $message);
+                } else {
 				    $insert_data = [
 				        'user_id' => $row['user_id'],
                         'group_id' =>$group_id,
@@ -486,9 +505,9 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 
 				    dibi::insert(USER_GROUP_TABLE, $insert_data)->execute();
 					
-					if ( $row['user_level'] != ADMIN && $row['user_level'] != MOD && $group_info['auth_mod'] ) {
+					if ( $row->user_level != ADMIN && $row->user_level != MOD && $group_info->auth_mod ) {
 					    dibi::update(USERS_TABLE, ['user_level' => MOD])
-                            ->where('user_id = %i', $row['user_id'])
+                            ->where('user_id = %i', $row->user_id)
                             ->execute();
 					}
 
@@ -512,8 +531,8 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 					$emailer->from($board_config['board_email']);
 					$emailer->replyto($board_config['board_email']);
 
-					$emailer->use_template('group_added', $row['user_lang']);
-					$emailer->email_address($row['user_email']);
+					$emailer->use_template('group_added', $row->user_lang);
+					$emailer->email_address($row->user_email);
 					$emailer->set_subject($lang['Group_added']);
 
                     $emailer->assign_vars(
@@ -528,94 +547,66 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
                     );
                     $emailer->send();
 					$emailer->reset();
-				} else {
-                    $template->assign_vars(
-                        [
-                            'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">'
-                        ]
-                    );
-
-                    $message = $lang['User_is_member_group'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
-
-					message_die(GENERAL_MESSAGE, $message);
 				}
 			} else {
 				if ( ( ( isset($_POST['approve']) || isset($_POST['deny']) ) && isset($_POST['pending_members']) ) || ( isset($_POST['remove']) && isset($_POST['members']) ) ) {
-
 					$members = ( isset($_POST['approve']) || isset($_POST['deny']) ) ? $_POST['pending_members'] : $_POST['members'];
 
-					$sql_in = '';
-
-					for ($i = 0; $i < count($members); $i++) {
-						$sql_in .= ( ( $sql_in != '' ) ? ', ' : '' ) . (int)$members[$i];
-					}
-
 					if ( isset($_POST['approve']) ) {
-						if ( $group_info['auth_mod'] ) {
-							$sql = "UPDATE " . USERS_TABLE . " 
-								SET user_level = " . MOD . " 
-								WHERE user_id IN ($sql_in) 
-									AND user_level NOT IN (" . MOD . ", " . ADMIN . ")";
-
-							if ( !$db->sql_query($sql) ) {
-								message_die(GENERAL_ERROR, 'Could not update user level', '', __LINE__, __FILE__, $sql);
-							}
+						if ( $group_info->auth_mod ) {
+						    dibi::update(USERS_TABLE, ['user_level' => MOD])
+                                ->where('user_id IN %in', $members)
+                                ->where('user_level NOT IN %in', [MOD, ADMIN])
+                                ->execute();
 						}
 
-						$sql = "UPDATE " . USER_GROUP_TABLE . " 
-							SET user_pending = 0 
-							WHERE user_id IN ($sql_in) 
-								AND group_id = $group_id";
-
-						$sql_select = "SELECT user_email 
-							FROM ". USERS_TABLE . " 
-							WHERE user_id IN ($sql_in)";
+						dibi::update(USER_GROUP_TABLE, ['user_pending' => 0])
+                            ->where('user_id IN %in', $members)
+                            ->where('group_id = %i', $group_id)
+                            ->execute();
 
 					} elseif ( isset($_POST['deny']) || isset($_POST['remove']) ) {
-						if ( $group_info['auth_mod'] ) {
-							$sql = "SELECT ug.user_id, ug.group_id 
-								FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug 
-								WHERE ug.user_id IN  ($sql_in) 
-									AND aa.group_id = ug.group_id 
-									AND aa.auth_mod = 1 
-								GROUP BY ug.user_id, ug.group_id 
-								ORDER BY ug.user_id, ug.group_id";
+						if ( $group_info->auth_mod ) {
+                            $group_check = dibi::select(['ug.user_id', 'ug.group_id '])
+                                ->from(AUTH_ACCESS_TABLE)
+                                ->as('aa')
+                                ->from(USER_GROUP_TABLE)
+                                ->as('ug')
+                                ->where('ug.user_id IN %in', $members)
+                                ->where('aa.group_id = ug.group_id')
+                                ->where('aa.auth_mod = %i', 1)
+                                ->groupBy('ug.user_id')
+                                ->groupBy('ug.group_id')
+                                ->orderBy('ug.user_id')
+                                ->orderBy('ug.group_id')
+                                ->fetchPairs('user_id', 'group_id');
 
-							if ( !($result = $db->sql_query($sql)) ) {
-								message_die(GENERAL_ERROR, 'Could not obtain moderator status', '', __LINE__, __FILE__, $sql);
-							}
+                            /**
+                             * TODO check whats this query returns
+                             * i think we dont need to foreach over $group_check and check count($group_id) == 1
+                             * i think it does not make any sense....
+                             */
+                            if (count($group_check)) {
+								$remove_mod_sql = [];
+								foreach ($group_check as $user_id => $group_id) {
+                                    if (count($group_id) == 1) {
+                                        $remove_mod_sql[] = $user_id;
+                                    }
+                                }
 
-							if ( $row = $db->sql_fetchrow($result) ) {
-								$group_check = [];
-								$remove_mod_sql = '';
-
-								do {
-									$group_check[$row['user_id']][] = $row['group_id'];
-								}
-								while ( $row = $db->sql_fetchrow($result) );
-
-								while (list($user_id, $group_list) = @each($group_check) ) {
-									if ( count($group_list) == 1 ) {
-										$remove_mod_sql .= ( ( $remove_mod_sql != '' ) ? ', ' : '' ) . $user_id;
-									}
-								}
-
-								if ( $remove_mod_sql != '' ) {
-									$sql = "UPDATE " . USERS_TABLE . " 
-										SET user_level = " . USER . " 
-										WHERE user_id IN ($remove_mod_sql) 
-											AND user_level NOT IN (" . ADMIN . ")";
-
-									if ( !$db->sql_query($sql) ) {
-										message_die(GENERAL_ERROR, 'Could not update user level', '', __LINE__, __FILE__, $sql);
-									}
+								if (count($remove_mod_sql)) {
+								    dibi::update(USERS_TABLE, ['user_level' => USER])
+                                        ->where('user_id IN %in', $remove_mod_sql)
+                                        ->where('user_level <> %i', ADMIN)
+                                        ->execute();
 								}
 							}
 						}
 
-						$sql = "DELETE FROM " . USER_GROUP_TABLE . " 
-							WHERE user_id IN ($sql_in) 
-								AND group_id = $group_id";
+						dibi::delete(USER_GROUP_TABLE)
+                            ->where('user_id IN %in', $members)
+                            ->where('group_id = %i', $group_id)
+                            ->execute();
 					}
 
 					if ( !$db->sql_query($sql) ) {
@@ -626,16 +617,11 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 					// Email users when they are approved
 					//
 					if ( isset($_POST['approve']) ) {
-						if ( !($result = $db->sql_query($sql_select)) ) {
-							message_die(GENERAL_ERROR, 'Could not get user email information', '', __LINE__, __FILE__, $sql);
-						}
 
-						$bcc_list = [];
-
-						while ($row = $db->sql_fetchrow($result))
-						{
-							$bcc_list[] = $row['user_email'];
-						}
+                        $bcc_list = dibi::select('user_email')
+                            ->from(USERS_TABLE)
+                            ->where('user_id IN %in', $members)
+                            ->fetchPairs(null, 'user_email');
 
 						//
 						// Get the group name
@@ -657,8 +643,8 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 						$emailer->from($board_config['board_email']);
 						$emailer->replyto($board_config['board_email']);
 
-						for ($i = 0; $i < count($bcc_list); $i++) {
-							$emailer->bcc($bcc_list[$i]);
+						foreach($bcc_list as $bcc_value) {
+							$emailer->bcc($bcc_value);
 						}
 
 						$emailer->use_template('group_approved');
@@ -700,9 +686,6 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
         message_die(GENERAL_MESSAGE, $lang['Group_not_exist']);
     }
 
-	//
-	// Get moderator details for this group
-	//
     $columns = [
         'username',
         'user_id',
@@ -718,64 +701,92 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
         'user_msnm'
     ];
 
+    //
+    // Get moderator details for this group
+    //
     $group_moderator = dibi::select($columns)
         ->from(USERS_TABLE)
         ->where('user_id = %i', $group_info->group_moderator)
         ->fetch();
 
-	//
-	// Get user information for this group
-	//
-	$sql = "SELECT u.username, u.user_id, u.user_viewemail, u.user_posts, u.user_regdate, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_msnm, ug.user_pending 
-		FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug
-		WHERE ug.group_id = $group_id
-			AND u.user_id = ug.user_id
-			AND ug.user_pending = 0 
-			AND ug.user_id <> " . $group_moderator['user_id'] . " 
-		ORDER BY u.username";
+    $columns = [
+        'u.username',
+        'u.user_id',
+        'u.user_viewemail',
+        'u.user_posts',
+        'u.user_regdate',
+        'u.user_from',
+        'u.user_website',
+        'u.user_email',
+        'u.user_icq',
+        'u.user_aim',
+        'u.user_yim',
+        'u.user_msnm'
+    ];
 
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, 'Error getting user list for group', '', __LINE__, __FILE__, $sql);
-	}
+    //
+    // Get user information for this group
+    //
+    $group_members = dibi::select($columns)
+        ->from(USERS_TABLE)
+        ->as('u')
+        ->from(USER_GROUP_TABLE)
+        ->as('ug')
+        ->where('ug.group_id = %i', $group_id)
+        ->where('u.user_id = ug.user_id')
+        ->where('ug.user_pending = %i', 0)
+        ->where('ug.user_id <> %i', $group_moderator->user_id)
+        ->orderBy('u.username')
+        ->fetchAll();
 
-	$group_members = $db->sql_fetchrowset($result); 
-	$members_count = count($group_members);
-	$db->sql_freeresult($result);
+    $members_count = count($group_members);
 
-	$sql = "SELECT u.username, u.user_id, u.user_viewemail, u.user_posts, u.user_regdate, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_msnm
-		FROM " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug, " . USERS_TABLE . " u
-		WHERE ug.group_id = $group_id
-			AND g.group_id = ug.group_id
-			AND ug.user_pending = 1
-			AND u.user_id = ug.user_id
-		ORDER BY u.username";
+	$columns = [
+	    'u.username',
+        'u.user_id',
+        'u.user_viewemail',
+        'u.user_posts',
+        'u.user_regdate',
+        'u.user_from',
+        'u.user_website',
+        'u.user_email',
+        'u.user_icq',
+        'u.user_aim',
+        'u.user_yim',
+        'u.user_msnm'
+    ];
 
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, 'Error getting user pending information', '', __LINE__, __FILE__, $sql);
-	}
+    $modgroup_pending_list = dibi::select($columns)
+        ->from(GROUPS_TABLE)
+        ->as('g')
+        ->from(USER_GROUP_TABLE)
+        ->as('ug')
+        ->from(USERS_TABLE)
+        ->as('u')
+        ->where('g.group_id = %i', $group_id)
+        ->where('g.group_id = ug.group_id')
+        ->where('ug.user_pending = %i', 1)
+        ->where('u.user_id = ug.user_id')
+        ->orderBy('u.username')
+        ->fetchAll();
 
-	$modgroup_pending_list = $db->sql_fetchrowset($result);
-	$modgroup_pending_count = count($modgroup_pending_list);
-	$db->sql_freeresult($result);
+    $modgroup_pending_count = count($modgroup_pending_list);
 
 	$is_group_member = 0;
-	if ( $members_count ) {
-		for ($i = 0; $i < $members_count; $i++) {
-			if ( $group_members[$i]['user_id'] == $userdata['user_id'] && $userdata['session_logged_in'] ) {
-				$is_group_member = true;
-			}
-		}
-	}
+
+    foreach ($group_members as $group_member) {
+        if ($group_member->user_id == $userdata['user_id'] && $userdata['session_logged_in']) {
+            $is_group_member = true;
+        }
+    }
 
 	$is_group_pending_member = 0;
 
-	if ( $modgroup_pending_count ) {
-		for ($i = 0; $i < $modgroup_pending_count; $i++) {
-			if ( $modgroup_pending_list[$i]['user_id'] == $userdata['user_id'] && $userdata['session_logged_in'] ) {
-				$is_group_pending_member = true;
-			}
-		}
-	}
+    foreach ($modgroup_pending_list as $modgroup_pending_value) {
+        if ($modgroup_pending_value->user_id == $userdata['user_id'] && $userdata['session_logged_in']) {
+            $is_group_pending_member = true;
+        }
+    }
 
 	if ( $userdata['user_level'] == ADMIN ) {
         $is_moderator = true;
@@ -823,8 +834,8 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 	//
 	// Add the moderator
 	//
-	$username = $group_moderator['username'];
-	$user_id = $group_moderator['user_id'];
+	$username = $group_moderator->username;
+	$user_id = $group_moderator->user_id;
 
 	generate_user_info($group_moderator, $board_config['default_dateformat'], $is_moderator, $from, $posts, $joined, $poster_avatar, $profile_img, $profile, $search_img, $search, $pm_img, $pm, $email_img, $email, $www_img, $www, $icq_status_img, $icq_img, $icq, $aim_img, $aim, $msn_img, $msn, $yim_img, $yim);
 
@@ -1007,11 +1018,12 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 		// Users pending in ONLY THIS GROUP (which is moderated by this user)
 		//
 		if ( $modgroup_pending_count ) {
-			for ($i = 0; $i < $modgroup_pending_count; $i++) {
-				$username = $modgroup_pending_list[$i]['username'];
-				$user_id = $modgroup_pending_list[$i]['user_id'];
+            foreach ($modgroup_pending_list as $modgroup_pending_value) {
+				$username = $modgroup_pending_value->username;
+				$user_id = $modgroup_pending_value->user_id;
 
-				generate_user_info($modgroup_pending_list[$i], $board_config['default_dateformat'], $is_moderator, $from, $posts, $joined, $poster_avatar, $profile_img, $profile, $search_img, $search, $pm_img, $pm, $email_img, $email, $www_img, $www, $icq_status_img, $icq_img, $icq, $aim_img, $aim, $msn_img, $msn, $yim_img, $yim);
+				generate_user_info($modgroup_pending_value, $board_config['default_dateformat'], $is_moderator,
+                    $from, $posts, $joined, $poster_avatar, $profile_img, $profile, $search_img, $search, $pm_img, $pm, $email_img, $email, $www_img, $www, $icq_status_img, $icq_img, $icq, $aim_img, $aim, $msn_img, $msn, $yim_img, $yim);
 
 				$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 				$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
@@ -1080,38 +1092,36 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 	// a pending membership.
 	//
 	$in_group = [];
-	
-	if ( $userdata['session_logged_in'] ) {
-		$sql = "SELECT g.group_id, g.group_name, g.group_type, ug.user_pending 
-			FROM " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug
-			WHERE ug.user_id = " . $userdata['user_id'] . "  
-				AND ug.group_id = g.group_id
-				AND g.group_single_user <> " . TRUE . "
-			ORDER BY g.group_name, ug.user_id";
 
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, 'Error getting group information', '', __LINE__, __FILE__, $sql);
-		}
+    if ($userdata['session_logged_in']) {
+	    $rows = dibi::select(['g.group_id', 'g.group_name', 'g.group_type', 'ug.user_pending'])
+            ->from(GROUPS_TABLE)
+            ->as('g')
+            ->from(USER_GROUP_TABLE)
+            ->as('ug')
+            ->where('ug.user_id = %i', $userdata['user_id'])
+            ->where('ug.group_id = g.group_id')
+            ->where('g.group_single_user <>', 1)
+            ->orderBy('g.group_name')
+            ->orderBy('ug.user_id')
+            ->fetchAll();
 
-		if ( $row = $db->sql_fetchrow($result) ) {
-			$in_group = [];
-			$s_member_groups_opt = '';
-			$s_pending_groups_opt = '';
+        $in_group = [];
+        $s_member_groups_opt = '';
+        $s_pending_groups_opt = '';
 
-			do
-			{
-				$in_group[] = $row['group_id'];
-				if ( $row['user_pending'] ) {
-					$s_pending_groups_opt .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
-				} else {
-					$s_member_groups_opt .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
-				}
-			}
-			while ($row = $db->sql_fetchrow($result) );
+        foreach ($rows as $row) {
+            $in_group[] = $row->group_id;
 
-			$s_pending_groups = '<select name="' . POST_GROUPS_URL . '">' . $s_pending_groups_opt . "</select>";
-			$s_member_groups = '<select name="' . POST_GROUPS_URL . '">' . $s_member_groups_opt . "</select>";
-		}
+            if ($row->user_pending) {
+                $s_pending_groups_opt .= '<option value="' . $row->group_id . '">' . $row->group_name . '</option>';
+            } else {
+                $s_member_groups_opt .= '<option value="' . $row->group_id . '">' . $row->group_name . '</option>';
+            }
+        }
+
+        $s_pending_groups = '<select name="' . POST_GROUPS_URL . '">' . $s_pending_groups_opt . "</select>";
+        $s_member_groups = '<select name="' . POST_GROUPS_URL . '">' . $s_member_groups_opt . "</select>";
 	}
 
 	//

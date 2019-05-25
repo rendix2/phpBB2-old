@@ -522,7 +522,7 @@ CREATE TABLE phpbb_users (
    user_occ varchar(100),
    user_interests varchar(255),
    user_actkey varchar(32),
-   user_newpasswd varchar(32),
+   user_newpasswd varchar(512),
    PRIMARY KEY (user_id),
    KEY user_session_time (user_session_time)
 );
