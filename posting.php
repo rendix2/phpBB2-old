@@ -157,28 +157,32 @@ switch ($mode) {
 //
 $error_msg = '';
 $post_data = [];
-switch ( $mode )
-{
+switch ( $mode ) {
 	case 'newtopic':
-		if ( empty($forum_id) ) {
+        if (empty($forum_id)) {
 			message_die(GENERAL_MESSAGE, $lang['Forum_not_exist']);
 		}
 
-		$sql = "SELECT * 
-			FROM " . FORUMS_TABLE . " 
-			WHERE forum_id = $forum_id";
+        $post_info = dibi::select('*')
+            ->from(FORUMS_TABLE)
+            ->where('forum_id = %i', $forum_id)
+            ->fetch();
 		break;
 
 	case 'reply':
 	case 'vote':
-		if ( empty( $topic_id) ) {
+        if (empty($topic_id)) {
 			message_die(GENERAL_MESSAGE, $lang['No_topic_id']);
 		}
 
-		$sql = "SELECT f.*, t.topic_status, t.topic_title, t.topic_type  
-			FROM " . FORUMS_TABLE . " f, " . TOPICS_TABLE . " t
-			WHERE t.topic_id = $topic_id
-				AND f.forum_id = t.forum_id";
+    $post_info = dibi::select(['f.*', 't.topic_status', 't.topic_title', 't.topic_type'])
+            ->from(FORUMS_TABLE)
+            ->as('f')
+            ->from(TOPICS_TABLE)
+            ->as('t')
+            ->where('t.topic_id = %i', $topic_id)
+            ->where('f.forum_id = t.forum_id')
+            ->fetch();
 		break;
 
 	case 'quote':
@@ -189,48 +193,105 @@ switch ( $mode )
 			message_die(GENERAL_MESSAGE, $lang['No_post_id']);
 		}
 
-		$select_sql = (!$submit) ? ', t.topic_title, p.enable_bbcode, p.enable_html, p.enable_smilies, p.enable_sig, p.post_username, pt.post_subject, pt.post_text, pt.bbcode_uid, u.username, u.user_id, u.user_sig, u.user_sig_bbcode_uid' : '';
-		$from_sql = ( !$submit ) ? ", " . POSTS_TEXT_TABLE . " pt, " . USERS_TABLE . " u" : '';
-		$where_sql = ( !$submit ) ? "AND pt.post_id = p.post_id AND u.user_id = p.poster_id" : '';
+		if (!$submit) {
+		    $columns = [
+		        'f.*',
+                't.topic_id',
+                't.topic_status',
+                't.topic_type',
+                't.topic_first_post_id',
+                't.topic_last_post_id',
+                't.topic_vote',
+                'p.post_id',
+                'p.poster_id',
+                't.topic_title',
+                'p.enable_bbcode',
+                'p.enable_html',
+                'p.enable_smilies',
+                'p.enable_sig',
+                'p.post_username',
+                'pt.post_subject',
+                'pt.post_text',
+                'pt.bbcode_uid',
+                'u.username',
+                'u.user_id',
+                'u.user_sig',
+                'u.user_sig_bbcode_uid'
+            ];
 
-		$sql = "SELECT f.*, t.topic_id, t.topic_status, t.topic_type, t.topic_first_post_id, t.topic_last_post_id, t.topic_vote, p.post_id, p.poster_id" . $select_sql . " 
-			FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f" . $from_sql . " 
-			WHERE p.post_id = $post_id 
-				AND t.topic_id = p.topic_id 
-				AND f.forum_id = p.forum_id
-				$where_sql";
+            $post_info = dibi::select($columns)
+                ->from(POSTS_TABLE)
+                ->as('p')
+                ->from(TOPICS_TABLE)
+                ->as('t')
+                ->from(FORUMS_TABLE)
+                ->as('f')
+                ->from(POSTS_TEXT_TABLE)
+                ->as('pt')
+                ->from(USERS_TABLE)
+                ->as('u')
+                ->where('p.post_id = %i', $post_id)
+                ->where('t.topic_id = p.topic_id')
+                ->where('f.forum_id = p.forum_id')
+                ->where('pt.post_id = p.post_id')
+                ->where('u.user_id = p.poster_id')
+                ->fetchAll();
+        } else {
+            $columns = [
+                'f.*',
+                't.topic_id',
+                't.topic_status',
+                't.topic_type',
+                't.topic_first_post_id',
+                't.topic_last_post_id',
+                't.topic_vote',
+                'p.post_id',
+                'p.poster_id'
+            ];
+
+            $post_info = dibi::select($columns)
+                ->from(POSTS_TABLE)
+                ->as('p')
+                ->from(TOPICS_TABLE)
+                ->as('t')
+                ->from(FORUMS_TABLE)
+                ->as('f')
+                ->where('p.post_id = %i', $post_id)
+                ->where('t.topic_id = p.topic_id')
+                ->where('f.forum_id = p.forum_id')
+                ->fetch();
+        }
+
 		break;
 
 	default:
 		message_die(GENERAL_MESSAGE, $lang['No_valid_mode']);
 }
 
-if ( ($result = $db->sql_query($sql)) && ($post_info = $db->sql_fetchrow($result)) )
-{
-	$db->sql_freeresult($result);
+if ($post_info) {
 
-	$forum_id = $post_info['forum_id'];
-	$forum_name = $post_info['forum_name'];
+	$forum_id = $post_info->forum_id;
+	$forum_name = $post_info->forum_name;
 
 	$is_auth = auth(AUTH_ALL, $forum_id, $userdata, $post_info);
 
-    if ($post_info['forum_status'] == FORUM_LOCKED && !$is_auth['auth_mod']) {
+    if ($post_info->forum_status == FORUM_LOCKED && !$is_auth['auth_mod']) {
         message_die(GENERAL_MESSAGE, $lang['Forum_locked']);
-    } elseif ($mode != 'newtopic' && $post_info['topic_status'] == TOPIC_LOCKED && !$is_auth['auth_mod']) {
+    } elseif ($mode != 'newtopic' && $post_info->topic_status == TOPIC_LOCKED && !$is_auth['auth_mod']) {
         message_die(GENERAL_MESSAGE, $lang['Topic_locked']);
     }
 
     if ( $mode == 'editpost' || $mode == 'delete' || $mode == 'poll_delete' )
 	{
-		$topic_id = $post_info['topic_id'];
+		$topic_id = $post_info->topic_id;
 
-		$post_data['poster_post'] = $post_info['poster_id'] == $userdata['user_id'];
-		$post_data['first_post'] = $post_info['topic_first_post_id'] == $post_id;
-		$post_data['last_post'] = $post_info['topic_last_post_id'] == $post_id;
-		$post_data['last_topic'] = $post_info['forum_last_post_id'] == $post_id;
-		$post_data['has_poll'] = $post_info['topic_vote'] ? true : false;
-		$post_data['topic_type'] = $post_info['topic_type'];
-		$post_data['poster_id'] = $post_info['poster_id'];
+		$post_data['poster_post'] = $post_info->poster_id == $userdata['user_id'];
+		$post_data['first_post'] = $post_info->topic_first_post_id == $post_id;
+		$post_data['last_post'] = $post_info->topic_last_post_id == $post_id;
+		$post_data['last_topic'] = $post_info->forum_last_post_id == $post_id;
+		$post_data['has_poll'] = $post_info->topic_vote ? true : false;
+		$post_data['topic_type'] = $post_info->topic_type;
+		$post_data['poster_id'] = $post_info->poster_id;
 
 		if ( $post_data['first_post'] && $post_data['has_poll'] )
 		{
@@ -242,7 +303,7 @@ if ( ($result = $db->sql_query($sql)) && ($post_info = $db->sql_fetchrow($result
                 ->where('vd.topic_id = %i', $topic_id)
                 ->where('vr.vote_id = vd.vote_id')
                 ->orderBy('vr.vote_option_id')
-                ->fetchAssoc();
+                ->fetchAll();
 
 			$poll_options = [];
 			$poll_results_sum = 0;
@@ -267,7 +328,7 @@ if ( ($result = $db->sql_query($sql)) && ($post_info = $db->sql_fetchrow($result
 		//
 		// Can this user edit/delete the post/poll?
 		//
-        if ($post_info['poster_id'] != $userdata['user_id'] && !$is_auth['auth_mod']) {
+        if ($post_info->poster_id != $userdata['user_id'] && !$is_auth['auth_mod']) {
 			$message = ( $delete || $mode == 'delete' ) ? $lang['Delete_own_posts'] : $lang['Edit_own_posts'];
 			$message .= '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id") . '">', '</a>');
 
@@ -279,7 +340,7 @@ if ( ($result = $db->sql_query($sql)) && ($post_info = $db->sql_fetchrow($result
         }
     } else {
         if ($mode == 'quote') {
-            $topic_id = $post_info['topic_id'];
+            $topic_id = $post_info->topic_id;
         }
         if ($mode == 'newtopic') {
             $post_data['topic_type'] = POST_NORMAL;
@@ -514,7 +575,7 @@ if (($delete || $poll_delete || $mode == 'delete') && !$confirm) {
         }
 
 		if ($error_msg == '' && $mode != 'poll_delete') {
-			user_notification($mode, $post_data, $post_info['topic_title'], $forum_id, $topic_id, $post_id, $notify_user);
+			user_notification($mode, $post_data, $post_info->topic_title, $forum_id, $topic_id, $post_id, $notify_user);
 		}
 
 		if ( $mode == 'newtopic' || $mode == 'reply' ) {
@@ -570,8 +631,8 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg != '' )
 	if ( $mode == 'newtopic' || $mode == 'reply') {
 		$user_sig = ( $userdata['user_sig'] != '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : '';
 	} elseif ( $mode == 'editpost' ) {
-		$user_sig = ( $post_info['user_sig'] != '' && $board_config['allow_sig'] ) ? $post_info['user_sig'] : '';
-		$userdata['user_sig_bbcode_uid'] = $post_info['user_sig_bbcode_uid'];
+		$user_sig = ( $post_info->user_sig != '' && $board_config['allow_sig'] ) ? $post_info->user_sig : '';
+		$userdata['user_sig_bbcode_uid'] = $post_info->user_sig_bbcode_uid;
 	}
 
 	if ($preview ) {
@@ -669,23 +730,23 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg != '' )
 		$message = '';
 
     } elseif ($mode == 'quote' || $mode == 'editpost') {
-		$subject = $post_data['first_post'] ? $post_info['topic_title'] : $post_info['post_subject'];
-		$message = $post_info['post_text'];
+		$subject = $post_data['first_post'] ? $post_info->topic_title : $post_info->post_subject;
+		$message = $post_info->post_text;
 
         if ($mode == 'editpost') {
-			$attach_sig = ( $post_info['enable_sig'] && $post_info['user_sig'] != '' ) ? TRUE : 0;
-			$user_sig = $post_info['user_sig'];
+			$attach_sig = ( $post_info->enable_sig && $post_info->user_sig != '' ) ? TRUE : 0;
+			$user_sig = $post_info->user_sig;
 
-			$html_on = $post_info['enable_html'] ? true : false;
-			$bbcode_on = $post_info['enable_bbcode'] ? true : false;
-			$smilies_on = $post_info['enable_smilies'] ? true : false;
+			$html_on = $post_info->enable_html ? true : false;
+			$bbcode_on = $post_info->enable_bbcode ? true : false;
+			$smilies_on = $post_info->enable_smilies ? true : false;
 		} else {
 			$attach_sig = $userdata['user_attachsig'] ? TRUE : 0;
 			$user_sig = $userdata['user_sig'];
 		}
 
-        if ($post_info['bbcode_uid'] != '') {
-			$message = preg_replace('/\:(([a-z0-9]:)?)' . $post_info['bbcode_uid'] . '/s', '', $message);
+        if ($post_info->bbcode_uid != '') {
+			$message = preg_replace('/\:(([a-z0-9]:)?)' . $post_info->bbcode_uid . '/s', '', $message);
 		}
 
 		$message = str_replace('<', '&lt;', $message);
@@ -700,7 +761,7 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg != '' )
 			$msg_date =  create_date($board_config['default_dateformat'], $postrow['post_time'], $board_config['board_timezone']);
 
 			// Use trim to get rid of spaces placed there by MS-SQL 2000
-			$quote_username = ( trim($post_info['post_username']) != '' ) ? $post_info['post_username'] : $post_info['username'];
+			$quote_username = ( trim($post_info->post_username) != '' ) ? $post_info->post_username : $post_info->username;
 			$message = '[quote="' . $quote_username . '"]' . $message . '[/quote]';
 
 			if ( !empty($orig_word) ) {
@@ -714,7 +775,7 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg != '' )
 
 			$mode = 'reply';
 		} else {
-			$username = ( $post_info['user_id'] == ANONYMOUS && !empty($post_info['post_username']) ) ? $post_info['post_username'] : '';
+			$username = ( $post_info->user_id == ANONYMOUS && !empty($post_info->post_username) ) ? $post_info->post_username : '';
 		}
 	}
 }
@@ -756,7 +817,7 @@ if ($board_config['allow_smilies']) {
     $smilies_status = $lang['Smilies_are_OFF'];
 }
 
-if (!$userdata['session_logged_in'] || ($mode == 'editpost' && $post_info['poster_id'] == ANONYMOUS)) {
+if (!$userdata['session_logged_in'] || ($mode == 'editpost' && $post_info->poster_id == ANONYMOUS)) {
     $template->assign_block_vars('switch_username_select', []);
 }
 
@@ -764,7 +825,7 @@ if (!$userdata['session_logged_in'] || ($mode == 'editpost' && $post_info['poste
 // Notify checkbox - only show if user is logged in
 //
 if ($userdata['session_logged_in'] && $is_auth['auth_read']) {
-    if ($mode != 'editpost' || ($mode == 'editpost' && $post_info['poster_id'] != ANONYMOUS)) {
+    if ($mode != 'editpost' || ($mode == 'editpost' && $post_info->poster_id != ANONYMOUS)) {
         $template->assign_block_vars('switch_notify_checkbox', []);
     }
 }
