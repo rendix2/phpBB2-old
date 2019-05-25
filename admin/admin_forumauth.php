@@ -92,10 +92,10 @@ $forum_auth_const  = [AUTH_ALL, AUTH_REG, AUTH_ACL, AUTH_MOD, AUTH_ADMIN];
 
 if (isset($_GET[POST_FORUM_URL]) || isset($_POST[POST_FORUM_URL])) {
     $forum_id  = isset($_POST[POST_FORUM_URL]) ? (int)$_POST[POST_FORUM_URL] : (int)$_GET[POST_FORUM_URL];
-    $forum_sql = "AND forum_id = $forum_id";
+    $forum_sql = true;
 } else {
     unset($forum_id);
-    $forum_sql = '';
+    $forum_sql = false;
 }
 
 if (isset($_GET['adv'])) {
@@ -108,43 +108,39 @@ if (isset($_GET['adv'])) {
 // Start program proper
 //
 if (isset($_POST['submit'])) {
-	$sql = '';
-
     if (!empty($forum_id)) {
 		if (isset($_POST['simpleauth']))
 		{
 			$simple_ary = $simple_auth_ary[(int)$_POST['simpleauth']];
 
-            for ($i = 0; $i < count($simple_ary); $i++) {
-                $sql .= (($sql != '') ? ', ' : '') . $forum_auth_fields[$i] . ' = ' . $simple_ary[$i];
-            }
+			if (count($forum_auth_fields) === count($simple_ary)) {
+                $update_data = array_combine($forum_auth_fields, $simple_ary);
 
-            if (is_array($simple_ary)) {
-                $sql = "UPDATE " . FORUMS_TABLE . " SET $sql WHERE forum_id = $forum_id";
+                dibi::update(FORUMS_TABLE, $update_data)
+                    ->where('forum_id = %i', $forum_id)
+                    ->execute();
             }
 		} else {
-			for ($i = 0; $i < count($forum_auth_fields); $i++) {
-				$value = (int)$_POST[$forum_auth_fields[$i]];
+		    $update_data = [];
 
-                if ($forum_auth_fields[$i] == 'auth_vote') {
+		    foreach ($forum_auth_fields as $forum_auth_field) {
+                $value = (int)$_POST[$forum_auth_field];
+
+                if ($forum_auth_field == 'auth_value') {
                     if ($_POST['auth_vote'] == AUTH_ALL) {
                         $value = AUTH_REG;
                     }
                 }
 
-				$sql .= ( ( $sql != '' ) ? ', ' : '' ) .$forum_auth_fields[$i] . ' = ' . $value;
-			}
+                $update_data[$forum_auth_field] = $value;
+            }
 
-			$sql = "UPDATE " . FORUMS_TABLE . " SET $sql WHERE forum_id = $forum_id";
+		    dibi::update(FORUMS_TABLE, $update_data)
+                ->where('forum_id = %i', $forum_id)
+                ->execute();
 		}
 
-        if ($sql != '') {
-            if (!$db->sql_query($sql)) {
-                message_die(GENERAL_ERROR, 'Could not update auth table', '', __LINE__, __FILE__, $sql);
-            }
-        }
-
-		$forum_sql = '';
+		$forum_sql = false;
 		$adv = 0;
 	}
 
@@ -163,22 +159,22 @@ if (isset($_POST['submit'])) {
 // no id was specified or just the requsted if it
 // was
 //
-$sql = "SELECT f.*
-	FROM " . FORUMS_TABLE . " f, " . CATEGORIES_TABLE . " c
-	WHERE c.cat_id = f.cat_id
-	$forum_sql
-	ORDER BY c.cat_order ASC, f.forum_order ASC";
+$forum_rows = dibi::select('f.*')
+    ->from(FORUMS_TABLE)
+    ->as('f')
+    ->from(CATEGORIES_TABLE)
+    ->as('c')
+    ->where('c.cat_id = f.cat_id');
 
-if ( !($result = $db->sql_query($sql)) )
-{
-	message_die(GENERAL_ERROR, "Couldn't obtain forum list", "", __LINE__, __FILE__, $sql);
+if ($forum_sql) {
+    $forum_rows->where('forum_id = %i', $forum_id);
 }
 
-$forum_rows = $db->sql_fetchrowset($result);
-$db->sql_freeresult($result);
+$forum_rows = $forum_rows->orderBy('c.cat_order', dibi::ASC)
+    ->orderBy('f.forum_order', dibi::ASC)
+    ->fetchAll();
 
-if (empty($forum_id) )
-{
+if (empty($forum_id) ) {
 	//
 	// Output the selection table if no forum id was
 	// specified
@@ -187,8 +183,8 @@ if (empty($forum_id) )
 
     $select_list = '<select name="' . POST_FORUM_URL . '">';
 
-	for ($i = 0; $i < count($forum_rows); $i++) {
-		$select_list .= '<option value="' . $forum_rows[$i]['forum_id'] . '">' . $forum_rows[$i]['forum_name'] . '</option>';
+    foreach ($forum_rows as $forum_row) {
+		$select_list .= '<option value="' . $forum_row->forum_id . '">' . $forum_row->forum_name . '</option>';
 	}
 
 	$select_list .= '</select>';
@@ -243,9 +239,9 @@ if (empty($forum_id) )
     if (empty($adv)) {
 		$simple_auth = '<select name="simpleauth">';
 
-        for ($j = 0; $j < count($simple_auth_types); $j++) {
-			$selected = ( $matched_type == $j ) ? ' selected="selected"' : '';
-			$simple_auth .= '<option value="' . $j . '"' . $selected . '>' . $simple_auth_types[$j] . '</option>';
+        foreach ($simple_auth_types as $key => $simple_auth_type) {
+			$selected = ( $matched_type == $key ) ? ' selected="selected"' : '';
+			$simple_auth .= '<option value="' . $key . '"' . $selected . '>' . $simple_auth_type . '</option>';
 		}
 
 		$simple_auth .= '</select>';
@@ -259,17 +255,17 @@ if (empty($forum_id) )
 		// Output values of individual
 		// fields
 		//
-		for ($j = 0; $j < count($forum_auth_fields); $j++) {
-			$custom_auth[$j] = '&nbsp;<select name="' . $forum_auth_fields[$j] . '">';
+		foreach ($forum_auth_fields as $key => $forum_auth_field) {
+			$custom_auth[$key] = '&nbsp;<select name="' . $forum_auth_field . '">';
 
-			for ($k = 0; $k < count($forum_auth_levels); $k++) {
-				$selected = ( $forum_rows[0][$forum_auth_fields[$j]] == $forum_auth_const[$k] ) ? ' selected="selected"' : '';
-				$custom_auth[$j] .= '<option value="' . $forum_auth_const[$k] . '"' . $selected . '>' . $lang['Forum_' . $forum_auth_levels[$k]] . '</option>';
-			}
+            foreach ($forum_auth_levels as $key2 => $forum_auth_level) {
+                $selected = ( $forum_rows[0][$forum_auth_field] == $forum_auth_const[$key2] ) ? ' selected="selected"' : '';
+                $custom_auth[$key] .= '<option value="' . $forum_auth_const[$key2] . '"' . $selected . '>' . $lang['Forum_' . $forum_auth_level] . '</option>';
+            }
 
-			$custom_auth[$j] .= '</select>&nbsp;';
+			$custom_auth[$key] .= '</select>&nbsp;';
 
-			$cell_title = $field_names[$forum_auth_fields[$j]];
+			$cell_title = $field_names[$forum_auth_field];
 
             $template->assign_block_vars('forum_auth_titles', ['CELL_TITLE' => $cell_title]);
             $template->assign_block_vars('forum_auth_data', ['S_AUTH_LEVELS_SELECT' => $custom_auth[$j]]);
