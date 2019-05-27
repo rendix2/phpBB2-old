@@ -149,8 +149,6 @@ if ( isset($_POST['submit']) ) {
         ->from(BANLIST_TABLE)
         ->fetchAll();
 
-	$db->sql_freeresult($result);
-
 	$kill_session_sql = '';
 
 	for ($i = 0; $i < count($user_list); $i++) {

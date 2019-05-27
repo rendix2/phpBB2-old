@@ -318,25 +318,19 @@ function remove_search_post(array $post_id_sql)
 			break;
 
 		default:
-			$sql = "DELETE FROM " . SEARCH_WORD_TABLE . " 
-				WHERE word_id IN ( 
-					SELECT word_id 
-					FROM " . SEARCH_MATCH_TABLE . " 
-					WHERE word_id IN ( 
-						SELECT word_id 
-						FROM " . SEARCH_MATCH_TABLE . " 
-						WHERE post_id IN ($post_id_sql) 
-						GROUP BY word_id 
-					) 
-					GROUP BY word_id 
-					HAVING COUNT(word_id) = 1
-				)";
+            $words_removed = dibi::delete(SEARCH_WORD_TABLE)
+                ->where('word_id IN',
 
-			if ( !$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, 'Could not delete old words from word table', '', __LINE__, __FILE__, $sql);
-			}
+                    dibi::select('word_id')
+                        ->from(SEARCH_MATCH_TABLE)
+                        ->where('word_id IN',
 
-			$words_removed = $db->sql_affectedrows();
+                            dibi::select('word_id')
+                                ->from(SEARCH_MATCH_TABLE)
+                                ->where('post_id IN', $post_id_sql))
+                        ->groupBy('word_id')
+                        ->having('COUNT(word_id) = %i', 1))
+                ->execute(dibi::AFFECTED_ROWS);
 
 			break;
 	}

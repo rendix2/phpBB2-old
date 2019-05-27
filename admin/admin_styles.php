@@ -353,15 +353,12 @@ switch( $mode )
 				//
 				// First, check if we already have a style by this name
 				//
-				$sql = "SELECT themes_id 
-					FROM " . THEMES_TABLE . " 
-					WHERE style_name = '" . str_replace("\'", "''", $updated['style_name']) . "'";
-
-				if (!$result = $db->sql_query($sql)) {
-					message_die(GENERAL_ERROR, "Could not query themes table", "", __LINE__, __FILE__, $sql);
-				}
+                $theme_check = dibi::select('themes_id')
+                    ->from(THEMES_TABLE)
+                    ->where('style_name = %s', $updated['style_name'])
+                    ->fetch();
 				
-				if ($db->sql_numrows($result)) {
+				if ($theme_check) {
 					message_die(GENERAL_ERROR, $lang['Style_exists'], $lang['Error']);
 				}
 
