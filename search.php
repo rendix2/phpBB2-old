@@ -152,18 +152,24 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
 		//
 		// Flood control
 		//
-		$where_sql = ($userdata['user_id'] == ANONYMOUS) ? "se.session_ip = '$user_ip'" : 'se.session_user_id = ' . $userdata['user_id'];
-		$sql = 'SELECT MAX(sr.search_time) AS last_search_time
-			FROM ' . SEARCH_TABLE . ' sr, ' . SESSIONS_TABLE . " se
-			WHERE sr.session_id = se.session_id
-				AND $where_sql";
+		$result = dibi::select('MAX(sr.search_time)')
+            ->as('last_search_time')
+            ->from(SEARCH_TABLE)
+            ->as('sr')
+            ->from(SESSIONS_TABLE)
+            ->as('se')
+            ->where('sr.session_id = se.session_id');
 
-        if ($result = $db->sql_query($sql)) {
-            if ($row = $db->sql_fetchrow($result)) {
-                if ((int)$row['last_search_time'] > 0 && ($current_time - (int)$row['last_search_time']) < (int)$board_config['search_flood_interval']) {
-                    message_die(GENERAL_MESSAGE, $lang['Search_Flood_Error']);
-                }
-            }
+		if ($userdata['user_id'] == ANONYMOUS) {
+		    $result->where('se.session_ip = %s', $user_ip);
+        } else {
+		    $result->where('se.session_user_id = %s', $userdata['user_id']);
+        }
+
+		$result = $result->fetch();
+
+        if ((int)$row->last_search_time > 0 && ($current_time - (int)$row->last_search_time) < (int)$board_config['search_flood_interval']) {
+            message_die(GENERAL_MESSAGE, $lang['Search_Flood_Error']);
         }
 
 		if ( $search_id == 'newposts' || $search_id == 'egosearch' || ( $search_author != '' && $search_keywords == '' )  ) {

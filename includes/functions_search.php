@@ -105,7 +105,7 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 
 	@set_time_limit(0);
 
-	$word = [];
+	$words = [];
 	$word_insert_sql = [];
 
 	while ( list($word_in, $search_matches) = @each($search_raw_words) ) {
@@ -116,7 +116,7 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 				$search_matches[$i] = trim($search_matches[$i]);
 
 				if ($search_matches[$i] != '' ) {
-					$word[] = $search_matches[$i];
+					$words[] = $search_matches[$i];
 
 					if ( !strstr($word_insert_sql[$word_in], "'" . $search_matches[$i] . "'") ) {
 						$word_insert_sql[$word_in] .= ( $word_insert_sql[$word_in] != "" ) ? ", '" . $search_matches[$i] . "'" : "'" . $search_matches[$i] . "'";
@@ -126,66 +126,50 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 		}
 	}
 
-	if ( count($word) ) {
-		sort($word);
+    if (count($words)) {
+		sort($words);
 
-		$prev_word = '';
-		$word_text_sql = '';
-		$temp_word = [];
-
-		for ($i = 0; $i < count($word); $i++) {
-			if ( $word[$i] != $prev_word ) {
-				$temp_word[] = $word[$i];
-				$word_text_sql .= ( ( $word_text_sql != '' ) ? ', ' : '' ) . "'" . $word[$i] . "'";
-			}
-			$prev_word = $word[$i];
-		}
-		$word = $temp_word;
-
+		$words = array_unique($words);
 		$check_words = [];
-		switch( SQL_LAYER ) {
-			case 'postgresql':
-			case 'msaccess':
-			case 'mssql-odbc':
-			case 'oracle':
-			case 'db2':
-				$sql = "SELECT word_id, word_text     
-					FROM " . SEARCH_WORD_TABLE . " 
-					WHERE word_text IN ($word_text_sql)";
 
-				if ( !($result = $db->sql_query($sql)) ) {
-					message_die(GENERAL_ERROR, 'Could not select words', '', __LINE__, __FILE__, $sql);
-				}
-
-				while ( $row = $db->sql_fetchrow($result) ) {
-					$check_words[$row['word_text']] = $row['word_id'];
-				}
-				break;
-		}
+        switch (SQL_LAYER) {
+            case 'postgresql':
+            case 'msaccess':
+            case 'mssql-odbc':
+            case 'oracle':
+            case 'db2':
+                $check_words = dibi::select(['word_id', 'word_text'])
+                    ->from(SEARCH_WORD_TABLE)
+                    ->where('word_text IN %in', $words)
+                    ->fetchPairs('word_text', 'word_id');
+                break;
+        }
 
 		$value_sql = '';
 		$match_word = [];
 
-		for ($i = 0; $i < count($word); $i++) {
+		// TODO check conditions
+		foreach ($words as $word) {
 			$new_match = true;
 
-			if ( isset($check_words[$word[$i]]) ) {
+			if ( isset($check_words[$word]) ) {
 				$new_match = false;
 			}
 
+			// TODO this we dont need!
 			if ( $new_match ) {
 				switch( SQL_LAYER ) {
 					case 'mysql':
 					case 'mysql4':
-						$value_sql .= ( ( $value_sql != '' ) ? ', ' : '' ) . '(\'' . $word[$i] . '\', 0)';
+						$value_sql .= ( ( $value_sql != '' ) ? ', ' : '' ) . '(\'' . $word . '\', 0)';
 						break;
 					case 'mssql':
 					case 'mssql-odbc':
-						$value_sql .= ( ( $value_sql != '' ) ? ' UNION ALL ' : '' ) . "SELECT '" . $word[$i] . "', 0";
+						$value_sql .= ( ( $value_sql != '' ) ? ' UNION ALL ' : '' ) . "SELECT '" . $word . "', 0";
 						break;
 					default:
 					    $insert_data = [
-					        'word_text' => $word[$i],
+					        'word_text' => $word,
                             'word_common' => 0
                         ];
 
@@ -195,6 +179,7 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 			}
 		}
 
+        // TODO this we dont need!
 		if ( $value_sql != '' ) {
 			switch ( SQL_LAYER ) {
 				case 'mysql':
@@ -232,7 +217,7 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 	}
 
 	if ($mode == 'single') {
-		remove_common('single', 4/10, $word);
+		remove_common('single', 4/10, $words);
 	}
 
 	return;
