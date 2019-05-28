@@ -366,24 +366,24 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 	//
 	// For security, get the ID of the group moderator.
 	//
-	switch(SQL_LAYER)
-	{
+	switch(SQL_LAYER) {
 		case 'postgresql':
-			$sql = "SELECT g.group_moderator, g.group_type, aa.auth_mod 
+            $group_info = dibi::query('SELECT g.group_moderator, g.group_type, aa.auth_mod 
 				FROM " . GROUPS_TABLE . " g, " . AUTH_ACCESS_TABLE . " aa 
-				WHERE g.group_id = $group_id
+				WHERE g.group_id = %i
 					AND aa.group_id = g.group_id 
 					UNION (
 						SELECT g.group_moderator, g.group_type, NULL 
 						FROM " . GROUPS_TABLE . " g
-						WHERE g.group_id = $group_id
+						WHERE g.group_id = %i
 							AND NOT EXISTS (
 							SELECT aa.group_id 
 							FROM " . AUTH_ACCESS_TABLE . " aa 
 							WHERE aa.group_id = g.group_id  
 						)
 					)
-				ORDER BY auth_mod DESC";
+				ORDER BY auth_mod DESC', $group_id, $group_id)
+                ->fetch();
 			break;
 
 		case 'oracle':
@@ -409,10 +409,6 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
                 ->orderBy('aa.auth_mod', dibi::DESC)
                 ->fetch();
 			break;
-	}
-
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, 'Could not get moderator information', '', __LINE__, __FILE__, $sql);
 	}
 
     if ($group_info) {
@@ -607,10 +603,6 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
                             ->where('user_id IN %in', $members)
                             ->where('group_id = %i', $group_id)
                             ->execute();
-					}
-
-					if ( !$db->sql_query($sql) ) {
-						message_die(GENERAL_ERROR, 'Could not update user group table', '', __LINE__, __FILE__, $sql);
 					}
 
 					//
@@ -1127,22 +1119,23 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 	//
 	// Select all other groups i.e. groups that this user is not a member of
 	//
-	$ignore_group_sql =	count($in_group) ? "AND group_id NOT IN (" . implode(', ', $in_group) . ")" : '';
-	$sql = "SELECT group_id, group_name, group_type 
-		FROM " . GROUPS_TABLE . " g 
-		WHERE group_single_user <> " . TRUE . " 
-			$ignore_group_sql 
-		ORDER BY g.group_name";
 
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, 'Error getting group information', '', __LINE__, __FILE__, $sql);
-	}
+    $group_rows = dibi::select(['group_id', 'group_name', 'group_type'])
+        ->from('GROUPS_TABLE')
+        ->where('group_single_user <> %i', 1);
+
+    if (count($in_group)) {
+        $group_rows->where('group_id NOT IN %in', $in_group);
+    }
+
+    $group_rows = $group_rows->orderBy('group_name')
+        ->fetchAll();
 
 	$s_group_list_opt = '';
 
-	while ($row = $db->sql_fetchrow($result) ) {
-		if  ( $row['group_type'] != GROUP_HIDDEN || $userdata['user_level'] == ADMIN ) {
-			$s_group_list_opt .='<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
+	foreach ($group_rows as $group_row) {
+		if  ( $group_row->group_type != GROUP_HIDDEN || $userdata['user_level'] == ADMIN ) {
+			$s_group_list_opt .='<option value="' . $group_row->group_id . '">' . $group_row->group_name . '</option>';
 		}
 	}
 	$s_group_list = '<select name="' . POST_GROUPS_URL . '">' . $s_group_list_opt . '</select>';

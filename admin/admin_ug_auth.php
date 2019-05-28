@@ -582,37 +582,55 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 		}
 	}
 
-	$sql = "SELECT u.user_id, u.username, u.user_level, g.group_id, g.group_name, g.group_single_user, ug.user_pending FROM " . USERS_TABLE . " u, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug WHERE ";
-	$sql .= ( $mode == 'user' ) ? "u.user_id = $user_id AND ug.user_id = u.user_id AND g.group_id = ug.group_id" : "g.group_id = $group_id AND ug.group_id = g.group_id AND u.user_id = ug.user_id";
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, "Couldn't obtain user/group information", "", __LINE__, __FILE__, $sql);
-	}
+    $ug_info = dibi::select(['u.user_id', 'u.username', 'u.user_level', 'g.group_id', 'g.group_name', 'g.group_single_user', 'ug.user_pending'])
+        ->from(USERS_TABLE)
+        ->as('u')
+        ->from(GROUPS_TABLE)
+        ->as('g')
+        ->from(USER_GROUP_TABLE)
+        ->as('ug');
 
-	$ug_info = [];
+    if ($mode == 'user') {
+	    $ug_info->where('u.user_id = %i', $user_id)
+            ->where('ug.user_id = u.user_id')
+            ->where('g.group_id = ug.group_id');
+    } else {
+        $ug_info->where('g.group_id = %i', $group_id)
+            ->where('ug.group_id = g.group_id')
+            ->where(' u.user_id = ug.user_id');
+    }
 
-	while ($row = $db->sql_fetchrow($result) ) {
-		$ug_info[] = $row;
-	}
+    $ug_info = $ug_info->fetchAll();
 
-	$db->sql_freeresult($result);
-
-	$sql = ( $mode == 'user' ) ? "SELECT aa.*, g.group_single_user FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE. " g WHERE ug.user_id = $user_id AND g.group_id = ug.group_id AND aa.group_id = ug.group_id AND g.group_single_user = 1" : "SELECT * FROM " . AUTH_ACCESS_TABLE . " WHERE group_id = $group_id";
-
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, "Couldn't obtain user/group permissions", "", __LINE__, __FILE__, $sql);
-	}
+    if ( $mode == 'user' ) {
+        $rows = dibi::select(['aa.*', 'g.group_single_user'])
+            ->from(AUTH_ACCESS_TABLE)
+            ->as('aa')
+            ->from(USER_GROUP_TABLE)
+            ->as('ug')
+            ->from(GROUPS_TABLE)
+            ->as('g')
+            ->where('ug.user_id = %i', $user_id)
+            ->where('g.group_id = ug.group_id')
+            ->where('aa.group_id = ug.group_id')
+            ->where('g.group_single_user = %i', 1)
+            ->fetchAll();
+    } else {
+        $rows = dibi::select('*')
+            ->from(AUTH_ACCESS_TABLE)
+            ->where('group_id = %i', $group_id)
+            ->fetchAll();
+    }
 
 	$auth_access = [];
 	$auth_access_count = [];
 
-    while ($row = $db->sql_fetchrow($result)) {
-        $auth_access[$row['forum_id']][] = $row;
-        $auth_access_count[$row['forum_id']]++;
+    foreach ($rows as $row) {
+        $auth_access[$row->forum_id][] = $row;
+        $auth_access_count[$row->forum_id]++;
     }
 
-	$db->sql_freeresult($result);
-
-	$is_admin = ( $mode == 'user' ) ? ( ( $ug_info[0]['user_level'] == ADMIN && $ug_info[0]['user_id'] != ANONYMOUS ) ? 1 : 0 ) : 0;
+	$is_admin = ( $mode == 'user' ) ? ( ( $ug_info[0]->user_level == ADMIN && $ug_info[0]->user_id != ANONYMOUS ) ? 1 : 0 ) : 0;
 
 	for ($i = 0; $i < count($forum_access); $i++) {
 		$forum_id = $forum_access[$i]['forum_id'];
@@ -758,19 +776,19 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 //	@reset($auth_user);
 
     if ($mode == 'user') {
-        $t_username  = $ug_info[0]['username'];
+        $t_username  = $ug_info[0]->username;
         $s_user_type = $is_admin ? '<select name="userlevel"><option value="admin" selected="selected">' . $lang['Auth_Admin'] . '</option><option value="user">' . $lang['Auth_User'] . '</option></select>' : '<select name="userlevel"><option value="admin">' . $lang['Auth_Admin'] . '</option><option value="user" selected="selected">' . $lang['Auth_User'] . '</option></select>';
     } else {
-        $t_groupname = $ug_info[0]['group_name'];
+        $t_groupname = $ug_info[0]->group_name;
     }
 
 	$name = [];
 	$id = [];
 
     for ($i = 0; $i < count($ug_info); $i++) {
-        if (($mode == 'user' && !$ug_info[$i]['group_single_user']) || $mode == 'group') {
-            $name[] = ($mode == 'user') ? $ug_info[$i]['group_name'] : $ug_info[$i]['username'];
-            $id[]   = ($mode == 'user') ? (int)$ug_info[$i]['group_id'] : (int)$ug_info[$i]['user_id'];
+        if (($mode == 'user' && !$ug_info[$i]->group_single_user) || $mode == 'group') {
+            $name[] = ($mode == 'user') ? $ug_info[$i]->group_name : $ug_info[$i]->username;
+            $id[]   = ($mode == 'user') ? (int)$ug_info[$i]->group_id : (int)$ug_info[$i]->user_id;
         }
     }
 
@@ -780,7 +798,7 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
         for ($i = 0; $i < count($ug_info); $i++) {
             $ug = ($mode == 'user') ? 'group&amp;' . POST_GROUPS_URL : 'user&amp;' . POST_USERS_URL;
 
-            if (!$ug_info[$i]['user_pending']) {
+            if (!$ug_info[$i]->user_pending) {
                 $t_usergroup_list .= (($t_usergroup_list != '') ? ', ' : '') . '<a href="' . append_sid("admin_ug_auth.php?mode=$ug=" . $id[$i]) . '">' . $name[$i] . '</a>';
             } else {
                 $t_pending_list .= (($t_pending_list != '') ? ', ' : '') . '<a href="' . append_sid("admin_ug_auth.php?mode=$ug=" . $id[$i]) . '">' . $name[$i] . '</a>';

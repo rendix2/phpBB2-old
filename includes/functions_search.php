@@ -145,58 +145,30 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
                 break;
         }
 
-		$value_sql = '';
-		$match_word = [];
-
-		// TODO check conditions
 		foreach ($words as $word) {
-			$new_match = true;
-
-			if ( isset($check_words[$word]) ) {
-				$new_match = false;
-			}
-
-			// TODO this we dont need!
-			if ( $new_match ) {
-				switch( SQL_LAYER ) {
-					case 'mysql':
-					case 'mysql4':
-						$value_sql .= ( ( $value_sql != '' ) ? ', ' : '' ) . '(\'' . $word . '\', 0)';
-						break;
-					case 'mssql':
-					case 'mssql-odbc':
-						$value_sql .= ( ( $value_sql != '' ) ? ' UNION ALL ' : '' ) . "SELECT '" . $word . "', 0";
-						break;
-					default:
-					    $insert_data = [
-					        'word_text' => $word,
+            if ( !isset($check_words[$word]) ) {
+                switch ( SQL_LAYER ) {
+                    case 'mysql':
+                    case 'mysql4':
+                        $insert_data = [
+                            'word_text' => $word,
                             'word_common' => 0
                         ];
 
-					    dibi::insert(SEARCH_WORD_TABLE, $insert_data)->execute();
-						break;
-				}
-			}
-		}
+                        dibi::insert(SEARCH_WORD_TABLE, $insert_data)->setFlag('IGNORE')->execute();
+                        break;
+                    case 'mssql':
+                    case 'mssql-odbc':
+                    default:
+                        $insert_data = [
+                            'word_text' => $word,
+                            'word_common' => 0
+                        ];
 
-        // TODO this we dont need!
-		if ( $value_sql != '' ) {
-			switch ( SQL_LAYER ) {
-				case 'mysql':
-				case 'mysql4':
-					$sql = "INSERT IGNORE INTO " . SEARCH_WORD_TABLE . " (word_text, word_common) 
-						VALUES $value_sql"; 
-					break;
-				case 'mssql':
-				case 'mssql-odbc':
-					$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text, word_common) 
-						$value_sql"; 
-					break;
-			}
-
-			if ( !$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, 'Could not insert new word', '', __LINE__, __FILE__, $sql);
-			}
+                        dibi::insert(SEARCH_WORD_TABLE, $insert_data)->execute();
+                        break;
+                }
+            }
 		}
 	}
 
@@ -219,8 +191,6 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 	if ($mode == 'single') {
 		remove_common('single', 4/10, $words);
 	}
-
-	return;
 }
 
 //
@@ -253,28 +223,22 @@ function remove_common($mode, $fraction, $word_id_list = [])
                 ->where('m.word_id = w.word_id ')
                 ->groupBy('m.word_id')
                 ->having('COUNT(m.word_id) > %i', $common_threshold)
-                ->fetchAll();
+                ->fetchPairs(null, 'word_id');
 		} else {
 		    $word_ids = dibi::select('word_id')
                 ->from(SEARCH_MATCH_TABLE)
                 ->groupBy('word_id')
                 ->having('COUNT(word_id) > %i', $common_threshold)
-                ->fetchAll();
+                ->fetchPairs(null, 'word_id');
 		}
 
-		$common_word_id = [];
-
-		foreach ($word_ids as $word_id) {
-		    $common_word_id[] = $word_id->word_id;
-        }
-
-		if ( count($common_word_id) ) {
+		if ( count($word_ids) ) {
 		    dibi::update(SEARCH_WORD_TABLE, ['word_common' => 1])
-                ->where('word_id IN %in', $common_word_id)
+                ->where('word_id IN %in', $word_ids)
                 ->execute();
 
 		    dibi::delete(SEARCH_MATCH_TABLE)
-                ->where('word_id IN %in', $common_word_id)
+                ->where('word_id IN %in', $word_ids)
                 ->execute();
 		}
 	}

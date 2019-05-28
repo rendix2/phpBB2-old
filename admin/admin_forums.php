@@ -905,6 +905,8 @@ if ($category_count) {
                     [
                         'FORUM_NAME' => $forum->forum_name,
                         'FORUM_DESC' => $forum->forum_desc,
+
+                        // TODO this variiable does not exists...
                         'ROW_COLOR'  => $row_color,
                         'NUM_TOPICS' => $forum->forum_topics,
                         'NUM_POSTS'  => $forum->forum_posts,
