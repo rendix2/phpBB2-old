@@ -149,8 +149,6 @@ if ( isset($_POST['submit']) ) {
         ->from(BANLIST_TABLE)
         ->fetchAll();
 
-	$db->sql_freeresult($result);
-
 	$kill_session_sql = '';
 
 	for ($i = 0; $i < count($user_list); $i++) {
@@ -221,14 +219,14 @@ if ( isset($_POST['submit']) ) {
 		}
 	}
 
-	$where_sql = '';
+	$where_sql = [];
 
     if (isset($_POST['unban_user'])) {
         $user_list = $_POST['unban_user'];
 
         for ($i = 0; $i < count($user_list); $i++) {
             if ($user_list[$i] != -1) {
-                $where_sql .= (($where_sql != '') ? ', ' : '') . (int)$user_list[$i];
+                $where_sql[] = (int)$user_list[$i];
             }
         }
     }
@@ -238,7 +236,7 @@ if ( isset($_POST['submit']) ) {
 
         for ($i = 0; $i < count($ip_list); $i++) {
             if ($ip_list[$i] != -1) {
-                $where_sql .= (($where_sql != '') ? ', ' : '') . str_replace("\'", "''", $ip_list[$i]);
+                $where_sql[] = $ip_list[$i];
             }
         }
     }
@@ -248,18 +246,15 @@ if ( isset($_POST['submit']) ) {
 
         for ($i = 0; $i < count($email_list); $i++) {
             if ($email_list[$i] != -1) {
-                $where_sql .= (($where_sql != '') ? ', ' : '') . str_replace("\'", "''", $email_list[$i]);
+                $where_sql[] = $email_list[$i];
             }
         }
     }
 
-    if ($where_sql != '') {
-        $sql = "DELETE FROM " . BANLIST_TABLE . "
-			WHERE ban_id IN ($where_sql)";
-
-        if (!$db->sql_query($sql)) {
-            message_die(GENERAL_ERROR, "Couldn't delete ban info from database", "", __LINE__, __FILE__, $sql);
-        }
+    if (count($where_sql)) {
+        dibi::delete(BANLIST_TABLE)
+            ->where('ban_id IN %in', $where_sql)
+            ->execute();
     }
 
 	$message = $lang['Ban_update_sucessful'] . '<br /><br />' . sprintf($lang['Click_return_banadmin'], '<a href="' . append_sid("admin_user_ban.php") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');

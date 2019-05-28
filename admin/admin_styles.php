@@ -67,43 +67,19 @@ switch( $mode )
 			include $phpbb_root_path. "templates/" . basename($install_to) . "/theme_info.cfg";
 
 			$template_name = $$install_to;
-			$found = FALSE; 
+			$found = FALSE;
+
+			$insert_data = [];
 			
 			for ($i = 0; $i < count($template_name) && !$found; $i++) {
 				if ($template_name[$i]['style_name'] == $style_name ) {
 					while (list($key, $val) = each($template_name[$i])) {
-						$db_fields[] = $key;
-						$db_values[] = str_replace("\'", "''" , $val);
+                        $insert_data[$key] = $val;
 					}
 				}
 			}
-					
-			$sql = "INSERT INTO " . THEMES_TABLE . " (";
 
-			for ($i = 0; $i < count($db_fields); $i++) {
-				$sql .= $db_fields[$i];
-				if ($i != (count($db_fields) - 1))
-				{
-					$sql .= ", ";
-				}
-				
-			}
-
-			$sql .= ") VALUES (";
-
-			for ($i = 0; $i < count($db_values); $i++) {
-				$sql .= "'" . $db_values[$i] . "'";
-
-				if ($i != (count($db_values) - 1)) {
-					$sql .= ", ";
-				}
-			}
-
-			$sql .= ")";
-			
-			if (!$result = $db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, "Could not insert theme data!", "", __LINE__, __FILE__, $sql);
-			}
+			dibi::insert(THEMES_TABLE, $insert_data)->execute();
 			
 			$message = $lang['Theme_installed'] . "<br /><br />" . sprintf($lang['Click_return_styleadmin'], "<a href=\"" . append_sid("admin_styles.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
 
@@ -121,16 +97,13 @@ switch( $mode )
 								$working_data = $$sub_dir;
 								
 								$style_name = $working_data[$i]['style_name'];
-														
-								$sql = "SELECT themes_id 
-									FROM " . THEMES_TABLE . " 
-									WHERE style_name = '" . str_replace("\'", "''", $style_name) . "'";
 
-								if (!$result = $db->sql_query($sql)) {
-									message_die(GENERAL_ERROR, "Could not query themes table!", "", __LINE__, __FILE__, $sql);
-								}
+								$theme_check = dibi::select('theme_id')
+                                    ->from(THEMES_TABLE)
+                                    ->where('style_name = %s', $style_name)
+                                    ->fetch();
 
-								if (!$db->sql_numrows($result)) {
+								if (!$theme_check) {
 									$installable_themes[] = $working_data[$i];
 								}
 							}
@@ -259,91 +232,26 @@ switch( $mode )
 			//
 			
 			if ($mode == "edit") {
-				$sql = "UPDATE " . THEMES_TABLE . " SET ";
-				$count = 0;
-
-				while (list($key, $val) = each($updated)) {
-					if ($count != 0) {
-						$sql .= ", ";
-					}
-
-					//
-					// I don't like this but it'll keep MSSQL from throwing
-					// an error and save me alot of typing
-					//
-					$sql .= stristr($key, "fontsize") ? "$key = $val" : "$key = '" . str_replace("\'", "''", $val) . "'";
-
-					$count++;
-				}
-				
-				$sql .= " WHERE themes_id = $style_id";
-				
-				if (!$result = $db->sql_query($sql)) {
-					message_die(GENERAL_ERROR, "Could not update themes table!", "", __LINE__, __FILE__, $sql);
-				}
+			    dibi::update(THEMES_TABLE, $updated)
+                    ->where('themes_id = %i', $style_id)
+                    ->execute();
 				
 				//
 				// Check if there's a names table entry for this style
 				//
-				$sql = "SELECT themes_id 
-					FROM " . THEMES_NAME_TABLE . " 
-					WHERE themes_id = $style_id";
-
-				if (!$result = $db->sql_query($sql)) {
-					message_die(GENERAL_ERROR, "Could not get data from themes_name table", "", __LINE__, __FILE__, $sql);
-				}
+				$theme_exists = dibi::select('theme_id')
+                    ->from(THEMES_NAME_TABLE)
+                    ->where('theme_id = %i', $style_id)
+                    ->fetchSingle();
 				
-				if ($db->sql_numrows($result) > 0) {
-					$sql = "UPDATE " . THEMES_NAME_TABLE . " 
-						SET ";
-
-					$count = 0;
-
-					while (list($key, $val) = each($updated_name)) {
-						if ($count != 0) {
-							$sql .= ", ";
-						}
-			
-						$sql .= "$key = '$val'";
-			
-						$count++;
-					}
-					
-					$sql .= " WHERE themes_id = $style_id";
+				if ($theme_exists) {
+				    dibi::update(THEMES_NAME_TABLE, $updated_name)
+                        ->where('themes_id = %i', $style_id)
+                        ->execute();
 				} else {
-					//
-					// Nope, no names entry so we create a new one.
-					//
-					$sql = "INSERT INTO " . THEMES_NAME_TABLE . " (themes_id, ";
+                    $updated_name['themes_id'] =  $style_id;
 
-					while (list($key, $val) = each($updated_name)) {
-						$fields[] = $key;
-						$vals[] = str_replace("\'", "''", $val);
-					}
-
-					for ($i = 0; $i < count($fields); $i++) {
-						if ($i > 0) {
-							$sql .= ", ";
-						}
-
-						$sql .= $fields[$i];
-					}
-					
-					$sql .= ") VALUES ($style_id, ";
-
-					for ($i = 0; $i < count($vals); $i++) {
-						if ($i > 0) {
-							$sql .= ", ";
-						}
-
-						$sql .= "'" . $vals[$i] . "'";
-					}
-					
-					$sql .= ")";
-				}
-										
-				if (!$result = $db->sql_query($sql)) {
-					message_die(GENERAL_ERROR, "Could not update themes name table!", "", __LINE__, __FILE__, $sql);
+				    dibi::insert(THEMES_NAME_TABLE, $updated_name)->execute();
 				}
 							
 				$message = $lang['Theme_updated'] . "<br /><br />" . sprintf($lang['Click_return_styleadmin'], "<a href=\"" . append_sid("admin_styles.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
@@ -353,90 +261,23 @@ switch( $mode )
 				//
 				// First, check if we already have a style by this name
 				//
-				$sql = "SELECT themes_id 
-					FROM " . THEMES_TABLE . " 
-					WHERE style_name = '" . str_replace("\'", "''", $updated['style_name']) . "'";
-
-				if (!$result = $db->sql_query($sql)) {
-					message_die(GENERAL_ERROR, "Could not query themes table", "", __LINE__, __FILE__, $sql);
-				}
+                $theme_check = dibi::select('themes_id')
+                    ->from(THEMES_TABLE)
+                    ->where('style_name = %s', $updated['style_name'])
+                    ->fetch();
 				
-				if ($db->sql_numrows($result)) {
+				if ($theme_check) {
 					message_die(GENERAL_ERROR, $lang['Style_exists'], $lang['Error']);
 				}
 
-                while (list($key, $val) = each($updated)) {
-                    $field_names[] = $key;
-
-                    if (stristr($key, "fontsize")) {
-                        $values[] = (string)$val;
-                    } else {
-                        $values[] = "'" . str_replace("\'", "''", $val) . "'";
-                    }
-                }
-				
-				$sql = "INSERT 
-					INTO " . THEMES_TABLE . " (";
-
-                for ($i = 0; $i < count($field_names); $i++) {
-					if ($i != 0) {
-						$sql .= ", ";
-					}
-
-					$sql .= $field_names[$i];
-				}
-
-                $sql .= ") VALUES (";
-
-                for ($i = 0; $i < count($values); $i++) {
-                    if ($i != 0) {
-                        $sql .= ", ";
-                    }
-
-                    $sql .= $values[$i];
-                }
-
-                $sql .= ")";
-
-                if (!$result = $db->sql_query($sql)) {
-                    message_die(GENERAL_ERROR, "Could not update themes table!", "", __LINE__, __FILE__, $sql);
-                }
-				
-				$style_id = $db->sql_nextid();
+                $style_id = dibi::insert(THEMES_TABLE, $updated)->execute(dibi::IDENTIFIER);
 				
 				// 
 				// Insert names data
 				//
-				$sql = "INSERT INTO " . THEMES_NAME_TABLE . " (themes_id, ";
+                $updated_name['themes_id'] =  $style_id;
 
-                while (list($key, $val) = each($updated_name)) {
-					$fields[] = $key;
-					$vals[] = $val;
-				}
-
-				for ($i = 0; $i < count($fields); $i++) {
-					if ($i > 0) {
-						$sql .= ", ";
-					}
-
-					$sql .= $fields[$i];
-				}
-				
-				$sql .= ") VALUES ($style_id, ";
-
-				for ($i = 0; $i < count($vals); $i++) {
-					if ($i > 0) {
-					    $sql .= ", ";
-					}
-
-				    $sql .= "'" . $vals[$i] . "'";
-				}
-				
-				$sql .= ")";
-										
-				if (!$result = $db->sql_query($sql)) {
-					message_die(GENERAL_ERROR, "Could not insert themes name table!", "", __LINE__, __FILE__, $sql);
-				}
+                dibi::insert(THEMES_NAME_TABLE, $updated_name)->execute();
 				
 				$message = $lang['Theme_created'] . "<br /><br />" . sprintf($lang['Click_return_styleadmin'], "<a href=\"" . append_sid("admin_styles.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
 
@@ -454,6 +295,17 @@ switch( $mode )
 				// 
 				// Fetch the Theme Info from the db
 				//
+
+
+                /*
+                 * TODO PREPARED...
+                 *
+                 $selected = dibi::select('*')
+                    ->from(THEMES_TABLE)
+                    ->where('themes_id = %i', $style_id)
+                    ->fetch();
+                  */
+
 				$sql = "SELECT * 
 					FROM " . THEMES_TABLE . " 
 					WHERE themes_id = $style_id";
@@ -471,9 +323,16 @@ switch( $mode )
 				//
 				// Fetch the Themes Name data
 				//
-				$sql = "SELECT * 
-					FROM " . THEMES_NAME_TABLE . " 
-					WHERE themes_id = $style_id";
+
+
+                /*
+                 * TODO PREPARED...
+                 *
+                $selected = dibi::select('*')
+                    ->from(THEMES_NAME_TABLE)
+                    ->where('themes_id = %i', $style_id)
+                    ->fetch();
+                */
 
 				if (!$result = $db->sql_query($sql)) {
 					message_die(GENERAL_ERROR, "Could not get data from themes name table", "", __LINE__, __FILE__, $sql);
@@ -647,25 +506,20 @@ switch( $mode )
 		if ($_POST['export_template']) {
 			$template_name = $_POST['export_template'];
 
-			$sql = "SELECT * 
-				FROM " . THEMES_TABLE . " 
-				WHERE template_name = '" . str_replace("\'", "''", $template_name) . "'";
-
-			if (!$result = $db->sql_query($sql)) {
-				message_die(GENERAL_ERROR, "Could not get theme data for selected template", "", __LINE__, __FILE__, $sql);
-			}
+            $themes = dibi::select('*')
+                ->from(THEMES_TABLE)
+                ->where('template_name = %s', $template_name)
+                ->fetchAll();
 			
-			$theme_rowset = $db->sql_fetchrowset($result);
-			
-			if (count($theme_rowset) == 0 ) {
+			if (!count($themes)) {
 				message_die(GENERAL_MESSAGE, $lang['No_themes']);
 			}
 			
 			$theme_data = '<?php'."\n\n";
 			$theme_data .= "//\n// phpBB 2.x auto-generated theme config file for $template_name\n// Do not change anything in this file!\n//\n\n";
 
-            for ($i = 0; $i < count($theme_rowset); $i++) {
-                while (list($key, $val) = each($theme_rowset[$i])) {
+            foreach ($themes as $theme) {
+                while (list($key, $val) = each($theme)) {
                     if (!(int)$key && $key != "0" && $key != "themes_id") {
                         $theme_data .= '$' . $template_name . "[$i]['$key'] = \"" . addslashes($val) . "\";\n";
                     }
@@ -809,16 +663,10 @@ switch( $mode )
 		break;
 
 	default:
-		
-		$sql = "SELECT themes_id, template_name, style_name 
-			FROM " . THEMES_TABLE . " 
-			ORDER BY template_name";
-
-        if (!$result = $db->sql_query($sql)) {
-            message_die(GENERAL_ERROR, "Could not get style information!", "", __LINE__, __FILE__, $sql);
-        }
-		
-		$style_rowset = $db->sql_fetchrowset($result);
+        $styles = dibi::select(['themes_id', 'template_name', 'style_name'])
+            ->from(THEMES_TABLE)
+            ->orderBy('template_name')
+            ->fetchAll();
 
         $template->set_filenames(["body" => "admin/styles_list_body.tpl"]);
 
@@ -833,7 +681,9 @@ switch( $mode )
             ]
         );
 
-        for ($i = 0; $i < count($style_rowset); $i++) {
+        foreach ($styles as $style) {
+
+            // TODO $theme should be $style?
 			$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
@@ -841,11 +691,11 @@ switch( $mode )
                 [
                     "ROW_CLASS"     => $row_class,
                     "ROW_COLOR"     => $row_color,
-                    "STYLE_NAME"    => $style_rowset[$i]['style_name'],
-                    "TEMPLATE_NAME" => $style_rowset[$i]['template_name'],
+                    "STYLE_NAME"    => $style->style_name,
+                    "TEMPLATE_NAME" => $style->template_name,
 
-                    "U_STYLES_EDIT"   => append_sid("admin_styles.php?mode=edit&amp;style_id=" . $style_rowset[$i]['themes_id']),
-                    "U_STYLES_DELETE" => append_sid("admin_styles.php?mode=delete&amp;style_id=" . $style_rowset[$i]['themes_id'])
+                    "U_STYLES_EDIT"   => append_sid("admin_styles.php?mode=edit&amp;style_id=" . $style->hemes_id),
+                    "U_STYLES_DELETE" => append_sid("admin_styles.php?mode=delete&amp;style_id=" . $style->themes_id)
                 ]
             );
         }

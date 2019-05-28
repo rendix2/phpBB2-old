@@ -133,27 +133,27 @@ function dss_rand()
 //
 // Get Userdata, $user can be username or user_id. If force_str is true, the username will be forced.
 //
+// TODO try to force use by user_id, NOT username
 function get_userdata($user, $force_str = false)
 {
-	global $db;
-
     if (!is_numeric($user) || $force_str) {
         $user = phpbb_clean_username($user);
     } else {
         $user = (int)$user;
     }
 
-	$sql = "SELECT *
-		FROM " . USERS_TABLE . " 
-		WHERE ";
+    $user_row = dibi::select('*')
+        ->from(USERS_TABLE);
 
-	$sql .= ( is_int($user) ? "user_id = $user" : "username = '" .  str_replace("\'", "''", $user) . "'" ) . " AND user_id <> " . ANONYMOUS;
+    if (is_int($user)) {
+        $user_row->where('user_id = %i', $user);
+    } else {
+        $user_row->where('username = %s', $user);
+    }
 
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, 'Tried obtaining data for a non-existent user', '', __LINE__, __FILE__, $sql);
-	}
+    $user_row = $user_row->where('user_id <> %i', ANONYMOUS)->fetch();
 
-	return ( $row = $db->sql_fetchrow($result) ) ? $row : false;
+	return $user_row;
 }
 
 function make_jumpbox($action, $match_forum_id = 0)
