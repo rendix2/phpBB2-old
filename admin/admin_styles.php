@@ -239,11 +239,11 @@ switch( $mode )
 				//
 				// Check if there's a names table entry for this style
 				//
-				$theme_exists = dibi::select('theme_id')
+				$theme_exists = dibi::select('themes_id')
                     ->from(THEMES_NAME_TABLE)
-                    ->where('theme_id = %i', $style_id)
+                    ->where('themes_id = %i', $style_id)
                     ->fetchSingle();
-				
+
 				if ($theme_exists) {
 				    dibi::update(THEMES_NAME_TABLE, $updated_name)
                         ->where('themes_id = %i', $style_id)
@@ -315,6 +315,8 @@ switch( $mode )
 				}
 				
 				if ( $selected_values = $db->sql_fetchrow($result) ) {
+                    $selected = [];
+
 					while (list($key, $val) = @each($selected_values)) {
 						$selected[$key] = $val;
 					}
@@ -339,6 +341,8 @@ switch( $mode )
 				}
 
                 if ($selected_names = $db->sql_fetchrow($result)) {
+                    $selected = [];
+
                     while (list($key, $val) = @each($selected_names)) {
                         $selected[$key] = $val;
                     }
@@ -681,8 +685,9 @@ switch( $mode )
             ]
         );
 
+        $i = 0;
         foreach ($styles as $style) {
-
+            $i++;
             // TODO $theme should be $style?
 			$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
@@ -694,7 +699,7 @@ switch( $mode )
                     "STYLE_NAME"    => $style->style_name,
                     "TEMPLATE_NAME" => $style->template_name,
 
-                    "U_STYLES_EDIT"   => append_sid("admin_styles.php?mode=edit&amp;style_id=" . $style->hemes_id),
+                    "U_STYLES_EDIT"   => append_sid("admin_styles.php?mode=edit&amp;style_id=" . $style->themes_id),
                     "U_STYLES_DELETE" => append_sid("admin_styles.php?mode=delete&amp;style_id=" . $style->themes_id)
                 ]
             );

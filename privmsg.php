@@ -298,7 +298,6 @@ if ( $mode == 'newpm' ) {
             'privmsgs_to_userid' => $privmsg['privmsgs_to_userid'],
             'privmsgs_date' => $privmsg['privmsgs_date'],
             'privmsgs_ip' => $privmsg['privmsgs_ip'],
-            'privmsgs_ip' => $privmsg['privmsgs_ip'],
             'privmsgs_enable_html' => $privmsg['privmsgs_enable_html'],
             'privmsgs_enable_bbcode' => $privmsg['privmsgs_enable_bbcode'],
             'privmsgs_enable_smilies' => $privmsg['privmsgs_enable_smilies'],
@@ -1748,56 +1747,62 @@ $post_new_mesg_url = '<a href="' . append_sid("privmsg.php?mode=post") . '"><img
 //
 // General SQL to obtain messages
 //
-$sql_tot = "SELECT COUNT(privmsgs_id) AS total 
-	FROM " . PRIVMSGS_TABLE . " ";
-$sql = "SELECT pm.privmsgs_type, pm.privmsgs_id, pm.privmsgs_date, pm.privmsgs_subject, u.user_id, u.username 
-	FROM " . PRIVMSGS_TABLE . " pm, " . USERS_TABLE . " u ";
+$sql_tot = dibi::select('COUNT(privmsgs_id)')
+    ->as('total')
+    ->from(PRIVMSGS_TABLE);
+
+$sql = dibi::select(['pm.privmsgs_type', 'pm.privmsgs_id', 'pm.privmsgs_date', 'pm.privmsgs_subject', 'u.user_id', 'u.username'])
+    ->from(PRIVMSGS_TABLE)
+    ->as('pm')
+    ->from(USERS_TABLE)
+    ->as('u');
 
 switch( $folder ) {
 	case 'inbox':
-		$sql_tot .= "WHERE privmsgs_to_userid = " . $userdata['user_id'] . "
-			AND ( privmsgs_type =  " . PRIVMSGS_NEW_MAIL . "
-				OR privmsgs_type = " . PRIVMSGS_READ_MAIL . " 
-				OR privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " )";
+        $sql_tot->where('privmsgs_to_userid = %i', $userdata['user_id'])
+            ->where('privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_READ_MAIL, PRIVMSGS_UNREAD_MAIL]);
 
-		$sql .= "WHERE pm.privmsgs_to_userid = " . $userdata['user_id'] . "
-			AND u.user_id = pm.privmsgs_from_userid
-			AND ( pm.privmsgs_type =  " . PRIVMSGS_NEW_MAIL . "
-				OR pm.privmsgs_type = " . PRIVMSGS_READ_MAIL . " 
-				OR privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " )";
+		$sql->where('privmsgs_to_userid = %i', $userdata['user_id'])
+            ->where('u.user_id = pm.privmsgs_from_userid')
+            ->where('pm.privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_READ_MAIL, PRIVMSGS_UNREAD_MAIL]);
 		break;
 
 	case 'outbox':
-		$sql_tot .= "WHERE privmsgs_from_userid = " . $userdata['user_id'] . "
-			AND ( privmsgs_type =  " . PRIVMSGS_NEW_MAIL . "
-				OR privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " )";
+        $sql_tot->where('privmsgs_from_userid = %i', $userdata['user_id'])
+            ->where('privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_READ_MAIL]);
 
-		$sql .= "WHERE pm.privmsgs_from_userid = " . $userdata['user_id'] . "
-			AND u.user_id = pm.privmsgs_to_userid
-			AND ( pm.privmsgs_type =  " . PRIVMSGS_NEW_MAIL . "
-				OR privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " )";
+        $sql->where('pm.privmsgs_from_userid = %i', $userdata['user_id'])
+            ->where('u.user_id = pm.privmsgs_to_userid')
+            ->where('pm.privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL]);
 		break;
 
 	case 'sentbox':
-		$sql_tot .= "WHERE privmsgs_from_userid = " . $userdata['user_id'] . "
-			AND privmsgs_type =  " . PRIVMSGS_SENT_MAIL;
+        $sql_tot->where('privmsgs_from_userid = %i', $userdata['user_id'])
+            ->where('privmsgs_type = %i', PRIVMSGS_SENT_MAIL);
 
-		$sql .= "WHERE pm.privmsgs_from_userid = " . $userdata['user_id'] . "
-			AND u.user_id = pm.privmsgs_to_userid
-			AND pm.privmsgs_type =  " . PRIVMSGS_SENT_MAIL;
+        $sql->where('pm.privmsgs_from_userid = %i', $userdata['user_id'])
+            ->where('u.user_id = pm.privmsgs_to_userid')
+            ->where('pm.privmsgs_type = %i', PRIVMSGS_SENT_MAIL);
 		break;
 
 	case 'savebox':
-		$sql_tot .= "WHERE ( ( privmsgs_to_userid = " . $userdata['user_id'] . " 
-				AND privmsgs_type = " . PRIVMSGS_SAVED_IN_MAIL . " )
-			OR ( privmsgs_from_userid = " . $userdata['user_id'] . " 
-				AND privmsgs_type = " . PRIVMSGS_SAVED_OUT_MAIL . ") )";
+        $sql_tot->where(
+            '(privmsgs_to_userid = %i AND privmsgs_type = %i) OR (privmsgs_from_userid = %i AND privmsgs_type = %i)',
+            $userdata['user_id'],
+            PRIVMSGS_SAVED_IN_MAIL,
+            $userdata['user_id'],
+            PRIVMSGS_SAVED_OUT_MAIL
+        );
 
-		$sql .= "WHERE u.user_id = pm.privmsgs_from_userid 
-			AND ( ( pm.privmsgs_to_userid = " . $userdata['user_id'] . " 
-				AND pm.privmsgs_type = " . PRIVMSGS_SAVED_IN_MAIL . " ) 
-			OR ( pm.privmsgs_from_userid = " . $userdata['user_id'] . " 
-				AND pm.privmsgs_type = " . PRIVMSGS_SAVED_OUT_MAIL . " ) )";
+        $sql->where('u.user_id = pm.privmsgs_from_userid')
+            ->where(
+                '(pm.privmsgs_to_userid = %i AND pm.privmsgs_type = %i) OR (pm.privmsgs_from_userid = %i AND pm.privmsgs_type = %i)',
+                $userdata['user_id'],
+                PRIVMSGS_SAVED_IN_MAIL,
+                $userdata['user_id'],
+                PRIVMSGS_SAVED_OUT_MAIL
+            );
+
 		break;
 
 	default:
@@ -1808,40 +1813,34 @@ switch( $folder ) {
 //
 // Show messages over previous x days/months
 //
-if ( $submit_msgdays && ( !empty($_POST['msgdays']) || !empty($_GET['msgdays']) ) ) {
+if ($submit_msgdays && (!empty($_POST['msgdays']) || !empty($_GET['msgdays']))) {
 	$msg_days = !empty($_POST['msgdays']) ? (int)$_POST['msgdays'] : (int)$_GET['msgdays'];
 	$min_msg_time = time() - ($msg_days * 86400);
 
-	$limit_msg_time_total = " AND privmsgs_date > $min_msg_time";
-	$limit_msg_time = " AND pm.privmsgs_date > $min_msg_time ";
+    $limit_msg_time_total = $sql_tot->where('privmsgs_date > %i', $min_msg_time);
+    $limit_msg_time       = $sql->where('pm.privmsgs_date > %i', $min_msg_time);
 
-	if ( !empty($_POST['msgdays']) )
-	{
+	if ( !empty($_POST['msgdays']) ) {
 		$start = 0;
 	}
 } else {
-	$limit_msg_time = $limit_msg_time_total = '';
+    $limit_msg_time       = $sql;
+    $limit_msg_time_total = $sql_tot;
 	$msg_days = 0;
 }
 
-$sql .= $limit_msg_time . " ORDER BY pm.privmsgs_date DESC LIMIT $start, " . $board_config['topics_per_page'];
+$sql = $limit_msg_time->orderBy('pm.privmsgs_date', dibi::DESC)
+    ->limit($board_config['topics_per_page'])
+    ->offset($start);
+
 $sql_all_tot = $sql_tot;
-$sql_tot .= $limit_msg_time_total;
+$sql_tot = $limit_msg_time_total;
 
 //
 // Get messages
 //
-if (!($result = $db->sql_query($sql_tot))) {
-    message_die(GENERAL_ERROR, 'Could not query private message information', '', __LINE__, __FILE__, $sql_tot);
-}
-
-$pm_total = ( $row = $db->sql_fetchrow($result) ) ? $row['total'] : 0;
-
-if (!($result = $db->sql_query($sql_all_tot))) {
-    message_die(GENERAL_ERROR, 'Could not query private message information', '', __LINE__, __FILE__, $sql_tot);
-}
-
-$pm_all_total = ( $row = $db->sql_fetchrow($result) ) ? $row['total'] : 0;
+$pm_total = $sql_tot->fetchSingle();
+$pm_all_total = $sql_all_tot->fetchSingle();
 
 //
 // Build select box
@@ -1965,27 +1964,27 @@ $template->assign_vars(
 //
 // Okay, let's build the correct folder
 //
-if ( !($result = $db->sql_query($sql)) ) {
-	message_die(GENERAL_ERROR, 'Could not query private messages', '', __LINE__, __FILE__, $sql);
-}
 
-if ( $row = $db->sql_fetchrow($result) ) {
+
+$rows = $sql->fetchAll();
+
+if (count($rows)) {
 	$i = 0;
 
-	do {
-		$privmsg_id = $row['privmsgs_id'];
+	foreach ($rows as $row) {
+		$privmsg_id = $row->privmsgs_id;
 
-		$flag = $row['privmsgs_type'];
+		$flag = $row->privmsgs_type;
 
 		$icon_flag = ( $flag == PRIVMSGS_NEW_MAIL || $flag == PRIVMSGS_UNREAD_MAIL ) ? $images['pm_unreadmsg'] : $images['pm_readmsg'];
 		$icon_flag_alt = ( $flag == PRIVMSGS_NEW_MAIL || $flag == PRIVMSGS_UNREAD_MAIL ) ? $lang['Unread_message'] : $lang['Read_message'];
 
-		$msg_userid = $row['user_id'];
-		$msg_username = $row['username'];
+		$msg_userid = $row->user_id;
+		$msg_username = $row->username;
 
 		$u_from_user_profile = append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$msg_userid");
 
-		$msg_subject = $row['privmsgs_subject'];
+		$msg_subject = $row->privmsgs_subject;
 
         if (count($orig_word)) {
             $msg_subject = preg_replace($orig_word, $replacement_word, $msg_subject);
@@ -1993,7 +1992,7 @@ if ( $row = $db->sql_fetchrow($result) ) {
 		
 		$u_subject = append_sid("privmsg.php?folder=$folder&amp;mode=read&amp;" . POST_POST_URL . "=$privmsg_id");
 
-		$msg_date = create_date($board_config['default_dateformat'], $row['privmsgs_date'], $board_config['board_timezone']);
+		$msg_date = create_date($board_config['default_dateformat'], $row->privmsgs_date, $board_config['board_timezone']);
 
         if ($flag == PRIVMSGS_NEW_MAIL && $folder == 'inbox') {
             $msg_subject  = '<b>' . $msg_subject . '</b>';
@@ -2022,7 +2021,7 @@ if ( $row = $db->sql_fetchrow($result) ) {
                 'U_FROM_USER_PROFILE' => $u_from_user_profile
             ]
         );
-    } while ($row = $db->sql_fetchrow($result) );
+    }
 
     $template->assign_vars([
             'PAGINATION'  => generate_pagination("privmsg.php?folder=$folder", $pm_total, $board_config['topics_per_page'], $start),
