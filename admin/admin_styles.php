@@ -98,7 +98,7 @@ switch( $mode )
 								
 								$style_name = $working_data[$i]['style_name'];
 
-								$theme_check = dibi::select('theme_id')
+								$theme_check = dibi::select('themes_id')
                                     ->from(THEMES_TABLE)
                                     ->where('style_name = %s', $style_name)
                                     ->fetch();
