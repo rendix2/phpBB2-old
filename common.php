@@ -174,8 +174,9 @@ include $phpbb_root_path .'vendor/autoload.php';
 // now we connect to database via dibi!
 $connection = dibi::connect([
     'driver'   => 'PDO',
-    'username' => 'root',
-    'dsn' => 'mysql:host='.$dbhost.';dbname='.$dbname.';charset=utf8'
+    'username' => $dbuser,
+    'password' => $dbpasswd,
+    'dsn'      => 'mysql:host='.$dbhost.';dbname='.$dbname.';charset=utf8'
 ]);
 
 $connection->connect();
