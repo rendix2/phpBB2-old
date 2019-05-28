@@ -295,58 +295,20 @@ switch( $mode )
 				// 
 				// Fetch the Theme Info from the db
 				//
-
-
-                /*
-                 * TODO PREPARED...
-                 *
-                 $selected = dibi::select('*')
+                $selected_values = dibi::select('*')
                     ->from(THEMES_TABLE)
                     ->where('themes_id = %i', $style_id)
                     ->fetch();
-                  */
-
-				$sql = "SELECT * 
-					FROM " . THEMES_TABLE . " 
-					WHERE themes_id = $style_id";
-
-				if (!$result = $db->sql_query($sql)) {
-					message_die(GENERAL_ERROR, "Could not get data from themes table", "", __LINE__, __FILE__, $sql);
-				}
-				
-				if ( $selected_values = $db->sql_fetchrow($result) ) {
-                    $selected = [];
-
-					while (list($key, $val) = @each($selected_values)) {
-						$selected[$key] = $val;
-					}
-				}
 				
 				//
 				// Fetch the Themes Name data
 				//
-
-
-                /*
-                 * TODO PREPARED...
-                 *
-                $selected = dibi::select('*')
+                $selected_names = dibi::select('*')
                     ->from(THEMES_NAME_TABLE)
                     ->where('themes_id = %i', $style_id)
                     ->fetch();
-                */
 
-				if (!$result = $db->sql_query($sql)) {
-					message_die(GENERAL_ERROR, "Could not get data from themes name table", "", __LINE__, __FILE__, $sql);
-				}
-
-                if ($selected_names = $db->sql_fetchrow($result)) {
-                    $selected = [];
-
-                    while (list($key, $val) = @each($selected_names)) {
-                        $selected[$key] = $val;
-                    }
-                }
+                $selected = array_merge($selected_names->toArray(), $selected_values->toArray());
 
 				$s_hidden_fields = '<input type="hidden" name="style_id" value="' . $style_id . '" />';
             } else {
