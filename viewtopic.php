@@ -124,27 +124,77 @@ if ( isset($_GET['view']) && empty($_GET[POST_POST_URL]) ) {
 // also allows for direct linking to a post (and the calculation of which
 // page the post is on and the correct display of viewtopic)
 //
-$join_sql_table = (!$post_id) ? '' : ", " . POSTS_TABLE . " p, " . POSTS_TABLE . " p2 ";
-$join_sql = (!$post_id) ? "t.topic_id = $topic_id" : "p.post_id = $post_id AND t.topic_id = p.topic_id AND p2.topic_id = p.topic_id AND p2.post_id <= $post_id";
-$count_sql = (!$post_id) ? '' : ", COUNT(p2.post_id) AS prev_posts";
 
-$order_sql = (!$post_id) ? '' : "GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, t.topic_vote, t.topic_last_post_id, f.forum_name, f.forum_status, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_sticky, f.auth_announce, f.auth_pollcreate, f.auth_vote, f.auth_attachments ORDER BY p.post_id ASC";
+if (!$post_id) {
+    $columns = ['t.topic_id', 't.topic_title', 't.topic_status', 't.topic_replies', 't.topic_time', 't.topic_type',
+                't.topic_vote', 't.topic_last_post_id', 'f.forum_name', 'f.forum_status', 'f.forum_id', 'f.auth_view',
+                'f.auth_read', 'f.auth_post', 'f.auth_reply', 'f.auth_edit', 'f.auth_delete', 'f.auth_sticky',
+                'f.auth_announce', 'f.auth_pollcreate', 'f.auth_vote', 'f.auth_attachments'
+                ];
 
-$sql = "SELECT t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, t.topic_vote, t.topic_last_post_id, f.forum_name, f.forum_status, f.forum_id, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_sticky, f.auth_announce, f.auth_pollcreate, f.auth_vote, f.auth_attachments" . $count_sql . "
-	FROM " . TOPICS_TABLE . " t, " . FORUMS_TABLE . " f" . $join_sql_table . "
-	WHERE $join_sql
-		AND f.forum_id = t.forum_id
-		$order_sql";
+    $forum_topic_data = dibi::select($columns)
+    ->from(TOPICS_TABLE)
+    ->as('t')
+    ->from(FORUMS_TABLE)
+    ->as('f')
+        ->where('t.topic_id = %i', $topic_id)
+        ->where('f.forum_id = t.forum_id')
+        ->fetch();
+} else {
+    $columns = ['t.topic_id', 't.topic_title', 't.topic_status', 't.topic_replies', 't.topic_time', 't.topic_type',
+                't.topic_vote', 't.topic_last_post_id', 'f.forum_name', 'f.forum_status', 'f.forum_id', 'f.auth_view',
+                'f.auth_read', 'f.auth_post', 'f.auth_reply', 'f.auth_edit', 'f.auth_delete', 'f.auth_sticky',
+                'f.auth_announce', 'f.auth_pollcreate', 'f.auth_vote', 'f.auth_attachments',
+    ];
 
-if ( !($result = $db->sql_query($sql)) ) {
-	message_die(GENERAL_ERROR, "Could not obtain topic information", '', __LINE__, __FILE__, $sql);
+    $forum_topic_data = dibi::select($columns)
+        ->select('COUNT(p2.post_id)')
+        ->as('prev_posts')
+        ->from(TOPICS_TABLE)
+        ->as('t')
+        ->from(FORUMS_TABLE)
+        ->as('f')
+        ->from(POSTS_TABLE)
+        ->as('p')
+        ->from(POSTS_TABLE)
+        ->as('p2')
+        ->where('p.post_id = %i', $post_id)
+        ->where('t.topic_id = p.topic_id')
+        ->where('p2.topic_id = p.topic_id')
+        ->where('p2.post_id <= %i', $post_id)
+        ->where('f.forum_id = t.forum_id')
+        ->groupBy('p.post_id')
+        ->groupBy('t.topic_id')
+        ->groupBy('t.topic_title')
+        ->groupBy('t.topic_status')
+        ->groupBy('t.topic_replies')
+        ->groupBy('t.topic_time')
+        ->groupBy('t.topic_type')
+        ->groupBy('t.topic_vote')
+        ->groupBy('t.topic_last_post_id')
+        ->groupBy('f.forum_name')
+        ->groupBy('f.forum_status')
+        ->groupBy('f.forum_id')
+        ->groupBy('f.auth_view')
+        ->groupBy('f.auth_read')
+        ->groupBy('f.auth_post')
+        ->groupBy('f.auth_reply')
+        ->groupBy('f.auth_edit')
+        ->groupBy('f.auth_delete')
+        ->groupBy('f.auth_sticky')
+        ->groupBy('f.auth_announce')
+        ->groupBy('f.auth_pollcreate')
+        ->groupBy('f.auth_vote')
+        ->groupBy('f.auth_attachments')
+        ->orderBy('p.post_id', dibi::ASC)
+        ->fetch();
 }
 
-if ( !($forum_topic_data = $db->sql_fetchrow($result)) ) {
-	message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
+if (!$forum_topic_data) {
+    message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
 }
 
-$forum_id = (int)$forum_topic_data['forum_id'];
+$forum_id = (int)$forum_topic_data->forum_id;
 
 //
 // Start session management
@@ -176,13 +226,13 @@ if (!$is_auth['auth_view'] || !$is_auth['auth_read'] ) {
 // End auth check
 //
 
-$forum_name = $forum_topic_data['forum_name'];
-$topic_title = $forum_topic_data['topic_title'];
-$topic_id = (int)$forum_topic_data['topic_id'];
-$topic_time = $forum_topic_data['topic_time'];
+$forum_name = $forum_topic_data->forum_name;
+$topic_title = $forum_topic_data->topic_title;
+$topic_id = (int)$forum_topic_data->topic_id;
+$topic_time = $forum_topic_data->topic_time;
 
 if ($post_id) {
-	$start = floor(($forum_topic_data['prev_posts'] - 1) / (int)$board_config['posts_per_page']) * (int)$board_config['posts_per_page'];
+	$start = floor(($forum_topic_data->prev_posts - 1) / (int)$board_config['posts_per_page']) * (int)$board_config['posts_per_page'];
 }
 
 //
@@ -302,7 +352,7 @@ if (!empty($_POST['postdays']) || !empty($_GET['postdays']) ) {
 		$start = 0;
 	}
 } else {
-	$total_replies = (int)$forum_topic_data['topic_replies'] + 1;
+	$total_replies = (int)$forum_topic_data->topic_replies + 1;
 
 	$limit_posts_time = '';
 	$post_days = 0;
@@ -397,12 +447,12 @@ if (!$total_posts) {
 
 $resync = false;
 
-if ($forum_topic_data['topic_replies'] + 1 < $start + $total_posts)  {
+if ($forum_topic_data->topic_replies + 1 < $start + $total_posts)  {
    $resync = true; 
-} elseif ($start + $board_config['posts_per_page'] > $forum_topic_data['topic_replies'])  { 
-   $row_id = (int)$forum_topic_data['topic_replies'] % (int)$board_config['posts_per_page'];
+} elseif ($start + $board_config['posts_per_page'] > $forum_topic_data->topic_replies)  { 
+   $row_id = (int)$forum_topic_data->topic_replies % (int)$board_config['posts_per_page'];
    
-   if ($postrow[$row_id]->post_id != $forum_topic_data['topic_last_post_id'] || $start + $total_posts < $forum_topic_data['topic_replies']) {
+   if ($postrow[$row_id]->post_id != $forum_topic_data->topic_last_post_id || $start + $total_posts < $forum_topic_data->topic_replies) {
        $resync = true; 
    } 
 }  elseif ($total_posts < $board_config['posts_per_page']) {
@@ -486,10 +536,10 @@ $nav_links['up']   = [
     'title' => $forum_name
 ];
 
-$reply_img = ( $forum_topic_data['forum_status'] == FORUM_LOCKED || $forum_topic_data['topic_status'] == TOPIC_LOCKED ) ? $images['reply_locked'] : $images['reply_new'];
-$reply_alt = ( $forum_topic_data['forum_status'] == FORUM_LOCKED || $forum_topic_data['topic_status'] == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['Reply_to_topic'];
-$post_img = ( $forum_topic_data['forum_status'] == FORUM_LOCKED ) ? $images['post_locked'] : $images['post_new'];
-$post_alt = ( $forum_topic_data['forum_status'] == FORUM_LOCKED ) ? $lang['Forum_locked'] : $lang['Post_new_topic'];
+$reply_img = ( $forum_topic_data->forum_status == FORUM_LOCKED || $forum_topic_data->topic_status == TOPIC_LOCKED ) ? $images['reply_locked'] : $images['reply_new'];
+$reply_alt = ( $forum_topic_data->forum_status == FORUM_LOCKED || $forum_topic_data->topic_status == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['Reply_to_topic'];
+$post_img = ( $forum_topic_data->forum_status == FORUM_LOCKED ) ? $images['post_locked'] : $images['post_new'];
+$post_alt = ( $forum_topic_data->forum_status == FORUM_LOCKED ) ? $lang['Forum_locked'] : $lang['Post_new_topic'];
 
 //
 // Set a cookie for this topic
@@ -546,7 +596,7 @@ if ( $is_auth['auth_mod'] ) {
 
 	$topic_mod .= "<a href=\"modcp.php?" . POST_TOPIC_URL . "=$topic_id&amp;mode=move&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_move'] . '" alt="' . $lang['Move_topic'] . '" title="' . $lang['Move_topic'] . '" border="0" /></a>&nbsp;';
 
-	$topic_mod .= ( $forum_topic_data['topic_status'] == TOPIC_UNLOCKED ) ? "<a href=\"modcp.php?" . POST_TOPIC_URL . "=$topic_id&amp;mode=lock&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_lock'] . '" alt="' . $lang['Lock_topic'] . '" title="' . $lang['Lock_topic'] . '" border="0" /></a>&nbsp;' : "<a href=\"modcp.php?" . POST_TOPIC_URL . "=$topic_id&amp;mode=unlock&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_unlock'] . '" alt="' . $lang['Unlock_topic'] . '" title="' . $lang['Unlock_topic'] . '" border="0" /></a>&nbsp;';
+	$topic_mod .= ( $forum_topic_data->topic_status == TOPIC_UNLOCKED ) ? "<a href=\"modcp.php?" . POST_TOPIC_URL . "=$topic_id&amp;mode=lock&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_lock'] . '" alt="' . $lang['Lock_topic'] . '" title="' . $lang['Lock_topic'] . '" border="0" /></a>&nbsp;' : "<a href=\"modcp.php?" . POST_TOPIC_URL . "=$topic_id&amp;mode=unlock&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_unlock'] . '" alt="' . $lang['Unlock_topic'] . '" title="' . $lang['Unlock_topic'] . '" border="0" /></a>&nbsp;';
 
 	$topic_mod .= "<a href=\"modcp.php?" . POST_TOPIC_URL . "=$topic_id&amp;mode=split&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_split'] . '" alt="' . $lang['Split_topic'] . '" title="' . $lang['Split_topic'] . '" border="0" /></a>&nbsp;';
 }
@@ -623,7 +673,7 @@ $template->assign_vars(array(
 //
 // Does this topic contain a poll?
 //
-if ( !empty($forum_topic_data['topic_vote']) ) {
+if ( !empty($forum_topic_data->topic_vote) ) {
 	$s_hidden_fields = '';
 
     $columns = [
@@ -669,7 +719,7 @@ if ( !empty($forum_topic_data['topic_vote']) ) {
 
 		$poll_expired = $vote_info[0]->vote_length ? ( ($vote_info[0]->vote_start + $vote_info[0]->vote_length < time() ) ? true : 0 ) : 0;
 
-        if ($user_voted || $view_result || $poll_expired || !$is_auth['auth_vote'] || $forum_topic_data['topic_status'] == TOPIC_LOCKED) {
+        if ($user_voted || $view_result || $poll_expired || !$is_auth['auth_vote'] || $forum_topic_data->topic_status == TOPIC_LOCKED) {
             $template->set_filenames(['pollbox' => 'viewtopic_poll_result.tpl']);
 
             $vote_results_sum = 0;
@@ -935,7 +985,7 @@ for ($i = 0; $i < $total_posts; $i++) {
 		$ip_img = '';
 		$ip = '';
 
-		if ( $userdata['user_id'] == $poster_id && $is_auth['auth_delete'] && $forum_topic_data['topic_last_post_id'] == $postrow[$i]->post_id ) {
+		if ( $userdata['user_id'] == $poster_id && $is_auth['auth_delete'] && $forum_topic_data->topic_last_post_id == $postrow[$i]->post_id ) {
 			$temp_url        = "posting.php?mode=delete&amp;" . POST_POST_URL . "=" . $postrow[$i]->post_id . "&amp;sid=" . $userdata['session_id'];
 			$delete_post_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_delpost'] . '" alt="' . $lang['Delete_post'] . '" title="' . $lang['Delete_post'] . '" border="0" /></a>';
 			$delete_post     = '<a href="' . $temp_url . '">' . $lang['Delete_post'] . '</a>';
