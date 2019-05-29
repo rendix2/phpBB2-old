@@ -339,22 +339,16 @@ if (!empty($mode) ) {
 			//
 			// Default permissions of public ::
 			//
-			$field_sql = "";
-			$value_sql = "";
-
-			while (list($field, $value) = each($forum_auth_ary) ) {
-				$field_sql .= ", $field";
-				$value_sql .= ", $value";
-
-			}
+            $forum_auth_ary['forum_id'] = $next_id;
+            $forum_auth_ary['forum_name'] = $_POST['forumname'];
+            $forum_auth_ary['cat_id'] = (int)$_POST[POST_CAT_URL];
+            $forum_auth_ary['forum_desc'] = $_POST['forumdesc'];
+            $forum_auth_ary['forum_order'] = $next_order;
+            $forum_auth_ary['forum_status'] = (int)$_POST['forumstatus'];
+            $forum_auth_ary['prune_enable'] = (int)$_POST['prune_enable'];
 
 			// There is no problem having duplicate forum names so we won't check for it.
-			$sql = "INSERT INTO " . FORUMS_TABLE . " (forum_id, forum_name, cat_id, forum_desc, forum_order, forum_status, prune_enable" . $field_sql . ")
-				VALUES ('" . $next_id . "', '" . str_replace("\'", "''", $_POST['forumname']) . "', " . (int)$_POST[POST_CAT_URL] . ", '" . str_replace("\'", "''", $_POST['forumdesc']) . "', $next_order, " . (int)$_POST['forumstatus'] . ", " . (int)$_POST['prune_enable'] . $value_sql . ")";
-
-			if (!$result = $db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, "Couldn't insert row in forums table", "", __LINE__, __FILE__, $sql);
-			}
+            dibi::insert(FORUMS_TABLE, $forum_auth_ary)->execute();
 
 			if ($_POST['prune_enable'] ) {
 
