@@ -133,25 +133,40 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 	//
 	preg_match('/(..)(..)(..)(..)/', $user_ip, $user_ip_parts);
 
-	$sql = "SELECT ban_ip, ban_userid, ban_email 
-		FROM " . BANLIST_TABLE . " 
-		WHERE ban_ip IN ('" . $user_ip_parts[1] . $user_ip_parts[2] . $user_ip_parts[3] . $user_ip_parts[4] . "', '" . $user_ip_parts[1] . $user_ip_parts[2] . $user_ip_parts[3] . "ff', '" . $user_ip_parts[1] . $user_ip_parts[2] . "ffff', '" . $user_ip_parts[1] . "ffffff')
-			OR ban_userid = $user_id";
-	
-	if ( $user_id != ANONYMOUS ) {
-		$sql .= " OR ban_email LIKE '" . str_replace("\'", "''", $userdata['user_email']) . "' 
-			OR ban_email LIKE '" . substr(str_replace("\'", "''", $userdata['user_email']), strpos(str_replace("\'", "''", $userdata['user_email']), "@")) . "'";
-	}
-	
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(CRITICAL_ERROR, 'Could not obtain ban information', '', __LINE__, __FILE__, $sql);
-	}
+	$ban_ip_array = [
+	    $user_ip_parts[1] . $user_ip_parts[2] . $user_ip_parts[3] . $user_ip_parts[4],
+        $user_ip_parts[1] . $user_ip_parts[2] . $user_ip_parts[3] . 'ff',
+        $user_ip_parts[1] . $user_ip_parts[2] . 'ffff',
+        $user_ip_parts[1] . 'ffffff'
+    ];
 
-	if ( $ban_info = $db->sql_fetchrow($result) ) {
-		if ( $ban_info['ban_ip'] || $ban_info['ban_userid'] || $ban_info['ban_email'] ) {
-			message_die(CRITICAL_MESSAGE, 'You_been_banned');
-		}
-	}
+	// check if banned :)
+	if ( $user_id != ANONYMOUS ) {
+	    $ban_email = $userdata['user_email'];
+	    $ban_email2 = substr( $userdata['user_email'], strpos($userdata['user_email'], '@'));
+
+        $ban_info = dibi::select(['ban_ip', 'ban_userid', 'ban_email'])
+            ->from(BANLIST_TABLE)
+            ->where(
+                'ban_ip IN %in OR ban_userid = %i OR ban_email LIKE %~like~ OR ban_email LIKE %~like~',
+                $ban_ip_array,
+                $user_id,
+                $ban_email,
+                $ban_email2
+            );
+	} else {
+        $ban_info = dibi::select(['ban_ip', 'ban_userid', 'ban_email'])
+            ->from(BANLIST_TABLE)
+            ->where(
+                'ban_ip IN %in OR ban_userid = %i',
+                $ban_ip_array,
+                $user_id
+            );
+    }
+
+    if ($ban_info && ($ban_info->ban_ip || $ban_info->ban_userid || $ban_info->ban_email)) {
+        message_die(CRITICAL_MESSAGE, 'You_been_banned');
+    }
 
 	//
 	// Create or update the session
