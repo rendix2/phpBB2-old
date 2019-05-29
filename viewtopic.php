@@ -433,7 +433,7 @@ $postrow = $postrow->where('pt.post_id = p.post_id')
     ->where('u.user_id = p.poster_id')
     ->orderBy('p.post_time', $post_time_order)
     ->limit($board_config['posts_per_page'])
-    ->offset($start)
+    ->offset((int)$start)
     ->fetchAll();
 
 $total_posts = count($postrow);

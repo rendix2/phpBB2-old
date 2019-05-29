@@ -153,7 +153,7 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
                 $user_id,
                 $ban_email,
                 $ban_email2
-            );
+            )->fetch();
 	} else {
         $ban_info = dibi::select(['ban_ip', 'ban_userid', 'ban_email'])
             ->from(BANLIST_TABLE)
@@ -161,7 +161,7 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
                 'ban_ip IN %in OR ban_userid = %i',
                 $ban_ip_array,
                 $user_id
-            );
+            )->fetch();
     }
 
     if ($ban_info && ($ban_info->ban_ip || $ban_info->ban_userid || $ban_info->ban_email)) {
