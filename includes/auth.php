@@ -55,56 +55,56 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 	switch( $type )
 	{
 		case AUTH_ALL:
-			$a_sql = 'a.auth_view, a.auth_read, a.auth_post, a.auth_reply, a.auth_edit, a.auth_delete, a.auth_sticky, a.auth_announce, a.auth_vote, a.auth_pollcreate';
+			$a_sql = ['a.auth_view', 'a.auth_read', 'a.auth_post', 'a.auth_reply', 'a.auth_edit', 'a.auth_delete', 'a.auth_sticky', 'a.auth_announce', 'a.auth_vote', 'a.auth_pollcreate'];
 			$auth_fields = ['auth_view', 'auth_read', 'auth_post', 'auth_reply', 'auth_edit', 'auth_delete', 'auth_sticky', 'auth_announce', 'auth_vote', 'auth_pollcreate'];
 			break;
 
 		case AUTH_VIEW:
-			$a_sql = 'a.auth_view';
+			$a_sql = ['a.auth_view'];
 			$auth_fields = ['auth_view'];
 			break;
 
 		case AUTH_READ:
-			$a_sql = 'a.auth_read';
+			$a_sql = ['a.auth_read'];
 			$auth_fields = ['auth_read'];
 			break;
 
 		case AUTH_POST:
-			$a_sql = 'a.auth_post';
+			$a_sql = ['a.auth_post'];
 			$auth_fields = ['auth_post'];
 			break;
 
 		case AUTH_REPLY:
-			$a_sql = 'a.auth_reply';
+			$a_sql = ['a.auth_reply'];
 			$auth_fields = ['auth_reply'];
 			break;
 
 		case AUTH_EDIT:
-			$a_sql = 'a.auth_edit';
+			$a_sql = ['a.auth_edit'];
 			$auth_fields = ['auth_edit'];
             break;
 
 		case AUTH_DELETE:
-			$a_sql = 'a.auth_delete';
+			$a_sql = ['a.auth_delete'];
 			$auth_fields = ['auth_delete'];
             break;
 
 		case AUTH_ANNOUNCE:
-			$a_sql = 'a.auth_announce';
+			$a_sql = ['a.auth_announce'];
 			$auth_fields = ['auth_announce'];
             break;
 		case AUTH_STICKY:
-			$a_sql = 'a.auth_sticky';
+			$a_sql = ['a.auth_sticky'];
 			$auth_fields = ['auth_sticky'];
             break;
 
 		case AUTH_POLLCREATE:
-			$a_sql = 'a.auth_pollcreate';
+			$a_sql = ['a.auth_pollcreate'];
 			$auth_fields = ['auth_pollcreate'];
             break;
 
 		case AUTH_VOTE:
-			$a_sql = 'a.auth_vote';
+			$a_sql = ['a.auth_vote'];
 			$auth_fields = ['auth_vote'];
             break;
 
@@ -119,28 +119,25 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 	// If f_access has been passed, or auth is needed to return an array of forums
 	// then we need to pull the auth information on the given forum (or all forums)
 	//
-	if ( empty($f_access) )
-	{
-		$forum_match_sql = ( $forum_id != AUTH_LIST_ALL ) ? "WHERE a.forum_id = $forum_id" : '';
+    if (empty($f_access)) {
+        if ($forum_id != AUTH_LIST_ALL) {
+            $f_access = dibi::select('a.forum_id')
+                ->select($a_sql)
+                ->from(FORUMS_TABLE)
+                ->as('a')
+                ->where('a.forum_id = %i', $forum_id)
+                ->fetch();
+        } else {
+            $f_access = dibi::select('a.forum_id')
+                ->select($a_sql)
+                ->from(FORUMS_TABLE)
+                ->as('a')
+                ->fetchAll();
+        }
 
-		$sql = "SELECT a.forum_id, $a_sql
-			FROM " . FORUMS_TABLE . " a
-			$forum_match_sql";
-
-		if ( !($result = $db->sql_query($sql)) )
-		{
-			message_die(GENERAL_ERROR, 'Failed obtaining forum access control lists', '', __LINE__, __FILE__, $sql);
-		}
-
-		$sql_fetchrow = ( $forum_id != AUTH_LIST_ALL ) ? 'sql_fetchrow' : 'sql_fetchrowset';
-
-		if ( !($f_access = $db->$sql_fetchrow($result)) )
-		{
-			$db->sql_freeresult($result);
-
+        if ($f_access === false || !count($f_access)) {
             return [];
         }
-        $db->sql_freeresult($result);
 	}
 
 	//
@@ -149,31 +146,29 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 	// are denied access
 	//
 	$u_access = [];
-	if ( $userdata['session_logged_in'] )
-	{
-		$forum_match_sql = ( $forum_id != AUTH_LIST_ALL ) ? "AND a.forum_id = $forum_id" : '';
+    if ($userdata['session_logged_in']) {
+		$rows = dibi::select('a.forum_id')
+            ->select($a_sql)
+            ->select('a.auth_mod ')
+            ->from(AUTH_ACCESS_TABLE)
+            ->as('a')
+            ->from(USER_GROUP_TABLE)
+            ->as('ug')
+            ->where('ug.user_id = %i', $userdata['user_id'])
+            ->where('ug.user_pending = %i', 0)
+            ->where('a.group_id = ug.group_id');
 
-		$sql = "SELECT a.forum_id, $a_sql, a.auth_mod 
-			FROM " . AUTH_ACCESS_TABLE . " a, " . USER_GROUP_TABLE . " ug 
-			WHERE ug.user_id = ".$userdata['user_id']. " 
-				AND ug.user_pending = 0 
-				AND a.group_id = ug.group_id
-				$forum_match_sql";
+        if ($forum_id != AUTH_LIST_ALL) {
+            $rows->where('a.forum_id = %i', $forum_id);
+        }
 
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, 'Failed obtaining forum access control lists', '', __LINE__, __FILE__, $sql);
-		}
-
-		if ( $row = $db->sql_fetchrow($result) ) {
-            do {
-                if ($forum_id != AUTH_LIST_ALL) {
-                    $u_access[] = $row;
-                } else {
-                    $u_access[$row['forum_id']][] = $row;
-                }
-            } while ($row = $db->sql_fetchrow($result));
-		}
-		$db->sql_freeresult($result);
+        foreach ($rows as $row) {
+            if ($forum_id != AUTH_LIST_ALL) {
+                $u_access[] = $row;
+            } else {
+                $u_access[$row->forum_id][] = $row;
+            }
+        }
 	}
 
 	$is_admin = ( $userdata['user_level'] == ADMIN && $userdata['session_logged_in'] ) ? TRUE : 0;
