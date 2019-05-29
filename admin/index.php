@@ -191,31 +191,27 @@ if (isset($_GET['pane']) && $_GET['pane'] == 'left' )
 	// in phpMyAdmin 2.2.0
 	//
 	if (preg_match("/^mysql/", SQL_LAYER) ) {
-		$sql = "SELECT VERSION() AS mysql_version";
+        $row = dibi::query('SELECT VERSION() AS mysql_version')->fetch();
 
-		if ($result = $db->sql_query($sql)) {
-			$row = $db->sql_fetchrow($result);
-			$version = $row['mysql_version'];
+		if ($row) {
+			$version = $row->mysql_version;
 
 			if (preg_match("/^(3\.23|4\.|5\.)/", $version) ) {
 				$db_name = preg_match("/^(3\.23\.[6-9])|(3\.23\.[1-9][1-9])|(4\.)|(5\.)/", $version) ? "`$dbname`" : $dbname;
 
-				$sql = "SHOW TABLE STATUS 
-					FROM " . $db_name;
+				$tables = dibi::query('SHOW TABLE STATUS FROM %SQL', $db_name)->fetchAll();
 
-				if ($result = $db->sql_query($sql)) {
-					$tabledata_ary = $db->sql_fetchrowset($result);
-
+                if (count($tables)) {
 					$dbsize = 0;
 
-                    for ($i = 0; $i < count($tabledata_ary); $i++) {
-                        if ($tabledata_ary[$i]['Type'] != "MRG_MyISAM") {
+                    foreach ($tables as $table) {
+                        if ($table->Type != "MRG_MyISAM") {
                             if ($table_prefix != "") {
-                                if (strstr($tabledata_ary[$i]['Name'], $table_prefix)) {
-                                    $dbsize += $tabledata_ary[$i]['Data_length'] + $tabledata_ary[$i]['Index_length'];
+                                if (strstr($table->Name, $table_prefix)) {
+                                    $dbsize += $table->Data_length + $table->Index_length;
                                 }
                             } else {
-                                $dbsize += $tabledata_ary[$i]['Data_length'] + $tabledata_ary[$i]['Index_length'];
+                                $dbsize += $table->Data_length + $table->Index_length;
                             }
                         }
                     }
