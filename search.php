@@ -391,10 +391,8 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
 			}
 		}
 
-		if ( $total_match_count )
-		{
-			if ( $show_results == 'topics' )
-			{
+		if ( $total_match_count ) {
+			if ( $show_results == 'topics' ) {
 				//
 				// This one is a beast, try to seperate it a bit (workaround for connection timeouts)
 				//
@@ -418,47 +416,52 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
 
 				$search_ids = [];
 
-				for ($i = 0; $i < count($search_id_chunks); $i++) {
-					$where_sql = '';
+				foreach ($search_id_chunks as $search_id_chunk) {
+                    if ($search_author == '' && $auth_sql == '') {
+                        $search_ids = dibi::select('topic_id')
+                            ->from(POSTS_TABLE)
+                            ->where('post_id IN %in', $search_id_chunk);
 
-                    if ($search_time) {
-                        $where_sql .= ($search_author == '' && $auth_sql == '') ? " AND post_time >= $search_time " : " AND p.post_time >= $search_time ";
-                    }
-	
-					if ( $search_author == '' && $auth_sql == '' ) {
-						$sql = "SELECT topic_id 
-							FROM " . POSTS_TABLE . "
-							WHERE post_id IN (" . implode(", ", $search_id_chunks[$i]) . ") 
-							$where_sql 
-							GROUP BY topic_id";
-					} else {
-						$from_sql = POSTS_TABLE . " p"; 
+                        if ($search_time) {
+                            $search_ids->where('post_time >= %i', $search_time);
+                        }
 
-						if ( $search_author != '' ) {
-							$from_sql .= ", " . USERS_TABLE . " u";
-							$where_sql .= " AND u.user_id = p.poster_id AND u.username LIKE '$search_author' ";
-						}
+                        $search_ids = $search_ids->groupBy('topic_id')
+                            ->fetchPairs(null, 'topic_id');
+                    } else {
+						$from_sql = POSTS_TABLE . " p";
 
-						if ( $auth_sql != '' ) {
-							$from_sql .= ", " . FORUMS_TABLE . " f";
-							$where_sql .= " AND f.forum_id = p.forum_id AND $auth_sql";
-						}
+                        $search_ids = dibi::select('p.topic_id')
+                            ->from(POSTS_TABLE)
+                            ->as('p');
 
-						$sql = "SELECT p.topic_id 
-							FROM $from_sql 
-							WHERE p.post_id IN (" . implode(", ", $search_id_chunks[$i]) . ") 
-								$where_sql 
-							GROUP BY p.topic_id";
+                        if ($search_author != '') {
+                            $search_ids->from(USERS_TABLE)
+                                ->as('u')
+                                ->where('u.user_id = p.poster_id')
+                                ->where('u.username LIKE %~like~', $search_author);
+
+                            if ($search_time) {
+                                $search_ids->where('p.post_time >= %i', $search_time);
+                            }
+                        }
+
+                        if ($auth_sql != '') {
+                            $search_ids->from(FORUMS_TABLE)
+                                ->as('f')
+                                ->where('f.forum_id = p.forum_id');
+
+                            if ($search_time) {
+                                $search_ids->where('p.post_time >= %i', $search_time);
+                            }
+
+                            $search_ids->where($auth_sql);
+                        }
+
+                        $search_ids = $search_ids->where('p.post_id IN %in', $search_id_chunk)
+                            ->groupBy('p.topic_id')
+                        ->fetchPairs(null, 'topic_id');
 					}
-
-                    if (!($result = $db->sql_query($sql))) {
-                        message_die(GENERAL_ERROR, 'Could not obtain topic ids', '', __LINE__, __FILE__, $sql);
-                    }
-
-                    while ($row = $db->sql_fetchrow($result)) {
-                        $search_ids[] = $row['topic_id'];
-                    }
-					$db->sql_freeresult($result);
 				}
 
 				$total_match_count = count($search_ids);
@@ -484,70 +487,68 @@ elseif ( $search_keywords != '' || $search_author != '' || $search_id )
 
 				$search_ids = [];
 
-				for ($i = 0; $i < count($search_id_chunks); $i++) {
-					$where_sql = ( $search_author == '' && $auth_sql == '' ) ? 'post_id IN (' . implode(', ', $search_id_chunks[$i]) . ')' : 'p.post_id IN (' . implode(', ', $search_id_chunks[$i]) . ')';
-					$select_sql = ( $search_author == '' && $auth_sql == '' ) ? 'post_id' : 'p.post_id';
-					$from_sql = (  $search_author == '' && $auth_sql == '' ) ? POSTS_TABLE : POSTS_TABLE . ' p';
+				foreach ($search_id_chunks as $search_id_chunk) {
+                    if ( $search_author == '' && $auth_sql == '' ) {
+                        $search_ids = dibi::select('post_id')
+                            ->from(POSTS_TABLE)
+                            ->where('post_id IN %in', $search_id_chunk);
 
-                    if ($search_time) {
-                        $where_sql .= ($search_author == '' && $auth_sql == '') ? " AND post_time >= $search_time " : " AND p.post_time >= $search_time";
+                        if ($search_time) {
+                            $search_ids->where('post_time >= %i', $search_time);
+                        }
+
+                        $search_ids = $search_ids->fetchPairs(null, 'post_id');
+                    } else {
+                        $search_ids = dibi::select('p.post_id')
+                            ->from(POSTS_TABLE)
+                            ->as('p');
+
+                        if ($auth_sql != '') {
+                            $search_ids->from(FORUMS_TABLE)
+                                ->as('f')
+                            ->where('f.forum_id = p.forum_id')
+                            ->where($auth_sql);
+                        }
+
+                        if ($search_author != '') {
+                            $search_ids->from(USERS_TABLE)
+                                ->as('u')
+                                ->where('u.user_id = p.poster_id')
+                                ->where('u.username LIKE %~like~', $search_author);
+                        }
+
+                        $search_ids->where('p.post_id IN %in', $search_id_chunk);
+
+                        if ($search_time) {
+                            $search_ids->where('p.post_time >= %i', $search_time);
+                        }
+
+                        $search_ids = $search_ids->fetchPairs(null, 'post_id');
                     }
-
-                    if ($auth_sql != '') {
-                        $from_sql  .= ", " . FORUMS_TABLE . " f";
-                        $where_sql .= " AND f.forum_id = p.forum_id AND $auth_sql";
-                    }
-
-                    if ($search_author != '') {
-                        $from_sql  .= ", " . USERS_TABLE . " u";
-                        $where_sql .= " AND u.user_id = p.poster_id AND u.username LIKE '$search_author'";
-                    }
-
-					$sql = "SELECT " . $select_sql . " 
-						FROM $from_sql 
-						WHERE $where_sql";
-
-                    if (!($result = $db->sql_query($sql))) {
-                        message_die(GENERAL_ERROR, 'Could not obtain post ids', '', __LINE__, __FILE__, $sql);
-                    }
-
-                    while ($row = $db->sql_fetchrow($result)) {
-                        $search_ids[] = $row['post_id'];
-                    }
-					$db->sql_freeresult($result);
 				}
 
 				$total_match_count = count($search_ids);
 			}
-		}
-		elseif ( $search_id == 'unanswered' )
-		{
-			if ( $auth_sql != '' )
-			{
-				$sql = "SELECT t.topic_id, f.forum_id
-					FROM " . TOPICS_TABLE . "  t, " . FORUMS_TABLE . " f
-					WHERE t.topic_replies = 0 
-						AND t.forum_id = f.forum_id
-						AND t.topic_moved_id = 0
-						AND $auth_sql";
+		} elseif ( $search_id == 'unanswered' ) {
+			if ( $auth_sql != '' ) {
+			    // TODO i guess we dont need f.forum
+                $search_ids = dibi::select(['t.topic_id', 'f.forum_id'])
+                    ->from(TOPICS_TABLE)
+                    ->as('t')
+                    ->from(FORUMS_TABLE)
+                    ->as('f')
+                    ->where('t.topic_replies = %i', 0)
+                    ->where('t.forum_id = f.forum_id')
+                    ->where('t.topic_moved_id = %i', 0)
+                    ->where($auth_sql)
+                    ->fetchPairs(null, 'topic_id');
 			} else {
-				$sql = "SELECT topic_id 
-					FROM " . TOPICS_TABLE . "  
-					WHERE topic_replies = 0 
-						AND topic_moved_id = 0";
+                $search_ids = dibi::select('topic_id')
+                    ->from(TOPICS_TABLE)
+                    ->where('topic_replies = %i', 0)
+                    ->where('topic_moved_id = %i', 0)
+                    ->fetchPairs(null, 'topic_id');
 			}
-
-            if (!($result = $db->sql_query($sql))) {
-                message_die(GENERAL_ERROR, 'Could not obtain post ids', '', __LINE__, __FILE__, $sql);
-            }
-
-			$search_ids = [];
-
-            while ($row = $db->sql_fetchrow($result)) {
-                $search_ids[] = $row['topic_id'];
-            }
-
-			$db->sql_freeresult($result);
 
 			$total_match_count = count($search_ids);
 
