@@ -61,12 +61,10 @@ if (isset($_POST['mode']) || isset($_GET['mode'])) {
 // ------------------
 // Begin function block
 //
+// TODO we need 'number' only in one cas!
 function get_info($mode, $id)
 {
-	global $db;
-
-	switch($mode)
-	{
+	switch($mode) {
 		case 'category':
 			$table = CATEGORIES_TABLE;
 			$idfield = 'cat_id';
@@ -84,39 +82,24 @@ function get_info($mode, $id)
 			break;
 	}
 
-	$sql = "SELECT count(*) as total
-		FROM $table";
+    $count = dibi::select('COUNT(*)')
+        ->as('total')
+        ->from($table)
+        ->fetchSingle();
 
-	if (!$result = $db->sql_query($sql) ) {
-		message_die(GENERAL_ERROR, "Couldn't get Forum/Category information", "", __LINE__, __FILE__, $sql);
-	}
+	$res = dibi::select('*')
+        ->from($table)
+        ->where('%n = %i', $idfield, $id)
+	    ->fetch();
 
-	$count = $db->sql_fetchrow($result);
-	$count = $count['total'];
+    $res->number = $count;
 
-	$sql = "SELECT *
-		FROM $table
-		WHERE $idfield = $id";
-
-	if (!$result = $db->sql_query($sql) ) {
-		message_die(GENERAL_ERROR, "Couldn't get Forum/Category information", "", __LINE__, __FILE__, $sql);
-	}
-
-	if ($db->sql_numrows($result) != 1 ) {
-		message_die(GENERAL_ERROR, "Forum/Category doesn't exist or multiple forums/categories with ID $id", "", __LINE__, __FILE__);
-	}
-
-	$return = $db->sql_fetchrow($result);
-	$return['number'] = $count;
-	return $return;
+	return $res;
 }
 
 function get_list($mode, $id, $select)
 {
-	global $db;
-
-	switch($mode)
-	{
+	switch($mode) {
 		case 'category':
 			$table = CATEGORIES_TABLE;
 			$idfield = 'cat_id';
@@ -134,36 +117,33 @@ function get_list($mode, $id, $select)
 			break;
 	}
 
-	$sql = "SELECT *
-		FROM $table";
 
-	if ($select == 0 ) {
-		$sql .= " WHERE $idfield <> $id";
-	}
+    $res = dibi::select([$idfield, $namefield])
+        ->from($table);
 
-	if (!$result = $db->sql_query($sql) ) {
-		message_die(GENERAL_ERROR, "Couldn't get list of Categories/Forums", "", __LINE__, __FILE__, $sql);
-	}
+	if ($select === 0) {
+	    $res->where('%n <> %i', $idfield, $id);
+    }
 
-	$cat_list = "";
+	$rows = $res->fetchPairs($idfield, $namefield);
 
-	while ($row = $db->sql_fetchrow($result) ) {
-		$s = "";
+    $cat_list = '';
 
-		if ($row[$idfield] == $id) {
-			$s = " selected=\"selected\"";
+	foreach ($rows as $row) {
+		$selected = '';
+
+		if ($row->{$idfield} == $id) {
+            $selected = ' selected="selected"';
 		}
 
-		$catlist .= "<option value=\"$row[$idfield]\"$s>" . $row[$namefield] . "</option>\n";
+        $cat_list .= '<option value="$row->{$idfield}" '.$selected.'>' . $row->{$namefield} . "</option>\n";
 	}
 
-	return $catlist;
+	return $cat_list;
 }
 
 function renumber_order($mode, $cat = 0)
 {
-	global $db;
-
 	switch($mode)
 	{
 		case 'category':
@@ -185,29 +165,23 @@ function renumber_order($mode, $cat = 0)
 			break;
 	}
 
-	$sql = "SELECT * FROM $table";
+	$res = dibi::select('*')
+        ->from($table);
 
 	if ($cat != 0) {
-		$sql .= " WHERE $catfield = $cat";
+	    $res->where('%n = %i', $catfield, $cat);
 	}
-	$sql .= " ORDER BY $orderfield ASC";
 
-
-	if (!$result = $db->sql_query($sql) ) {
-		message_die(GENERAL_ERROR, "Couldn't get list of Categories", "", __LINE__, __FILE__, $sql);
-	}
+	$rows = $res->orderBy($orderfield, dibi::ASC)
+    ->fetchAll();
 
 	$i = 10;
 	$inc = 10;
 
-	while ($row = $db->sql_fetchrow($result) ) {
-		$sql = "UPDATE $table
-			SET $orderfield = $i
-			WHERE $idfield = " . $row[$idfield];
-
-		if (!$db->sql_query($sql) ) {
-			message_die(GENERAL_ERROR, "Couldn't update order fields", "", __LINE__, __FILE__, $sql);
-		}
+	foreach ($rows as $row) {
+	    dibi::update($table, [$orderfield => $i])
+            ->where('%n = %i', $idfield, $row->{$idfield})
+            ->execute();
 
 		$i += 10;
 	}

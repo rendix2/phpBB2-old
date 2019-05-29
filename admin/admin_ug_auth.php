@@ -354,69 +354,34 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 			//
 			// Checks complete, make updates to DB
 			//
-			$delete_sql = '';
+			$delete_sql = [];
 
 			while (list($forum_id, $action) = @each($forum_auth_action) ) {
 				if ( $action == 'delete' ) {
-					$delete_sql .= ( ( $delete_sql != '' ) ? ', ' : '' ) . $forum_id;
+					$delete_sql[] = $forum_id;
 				} else {
 					if ( $action == 'insert' ) {
-						$sql_field = '';
-						$sql_value = '';
+                        $update_acl_status[$forum_id]['auth_mod'] = isset($update_mod_status[$forum_id]) ? $update_mod_status[$forum_id] : 0;
+                        $update_acl_status[$forum_id]['forum_id'] = $forum_id;
+                        $update_acl_status[$forum_id]['group_id'] = $group_id;
 
-						while ( list($auth_type, $value) = @each($update_acl_status[$forum_id]) )
-						{
-							$sql_field .= ( ( $sql_field != '' ) ? ', ' : '' ) . $auth_type;
-							$sql_value .= ( ( $sql_value != '' ) ? ', ' : '' ) . $value;
-						}
-
-						$sql_field .= ( ( $sql_field != '' ) ? ', ' : '' ) . 'auth_mod';
-						$sql_value .= ( ( $sql_value != '' ) ? ', ' : '' ) . ( !isset($update_mod_status[$forum_id]) ? 0 : $update_mod_status[$forum_id]);
-
-						/*
-						 * TODO
-						 *
-						$insert_data = [
-						    'forum_id' => $forum_id,
-                            'group_id' => $group_id,
-                            $sql_field => $sql_value
-                        ];
-
-						dibi::insert(AUTH_ACCESS_TABLE, $insert_data)->execute();
-						*/
-
-						$sql = "INSERT INTO " . AUTH_ACCESS_TABLE . " (forum_id, group_id, $sql_field) 
-							VALUES ($forum_id, $group_id, $sql_value)";
+                        dibi::insert(AUTH_ACCESS_TABLE, $update_acl_status[$forum_id])->execute();
 					} else {
-						$sql_values = '';
+                        $update_acl_status[$forum_id]['auth_mod'] = isset($update_mod_status[$forum_id]) ? $update_mod_status[$forum_id] : 0;
 
-						while ( list($auth_type, $value) = @each($update_acl_status[$forum_id]) )
-						{
-							$sql_values .= ( ( $sql_values != '' ) ? ', ' : '' ) . $auth_type . ' = ' . $value;
-						}
-
-						$sql_values .= ( ( $sql_values != '' ) ? ', ' : '' ) . 'auth_mod = ' . ( !isset($update_mod_status[$forum_id]) ? 0 : $update_mod_status[$forum_id]);
-
-						$sql = "UPDATE " . AUTH_ACCESS_TABLE . " 
-							SET $sql_values 
-							WHERE group_id = $group_id 
-								AND forum_id = $forum_id";
-					}
-
-					if (!($result = $db->sql_query($sql)) ) {
-						message_die(GENERAL_ERROR, "Couldn't update private forum permissions", "", __LINE__, __FILE__, $sql);
+					    dibi::update(AUTH_ACCESS_TABLE, $update_acl_status[$forum_id])
+                            ->where('group_id = %i', $group_id)
+                            ->where('forum_id = %i', $forum_id)
+                            ->execute();
 					}
 				}
 			}
 
-			if ( $delete_sql != '' ) {
-				$sql = "DELETE FROM " . AUTH_ACCESS_TABLE . " 
-					WHERE group_id = $group_id 
-						AND forum_id IN ($delete_sql)";
-
-				if (!($result = $db->sql_query($sql)) ) {
-					message_die(GENERAL_ERROR, "Couldn't delete permission entries", "", __LINE__, __FILE__, $sql);
-				}
+            if (count($delete_sql)) {
+                dibi::delete(AUTH_ACCESS_TABLE)
+                    ->where('group_id = %i', $group_id)
+                    ->where('forum_id IN %in', $delete_sql)
+                    ->execute();
 			}
 
 			$l_auth_return = ( $mode == 'user' ) ? $lang['Click_return_userauth'] : $lang['Click_return_groupauth'];
