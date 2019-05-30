@@ -129,14 +129,14 @@ function get_list($mode, $id, $select)
 
     $cat_list = '';
 
-	foreach ($rows as $row) {
+	foreach ($rows as $key => $value) {
 		$selected = '';
 
-		if ($row->{$idfield} == $id) {
+		if ($key == $id) {
             $selected = ' selected="selected"';
 		}
 
-        $cat_list .= '<option value="$row->{$idfield}" '.$selected.'>' . $row->{$namefield} . "</option>\n";
+        $cat_list .= '<option value="'.$key.'" '.$selected.'>' . $value . "</option>\n";
 	}
 
 	return $cat_list;
@@ -387,7 +387,7 @@ if (!empty($mode) ) {
                 'prune_enable' => (int)$_POST['prune_enable']
             ];
 
-			dibi::update($update_data, FORUMS_TABLE)
+			dibi::update(FORUMS_TABLE, $update_data)
                 ->where('forum_id = %i', (int)$_POST[POST_FORUM_URL])
                 ->execute();
 
@@ -752,12 +752,15 @@ if (!empty($mode) ) {
 
 			$cat_id = $forum_info['cat_id'];
 
-            /**
-             * TODO check if it work with negative values
-             */
-			dibi::update(FORUMS_TABLE, ['forum_order%sql' => 'forum_order + ' . $move])
-                ->where('forum_id = %i', $forum_id)
-                ->execute();
+            if ($move > 0 ) {
+                dibi::update(FORUMS_TABLE, ['forum_order%sql' => 'forum_order + ' . $move])
+                    ->where('forum_id = %i', $forum_id)
+                    ->execute();
+            } else {
+                dibi::update(FORUMS_TABLE, ['forum_order%sql' => 'forum_order  - ' . abs($move)])
+                    ->where('forum_id = %i', $forum_id)
+                    ->execute();
+            }
 
 			renumber_order('forum', $forum_info['cat_id']);
 			$show_index = TRUE;
@@ -771,12 +774,15 @@ if (!empty($mode) ) {
 			$move = (int)$_GET['move'];
 			$cat_id = (int)$_GET[POST_CAT_URL];
 
-            /**
-             * TODO check if it work with negative values
-             */
-            dibi::update(FORUMS_TABLE, ['cat_order%sql' => 'cat_order + ' . $move])
-                ->where('cat_id = %i', $cat_id)
-                ->execute();
+            if ($move > 0 ) {
+                dibi::update(CATEGORIES_TABLE, ['cat_order%sql' => 'cat_order + ' . $move])
+                    ->where('cat_id = %i', $cat_id)
+                    ->execute();
+            } else {
+                dibi::update(CATEGORIES_TABLE, ['cat_order%sql' => 'cat_order - ' . abs($move)])
+                    ->where('cat_id = %i', $cat_id)
+                    ->execute();
+            }
 
 			renumber_order('category');
 			$show_index = TRUE;
@@ -822,7 +828,7 @@ $template->assign_vars(
 
 $categories = dibi::select(['cat_id', 'cat_title', 'cat_order'])
     ->from(CATEGORIES_TABLE)
-    ->orderBy(CATEGORIES_TABLE)
+    ->orderBy('cat_order')
     ->fetchAll();
 
 $category_count = count($categories);
@@ -834,7 +840,7 @@ if ($category_count) {
         ->orderBy('forum_order')
         ->fetchAll();
 
-    $total_forums = $count($total_forums);
+    $total_forums = count($forums);
 
 	//
 	// Okay, let's build the index

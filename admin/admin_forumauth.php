@@ -98,6 +98,7 @@ if (isset($_GET[POST_FORUM_URL]) || isset($_POST[POST_FORUM_URL])) {
     $forum_sql = false;
 }
 
+// advanced
 if (isset($_GET['adv'])) {
     $adv = (int)$_GET['adv'];
 } else {
@@ -268,7 +269,7 @@ if (empty($forum_id) ) {
 			$cell_title = $field_names[$forum_auth_field];
 
             $template->assign_block_vars('forum_auth_titles', ['CELL_TITLE' => $cell_title]);
-            $template->assign_block_vars('forum_auth_data', ['S_AUTH_LEVELS_SELECT' => $custom_auth[$j]]);
+            $template->assign_block_vars('forum_auth_data', ['S_AUTH_LEVELS_SELECT' => $custom_auth[$key]]);
 
             $s_column_span++;
 		}
