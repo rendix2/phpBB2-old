@@ -427,11 +427,11 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
                 ->fetchSingle();
 
 			if ($first_post_id) {
-                $topic_update_sql['topic_replies=sql'] = 'topic_replies - 1';
-                $topic_update_sql['topic_first_post_id=sql'] = $first_post_id;
+                $topic_update_sql['topic_replies%sql'] = 'topic_replies - 1';
+                $topic_update_sql['topic_first_post_id%sql'] = $first_post_id;
 			}
 		} else {
-			$topic_update_sql['topic_replies=sql'] = 'topic_replies - 1';
+			$topic_update_sql['topic_replies%sql'] = 'topic_replies - 1';
 		}
 	} elseif ($mode != 'poll_delete') {
         $forum_update_sql['forum_last_post_id'] = $post_id;
