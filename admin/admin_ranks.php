@@ -272,7 +272,7 @@ $template->assign_vars(
 	]
 );
 
-foreach ($ranks as $rank) {
+foreach ($ranks as $i => $rank) {
 	$special_rank = $rank->rank_special;
 	$rank_id = $rank->rank_id;
 	$rank_min = $rank->rank_min;
