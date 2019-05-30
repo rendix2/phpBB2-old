@@ -215,7 +215,7 @@ $board_config = dibi::select('*')
     ->fetchPairs('config_name', 'config_value');
 
 if (!$board_config) {
-    message_die(CRITICAL_ERROR, "Could not query config information", "", __LINE__, __FILE__, $sql);
+    message_die(CRITICAL_ERROR, "Could not query config information");
 }
 
 if (file_exists('install') || file_exists('contrib')) {

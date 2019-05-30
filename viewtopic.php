@@ -106,11 +106,7 @@ if ( isset($_GET['view']) && empty($_GET[POST_POST_URL]) ) {
             ->orderBy('t.topic_last_post_id', $sql_ordering)
             ->fetch();
 
-		if ( !$row ) {
-			message_die(GENERAL_ERROR, "Could not obtain newer/older topic information");
-		}
-
-		if ( $row = $db->sql_fetchrow($result) ) {
+        if ($row) {
 			$topic_id = (int)$row->topic_id;
 		} else {
 			$message = ( $_GET['view'] == 'next' ) ? 'No_newer_topics' : 'No_older_topics';

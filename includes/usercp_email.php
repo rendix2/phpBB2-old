@@ -81,7 +81,7 @@ if ($row->user_viewemail || $userdata['user_level'] == ADMIN) {
                 ->execute();
 
             if (!$result) {
-                message_die(GENERAL_ERROR, 'Could not update last email time', '', __LINE__, __FILE__, $sql);
+                message_die(GENERAL_ERROR, 'Could not update last email time');
             }
 
             include $phpbb_root_path . 'includes/emailer.php';

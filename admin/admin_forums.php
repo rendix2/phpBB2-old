@@ -444,10 +444,6 @@ if (!empty($mode) ) {
                 ->from(CATEGORIES_TABLE)
                 ->fetchSingle();
 
-			if (!$max_order) {
-                message_die(GENERAL_ERROR, "Couldn't get order number from categories table", "", __LINE__, __FILE__, $sql);
-            }
-
 			$next_order = $max_order + 10;
 
 			//
@@ -676,7 +672,7 @@ if (!empty($mode) ) {
                     ->fetchSingle();
 
 				if ($count === false) {
-					message_die(GENERAL_ERROR, "Couldn't get Forum count", "", __LINE__, __FILE__, $sql);
+					message_die(GENERAL_ERROR, "Couldn't get Forum count");
 				}
 
 				if ($count > 0) {

@@ -399,10 +399,10 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
                     ->where('topic_id = %i', $topic_id)
                     ->fetchSingle();
 
-                if ($last_post_id) {
-                    $topic_update_sql['topic_last_post_id'] = $last_post_id;
+                if ($last_post_id === false) {
+                    message_die(GENERAL_ERROR, 'Error in deleting post');
                 } else {
-                    message_die(GENERAL_ERROR, 'Error in deleting post', '', __LINE__, __FILE__, $sql);
+                    $topic_update_sql['topic_last_post_id'] = $last_post_id;
                 }
 			}
 

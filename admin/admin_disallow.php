@@ -48,11 +48,8 @@ if (isset($_POST['add_name']) ) {
 	if (!validate_username($disallowed_user) ) {
 		$message = $lang['Disallowed_already'];
 	} else {
-		$result = dibi::insert(DISALLOW_TABLE, ['disallow_username' => $disallowed_user])->execute();
+		dibi::insert(DISALLOW_TABLE, ['disallow_username' => $disallowed_user])->execute();
 
-        if (!$result) {
-			message_die(GENERAL_ERROR, "Could not add disallowed user.", "",__LINE__, __FILE__, $sql);
-		}
 		$message = $lang['Disallow_successful'];
 	}
 
@@ -62,13 +59,9 @@ if (isset($_POST['add_name']) ) {
 } elseif (isset($_POST['delete_name']) ) {
 	$disallowed_id = isset($_POST['disallowed_id']) ? (int)$_POST['disallowed_id'] : (int)$_GET['disallowed_id'];
 
-    $result = dibi::delete(DISALLOW_TABLE)
+    dibi::delete(DISALLOW_TABLE)
         ->where('disallow_id = %i', $disallowed_id)
         ->execute();
-
-	if (!$result ) {
-		message_die(GENERAL_ERROR, "Couldn't removed disallowed user.", "",__LINE__, __FILE__, $sql);
-	}
 
 	$message .= $lang['Disallowed_deleted'] . "<br /><br />" . sprintf($lang['Click_return_disallowadmin'], "<a href=\"" . append_sid("admin_disallow.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
 

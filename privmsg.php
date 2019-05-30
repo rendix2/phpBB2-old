@@ -784,8 +784,6 @@ if ( $mode == 'newpm' ) {
 						unset($update_list);
 					}
 				}
-				
-				$db->sql_freeresult($result);
 			}
 
             // Delete the messages text
@@ -946,8 +944,6 @@ if ( $mode == 'newpm' ) {
 					unset($update_list);
 				}
 			}
-			
-			$db->sql_freeresult($result);
 		}
 
 		switch ($folder) {

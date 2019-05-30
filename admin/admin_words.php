@@ -79,10 +79,6 @@ if ($mode != "" )
                     ->where('word_id = %i', $word_id)
                     ->fetch();
 
-				if (!$word_info) {
-					message_die(GENERAL_ERROR, "Could not query words table", "Error", __LINE__, __FILE__, $sql);
-				}
-
 				$s_hidden_fields .= '<input type="hidden" name="id" value="' . $word_id . '" />';
 			} else {
 				message_die(GENERAL_MESSAGE, $lang['No_word_selected']);

@@ -388,7 +388,7 @@ function session_pagestart($user_ip, $thispage_id)
 	$user_id = isset($sessiondata['userid']) ? (int)$sessiondata['userid'] : ANONYMOUS;
 
 	if ( !($userdata = session_begin($user_id, $user_ip, $thispage_id, TRUE)) ) {
-		message_die(CRITICAL_ERROR, 'Error creating user session', '', __LINE__, __FILE__, $sql);
+		message_die(CRITICAL_ERROR, 'Error creating user session');
 	}
 
 	return $userdata;

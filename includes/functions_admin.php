@@ -103,7 +103,7 @@ function sync($type, $id = false)
                 ->fetchSingle();
 
             if ( $total_topics === false ) {
-                message_die(GENERAL_ERROR, 'Could not get topic count', '', __LINE__, __FILE__, $sql);
+                message_die(GENERAL_ERROR, 'Could not get topic count');
             }
 
 			$forums_update_data = [
