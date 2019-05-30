@@ -235,7 +235,7 @@ switch ( $mode ) {
                 ->where('f.forum_id = p.forum_id')
                 ->where('pt.post_id = p.post_id')
                 ->where('u.user_id = p.poster_id')
-                ->fetchAll();
+                ->fetch();
         } else {
             $columns = [
                 'f.*',

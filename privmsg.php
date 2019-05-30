@@ -166,7 +166,7 @@ if ( $mode == 'newpm' ) {
 	}
 
     $columns = [
-        'u.user_sig_bbcode_ui',
+        'u.user_sig_bbcode_uid',
         'u.user_posts',
         'u.user_from',
         'u.user_website',

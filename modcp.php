@@ -101,7 +101,7 @@ if ( !empty($topic_id) ) {
         ->from(TOPICS_TABLE)
         ->as('t')
         ->from(FORUMS_TABLE)
-        ->as('t')
+        ->as('f')
         ->where('t.topic_id = %i', $topic_id)
         ->where('f.forum_id = t.forum_id')
         ->fetch();

@@ -388,7 +388,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 
 		case 'oracle':
             $group_info = dibi::select(['g.group_moderator', 'g.group_type', 'aa.auth_mod'])
-                ->from(AUTH_ACCESS_TABLE)
+                ->from(GROUPS_TABLE)
                 ->as('g')
                 ->from(AUTH_ACCESS_TABLE)
                 ->as('aa')
@@ -400,7 +400,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 
 		default:
             $group_info = dibi::select(['g.group_moderator', 'g.group_type', 'aa.auth_mod'])
-                ->from(AUTH_ACCESS_TABLE)
+                ->from(GROUPS_TABLE)
                 ->as('g')
                 ->leftJoin(AUTH_ACCESS_TABLE)
                 ->as('aa')
@@ -1121,7 +1121,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 	//
 
     $group_rows = dibi::select(['group_id', 'group_name', 'group_type'])
-        ->from('GROUPS_TABLE')
+        ->from(GROUPS_TABLE)
         ->where('group_single_user <> %i', 1);
 
     if (count($in_group)) {
