@@ -491,7 +491,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
     //
 	// Loop throuh the rows of smilies setting block vars for the template.
 	//
-    foreach ($smilies as $smiley) {
+    foreach ($smilies as $i => $smiley) {
         //
         // Replace htmlentites for < and > with actual character.
         //
