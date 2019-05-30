@@ -165,6 +165,49 @@ if ( $mode == 'newpm' ) {
 		redirect(append_sid("login.php?redirect=privmsg.php&folder=$folder&mode=$mode&" . POST_POST_URL . "=$privmsgs_id", true));
 	}
 
+    $columns = [
+        'u.user_sig_bbcode_ui',
+        'u.user_posts',
+        'u.user_from',
+        'u.user_website',
+        'u.user_email',
+        'u.user_icq',
+        'u.user_aim',
+        'u.user_yim',
+        'u.user_regdate',
+        'u.user_msnm',
+        'u.user_viewemail',
+        'u.user_rank',
+        'u.user_sig',
+        'u.user_avatar',
+        'pm.*',
+        'pmt.privmsgs_bbcode_uid',
+        'pmt.privmsgs_text'
+    ];
+
+    //
+    // Major query obtains the message ...
+    //
+    $privmsg = dibi::select('u.username')
+        ->as('username_1')
+        ->select('u.user_id')
+        ->as('user_id_1')
+        ->select('u2.username')
+        ->as('username_2')
+        ->select('u2.user_id')
+        ->as('user_id_2')
+        ->select($columns)
+        ->from(PRIVMSGS_TABLE)
+        ->as('pm')
+        ->from(PRIVMSGS_TEXT_TABLE)
+        ->as('pmt')
+        ->from(USERS_TABLE)
+        ->as('u')
+        ->from(USERS_TABLE)
+        ->as('u2')
+        ->where('pm.privmsgs_id = %i', $privmsgs_id)
+        ->where('pmt.privmsgs_text_id = pm.privmsgs_id');
+
 	//
 	// SQL to pull appropriate message, prevents nosey people
 	// reading other peoples messages ... hopefully!
@@ -173,32 +216,34 @@ if ( $mode == 'newpm' ) {
 	{
 		case 'inbox':
 			$l_box_name = $lang['Inbox'];
-			$pm_sql_user = "AND pm.privmsgs_to_userid = " . $userdata['user_id'] . " 
-				AND ( pm.privmsgs_type = " . PRIVMSGS_READ_MAIL . " 
-					OR pm.privmsgs_type = " . PRIVMSGS_NEW_MAIL . " 
-					OR pm.privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " )";
+
+            $privmsg->where('pm.privmsgs_to_userid = %i', $userdata['user_id'])
+                ->where('pm.privmsgs_type IN %in', [PRIVMSGS_READ_MAIL, PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL]);
 			break;
 			
 		case 'outbox':
 			$l_box_name = $lang['Outbox'];
-			$pm_sql_user = "AND pm.privmsgs_from_userid =  " . $userdata['user_id'] . " 
-				AND ( pm.privmsgs_type = " . PRIVMSGS_NEW_MAIL . "
-					OR pm.privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " ) ";
+
+            $privmsg->where('pm.privmsgs_from_userid = %i', $userdata['user_id'])
+                ->where('pm.privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL]);
 			break;
 			
 		case 'sentbox':
 			$l_box_name = $lang['Sentbox'];
-			$pm_sql_user = "AND pm.privmsgs_from_userid =  " . $userdata['user_id'] . " 
-				AND pm.privmsgs_type = " . PRIVMSGS_SENT_MAIL;
+
+            $privmsg->where('pm.privmsgs_from_userid = %i', $userdata['user_id'])
+                ->where('pm.privmsgs_type = %i', PRIVMSGS_SENT_MAIL);
 			break;
 			
 		case 'savebox':
 			$l_box_name = $lang['Savebox'];
-			$pm_sql_user = "AND ( ( pm.privmsgs_to_userid = " . $userdata['user_id'] . "
-					AND pm.privmsgs_type = " . PRIVMSGS_SAVED_IN_MAIL . " ) 
-				OR ( pm.privmsgs_from_userid = " . $userdata['user_id'] . "
-					AND pm.privmsgs_type = " . PRIVMSGS_SAVED_OUT_MAIL . " ) 
-				)";
+
+            $privmsg->where('((pm.privmsgs_to_userid = %i AND pm.privmsgs_type = %i) OR (pm.privmsgs_from_userid = %i AND pm.privmsgs_type = %i))',
+                    $userdata['user_id'],
+                    PRIVMSGS_SAVED_IN_MAIL,
+                    $userdata['user_id'],
+                    PRIVMSGS_SAVED_OUT_MAIL
+                );
 			break;
 			
 		default:
@@ -206,37 +251,26 @@ if ( $mode == 'newpm' ) {
 			break;
 	}
 
-	//
-	// Major query obtains the message ...
-	//
-	$sql = "SELECT u.username AS username_1, u.user_id AS user_id_1, u2.username AS username_2, u2.user_id AS user_id_2, u.user_sig_bbcode_uid, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_avatar, pm.*, pmt.privmsgs_bbcode_uid, pmt.privmsgs_text
-		FROM " . PRIVMSGS_TABLE . " pm, " . PRIVMSGS_TEXT_TABLE . " pmt, " . USERS_TABLE . " u, " . USERS_TABLE . " u2 
-		WHERE pm.privmsgs_id = $privmsgs_id
-			AND pmt.privmsgs_text_id = pm.privmsgs_id 
-			$pm_sql_user 
-			AND u.user_id = pm.privmsgs_from_userid 
-			AND u2.user_id = pm.privmsgs_to_userid";
-	
-	if ( !($result = $db->sql_query($sql)) ) {
-		message_die(GENERAL_ERROR, 'Could not query private message post information', '', __LINE__, __FILE__, $sql);
-	}
+	$privmsg = $privmsg->where('u.user_id = pm.privmsgs_from_userid')
+        ->where('u2.user_id = pm.privmsgs_to_userid')
+        ->fetch();
 
 	//
 	// Did the query return any data?
 	//
-	if ( !($privmsg = $db->sql_fetchrow($result)) )	{
+	if (!$privmsg) {
 		redirect(append_sid("privmsg.php?folder=$folder", true));
 	}
 
-	$privmsg_id = $privmsg['privmsgs_id'];
+	$privmsg_id = $privmsg->privmsgs_id;
 
 	//
 	// Is this a new message in the inbox? If it is then save
 	// a copy in the posters sent box
 	//
-	if (($privmsg['privmsgs_type'] == PRIVMSGS_NEW_MAIL || $privmsg['privmsgs_type'] == PRIVMSGS_UNREAD_MAIL) && $folder == 'inbox') {
+	if (($privmsg->privmsgs_type == PRIVMSGS_NEW_MAIL || $privmsg->privmsgs_type == PRIVMSGS_UNREAD_MAIL) && $folder == 'inbox') {
 		// Update appropriate counter
-		switch ($privmsg['privmsgs_type']) {
+		switch ($privmsg->rivmsgs_type) {
 			case PRIVMSGS_NEW_MAIL:
 			    dibi::update(USERS_TABLE, ['user_new_privmsg%sql' => 'user_new_privmsg - 1'])
                     ->where('user_id = %i', $userdata['user_id'])
@@ -250,7 +284,7 @@ if ( $mode == 'newpm' ) {
 		}
 
 		dibi::update(PRIVMSGS_TABLE, ['privmsgs_type' => PRIVMSGS_READ_MAIL])
-            ->where('privmsgs_id = %i', $privmsg['privmsgs_id']);
+            ->where('privmsgs_id = %i', $privmsg->privmsgs_id);
 
         $sent_info = dibi::select('COUNT(privmsgs_id)')
             ->as('sent_items')
@@ -258,7 +292,7 @@ if ( $mode == 'newpm' ) {
             ->as('oldest_post_time')
             ->from(PRIVMSGS_TABLE)
             ->where('privmsgs_type = %i', PRIVMSGS_SENT_MAIL)
-            ->where('privmsgs_from_userid = %i', $privmsg['privmsgs_from_userid'])
+            ->where('privmsgs_from_userid = %i', $privmsg->privmsgs_from_userid)
             ->fetch();
 
 		$sql_priority = ( SQL_LAYER == 'mysql' ) ? 'LOW_PRIORITY' : '';
@@ -269,7 +303,7 @@ if ( $mode == 'newpm' ) {
                     ->from(PRIVMSGS_TABLE)
                     ->where('privmsgs_type = %i', PRIVMSGS_SENT_MAIL)
                     ->where('privmsgs_date = %i', $sent_info->oldest_post_time)
-                    ->where('privmsgs_from_userid = %i', $privmsg['privmsgs_from_userid'])
+                    ->where('privmsgs_from_userid = %i', $privmsg->privmsgs_from_userid)
                     ->fetchSingle();
 
 				dibi::delete(PRIVMSGS_TABLE)
@@ -292,24 +326,24 @@ if ( $mode == 'newpm' ) {
 
         // TODO duplicate key
         $insert_data = [
-           'privmsgs_type' => PRIVMSGS_SENT_MAIL,
-            'privmsgs_subject' => $privmsg['privmsgs_subject'],
-            'privmsgs_from_userid' => $privmsg['privmsgs_from_userid'],
-            'privmsgs_to_userid' => $privmsg['privmsgs_to_userid'],
-            'privmsgs_date' => $privmsg['privmsgs_date'],
-            'privmsgs_ip' => $privmsg['privmsgs_ip'],
-            'privmsgs_enable_html' => $privmsg['privmsgs_enable_html'],
-            'privmsgs_enable_bbcode' => $privmsg['privmsgs_enable_bbcode'],
-            'privmsgs_enable_smilies' => $privmsg['privmsgs_enable_smilies'],
-            'privmsgs_attach_sig' => $privmsg['privmsgs_attach_sig']
+            'privmsgs_type'           => PRIVMSGS_SENT_MAIL,
+            'privmsgs_subject'        => $privmsg->privmsgs_subject,
+            'privmsgs_from_userid'    => $privmsg->privmsgs_from_userid,
+            'privmsgs_to_userid'      => $privmsg->privmsgs_to_userid,
+            'privmsgs_date'           => $privmsg->privmsgs_date,
+            'privmsgs_ip'             => $privmsg->privmsgs_ip,
+            'privmsgs_enable_html'    => $privmsg->privmsgs_enable_html,
+            'privmsgs_enable_bbcode'  => $privmsg->privmsgs_enable_bbcode,
+            'privmsgs_enable_smilies' => $privmsg->privmsgs_enable_smilies,
+            'privmsgs_attach_sig'     => $privmsg->privmsgs_attach_sig
         ];
 
         $privmsg_sent_id = dibi::insert(PRIVMSGS_TABLE, $insert_data)->execute(dibi::IDENTIFIER);
 
         $insert_data = [
-           'privmsgs_text_id' => $privmsg_sent_id,
-           'privmsgs_bbcode_uid' => $privmsg['privmsgs_bbcode_uid'],
-            'privmsgs_text' => $privmsg['privmsgs_text']
+            'privmsgs_text_id'    => $privmsg_sent_id,
+            'privmsgs_bbcode_uid' => $privmsg->privmsgs_bbcode_uid,
+            'privmsgs_text'       => $privmsg->privmsgs_text
         ];
 
         dibi::insert(PRIVMSGS_TEXT_TABLE, $insert_data)->execute();
@@ -360,7 +394,7 @@ if ( $mode == 'newpm' ) {
 		$edit = $post_icons['edit'];
 		$l_box_name = $lang['Outbox'];
 	} elseif ($folder == 'savebox') {
-		if ( $privmsg['privmsgs_type'] == PRIVMSGS_SAVED_IN_MAIL ) {
+		if ( $privmsg->privmsgs_type == PRIVMSGS_SAVED_IN_MAIL ) {
 			$post_img = $post_icons['post_img'];
 			$reply_img = $post_icons['reply_img'];
 			$quote_img = $post_icons['quote_img'];
@@ -446,12 +480,12 @@ if ( $mode == 'newpm' ) {
         ]
     );
 
-    $username_from = $privmsg['username_1'];
-	$user_id_from = $privmsg['user_id_1'];
-	$username_to = $privmsg['username_2'];
-	$user_id_to = $privmsg['user_id_2'];
+    $username_from = $privmsg->username_1;
+	$user_id_from = $privmsg->user_id_1;
+	$username_to = $privmsg->username_2;
+	$user_id_to = $privmsg->user_id_2;
 
-	$post_date = create_date($board_config['default_dateformat'], $privmsg['privmsgs_date'], $board_config['board_timezone']);
+	$post_date = create_date($board_config['default_dateformat'], $privmsg->privmsgs_date, $board_config['board_timezone']);
 
 	$temp_url = append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . '=' . $user_id_from);
 	$profile_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_profile'] . '" alt="' . $lang['Read_profile'] . '" title="' . $lang['Read_profile'] . '" border="0" /></a>';
@@ -461,9 +495,9 @@ if ( $mode == 'newpm' ) {
 	$pm_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
 	$pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
 
-	if ( !empty($privmsg['user_viewemail']) || $userdata['user_level'] == ADMIN )
+	if ( !empty($privmsg->user_viewemail) || $userdata['user_level'] == ADMIN )
 	{
-		$email_uri = $board_config['board_email_form'] ? append_sid("profile.php?mode=email&amp;" . POST_USERS_URL .'=' . $user_id_from) : 'mailto:' . $privmsg['user_email'];
+		$email_uri = $board_config['board_email_form'] ? append_sid("profile.php?mode=email&amp;" . POST_USERS_URL .'=' . $user_id_from) : 'mailto:' . $privmsg->user_email;
 
 		$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
 		$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
@@ -472,28 +506,28 @@ if ( $mode == 'newpm' ) {
 		$email = '';
 	}
 
-	$www_img = $privmsg['user_website'] ? '<a href="' . $privmsg['user_website'] . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
-	$www = $privmsg['user_website'] ? '<a href="' . $privmsg['user_website'] . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
+	$www_img = $privmsg->user_website ? '<a href="' . $privmsg->user_website . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
+	$www = $privmsg->user_website ? '<a href="' . $privmsg->user_website . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
 
-	if ( !empty($privmsg['user_icq']) ) {
-		$icq_status_img = '<a href="http://wwp.icq.com/' . $privmsg['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $privmsg['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
-		$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $privmsg['user_icq'] . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
-		$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $privmsg['user_icq'] . '">' . $lang['ICQ'] . '</a>';
+	if ( !empty($privmsg->user_icq) ) {
+		$icq_status_img = '<a href="http://wwp.icq.com/' . $privmsg->user_icq . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $privmsg->user_icq . '&img=5" width="18" height="18" border="0" /></a>';
+		$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $privmsg->user_icq . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
+		$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $privmsg->user_icq . '">' . $lang['ICQ'] . '</a>';
 	} else {
 		$icq_status_img = '';
 		$icq_img = '';
 		$icq = '';
 	}
 
-	$aim_img = $privmsg['user_aim'] ? '<a href="aim:goim?screenname=' . $privmsg['user_aim'] . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
-	$aim = $privmsg['user_aim'] ? '<a href="aim:goim?screenname=' . $privmsg['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
+	$aim_img = $privmsg->user_aim ? '<a href="aim:goim?screenname=' . $privmsg->user_aim . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
+	$aim = $privmsg->user_aim ? '<a href="aim:goim?screenname=' . $privmsg->user_aim . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
 
 	$temp_url = append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id_from");
-	$msn_img = $privmsg['user_msnm'] ? '<a href="' . $temp_url . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
-	$msn = $privmsg['user_msnm'] ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
+	$msn_img = $privmsg->user_msnm ? '<a href="' . $temp_url . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
+	$msn = $privmsg->user_msnm ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
 
-	$yim_img = $privmsg['user_yim'] ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $privmsg['user_yim'] . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
-	$yim = $privmsg['user_yim'] ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $privmsg['user_yim'] . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
+	$yim_img = $privmsg->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $privmsg->user_yim . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
+	$yim = $privmsg->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $privmsg->user_yim . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
 
 	$temp_url = append_sid("search.php?search_author=" . urlencode($username_from) . "&amp;showresults=posts");
 	$search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $username_from) . '" title="' . sprintf($lang['Search_user_posts'], $username_from) . '" border="0" /></a>';
@@ -502,18 +536,18 @@ if ( $mode == 'newpm' ) {
 	//
 	// Processing of post
 	//
-	$post_subject = $privmsg['privmsgs_subject'];
+	$post_subject = $privmsg->privmsgs_subject;
 
-	$private_message = $privmsg['privmsgs_text'];
-	$bbcode_uid = $privmsg['privmsgs_bbcode_uid'];
+	$private_message = $privmsg->privmsgs_text;
+	$bbcode_uid = $privmsg->privmsgs_bbcode_uid;
 
     if ($board_config['allow_sig']) {
-        $user_sig = ($privmsg['privmsgs_from_userid'] == $userdata['user_id']) ? $userdata['user_sig'] : $privmsg['user_sig'];
+        $user_sig = ($privmsg->privmsgs_from_userid == $userdata['user_id']) ? $userdata['user_sig'] : $privmsg->user_sig;
     } else {
         $user_sig = '';
     }
 
-	$user_sig_bbcode_uid = ( $privmsg['privmsgs_from_userid'] == $userdata['user_id'] ) ? $userdata['user_sig_bbcode_uid'] : $privmsg['user_sig_bbcode_uid'];
+	$user_sig_bbcode_uid = ( $privmsg->privmsgs_from_userid == $userdata['user_id'] ) ? $userdata['user_sig_bbcode_uid'] : $privmsg->user_sig_bbcode_uid;
 
 	//
 	// If the board has HTML off but the post has HTML
@@ -524,12 +558,12 @@ if ( $mode == 'newpm' ) {
             $user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
         }
 
-        if ($privmsg['privmsgs_enable_html']) {
+        if ($privmsg->privmsgs_enable_html) {
             $private_message = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $private_message);
         }
     }
 
-	if ( $user_sig != '' && $privmsg['privmsgs_attach_sig'] && $user_sig_bbcode_uid != '' ) {
+	if ( $user_sig != '' && $privmsg->privmsgs_attach_sig && $user_sig_bbcode_uid != '' ) {
 		$user_sig = $board_config['allow_bbcode'] ? bbencode_second_pass($user_sig, $user_sig_bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $user_sig);
 	}
 
@@ -539,7 +573,7 @@ if ( $mode == 'newpm' ) {
 
 	$private_message = make_clickable($private_message);
 
-	if ( $privmsg['privmsgs_attach_sig'] && $user_sig != '' ) {
+	if ( $privmsg->privmsgs_attach_sig && $user_sig != '' ) {
 		$private_message .= '<br /><br />_________________<br />' . make_clickable($user_sig);
 	}
 
@@ -552,7 +586,7 @@ if ( $mode == 'newpm' ) {
 		$private_message = preg_replace($orig_word, $replacement_word, $private_message);
 	}
 
-	if ( $board_config['allow_smilies'] && $privmsg['privmsgs_enable_smilies'] ) {
+	if ( $board_config['allow_smilies'] && $privmsg->privmsgs_enable_smilies ) {
 		$private_message = smilies_pass($private_message);
 	}
 
@@ -641,99 +675,85 @@ if ( $mode == 'newpm' ) {
 		include $phpbb_root_path . 'includes/page_tail.php';
 
 	} elseif ($confirm && $sid === $userdata['session_id']) {
-		$delete_sql_id = '';
-
-		if (!$delete_all) {
-			for ($i = 0; $i < count($mark_list); $i++) {
-				$delete_sql_id .= (($delete_sql_id != '') ? ', ' : '') . (int)$mark_list[$i];
-			}
-			
-			$delete_sql_id = "AND privmsgs_id IN ($delete_sql_id)";
-		}
-
+	    // check marklist
 		switch($folder) {
 			case 'inbox':
-				$delete_type = "privmsgs_to_userid = " . $userdata['user_id'] . " AND (
-				privmsgs_type = " . PRIVMSGS_READ_MAIL . " OR privmsgs_type = " . PRIVMSGS_NEW_MAIL . " OR privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " )";
-				break;
+                $mark_list = dibi::select('privmsgs_id')
+                    ->from(PRIVMSGS_TABLE)
+                    ->where('privmsgs_to_userid = %i', $userdata['user_id'])
+                    ->where('privmsgs_type IN %in', [PRIVMSGS_READ_MAIL, PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
+                    ->where('privmsgs_id IN %in', $mark_list)
+                    ->fetchPairs(null, 'privmsgs_id');
+                break;
 
 			case 'outbox':
-				$delete_type = "privmsgs_from_userid = " . $userdata['user_id'] . " AND ( privmsgs_type = " . PRIVMSGS_NEW_MAIL . " OR privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " )";
+                $mark_list = dibi::select('privmsgs_id')
+                    ->from(PRIVMSGS_TABLE)
+                    ->where('privmsgs_from_userid = %i', $userdata['user_id'])
+                    ->where('privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
+                    ->where('privmsgs_id IN %in', $mark_list)
+                    ->fetchPairs(null, 'privmsgs_id');
 				break;
 
 			case 'sentbox':
-				$delete_type = "privmsgs_from_userid = " . $userdata['user_id'] . " AND privmsgs_type = " . PRIVMSGS_SENT_MAIL;
+                $mark_list = dibi::select('privmsgs_id')
+                    ->from(PRIVMSGS_TABLE)
+                    ->where('privmsgs_from_userid = %i', $userdata['user_id'])
+                    ->where('privmsgs_type = %i', PRIVMSGS_SENT_MAIL)
+                    ->where('privmsgs_id IN %in', $mark_list)
+                    ->fetchPairs(null, 'privmsgs_id');
 				break;
 
 			case 'savebox':
-				$delete_type = "( ( privmsgs_from_userid = " . $userdata['user_id'] . " 
-					AND privmsgs_type = " . PRIVMSGS_SAVED_OUT_MAIL . " ) 
-				OR ( privmsgs_to_userid = " . $userdata['user_id'] . " 
-					AND privmsgs_type = " . PRIVMSGS_SAVED_IN_MAIL . " ) )";
+                $mark_list = dibi::select('privmsgs_id')
+                    ->from(PRIVMSGS_TABLE)
+                    ->where(
+                        '( (privmsgs_from_userid = %i AND privmsgs_type = %i) OR (privmsgs_to_userid  = %i AND privmsgs_type = %i) )',
+                        $userdata['user_id'],
+                        PRIVMSGS_SAVED_OUT_MAIL,
+                        $userdata['user_id'],
+                        PRIVMSGS_SAVED_IN_MAIL
+                    )
+                    ->where('privmsgs_id IN %in', $mark_list)
+                    ->fetchPairs(null, 'privmsgs_id');
 				break;
 		}
 
-		$sql = "SELECT privmsgs_id
-			FROM " . PRIVMSGS_TABLE . "
-			WHERE $delete_type $delete_sql_id";
-
-		if ( !($result = $db->sql_query($sql)) ) {
-			message_die(GENERAL_ERROR, 'Could not obtain id list to delete messages', '', __LINE__, __FILE__, $sql);
-		}
-
-		$mark_list = [];
-		
-		while ( $row = $db->sql_fetchrow($result) ) {
-			$mark_list[] = $row['privmsgs_id'];
-		}
-
-		unset($delete_type);
-
 		if ( count($mark_list) ) {
-			$delete_sql_id = '';
-			
-			for ($i = 0; $i < count($mark_list); $i++) {
-				$delete_sql_id .= (($delete_sql_id != '') ? ', ' : '') . (int)$mark_list[$i];
-			}
-
 			if ($folder == 'inbox' || $folder == 'outbox') {
+                // Get information relevant to new or unread mail
+                // so we can adjust users counters appropriately
+			    $rows = dibi::select(['privmsgs_to_userid', 'privmsgs_type'])
+                    ->from(PRIVMSGS_TABLE)
+                    ->where('privmsgs_id IN %in', $mark_list);
+
 				switch ($folder) {
 					case 'inbox':
-						$sql = "privmsgs_to_userid = " . $userdata['user_id'];
+                        $rows->where('privmsgs_to_userid = %i', $userdata['user_id']);
 						break;
 					case 'outbox':
-						$sql = "privmsgs_from_userid = " . $userdata['user_id'];
+                        $rows->where('privmsgs_from_userid = %i', $userdata['user_id']);
 						break;
 				}
 
-				// Get information relevant to new or unread mail
-				// so we can adjust users counters appropriately
-				$sql = "SELECT privmsgs_to_userid, privmsgs_type 
-					FROM " . PRIVMSGS_TABLE . " 
-					WHERE privmsgs_id IN ($delete_sql_id) 
-						AND $sql  
-						AND privmsgs_type IN (" . PRIVMSGS_NEW_MAIL . ", " . PRIVMSGS_UNREAD_MAIL . ")";
-				
-				if ( !($result = $db->sql_query($sql)) ) {
-					message_die(GENERAL_ERROR, 'Could not obtain user id list for outbox messages', '', __LINE__, __FILE__, $sql);
-				}
+                $rows = $rows->where('privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
+                    ->fetchAll();
 
-				if ( $row = $db->sql_fetchrow($result)) {
+                if (count($rows)) {
 					$update_users = $update_list = [];
-				
-					do
-					{
-						switch ($row['privmsgs_type']) {
+
+					// todo is this safe? use ++ on empty array...
+					foreach ($rows as $row) {
+						switch ($row->privmsgs_type) {
 							case PRIVMSGS_NEW_MAIL:
-								$update_users['new'][$row['privmsgs_to_userid']]++;
+								$update_users['new'][$row->privmsgs_to_userid]++;
 								break;
 
 							case PRIVMSGS_UNREAD_MAIL:
-								$update_users['unread'][$row['privmsgs_to_userid']]++;
+								$update_users['unread'][$row->privmsgs_to_userid]++;
 								break;
 						}
 					}
-					while ($row = $db->sql_fetchrow($result));
 
 					if (count($update_users)) {
 						while (list($type, $users) = each($update_users)) {
@@ -755,15 +775,9 @@ if ( $mode == 'newpm' ) {
 							}
 
 							while (list($dec, $user_ary) = each($dec_ary)) {
-								$user_ids = implode(', ', $user_ary);
-
-								$sql = "UPDATE " . USERS_TABLE . " 
-									SET $type = $type - $dec 
-									WHERE user_id IN ($user_ids)";
-								
-								if ( !$db->sql_query($sql) ) {
-									message_die(GENERAL_ERROR, 'Could not update user pm counters', '', __LINE__, __FILE__, $sql);
-								}
+								dibi::update(USERS_TABLE, [$type . '%sql' => $type . ' - ' . $dec])
+                                    ->where('user_id IN %in', $user_ary)
+                                    ->execute();
 							}
 						}
 						
@@ -774,42 +788,47 @@ if ( $mode == 'newpm' ) {
 				$db->sql_freeresult($result);
 			}
 
-			// Delete the messages
-			$delete_text_sql = "DELETE FROM " . PRIVMSGS_TEXT_TABLE . "
-				WHERE privmsgs_text_id IN ($delete_sql_id)";
-			$delete_sql = "DELETE FROM " . PRIVMSGS_TABLE . "
-				WHERE privmsgs_id IN ($delete_sql_id)
-					AND ";
+            // Delete the messages text
+			dibi::delete(PRIVMSGS_TEXT_TABLE)
+                ->where('privmsgs_text_id IN %in', $mark_list)
+                ->execute();
 
-			switch( $folder ) {
+            // Delete the messages
+            switch ($folder) {
 				case 'inbox':
-					$delete_sql .= "privmsgs_to_userid = " . $userdata['user_id'] . " AND (
-						privmsgs_type = " . PRIVMSGS_READ_MAIL . " OR privmsgs_type = " . PRIVMSGS_NEW_MAIL . " OR privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " )";
-					break;
+                    dibi::delete(PRIVMSGS_TABLE)
+                        ->where('privmsgs_id IN %in', $mark_list)
+                        ->where('privmsgs_to_userid = %i', $userdata['user_id'])
+                        ->where('privmsgs_type IN %in', [PRIVMSGS_READ_MAIL, PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL]);
+                    break;
 
 				case 'outbox':
-					$delete_sql .= "privmsgs_from_userid = " . $userdata['user_id'] . " AND ( 
-						privmsgs_type = " . PRIVMSGS_NEW_MAIL . " OR privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " )";
-					break;
+                    dibi::delete(PRIVMSGS_TABLE)
+                        ->where('privmsgs_id IN %in', $mark_list)
+                        ->where('privmsgs_from_userid = %i', $userdata['user_id'])
+                        ->where('privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL]);
+                    break;
 
 				case 'sentbox':
-					$delete_sql .= "privmsgs_from_userid = " . $userdata['user_id'] . " AND privmsgs_type = " . PRIVMSGS_SENT_MAIL;
+                    dibi::delete(PRIVMSGS_TABLE)
+                        ->where('privmsgs_id IN %in', $mark_list)
+                        ->where('privmsgs_from_userid = %i', $userdata['user_id'])
+                        ->where('privmsgs_type = %i', PRIVMSGS_SENT_MAIL)
+                        ->execute();
 					break;
 
 				case 'savebox':
-					$delete_sql .= "( ( privmsgs_from_userid = " . $userdata['user_id'] . " 
-						AND privmsgs_type = " . PRIVMSGS_SAVED_OUT_MAIL . " ) 
-					OR ( privmsgs_to_userid = " . $userdata['user_id'] . " 
-						AND privmsgs_type = " . PRIVMSGS_SAVED_IN_MAIL . " ) )";
+                    dibi::delete(PRIVMSGS_TABLE)
+                        ->where('privmsgs_id IN %in', $mark_list)
+                        ->where(
+                            '( (privmsgs_from_userid = %i AND privmsgs_type = %i ) OR (privmsgs_to_userid = %i AND privmsgs_type = %i ) )',
+                            $userdata['user_id'],
+                            PRIVMSGS_SAVED_OUT_MAIL,
+                            $userdata['user_id'],
+                            PRIVMSGS_SAVED_IN_MAIL
+                        )
+                        ->execute();
 					break;
-			}
-
-			if ( !$db->sql_query($delete_sql, BEGIN_TRANSACTION) ) {
-				message_die(GENERAL_ERROR, 'Could not delete private message info', '', __LINE__, __FILE__, $delete_sql);
-			}
-
-			if ( !$db->sql_query($delete_text_sql, END_TRANSACTION) ) {
-				message_die(GENERAL_ERROR, 'Could not delete private message text', '', __LINE__, __FILE__, $delete_text_sql);
 			}
 		}
 	}
@@ -860,57 +879,42 @@ if ( $mode == 'newpm' ) {
                     ->execute();
 			}
 		}
-	
-		$saved_sql_id = '';
-		
-		for ($i = 0; $i < count($mark_list); $i++) {
-			$saved_sql_id .= (($saved_sql_id != '') ? ', ' : '') . (int)$mark_list[$i];
-		}
-
-		// Process request
-		$saved_sql = "UPDATE " . PRIVMSGS_TABLE;
 
 		// Decrement read/new counters if appropriate
 		if ($folder == 'inbox' || $folder == 'outbox') {
-			switch ($folder)
-			{
-				case 'inbox':
-					$sql = "privmsgs_to_userid = " . $userdata['user_id'];
-					break;
-				case 'outbox':
-					$sql = "privmsgs_from_userid = " . $userdata['user_id'];
-					break;
-			}
-
 			// Get information relevant to new or unread mail
 			// so we can adjust users counters appropriately
-			$sql = "SELECT privmsgs_to_userid, privmsgs_type 
-				FROM " . PRIVMSGS_TABLE . " 
-				WHERE privmsgs_id IN ($saved_sql_id) 
-					AND $sql  
-					AND privmsgs_type IN (" . PRIVMSGS_NEW_MAIL . ", " . PRIVMSGS_UNREAD_MAIL . ")";
-			
-			if ( !($result = $db->sql_query($sql)) ) {
-				message_die(GENERAL_ERROR, 'Could not obtain user id list for outbox messages', '', __LINE__, __FILE__, $sql);
-			}
+            $rows = dibi::select(['privmsgs_to_userid','privmsgs_type'])
+                ->from(PRIVMSGS_TABLE)
+                ->where('privmsgs_id IN %in', $mark_list);
 
-			if ( $row = $db->sql_fetchrow($result)) {
+            switch ($folder) {
+                case 'inbox':
+                    $rows->where('privmsgs_to_userid = %i', $userdata['user_id']);
+                    break;
+                case 'outbox':
+                    $rows->where('privmsgs_from_userid = %i', $userdata['user_id']);
+                    break;
+            }
+
+            $rows = $rows->where('privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
+                ->fetchAll();
+
+            // TODO its safe do ++ on empty array? :O
+            if (count($rows)) {
 				$update_users = $update_list = [];
 			
-				do
-				{
-					switch ($row['privmsgs_type'])
-					{
+				foreach ($rows as $row) {
+					switch ($row['privmsgs_type']) {
 						case PRIVMSGS_NEW_MAIL:
-							$update_users['new'][$row['privmsgs_to_userid']]++;
+							$update_users['new'][$row->privmsgs_to_userid]++;
 							break;
 
 						case PRIVMSGS_UNREAD_MAIL:
-							$update_users['unread'][$row['privmsgs_to_userid']]++;
+							$update_users['unread'][$row->privmsgs_to_userid]++;
 							break;
 					}
 				}
-				while ($row = $db->sql_fetchrow($result));
 
 				if (count($update_users)) {
 					while (list($type, $users) = each($update_users)) {
@@ -933,15 +937,9 @@ if ( $mode == 'newpm' ) {
 						}
 
 						while (list($dec, $user_ary) = each($dec_ary)) {
-							$user_ids = implode(', ', $user_ary);
-
-							$sql = "UPDATE " . USERS_TABLE . " 
-								SET $type = $type - $dec 
-								WHERE user_id IN ($user_ids)";
-							
-							if ( !$db->sql_query($sql) ) {
-								message_die(GENERAL_ERROR, 'Could not update user pm counters', '', __LINE__, __FILE__, $sql);
-							}
+                            dibi::update(USERS_TABLE, [$type . '%sql' => $type . ' - ' . $dec])
+                                ->where('user_id IN %in', $user_ary)
+                                ->execute();
 						}
 					}
 					
@@ -954,31 +952,25 @@ if ( $mode == 'newpm' ) {
 
 		switch ($folder) {
 			case 'inbox':
-				$saved_sql .= " SET privmsgs_type = " . PRIVMSGS_SAVED_IN_MAIL . " 
-					WHERE privmsgs_to_userid = " . $userdata['user_id'] . " 
-						AND ( privmsgs_type = " . PRIVMSGS_READ_MAIL . " 
-							OR privmsgs_type = " . PRIVMSGS_NEW_MAIL . " 
-							OR privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . ")";
+                dibi::update(PRIVMSGS_TABLE, ['privmsgs_type' => PRIVMSGS_SAVED_IN_MAIL])
+                    ->where('privmsgs_to_userid = %i', $userdata['user_id'])
+                    ->where('privmsgs_type IN %in', [PRIVMSGS_READ_MAIL, PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
+                    ->where('privmsgs_id IN %in', $mark_list);
 				break;
 
 			case 'outbox':
-				$saved_sql .= " SET privmsgs_type = " . PRIVMSGS_SAVED_OUT_MAIL . " 
-					WHERE privmsgs_from_userid = " . $userdata['user_id'] . " 
-						AND ( privmsgs_type = " . PRIVMSGS_NEW_MAIL . " 
-							OR privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " ) ";
+                dibi::update(PRIVMSGS_TABLE, ['privmsgs_type' => PRIVMSGS_SAVED_OUT_MAIL])
+                    ->where('privmsgs_to_userid = %i', $userdata['user_id'])
+                    ->where('privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
+                    ->where('privmsgs_id IN %in', $mark_list);
 				break;
 
 			case 'sentbox':
-				$saved_sql .= " SET privmsgs_type = " . PRIVMSGS_SAVED_OUT_MAIL . " 
-					WHERE privmsgs_from_userid = " . $userdata['user_id'] . " 
-						AND privmsgs_type = " . PRIVMSGS_SENT_MAIL;
+                dibi::update(PRIVMSGS_TABLE, ['privmsgs_type' => PRIVMSGS_SAVED_OUT_MAIL])
+                    ->where('privmsgs_to_userid = %i', $userdata['user_id'])
+                    ->where('privmsgs_type = %i', PRIVMSGS_SENT_MAIL)
+                    ->where('privmsgs_id IN %in', $mark_list);
 				break;
-		}
-
-		$saved_sql .= " AND privmsgs_id IN ($saved_sql_id)";
-
-		if ( !$db->sql_query($saved_sql) ) {
-			message_die(GENERAL_ERROR, 'Could not save private messages', '', __LINE__, __FILE__, $saved_sql);
 		}
 
 		redirect(append_sid("privmsg.php?folder=savebox", true));
@@ -1787,7 +1779,7 @@ switch( $folder ) {
 
 	case 'savebox':
         $sql_tot->where(
-            '(privmsgs_to_userid = %i AND privmsgs_type = %i) OR (privmsgs_from_userid = %i AND privmsgs_type = %i)',
+            '((privmsgs_to_userid = %i AND privmsgs_type = %i) OR (privmsgs_from_userid = %i AND privmsgs_type = %i))',
             $userdata['user_id'],
             PRIVMSGS_SAVED_IN_MAIL,
             $userdata['user_id'],
@@ -1796,7 +1788,7 @@ switch( $folder ) {
 
         $sql->where('u.user_id = pm.privmsgs_from_userid')
             ->where(
-                '(pm.privmsgs_to_userid = %i AND pm.privmsgs_type = %i) OR (pm.privmsgs_from_userid = %i AND pm.privmsgs_type = %i)',
+                '((pm.privmsgs_to_userid = %i AND pm.privmsgs_type = %i) OR (pm.privmsgs_from_userid = %i AND pm.privmsgs_type = %i))',
                 $userdata['user_id'],
                 PRIVMSGS_SAVED_IN_MAIL,
                 $userdata['user_id'],
