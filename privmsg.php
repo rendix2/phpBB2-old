@@ -270,7 +270,7 @@ if ( $mode == 'newpm' ) {
 	//
 	if (($privmsg->privmsgs_type == PRIVMSGS_NEW_MAIL || $privmsg->privmsgs_type == PRIVMSGS_UNREAD_MAIL) && $folder == 'inbox') {
 		// Update appropriate counter
-		switch ($privmsg->rivmsgs_type) {
+		switch ($privmsg->privmsgs_type) {
 			case PRIVMSGS_NEW_MAIL:
 			    dibi::update(USERS_TABLE, ['user_new_privmsg%sql' => 'user_new_privmsg - 1'])
                     ->where('user_id = %i', $userdata['user_id'])
@@ -599,11 +599,19 @@ if ( $mode == 'newpm' ) {
         [
             'MESSAGE_TO'    => $username_to,
             'MESSAGE_FROM'  => $username_from,
+
+            /*
+             * this variables are not used in template
+             *
             'RANK_IMAGE'    => $rank_image,
             'POSTER_JOINED' => $poster_joined,
             'POSTER_POSTS'  => $poster_posts,
             'POSTER_FROM'   => $poster_from,
             'POSTER_AVATAR' => $poster_avatar,
+
+            */
+
+
             'POST_SUBJECT'  => $post_subject,
             'POST_DATE'     => $post_date,
             'MESSAGE'       => $private_message,
@@ -1366,7 +1374,6 @@ if ( $mode == 'newpm' ) {
                 'u.username',
                 'u.user_id',
             ];
-
 
             $privmsg = dibi::select($columns)
                 ->from(PRIVMSGS_TABLE)

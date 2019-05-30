@@ -342,7 +342,7 @@ if (!empty($_POST['postdays']) || !empty($_GET['postdays']) ) {
         ->where('p.post_time >= %i', $min_post_time)
         ->fetchSingle();
 
-	$limit_posts_time = "AND p.post_time >= $min_post_time ";
+	$limit_posts_time = true;
 
 	if ( !empty($_POST['postdays'])) {
 		$start = 0;
@@ -350,7 +350,7 @@ if (!empty($_POST['postdays']) || !empty($_GET['postdays']) ) {
 } else {
 	$total_replies = (int)$forum_topic_data->topic_replies + 1;
 
-	$limit_posts_time = '';
+    $limit_posts_time = false;
 	$post_days = 0;
 }
 
@@ -416,18 +416,20 @@ $columns = [
 $postrow = dibi::select($columns)
     ->from(POSTS_TABLE)
     ->as('p')
-    ->from(USERS_TABLE)
+    ->leftJoin(USERS_TABLE)
     ->as('u')
-    ->from(POSTS_TEXT_TABLE)
-    ->as('pt');
+    ->on('u.user_id = p.poster_id')
+    ->leftJoin(POSTS_TEXT_TABLE)
+    ->as('pt')
+    ->on('pt.post_id = p.post_id')
+    ->where('p.topic_id = %i', $topic_id);
 
 if ($limit_posts_time) {
     $postrow->where('p.post_time >= %i', $min_post_time);
 }
 
-$postrow = $postrow->where('pt.post_id = p.post_id')
-    ->where('u.user_id = p.poster_id')
-    ->orderBy('p.post_time', $post_time_order)
+$postrow = $postrow
+    ->orderBy('p.post_id', $post_time_order)
     ->limit($board_config['posts_per_page'])
     ->offset((int)$start)
     ->fetchAll();
@@ -867,7 +869,7 @@ for ($i = 0; $i < $total_posts; $i++) {
 	elseif ( $postrow[$i]->user_rank ) {
 	    foreach ($ranks as $rank) {
 	        if ($postrow[$i]->user_rank === $rank->rank_id && $rank->rank_special) {
-	            $poster_rank = $rank->title;
+	            $poster_rank = $rank->rank_title;
 	            $rank_image = $rank->rank_image ? '<img src="' . $rank->rank_image . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
             }
         }
