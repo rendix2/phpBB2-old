@@ -166,7 +166,7 @@ if ($mode == 'searchuser') {
 
 		$result = $result->fetch();
 
-        if ((int)$row->last_search_time > 0 && ($current_time - (int)$row->last_search_time) < (int)$board_config['search_flood_interval']) {
+        if ((int)$result->last_search_time > 0 && ($current_time - (int)$result->last_search_time) < (int)$board_config['search_flood_interval']) {
             message_die(GENERAL_MESSAGE, $lang['Search_Flood_Error']);
         }
 
