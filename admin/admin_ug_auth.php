@@ -510,7 +510,7 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 	if ( isset($_POST['username']) ) {
 		$this_userdata = get_userdata($_POST['username'], true);
 
-		if ( !is_array($this_userdata) ) {
+        if (!$this_userdata) {
 			message_die(GENERAL_MESSAGE, $lang['No_such_user']);
 		}
 
