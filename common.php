@@ -67,9 +67,19 @@ if (isset($HTTP_SESSION_VARS) && !is_array($HTTP_SESSION_VARS)) {
 
 if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on') {
 	// PHP4+ path
-	$not_unset = array('HTTP_GET_VARS', 'HTTP_POST_VARS', 'HTTP_COOKIE_VARS', 'HTTP_SERVER_VARS', 'HTTP_SESSION_VARS', 'HTTP_ENV_VARS', 'HTTP_POST_FILES', 'phpEx', 'phpbb_root_path');
+    $not_unset = [
+        'HTTP_GET_VARS',
+        'HTTP_POST_VARS',
+        'HTTP_COOKIE_VARS',
+        'HTTP_SERVER_VARS',
+        'HTTP_SESSION_VARS',
+        'HTTP_ENV_VARS',
+        'HTTP_POST_FILES',
+        'phpEx',
+        'phpbb_root_path'
+    ];
 
-	// Not only will array_merge give a warning if a parameter
+    // Not only will array_merge give a warning if a parameter
 	// is not an array, it will actually fail. So we check if
 	// HTTP_SESSION_VARS has been initialised.
 	if (!isset($HTTP_SESSION_VARS) || !is_array($HTTP_SESSION_VARS)) {

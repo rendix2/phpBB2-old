@@ -833,7 +833,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 
 	$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
-	$template->assign_vars(array(
+	$template->assign_vars([
 		'L_GROUP_INFORMATION' => $lang['Group_Information'],
 		'L_GROUP_NAME' => $lang['Group_name'],
 		'L_GROUP_DESC' => $lang['Group_description'],
@@ -910,7 +910,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 		'S_HIDDEN_FIELDS' => $s_hidden_fields, 
 		'S_MODE_SELECT' => $select_sort_mode,
 		'S_ORDER_SELECT' => $select_sort_order,
-		'S_GROUPCP_ACTION' => append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id"))
+		'S_GROUPCP_ACTION' => append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id")]
 	);
 
 	//
@@ -1022,38 +1022,40 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 
 				$user_select = '<input type="checkbox" name="member[]" value="' . $user_id . '">';
 
-				$template->assign_block_vars('pending_members_row', array(
-					'ROW_CLASS' => $row_class,
-					'ROW_COLOR' => '#' . $row_color, 
-					'USERNAME' => $username,
-					'FROM' => $from,
-					'JOINED' => $joined,
-					'POSTS' => $posts,
-					'USER_ID' => $user_id, 
-					'AVATAR_IMG' => $poster_avatar,
-					'PROFILE_IMG' => $profile_img, 
-					'PROFILE' => $profile, 
-					'SEARCH_IMG' => $search_img,
-					'SEARCH' => $search,
-					'PM_IMG' => $pm_img,
-					'PM' => $pm,
-					'EMAIL_IMG' => $email_img,
-					'EMAIL' => $email,
-					'WWW_IMG' => $www_img,
-					'WWW' => $www,
-					'ICQ_STATUS_IMG' => $icq_status_img,
-					'ICQ_IMG' => $icq_img, 
-					'ICQ' => $icq, 
-					'AIM_IMG' => $aim_img,
-					'AIM' => $aim,
-					'MSN_IMG' => $msn_img,
-					'MSN' => $msn,
-					'YIM_IMG' => $yim_img,
-					'YIM' => $yim,
-					
-					'U_VIEWPROFILE' => append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id"))
-				);
-			}
+                $template->assign_block_vars('pending_members_row',
+                    [
+                        'ROW_CLASS'      => $row_class,
+                        'ROW_COLOR'      => '#' . $row_color,
+                        'USERNAME'       => $username,
+                        'FROM'           => $from,
+                        'JOINED'         => $joined,
+                        'POSTS'          => $posts,
+                        'USER_ID'        => $user_id,
+                        'AVATAR_IMG'     => $poster_avatar,
+                        'PROFILE_IMG'    => $profile_img,
+                        'PROFILE'        => $profile,
+                        'SEARCH_IMG'     => $search_img,
+                        'SEARCH'         => $search,
+                        'PM_IMG'         => $pm_img,
+                        'PM'             => $pm,
+                        'EMAIL_IMG'      => $email_img,
+                        'EMAIL'          => $email,
+                        'WWW_IMG'        => $www_img,
+                        'WWW'            => $www,
+                        'ICQ_STATUS_IMG' => $icq_status_img,
+                        'ICQ_IMG'        => $icq_img,
+                        'ICQ'            => $icq,
+                        'AIM_IMG'        => $aim_img,
+                        'AIM'            => $aim,
+                        'MSN_IMG'        => $msn_img,
+                        'MSN'            => $msn,
+                        'YIM_IMG'        => $yim_img,
+                        'YIM'            => $yim,
+
+                        'U_VIEWPROFILE' => append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id")
+                    ]
+                );
+            }
 
 			$template->assign_block_vars('switch_pending_members', [] );
 
