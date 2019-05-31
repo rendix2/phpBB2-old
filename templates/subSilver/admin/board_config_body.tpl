@@ -75,6 +75,10 @@
 		<td class="row1">{L_POSTS_PER_PAGE}</td>
 		<td class="row2"><input class="post" type="text" name="posts_per_page" size="3" maxlength="4" value="{POSTS_PER_PAGE}" /></td>
 	</tr>
+		<tr>
+			<td class="row1">{L_MEMBERS_PER_PAGE}</td>
+			<td class="row2"><input class="post" type="text" name="members_per_page" size="3" maxlength="4" value="{MEMBERS_PER_PAGE}" /></td>
+		</tr>
 	<tr>
 		<td class="row1">{L_HOT_THRESHOLD}</td>
 		<td class="row2"><input class="post" type="text" name="hot_threshold" size="3" maxlength="4" value="{HOT_TOPIC}" /></td>

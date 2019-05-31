@@ -144,41 +144,41 @@ $users = dibi::select($columns)
 switch ($mode) {
     case 'joined':
         $users->orderBy('user_regdate', $sort_order)
-        ->limit($board_config['topics_per_page'])
+        ->limit($board_config['members_per_page'])
         ->offset($start);
         break;
     case 'username':
         $users->orderBy('username', $sort_order)
-            ->limit($board_config['topics_per_page'])
+            ->limit($board_config['members_per_page'])
             ->offset($start);
         break;
     case 'location':
         $users->orderBy('user_from', $sort_order)
-            ->limit($board_config['topics_per_page'])
+            ->limit($board_config['members_per_page'])
             ->offset($start);
         break;
     case 'posts':
         $users->orderBy('user_posts', $sort_order)
-            ->limit($board_config['topics_per_page'])
+            ->limit($board_config['members_per_page'])
             ->offset($start);
         break;
     case 'email':
         $users->orderBy('user_email', $sort_order)
-            ->limit($board_config['topics_per_page'])
+            ->limit($board_config['members_per_page'])
             ->offset($start);
         break;
     case 'website':
         $users->orderBy('user_website', $sort_order)
-            ->limit($board_config['topics_per_page'])
+            ->limit($board_config['members_per_page'])
             ->offset($start);
         break;
     case 'topten':
         $users->orderBy('user_posts', $sort_order)
-            ->limit($board_config['topics_per_page']);
+            ->limit($board_config['members_per_page']);
         break;
     default:
         $users->orderBy('user_regdate', $sort_order)
-            ->limit($board_config['topics_per_page'])
+            ->limit($board_config['members_per_page'])
             ->offset($start);
         break;
 }
