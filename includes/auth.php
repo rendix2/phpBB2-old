@@ -52,6 +52,9 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 {
 	global $db, $lang;
 
+    $a_sql = [];
+    $auth_fields = [];
+
 	switch( $type )
 	{
 		case AUTH_ALL:

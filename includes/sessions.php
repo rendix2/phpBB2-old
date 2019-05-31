@@ -96,7 +96,7 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
                 ->fetch();
 
 			if (!$userdata) {
-				message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch', '', __LINE__, __FILE__, $sql);
+				message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch');
 			}
 
 			// we need it as array, no object.. :(
