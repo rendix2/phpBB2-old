@@ -293,8 +293,8 @@ switch( $mode )
 			if ( isset($_POST['topic_id_list']) ) {
 				$topics = $_POST['topic_id_list'];
 
-				for ($i = 0; $i < count($topics); $i++) {
-					$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . (int)$topics[$i] . '" />';
+				foreach ($topics as $topic) {
+					$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . (int)$topic . '" />';
 				}
 			} else {
 				$hidden_fields .= '<input type="hidden" name="' . POST_TOPIC_URL . '" value="' . $topic_id . '" />';
@@ -347,12 +347,6 @@ switch( $mode )
 
 			if ( $new_forum_id != $old_forum_id ) {
                 $topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topic_id];
-
-                $topic_list = '';
-
-				for ($i = 0; $i < count($topics); $i++) {
-					$topic_list .= ( ( $topic_list != '' ) ? ', ' : '' ) . (int)$topics[$i];
-				}
 
 				$topic_rows = dibi::select('*')
                     ->from(TOPICS_TABLE)
@@ -426,8 +420,8 @@ switch( $mode )
 			if ( isset($_POST['topic_id_list']) ) {
 				$topics = $_POST['topic_id_list'];
 
-				for ($i = 0; $i < count($topics); $i++) {
-					$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . (int)$topics[$i] . '" />';
+				foreach ($topics as $topic) {
+					$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . (int)$topic . '" />';
 				}
 			} else {
 				$hidden_fields .= '<input type="hidden" name="' . POST_TOPIC_URL . '" value="' . $topic_id . '" />';

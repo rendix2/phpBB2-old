@@ -120,7 +120,7 @@ if (
     // Strip all tags from data ... may p**s some people off, bah, strip_tags is
 	// doing the job but can still break HTML output ... have no choice, have
 	// to use htmlspecialchars ... be prepared to be moaned at.
-	while (list($var, $param) = @each($strip_var_list) ) {
+	foreach ($strip_var_list as $var => $param) {
 		if ( !empty($_POST[$param]) ) {
 			$$var = trim(htmlspecialchars($_POST[$param]));
 		}
@@ -134,7 +134,7 @@ if (
                       'signature'        => 'signature'
     ];
 
-    while (list($var, $param) = @each($trim_var_list) ) {
+    foreach ($trim_var_list as $var => $param) {
 		if ( !empty($_POST[$param]) ) {
 			$$var = trim($_POST[$param]);
 		}

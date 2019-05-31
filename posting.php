@@ -39,7 +39,7 @@ $params = ['submit'      => 'post',
            'mode'        => 'mode'
 ];
 
-while (list($var, $param) = @each($params)) {
+foreach ($params as $var => $param) {
     if (!empty($_POST[$param]) || !empty($_GET[$param])) {
         $$var = !empty($_POST[$param]) ? htmlspecialchars($_POST[$param]) : htmlspecialchars($_GET[$param]);
     } else {
@@ -52,7 +52,7 @@ $sid = isset($_POST['sid']) ? $_POST['sid'] : 0;
 
 $params = ['forum_id' => POST_FORUM_URL, 'topic_id' => POST_TOPIC_URL, 'post_id' => POST_POST_URL];
 
-while (list($var, $param) = @each($params)) {
+foreach ($params as $var => $param) {}
     if (!empty($_POST[$param]) || !empty($_GET[$param])) {
         $$var = !empty($_POST[$param]) ? (int)$_POST[$param] : (int)$_GET[$param];
     } else {
@@ -614,8 +614,7 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg != '' )
 	$poll_options = [];
 
 	if ( !empty($_POST['poll_option_text']) ) {
-		while (list($option_id, $option_text) = @each($_POST['poll_option_text']) )
-		{
+	    foreach ($_POST['poll_option_text'] as $option_id => $option_text) {
 			if (isset($_POST['del_poll_option'][$option_id]) ) {
 				unset($poll_options[$option_id]);
 			} elseif ( !empty($option_text) ) {
@@ -1031,7 +1030,7 @@ if (( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['edit_poll']) )
 	}
 
 	if (!empty($poll_options) ) {
-		while (list($option_id, $option_text) = each($poll_options) ) {
+	    foreach ($poll_options as $option_id => $option_text) {
             $template->assign_block_vars('poll_option_rows',
                 [
                     'POLL_OPTION' => str_replace('"', '&quot;', $option_text),

@@ -73,7 +73,7 @@ switch( $mode )
 			
 			for ($i = 0; $i < count($template_name) && !$found; $i++) {
 				if ($template_name[$i]['style_name'] == $style_name ) {
-					while (list($key, $val) = each($template_name[$i])) {
+					foreach ($template_name[$i] as $key => $value) {
                         $insert_data[$key] = $val;
 					}
 				}
@@ -485,9 +485,9 @@ switch( $mode )
 			$theme_data .= "//\n// phpBB 2.x auto-generated theme config file for $template_name\n// Do not change anything in this file!\n//\n\n";
 
             foreach ($themes as $theme) {
-                while (list($key, $val) = each($theme)) {
+                foreach ($theme as $key => $value) {
                     if (!(int)$key && $key != "0" && $key != "themes_id") {
-                        $theme_data .= '$' . $template_name . "[$i]['$key'] = \"" . addslashes($val) . "\";\n";
+                        $theme_data .= '$' . $template_name . "[$i]['$key'] = \"" . addslashes($value) . "\";\n";
                     }
                 }
                 $theme_data .= "\n";

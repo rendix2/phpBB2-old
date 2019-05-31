@@ -214,12 +214,12 @@ if (empty($forum_id) ) {
 
     $matched_type = '';
 
-	while (list($key, $auth_levels) = each($simple_auth_ary)) {
+	foreach ($simple_auth_ary as $key => $auth_levels) {
 		$matched = 1;
-		for ($k = 0; $k < count($auth_levels); $k++) {
+		foreach ($auth_levels as $k => $auth_level) {
 			$matched_type = $key;
 
-			if ( $forum_rows[0][$forum_auth_fields[$k]] != $auth_levels[$k] ) {
+			if ( $forum_rows[0][$forum_auth_fields[$k]] != $auth_level ) {
 				$matched = 0;
 			}
 		}

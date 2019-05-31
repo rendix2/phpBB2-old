@@ -232,16 +232,15 @@ unset($moderators);
 // then get it's value, find the number of topics with dates newer than it (to properly
 // handle pagination) and alter the main query
 //
-$previous_days = [0, 1, 7, 14, 30, 90, 180, 364];
-$previous_days_text = [
-    $lang['All_Topics'],
-    $lang['1_Day'],
-    $lang['7_Days'],
-    $lang['2_Weeks'],
-    $lang['1_Month'],
-    $lang['3_Months'],
-    $lang['6_Months'],
-    $lang['1_Year']
+$previous_days = [
+    0 => $lang['All_Topics'],
+    1 => $lang['1_Day'],
+    7 => $lang['7_Days'],
+    14 => $lang['2_Weeks'],
+    30 => $lang['1_Month'],
+    90 => $lang['3_Months'],
+    180 => $lang['6_Months'],
+    364 => $lang['1_Year']
 ];
 
 if (!empty($_POST['topicdays']) || !empty($_GET['topicdays']) ) {
@@ -274,9 +273,10 @@ if (!empty($_POST['topicdays']) || !empty($_GET['topicdays']) ) {
 
 $select_topic_days = '<select name="topicdays">';
 
-for ($i = 0; $i < count($previous_days); $i++) {
-	$selected = ($topic_days == $previous_days[$i]) ? ' selected="selected"' : '';
-	$select_topic_days .= '<option value="' . $previous_days[$i] . '"' . $selected . '>' . $previous_days_text[$i] . '</option>';
+foreach ($previous_days as $previous_day_key => $previous_day_value) {
+	$selected = ($topic_days == $previous_day_key) ? ' selected="selected"' : '';
+
+	$select_topic_days .= '<option value="' . $previous_day_key . '"' . $selected . '>' . $previous_day_value . '</option>';
 }
 
 $select_topic_days .= '</select>';
@@ -463,7 +463,7 @@ $template->assign_vars(
 // Okay, lets dump out the page ...
 //
 if ($total_topics) {
-    foreach ($topic_rowset as $topic) {
+    foreach ($topic_rowset as $i => $topic) {
 		$topic_id = $topic->topic_id;
 
 		$topic_title = count($orig_word) ? preg_replace($orig_word, $replacement_word, $topic->topic_title) : $topic->topic_title;

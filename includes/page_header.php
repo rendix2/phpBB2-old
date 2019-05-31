@@ -253,7 +253,7 @@ if (!isset($nav_links)) {
 $nav_links_html = '';
 $nav_link_proto = '<link rel="%s" href="%s" title="%s" />' . "\n";
 
-while (list($nav_item, $nav_array) = @each($nav_links) ) {
+foreach ($nav_links as $nav_item => $nav_array) {
 	if ( !empty($nav_array['url']) ) {
 		$nav_links_html .= sprintf($nav_link_proto, $nav_item, append_sid($nav_array['url']), $nav_array['title']);
 	} else {

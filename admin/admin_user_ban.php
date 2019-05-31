@@ -61,8 +61,8 @@ if ( isset($_POST['submit']) ) {
 	if ( isset($_POST['ban_ip']) ) {
 		$ip_list_temp = explode(',', $_POST['ban_ip']);
 
-		for ($i = 0; $i < count($ip_list_temp); $i++) {
-			if ( preg_match('/^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})[ ]*\-[ ]*([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/', trim($ip_list_temp[$i]), $ip_range_explode) ) {
+		foreach ($ip_list_temp as $i => $ip_value_tmp) {
+			if ( preg_match('/^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})[ ]*\-[ ]*([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/', trim($ip_value_tmp), $ip_range_explode) ) {
 				//
 				// Don't ask about all this, just don't ask ... !
 				//
@@ -115,16 +115,16 @@ if ( isset($_POST['submit']) ) {
 
 					$ip_1_counter++;
 				}
-			} elseif ( preg_match('/^([\w\-_]\.?){2,}$/is', trim($ip_list_temp[$i])) ) {
-				$ip = gethostbynamel(trim($ip_list_temp[$i]));
+			} elseif ( preg_match('/^([\w\-_]\.?){2,}$/is', trim($ip_value_tmp)) ) {
+				$ips = gethostbynamel(trim($ip_value_tmp));
 
-                for ($j = 0; $j < count($ip); $j++) {
-                    if (!empty($ip[$j])) {
-                        $ip_list[] = encode_ip($ip[$j]);
+                foreach ($ips as $ip) {
+                    if (!empty($ip)) {
+                        $ip_list[] = encode_ip($ip);
                     }
                 }
-			} elseif ( preg_match('/^([0-9]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})$/', trim($ip_list_temp[$i])) ) {
-				$ip_list[] = encode_ip(str_replace('*', '255', trim($ip_list_temp[$i])));
+			} elseif ( preg_match('/^([0-9]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})$/', trim($ip_value_tmp)) ) {
+				$ip_list[] = encode_ip(str_replace('*', '255', trim($ip_value_tmp)));
 			}
 		}
 	}
@@ -133,14 +133,14 @@ if ( isset($_POST['submit']) ) {
 	if ( isset($_POST['ban_email']) ) {
 		$email_list_temp = explode(',', $_POST['ban_email']);
 
-		for ($i = 0; $i < count($email_list_temp); $i++) {
+		foreach ($email_list_temp as $email_value_tmp) {
 			//
 			// This ereg match is based on one by php@unreelpro.com
 			// contained in the annotated php manual at php.com (ereg
 			// section)
 			//
-			if (preg_match('/^(([a-z0-9&\'\.\-_\+])|(\*))+@(([a-z0-9\-])|(\*))+\.([a-z0-9\-]+\.)*?[a-z]+$/is', trim($email_list_temp[$i]))) {
-				$email_list[] = trim($email_list_temp[$i]);
+			if (preg_match('/^(([a-z0-9&\'\.\-_\+])|(\*))+@(([a-z0-9\-])|(\*))+\.([a-z0-9\-]+\.)*?[a-z]+$/is', trim($email_value_tmp))) {
+				$email_list[] = trim($email_value_tmp);
 			}
 		}
 	}
@@ -151,42 +151,42 @@ if ( isset($_POST['submit']) ) {
 
 	$kill_session_sql = '';
 
-	for ($i = 0; $i < count($user_list); $i++) {
+	foreach ($user_list as $user_value) {
 		$in_banlist = false;
 
 		foreach ($bans as $ban) {
-            if ($user_list[$i] == $ban->ban_userid) {
+            if ($user_value == $ban->ban_userid) {
                 $in_banlist = true;
             }
         }
 
 		if ( !$in_banlist ) {
-			$kill_session_sql .= ( ( $kill_session_sql != '' ) ? ' OR ' : '' ) . "session_user_id = " . $user_list[$i];
+			$kill_session_sql .= ( ( $kill_session_sql != '' ) ? ' OR ' : '' ) . "session_user_id = " . $user_value;
 
-			dibi::insert(BANLIST_TABLE, ['ban_userid' => $user_list[$i] ])
+			dibi::insert(BANLIST_TABLE, ['ban_userid' => $user_value ])
                 ->execute();
 		}
 	}
 
-	for ($i = 0; $i < count($ip_list); $i++) {
+	foreach ($ip_list as $ip_value) {
 		$in_banlist = false;
 
 		foreach ($bans as $ban) {
-		    if ($ip_list[$i] == $ban->ban_ip) {
+		    if ($ip_value == $ban->ban_ip) {
 		        $in_banlist = true;
             }
         }
 
 		if ( !$in_banlist ) {
-			if ( preg_match('/(ff\.)|(\.ff)/is', chunk_split($ip_list[$i], 2, '.')) ) {
-				$kill_ip_sql = "session_ip LIKE '" . str_replace('.', '', preg_replace('/(ff\.)|(\.ff)/is', '%', chunk_split($ip_list[$i], 2, "."))) . "'";
+			if ( preg_match('/(ff\.)|(\.ff)/is', chunk_split($ip_value, 2, '.')) ) {
+				$kill_ip_sql = "session_ip LIKE '" . str_replace('.', '', preg_replace('/(ff\.)|(\.ff)/is', '%', chunk_split($ip_value, 2, "."))) . "'";
 			} else {
-				$kill_ip_sql = "session_ip = '" . $ip_list[$i] . "'";
+				$kill_ip_sql = "session_ip = '" . $ip_value . "'";
 			}
 
 			$kill_session_sql .= ( ( $kill_session_sql != '' ) ? ' OR ' : '' ) . $kill_ip_sql;
 
-			dibi::insert(BANLIST_TABLE, ['ban_ip' => $ip_list[$i]])->execute();
+			dibi::insert(BANLIST_TABLE, ['ban_ip' => $ip_value])->execute();
 		}
 	}
 
@@ -204,17 +204,17 @@ if ( isset($_POST['submit']) ) {
 		}
 	}
 
-	for ($i = 0; $i < count($email_list); $i++) {
+	foreach ($email_list as $email_value) {
 		$in_banlist = false;
 
 		foreach ($bans as $ban) {
-            if ( $email_list[$i] == $ban->ban_email ) {
+            if ( $email_value == $ban->ban_email ) {
                 $in_banlist = true;
             }
         }
 
 		if ( !$in_banlist ) {
-		    dibi::insert(BANLIST_TABLE, ['ban_email' => $email_list[$i]])
+		    dibi::insert(BANLIST_TABLE, ['ban_email' => $email_value])
                 ->execute();
 		}
 	}
@@ -224,9 +224,9 @@ if ( isset($_POST['submit']) ) {
     if (isset($_POST['unban_user'])) {
         $user_list = $_POST['unban_user'];
 
-        for ($i = 0; $i < count($user_list); $i++) {
-            if ($user_list[$i] != -1) {
-                $where_sql[] = (int)$user_list[$i];
+        foreach ($user_list as $user_value) {
+            if ($user_value != -1) {
+                $where_sql[] = (int)$user_value;
             }
         }
     }
@@ -234,9 +234,9 @@ if ( isset($_POST['submit']) ) {
     if (isset($_POST['unban_ip'])) {
         $ip_list = $_POST['unban_ip'];
 
-        for ($i = 0; $i < count($ip_list); $i++) {
-            if ($ip_list[$i] != -1) {
-                $where_sql[] = $ip_list[$i];
+        foreach ($ip_list as $ip_value) {
+            if ($ip_value != -1) {
+                $where_sql[] = $ip_value;
             }
         }
     }
@@ -244,9 +244,9 @@ if ( isset($_POST['submit']) ) {
     if (isset($_POST['unban_email'])) {
         $email_list = $_POST['unban_email'];
 
-        for ($i = 0; $i < count($email_list); $i++) {
-            if ($email_list[$i] != -1) {
-                $where_sql[] = $email_list[$i];
+        foreach ($email_list as $email_value) {
+            if ($email_value != -1) {
+                $where_sql[] = $email_value;
             }
         }
     }

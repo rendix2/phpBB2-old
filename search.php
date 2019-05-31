@@ -99,14 +99,6 @@ if ( !empty($_POST['search_time']) || !empty($_GET['search_time'])) {
 $start = isset($_GET['start']) ? (int)$_GET['start'] : 0;
 $start = ($start < 0) ? 0 : $start;
 
-$sort_by_types = [
-    $lang['Sort_Time'],
-    $lang['Sort_Post_Subject'],
-    $lang['Sort_Topic_Title'],
-    $lang['Sort_Author'],
-    $lang['Sort_Forum']
-];
-
 //
 // encoding match for workaround
 //
@@ -367,7 +359,7 @@ if ($mode == 'searchuser') {
 
             $ignore_forum_sql = '';
 
-            while (list($key, $value) = each($is_auth_ary)) {
+            foreach ($is_auth_ary as $key => $value) {
                 if (!$value['auth_read']) {
                     $ignore_forum_sql .= (($ignore_forum_sql != '') ? ', ' : '') . $key;
                 }
@@ -399,13 +391,13 @@ if ($mode == 'searchuser') {
 				$chunk = 0;
 
                 if (count($search_ids) > $limiter) {
-                    for ($i = 0; $i < count($search_ids); $i++) {
+                    foreach ($search_ids as $search_id) {
                         if ($count == $limiter) {
                             $chunk++;
                             $count = 0;
                         }
 
-                        $search_id_chunks[$chunk][$count] = $search_ids[$i];
+                        $search_id_chunks[$chunk][$count] = $search_id;
                         $count++;
                     }
                 } else {
@@ -470,13 +462,13 @@ if ($mode == 'searchuser') {
 				$chunk = 0;
 
                 if (count($search_ids) > $limiter) {
-                    for ($i = 0; $i < count($search_ids); $i++) {
+                    foreach ($search_ids as $search_id) {
                         if ($count == $limiter) {
                             $chunk++;
                             $count = 0;
                         }
 
-                        $search_id_chunks[$chunk][$count] = $search_ids[$i];
+                        $search_id_chunks[$chunk][$count] = $search_id;
                         $count++;
                     }
                 } else {
@@ -774,15 +766,13 @@ if ($mode == 'searchuser') {
         $highlight_active = '';
 		$highlight_match = [];
 
-		for ($j = 0; $j < count($split_search); $j++ ) {
-			$split_word = $split_search[$j];
-
+        foreach ($split_search as $split_word) {
 			if ( $split_word != 'and' && $split_word != 'or' && $split_word != 'not' ) {
 				$highlight_match[] = '#\b(' . str_replace("*", "([\w]+)?", $split_word) . ')\b#is';
 				$highlight_active .= " " . $split_word;
 
-				for ($k = 0; $k < count($synonym_array); $k++) {
-					list($replace_synonym, $match_synonym) = explode(' ', trim(strtolower($synonym_array[$k])));
+				foreach ($synonym_array as $synonym) {
+					list($replace_synonym, $match_synonym) = explode(' ', trim(strtolower($synonym)));
 
 					if ( $replace_synonym == $split_word ) {
 						$highlight_match[] = '#\b(' . str_replace("*", "([\w]+)?", $replace_synonym) . ')\b#is';
@@ -1218,32 +1208,40 @@ for ($i = 100; $i < 1100; $i += 100) {
 //
 // Sorting
 //
+$sort_by_types = [
+    $lang['Sort_Time'],
+    $lang['Sort_Post_Subject'],
+    $lang['Sort_Topic_Title'],
+    $lang['Sort_Author'],
+    $lang['Sort_Forum']
+];
+
 $s_sort_by = "";
 
-for ($i = 0; $i < count($sort_by_types); $i++) {
-	$s_sort_by .= '<option value="' . $i . '">' . $sort_by_types[$i] . '</option>';
+foreach ($sort_by_types as $i => $sort_by_type) {
+	$s_sort_by .= '<option value="' . $i . '">' . $sort_by_type . '</option>';
 }
 
 //
 // Search time
 //
-$previous_days = [0, 1, 7, 14, 30, 90, 180, 364];
-$previous_days_text = [
-    $lang['All_Posts'],
-    $lang['1_Day'],
-    $lang['7_Days'],
-    $lang['2_Weeks'],
-    $lang['1_Month'],
-    $lang['3_Months'],
-    $lang['6_Months'],
-    $lang['1_Year']
+$previous_days = [
+    0 => $lang['All_Posts'],
+    1 => $lang['1_Day'],
+    7 => $lang['7_Days'],
+    14 => $lang['2_Weeks'],
+    30 => $lang['1_Month'],
+    90 => $lang['3_Months'],
+    180 => $lang['6_Months'],
+    364 => $lang['1_Year']
 ];
 
 $s_time = '';
 
-for ($i = 0; $i < count($previous_days); $i++) {
-	$selected = ( $topic_days == $previous_days[$i] ) ? ' selected="selected"' : '';
-	$s_time .= '<option value="' . $previous_days[$i] . '"' . $selected . '>' . $previous_days_text[$i] . '</option>';
+foreach ($previous_days as $previous_day_key => $previous_days_value) {
+	$selected = ( $topic_days == $previous_day_key ) ? ' selected="selected"' : '';
+
+	$s_time .= '<option value="' . $previous_day_key . '"' . $selected . '>' . $previous_days_value . '</option>';
 }
 
 //

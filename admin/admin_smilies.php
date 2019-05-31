@@ -167,7 +167,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 		//
 		$smile_paks_select = "<select name='smile_pak'><option value=''>" . $lang['Select_pak'] . "</option>";
 
-		while (list($key, $value) = @each($smiley_paks) ) {
+		foreach ($smiley_paks as $key => $value) {
 			if ( !empty($value) ) {
 				$smile_paks_select .= "<option>" . $value . "</option>";
 			}

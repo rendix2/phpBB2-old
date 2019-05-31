@@ -134,7 +134,7 @@ function prepare_post(&$mode, &$post_data, &$bbcode_on, &$html_on, &$smilies_on,
 		if (!empty($poll_options)) {
 			$temp_option_text = [];
 
-			while (list($option_id, $option_text) = @each($poll_options)) {
+			foreach ($poll_options as $option_id => $option_text) {
 				$option_text = trim($option_text);
 
 				if (!empty($option_text)) {
@@ -610,11 +610,11 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 
 					@reset($bcc_list_ary);
 
-					while (list($user_lang, $bcc_list) = each($bcc_list_ary)) {
+					foreach ($bcc_list_ary as $user_lang => $bcc_list) {
 						$emailer->use_template('topic_notify', $user_lang);
 
-						for ($i = 0; $i < count($bcc_list); $i++) {
-							$emailer->bcc($bcc_list[$i]);
+						foreach ($bcc_list as $bcc_value) {
+							$emailer->bcc($bcc_value);
 						}
 
 						// The Topic_reply_notification lang string below will be used
@@ -723,7 +723,7 @@ function generate_smilies($mode, $page_id)
 			$row = 0;
 			$col = 0;
 
-			while (list($smile_url, $data) = @each($rowset)) {
+			foreach ($rowset as $smile_url => $data) {
 				if (!$col) {
 					$template->assign_block_vars('smilies_row', []);
 				}

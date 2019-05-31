@@ -655,8 +655,8 @@ if ( $mode == 'newpm' ) {
 		$s_hidden_fields .= isset($_POST['delete']) ? '<input type="hidden" name="delete" value="true" />' : '<input type="hidden" name="deleteall" value="true" />';
 		$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
-		for ($i = 0; $i < count($mark_list); $i++) {
-			$s_hidden_fields .= '<input type="hidden" name="mark[]" value="' . (int)$mark_list[$i] . '" />';
+		foreach ($mark_list as $value) {
+			$s_hidden_fields .= '<input type="hidden" name="mark[]" value="' . (int)$value . '" />';
 		}
 
 		//
@@ -764,14 +764,14 @@ if ( $mode == 'newpm' ) {
 					}
 
 					if (count($update_users)) {
-						while (list($type, $users) = each($update_users)) {
-							while (list($user_id, $dec) = each($users)) {
+						foreach ($update_users as $type => $users) {
+    						foreach ($users as $user_id => $dec) {
 								$update_list[$type][$dec][] = $user_id;
 							}
 						}
 						unset($update_users);
 
-						while (list($type, $dec_ary) = each($update_list)) {
+						foreach ($update_list as $type => $dec_aray) {
 							switch ($type) {
 								case 'new':
 									$type = "user_new_privmsg";
@@ -782,7 +782,7 @@ if ( $mode == 'newpm' ) {
 									break;
 							}
 
-							while (list($dec, $user_ary) = each($dec_ary)) {
+							foreach ($dec_ary as $dec => $user_ary) {
 								dibi::update(USERS_TABLE, [$type . '%sql' => $type . ' - ' . $dec])
                                     ->where('user_id IN %in', $user_ary)
                                     ->execute();
@@ -923,15 +923,15 @@ if ( $mode == 'newpm' ) {
 				}
 
 				if (count($update_users)) {
-					while (list($type, $users) = each($update_users)) {
-						while (list($user_id, $dec) = each($users)) {
+					foreach ($update_users as $type => $users) {
+						foreach ($users as $user_id => $dec) {
 							$update_list[$type][$dec][] = $user_id;
 						}
 					}
 					
 					unset($update_users);
 
-					while (list($type, $dec_ary) = each($update_list)) {
+					foreach ($update_list as $type => $dec_ary) {
 						switch ($type) {
 							case 'new':
 								$type = "user_new_privmsg";
@@ -942,7 +942,7 @@ if ( $mode == 'newpm' ) {
 								break;
 						}
 
-						while (list($dec, $user_ary) = each($dec_ary)) {
+						foreach ($dec_ary as $dec => $user_ary) {
                             dibi::update(USERS_TABLE, [$type . '%sql' => $type . ' - ' . $dec])
                                 ->where('user_id IN %in', $user_ary)
                                 ->execute();
@@ -1842,23 +1842,23 @@ $pm_all_total = $sql_all_tot->fetchSingle();
 //
 // Build select box
 //
-$previous_days = [0, 1, 7, 14, 30, 90, 180, 364];
-$previous_days_text = [
-    $lang['All_Posts'],
-    $lang['1_Day'],
-    $lang['7_Days'],
-    $lang['2_Weeks'],
-    $lang['1_Month'],
-    $lang['3_Months'],
-    $lang['6_Months'],
-    $lang['1_Year']
+$previous_days = [
+    0   => $lang['All_Posts'],
+    1   => $lang['1_Day'],
+    7   => $lang['7_Days'],
+    14  => $lang['2_Weeks'],
+    30  => $lang['1_Month'],
+    90  => $lang['3_Months'],
+    180 => $lang['6_Months'],
+    364 => $lang['1_Year']
 ];
 
 $select_msg_days = '';
 
-for ($i = 0; $i < count($previous_days); $i++) {
-	$selected = ( $msg_days == $previous_days[$i] ) ? ' selected="selected"' : '';
-	$select_msg_days .= '<option value="' . $previous_days[$i] . '"' . $selected . '>' . $previous_days_text[$i] . '</option>';
+foreach ($previous_days as $previous_day_key => $previous_days_value) {
+    $selected = ( $msg_days == $previous_day_key ) ? ' selected="selected"' : '';
+
+    $select_msg_days .= '<option value="' . $previous_day_key . '"' . $selected . '>' . $previous_days_value . '</option>';
 }
 
 //

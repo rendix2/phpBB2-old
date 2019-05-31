@@ -53,25 +53,23 @@ if (isset($_POST['order'])) {
 //
 // Memberlist sorting
 //
-$mode_types_text = [
-    $lang['Sort_Joined'],
-    $lang['Sort_Username'],
-    $lang['Sort_Location'],
-    $lang['Sort_Posts'],
-    $lang['Sort_Email'],
-    $lang['Sort_Website'],
-    $lang['Sort_Top_Ten']
+$mode_types = [
+    'joined'   => $lang['Sort_Joined'],
+    'username' => $lang['Sort_Username'],
+    'location' => $lang['Sort_Location'],
+    'posts'    => $lang['Sort_Posts'],
+    'email'    => $lang['Sort_Email'],
+    'website'  => $lang['Sort_Website'],
+    'topten'   => $lang['Sort_Top_Ten']
 ];
-
-$mode_types = ['joined', 'username', 'location', 'posts', 'email', 'website', 'topten'];
 
 $select_sort_mode = '<select name="mode">';
 
 $count_mode_type_text = count($mode_types_text);
 
-for ($i = 0; $i < $count_mode_type_text; $i++) {
-	$selected = ( $mode == $mode_types[$i] ) ? ' selected="selected"' : '';
-	$select_sort_mode .= '<option value="' . $mode_types[$i] . '"' . $selected . '>' . $mode_types_text[$i] . '</option>';
+foreach ($mode_types as $mode_type_key => $mode_types_value) {
+	$selected = ( $mode == $mode_type_key ) ? ' selected="selected"' : '';
+	$select_sort_mode .= '<option value="' . $mode_type_key . '"' . $selected . '>' . $mode_types_value . '</option>';
 }
 
 $select_sort_mode .= '</select>';

@@ -324,8 +324,16 @@ if ($userdata['session_logged_in'] ) {
 // then get it's value, find the number of topics with dates newer than it (to properly
 // handle pagination) and alter the main query
 //
-$previous_days = [0, 1, 7, 14, 30, 90, 180, 364];
-$previous_days_text = [$lang['All_Posts'], $lang['1_Day'], $lang['7_Days'], $lang['2_Weeks'], $lang['1_Month'], $lang['3_Months'], $lang['6_Months'], $lang['1_Year']];
+$previous_days = [
+    0   => $lang['All_Posts'],
+    1   => $lang['1_Day'],
+    7   => $lang['7_Days'],
+    14  => $lang['2_Weeks'],
+    30  => $lang['1_Month'],
+    90  => $lang['3_Months'],
+    180 => $lang['6_Months'],
+    364 => $lang['1_Year']
+];
 
 if (!empty($_POST['postdays']) || !empty($_GET['postdays']) ) {
 	$post_days =  !empty($_POST['postdays']) ? (int)$_POST['postdays'] : (int)$_GET['postdays'];
@@ -356,9 +364,10 @@ if (!empty($_POST['postdays']) || !empty($_GET['postdays']) ) {
 
 $select_post_days = '<select name="postdays">';
 
-for ($i = 0; $i < count($previous_days); $i++) {
-	$selected = ($post_days == $previous_days[$i]) ? ' selected="selected"' : '';
-	$select_post_days .= '<option value="' . $previous_days[$i] . '"' . $selected . '>' . $previous_days_text[$i] . '</option>';
+foreach ($previous_days as $previous_day_key => $previous_days_value) {
+	$selected = ($post_days == $previous_day_key) ? ' selected="selected"' : '';
+
+	$select_post_days .= '<option value="' . $previous_day_key . '"' . $selected . '>' . $previous_days_value . '</option>';
 }
 
 $select_post_days .= '</select>';
@@ -413,7 +422,7 @@ $columns = [
     'pt.bbcode_uid'
 ];
 
-$postrow = dibi::select($columns)
+$posts = dibi::select($columns)
     ->from(POSTS_TABLE)
     ->as('p')
     ->leftJoin(USERS_TABLE)
@@ -425,16 +434,16 @@ $postrow = dibi::select($columns)
     ->where('p.topic_id = %i', $topic_id);
 
 if ($limit_posts_time) {
-    $postrow->where('p.post_time >= %i', $min_post_time);
+    $posts->where('p.post_time >= %i', $min_post_time);
 }
 
-$postrow = $postrow
+$posts = $posts
     ->orderBy('p.post_id', $post_time_order)
     ->limit($board_config['posts_per_page'])
     ->offset((int)$start)
     ->fetchAll();
 
-$total_posts = count($postrow);
+$total_posts = count($posts);
 
 if (!$total_posts) {
     include $phpbb_root_path . 'includes/functions_admin.php';
@@ -450,7 +459,7 @@ if ($forum_topic_data->topic_replies + 1 < $start + $total_posts)  {
 } elseif ($start + $board_config['posts_per_page'] > $forum_topic_data->topic_replies)  { 
    $row_id = (int)$forum_topic_data->topic_replies % (int)$board_config['posts_per_page'];
    
-   if ($postrow[$row_id]->post_id != $forum_topic_data->topic_last_post_id || $start + $total_posts < $forum_topic_data->topic_replies) {
+   if ($posts[$row_id]->post_id != $forum_topic_data->topic_last_post_id || $start + $total_posts < $forum_topic_data->topic_replies) {
        $resync = true; 
    } 
 }  elseif ($total_posts < $board_config['posts_per_page']) {
@@ -496,9 +505,9 @@ if (isset($_GET['highlight'])) {
 	// Split words and phrases
 	$words = explode(' ', trim(htmlspecialchars($_GET['highlight'])));
 
-	for ($i = 0; $i < count($words); $i++) {
-		if (trim($words[$i]) != '') {
-			$highlight_match .= (($highlight_match != '') ? '|' : '') . str_replace('*', '\w*', preg_quote($words[$i], '#'));
+	foreach ($words as $word){
+		if (trim($word) != '') {
+			$highlight_match .= (($highlight_match != '') ? '|' : '') . str_replace('*', '\w*', preg_quote($word, '#'));
 		}
 	}
 	
@@ -817,30 +826,30 @@ dibi::update(TOPICS_TABLE, ['topic_views%sql' => 'topic_views + 1'])
 // Okay, let's do the loop, yeah come on baby let's do the loop
 // and it goes like this ...
 //
-for ($i = 0; $i < $total_posts; $i++) {
-	$poster_id = $postrow[$i]->user_id;
-	$poster = ( $poster_id == ANONYMOUS ) ? $lang['Guest'] : $postrow[$i]->username;
+foreach ($posts as $i => $post) {
+	$poster_id = $post->user_id;
+	$poster = ( $poster_id == ANONYMOUS ) ? $lang['Guest'] : $post->username;
 
-	$post_date = create_date($board_config['default_dateformat'], $postrow[$i]->post_time, $board_config['board_timezone']);
+	$post_date = create_date($board_config['default_dateformat'], $post->post_time, $board_config['board_timezone']);
 
-	$poster_posts = ( $postrow[$i]->user_id != ANONYMOUS ) ? $lang['Posts'] . ': ' . $postrow[$i]->user_posts : '';
+	$poster_posts = ( $post->user_id != ANONYMOUS ) ? $lang['Posts'] . ': ' . $post->user_posts : '';
 
-	$poster_from = ( $postrow[$i]->user_from && $postrow[$i]->user_id != ANONYMOUS ) ? $lang['Location'] . ': ' . $postrow[$i]->user_from : '';
+	$poster_from = ( $post->user_from && $post->user_id != ANONYMOUS ) ? $lang['Location'] . ': ' . $post->user_from : '';
 
-	$poster_joined = ( $postrow[$i]->user_id != ANONYMOUS ) ? $lang['Joined'] . ': ' . create_date($lang['DATE_FORMAT'], $postrow[$i]->user_regdate, $board_config['board_timezone']) : '';
+	$poster_joined = ( $post->user_id != ANONYMOUS ) ? $lang['Joined'] . ': ' . create_date($lang['DATE_FORMAT'], $post->user_regdate, $board_config['board_timezone']) : '';
 
 	$poster_avatar = '';
-	
-	if ( $postrow[$i]->user_avatar_type && $poster_id != ANONYMOUS && $postrow[$i]->user_allowavatar ) {
-		switch( $postrow[$i]->user_avatar_type ) {
+
+    if ($post->user_avatar_type && $poster_id != ANONYMOUS && $post->user_allowavatar) {
+		switch( $post->user_avatar_type ) {
 			case USER_AVATAR_UPLOAD:
-				$poster_avatar = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $postrow[$i]->user_avatar . '" alt="" border="0" />' : '';
+				$poster_avatar = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $post->user_avatar . '" alt="" border="0" />' : '';
 				break;
 			case USER_AVATAR_REMOTE:
-				$poster_avatar = $board_config['allow_avatar_remote'] ? '<img src="' . $postrow[$i]->user_avatar . '" alt="" border="0" />' : '';
+				$poster_avatar = $board_config['allow_avatar_remote'] ? '<img src="' . $post->user_avatar . '" alt="" border="0" />' : '';
 				break;
 			case USER_AVATAR_GALLERY:
-				$poster_avatar = $board_config['allow_avatar_local'] ? '<img src="' . $board_config['avatar_gallery_path'] . '/' . $postrow[$i]->user_avatar . '" alt="" border="0" />' : '';
+				$poster_avatar = $board_config['allow_avatar_local'] ? '<img src="' . $board_config['avatar_gallery_path'] . '/' . $post->user_avatar . '" alt="" border="0" />' : '';
 				break;
 		}
 	}
@@ -848,7 +857,7 @@ for ($i = 0; $i < $total_posts; $i++) {
 	//
 	// Define the little post icon
 	//
-    if ($userdata['session_logged_in'] && $postrow[$i]->post_time > $userdata['user_lastvisit'] && $postrow[$i]->post_time > $topic_last_read) {
+    if ($userdata['session_logged_in'] && $post->post_time > $userdata['user_lastvisit'] && $post->post_time > $topic_last_read) {
         $mini_post_img = $images['icon_minipost_new'];
         $mini_post_alt = $lang['New_post'];
     } else {
@@ -856,27 +865,27 @@ for ($i = 0; $i < $total_posts; $i++) {
         $mini_post_alt = $lang['Post'];
     }
 
-	$mini_post_url = append_sid("viewtopic.php?" . POST_POST_URL . '=' . $postrow[$i]->post_id) . '#' . # $postrow[$i]->post_id;
+	$mini_post_url = append_sid("viewtopic.php?" . POST_POST_URL . '=' . $post->post_id) . '#' . # $post->post_id;
 
 	//
 	// Generate ranks, set them to empty string initially.
 	//
 	$poster_rank = '';
 	$rank_image = '';
-	if ( $postrow[$i]->user_id == ANONYMOUS )
+	if ( $post->user_id == ANONYMOUS )
 	{
 	    // WHAT WAS THERE???????
 	}
-	elseif ( $postrow[$i]->user_rank ) {
+	elseif ( $post->user_rank ) {
 	    foreach ($ranks as $rank) {
-	        if ($postrow[$i]->user_rank === $rank->rank_id && $rank->rank_special) {
+	        if ($post->user_rank === $rank->rank_id && $rank->rank_special) {
 	            $poster_rank = $rank->rank_title;
 	            $rank_image = $rank->rank_image ? '<img src="' . $rank->rank_image . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
             }
         }
 	} else {
 		foreach ($ranks as $rank) {
-		    if ( $postrow[$i]->user_posts >= $rank->rank_min && !$rank->rank_special) {
+		    if ( $post->user_posts >= $rank->rank_min && !$rank->rank_special) {
 		        $poster_rank = $rank->rank_title;
 		        $rank_image = $rank->rank_image ? '<img src="' . $rank->rank_image . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
             }
@@ -886,8 +895,8 @@ for ($i = 0; $i < $total_posts; $i++) {
 	//
 	// Handle anon users posting with usernames
 	//
-	if ( $poster_id == ANONYMOUS && $postrow[$i]->post_username != '' ) {
-		$poster = $postrow[$i]->post_username;
+	if ( $poster_id == ANONYMOUS && $post->post_username != '' ) {
+		$poster = $post->post_username;
 		$poster_rank = $lang['Guest'];
 	}
 
@@ -902,8 +911,8 @@ for ($i = 0; $i < $total_posts; $i++) {
 		$pm_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
 		$pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
 
-		if ( !empty($postrow[$i]->user_viewemail) || $is_auth['auth_mod'] ) {
-			$email_uri = $board_config['board_email_form'] ? append_sid("profile.php?mode=email&amp;" . POST_USERS_URL .'=' . $poster_id) : 'mailto:' . $postrow[$i]->user_email;
+		if ( !empty($post->user_viewemail) || $is_auth['auth_mod'] ) {
+			$email_uri = $board_config['board_email_form'] ? append_sid("profile.php?mode=email&amp;" . POST_USERS_URL .'=' . $poster_id) : 'mailto:' . $post->user_email;
 
 			$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
 			$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
@@ -912,28 +921,28 @@ for ($i = 0; $i < $total_posts; $i++) {
 			$email = '';
 		}
 
-		$www_img = $postrow[$i]->user_website ? '<a href="' . $postrow[$i]->user_website . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
-		$www = $postrow[$i]->user_website ? '<a href="' . $postrow[$i]->user_website . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
+		$www_img = $post->user_website ? '<a href="' . $post->user_website . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
+		$www = $post->user_website ? '<a href="' . $post->user_website . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
 
-		if ( !empty($postrow[$i]->user_icq) ) {
-			$icq_status_img = '<a href="http://wwp.icq.com/' . $postrow[$i]->user_icq . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $postrow[$i]->user_icq . '&img=5" width="18" height="18" border="0" /></a>';
-			$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $postrow[$i]->user_icq . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
-			$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $postrow[$i]->user_icq . '">' . $lang['ICQ'] . '</a>';
+		if ( !empty($post->user_icq) ) {
+			$icq_status_img = '<a href="http://wwp.icq.com/' . $post->user_icq . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $post->user_icq . '&img=5" width="18" height="18" border="0" /></a>';
+			$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $post->user_icq . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
+			$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $post->user_icq . '">' . $lang['ICQ'] . '</a>';
 		} else {
 			$icq_status_img = '';
 			$icq_img = '';
 			$icq = '';
 		}
 
-		$aim_img = $postrow[$i]->user_aim ? '<a href="aim:goim?screenname=' . $postrow[$i]->user_aim . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
-		$aim = $postrow[$i]->user_aim ? '<a href="aim:goim?screenname=' . $postrow[$i]->user_aim . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
+		$aim_img = $post->user_aim ? '<a href="aim:goim?screenname=' . $post->user_aim . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
+		$aim = $post->user_aim ? '<a href="aim:goim?screenname=' . $post->user_aim . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
 
 		$temp_url = append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$poster_id");
-		$msn_img = $postrow[$i]->user_msnm ? '<a href="' . $temp_url . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
-		$msn = $postrow[$i]->user_msnm ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
+		$msn_img = $post->user_msnm ? '<a href="' . $temp_url . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
+		$msn = $post->user_msnm ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
 
-		$yim_img = $postrow[$i]->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $postrow[$i]->user_yim . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
-		$yim = $postrow[$i]->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $postrow[$i]->user_yim . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
+		$yim_img = $post->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $post->user_yim . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
+		$yim = $post->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $post->user_yim . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
 	} else {
 		$profile_img = '';
 		$profile = '';
@@ -954,17 +963,17 @@ for ($i = 0; $i < $total_posts; $i++) {
 		$yim = '';
 	}
 
-	$temp_url = append_sid("posting.php?mode=quote&amp;" . POST_POST_URL . "=" . $postrow[$i]->post_id);
+	$temp_url = append_sid("posting.php?mode=quote&amp;" . POST_POST_URL . "=" . $post->post_id);
 	$quote_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_quote'] . '" alt="' . $lang['Reply_with_quote'] . '" title="' . $lang['Reply_with_quote'] . '" border="0" /></a>';
 	$quote = '<a href="' . $temp_url . '">' . $lang['Reply_with_quote'] . '</a>';
 
-	$temp_url = append_sid("search.php?search_author=" . urlencode($postrow[$i]->username) . "&amp;showresults=posts");
-	$search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $postrow[$i]->username) . '" title="' . sprintf($lang['Search_user_posts'], $postrow[$i]->username) . '" border="0" /></a>';
-	$search = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $postrow[$i]->username) . '</a>';
+	$temp_url = append_sid("search.php?search_author=" . urlencode($post->username) . "&amp;showresults=posts");
+	$search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $post->username) . '" title="' . sprintf($lang['Search_user_posts'], $post->username) . '" border="0" /></a>';
+	$search = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $post->username) . '</a>';
 
 	if ( ( $userdata['user_id'] == $poster_id && $is_auth['auth_edit'] ) || $is_auth['auth_mod'] )
 	{
-		$temp_url = append_sid("posting.php?mode=editpost&amp;" . POST_POST_URL . "=" . $postrow[$i]->post_id);
+		$temp_url = append_sid("posting.php?mode=editpost&amp;" . POST_POST_URL . "=" . $post->post_id);
 		$edit_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_edit'] . '" alt="' . $lang['Edit_delete_post'] . '" title="' . $lang['Edit_delete_post'] . '" border="0" /></a>';
 		$edit = '<a href="' . $temp_url . '">' . $lang['Edit_delete_post'] . '</a>';
 	} else {
@@ -973,19 +982,19 @@ for ($i = 0; $i < $total_posts; $i++) {
 	}
 
 	if ( $is_auth['auth_mod'] ) {
-		$temp_url = "modcp.php?mode=ip&amp;" . POST_POST_URL . "=" . $postrow[$i]->post_id . "&amp;" . POST_TOPIC_URL . "=" . $topic_id . "&amp;sid=" . $userdata['session_id'];
+		$temp_url = "modcp.php?mode=ip&amp;" . POST_POST_URL . "=" . $post->post_id . "&amp;" . POST_TOPIC_URL . "=" . $topic_id . "&amp;sid=" . $userdata['session_id'];
 		$ip_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_ip'] . '" alt="' . $lang['View_IP'] . '" title="' . $lang['View_IP'] . '" border="0" /></a>';
 		$ip = '<a href="' . $temp_url . '">' . $lang['View_IP'] . '</a>';
 
-		$temp_url        = "posting.php?mode=delete&amp;" . POST_POST_URL . "=" . $postrow[$i]->post_id . "&amp;sid=" . $userdata['session_id'];
+		$temp_url        = "posting.php?mode=delete&amp;" . POST_POST_URL . "=" . $post->post_id . "&amp;sid=" . $userdata['session_id'];
 		$delete_post_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_delpost'] . '" alt="' . $lang['Delete_post'] . '" title="' . $lang['Delete_post'] . '" border="0" /></a>';
 		$delete_post     = '<a href="' . $temp_url . '">' . $lang['Delete_post'] . '</a>';
 	} else {
 		$ip_img = '';
 		$ip = '';
 
-		if ( $userdata['user_id'] == $poster_id && $is_auth['auth_delete'] && $forum_topic_data->topic_last_post_id == $postrow[$i]->post_id ) {
-			$temp_url        = "posting.php?mode=delete&amp;" . POST_POST_URL . "=" . $postrow[$i]->post_id . "&amp;sid=" . $userdata['session_id'];
+		if ( $userdata['user_id'] == $poster_id && $is_auth['auth_delete'] && $forum_topic_data->topic_last_post_id == $post->post_id ) {
+			$temp_url        = "posting.php?mode=delete&amp;" . POST_POST_URL . "=" . $post->post_id . "&amp;sid=" . $userdata['session_id'];
 			$delete_post_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_delpost'] . '" alt="' . $lang['Delete_post'] . '" title="' . $lang['Delete_post'] . '" border="0" /></a>';
 			$delete_post     = '<a href="' . $temp_url . '">' . $lang['Delete_post'] . '</a>';
 		} else {
@@ -994,13 +1003,13 @@ for ($i = 0; $i < $total_posts; $i++) {
 		}
 	}
 
-	$post_subject = ( $postrow[$i]->post_subject != '' ) ? $postrow[$i]->post_subject : '';
+	$post_subject = ( $post->post_subject != '' ) ? $post->post_subject : '';
 
-	$message = $postrow[$i]->post_text;
-	$bbcode_uid = $postrow[$i]->bbcode_uid;
+	$message = $post->post_text;
+	$bbcode_uid = $post->bbcode_uid;
 
-	$user_sig = ( $postrow[$i]->enable_sig && $postrow[$i]->user_sig != '' && $board_config['allow_sig'] ) ? $postrow[$i]->user_sig : '';
-	$user_sig_bbcode_uid = $postrow[$i]->user_sig_bbcode_uid;
+	$user_sig = ( $post->enable_sig && $post->user_sig != '' && $board_config['allow_sig'] ) ? $post->user_sig : '';
+	$user_sig_bbcode_uid = $post->user_sig_bbcode_uid;
 
 	//
 	// Note! The order used for parsing the message _is_ important, moving things around could break any
@@ -1016,7 +1025,7 @@ for ($i = 0; $i < $total_posts; $i++) {
             $user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
         }
 
-        if ($postrow[$i]->enable_html) {
+        if ($post->enable_html) {
             $message = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $message);
         }
     }
@@ -1042,11 +1051,11 @@ for ($i = 0; $i < $total_posts; $i++) {
 	// Parse smilies
 	//
     if ($board_config['allow_smilies']) {
-        if ($postrow[$i]->user_allowsmile && $user_sig != '') {
+        if ($post->user_allowsmile && $user_sig != '') {
             $user_sig = smilies_pass($user_sig);
         }
 
-        if ($postrow[$i]->enable_smilies) {
+        if ($post->enable_smilies) {
             $message = smilies_pass($message);
         }
     }
@@ -1087,10 +1096,10 @@ for ($i = 0; $i < $total_posts; $i++) {
 	//
 	// Editing information
 	//
-	if ( $postrow[$i]->post_edit_count ) {
-		$l_edit_time_total = ( $postrow[$i]->post_edit_count == 1 ) ? $lang['Edited_time_total'] : $lang['Edited_times_total'];
+	if ( $post->post_edit_count ) {
+		$l_edit_time_total = ( $post->post_edit_count == 1 ) ? $lang['Edited_time_total'] : $lang['Edited_times_total'];
 
-		$l_edited_by = '<br /><br />' . sprintf($l_edit_time_total, $poster, create_date($board_config['default_dateformat'], $postrow[$i]->post_edit_time, $board_config['board_timezone']), $postrow[$i]->post_edit_count);
+		$l_edited_by = '<br /><br />' . sprintf($l_edit_time_total, $poster, create_date($board_config['default_dateformat'], $post->post_edit_time, $board_config['board_timezone']), $post->post_edit_count);
 	} else {
 		$l_edited_by = '';
 	}
@@ -1168,7 +1177,7 @@ for ($i = 0; $i < $total_posts; $i++) {
             'L_MINI_POST_ALT' => $mini_post_alt,
 
             'U_MINI_POST' => $mini_post_url,
-            'U_POST_ID'   => $postrow[$i]->post_id
+            'U_POST_ID'   => $post->post_id
         ]
     );
 }

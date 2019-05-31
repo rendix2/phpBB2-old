@@ -41,16 +41,16 @@ function remove_comments(&$output)
 	$linecount = count($lines);
 
 	$in_comment = false;
-	for ($i = 0; $i < $linecount; $i++) {
-		if (preg_match("/^\/\*/", preg_quote($lines[$i])) ) {
+	foreach ($lines as $line) {
+		if (preg_match("/^\/\*/", preg_quote($line)) ) {
 			$in_comment = true;
 		}
 
 		if (!$in_comment ) {
-			$output .= $lines[$i] . "\n";
+			$output .= $line . "\n";
 		}
 
-		if (preg_match("/\*\/$/", preg_quote($lines[$i])) ) {
+		if (preg_match("/\*\/$/", preg_quote($line)) ) {
 			$in_comment = false;
 		}
 	}
@@ -72,10 +72,10 @@ function remove_remarks($sql)
 	$linecount = count($lines);
 	$output = "";
 
-	for ($i = 0; $i < $linecount; $i++) {
-		if (($i != ($linecount - 1)) || (strlen($lines[$i]) > 0)) {
-			if ($lines[$i][0] != "#") {
-				$output .= $lines[$i] . "\n";
+	foreach ($lines as $i => $line) {
+		if (($i != ($linecount - 1)) || (strlen($line) > 0)) {
+			if ($line[0] != "#") {
+				$output .= $line . "\n";
 			} else {
 				$output .= "\n";
 			}
@@ -106,29 +106,29 @@ function split_sql_file($sql, $delimiter)
 	
 	// this is faster than calling count($oktens) every time thru the loop.
 	$token_count = count($tokens);
-	for ($i = 0; $i < $token_count; $i++) {
+	foreach ($tokens as $i => $token) {
 		// Don't wanna add an empty string as the last thing in the array.
-		if (($i != ($token_count - 1)) || strlen($tokens[$i] > 0)) {
+		if (($i != ($token_count - 1)) || strlen($token > 0)) {
 			// This is the total number of single quotes in the token.
-			$total_quotes = preg_match_all("/'/", $tokens[$i], $matches);
+			$total_quotes = preg_match_all("/'/", $token, $matches);
 			// Counts single quotes that are preceded by an odd number of backslashes, 
 			// which means they're escaped quotes.
-			$escaped_quotes = preg_match_all("/(?<!\\\\)(\\\\\\\\)*\\\\'/", $tokens[$i], $matches);
+			$escaped_quotes = preg_match_all("/(?<!\\\\)(\\\\\\\\)*\\\\'/", $token, $matches);
 			
 			$unescaped_quotes = $total_quotes - $escaped_quotes;
 			
 			// If the number of unescaped quotes is even, then the delimiter did NOT occur inside a string literal.
 			if (($unescaped_quotes % 2) == 0) {
 				// It's a complete sql statement.
-				$output[] = $tokens[$i];
+				$output[] = $token;
 				// save memory.
-				$tokens[$i] = "";
+                $token = "";
 			} else {
 				// incomplete sql statement. keep adding tokens until we have a complete one.
 				// $temp will hold what we have so far.
-				$temp = $tokens[$i] . $delimiter;
+				$temp = $token . $delimiter;
 				// save memory..
-				$tokens[$i] = "";
+                $token = "";
 				
 				// Do we have a complete statement yet? 
 				$complete_stmt = false;

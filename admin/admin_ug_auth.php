@@ -41,7 +41,7 @@ require './pagestart.php';
 
 $params = ['mode' => 'mode', 'user_id' => POST_USERS_URL, 'group_id' => POST_GROUPS_URL, 'adv' => 'adv'];
 
-while (list($var, $param) = @each($params)) {
+foreach ($params as $var => $param) {
     if (!empty($_POST[$param]) || !empty($_GET[$param])) {
         $$var = !empty($_POST[$param]) ? $_POST[$param] : $_GET[$param];
     } else {
@@ -253,8 +253,8 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 					}
 				}
 
-				while (list($forum_id, $value) = @each($_POST['private']) ) {
-					while (list($auth_field, $exists) = @each($forum_auth_level_fields[$forum_id]) ) {
+                foreach ($_POST['private'] as $forum_id => $value) {
+					foreach ($forum_auth_level_fields[$forum_id] as $auth_field => $exists) {
 						if ($exists) {
 							$change_acl_list[$forum_id][$auth_field] = $value;
 						}
@@ -264,10 +264,8 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 				$change_acl_list = [];
 
                 foreach ($forum_auth_fields as $field) {
-					$auth_field = $field;
-
-					while (list($forum_id, $value) = @each($_POST['private_' . $auth_field]) ) {
-						$change_acl_list[$forum_id][$auth_field] = $value;
+					foreach ($_POST['private_' . $field] as $forum_id => $value) {
+						$change_acl_list[$forum_id][$field] = $value;
 					}
 				}
 			}
@@ -324,9 +322,7 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
                     }
 				}
 
-				for ($j = 0; $j < count($forum_auth_fields); $j++) {
-					$auth_field = $forum_auth_fields[$j];
-
+				foreach ($forum_auth_fields as $auth_field) {
 					if ($access->{$auth_field} == AUTH_ACL && isset($change_acl_list[$forum_id][$auth_field]) ) {
 						if ( ( empty($auth_access[$forum_id]['auth_mod']) && 
 							( isset($auth_access[$forum_id][$auth_field]) && $change_acl_list[$forum_id][$auth_field] != $auth_access[$forum_id][$auth_field] ) || 
@@ -356,7 +352,7 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 			//
 			$delete_sql = [];
 
-			while (list($forum_id, $action) = @each($forum_auth_action) ) {
+			foreach ($forum_auth_action as $forum_id => $action) {
 				if ( $action == 'delete' ) {
 					$delete_sql[] = $forum_id;
 				} else {
@@ -536,12 +532,12 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 
 			$forum_auth_level[$forum_id] = AUTH_ALL;
 
-			for ($j = 0; $j < count($forum_auth_fields); $j++) {
-                $access->{$forum_auth_fields[$j]} . ' :: ';
+			foreach ($forum_auth_fields as $forum_auth_field) {
+                $access->{$forum_auth_field} . ' :: ';
 
-                if ($access->{$forum_auth_fields[$j]} == AUTH_ACL) {
+                if ($access->{$forum_auth_field} == AUTH_ACL) {
 					$forum_auth_level[$forum_id] = AUTH_ACL;
-					$forum_auth_level_fields[$forum_id][] = $forum_auth_fields[$j];
+					$forum_auth_level_fields[$forum_id][] = $forum_auth_field;
 				}
 			}
 		}
@@ -597,14 +593,14 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 
 	$is_admin = ( $mode == 'user' ) ? ( ( $ug_info[0]->user_level == ADMIN && $ug_info[0]->user_id != ANONYMOUS ) ? 1 : 0 ) : 0;
 
-	for ($i = 0; $i < count($forum_access); $i++) {
-		$forum_id = $forum_access[$i]['forum_id'];
+	foreach ($forum_access as $forum_access_value) {
+		$forum_id = $forum_access_value['forum_id'];
 
 		unset($prev_acl_setting);
 
-		for ($j = 0; $j < count($forum_auth_fields); $j++) {
-			$key = $forum_auth_fields[$j];
-			$value = $forum_access[$i][$key];
+		foreach ($forum_auth_fields as $forum_auth_field) {
+			$key = $forum_auth_field;
+			$value = $forum_access_value[$key];
 
 			switch( $value ) {
 				case AUTH_ALL:
@@ -650,13 +646,13 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 
 	$i = 0;
 	@reset($auth_ug);
-    while (list($forum_id, $user_ary) = @each($auth_ug)) {
+    foreach ($auth_ug as $forum_id => $user_ary) {
         if (empty($adv)) {
             if ($forum_auth_level[$forum_id] == AUTH_ACL) {
                 $allowed = 1;
 
-                for ($j = 0; $j < count($forum_auth_level_fields[$forum_id]); $j++) {
-                    if (!$auth_ug[$forum_id][$forum_auth_level_fields[$forum_id][$j]]) {
+                foreach ($forum_auth_level_fields[$forum_id] as $j => $auth_level_field) {
+                    if (!$auth_ug[$forum_id][$auth_level_field[$j]]) {
                         $allowed = 0;
                     }
                 }
@@ -676,12 +672,11 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
                 $optionlist_acl = '&nbsp;';
             }
 		} else {
-            for ($j = 0; $j < count($forum_access); $j++) {
-                if ($forum_access[$j]['forum_id'] == $forum_id) {
-                    for ($k = 0; $k < count($forum_auth_fields); $k++) {
-                        $field_name = $forum_auth_fields[$k];
+            foreach ($forum_access as $forum_access_value) {
+                if ($forum_access_value['forum_id'] == $forum_id) {
+                    foreach ($forum_auth_fields as $k => $field_name) {
 
-                        if ($forum_access[$j][$field_name] == AUTH_ACL) {
+                        if ($forum_access_value[$field_name] == AUTH_ACL) {
                             $optionlist_acl_adv[$forum_id][$k] = '<select name="private_' . $field_name . '[' . $forum_id . ']">';
 
                             if (isset($auth_field_acl[$forum_id][$field_name]) && !($is_admin || $user_ary['auth_mod'])) {
@@ -782,8 +777,8 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
         $template->assign_block_vars('acltype', ['L_UG_ACL_TYPE' => $lang['Simple_Permission']]);
         $s_column_span++;
     } else {
-        for ($i = 0; $i < count($forum_auth_fields); $i++) {
-            $cell_title = $field_names[$forum_auth_fields[$i]];
+        foreach ($forum_auth_fields as $forum_auth_field) {
+            $cell_title = $field_names[$forum_auth_field];
 
             $template->assign_block_vars('acltype', ['L_UG_ACL_TYPE' => $cell_title]);
             $s_column_span++;
