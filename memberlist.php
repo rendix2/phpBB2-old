@@ -298,7 +298,7 @@ $users = $users->fetchAll();
 	}
 
 
-if ($mode != 'topten' || $board_config['topics_per_page'] < 10) {
+if ($mode != 'topten' || $board_config['members_per_page'] < 10) {
     $total_members = dibi::select('COUNT(*)')
         ->as('total')
         ->from(USERS_TABLE)
@@ -316,7 +316,7 @@ if ($mode != 'topten' || $board_config['topics_per_page'] < 10) {
 $template->assign_vars(
     [
         'PAGINATION'  => $pagination,
-        'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $board_config['topics_per_page']) + 1, ceil($total_members / $board_config['topics_per_page'])),
+        'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $board_config['members_per_page']) + 1, ceil($total_members / $board_config['members_per_page'])),
 
         'L_GOTO_PAGE' => $lang['Goto_page']
     ]
