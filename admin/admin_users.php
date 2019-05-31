@@ -842,7 +842,8 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 		$ini_val = ( PHP_VERSION >= '4.0.0' ) ? 'ini_get' : 'get_cfg_var';
 		$form_enctype = ( !@$ini_val('file_uploads') || PHP_VERSION == '4.0.4pl1' || !$board_config['allow_avatar_upload'] || ( PHP_VERSION < '4.0.3' && @$ini_val('open_basedir') != '' ) ) ? '' : 'enctype="multipart/form-data"';
 
-		$template->assign_vars(array(
+		$template->assign_vars(
+		    [
                 'USERNAME' => $username,
                 'EMAIL' => $email,
                 'YIM' => $yim,
@@ -954,7 +955,8 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
                 'L_SELECT_RANK' => $lang['Rank_title'],
 
                 'S_HIDDEN_FIELDS' => $s_hidden_fields,
-                'S_PROFILE_ACTION' => append_sid("admin_users.php"))
+                'S_PROFILE_ACTION' => append_sid("admin_users.php")
+            ]
 		);
 
         if (file_exists(@phpbb_realpath('./../' . $board_config['avatar_path'])) && ($board_config['allow_avatar_upload'] == true)) {

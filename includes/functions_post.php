@@ -379,8 +379,6 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 //
 function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_id, &$user_id)
 {
-	global $db;
-
 	$sign = ($mode == 'delete') ? '- 1' : '+ 1';
 
 	$forum_update_sql = ['forum_posts%sql' => 'forum_posts ' . $sign];
@@ -680,7 +678,7 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 //
 function generate_smilies($mode, $page_id)
 {
-	global $db, $board_config, $template, $lang, $images, $theme, $phpbb_root_path;
+	global $board_config, $template, $lang, $images, $theme, $phpbb_root_path;
 	global $user_ip, $session_length;
 	global $userdata;
 

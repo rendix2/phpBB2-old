@@ -1063,7 +1063,6 @@ if ($mode == 'searchuser') {
                                     $folder_alt = ($search_set->topic_status == TOPIC_LOCKED) ? $lang['Topic_locked'] : $lang['No_new_posts'];
 
                                     $folder_image = $folder;
-                                    $folder_alt = $folder_alt;
                                     $newest_post_img = '';
                                 }
 
@@ -1102,30 +1101,32 @@ if ($mode == 'searchuser') {
 
 				$last_post_url = '<a href="' . append_sid("viewtopic.php?"  . POST_POST_URL . '=' . $search_set->topic_last_post_id) . '#' . $search_set->topic_last_post_id . '"><img src="' . $images['icon_latest_reply'] . '" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" border="0" /></a>';
 
-				$template->assign_block_vars('searchresults', array(
-					'FORUM_NAME' => $search_set->forum_name,
-					'FORUM_ID' => $forum_id,
-					'TOPIC_ID' => $topic_id,
-					'FOLDER' => $folder_image,
-					'NEWEST_POST_IMG' => $newest_post_img,
-					'TOPIC_FOLDER_IMG' => $folder_image,
-					'GOTO_PAGE' => $goto_page,
-					'REPLIES' => $replies,
-					'TOPIC_TITLE' => $topic_title,
-					'TOPIC_TYPE' => $topic_type,
-					'VIEWS' => $views,
-					'TOPIC_AUTHOR' => $topic_author,
-					'FIRST_POST_TIME' => $first_post_time,
-					'LAST_POST_TIME' => $last_post_time,
-					'LAST_POST_AUTHOR' => $last_post_author,
-					'LAST_POST_IMG' => $last_post_url,
+                $template->assign_block_vars('searchresults',
+                    [
+                        'FORUM_NAME'       => $search_set->forum_name,
+                        'FORUM_ID'         => $forum_id,
+                        'TOPIC_ID'         => $topic_id,
+                        'FOLDER'           => $folder_image,
+                        'NEWEST_POST_IMG'  => $newest_post_img,
+                        'TOPIC_FOLDER_IMG' => $folder_image,
+                        'GOTO_PAGE'        => $goto_page,
+                        'REPLIES'          => $replies,
+                        'TOPIC_TITLE'      => $topic_title,
+                        'TOPIC_TYPE'       => $topic_type,
+                        'VIEWS'            => $views,
+                        'TOPIC_AUTHOR'     => $topic_author,
+                        'FIRST_POST_TIME'  => $first_post_time,
+                        'LAST_POST_TIME'   => $last_post_time,
+                        'LAST_POST_AUTHOR' => $last_post_author,
+                        'LAST_POST_IMG'    => $last_post_url,
 
-					'L_TOPIC_FOLDER_ALT' => $folder_alt,
+                        'L_TOPIC_FOLDER_ALT' => $folder_alt,
 
-					'U_VIEW_FORUM' => $forum_url,
-					'U_VIEW_TOPIC' => $topic_url)
-				);
-			}
+                        'U_VIEW_FORUM' => $forum_url,
+                        'U_VIEW_TOPIC' => $topic_url
+                    ]
+                );
+            }
 		}
 
 		$base_url = "search.php?search_id=$search_id";
@@ -1254,36 +1255,38 @@ include $phpbb_root_path . 'includes/page_header.php';
 $template->set_filenames(['body' => 'search_body.tpl']);
 make_jumpbox('viewforum.php');
 
-$template->assign_vars(array(
-	'L_SEARCH_QUERY' => $lang['Search_query'],
-	'L_SEARCH_OPTIONS' => $lang['Search_options'],
-	'L_SEARCH_KEYWORDS' => $lang['Search_keywords'],
-	'L_SEARCH_KEYWORDS_EXPLAIN' => $lang['Search_keywords_explain'],
-	'L_SEARCH_AUTHOR' => $lang['Search_author'],
-	'L_SEARCH_AUTHOR_EXPLAIN' => $lang['Search_author_explain'],
-	'L_SEARCH_ANY_TERMS' => $lang['Search_for_any'],
-	'L_SEARCH_ALL_TERMS' => $lang['Search_for_all'],
-	'L_SEARCH_MESSAGE_ONLY' => $lang['Search_msg_only'],
-	'L_SEARCH_MESSAGE_TITLE' => $lang['Search_title_msg'],
-	'L_CATEGORY' => $lang['Category'],
-	'L_RETURN_FIRST' => $lang['Return_first'],
-	'L_CHARACTERS' => $lang['characters_posts'],
-	'L_SORT_BY' => $lang['Sort_by'],
-	'L_SORT_ASCENDING' => $lang['Sort_Ascending'],
-	'L_SORT_DESCENDING' => $lang['Sort_Descending'],
-	'L_SEARCH_PREVIOUS' => $lang['Search_previous'],
-	'L_DISPLAY_RESULTS' => $lang['Display_results'],
-	'L_FORUM' => $lang['Forum'],
-	'L_TOPICS' => $lang['Topics'],
-	'L_POSTS' => $lang['Posts'],
+$template->assign_vars(
+    [
+        'L_SEARCH_QUERY'            => $lang['Search_query'],
+        'L_SEARCH_OPTIONS'          => $lang['Search_options'],
+        'L_SEARCH_KEYWORDS'         => $lang['Search_keywords'],
+        'L_SEARCH_KEYWORDS_EXPLAIN' => $lang['Search_keywords_explain'],
+        'L_SEARCH_AUTHOR'           => $lang['Search_author'],
+        'L_SEARCH_AUTHOR_EXPLAIN'   => $lang['Search_author_explain'],
+        'L_SEARCH_ANY_TERMS'        => $lang['Search_for_any'],
+        'L_SEARCH_ALL_TERMS'        => $lang['Search_for_all'],
+        'L_SEARCH_MESSAGE_ONLY'     => $lang['Search_msg_only'],
+        'L_SEARCH_MESSAGE_TITLE'    => $lang['Search_title_msg'],
+        'L_CATEGORY'                => $lang['Category'],
+        'L_RETURN_FIRST'            => $lang['Return_first'],
+        'L_CHARACTERS'              => $lang['characters_posts'],
+        'L_SORT_BY'                 => $lang['Sort_by'],
+        'L_SORT_ASCENDING'          => $lang['Sort_Ascending'],
+        'L_SORT_DESCENDING'         => $lang['Sort_Descending'],
+        'L_SEARCH_PREVIOUS'         => $lang['Search_previous'],
+        'L_DISPLAY_RESULTS'         => $lang['Display_results'],
+        'L_FORUM'                   => $lang['Forum'],
+        'L_TOPICS'                  => $lang['Topics'],
+        'L_POSTS'                   => $lang['Posts'],
 
-	'S_SEARCH_ACTION' => append_sid("search.php?mode=results"),
-	'S_CHARACTER_OPTIONS' => $s_characters,
-	'S_FORUM_OPTIONS' => $s_forums,
-	'S_CATEGORY_OPTIONS' => $s_categories,
-	'S_TIME_OPTIONS' => $s_time,
-	'S_SORT_OPTIONS' => $s_sort_by,
-	'S_HIDDEN_FIELDS' => '')
+        'S_SEARCH_ACTION'     => append_sid("search.php?mode=results"),
+        'S_CHARACTER_OPTIONS' => $s_characters,
+        'S_FORUM_OPTIONS'     => $s_forums,
+        'S_CATEGORY_OPTIONS'  => $s_categories,
+        'S_TIME_OPTIONS'      => $s_time,
+        'S_SORT_OPTIONS'      => $s_sort_by,
+        'S_HIDDEN_FIELDS'     => ''
+    ]
 );
 
 $template->pparse('body');

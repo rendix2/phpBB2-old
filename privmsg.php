@@ -1596,7 +1596,8 @@ if ( $mode == 'newpm' ) {
 	//
 	generate_smilies('inline', PAGE_PRIVMSGS);
 
-	$template->assign_vars(array(
+	$template->assign_vars(
+	    [
             'SUBJECT' => $privmsg_subject,
             'USERNAME' => $to_username,
             'MESSAGE' => $privmsg_message,
@@ -1679,7 +1680,8 @@ if ( $mode == 'newpm' ) {
             'S_POST_ACTION' => append_sid("privmsg.php"),
 
             'U_SEARCH_USER' => append_sid("search.php?mode=searchuser"),
-            'U_VIEW_FORUM' => append_sid("privmsg.php"))
+            'U_VIEW_FORUM' => append_sid("privmsg.php")
+        ]
 	);
 
 	$template->pparse('body');

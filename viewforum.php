@@ -410,48 +410,50 @@ include $phpbb_root_path . 'includes/page_header.php';
 $template->set_filenames(['body' => 'viewforum_body.tpl']);
 make_jumpbox('viewforum.php');
 
-$template->assign_vars(array(
-	'FORUM_ID' => $forum_id,
-	'FORUM_NAME' => $forum_row['forum_name'],
-	'MODERATORS' => $forum_moderators,
-	'POST_IMG' => ( $forum_row['forum_status'] == FORUM_LOCKED ) ? $images['post_locked'] : $images['post_new'],
+$template->assign_vars(
+    [
+        'FORUM_ID'   => $forum_id,
+        'FORUM_NAME' => $forum_row['forum_name'],
+        'MODERATORS' => $forum_moderators,
+        'POST_IMG'   => ($forum_row['forum_status'] == FORUM_LOCKED) ? $images['post_locked'] : $images['post_new'],
 
-	'FOLDER_IMG' => $images['folder'],
-	'FOLDER_NEW_IMG' => $images['folder_new'],
-	'FOLDER_HOT_IMG' => $images['folder_hot'],
-	'FOLDER_HOT_NEW_IMG' => $images['folder_hot_new'],
-	'FOLDER_LOCKED_IMG' => $images['folder_locked'],
-	'FOLDER_LOCKED_NEW_IMG' => $images['folder_locked_new'],
-	'FOLDER_STICKY_IMG' => $images['folder_sticky'],
-	'FOLDER_STICKY_NEW_IMG' => $images['folder_sticky_new'],
-	'FOLDER_ANNOUNCE_IMG' => $images['folder_announce'],
-	'FOLDER_ANNOUNCE_NEW_IMG' => $images['folder_announce_new'],
+        'FOLDER_IMG'              => $images['folder'],
+        'FOLDER_NEW_IMG'          => $images['folder_new'],
+        'FOLDER_HOT_IMG'          => $images['folder_hot'],
+        'FOLDER_HOT_NEW_IMG'      => $images['folder_hot_new'],
+        'FOLDER_LOCKED_IMG'       => $images['folder_locked'],
+        'FOLDER_LOCKED_NEW_IMG'   => $images['folder_locked_new'],
+        'FOLDER_STICKY_IMG'       => $images['folder_sticky'],
+        'FOLDER_STICKY_NEW_IMG'   => $images['folder_sticky_new'],
+        'FOLDER_ANNOUNCE_IMG'     => $images['folder_announce'],
+        'FOLDER_ANNOUNCE_NEW_IMG' => $images['folder_announce_new'],
 
-	'L_TOPICS' => $lang['Topics'],
-	'L_REPLIES' => $lang['Replies'],
-	'L_VIEWS' => $lang['Views'],
-	'L_POSTS' => $lang['Posts'],
-	'L_LASTPOST' => $lang['Last_Post'], 
-	'L_MODERATOR' => $l_moderators, 
-	'L_MARK_TOPICS_READ' => $lang['Mark_all_topics'], 
-	'L_POST_NEW_TOPIC' => ( $forum_row['forum_status'] == FORUM_LOCKED ) ? $lang['Forum_locked'] : $lang['Post_new_topic'], 
-	'L_NO_NEW_POSTS' => $lang['No_new_posts'],
-	'L_NEW_POSTS' => $lang['New_posts'],
-	'L_NO_NEW_POSTS_LOCKED' => $lang['No_new_posts_locked'], 
-	'L_NEW_POSTS_LOCKED' => $lang['New_posts_locked'], 
-	'L_NO_NEW_POSTS_HOT' => $lang['No_new_posts_hot'],
-	'L_NEW_POSTS_HOT' => $lang['New_posts_hot'],
-	'L_ANNOUNCEMENT' => $lang['Post_Announcement'], 
-	'L_STICKY' => $lang['Post_Sticky'], 
-	'L_POSTED' => $lang['Posted'],
-	'L_JOINED' => $lang['Joined'],
-	'L_AUTHOR' => $lang['Author'],
+        'L_TOPICS'              => $lang['Topics'],
+        'L_REPLIES'             => $lang['Replies'],
+        'L_VIEWS'               => $lang['Views'],
+        'L_POSTS'               => $lang['Posts'],
+        'L_LASTPOST'            => $lang['Last_Post'],
+        'L_MODERATOR'           => $l_moderators,
+        'L_MARK_TOPICS_READ'    => $lang['Mark_all_topics'],
+        'L_POST_NEW_TOPIC'      => ($forum_row['forum_status'] == FORUM_LOCKED) ? $lang['Forum_locked'] : $lang['Post_new_topic'],
+        'L_NO_NEW_POSTS'        => $lang['No_new_posts'],
+        'L_NEW_POSTS'           => $lang['New_posts'],
+        'L_NO_NEW_POSTS_LOCKED' => $lang['No_new_posts_locked'],
+        'L_NEW_POSTS_LOCKED'    => $lang['New_posts_locked'],
+        'L_NO_NEW_POSTS_HOT'    => $lang['No_new_posts_hot'],
+        'L_NEW_POSTS_HOT'       => $lang['New_posts_hot'],
+        'L_ANNOUNCEMENT'        => $lang['Post_Announcement'],
+        'L_STICKY'              => $lang['Post_Sticky'],
+        'L_POSTED'              => $lang['Posted'],
+        'L_JOINED'              => $lang['Joined'],
+        'L_AUTHOR'              => $lang['Author'],
 
-	'S_AUTH_LIST' => $s_auth_can, 
+        'S_AUTH_LIST' => $s_auth_can,
 
-	'U_VIEW_FORUM' => append_sid("viewforum.php?" . POST_FORUM_URL ."=$forum_id"),
+        'U_VIEW_FORUM' => append_sid("viewforum.php?" . POST_FORUM_URL . "=$forum_id"),
 
-	'U_MARK_READ' => append_sid("viewforum.php?" . POST_FORUM_URL . "=$forum_id&amp;mark=topics"))
+        'U_MARK_READ' => append_sid("viewforum.php?" . POST_FORUM_URL . "=$forum_id&amp;mark=topics")
+    ]
 );
 //
 // End header

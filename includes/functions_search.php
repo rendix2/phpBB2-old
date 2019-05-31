@@ -198,8 +198,6 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 //
 function remove_common($mode, $fraction, $word_id_list = [])
 {
-	global $db;
-
 	$total_posts = dibi::select('COUNT(post_id)')
         ->as('total_posts')
         ->from(POSTS_TABLE)
@@ -252,8 +250,6 @@ function remove_common($mode, $fraction, $word_id_list = [])
  */
 function remove_search_post(array $post_id_sql)
 {
-	global $db;
-
 	$words_removed = false;
 
 	switch ( SQL_LAYER ) {
@@ -311,7 +307,7 @@ function remove_search_post(array $post_id_sql)
 //
 function username_search($search_match)
 {
-	global $db, $board_config, $template, $lang, $images, $theme, $phpbb_root_path;
+	global $board_config, $template, $lang, $images, $theme, $phpbb_root_path;
 	global $gen_simple_header;
 	
 	$gen_simple_header = TRUE;
@@ -342,21 +338,23 @@ function username_search($search_match)
 
     $template->set_filenames(['search_user_body' => 'search_username.tpl']);
 
-    $template->assign_vars(array(
+    $template->assign_vars(
+        [
             'USERNAME' => !empty($search_match) ? phpbb_clean_username($search_match) : '',
 
-            'L_CLOSE_WINDOW' => $lang['Close_window'],
+            'L_CLOSE_WINDOW'    => $lang['Close_window'],
             'L_SEARCH_USERNAME' => $lang['Find_username'],
             'L_UPDATE_USERNAME' => $lang['Select_username'],
-            'L_SELECT' => $lang['Select'],
-            'L_SEARCH' => $lang['Search'],
-            'L_SEARCH_EXPLAIN' => $lang['Search_author_explain'],
+            'L_SELECT'          => $lang['Select'],
+            'L_SEARCH'          => $lang['Search'],
+            'L_SEARCH_EXPLAIN'  => $lang['Search_author_explain'],
 
             'S_USERNAME_OPTIONS' => $username_list,
-            'S_SEARCH_ACTION' => append_sid("search.php?mode=searchuser"))
-	);
+            'S_SEARCH_ACTION'    => append_sid("search.php?mode=searchuser")
+        ]
+    );
 
-	if ( $username_list != '' ) {
+    if ( $username_list != '' ) {
 		$template->assign_block_vars('switch_select_name', []);
 	}
 

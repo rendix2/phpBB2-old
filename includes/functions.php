@@ -114,7 +114,7 @@ function phpbb_rtrim($str, $charlist = false)
 */
 function dss_rand()
 {
-	global $db, $board_config, $dss_seeded;
+	global $board_config, $dss_seeded;
 
 	$val = $board_config['rand_seed'] . microtime();
 	$val = md5($val);
@@ -161,6 +161,8 @@ function make_jumpbox($action, $match_forum_id = 0)
 	global $template, $userdata, $lang, $db, $nav_links, $SID;
 
 //	$is_auth = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
+
+    $boxstring = '';
 
     $categories = dibi::select(['c.cat_id', 'c.cat_title', 'c.cat_order'])
         ->from(CATEGORIES_TABLE)
@@ -249,6 +251,8 @@ function init_userprefs($userdata)
 	global $board_config, $theme, $images;
 	global $template, $lang, $phpbb_root_path, $db;
 	global $nav_links;
+
+    $default_lang = '';
 
     if ($userdata['user_id'] != ANONYMOUS) {
         if (!empty($userdata['user_lang'])) {
@@ -579,6 +583,8 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 	
 
 	$sql_store = $sql;
+
+    $debug_text = '';
 	
 	//
 	// Get SQL error if we are debugging. Do this as soon as possible to prevent 
@@ -586,8 +592,6 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 	//
 	if ( DEBUG && ( $msg_code == GENERAL_ERROR || $msg_code == CRITICAL_ERROR ) ) {
 		$sql_error = $db->sql_error();
-
-		$debug_text = '';
 
 		if ( $sql_error['message'] != '' ) {
 			$debug_text .= '<br /><br />SQL Error : ' . $sql_error['code'] . ' ' . $sql_error['message'];

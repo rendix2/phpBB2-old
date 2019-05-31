@@ -212,6 +212,8 @@ if (empty($forum_id) ) {
 
 	@reset($simple_auth_ary);
 
+    $matched_type = '';
+
 	while (list($key, $auth_levels) = each($simple_auth_ary)) {
 		$matched = 1;
 		for ($k = 0; $k < count($auth_levels); $k++) {
@@ -235,7 +237,7 @@ if (empty($forum_id) ) {
         $adv = 1;
     }
 
-	$s_column_span == 0;
+	$s_column_span = 0;
 
     if (empty($adv)) {
 		$simple_auth = '<select name="simpleauth">';

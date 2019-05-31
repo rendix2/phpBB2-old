@@ -35,6 +35,8 @@ $configs = dibi::select('*')
 	->from(CONFIG_TABLE)
 	->fetchAll();
 
+$new = [];
+
 // todo check tis logic.. its strange...
 foreach ($configs as $config) {
 	$config_name = $config->config_name;

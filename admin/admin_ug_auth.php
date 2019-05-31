@@ -645,7 +645,9 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 		//
 		$auth_ug[$forum_id]['auth_mod'] = !empty($auth_access_count[$forum_id]) ? check_auth(AUTH_MOD, 'auth_mod', $auth_access[$forum_id], 0) : 0;
 	}
-	
+
+    $optionlist_acl_adv = [];
+
 	$i = 0;
 	@reset($auth_ug);
     while (list($forum_id, $user_ary) = @each($auth_ug)) {

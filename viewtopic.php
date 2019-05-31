@@ -622,50 +622,51 @@ $pagination = ( $highlight != '' ) ? generate_pagination("viewtopic.php?" . POST
 //
 // Send vars to template
 //
-$template->assign_vars(array(
-        'FORUM_ID' => $forum_id,
-        'FORUM_NAME' => $forum_name,
-        'TOPIC_ID' => $topic_id,
+$template->assign_vars(
+    [
+        'FORUM_ID'    => $forum_id,
+        'FORUM_NAME'  => $forum_name,
+        'TOPIC_ID'    => $topic_id,
         'TOPIC_TITLE' => $topic_title,
-        'PAGINATION' => $pagination,
-        'PAGE_NUMBER' => sprintf($lang['Page_of'],
-            floor( $start / (int)$board_config['posts_per_page']) + 1, ceil( $total_replies / (int)$board_config['posts_per_page'])),
+        'PAGINATION'  => $pagination,
+        'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / (int)$board_config['posts_per_page']) + 1, ceil($total_replies / (int)$board_config['posts_per_page'])),
 
-        'POST_IMG' => $post_img,
+        'POST_IMG'  => $post_img,
         'REPLY_IMG' => $reply_img,
 
-        'L_AUTHOR' => $lang['Author'],
-        'L_MESSAGE' => $lang['Message'],
-        'L_POSTED' => $lang['Posted'],
-        'L_POST_SUBJECT' => $lang['Post_subject'],
-        'L_VIEW_NEXT_TOPIC' => $lang['View_next_topic'],
+        'L_AUTHOR'              => $lang['Author'],
+        'L_MESSAGE'             => $lang['Message'],
+        'L_POSTED'              => $lang['Posted'],
+        'L_POST_SUBJECT'        => $lang['Post_subject'],
+        'L_VIEW_NEXT_TOPIC'     => $lang['View_next_topic'],
         'L_VIEW_PREVIOUS_TOPIC' => $lang['View_previous_topic'],
-        'L_POST_NEW_TOPIC' => $post_alt,
-        'L_POST_REPLY_TOPIC' => $reply_alt,
-        'L_BACK_TO_TOP' => $lang['Back_to_top'],
-        'L_DISPLAY_POSTS' => $lang['Display_posts'],
-        'L_LOCK_TOPIC' => $lang['Lock_topic'],
-        'L_UNLOCK_TOPIC' => $lang['Unlock_topic'],
-        'L_MOVE_TOPIC' => $lang['Move_topic'],
-        'L_SPLIT_TOPIC' => $lang['Split_topic'],
-        'L_DELETE_TOPIC' => $lang['Delete_topic'],
-        'L_GOTO_PAGE' => $lang['Goto_page'],
+        'L_POST_NEW_TOPIC'      => $post_alt,
+        'L_POST_REPLY_TOPIC'    => $reply_alt,
+        'L_BACK_TO_TOP'         => $lang['Back_to_top'],
+        'L_DISPLAY_POSTS'       => $lang['Display_posts'],
+        'L_LOCK_TOPIC'          => $lang['Lock_topic'],
+        'L_UNLOCK_TOPIC'        => $lang['Unlock_topic'],
+        'L_MOVE_TOPIC'          => $lang['Move_topic'],
+        'L_SPLIT_TOPIC'         => $lang['Split_topic'],
+        'L_DELETE_TOPIC'        => $lang['Delete_topic'],
+        'L_GOTO_PAGE'           => $lang['Goto_page'],
 
-        'S_TOPIC_LINK' => POST_TOPIC_URL,
-        'S_SELECT_POST_DAYS' => $select_post_days,
+        'S_TOPIC_LINK'        => POST_TOPIC_URL,
+        'S_SELECT_POST_DAYS'  => $select_post_days,
         'S_SELECT_POST_ORDER' => $select_post_order,
-        'S_POST_DAYS_ACTION' => append_sid("viewtopic.php?" . POST_TOPIC_URL . '=' . $topic_id . "&amp;start=$start"),
-        'S_AUTH_LIST' => $s_auth_can,
-        'S_TOPIC_ADMIN' => $topic_mod,
-        'S_WATCH_TOPIC' => $s_watching_topic,
-        'S_WATCH_TOPIC_IMG' => $s_watching_topic_img,
+        'S_POST_DAYS_ACTION'  => append_sid("viewtopic.php?" . POST_TOPIC_URL . '=' . $topic_id . "&amp;start=$start"),
+        'S_AUTH_LIST'         => $s_auth_can,
+        'S_TOPIC_ADMIN'       => $topic_mod,
+        'S_WATCH_TOPIC'       => $s_watching_topic,
+        'S_WATCH_TOPIC_IMG'   => $s_watching_topic_img,
 
-        'U_VIEW_TOPIC' => append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=$highlight"),
-        'U_VIEW_FORUM' => $view_forum_url,
+        'U_VIEW_TOPIC'       => append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=$highlight"),
+        'U_VIEW_FORUM'       => $view_forum_url,
         'U_VIEW_OLDER_TOPIC' => $view_prev_topic_url,
         'U_VIEW_NEWER_TOPIC' => $view_next_topic_url,
-        'U_POST_NEW_TOPIC' => $new_topic_url,
-        'U_POST_REPLY_TOPIC' => $reply_topic_url)
+        'U_POST_NEW_TOPIC'   => $new_topic_url,
+        'U_POST_REPLY_TOPIC' => $reply_topic_url
+    ]
 );
 
 //

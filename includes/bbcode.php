@@ -430,8 +430,8 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 			{
 				// We have an opening tag.
 				// Push its position, the text we matched, and its index in the open_tag array on to the stack, and then keep going to the right.
-				$match = array("pos" => $curr_pos, "tag" => $which_start_tag, "index" => $start_tag_index);
-				array_push($stack, $match);
+                $match = ["pos" => $curr_pos, "tag" => $which_start_tag, "index" => $start_tag_index];
+                array_push($stack, $match);
 				//
 				// Rather than just increment $curr_pos
 				// Set it to the ending of the tag we just found
@@ -484,9 +484,9 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 						{
 							if ($open_tag[0] == '[code]')
 							{
-								$code_entities_match = array('#<#', '#>#', '#"#', '#:#', '#\[#', '#\]#', '#\(#', '#\)#', '#\{#', '#\}#');
-								$code_entities_replace = array('&lt;', '&gt;', '&quot;', '&#58;', '&#91;', '&#93;', '&#40;', '&#41;', '&#123;', '&#125;');
-								$between_tags = preg_replace($code_entities_match, $code_entities_replace, $between_tags);
+                                $code_entities_match = ['#<#', '#>#', '#"#', '#:#', '#\[#', '#\]#', '#\(#', '#\)#', '#\{#', '#\}#'];
+                                $code_entities_replace = ['&lt;', '&gt;', '&quot;', '&#58;', '&#91;', '&#93;', '&#40;', '&#41;', '&#123;', '&#125;'];
+                                $between_tags = preg_replace($code_entities_match, $code_entities_replace, $between_tags);
 							}
 							$text = $before_start_tag . substr($start_tag, 0, $start_length - 1) . ":$curr_nesting_depth:$uid]";
 							$text .= $between_tags . substr($close_tag_new, 0, $close_tag_new_length - 1) . ":$curr_nesting_depth:$uid]";
