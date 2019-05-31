@@ -266,7 +266,7 @@ if (isset($_GET['pane']) && $_GET['pane'] == 'left' )
 	//
 	// Get users online information.
 	//
-    $onlinerow_reg = dibi::select(['u.user_id', 'u.username', 'u.user_session_time', 'u.user_session_page', 's.session_logged_in', 's.session_ip', 's.session_start'])
+    $onlinerow_reg = dibi::select(['u.user_id', 'u.username', 'u.user_session_time', 'u.user_session_page', 'u.user_allow_viewonline', 's.session_logged_in', 's.session_ip', 's.session_start'])
         ->from(USERS_TABLE)
         ->as('u')
         ->from(SESSIONS_TABLE)
