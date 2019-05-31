@@ -1063,7 +1063,6 @@ if ($mode == 'searchuser') {
                                     $folder_alt = ($search_set->topic_status == TOPIC_LOCKED) ? $lang['Topic_locked'] : $lang['No_new_posts'];
 
                                     $folder_image = $folder;
-                                    $folder_alt = $folder_alt;
                                     $newest_post_img = '';
                                 }
 
