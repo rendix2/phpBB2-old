@@ -50,7 +50,7 @@
 */
 function auth($type, $forum_id, $userdata, $f_access = '')
 {
-	global $db, $lang;
+	global $lang;
 
     $a_sql = [];
     $auth_fields = [];

@@ -23,7 +23,7 @@
 
 function topic_review($topic_id, $is_inline_review)
 {
-	global $db, $board_config, $template, $lang, $images, $theme, $phpbb_root_path;
+	global $board_config, $template, $lang, $images, $theme, $phpbb_root_path;
 	global $userdata, $user_ip;
 	global $orig_word, $replacement_word;
 

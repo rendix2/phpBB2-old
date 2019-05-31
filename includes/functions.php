@@ -114,7 +114,7 @@ function phpbb_rtrim($str, $charlist = false)
 */
 function dss_rand()
 {
-	global $db, $board_config, $dss_seeded;
+	global $board_config, $dss_seeded;
 
 	$val = $board_config['rand_seed'] . microtime();
 	$val = md5($val);

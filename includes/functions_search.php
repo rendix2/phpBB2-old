@@ -198,8 +198,6 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 //
 function remove_common($mode, $fraction, $word_id_list = [])
 {
-	global $db;
-
 	$total_posts = dibi::select('COUNT(post_id)')
         ->as('total_posts')
         ->from(POSTS_TABLE)
@@ -252,8 +250,6 @@ function remove_common($mode, $fraction, $word_id_list = [])
  */
 function remove_search_post(array $post_id_sql)
 {
-	global $db;
-
 	$words_removed = false;
 
 	switch ( SQL_LAYER ) {
@@ -311,7 +307,7 @@ function remove_search_post(array $post_id_sql)
 //
 function username_search($search_match)
 {
-	global $db, $board_config, $template, $lang, $images, $theme, $phpbb_root_path;
+	global $board_config, $template, $lang, $images, $theme, $phpbb_root_path;
 	global $gen_simple_header;
 	
 	$gen_simple_header = TRUE;

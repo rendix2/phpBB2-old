@@ -26,7 +26,7 @@
 //
 function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_autologin = 0, $admin = 0)
 {
-	global $db, $board_config;
+	global $board_config;
 	global $SID;
 
 	$cookiename = $board_config['cookie_name'];
@@ -280,7 +280,7 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 //
 function session_pagestart($user_ip, $thispage_id)
 {
-	global $db, $lang, $board_config;
+	global $lang, $board_config;
 	global $SID;
 
 	$cookiename = $board_config['cookie_name'];
@@ -402,7 +402,7 @@ function session_pagestart($user_ip, $thispage_id)
 */
 function session_end($session_id, $user_id)
 {
-	global $db, $lang, $board_config, $userdata;
+	global $lang, $board_config, $userdata;
 	global $SID;
 
 	$cookiename = $board_config['cookie_name'];
