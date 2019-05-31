@@ -10,6 +10,8 @@
 *
 ****************************************************************************/
 
+use Ifsnop\Mysqldump\Mysqldump;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -32,12 +34,12 @@ define('IN_PHPBB', 1);
 
 if (!empty($setmodules) ) {
 	$filename = basename(__FILE__);
-	$module['General']['Backup_DB'] = $filename . "?perform=backup";
+	$module['Database']['Backup_DB'] = $filename . "?perform=backup";
 
 	$file_uploads = (@PHP_VERSION >= '4.0.0') ? @ini_get('file_uploads') : @get_cfg_var('file_uploads');
 
 	if ((empty($file_uploads) || $file_uploads != 0) && (strtolower($file_uploads) != 'off') && (@PHP_VERSION != '4.0.4pl1') ) {
-		$module['General']['Restore_DB'] = $filename . "?perform=restore";
+		$module['Database']['Restore_DB'] = $filename . "?perform=restore";
 	}
 
 	return;
@@ -586,222 +588,23 @@ if (isset($_GET['perform']) || isset($_POST['perform']) )
 	switch($perform)
 	{
 		case 'backup':
+			$dumper = new Mysqldump(
+				'mysql:host='.$dbhost.';dbname='.$dbname.';charset=utf8',
+				$dbuser,
+				$dbpasswd
+			);
 
-			$error = false;
-			switch(SQL_LAYER)
-			{
-				case 'oracle':
-					$error = true;
-					break;
-				case 'db2':
-					$error = true;
-					break;
-				case 'msaccess':
-					$error = true;
-					break;
-				case 'mssql':
-				case 'mssql-odbc':
-					$error = true;
-					break;
-			}
+			$dir_separator = DIRECTORY_SEPARATOR;
+			$backup_file_name = $phpbb_root_path . $dir_separator . 'temp' . $dir_separator .'phpbb_db_backup.sql';
 
-			if ($error) {
-				include './page_header_admin.php';
+			$dumper->start($backup_file_name);
 
-                $template->set_filenames(["body" => "admin/admin_message_body.tpl"]);
-
-                $template->assign_vars(
-                    [
-                        "MESSAGE_TITLE" => $lang['Information'],
-                        "MESSAGE_TEXT"  => $lang['Backups_not_supported']
-                    ]
-                );
-
-                $template->pparse("body");
-
-				include './page_footer_admin.php';
-			}
-
-            $tables = [
-                'auth_access',
-                'banlist',
-                'categories',
-                'config',
-                'disallow',
-                'forums',
-                'forum_prune',
-                'groups',
-                'posts',
-                'posts_text',
-                'privmsgs',
-                'privmsgs_text',
-                'ranks',
-                'search_results',
-                'search_wordlist',
-                'search_wordmatch',
-                'sessions',
-                'smilies',
-                'themes',
-                'themes_name',
-                'topics',
-                'topics_watch',
-                'user_group',
-                'users',
-                'vote_desc',
-                'vote_results',
-                'vote_voters',
-                'words',
-                'confirm',
-                'sessions_keys'
-            ];
-
-            $additional_tables = isset($_POST['additional_tables']) ? $_POST['additional_tables'] : ( isset($_GET['additional_tables']) ? $_GET['additional_tables'] : "" );
-
-			$backup_type = isset($_POST['backup_type']) ? $_POST['backup_type'] : ( isset($_GET['backup_type']) ? $_GET['backup_type'] : "" );
-
-			$gzipcompress = !empty($_POST['gzipcompress']) ? $_POST['gzipcompress'] : ( !empty($_GET['gzipcompress']) ? $_GET['gzipcompress'] : 0 );
-
-			$drop = !empty($_POST['drop']) ? (int)$_POST['drop'] : ( !empty($_GET['drop']) ? (int)$_GET['drop'] : 0 );
-
-			if (!empty($additional_tables)) {
-				// TODO i think we should not use preg_match and than explode().. just do explode()
-
-				if (preg_match("#,#", $additional_tables)) {
-					$additional_tables = explode(",", $additional_tables);
-
-					for ($i = 0; $i < count($additional_tables); $i++) {
-						$tables[] = trim($additional_tables[$i]);
-					}
-				} else {
-					$tables[] = trim($additional_tables);
-				}
-			}
-
-			if (!isset($_POST['backupstart']) && !isset($_GET['backupstart'])) {
-				include './page_header_admin.php';
-
-				$template->set_filenames(["body" => "admin/db_utils_backup_body.tpl"]);
-
-				$s_hidden_fields = "<input type=\"hidden\" name=\"perform\" value=\"backup\" /><input type=\"hidden\" name=\"drop\" value=\"1\" /><input type=\"hidden\" name=\"perform\" value=\"$perform\" />";
-
-				$template->assign_vars(
-					[
-						"L_DATABASE_BACKUP"   => $lang['Database_Utilities'] . " : " . $lang['Backup'],
-						"L_BACKUP_EXPLAIN"    => $lang['Backup_explain'],
-						"L_FULL_BACKUP"       => $lang['Full_backup'],
-						"L_STRUCTURE_BACKUP"  => $lang['Structure_backup'],
-						"L_DATA_BACKUP"       => $lang['Data_backup'],
-						"L_ADDITIONAL_TABLES" => $lang['Additional_tables'],
-						"L_START_BACKUP"      => $lang['Start_backup'],
-						"L_BACKUP_OPTIONS"    => $lang['Backup_options'],
-						"L_GZIP_COMPRESS"     => $lang['Gzip_compress'],
-						"L_NO"                => $lang['No'],
-						"L_YES"               => $lang['Yes'],
-
-						"S_HIDDEN_FIELDS"  => $s_hidden_fields,
-						"S_DBUTILS_ACTION" => append_sid("admin_db_utilities.php")
-					]
-				);
-				$template->pparse("body");
-
-				break;
-
-			} elseif (!isset($_POST['startdownload']) && !isset($_GET['startdownload']) ) {
-				if (is_array($additional_tables)) {
-					$additional_tables = implode(',', $additional_tables);
-				}
-
-				$template->set_filenames(["body" => "admin/admin_message_body.tpl"]);
-
-				$template->assign_vars(
-					[
-						"META" => '<meta http-equiv="refresh" content="2;url=' . append_sid("admin_db_utilities.php?perform=backup&additional_tables=" . quotemeta($additional_tables) . "&backup_type=$backup_type&drop=1&amp;backupstart=1&gzipcompress=$gzipcompress&startdownload=1") . '">',
-
-						"MESSAGE_TITLE" => $lang['Database_Utilities'] . " : " . $lang['Backup'],
-						"MESSAGE_TEXT"  => $lang['Backup_download']
-					]
-				);
-
-				include './page_header_admin.php';
-
-				$template->pparse("body");
-
-				include './page_footer_admin.php';
-
-			}
-
-			header("Pragma: no-cache");
-			$do_gzip_compress = false;
-
-			if ($gzipcompress ) {
-				$phpver = PHP_VERSION;
-
-				if ($phpver >= "4.0") {
-					if (extension_loaded("zlib")) {
-						$do_gzip_compress = true;
-					}
-				}
-			}
-
-			if ($do_gzip_compress) {
-				@ob_start();
-				@ob_implicit_flush(0);
-				header("Content-Type: application/x-gzip; name=\"phpbb_db_backup.sql.gz\"");
-				header("Content-disposition: attachment; filename=phpbb_db_backup.sql.gz");
-			} else {
-				header("Content-Type: text/x-delimtext; name=\"phpbb_db_backup.sql\"");
-				header("Content-disposition: attachment; filename=phpbb_db_backup.sql");
-			}
-
-			//
-			// Build the sql script file...
-			//
-			echo "#\n";
-			echo "# phpBB Backup Script\n";
-			echo "# Dump of tables for $dbname\n";
-			echo "#\n# DATE : " .  gmdate("d-m-Y H:i:s", time()) . " GMT\n";
-			echo "#\n";
-
-			if (SQL_LAYER == 'postgresql') {
-				 echo "\n" . pg_get_sequences("\n", $backup_type);
-			}
-
-			for ($i = 0; $i < count($tables); $i++) {
-				$table_name = $tables[$i];
-
-				switch (SQL_LAYER) {
-					case 'postgresql':
-						$table_def_function = "get_table_def_postgresql";
-						$table_content_function = "get_table_content_postgresql";
-						break;
-
-					case 'mysql':
-					case 'mysql4':
-						$table_def_function = "get_table_def_mysql";
-						$table_content_function = "get_table_content_mysql";
-						break;
-				}
-
-				if ($backup_type != 'data') {
-					echo "#\n# TABLE: " . $table_prefix . $table_name . "\n#\n";
-					echo $table_def_function($table_prefix . $table_name, "\n") . "\n";
-				}
-
-				if ($backup_type != 'structure') {
-					$table_content_function($table_prefix . $table_name, "output_table_content");
-				}
-			}
-
-			if ($do_gzip_compress) {
-				$Size = ob_get_length();
-				$Crc = crc32(ob_get_contents());
-				$contents = gzcompress(ob_get_contents());
-				ob_end_clean();
-				echo "\x1f\x8b\x08\x00\x00\x00\x00\x00".substr($contents, 0, strlen($contents) - 4).gzip_PrintFourChars($Crc).gzip_PrintFourChars($Size);
-			}
+			header('Content-Type: application/octet-stream');
+			header("Content-Transfer-Encoding: Binary");
+			header("Content-disposition: attachment; filename=\"" . basename($backup_file_name) . "\"");
+			readfile($backup_file_name); // do the double-download-dance (dirty but worky)
+			unlink($backup_file_name);
 			exit;
-
-			break;
 
 		case 'restore':
 			if (!isset($_POST['restore_start'])) {

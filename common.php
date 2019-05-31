@@ -191,7 +191,7 @@ Panel::$maxLength = 10000;
 $panel->register($connection);
 
 // We do not need this any longer, unset for safety purposes
-unset($dbpasswd);
+//unset($dbpasswd);
 
 //
 // Obtain and encode users IP
