@@ -107,7 +107,7 @@ function user_avatar_url($mode, &$error, &$error_msg, $avatar_filename)
 		return [];
 	}
 
-	return ( $mode == 'editprofile' ) ? ['user_avatar' => $avatar_filename, 'user_avatar_type' => USER_AVATAR_REMOTE] : [];;
+	return ( $mode == 'editprofile' ) ? ['user_avatar' => $avatar_filename, 'user_avatar_type' => USER_AVATAR_REMOTE] : [];
 
 }
 
