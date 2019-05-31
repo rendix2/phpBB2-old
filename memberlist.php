@@ -306,7 +306,7 @@ if ($mode != 'topten' || $board_config['topics_per_page'] < 10) {
         ->fetchSingle();
 
     if ($total_members) {
-        $pagination = generate_pagination("memberlist.php?mode=$mode&amp;order=$sort_order", $total_members, $board_config['topics_per_page'], $start) . '&nbsp;';
+        $pagination = generate_pagination("memberlist.php?mode=$mode&amp;order=$sort_order", $total_members, $board_config['members_per_page'], $start) . '&nbsp;';
     }
 } else {
     $pagination = '&nbsp;';
