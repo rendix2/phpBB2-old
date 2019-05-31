@@ -325,21 +325,9 @@ if (!empty($mode) ) {
 
 			$next_order = $max_order + 10;
 
-            $max_id = dibi::select('MAX(forum_id)')
-                ->as('max_id')
-                ->from(FORUMS_TABLE)
-                ->fetchSingle();
-
-			if ($max_id === false) {
-				message_die(GENERAL_ERROR, "Couldn't get order number from forums table", "", __LINE__, __FILE__, $sql);
-			}
-
-			$next_id = $max_id + 1;
-
 			//
 			// Default permissions of public ::
 			//
-            $forum_auth_ary['forum_id'] = $next_id;
             $forum_auth_ary['forum_name'] = $_POST['forumname'];
             $forum_auth_ary['cat_id'] = (int)$_POST[POST_CAT_URL];
             $forum_auth_ary['forum_desc'] = $_POST['forumdesc'];
@@ -348,7 +336,7 @@ if (!empty($mode) ) {
             $forum_auth_ary['prune_enable'] = (int)$_POST['prune_enable'];
 
 			// There is no problem having duplicate forum names so we won't check for it.
-            dibi::insert(FORUMS_TABLE, $forum_auth_ary)->execute();
+            $forums_id = dibi::insert(FORUMS_TABLE, $forum_auth_ary)->execute(dibi::IDENTIFIER);
 
 			if ($_POST['prune_enable'] ) {
 
@@ -357,7 +345,7 @@ if (!empty($mode) ) {
 				}
 
 				$insert_data = [
-				    'forum_id' => $next_id,
+				    'forum_id' => $forums_id,
                     'prune_days' => (int)$_POST['prune_days'],
                     'prune_freq' => (int)$_POST['prune_freq']
                 ];
