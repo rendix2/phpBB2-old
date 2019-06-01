@@ -407,7 +407,7 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 		//
 
         // TODO
-		switch ( SQL_LAYER ) {
+        switch (SQL_LAYER) {
 			case 'postgresql':
 				$sql = "SELECT u.user_id 
 					FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug, " . AUTH_ACCESS_TABLE . " aa
@@ -428,6 +428,8 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 						AND u.user_level NOT IN (" . USER . ", " . ADMIN . ")  
 						GROUP BY u.user_id
 					)";
+
+				dibi::query($sql)->fetchPairs(null, 'user_id');;
 				break;
 			case 'oracle':
 				$sql = "SELECT u.user_id 
@@ -437,6 +439,8 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 						AND u.user_level NOT IN (" . USER . ", " . ADMIN . ")
 					GROUP BY u.user_id 
 					HAVING SUM(aa.auth_mod) = 0";
+
+                dibi::query($sql)->fetchPairs(null, 'user_id');;
 				break;
 			default:
                 $unset_mod = dibi::select('u.user_id')
@@ -451,11 +455,9 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
                     ->where('u.user_level NOT IN %in', [USER, ADMIN])
                     ->groupBy('u.user_id')
                     ->having('SUM(aa.auth_mod) = %i', 0)
-                    ->fetchPairs('null', 'user_id');
+                    ->fetchPairs(null, 'user_id');
 				break;
 		}
-
-		$db->sql_freeresult($result);
 
         if (count($set_mod)) {
             dibi::update(USERS_TABLE, ['user_level' => MOD])
