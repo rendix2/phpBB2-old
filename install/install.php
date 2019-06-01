@@ -367,7 +367,7 @@ $available_drivers = PDO::getAvailableDrivers();
 
 foreach ($available_drivers as $driver) {
     if (isset($available_dbms_temp[$driver])) {
-        $available_dbms[] = $available_dbms_temp[$driver];
+        $available_dbms[$driver] = $available_dbms_temp[$driver];
     }
 }
 
@@ -733,6 +733,7 @@ else
 	// MS Access is slightly different in that a pre-built, pre-
 	// populated DB is supplied, all we need do here is update
 	// the relevant entries
+    /*
 	if (isset($dbms))
 	{
 		switch($dbms)
@@ -769,13 +770,23 @@ else
 
 		include $phpbb_root_path.'includes/db.php';
 	}
+	*/
+
+    $connection = dibi::connect([
+        'driver'   => 'PDO',
+        'username' => $dbuser,
+        'password' => $dbpasswd,
+        'dsn'      => 'mysql:host='.$dbhost.';dbname='.$dbname.';charset=utf8'
+    ]);
+
+    $connection->connect();
 
 	$dbms_schema = 'schemas/' . $available_dbms[$dbms]['SCHEMA'] . '_schema.sql';
 	$dbms_basic = 'schemas/' . $available_dbms[$dbms]['SCHEMA'] . '_basic.sql';
 
 	$remove_remarks = $available_dbms[$dbms]['COMMENTS'];;
 	$delimiter = $available_dbms[$dbms]['DELIM']; 
-	$delimiter_basic = $available_dbms[$dbms]['DELIM_BASIC']; 
+	$delimiter_basic = $available_dbms[$dbms]['DELIM_BASIC'];
 
 	if ($install_step == 1) {
 		if ($upgrade != 1) {
@@ -795,36 +806,27 @@ else
 
 				for ($i = 0; $i < count($sql_query); $i++) {
 					if (trim($sql_query[$i]) != '') {
-						if (!($result = $db->sql_query($sql_query[$i]))) {
-							$error = $db->sql_error();
-
-							page_header($lang['Install'], '');
-							page_error($lang['Installer_Error'], $lang['Install_db_error'] . '<br />' . $error['message']);
-							page_footer();
-							exit;
-						}
+					    $result = dibi::query($sql_query[$i]);
 					}
 				}
 		
 				// Ok tables have been built, let's fill in the basic information
-				$sql_query = @fread(@fopen($dbms_basic, 'r'), @filesize($dbms_basic));
-				$sql_query = preg_replace('/phpbb_/', $table_prefix, $sql_query);
+                $lines = file($dbms_basic);
 
-				$sql_query = $remove_remarks($sql_query);
-				$sql_query = split_sql_file($sql_query, $delimiter_basic);
+                foreach ($lines as $line) {
+                    if (substr($line, 0, 2) == '--' || $line == '') {
+                        continue;
+                    }
 
-				for ($i = 0; $i < count($sql_query); $i++) {
-					if (trim($sql_query[$i]) != '') {
-						if (!($result = $db->sql_query($sql_query[$i]))) {
-							$error = $db->sql_error();
+                    $templine .= $line;
 
-							page_header($lang['Install'], '');
-							page_error($lang['Installer_Error'], $lang['Install_db_error'] . '<br />' . $error['message']);
-							page_footer();
-							exit;
-						}
-					}
-				}
+                    if (substr(trim($line), -1, 1) == ';') {
+                        // Perform the query
+                        dibi::query($templine);
+                        // Reset temp variable to empty
+                        $templine = '';
+                    }
+                }
 			}
 
 			// Ok at this point they have entered their admin password, let's go 
@@ -835,19 +837,8 @@ else
 			$error = '';
 
 			// Update the default admin user with their information.
-			$sql = "INSERT INTO " . $table_prefix . "config (config_name, config_value) 
-				VALUES ('board_startdate', " . time() . ")";
-
-			if (!$db->sql_query($sql)) {
-				$error .= "Could not insert board_startdate :: " . $sql . " :: " . __LINE__ . " :: " . __FILE__ . "<br /><br />";
-			}
-
-			$sql = "INSERT INTO " . $table_prefix . "config (config_name, config_value) 
-				VALUES ('default_lang', '" . str_replace("\'", "''", $language) . "')";
-
-			if (!$db->sql_query($sql)) {
-				$error .= "Could not insert default_lang :: " . $sql . " :: " . __LINE__ . " :: " . __FILE__ . "<br /><br />";
-			}
+            dibi::insert($table_prefix.'config', ['config_name' => 'board_startdate', 'config_value' => time()])->execute();
+            dibi::insert($table_prefix.'config', ['config_name' => 'default_lang', 'config_value' => $language])->execute();
 
             $update_config = [
                 'board_email' => $board_email,
@@ -856,32 +847,27 @@ else
                 'server_name' => $server_name,
             ];
 
-            while (list($config_name, $config_value) = each($update_config)) {
-				$sql = "UPDATE " . $table_prefix . "config 
-					SET config_value = '$config_value' 
-					WHERE config_name = '$config_name'";
-
-				if (!$db->sql_query($sql)) {
-					$error .= "Could not insert default_lang :: " . $sql . " :: " . __LINE__ . " :: " . __FILE__ . "<br /><br />";
-				}
+            foreach ($update_config as $config_name => $config_value) {
+                dibi::update($table_prefix . 'config' , ['config_value' => $config_value])
+                    ->where('config_name = %s',  $config_name)
+                    ->execute();
 			}
 
 			$admin_pass_bcrypt = ($confirm && $userdata['user_level'] == ADMIN) ? $admin_pass1 : password_hash($admin_pass1, PASSWORD_BCRYPT);
 
-			$sql = "UPDATE " . $table_prefix . "users 
-				SET username = '" . str_replace("\'", "''", $admin_name) . "', user_password='" . str_replace("\'", "''", $admin_pass_bcrypt) . "', user_lang = '" . str_replace("\'", "''", $language) . "', user_email='" . str_replace("\'", "''", $board_email) . "'
-				WHERE username = 'Admin'";
+            $update_data = [
+                'username'      => $admin_name,
+                'user_password' => $admin_pass_bcrypt,
+                'user_lang'     => $language,
+                'user_email'    => $board_email,
+            ];
 
-			if (!$db->sql_query($sql)) {
-				$error .= "Could not update admin info :: " . $sql . " :: " . __LINE__ . " :: " . __FILE__ . "<br /><br />";
-			}
+            dibi::update($table_prefix . "users", $update_data)
+                ->where('username = %s', 'Admin')
+                ->execute();
 
-			$sql = "UPDATE " . $table_prefix . "users 
-				SET user_regdate = " . time();
-
-			if (!$db->sql_query($sql)) {
-				$error .= "Could not update user_regdate :: " . $sql . " :: " . __LINE__ . " :: " . __FILE__ . "<br /><br />";
-			}
+            dibi::update($table_prefix . "users", ['user_regdate' => time()])
+            ->execute();
 
 			if ($error != '') {
 				page_header($lang['Install'], '');
@@ -901,6 +887,7 @@ else
 			$config_data .= '$dbuser = \'' . $dbuser . '\';' . "\n";
 			$config_data .= '$dbpasswd = \'' . $dbpasswd . '\';' . "\n\n";
 			$config_data .= '$table_prefix = \'' . $table_prefix . '\';' . "\n\n";
+            $config_data .= sprintf('$dns = $dbms.\':host=\'.$dbhost.\';dbname=\'.$dbname.\';charset=utf8\';'. "\n\n", $dbms);
 			$config_data .= 'define(\'PHPBB_INSTALLED\', true);'."\n\n";	
 			$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
 

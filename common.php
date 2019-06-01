@@ -186,7 +186,7 @@ $connection = dibi::connect([
     'driver'   => 'PDO',
     'username' => $dbuser,
     'password' => $dbpasswd,
-    'dsn'      => 'mysql:host='.$dbhost.';dbname='.$dbname.';charset=utf8'
+    'dsn'      => $dns
 ]);
 
 $connection->connect();
