@@ -1,8 +1,10 @@
 {
     "require": {
+        "ext-mbstring": "*",
+        "ext-pdo": "*",
+
         "tracy/tracy": "^2.5",
         "dibi/dibi": "^3.2",
-        "ext-mbstring": "*",
-        "ifsnop/mysqldump-php": "^2.7"
+        "ifsnop/mysqldump-php": "^2.7",
     }
 }
