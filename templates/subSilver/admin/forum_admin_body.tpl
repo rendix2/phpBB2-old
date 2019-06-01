@@ -9,10 +9,22 @@
 	</tr>
 	<!-- BEGIN catrow -->
 	<tr>
-		<td class="catLeft" colspan="3"><span class="cattitle"><b><a href="{catrow.U_VIEWCAT}">{catrow.CAT_DESC}</a></b></span></td>
+		<td class="catLeft"><span class="cattitle"><b><a href="{catrow.U_VIEWCAT}">{catrow.CAT_DESC}</a></b></span></td>
+		<td class="cat" align="center" valign="middle"><span class="gen">{catrow.L_TOPICS}</span></td>
+		<td class="cat" align="center" valign="middle"><span class="gen">{catrow.L_POSTS}</span></td>
 		<td class="cat" align="center" valign="middle"><span class="gen"><a href="{catrow.U_CAT_EDIT}">{L_EDIT}</a></span></td>
 		<td class="cat" align="center" valign="middle"><span class="gen"><a href="{catrow.U_CAT_DELETE}">{L_DELETE}</a></span></td>
-		<td class="cat" align="center" valign="middle" nowrap="nowrap"><span class="gen"><a href="{catrow.U_CAT_MOVE_UP}">{L_MOVE_UP}</a> <a href="{catrow.U_CAT_MOVE_DOWN}">{L_MOVE_DOWN}</a></span></td>
+		<td class="cat" align="center" valign="middle" nowrap="nowrap">
+			<span class="gen">
+				<!-- BEGIN up -->
+				<a href="{catrow.U_CAT_MOVE_UP}">{L_MOVE_UP}</a>
+				<!-- END up -->
+
+				<!-- BEGIN down -->
+				<a href="{catrow.U_CAT_MOVE_DOWN}">{L_MOVE_DOWN}</a>
+				<!-- END down -->
+			</span>
+		</td>
 		<td class="catRight" align="center" valign="middle"><span class="gen">&nbsp;</span></td>
 	</tr>
 	<!-- BEGIN forumrow -->
@@ -22,7 +34,17 @@
 		<td class="row2" align="center" valign="middle"><span class="gen">{catrow.forumrow.NUM_POSTS}</span></td>
 		<td class="row1" align="center" valign="middle"><span class="gen"><a href="{catrow.forumrow.U_FORUM_EDIT}">{L_EDIT}</a></span></td>
 		<td class="row2" align="center" valign="middle"><span class="gen"><a href="{catrow.forumrow.U_FORUM_DELETE}">{L_DELETE}</a></span></td>
-		<td class="row1" align="center" valign="middle"><span class="gen"><a href="{catrow.forumrow.U_FORUM_MOVE_UP}">{L_MOVE_UP}</a> <br /> <a href="{catrow.forumrow.U_FORUM_MOVE_DOWN}">{L_MOVE_DOWN}</a></span></td>
+		<td class="row1" align="center" valign="middle">
+			<span class="gen">
+				<!-- BEGIN up -->
+				<a href="{catrow.forumrow.U_FORUM_MOVE_UP}">{L_MOVE_UP}</a>
+				<!-- END up -->
+
+				<!-- BEGIN down -->
+				<a href="{catrow.forumrow.U_FORUM_MOVE_DOWN}">{L_MOVE_DOWN}</a>
+				<!-- END down -->
+			</span>
+		</td>
 		<td class="row2" align="center" valign="middle"><span class="gen"><a href="{catrow.forumrow.U_FORUM_RESYNC}">{L_RESYNC}</a></span></td>
 	</tr>
 	<!-- END forumrow -->

@@ -656,7 +656,7 @@ if (!empty($mode) ) {
 			if ($catinfo['number'] == 1) {
                 $count = dibi::select('COUNT(*)')
                     ->select('total')
-                    ->from(FORUMS_TABLE)
+                    ->as(FORUMS_TABLE)
                     ->fetchSingle();
 
 				if ($count === false) {
@@ -821,6 +821,8 @@ $categories = dibi::select(['cat_id', 'cat_title', 'cat_order'])
 
 $category_count = count($categories);
 
+$forums_count = 0;
+
 if ($category_count) {
     $forums = dibi::select('*')
         ->from(FORUMS_TABLE)
@@ -828,15 +830,27 @@ if ($category_count) {
         ->orderBy('forum_order')
         ->fetchAll();
 
-    $total_forums = count($forums);
+    $forums_count = count($forums);
 
 	//
 	// Okay, let's build the index
 	//
 	$gen_cat = [];
+	$cat_i = 0;
+
+    $tmp = [];
+
+    foreach ($categories as $category) {
+        $tmp[$category->cat_id] = 0;
+    }
+
+    foreach ($forums as $forum) {
+        $tmp[$forum->cat_id]++;
+    }
 
     foreach ($categories as $category) {
 		$cat_id = $category->cat_id;
+		$cat_i++;
 
         $template->assign_block_vars("catrow",
             [
@@ -846,6 +860,9 @@ if ($category_count) {
                 'CAT_ID'   => $cat_id,
                 'CAT_DESC' => $category->cat_title,
 
+                'L_POSTS'  => $lang['Number_posts'],
+                'L_TOPICS' => $lang['Number_topics'],
+
                 'U_CAT_EDIT'      => append_sid("admin_forums.php?mode=editcat&amp;" . POST_CAT_URL . "=$cat_id"),
                 'U_CAT_DELETE'    => append_sid("admin_forums.php?mode=deletecat&amp;" . POST_CAT_URL . "=$cat_id"),
                 'U_CAT_MOVE_UP'   => append_sid("admin_forums.php?mode=cat_order&amp;move=-15&amp;" . POST_CAT_URL . "=$cat_id"),
@@ -854,10 +871,23 @@ if ($category_count) {
             ]
         );
 
-        foreach ($forums as $forum) {
+        if ($category->cat_order - 15 > 0) {
+            $template->assign_block_vars('catrow.up', []);
+        }
+
+        if ($cat_i !== $category_count) {
+            $template->assign_block_vars('catrow.down', []);
+        }
+
+        $forum_i = 0;
+
+        foreach ($forums as $i => $forum) {
+            $forum_i++;
 			$forum_id = $forum->forum_id;
 
 			if ($forum->cat_id == $cat_id) {
+                $row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
+                $row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
                 $template->assign_block_vars("catrow.forumrow",
                     [
@@ -865,7 +895,9 @@ if ($category_count) {
                         'FORUM_DESC' => $forum->forum_desc,
 
                         // TODO this variiable does not exists...
-                        'ROW_COLOR'  => $row_color,
+
+                        'ROW_COLOR'  => '#' . $row_color,
+                        'ROW_CLASS'  => $row_class,
                         'NUM_TOPICS' => $forum->forum_topics,
                         'NUM_POSTS'  => $forum->forum_posts,
 
@@ -878,7 +910,17 @@ if ($category_count) {
                     ]
                 );
 
-            }// if ... forumid == catid
+                if ($forum->forum_order - 15 > 0) {
+                    $template->assign_block_vars('catrow.forumrow.up', []);
+                }
+
+                if ($tmp[$forum->cat_id] !== $forum_i) {
+                    $template->assign_block_vars('catrow.forumrow.down', []);
+                }
+
+            } else {
+                $forum_i = 0;
+            }
 
 		} // for ... forums
 

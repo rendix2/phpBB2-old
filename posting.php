@@ -52,7 +52,7 @@ $sid = isset($_POST['sid']) ? $_POST['sid'] : 0;
 
 $params = ['forum_id' => POST_FORUM_URL, 'topic_id' => POST_TOPIC_URL, 'post_id' => POST_POST_URL];
 
-foreach ($params as $var => $param) {}
+foreach ($params as $var => $param) {
     if (!empty($_POST[$param]) || !empty($_GET[$param])) {
         $$var = !empty($_POST[$param]) ? (int)$_POST[$param] : (int)$_GET[$param];
     } else {
