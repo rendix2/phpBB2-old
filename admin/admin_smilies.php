@@ -119,7 +119,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 		$fcontents = @file($phpbb_root_path . $board_config['smilies_path'] . '/'. $smile_pak);
 
 		if (empty($fcontents) ) {
-			message_die(GENERAL_ERROR, "Couldn't read smiley pak file", "", __LINE__, __FILE__, $sql);
+			message_die(GENERAL_ERROR, "Couldn't read smiley pak file", "", __LINE__, __FILE__);
 		}
 
 		for ($i = 0; $i < count($fcontents); $i++ ) {

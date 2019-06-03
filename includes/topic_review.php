@@ -208,7 +208,7 @@ function topic_review($topic_id, $is_inline_review)
             $i++;
 		}
 	} else {
-		message_die(GENERAL_MESSAGE, 'Topic_post_not_exist', '', __LINE__, __FILE__, $sql);
+		message_die(GENERAL_MESSAGE, 'Topic_post_not_exist', '', __LINE__, __FILE__);
 	}
 
     $template->assign_vars(

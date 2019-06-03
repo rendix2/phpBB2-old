@@ -568,7 +568,7 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 // CRITICAL_ERROR : Used when config data cannot be obtained, eg
 // no database connection. Should _not_ be used in 99.5% of cases
 //
-function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '', $err_file = '', $sql = '')
+function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '', $err_file = '')
 {
 	global $db, $template, $board_config, $theme, $lang, $phpbb_root_path, $nav_links, $gen_simple_header, $images;
 	global $userdata, $user_ip, $session_length;
@@ -578,9 +578,6 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 	}
 	
 	define('HAS_DIED', 1);
-	
-
-	$sql_store = $sql;
 
     $debug_text = '';
 	
@@ -589,16 +586,6 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 	// subsequent queries from overwriting the status of sql_error()
 	//
 	if ( DEBUG && ( $msg_code == GENERAL_ERROR || $msg_code == CRITICAL_ERROR ) ) {
-		$sql_error = $db->sql_error();
-
-		if ( $sql_error['message'] != '' ) {
-			$debug_text .= '<br /><br />SQL Error : ' . $sql_error['code'] . ' ' . $sql_error['message'];
-		}
-
-		if ( $sql_store != '' ) {
-			$debug_text .= "<br /><br />$sql_store";
-		}
-
 		if ( $err_line != '' && $err_file != '' ) {
 			$debug_text .= '<br /><br />Line : ' . $err_line . '<br />File : ' . basename($err_file);
 		}

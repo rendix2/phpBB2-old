@@ -75,7 +75,6 @@ include $phpbb_root_path . 'includes/template.php';
 include $phpbb_root_path . 'includes/sessions.php';
 include $phpbb_root_path . 'includes/auth.php';
 include $phpbb_root_path . 'includes/functions.php';
-include $phpbb_root_path . 'includes/db.php';
 include $phpbb_root_path .'vendor/autoload.php';
 
 // now we connect to database via dibi!
