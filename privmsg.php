@@ -60,7 +60,7 @@ if (isset($_POST['folder']) || isset($_GET['folder'])) {
     $folder = isset($_POST['folder']) ? $_POST['folder'] : $_GET['folder'];
     $folder = htmlspecialchars($folder);
 
-    if ($folder != 'inbox' && $folder != 'outbox' && $folder != 'sentbox' && $folder != 'savebox') {
+    if ($folder !== 'inbox' && $folder !== 'outbox' && $folder !== 'sentbox' && $folder !== 'savebox') {
         $folder = 'inbox';
     }
 } else {
@@ -107,17 +107,17 @@ $error = FALSE;
 //
 // Define the box image links
 //
-$inbox_img = ( $folder != 'inbox' || $mode != '' ) ? '<a href="' . append_sid("privmsg.php?folder=inbox") . '"><img src="' . $images['pm_inbox'] . '" border="0" alt="' . $lang['Inbox'] . '" /></a>' : '<img src="' . $images['pm_inbox'] . '" border="0" alt="' . $lang['Inbox'] . '" />';
-$inbox_url = ( $folder != 'inbox' || $mode != '' ) ? '<a href="' . append_sid("privmsg.php?folder=inbox") . '">' . $lang['Inbox'] . '</a>' : $lang['Inbox'];
+$inbox_img = ( $folder !== 'inbox' || $mode !== '' ) ? '<a href="' . append_sid("privmsg.php?folder=inbox") . '"><img src="' . $images['pm_inbox'] . '" border="0" alt="' . $lang['Inbox'] . '" /></a>' : '<img src="' . $images['pm_inbox'] . '" border="0" alt="' . $lang['Inbox'] . '" />';
+$inbox_url = ( $folder !== 'inbox' || $mode !== '' ) ? '<a href="' . append_sid("privmsg.php?folder=inbox") . '">' . $lang['Inbox'] . '</a>' : $lang['Inbox'];
 
-$outbox_img = ( $folder != 'outbox' || $mode != '' ) ? '<a href="' . append_sid("privmsg.php?folder=outbox") . '"><img src="' . $images['pm_outbox'] . '" border="0" alt="' . $lang['Outbox'] . '" /></a>' : '<img src="' . $images['pm_outbox'] . '" border="0" alt="' . $lang['Outbox'] . '" />';
-$outbox_url = ( $folder != 'outbox' || $mode != '' ) ? '<a href="' . append_sid("privmsg.php?folder=outbox") . '">' . $lang['Outbox'] . '</a>' : $lang['Outbox'];
+$outbox_img = ( $folder !== 'outbox' || $mode !== '' ) ? '<a href="' . append_sid("privmsg.php?folder=outbox") . '"><img src="' . $images['pm_outbox'] . '" border="0" alt="' . $lang['Outbox'] . '" /></a>' : '<img src="' . $images['pm_outbox'] . '" border="0" alt="' . $lang['Outbox'] . '" />';
+$outbox_url = ( $folder !== 'outbox' || $mode !== '' ) ? '<a href="' . append_sid("privmsg.php?folder=outbox") . '">' . $lang['Outbox'] . '</a>' : $lang['Outbox'];
 
-$sentbox_img = ( $folder != 'sentbox' || $mode != '' ) ? '<a href="' . append_sid("privmsg.php?folder=sentbox") . '"><img src="' . $images['pm_sentbox'] . '" border="0" alt="' . $lang['Sentbox'] . '" /></a>' : '<img src="' . $images['pm_sentbox'] . '" border="0" alt="' . $lang['Sentbox'] . '" />';
-$sentbox_url = ( $folder != 'sentbox' || $mode != '' ) ? '<a href="' . append_sid("privmsg.php?folder=sentbox") . '">' . $lang['Sentbox'] . '</a>' : $lang['Sentbox'];
+$sentbox_img = ( $folder !== 'sentbox' || $mode !== '' ) ? '<a href="' . append_sid("privmsg.php?folder=sentbox") . '"><img src="' . $images['pm_sentbox'] . '" border="0" alt="' . $lang['Sentbox'] . '" /></a>' : '<img src="' . $images['pm_sentbox'] . '" border="0" alt="' . $lang['Sentbox'] . '" />';
+$sentbox_url = ( $folder !== 'sentbox' || $mode !== '' ) ? '<a href="' . append_sid("privmsg.php?folder=sentbox") . '">' . $lang['Sentbox'] . '</a>' : $lang['Sentbox'];
 
-$savebox_img = ( $folder != 'savebox' || $mode != '' ) ? '<a href="' . append_sid("privmsg.php?folder=savebox") . '"><img src="' . $images['pm_savebox'] . '" border="0" alt="' . $lang['Savebox'] . '" /></a>' : '<img src="' . $images['pm_savebox'] . '" border="0" alt="' . $lang['Savebox'] . '" />';
-$savebox_url = ( $folder != 'savebox' || $mode != '' ) ? '<a href="' . append_sid("privmsg.php?folder=savebox") . '">' . $lang['Savebox'] . '</a>' : $lang['Savebox'];
+$savebox_img = ( $folder !== 'savebox' || $mode !== '' ) ? '<a href="' . append_sid("privmsg.php?folder=savebox") . '"><img src="' . $images['pm_savebox'] . '" border="0" alt="' . $lang['Savebox'] . '" /></a>' : '<img src="' . $images['pm_savebox'] . '" border="0" alt="' . $lang['Savebox'] . '" />';
+$savebox_url = ( $folder !== 'savebox' || $mode !== '' ) ? '<a href="' . append_sid("privmsg.php?folder=savebox") . '">' . $lang['Savebox'] . '</a>' : $lang['Savebox'];
 
 // ----------
 // Start main
@@ -552,7 +552,7 @@ if ($mode === 'newpm') {
 	// on then we process it, else leave it alone
 	//
     if (!$board_config['allow_html'] || !$userdata['user_allowhtml']) {
-        if ($user_sig != '') {
+        if ($user_sig !== '') {
             $user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
         }
 
@@ -561,17 +561,17 @@ if ($mode === 'newpm') {
         }
     }
 
-	if ( $user_sig != '' && $privmsg->privmsgs_attach_sig && $user_sig_bbcode_uid != '' ) {
+	if ( $user_sig !== '' && $privmsg->privmsgs_attach_sig && $user_sig_bbcode_uid !== '' ) {
 		$user_sig = $board_config['allow_bbcode'] ? bbencode_second_pass($user_sig, $user_sig_bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $user_sig);
 	}
 
-	if ( $bbcode_uid != '' ) {
+	if ( $bbcode_uid !== '' ) {
 		$private_message = $board_config['allow_bbcode'] ? bbencode_second_pass($private_message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $private_message);
 	}
 
 	$private_message = make_clickable($private_message);
 
-	if ( $privmsg->privmsgs_attach_sig && $user_sig != '' ) {
+	if ( $privmsg->privmsgs_attach_sig && $user_sig !== '' ) {
 		$private_message .= '<br /><br />_________________<br />' . make_clickable($user_sig);
 	}
 
@@ -836,7 +836,7 @@ if ($mode === 'newpm') {
 			}
 		}
 	}
-} elseif ( $save && $mark_list && $folder != 'savebox' && $folder != 'outbox' ) {
+} elseif ( $save && $mark_list && $folder !== 'savebox' && $folder !== 'outbox' ) {
     if (!$userdata['session_logged_in']) {
         redirect(append_sid("login.php?redirect=privmsg.php&folder=inbox", true));
     }
@@ -885,7 +885,7 @@ if ($mode === 'newpm') {
 		}
 
 		// Decrement read/new counters if appropriate
-		if ($folder == 'inbox' || $folder == 'outbox') {
+		if ($folder === 'inbox' || $folder === 'outbox') {
 			// Get information relevant to new or unread mail
 			// so we can adjust users counters appropriately
             $rows = dibi::select(['privmsgs_to_userid','privmsgs_type'])
@@ -977,7 +977,7 @@ if ($mode === 'newpm') {
 
 		redirect(append_sid("privmsg.php?folder=savebox", true));
 	}
-} elseif ( $submit || $refresh || $mode != '' ) {
+} elseif ( $submit || $refresh || $mode !== '' ) {
 	if ( !$userdata['session_logged_in'] ) {
 		$user_id = isset($_GET[POST_USERS_URL]) ? '&' . POST_USERS_URL . '=' . (int)$_GET[POST_USERS_URL] : '';
 		redirect(append_sid("login.php?redirect=privmsg.php&folder=$folder&mode=$mode" . $user_id, true));
@@ -1005,9 +1005,9 @@ if ($mode === 'newpm') {
     }
 
 	$attach_sig = ( $submit || $refresh ) ? ( !empty($_POST['attach_sig']) ? TRUE : 0 ) : $userdata['user_attachsig'];
-	$user_sig = ( $userdata['user_sig'] != '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : "";
+	$user_sig = ( $userdata['user_sig'] !== '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : "";
 	
-	if ( $submit && $mode != 'edit' )
+	if ( $submit && $mode !== 'edit' )
 	{
 		//
 		// Flood control
@@ -1046,7 +1046,7 @@ if ($mode === 'newpm') {
 
     if ($submit) {
         // session id check
-        if ($sid == '' || $sid != $userdata['session_id']) {
+        if ($sid === '' || $sid !== $userdata['session_id']) {
             $error = true;
             $error_msg .= (!empty($error_msg) ? '<br />' : '') . $lang['Session_invalid'];
         }
@@ -1103,7 +1103,7 @@ if ($mode === 'newpm') {
 
 		$msg_time = time();
 
-        if ($mode != 'edit') {
+        if ($mode !== 'edit') {
 			//
 			// See if recipient is at their inbox limit
 			//
@@ -1176,7 +1176,7 @@ if ($mode === 'newpm') {
                 ->execute();
 		}
 
-        if ($mode != 'edit') {
+        if ($mode !== 'edit') {
 			$insert_data = [
 			    'privmsgs_text_id' => $privmsg_sent_id,
                 'privmsgs_bbcode_uid' => $bbcode_uid,
@@ -1195,7 +1195,7 @@ if ($mode === 'newpm') {
                 ->execute();
 		}
 
-        if ($mode != 'edit') {
+        if ($mode !== 'edit') {
 			//
 			// Add to the users new pm counter
 			//
@@ -1211,7 +1211,7 @@ if ($mode === 'newpm') {
 
             if ($to_userdata['user_notify_pm'] && !empty($to_userdata['user_email']) && $to_userdata['user_active']) {
 				$script_name = preg_replace('/^\/?(.*?)\/?$/', "\\1", trim($board_config['script_path']));
-				$script_name = ( $script_name != '' ) ? $script_name . '/privmsg.php' : 'privmsg.php';
+				$script_name = ( $script_name !== '' ) ? $script_name . '/privmsg.php' : 'privmsg.php';
 				$server_name = trim($board_config['server_name']);
 				$server_protocol = $board_config['cookie_secure'] ? 'https://' : 'http://';
 				$server_port = ( $board_config['server_port'] <> 80 ) ? ':' . trim($board_config['server_port']) . '/' : '/';
@@ -1274,11 +1274,11 @@ if ($mode === 'newpm') {
         if ($mode === 'post') {
             $page_title = $lang['Post_new_pm'];
 
-            $user_sig = ($userdata['user_sig'] != '' && $board_config['allow_sig']) ? $userdata['user_sig'] : '';
+            $user_sig = ($userdata['user_sig'] !== '' && $board_config['allow_sig']) ? $userdata['user_sig'] : '';
         } elseif ($mode === 'reply') {
             $page_title = $lang['Post_reply_pm'];
 
-            $user_sig = ($userdata['user_sig'] != '' && $board_config['allow_sig']) ? $userdata['user_sig'] : '';
+            $user_sig = ($userdata['user_sig'] !== '' && $board_config['allow_sig']) ? $userdata['user_sig'] : '';
         } elseif ($mode === 'edit') {
             $page_title = $lang['Edit_pm'];
 
@@ -1291,11 +1291,11 @@ if ($mode === 'newpm') {
                 ->where('u.user_id = pm.privmsgs_from_userid')
                 ->fetch();
 
-            if ($userdata['user_id'] != $postrow->user_id) {
+            if ($userdata['user_id'] !== $postrow->user_id) {
                 message_die(GENERAL_MESSAGE, $lang['Edit_own_posts']);
             }
 
-            $user_sig = ($postrow->user_sig != '' && $board_config['allow_sig']) ? $postrow->user_sig : '';
+            $user_sig = ($postrow->user_sig !== '' && $board_config['allow_sig']) ? $postrow->user_sig : '';
         }
 	} else {
         if (!$privmsg_id && ($mode === 'reply' || $mode === 'edit' || $mode === 'quote')) {
@@ -1421,7 +1421,7 @@ if ($mode === 'newpm') {
 	//
 	// Has admin prevented user from sending PM's?
 	//
-    if (!$userdata['user_allow_pm'] && $mode != 'edit') {
+    if (!$userdata['user_allow_pm'] && $mode !== 'edit') {
         $message = $lang['Cannot_send_privmsg'];
         message_die(GENERAL_MESSAGE, $message);
     }
@@ -1448,12 +1448,12 @@ if ($mode === 'newpm') {
         // Finalise processing as per viewtopic
         //
         if (!$html_on || !$board_config['allow_html'] || !$userdata['user_allowhtml']) {
-            if ($user_sig != '') {
+            if ($user_sig !== '') {
                 $user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
             }
         }
 
-        if ($attach_sig && $user_sig != '' && $userdata['user_sig_bbcode_uid']) {
+        if ($attach_sig && $user_sig !== '' && $userdata['user_sig_bbcode_uid']) {
             $user_sig = bbencode_second_pass($user_sig, $userdata['user_sig_bbcode_uid']);
         }
 
@@ -1461,7 +1461,7 @@ if ($mode === 'newpm') {
             $preview_message = bbencode_second_pass($preview_message, $bbcode_uid);
         }
 
-        if ($attach_sig && $user_sig != '') {
+        if ($attach_sig && $user_sig !== '') {
             $preview_message = $preview_message . '<br /><br />_________________<br />' . $user_sig;
         }
 
@@ -1567,7 +1567,7 @@ if ($mode === 'newpm') {
 	// Signature toggle selection - only show if
 	// the user has a signature
 	//
-    if ($user_sig != '') {
+    if ($user_sig !== '') {
         $template->assign_block_vars('switch_signature_checkbox', []);
     }
 
@@ -1882,7 +1882,7 @@ $post_pm = '<a href="' . $post_pm . '">' . $lang['Post_new_pm'] . '</a>';
 //
 // Output data for inbox status
 //
-if ( $folder != 'outbox' ) {
+if ( $folder !== 'outbox' ) {
 	$inbox_limit_pct = ( $board_config['max_' . $folder . '_privmsgs'] > 0 ) ? round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * 100) : 100;
 	$inbox_limit_img_length = ( $board_config['max_' . $folder . '_privmsgs'] > 0 ) ? round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * $board_config['privmsg_graphic_length']) : $board_config['privmsg_graphic_length'];
 	$inbox_limit_remain = ( $board_config['max_' . $folder . '_privmsgs'] > 0 ) ? $board_config['max_' . $folder . '_privmsgs'] - $pm_all_total : 0;

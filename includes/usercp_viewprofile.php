@@ -57,7 +57,7 @@ $memberdays = max(1, round( ( time() - $regdate ) / 86400 ));
 $posts_per_day = $profile_data['user_posts'] / $memberdays;
 
 // Get the users percentage of total posts
-if ($profile_data['user_posts'] != 0  ) {
+if ($profile_data['user_posts'] !== 0  ) {
 	$total_posts = get_db_stat('postcount');
 	$percentage = $total_posts ? min(100, ($profile_data['user_posts'] / $total_posts) * 100) : 0;
 } else {

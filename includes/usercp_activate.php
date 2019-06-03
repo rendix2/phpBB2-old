@@ -54,7 +54,7 @@ if ($row['user_active'] && trim($row['user_actkey']) == '') {
 if ((int)$board_config['require_activation'] == USER_ACTIVATION_ADMIN && $row['user_newpasswd'] == '') {
     if (!$userdata['session_logged_in']) {
         redirect(append_sid('login.php?redirect=profile.php&mode=activate&' . POST_USERS_URL . '=' . $row['user_id'] . '&act_key=' . trim($_GET['act_key'])));
-    } elseif ($userdata['user_level'] != ADMIN) {
+    } elseif ($userdata['user_level'] !== ADMIN) {
         message_die(GENERAL_MESSAGE, $lang['Not_Authorised']);
     }
 }
@@ -64,7 +64,7 @@ $update_data = [
     'user_actkey' => ''
 ];
 
-if ($row['user_newpasswd'] != '') {
+if ($row['user_newpasswd'] !== '') {
     $update_data['user_password'] = $row['user_newpasswd'];
     $update_data['user_newpasswd'] = '';
 }

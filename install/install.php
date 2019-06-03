@@ -491,7 +491,7 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] == 1 && empty($_POST['upg
 		page_footer();
 		exit();
 	}
-} elseif (empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin_pass1) || empty($dbhost)) {
+} elseif (empty($install_step) || $admin_pass1 !== $admin_pass2 || empty($admin_pass1) || empty($dbhost)) {
 	// Ok we haven't installed before so lets work our way through the various
 	// steps of the install process.  This could turn out to be quite a lengty 
 	// process.
@@ -501,7 +501,7 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] == 1 && empty($_POST['upg
 	$instruction_text = $lang['Inst_Step_0'];
 
     if (!empty($install_step)) {
-        if ($_POST['admin_pass1'] != $_POST['admin_pass2'] || (empty($_POST['admin_pass1']) || empty($dbhost)) && $_POST['cur_lang'] == $language) {
+        if ($_POST['admin_pass1'] !== $_POST['admin_pass2'] || (empty($_POST['admin_pass1']) || empty($dbhost)) && $_POST['cur_lang'] == $language) {
             $error = $lang['Password_mismatch'];
         }
     }
@@ -571,19 +571,19 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] == 1 && empty($_POST['upg
 					</tr>
 					<tr>
 						<td class="row1" align="right"><span class="gen"><?php echo $lang['DB_Host']; ?>: </span></td>
-						<td class="row2"><input type="text" name="dbhost" value="<?php echo ($dbhost != '') ? $dbhost : ''; ?>" /></td>
+						<td class="row2"><input type="text" name="dbhost" value="<?php echo ($dbhost !== '') ? $dbhost : ''; ?>" /></td>
 					</tr>
 					<tr>
 						<td class="row1" align="right"><span class="gen"><?php echo $lang['DB_Name']; ?>: </span></td>
-						<td class="row2"><input type="text" name="dbname" value="<?php echo ($dbname != '') ? $dbname : ''; ?>" /></td>
+						<td class="row2"><input type="text" name="dbname" value="<?php echo ($dbname !== '') ? $dbname : ''; ?>" /></td>
 					</tr>
 					<tr>
 						<td class="row1" align="right"><span class="gen"><?php echo $lang['DB_Username']; ?>: </span></td>
-						<td class="row2"><input type="text" name="dbuser" value="<?php echo ($dbuser != '') ? $dbuser : ''; ?>" /></td>
+						<td class="row2"><input type="text" name="dbuser" value="<?php echo ($dbuser !== '') ? $dbuser : ''; ?>" /></td>
 					</tr>
 					<tr>
 						<td class="row1" align="right"><span class="gen"><?php echo $lang['DB_Password']; ?>: </span></td>
-						<td class="row2"><input type="password" name="dbpasswd" value="<?php echo ($dbpasswd != '') ? $dbpasswd : ''; ?>" /></td>
+						<td class="row2"><input type="password" name="dbpasswd" value="<?php echo ($dbpasswd !== '') ? $dbpasswd : ''; ?>" /></td>
 					</tr>
 					<tr>
 						<td class="row1" align="right"><span class="gen"><?php echo $lang['Table_Prefix']; ?>: </span></td>
@@ -606,7 +606,7 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] == 1 && empty($_POST['upg
 ?>
 					<tr>
 						<td class="row1" align="right"><span class="gen"><?php echo $lang['Admin_email']; ?>: </span></td>
-						<td class="row2"><input type="text" name="board_email" value="<?php echo ($board_email != '') ? $board_email : ''; ?>" /></td>
+						<td class="row2"><input type="text" name="board_email" value="<?php echo $board_email; ?>" /></td>
 					</tr> 
 					<tr>
 						<td class="row1" align="right"><span class="gen"><?php echo $lang['Server_name']; ?>: </span></td>
@@ -622,15 +622,15 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] == 1 && empty($_POST['upg
 					</tr>
 					<tr>
 						<td class="row1" align="right"><span class="gen"><?php echo $lang['Admin_Username']; ?>: </span></td>
-						<td class="row2"><input type="text" name="admin_name" value="<?php echo ($admin_name != '') ? $admin_name : ''; ?>" /></td>
+						<td class="row2"><input type="text" name="admin_name" value="<?php echo $admin_name; ?>" /></td>
 					</tr>
 					<tr>
 						<td class="row1" align="right"><span class="gen"><?php echo $lang['Admin_Password']; ?>: </span></td>
-						<td class="row2"><input type="password" name="admin_pass1" value="<?php echo ($admin_pass1 != '') ? $admin_pass1 : ''; ?>" /></td>
+						<td class="row2"><input type="password" name="admin_pass1" value="<?php echo $admin_pass1; ?>" /></td>
 					</tr>
 					<tr>
 						<td class="row1" align="right"><span class="gen"><?php echo $lang['Admin_Password_confirm']; ?>: </span></td>
-						<td class="row2"><input type="password" name="admin_pass2" value="<?php echo ($admin_pass2 != '') ? $admin_pass2 : ''; ?>" /></td>
+						<td class="row2"><input type="password" name="admin_pass2" value="<?php echo $admin_pass2; ?>" /></td>
 					</tr>
 <?php
 
@@ -700,9 +700,9 @@ else
 	$delimiter = $available_dbms[$dbms]['DELIM']; 
 	$delimiter_basic = $available_dbms[$dbms]['DELIM_BASIC'];
 
-	if ($install_step == 1) {
-		if ($upgrade != 1) {
-			if ($dbms != 'msaccess') {
+	if ($install_step === 1) {
+		if ($upgrade !== 1) {
+			if ($dbms !== 'msaccess') {
 				// Load in the sql parser
 				include $phpbb_root_path.'includes/sql_parse.php';
 
@@ -717,7 +717,7 @@ else
 				$sql_query = split_sql_file($sql_query, $delimiter);
 
 				for ($i = 0; $i < count($sql_query); $i++) {
-					if (trim($sql_query[$i]) != '') {
+					if (trim($sql_query[$i]) !== '') {
 					    $result = dibi::query($sql_query[$i]);
 					}
 				}
@@ -781,7 +781,7 @@ else
             dibi::update($table_prefix . "users", ['user_regdate' => time()])
             ->execute();
 
-			if ($error != '') {
+			if ($error !== '') {
 				page_header($lang['Install'], '');
 				page_error($lang['Installer_Error'], $lang['Install_db_error'] . '<br /><br />' . $error);
 				page_footer();

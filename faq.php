@@ -69,7 +69,7 @@ $faq_block_titles = [];
 $faq_count = count($faq);
 
 for ($i = 0; $i < $faq_count; $i++) {
-	if ($faq[$i][0] != '--' ) {
+	if ($faq[$i][0] !== '--' ) {
 		$faq_block[$j][$counter]['id'] = $counter_2;
 		$faq_block[$j][$counter]['question'] = $faq[$i][0];
 		$faq_block[$j][$counter]['answer'] = $faq[$i][1];
@@ -77,7 +77,7 @@ for ($i = 0; $i < $faq_count; $i++) {
 		$counter++;
 		$counter_2++;
 	} else {
-		$j = ( $counter != 0 ) ? $j + 1 : 0;
+		$j = ( $counter !== 0 ) ? $j + 1 : 0;
 
 		$faq_block_titles[$j] = $faq[$i][1];
 

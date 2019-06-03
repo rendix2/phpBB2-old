@@ -123,7 +123,7 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 	// then we need to pull the auth information on the given forum (or all forums)
 	//
     if (empty($f_access)) {
-        if ($forum_id != AUTH_LIST_ALL) {
+        if ($forum_id !== AUTH_LIST_ALL) {
             $f_access = dibi::select('a.forum_id')
                 ->select($a_sql)
                 ->from(FORUMS_TABLE)
@@ -161,12 +161,12 @@ function auth($type, $forum_id, $userdata, $f_access = '')
             ->where('ug.user_pending = %i', 0)
             ->where('a.group_id = ug.group_id');
 
-        if ($forum_id != AUTH_LIST_ALL) {
+        if ($forum_id !== AUTH_LIST_ALL) {
             $rows->where('a.forum_id = %i', $forum_id);
         }
 
         foreach ($rows as $row) {
-            if ($forum_id != AUTH_LIST_ALL) {
+            if ($forum_id !== AUTH_LIST_ALL) {
                 $u_access[] = $row;
             } else {
                 $u_access[$row->forum_id][] = $row;
@@ -174,7 +174,7 @@ function auth($type, $forum_id, $userdata, $f_access = '')
         }
 	}
 
-	$is_admin = ( $userdata['user_level'] == ADMIN && $userdata['session_logged_in'] ) ? TRUE : 0;
+	$is_admin = ( $userdata['user_level'] === ADMIN && $userdata['session_logged_in'] ) ? TRUE : 0;
 
 	$auth_user = [];
 
@@ -192,7 +192,7 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 		// and admin automatically have access to an ACL forum, similarly we assume admins meet an
 		// auth requirement of MOD
 		//
-		if ( $forum_id != AUTH_LIST_ALL ) {
+		if ( $forum_id !== AUTH_LIST_ALL ) {
 			$value = $f_access[$key];
 
 			switch( $value ) {
@@ -268,7 +268,7 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 	//
 	// Is user a moderator?
 	//
-	if ( $forum_id != AUTH_LIST_ALL ) {
+	if ( $forum_id !== AUTH_LIST_ALL ) {
 		$auth_user['auth_mod'] = $userdata['session_logged_in'] ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access, $is_admin) : 0;
 	} else {
 		for ($k = 0; $k < count($f_access); $k++) {

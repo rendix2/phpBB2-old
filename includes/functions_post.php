@@ -94,7 +94,7 @@ function prepare_post(&$mode, &$post_data, &$bbcode_on, &$html_on, &$smilies_on,
 	if (!empty($username)) {
 		$username = phpbb_clean_username($username);
 
-		if (!$userdata['session_logged_in'] || ($userdata['session_logged_in'] && $username != $userdata['username'])) {
+		if (!$userdata['session_logged_in'] || ($userdata['session_logged_in'] && $username !== $userdata['username'])) {
 			include $phpbb_root_path . 'includes/functions_validate.php';
 
 			$result = validate_username($username);
@@ -569,7 +569,7 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 				@set_time_limit(60);
 
 				foreach ($users as $user) {
-                    if ($user->user_email != '') {
+                    if ($user->user_email !== '') {
                         $bcc_list_ary[$user->user_lang][] = $user->user_email;
                     }
 
@@ -594,7 +594,7 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 					$emailer = new emailer($board_config['smtp_delivery']);
 
 					$script_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['script_path']));
-					$script_name = ($script_name != '') ? $script_name . '/viewtopic.php' : 'viewtopic.php';
+					$script_name = ($script_name !== '') ? $script_name . '/viewtopic.php' : 'viewtopic.php';
 					$server_name = trim($board_config['server_name']);
 					$server_protocol = $board_config['cookie_secure'] ? 'https://' : 'http://';
 					$server_port = ($board_config['server_port'] <> 80) ? ':' . trim($board_config['server_port']) . '/' : '/';

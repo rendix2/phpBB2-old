@@ -145,7 +145,7 @@ function topic_review($topic_id, $is_inline_review)
 			//
 			// Handle anon users posting with usernames
 			//
-            if ($poster_id == ANONYMOUS && $row->post_username != '') {
+            if ($poster_id == ANONYMOUS && $row->post_username !== '') {
 				$poster = $row->post_username;
 				$poster_rank = $lang['Guest'];
             } elseif ($poster_id == ANONYMOUS) {
@@ -153,7 +153,7 @@ function topic_review($topic_id, $is_inline_review)
 				$poster_rank = '';
 			}
 
-			$post_subject = ( $row->post_subject != '' ) ? $row->post_subject : '';
+			$post_subject = $row->post_subject;
 
 			$message = $row->post_text;
 			$bbcode_uid = $row->bbcode_uid;
@@ -166,7 +166,7 @@ function topic_review($topic_id, $is_inline_review)
                 $message = preg_replace('#(<)([\/]?.*?)(>)#is', '&lt;\2&gt;', $message);
             }
 
-            if ($bbcode_uid != "") {
+            if ($bbcode_uid !== "") {
                 $message = $board_config['allow_bbcode'] ? bbencode_second_pass($message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
             }
 

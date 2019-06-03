@@ -39,7 +39,7 @@ if (isset($lang['TRANSLATION_INFO']) ) {
 
 $template->assign_vars(
     [
-        'PHPBB_VERSION'    => ($userdata['user_level'] == ADMIN && $userdata['user_id'] != ANONYMOUS) ? '2' . $board_config['version'] : '',
+        'PHPBB_VERSION'    => ($userdata['user_level'] === ADMIN && $userdata['user_id'] !== ANONYMOUS) ? '2' . $board_config['version'] : '',
         'TRANSLATION_INFO' => $translation_info
     ]
 );

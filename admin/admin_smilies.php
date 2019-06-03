@@ -264,7 +264,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
     );
 
     $template->pparse("body");
-} elseif ( $mode != "" ) {
+} elseif ( $mode !== "" ) {
 	switch( $mode ) {
 		case 'delete':
 			//

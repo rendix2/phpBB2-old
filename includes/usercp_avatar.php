@@ -52,7 +52,7 @@ function user_avatar_delete($avatar_type, $avatar_file)
 
 	$avatar_file = basename($avatar_file);
 
-	if ( $avatar_type == USER_AVATAR_UPLOAD && $avatar_file != '' ) {
+	if ( $avatar_type == USER_AVATAR_UPLOAD && $avatar_file !== '' ) {
 		if ( @file_exists(@phpbb_realpath('./' . $board_config['avatar_path'] . '/' . $avatar_file)) ) {
 			@unlink('./' . $board_config['avatar_path'] . '/' . $avatar_file);
 		}
@@ -201,7 +201,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 	switch ($type) {
 		// GIF
 		case 1:
-			if ($imgtype != '.gif')
+			if ($imgtype !== '.gif')
 			{
 				@unlink($tmp_filename);
 				message_die(GENERAL_ERROR, 'Unable to upload file', '', __LINE__, __FILE__);
@@ -214,7 +214,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 		case 10:
 		case 11:
 		case 12:
-			if ($imgtype != '.jpg' && $imgtype != '.jpeg')
+			if ($imgtype !== '.jpg' && $imgtype !== '.jpeg')
 			{
 				@unlink($tmp_filename);
 				message_die(GENERAL_ERROR, 'Unable to upload file', '', __LINE__, __FILE__);
@@ -223,7 +223,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 
 		// PNG
 		case 3:
-			if ($imgtype != '.png')
+			if ($imgtype !== '.png')
 			{
 				@unlink($tmp_filename);
 				message_die(GENERAL_ERROR, 'Unable to upload file', '', __LINE__, __FILE__);
@@ -239,15 +239,15 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 	{
 		$new_filename = uniqid(rand()) . $imgtype;
 
-		if ( $mode === 'editprofile' && $current_type == USER_AVATAR_UPLOAD && $current_avatar != '' ) {
+		if ( $mode === 'editprofile' && $current_type === USER_AVATAR_UPLOAD && $current_avatar !== '' ) {
 			user_avatar_delete($current_type, $current_avatar);
 		}
 
-		if ($avatar_mode == 'remote' ) {
+		if ($avatar_mode === 'remote' ) {
 			@copy($tmp_filename, './' . $board_config['avatar_path'] . "/$new_filename");
 			@unlink($tmp_filename);
 		} else {
-			if ( @$ini_val('open_basedir') != '' ) {
+			if ( @$ini_val('open_basedir') !== '' ) {
 				if ( @PHP_VERSION < '4.0.3' ) {
 					message_die(GENERAL_ERROR, 'open_basedir is set and your PHP version does not allow move_uploaded_file', '', __LINE__, __FILE__);
 				}
@@ -286,7 +286,7 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 	$avatar_images = [];
 
 	while ($file = @readdir($dir) ) {
-		if ($file != '.' && $file != '..' && !is_file($board_config['avatar_gallery_path'] . '/' . $file) && !is_link($board_config['avatar_gallery_path'] . '/' . $file) ) {
+		if ($file !== '.' && $file !== '..' && !is_file($board_config['avatar_gallery_path'] . '/' . $file) && !is_link($board_config['avatar_gallery_path'] . '/' . $file) ) {
 			$sub_dir = @opendir($board_config['avatar_gallery_path'] . '/' . $file);
 
 			$avatar_row_count = 0;

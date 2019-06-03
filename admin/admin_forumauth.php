@@ -217,7 +217,7 @@ if (empty($forum_id) ) {
 		foreach ($auth_levels as $k => $auth_level) {
 			$matched_type = $key;
 
-			if ( $forum_rows[0]->{$forum_auth_fields[$k]} != $auth_level ) {
+			if ( $forum_rows[0]->{$forum_auth_fields[$k]} !== $auth_level ) {
 				$matched = 0;
 			}
 		}

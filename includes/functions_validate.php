@@ -41,7 +41,7 @@ function validate_username($username)
         ->fetch();
 
 	if ($db_user_name) {
-        if (($userdata['session_logged_in'] && $db_user_name->username != $userdata['username']) || !$userdata['session_logged_in']) {
+        if (($userdata['session_logged_in'] && $db_user_name->username !== $userdata['username']) || !$userdata['session_logged_in']) {
 
             return ['error' => true, 'error_msg' => $lang['Username_taken']];
         }
@@ -93,7 +93,7 @@ function validate_email($email)
 {
 	global $lang;
 
-	if ($email != '') {
+	if ($email !== '') {
 		if (preg_match('/^[a-z0-9&\'\.\-_\+]+@[a-z0-9\-]+\.([a-z0-9\-]+\.)*?[a-z]+$/is', $email)) {
 
 		    $bans = dibi::select('ban_email')
@@ -146,7 +146,7 @@ function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$loca
 	
 	// website has to start with http://, followed by something with length at least 3 that
 	// contains at least one dot.
-	if ($website != "") {
+	if ($website !== "") {
 		if (!preg_match('#^http[s]?:\/\/#i', $website)) {
 			$website = 'http://' . $website;
 		}

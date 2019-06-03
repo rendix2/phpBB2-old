@@ -69,8 +69,8 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 	//
 	$userdata = [];
 
-	if ($user_id != ANONYMOUS) {
-		if (isset($sessiondata['autologinid']) && (string) $sessiondata['autologinid'] != '' && $user_id) {
+	if ($user_id !== ANONYMOUS) {
+		if (isset($sessiondata['autologinid']) && (string) $sessiondata['autologinid'] !== '' && $user_id) {
             $userdata = dibi::select('u.*')
                 ->from(USERS_TABLE)
                 ->as('u')
@@ -141,7 +141,7 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
     ];
 
 	// check if banned :)
-	if ( $user_id != ANONYMOUS ) {
+	if ( $user_id !== ANONYMOUS ) {
 	    $ban_email = $userdata['user_email'];
 	    $ban_email2 = substr( $userdata['user_email'], strpos($userdata['user_email'], '@'));
 
@@ -202,7 +202,7 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
         dibi::insert(SESSIONS_TABLE, $insert_data)->execute();
     }
 
-	if ( $user_id != ANONYMOUS ) {
+	if ( $user_id !== ANONYMOUS ) {
 		$last_visit = ( $userdata['user_session_time'] > 0 ) ? $userdata['user_session_time'] : $current_time; 
 
 		if (!$admin) {
@@ -225,7 +225,7 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 		if ($enable_autologin) {
 			$auto_login_key = dss_rand() . dss_rand();
 			
-			if (isset($sessiondata['autologinid']) && (string) $sessiondata['autologinid'] != '') {
+			if (isset($sessiondata['autologinid']) && (string) $sessiondata['autologinid'] !== '') {
 			    $update_data = [
 			       'last_ip' =>  $user_ip,
                     'key_id' => md5($auto_login_key),
@@ -359,7 +359,7 @@ function session_pagestart($user_ip, $thispage_id)
                         ->where('session_id = %s', $userdata['session_id'])
                         ->execute();
 
-					if ( $userdata['user_id'] != ANONYMOUS ) {
+					if ( $userdata['user_id'] !== ANONYMOUS ) {
 					    dibi::update(USERS_TABLE, ['user_session_time' => $current_time, 'user_session_page' => $thispage_id])
                             ->where('user_id = %i', $userdata['user_id'])
                             ->execute();
@@ -372,7 +372,7 @@ function session_pagestart($user_ip, $thispage_id)
 				}
 
 				// Add the session_key to the userdata array if it is set
-				if ( isset($sessiondata['autologinid']) && $sessiondata['autologinid'] != '' ) {
+				if ( isset($sessiondata['autologinid']) && $sessiondata['autologinid'] !== '' ) {
 					$userdata['session_key'] = $sessiondata['autologinid'];
 				}
 
@@ -428,7 +428,7 @@ function session_end($session_id, $user_id)
 	//
 	// Remove this auto-login entry (if applicable)
 	//
-	if ( isset($userdata['session_key']) && $userdata['session_key'] != '' ) {
+	if ( isset($userdata['session_key']) && $userdata['session_key'] !== '' ) {
 		$autologin_key = md5($userdata['session_key']);
 
 		dibi::delete(SESSIONS_KEYS_TABLE)

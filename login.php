@@ -68,7 +68,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
             ->fetch();
 
 		if ($row) {
-            if ($row->user_level != ADMIN && $board_config['board_disable'] ) {
+            if ($row->user_level !== ADMIN && $board_config['board_disable'] ) {
 				redirect(append_sid("index.php", true));
 			} else {
 				// If the last login is more than x minutes ago, then reset the login tries/time
@@ -83,7 +83,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 				// Check to see if user is allowed to login again... if his tries are exceeded
 				if ($row->user_last_login_try && $board_config['login_reset_time'] && $board_config['max_login_attempts'] &&
 					$row->user_last_login_try >= (time() - ($board_config['login_reset_time'] * 60)) &&
-					$row->user_login_tries >= $board_config['max_login_attempts'] && $userdata['user_level'] != ADMIN)
+					$row->user_login_tries >= $board_config['max_login_attempts'] && $userdata['user_level'] !== ADMIN)
 				{
 					message_die(GENERAL_MESSAGE, sprintf($lang['Login_attempts_exceeded'], $board_config['max_login_attempts'], $board_config['login_reset_time']));
 				}
@@ -110,7 +110,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 				// Only store a failed login attempt for an active user - inactive users can't login even with a correct password
 				elseif ($row->user_active ) {
 					// Save login tries and last login
-					if ($row->user_id != ANONYMOUS) {
+					if ($row->user_id !== ANONYMOUS) {
                         $update_data = ['user_login_tries%sql' => 'user_login_tries + 1', 'user_last_login_try' => time()];
 
                         dibi::update(USERS_TABLE, $update_data)
@@ -156,7 +156,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 		}
 	} elseif (( isset($_GET['logout']) || isset($_POST['logout']) ) && $userdata['session_logged_in'] ) {
 		// session id check
-		if ($sid == '' || $sid != $userdata['session_id']) {
+		if ($sid === '' || $sid !== $userdata['session_id']) {
 			message_die(GENERAL_ERROR, 'Invalid_session');
 		}
 
@@ -198,7 +198,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 				if (count($forward_match) > 1) {
 					for ($i = 1; $i < count($forward_match); $i++) {
 						if (!preg_match("/sid=/", $forward_match[$i]) ) {
-							if ($forward_page != '' ) {
+							if ($forward_page !== '' ) {
 								$forward_page .= '&';
 							}
 							
@@ -213,7 +213,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 			}
 		}
 
-		$username = ( $userdata['user_id'] != ANONYMOUS ) ? $userdata['username'] : '';
+		$username = ( $userdata['user_id'] !== ANONYMOUS ) ? $userdata['username'] : '';
 
 		$s_hidden_fields = '<input type="hidden" name="redirect" value="' . $forward_page . '" />';
 		$s_hidden_fields .= isset($_GET['admin']) ? '<input type="hidden" name="admin" value="1" />' : '';

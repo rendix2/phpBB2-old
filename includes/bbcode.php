@@ -329,7 +329,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 	$close_tag_new_length = strlen($close_tag_new);
 	$uid_length = strlen($uid);
 
-	$use_function_pointer = ($func && ($func != ''));
+	$use_function_pointer = ($func && ($func !== ''));
 
 	$stack = [];
 

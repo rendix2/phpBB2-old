@@ -88,7 +88,8 @@ switch( $mode )
 			
 			if ($dir = @opendir($phpbb_root_path. "templates/") ) {
 				while ($sub_dir = @readdir($dir) ) {
-					if (!is_file(phpbb_realpath($phpbb_root_path . 'templates/' .$sub_dir)) && !is_link(phpbb_realpath($phpbb_root_path . 'templates/' .$sub_dir)) && $sub_dir != "." && $sub_dir != ".." && $sub_dir != "CVS" ) {
+					if (!is_file(phpbb_realpath($phpbb_root_path . 'templates/' .$sub_dir)) && !is_link
+                        (phpbb_realpath($phpbb_root_path . 'templates/' .$sub_dir)) && $sub_dir !== "." && $sub_dir !== ".." && $sub_dir !== "CVS" ) {
 						if (@file_exists(@phpbb_realpath($phpbb_root_path. "templates/" . $sub_dir . "/theme_info.cfg")) ) {
 							include $phpbb_root_path. "templates/" . $sub_dir . "/theme_info.cfg";
 							
@@ -322,7 +323,7 @@ switch( $mode )
 
                 while ($file = @readdir($dir)) {
                     if (!is_file(phpbb_realpath($phpbb_root_path . 'templates/' . $file)) && !is_link(phpbb_realpath($phpbb_root_path . 'templates/' . $file)) && $file != "." && $file != ".." && $file != "CVS" ) {
-                        if ($file == $selected['template_name']) {
+                        if ($file === $selected['template_name']) {
                             $s_template_select .= '<option value="' . $file . '" selected="selected">' . $file . "</option>\n";
                         } else {
                             $s_template_select .= '<option value="' . $file . '">' . $file . "</option>\n";
@@ -539,7 +540,7 @@ switch( $mode )
             if ($dir = @opendir($phpbb_root_path . 'templates/') ) {
 				$s_template_select = '<select name="export_template">';
 				while ($file = @readdir($dir) ) {
-					if (!is_file(phpbb_realpath($phpbb_root_path . 'templates/' . $file)) && !is_link(phpbb_realpath($phpbb_root_path . 'templates/' .$file)) && $file != "." && $file != ".." && $file != "CVS" ) {
+					if (!is_file(phpbb_realpath($phpbb_root_path . 'templates/' . $file)) && !is_link(phpbb_realpath($phpbb_root_path . 'templates/' .$file)) && $file !== "." && $file !== ".." && $file !== "CVS" ) {
 						$s_template_select .= '<option value="' . $file . '">' . $file . "</option>\n";
 					}
 				}

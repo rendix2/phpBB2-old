@@ -39,11 +39,11 @@ init_userprefs($userdata);
 
 if (!$userdata['session_logged_in']) {
     redirect(append_sid("login.php?redirect=admin/index.php", true));
-} elseif ($userdata['user_level'] != ADMIN) {
+} elseif ($userdata['user_level'] !== ADMIN) {
     message_die(GENERAL_MESSAGE, $lang['Not_admin']);
 }
 
-if ($_GET['sid'] != $userdata['session_id']) {
+if ($_GET['sid'] !== $userdata['session_id']) {
     redirect("index.php?sid=" . $userdata['session_id']);
 }
 

@@ -67,7 +67,7 @@ if ( isset($_POST['submit']) ) {
 
 	$group_id = (int)$_POST[POST_GROUPS_URL];
 
-    if ($group_id != -1) {
+    if ($group_id !== -1) {
         $bcc_list = dibi::select('u.user_email')
             ->from(USERS_TABLE)
             ->as('u')
@@ -84,7 +84,7 @@ if ( isset($_POST['submit']) ) {
     }
 
     if (!count($bcc_list)) {
-        $message = ( $group_id != -1 ) ? $lang['Group_not_exist'] : $lang['No_such_user'];
+        $message = ( $group_id !== -1 ) ? $lang['Group_not_exist'] : $lang['No_such_user'];
 
         $error = true;
         $error_msg .= !empty($error_msg) ? '<br />' . $message : $message;

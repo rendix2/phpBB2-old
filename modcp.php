@@ -139,7 +139,7 @@ init_userprefs($userdata);
 //
 
 // session id check
-if ($sid == '' || $sid != $userdata['session_id']) {
+if ($sid === '' || $sid !== $userdata['session_id']) {
 	message_die(GENERAL_ERROR, 'Invalid_session');
 }
 
@@ -345,7 +345,7 @@ switch( $mode )
 				message_die(GENERAL_MESSAGE, 'New forum does not exist');
 			}
 
-			if ( $new_forum_id != $old_forum_id ) {
+			if ( $new_forum_id !== $old_forum_id ) {
                 $topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topic_id];
 
 				$topic_rows = dibi::select('*')
@@ -694,7 +694,7 @@ switch( $mode )
 
 					$bbcode_uid = $post->bbcode_uid;
 					$message = $post->post_text;
-					$post_subject = ( $post->post_subject != '' ) ? $post->post_subject : $topic_title;
+					$post_subject = ( $post->post_subject !== '' ) ? $post->post_subject : $topic_title;
 
 					//
 					// If the board has HTML off but the post has HTML
@@ -706,7 +706,7 @@ switch( $mode )
                         }
                     }
 
-                    if ($bbcode_uid != '') {
+                    if ($bbcode_uid !== '') {
 						$message = $board_config['allow_bbcode'] ? bbencode_second_pass($message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
 					}
 

@@ -1070,7 +1070,7 @@ if (isset($_POST['avatargallery']) && !$error ) {
 	// of the templates to 'fake' an IF...ELSE...ENDIF solution
 	// it works well :)
 	//
-	if ( $mode != 'register' ) {
+	if ( $mode !== 'register' ) {
 		if ($userdata['user_allowavatar'] && ($board_config['allow_avatar_upload'] || $board_config['allow_avatar_local'] || $board_config['allow_avatar_remote'] ) ) {
 			$template->assign_block_vars('switch_avatar_block', [] );
 

@@ -463,7 +463,7 @@ if ($forum_topic_data->topic_replies + 1 < $start + $total_posts)  {
 } elseif ($start + $board_config['posts_per_page'] > $forum_topic_data->topic_replies)  { 
    $row_id = (int)$forum_topic_data->topic_replies % (int)$board_config['posts_per_page'];
    
-   if ($posts[$row_id]->post_id != $forum_topic_data->topic_last_post_id || $start + $total_posts < $forum_topic_data->topic_replies) {
+   if ($posts[$row_id]->post_id !== $forum_topic_data->topic_last_post_id || $start + $total_posts < $forum_topic_data->topic_replies) {
        $resync = true; 
    } 
 }  elseif ($total_posts < $board_config['posts_per_page']) {
@@ -510,8 +510,8 @@ if (isset($_GET['highlight'])) {
 	$words = explode(' ', trim(htmlspecialchars($_GET['highlight'])));
 
 	foreach ($words as $word){
-		if (trim($word) != '') {
-			$highlight_match .= (($highlight_match != '') ? '|' : '') . str_replace('*', '\w*', preg_quote($word, '#'));
+		if (trim($word) !== '') {
+			$highlight_match .= (($highlight_match !== '') ? '|' : '') . str_replace('*', '\w*', preg_quote($word, '#'));
 		}
 	}
 	
@@ -547,10 +547,10 @@ $nav_links['up']   = [
     'title' => $forum_name
 ];
 
-$reply_img = ( $forum_topic_data->forum_status == FORUM_LOCKED || $forum_topic_data->topic_status == TOPIC_LOCKED ) ? $images['reply_locked'] : $images['reply_new'];
-$reply_alt = ( $forum_topic_data->forum_status == FORUM_LOCKED || $forum_topic_data->topic_status == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['Reply_to_topic'];
-$post_img = ( $forum_topic_data->forum_status == FORUM_LOCKED ) ? $images['post_locked'] : $images['post_new'];
-$post_alt = ( $forum_topic_data->forum_status == FORUM_LOCKED ) ? $lang['Forum_locked'] : $lang['Post_new_topic'];
+$reply_img = ( $forum_topic_data->forum_status === FORUM_LOCKED || $forum_topic_data->topic_status == TOPIC_LOCKED ) ? $images['reply_locked'] : $images['reply_new'];
+$reply_alt = ( $forum_topic_data->forum_status === FORUM_LOCKED || $forum_topic_data->topic_status == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['Reply_to_topic'];
+$post_img = ( $forum_topic_data->forum_status === FORUM_LOCKED ) ? $images['post_locked'] : $images['post_new'];
+$post_alt = ( $forum_topic_data->forum_status === FORUM_LOCKED ) ? $lang['Forum_locked'] : $lang['Post_new_topic'];
 
 //
 // Set a cookie for this topic
@@ -630,7 +630,7 @@ if ( $can_watch_topic ) {
 // If we've got a hightlight set pass it on to pagination,
 // I get annoyed when I lose my highlight after the first page.
 //
-$pagination = ( $highlight != '' ) ? generate_pagination("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=$highlight", $total_replies, $board_config['posts_per_page'], $start) : generate_pagination("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order", $total_replies, $board_config['posts_per_page'], $start);
+$pagination = ( $highlight !== '' ) ? generate_pagination("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=$highlight", $total_replies, $board_config['posts_per_page'], $start) : generate_pagination("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order", $total_replies, $board_config['posts_per_page'], $start);
 
 //
 // Send vars to template
@@ -836,15 +836,15 @@ foreach ($posts as $i => $post) {
 
 	$post_date = create_date($board_config['default_dateformat'], $post->post_time, $board_config['board_timezone']);
 
-	$poster_posts = ( $post->user_id != ANONYMOUS ) ? $lang['Posts'] . ': ' . $post->user_posts : '';
+	$poster_posts = ( $post->user_id !== ANONYMOUS ) ? $lang['Posts'] . ': ' . $post->user_posts : '';
 
-	$poster_from = ( $post->user_from && $post->user_id != ANONYMOUS ) ? $lang['Location'] . ': ' . $post->user_from : '';
+	$poster_from = ( $post->user_from && $post->user_id !== ANONYMOUS ) ? $lang['Location'] . ': ' . $post->user_from : '';
 
-	$poster_joined = ( $post->user_id != ANONYMOUS ) ? $lang['Joined'] . ': ' . create_date($lang['DATE_FORMAT'], $post->user_regdate, $board_config['board_timezone']) : '';
+	$poster_joined = ( $post->user_id !== ANONYMOUS ) ? $lang['Joined'] . ': ' . create_date($lang['DATE_FORMAT'], $post->user_regdate, $board_config['board_timezone']) : '';
 
 	$poster_avatar = '';
 
-    if ($post->user_avatar_type && $poster_id != ANONYMOUS && $post->user_allowavatar) {
+    if ($post->user_avatar_type && $poster_id !== ANONYMOUS && $post->user_allowavatar) {
 		switch( $post->user_avatar_type ) {
 			case USER_AVATAR_UPLOAD:
 				$poster_avatar = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $post->user_avatar . '" alt="" border="0" />' : '';
@@ -898,14 +898,14 @@ foreach ($posts as $i => $post) {
 	//
 	// Handle anon users posting with usernames
 	//
-    if ($poster_id == ANONYMOUS && $post->post_username != '') {
+    if ($poster_id === ANONYMOUS && $post->post_username !== '') {
 		$poster = $post->post_username;
 		$poster_rank = $lang['Guest'];
 	}
 
 	$temp_url = '';
 
-    if ($poster_id != ANONYMOUS) {
+    if ($poster_id !== ANONYMOUS) {
 		$temp_url = append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$poster_id");
 		$profile_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_profile'] . '" alt="' . $lang['Read_profile'] . '" title="' . $lang['Read_profile'] . '" border="0" /></a>';
 		$profile = '<a href="' . $temp_url . '">' . $lang['Read_profile'] . '</a>';
@@ -1005,12 +1005,12 @@ foreach ($posts as $i => $post) {
 		}
 	}
 
-	$post_subject = ( $post->post_subject != '' ) ? $post->post_subject : '';
+	$post_subject = ( $post->post_subject !== '' ) ? $post->post_subject : '';
 
 	$message = $post->post_text;
 	$bbcode_uid = $post->bbcode_uid;
 
-	$user_sig = ( $post->enable_sig && $post->user_sig != '' && $board_config['allow_sig'] ) ? $post->user_sig : '';
+	$user_sig = ( $post->enable_sig && $post->user_sig !== '' && $board_config['allow_sig'] ) ? $post->user_sig : '';
 	$user_sig_bbcode_uid = $post->user_sig_bbcode_uid;
 
 	//
@@ -1023,7 +1023,7 @@ foreach ($posts as $i => $post) {
 	// on then we process it, else leave it alone
 	//
     if (!$board_config['allow_html'] || !$userdata['user_allowhtml']) {
-        if ($user_sig != '') {
+        if ($user_sig !== '') {
             $user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
         }
 
@@ -1035,15 +1035,15 @@ foreach ($posts as $i => $post) {
 	//
 	// Parse message and/or sig for BBCode if reqd
 	//
-	if ($user_sig != '' && $user_sig_bbcode_uid != '') {
+	if ($user_sig !== '' && $user_sig_bbcode_uid !== '') {
 		$user_sig = $board_config['allow_bbcode'] ? bbencode_second_pass($user_sig, $user_sig_bbcode_uid) : preg_replace("/\:$user_sig_bbcode_uid/si", '', $user_sig);
 	}
 
-	if ($bbcode_uid != '') {
+	if ($bbcode_uid !== '') {
 		$message = $board_config['allow_bbcode'] ? bbencode_second_pass($message, $bbcode_uid) : preg_replace("/\:$bbcode_uid/si", '', $message);
 	}
 
-    if ($user_sig != '') {
+    if ($user_sig !== '') {
 		$user_sig = make_clickable($user_sig);
 	}
 	
@@ -1053,7 +1053,7 @@ foreach ($posts as $i => $post) {
 	// Parse smilies
 	//
     if ($board_config['allow_smilies']) {
-        if ($post->user_allowsmile && $user_sig != '') {
+        if ($post->user_allowsmile && $user_sig !== '') {
             $user_sig = smilies_pass($user_sig);
         }
 
@@ -1076,7 +1076,7 @@ foreach ($posts as $i => $post) {
 	if (count($orig_word)) {
 		$post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
 
-		if ($user_sig != '') {
+		if ($user_sig !== '') {
 			$user_sig = str_replace('\"', '"', substr(@preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "@preg_replace(\$orig_word, \$replacement_word, '\\0')", '>' . $user_sig . '<'), 1, -1));
 		}
 
@@ -1087,7 +1087,7 @@ foreach ($posts as $i => $post) {
 	// Replace newlines (we use this rather than nl2br because
 	// till recently it wasn't XHTML compliant)
 	//
-    if ($user_sig != '') {
+    if ($user_sig !== '') {
 		$user_sig = '<br />_________________<br />' . str_replace("\n", "\n<br />\n", $user_sig);
 	}
 

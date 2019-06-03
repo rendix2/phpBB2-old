@@ -108,7 +108,7 @@ if (defined('SHOW_ONLINE')) {
 		// User is logged in and therefor not a guest
 		if ( $row->session_logged_in ) {
 			// Skip multiple sessions for one user
-			if ( $row->user_id != $prev_user_id ) {
+			if ( $row->user_id !== $prev_user_id ) {
 				$style_color = '';
 				
 				if ( $row->user_level == ADMIN ) {
@@ -128,14 +128,14 @@ if (defined('SHOW_ONLINE')) {
 				}
 
 				if ( $row->user_allow_viewonline || $userdata['user_level'] == ADMIN ) {
-					$online_userlist .= ( $online_userlist != '' ) ? ', ' . $user_online_link : $user_online_link;
+					$online_userlist .= ( $online_userlist !== '' ) ? ', ' . $user_online_link : $user_online_link;
 				}
 			}
 
 			$prev_user_id = $row->user_id;
 		} else {
 			// Skip multiple sessions for one user
-			if ( $row->session_ip != $prev_session_ip ) {
+			if ( $row->session_ip !== $prev_session_ip ) {
 				$guests_online++;
 			}
 		}
@@ -266,7 +266,7 @@ foreach ($nav_links as $nav_item => $nav_array) {
 
 // Format Timezone. We are unable to use array_pop here, because of PHP3 compatibility
 $l_timezone = explode('.', $board_config['board_timezone']);
-$l_timezone = (count($l_timezone) > 1 && $l_timezone[count($l_timezone)-1] != 0) ? $lang[sprintf('%.1f', $board_config['board_timezone'])] : $lang[number_format($board_config['board_timezone'])];
+$l_timezone = (count($l_timezone) > 1 && $l_timezone[count($l_timezone)-1] !== 0) ? $lang[sprintf('%.1f', $board_config['board_timezone'])] : $lang[number_format($board_config['board_timezone'])];
 //
 // The following assigns all _common_ variables that may be used at any point
 // in a template.

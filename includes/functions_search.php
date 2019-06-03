@@ -92,7 +92,7 @@ function clean_words($mode, &$entry, array &$stopwords, array &$synonyms)
 		foreach ($stopwords as &$stopword) {
 			$stopword = trim($stopword);
 
-			if ( $mode === 'post' || ( $stopword != 'not' && $stopword != 'and' && $stopword != 'or' ) ) {
+			if ( $mode === 'post' || ( $stopword !== 'not' && $stopword !== 'and' && $stopword !== 'or' ) ) {
 				$entry = str_replace(' ' . trim($stopword) . ' ', ' ', $entry);
 			}
 		}
@@ -102,7 +102,7 @@ function clean_words($mode, &$entry, array &$stopwords, array &$synonyms)
 		foreach ($synonyms as &$synonym) {
 			list($replace_synonym, $match_synonym) = explode(' ', trim(strtolower($synonym)));
 
-			if ( $mode === 'post' || ( $match_synonym != 'not' && $match_synonym != 'and' && $match_synonym != 'or' )
+			if ( $mode === 'post' || ( $match_synonym !== 'not' && $match_synonym !== 'and' && $match_synonym !== 'or' )
             ) {
 				$entry =  str_replace(' ' . trim($match_synonym) . ' ', ' ' . trim($replace_synonym) . ' ', $entry);
 			}
@@ -148,7 +148,7 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
             foreach ($search_matches as $search_match) {
                 $search_match = trim($search_match);
 
-				if ($search_match != '' ) {
+				if ($search_match !== '' ) {
 					$words[] = $search_match;
 
                     if (!in_array($search_match, $word_insert_sql[$word_in], true)) {
@@ -388,7 +388,7 @@ function username_search($search_match)
         ]
     );
 
-    if ( $username_list != '' ) {
+    if ( $username_list !== '' ) {
 		$template->assign_block_vars('switch_select_name', []);
 	}
 

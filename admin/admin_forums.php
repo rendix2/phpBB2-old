@@ -168,7 +168,7 @@ function renumber_order($mode, $cat = 0)
 	$res = dibi::select('*')
         ->from($table);
 
-	if ($cat != 0) {
+	if ($cat !== 0) {
 	    $res->where('%n = %i', $catfield, $cat);
 	}
 
@@ -788,7 +788,7 @@ if (!empty($mode) ) {
 			break;
 	}
 
-    if ($show_index != true) {
+    if ($show_index !== true) {
 		include './page_footer_admin.php';
 		exit;
 	}

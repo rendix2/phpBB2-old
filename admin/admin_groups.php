@@ -87,7 +87,7 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 	//
 	// Ok, now we know everything about them, let's show the page.
 	//
-	if ($group_info['group_moderator'] != '') {
+	if ($group_info['group_moderator'] !== '') {
 
 	    // TODO i can be moderator!
         //check this situation => i dont need query

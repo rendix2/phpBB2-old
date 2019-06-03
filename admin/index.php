@@ -147,7 +147,7 @@ if (isset($_GET['pane']) && $_GET['pane'] == 'left' )
 
     if ($avatar_dir = @opendir($phpbb_root_path . $board_config['avatar_path'])) {
         while ($file = @readdir($avatar_dir)) {
-            if ($file != "." && $file != "..") {
+            if ($file !== "." && $file !== "..") {
                 $avatar_dir_size += @filesize($phpbb_root_path . $board_config['avatar_path'] . "/" . $file);
             }
         }
@@ -205,8 +205,8 @@ if (isset($_GET['pane']) && $_GET['pane'] == 'left' )
 					$dbsize = 0;
 
                     foreach ($tables as $table) {
-                        if ($table->Type != "MRG_MyISAM") {
-                            if ($table_prefix != "") {
+                        if ($table->Type !== "MRG_MyISAM") {
+                            if ($table_prefix !== "") {
                                 if (strstr($table->Name, $table_prefix)) {
                                     $dbsize += $table->Data_length + $table->Index_length;
                                 }

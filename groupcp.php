@@ -40,7 +40,7 @@ function generate_user_info(&$row, $date_format, $group_mod, &$from, &$posts, &$
      * TODO this never be true
      * add this columns into selects
      */
-	if ( $row->user_avatar_type && $row->user_id != ANONYMOUS && $row->user_allowavatar ) {
+	if ( $row->user_avatar_type && $row->user_id !== ANONYMOUS && $row->user_allowavatar ) {
 		switch( $row->user_avatar_type ) {
 			case USER_AVATAR_UPLOAD:
 				$poster_avatar = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $row->user_avatar . '" alt="" border="0" />' : '';
@@ -114,7 +114,7 @@ init_userprefs($userdata);
 //
 
 $script_name = preg_replace('/^\/?(.*?)\/?$/', "\\1", trim($board_config['script_path']));
-$script_name = ( $script_name != '' ) ? $script_name . '/groupcp.php' : 'groupcp.php';
+$script_name = ( $script_name !== '' ) ? $script_name . '/groupcp.php' : 'groupcp.php';
 $server_name = trim($board_config['server_name']);
 $server_protocol = $board_config['cookie_secure'] ? 'https://' : 'http://';
 $server_port = ( $board_config['server_port'] <> 80 ) ? ':' . trim($board_config['server_port']) . '/' : '/';
@@ -155,7 +155,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
         ->where('group_id = %i', $group_id)
         ->fetchSingle();
 
-    if ($group_moderator != $userdata['user_id'] && $userdata['user_level'] != ADMIN) {
+    if ($group_moderator !== $userdata['user_id'] && $userdata['user_level'] !== ADMIN) {
         $template->assign_vars(
             [
                 'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.php") . '">'
@@ -297,7 +297,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
             ->where('group_id = %i', $group_id)
             ->execute();
 
-        if ($userdata['user_level'] != ADMIN && $userdata['user_level'] == MOD) {
+        if ($userdata['user_level'] !== ADMIN && $userdata['user_level'] == MOD) {
             $is_auth_mod = dibi::select('COUNT(auth_mod)')
                 ->as('is_auth_mod')
                 ->from(AUTH_ACCESS_TABLE)
@@ -501,7 +501,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 
 				    dibi::insert(USER_GROUP_TABLE, $insert_data)->execute();
 
-                    if ($row->user_level != ADMIN && $row->user_level != MOD && $group_info->auth_mod) {
+                    if ($row->user_level !== ADMIN && $row->user_level !== MOD && $group_info->auth_mod) {
                         dibi::update(USERS_TABLE, ['user_level' => MOD])
                             ->where('user_id = %i', $row->user_id)
                             ->execute();
@@ -921,7 +921,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 
 		generate_user_info($group_members[$i], $board_config['default_dateformat'], $is_moderator, $from, $posts, $joined, $poster_avatar, $profile_img, $profile, $search_img, $search, $pm_img, $pm, $email_img, $email, $www_img, $www, $icq_status_img, $icq_img, $icq, $aim_img, $aim, $msn_img, $msn, $yim_img, $yim);
 
-		if ( $group_info->group_type != GROUP_HIDDEN || $is_group_member || $is_moderator ) {
+		if ( $group_info->group_type !== GROUP_HIDDEN || $is_group_member || $is_moderator ) {
 			$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
@@ -1134,13 +1134,13 @@ if (isset($_POST['groupstatus']) && $group_id) {
 	$s_group_list_opt = '';
 
 	foreach ($group_rows as $group_row) {
-		if  ( $group_row->group_type != GROUP_HIDDEN || $userdata['user_level'] == ADMIN ) {
+		if  ( $group_row->group_type !== GROUP_HIDDEN || $userdata['user_level'] === ADMIN ) {
 			$s_group_list_opt .='<option value="' . $group_row->group_id . '">' . $group_row->group_name . '</option>';
 		}
 	}
 	$s_group_list = '<select name="' . POST_GROUPS_URL . '">' . $s_group_list_opt . '</select>';
 
-    if ($s_group_list_opt != '' || $s_pending_groups_opt != '' || $s_member_groups_opt != '') {
+    if ($s_group_list_opt !== '' || $s_pending_groups_opt !== '' || $s_member_groups_opt !== '') {
 		//
 		// Load and process templates
 		//
@@ -1150,19 +1150,19 @@ if (isset($_POST['groupstatus']) && $group_id) {
         $template->set_filenames(['user' => 'groupcp_user_body.tpl']);
         make_jumpbox('viewforum.php');
 
-        if ($s_pending_groups_opt != '' || $s_member_groups_opt != '') {
+        if ($s_pending_groups_opt !== '' || $s_member_groups_opt !== '') {
             $template->assign_block_vars('switch_groups_joined', []);
         }
 
-        if ($s_member_groups_opt != '') {
+        if ($s_member_groups_opt !== '') {
             $template->assign_block_vars('switch_groups_joined.switch_groups_member', []);
         }
 
-        if ($s_pending_groups_opt != '') {
+        if ($s_pending_groups_opt !== '') {
             $template->assign_block_vars('switch_groups_joined.switch_groups_pending', []);
         }
 
-        if ($s_group_list_opt != '') {
+        if ($s_group_list_opt !== '') {
             $template->assign_block_vars('switch_groups_remaining', []);
         }
 

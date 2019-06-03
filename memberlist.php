@@ -195,7 +195,7 @@ $users = $users->fetchAll();
 
 		$poster_avatar = '';
 
-        if ($user->user_avatar_type && $user_id != ANONYMOUS && $user->user_allowavatar) {
+        if ($user->user_avatar_type && $user_id !== ANONYMOUS && $user->user_allowavatar) {
             switch ($user->user_avatar_type) {
 				case USER_AVATAR_UPLOAD:
 					$poster_avatar = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $user->user_avatar . '" alt="" border="0" />' : '';
@@ -209,7 +209,7 @@ $users = $users->fetchAll();
 			}
 		}
 
-        if (!empty($user->user_viewemail) || $userdata['user_level'] == ADMIN) {
+        if (!empty($user->user_viewemail) || $userdata['user_level'] === ADMIN) {
 			$email_uri = $board_config['board_email_form'] ? append_sid("profile.php?mode=email&amp;" . POST_USERS_URL .'=' . $user_id) : 'mailto:' . $user->user_email;
 
 			$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
@@ -295,7 +295,7 @@ $users = $users->fetchAll();
 	}
 
 
-if ($mode != 'topten' || $board_config['members_per_page'] < 10) {
+if ($mode !== 'topten' || $board_config['members_per_page'] < 10) {
     $total_members = dibi::select('COUNT(*)')
         ->as('total')
         ->from(USERS_TABLE)
