@@ -286,18 +286,18 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 		if ($signature != '') {
 			$sig_length_check = preg_replace('/(\[.*?)(=.*?)\]/is', '\\1]', stripslashes($signature));
 
-			if ( $allowhtml ) {
+            if ($allowhtml) {
 				$sig_length_check = preg_replace('/(\<.*?)(=.*?)( .*?=.*?)?([ \/]?\>)/is', '\\1\\3\\4', $sig_length_check);
 			}
 
 			// Only create a new bbcode_uid when there was no uid yet.
-			if ( $signature_bbcode_uid == '' ) {
-				$signature_bbcode_uid = $allowbbcode ? make_bbcode_uid() : '';
+            if ($allowbbcode) {
+				$signature_bbcode_uid = make_bbcode_uid();
 			}
 
 			$signature = prepare_message($signature, $allowhtml, $allowbbcode, $allowsmilies, $signature_bbcode_uid);
 
-			if ( strlen($sig_length_check) > $board_config['max_sig_chars'] ) {
+            if (strlen($sig_length_check) > $board_config['max_sig_chars']) {
 				$error = TRUE;
 				$error_msg .=  ( isset($error_msg) ? '<br />' : '' ) . $lang['Signature_too_long'];
 			}

@@ -100,7 +100,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
                         ->where('user_id = %i', $row->user_id)
                         ->execute();
 
-					if ($session_id ) {
+                    if ($session_id) {
 						$url = !empty($_POST['redirect']) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : "index.php";
 						redirect(append_sid($url, true));
 					} else {

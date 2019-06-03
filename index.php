@@ -140,8 +140,7 @@ switch (SQL_LAYER) {
 					)
 					ORDER BY cat_id, forum_order";
 
-        // TODO
-        $forum_data = dibi::query($sql);
+        $forum_data = dibi::query($sql)->fetchAll();
         break;
 
     case 'oracle':

@@ -30,14 +30,14 @@ include $phpbb_root_path . 'includes/bbcode.php';
 // Start initial var setup
 //
 $topic_id = $post_id = 0;
-if ( isset($_GET[POST_TOPIC_URL]) ) {
-	$topic_id = (int)$_GET[POST_TOPIC_URL];
-} elseif ( isset($_GET['topic']) ) {
-	$topic_id = (int)$_GET['topic'];
+if (isset($_GET[POST_TOPIC_URL])) {
+    $topic_id = (int)$_GET[POST_TOPIC_URL];
+} elseif (isset($_GET['topic'])) {
+    $topic_id = (int)$_GET['topic'];
 }
 
-if ( isset($_GET[POST_POST_URL])) {
-	$post_id = (int)$_GET[POST_POST_URL];
+if (isset($_GET[POST_POST_URL])) {
+    $post_id = (int)$_GET[POST_POST_URL];
 }
 
 $start = isset($_GET['start']) ? (int)$_GET['start'] : 0;
@@ -51,10 +51,14 @@ if (!$topic_id && !$post_id) {
 // Find topic id if user requested a newer
 // or older topic
 //
-if ( isset($_GET['view']) && empty($_GET[POST_POST_URL]) ) {
-	if ( $_GET['view'] == 'newest' ) {
-		if ( isset($_COOKIE[$board_config['cookie_name'] . '_sid']) || isset($_GET['sid']) ) {
-			$session_id = isset($_COOKIE[$board_config['cookie_name'] . '_sid']) ? $_COOKIE[$board_config['cookie_name'] . '_sid'] : $_GET['sid'];
+$cookie_name_sid = $board_config['cookie_name'] . '_sid';
+$cookie_name_topic = $board_config['cookie_name'] . '_t';
+$cookie_name_forum = $board_config['cookie_name'] . '_f';
+
+if (isset($_GET['view']) && empty($_GET[POST_POST_URL])) {
+    if ($_GET['view'] == 'newest') {
+		if ( isset($_COOKIE[$cookie_name_sid]) || isset($_GET['sid']) ) {
+			$session_id = isset($_COOKIE[$cookie_name_sid]) ? $_COOKIE[$cookie_name_sid] : $_GET['sid'];
 
             if (!preg_match('/^[A-Za-z0-9]*$/', $session_id)) {
                 $session_id = '';
@@ -129,10 +133,10 @@ if (!$post_id) {
                 ];
 
     $forum_topic_data = dibi::select($columns)
-    ->from(TOPICS_TABLE)
-    ->as('t')
-    ->from(FORUMS_TABLE)
-    ->as('f')
+        ->from(TOPICS_TABLE)
+        ->as('t')
+        ->from(FORUMS_TABLE)
+        ->as('f')
         ->where('t.topic_id = %i', $topic_id)
         ->where('f.forum_id = t.forum_id')
         ->fetch();
@@ -244,8 +248,8 @@ if ($userdata['session_logged_in'] ) {
         ->fetch();
 
     if ($row) {
-		if ( isset($_GET['unwatch']) ) {
-			if ( $_GET['unwatch'] == 'topic' ) {
+        if (isset($_GET['unwatch'])) {
+            if ($_GET['unwatch'] == 'topic') {
 				$is_watching_topic = 0;
 
 				$sql_priority = (SQL_LAYER == 'mysql') ? 'LOW_PRIORITY' : '';
@@ -279,8 +283,8 @@ if ($userdata['session_logged_in'] ) {
 			}
 		}
 	} else {
-		if ( isset($_GET['watch']) ) {
-			if ( $_GET['watch'] == 'topic' ) {
+        if (isset($_GET['watch'])) {
+            if ($_GET['watch'] == 'topic') {
 				$is_watching_topic = TRUE;
 
 				$sql_priority = (SQL_LAYER == 'mysql') ? 'LOW_PRIORITY' : '';
@@ -335,7 +339,7 @@ $previous_days = [
     364 => $lang['1_Year']
 ];
 
-if (!empty($_POST['postdays']) || !empty($_GET['postdays']) ) {
+if (!empty($_POST['postdays']) || !empty($_GET['postdays'])) {
 	$post_days =  !empty($_POST['postdays']) ? (int)$_POST['postdays'] : (int)$_GET['postdays'];
 	$min_post_time = time() - ($post_days * 86400);
 
@@ -352,7 +356,7 @@ if (!empty($_POST['postdays']) || !empty($_GET['postdays']) ) {
 
 	$limit_posts_time = true;
 
-	if ( !empty($_POST['postdays'])) {
+    if (!empty($_POST['postdays'])) {
 		$start = 0;
 	}
 } else {
@@ -551,26 +555,26 @@ $post_alt = ( $forum_topic_data->forum_status == FORUM_LOCKED ) ? $lang['Forum_l
 //
 // Set a cookie for this topic
 //
-if ( $userdata['session_logged_in'] ) {
-	$tracking_topics = isset($_COOKIE[$board_config['cookie_name'] . '_t']) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_t']) : [];
-	$tracking_forums = isset($_COOKIE[$board_config['cookie_name'] . '_f']) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_f']) : [];
+if ($userdata['session_logged_in']) {
+	$tracking_topics = isset($_COOKIE[$cookie_name_topic]) ? unserialize($_COOKIE[$cookie_name_topic]) : [];
+	$tracking_forums = isset($_COOKIE[$cookie_name_forum]) ? unserialize($_COOKIE[$cookie_name_forum]) : [];
 
-	if ( !empty($tracking_topics[$topic_id]) && !empty($tracking_forums[$forum_id]) ) {
-		$topic_last_read = ( $tracking_topics[$topic_id] > $tracking_forums[$forum_id] ) ? $tracking_topics[$topic_id] : $tracking_forums[$forum_id];
-	} elseif ( !empty($tracking_topics[$topic_id]) || !empty($tracking_forums[$forum_id]) ) {
-		$topic_last_read = !empty($tracking_topics[$topic_id]) ? $tracking_topics[$topic_id] : $tracking_forums[$forum_id];
-	} else {
-		$topic_last_read = $userdata['user_lastvisit'];
-	}
+    if (!empty($tracking_topics[$topic_id]) && !empty($tracking_forums[$forum_id])) {
+        $topic_last_read = ($tracking_topics[$topic_id] > $tracking_forums[$forum_id]) ? $tracking_topics[$topic_id] : $tracking_forums[$forum_id];
+    } elseif (!empty($tracking_topics[$topic_id]) || !empty($tracking_forums[$forum_id])) {
+        $topic_last_read = !empty($tracking_topics[$topic_id]) ? $tracking_topics[$topic_id] : $tracking_forums[$forum_id];
+    } else {
+        $topic_last_read = $userdata['user_lastvisit'];
+    }
 
-	if ( count($tracking_topics) >= 150 && empty($tracking_topics[$topic_id]) ) {
+    if (count($tracking_topics) >= 150 && empty($tracking_topics[$topic_id])) {
 		asort($tracking_topics);
 		unset($tracking_topics[key($tracking_topics)]);
 	}
 
 	$tracking_topics[$topic_id] = time();
 
-	setcookie($board_config['cookie_name'] . '_t', serialize($tracking_topics), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+	setcookie($cookie_name_topic, serialize($tracking_topics), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 }
 
 //
@@ -796,7 +800,7 @@ if ( !empty($forum_topic_data->topic_vote) ) {
             $s_hidden_fields = '<input type="hidden" name="topic_id" value="' . $topic_id . '" /><input type="hidden" name="mode" value="vote" />';
 		}
 
-		if ( count($orig_word) ) {
+        if (count($orig_word)) {
 			$vote_title = preg_replace($orig_word, $replacement_word, $vote_title);
 		}
 
@@ -872,8 +876,7 @@ foreach ($posts as $i => $post) {
 	//
 	$poster_rank = '';
 	$rank_image = '';
-	if ( $post->user_id == ANONYMOUS )
-	{
+    if ($post->user_id == ANONYMOUS) {
 	    // WHAT WAS THERE???????
 	}
 	elseif ( $post->user_rank ) {
@@ -895,14 +898,14 @@ foreach ($posts as $i => $post) {
 	//
 	// Handle anon users posting with usernames
 	//
-	if ( $poster_id == ANONYMOUS && $post->post_username != '' ) {
+    if ($poster_id == ANONYMOUS && $post->post_username != '') {
 		$poster = $post->post_username;
 		$poster_rank = $lang['Guest'];
 	}
 
 	$temp_url = '';
 
-	if ( $poster_id != ANONYMOUS ) {
+    if ($poster_id != ANONYMOUS) {
 		$temp_url = append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$poster_id");
 		$profile_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_profile'] . '" alt="' . $lang['Read_profile'] . '" title="' . $lang['Read_profile'] . '" border="0" /></a>';
 		$profile = '<a href="' . $temp_url . '">' . $lang['Read_profile'] . '</a>';
@@ -911,7 +914,7 @@ foreach ($posts as $i => $post) {
 		$pm_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
 		$pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
 
-		if ( !empty($post->user_viewemail) || $is_auth['auth_mod'] ) {
+        if (!empty($post->user_viewemail) || $is_auth['auth_mod']) {
 			$email_uri = $board_config['board_email_form'] ? append_sid("profile.php?mode=email&amp;" . POST_USERS_URL .'=' . $poster_id) : 'mailto:' . $post->user_email;
 
 			$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
@@ -924,7 +927,7 @@ foreach ($posts as $i => $post) {
 		$www_img = $post->user_website ? '<a href="' . $post->user_website . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
 		$www = $post->user_website ? '<a href="' . $post->user_website . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
 
-		if ( !empty($post->user_icq) ) {
+        if (!empty($post->user_icq)) {
 			$icq_status_img = '<a href="http://wwp.icq.com/' . $post->user_icq . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $post->user_icq . '&img=5" width="18" height="18" border="0" /></a>';
 			$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $post->user_icq . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
 			$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $post->user_icq . '">' . $lang['ICQ'] . '</a>';
@@ -971,8 +974,7 @@ foreach ($posts as $i => $post) {
 	$search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $post->username) . '" title="' . sprintf($lang['Search_user_posts'], $post->username) . '" border="0" /></a>';
 	$search = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $post->username) . '</a>';
 
-	if ( ( $userdata['user_id'] == $poster_id && $is_auth['auth_edit'] ) || $is_auth['auth_mod'] )
-	{
+    if (($userdata['user_id'] == $poster_id && $is_auth['auth_edit']) || $is_auth['auth_mod']) {
 		$temp_url = append_sid("posting.php?mode=editpost&amp;" . POST_POST_URL . "=" . $post->post_id);
 		$edit_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_edit'] . '" alt="' . $lang['Edit_delete_post'] . '" title="' . $lang['Edit_delete_post'] . '" border="0" /></a>';
 		$edit = '<a href="' . $temp_url . '">' . $lang['Edit_delete_post'] . '</a>';
@@ -981,7 +983,7 @@ foreach ($posts as $i => $post) {
 		$edit = '';
 	}
 
-	if ( $is_auth['auth_mod'] ) {
+    if ($is_auth['auth_mod']) {
 		$temp_url = "modcp.php?mode=ip&amp;" . POST_POST_URL . "=" . $post->post_id . "&amp;" . POST_TOPIC_URL . "=" . $topic_id . "&amp;sid=" . $userdata['session_id'];
 		$ip_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_ip'] . '" alt="' . $lang['View_IP'] . '" title="' . $lang['View_IP'] . '" border="0" /></a>';
 		$ip = '<a href="' . $temp_url . '">' . $lang['View_IP'] . '</a>';
@@ -993,7 +995,7 @@ foreach ($posts as $i => $post) {
 		$ip_img = '';
 		$ip = '';
 
-		if ( $userdata['user_id'] == $poster_id && $is_auth['auth_delete'] && $forum_topic_data->topic_last_post_id == $post->post_id ) {
+        if ($userdata['user_id'] == $poster_id && $is_auth['auth_delete'] && $forum_topic_data->topic_last_post_id == $post->post_id) {
 			$temp_url        = "posting.php?mode=delete&amp;" . POST_POST_URL . "=" . $post->post_id . "&amp;sid=" . $userdata['session_id'];
 			$delete_post_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_delpost'] . '" alt="' . $lang['Delete_post'] . '" title="' . $lang['Delete_post'] . '" border="0" /></a>';
 			$delete_post     = '<a href="' . $temp_url . '">' . $lang['Delete_post'] . '</a>';
@@ -1041,7 +1043,7 @@ foreach ($posts as $i => $post) {
 		$message = $board_config['allow_bbcode'] ? bbencode_second_pass($message, $bbcode_uid) : preg_replace("/\:$bbcode_uid/si", '', $message);
 	}
 
-	if ( $user_sig != '' ) {
+    if ($user_sig != '') {
 		$user_sig = make_clickable($user_sig);
 	}
 	
@@ -1063,8 +1065,7 @@ foreach ($posts as $i => $post) {
 	//
 	// Highlight active words (primarily for search)
 	//
-	if ($highlight_match)
-	{
+	if ($highlight_match) {
 		// This has been back-ported from 3.0 CVS
 		$message = preg_replace('#(?!<.*)(?<!\w)(' . $highlight_match . ')(?!\w|[^<>]*>)#i', '<b style="color:#'.$theme['fontcolor3'].'">\1</b>', $message);
 	}
@@ -1086,8 +1087,7 @@ foreach ($posts as $i => $post) {
 	// Replace newlines (we use this rather than nl2br because
 	// till recently it wasn't XHTML compliant)
 	//
-	if ( $user_sig != '' )
-	{
+    if ($user_sig != '') {
 		$user_sig = '<br />_________________<br />' . str_replace("\n", "\n<br />\n", $user_sig);
 	}
 
@@ -1096,7 +1096,7 @@ foreach ($posts as $i => $post) {
 	//
 	// Editing information
 	//
-	if ( $post->post_edit_count ) {
+    if ($post->post_edit_count) {
 		$l_edit_time_total = ( $post->post_edit_count == 1 ) ? $lang['Edited_time_total'] : $lang['Edited_times_total'];
 
 		$l_edited_by = '<br /><br />' . sprintf($l_edit_time_total, $poster, create_date($board_config['default_dateformat'], $post->post_edit_time, $board_config['board_timezone']), $post->post_edit_count);

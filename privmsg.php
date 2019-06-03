@@ -56,15 +56,15 @@ $refresh = $preview || $submit_search;
 
 $mark_list = !empty($_POST['mark']) ? $_POST['mark'] : 0;
 
-if ( isset($_POST['folder']) || isset($_GET['folder']) ) {
-	$folder = isset($_POST['folder']) ? $_POST['folder'] : $_GET['folder'];
-	$folder = htmlspecialchars($folder);
+if (isset($_POST['folder']) || isset($_GET['folder'])) {
+    $folder = isset($_POST['folder']) ? $_POST['folder'] : $_GET['folder'];
+    $folder = htmlspecialchars($folder);
 
-	if ( $folder != 'inbox' && $folder != 'outbox' && $folder != 'sentbox' && $folder != 'savebox' ) {
-		$folder = 'inbox';
-	}
+    if ($folder != 'inbox' && $folder != 'outbox' && $folder != 'sentbox' && $folder != 'savebox') {
+        $folder = 'inbox';
+    }
 } else {
-	$folder = 'inbox';
+    $folder = 'inbox';
 }
 
 //
@@ -79,28 +79,27 @@ init_userprefs($userdata);
 //
 // Cancel 
 //
-if ( $cancel ) {
-	redirect(append_sid("privmsg.php?folder=$folder", true));
+if ($cancel) {
+    redirect(append_sid("privmsg.php?folder=$folder", true));
 }
 
 //
 // Var definitions
 //
-if ( !empty($_POST['mode']) || !empty($_GET['mode']) ) {
-	$mode = !empty($_POST['mode']) ? $_POST['mode'] : $_GET['mode'];
-	$mode = htmlspecialchars($mode);
+if (!empty($_POST['mode']) || !empty($_GET['mode'])) {
+    $mode = !empty($_POST['mode']) ? $_POST['mode'] : $_GET['mode'];
+    $mode = htmlspecialchars($mode);
 } else {
-	$mode = '';
+    $mode = '';
 }
 
 $start = !empty($_GET['start']) ? (int)$_GET['start'] : 0;
 $start = ($start < 0) ? 0 : $start;
 
-if ( isset($_POST[POST_POST_URL]) || isset($_GET[POST_POST_URL]) )
-{
-	$privmsg_id = isset($_POST[POST_POST_URL]) ? (int)$_POST[POST_POST_URL] : (int)$_GET[POST_POST_URL];
+if (isset($_POST[POST_POST_URL]) || isset($_GET[POST_POST_URL])) {
+    $privmsg_id = isset($_POST[POST_POST_URL]) ? (int)$_POST[POST_POST_URL] : (int)$_GET[POST_POST_URL];
 } else {
-	$privmsg_id = '';
+    $privmsg_id = '';
 }
 
 $error = FALSE;
@@ -123,8 +122,8 @@ $savebox_url = ( $folder != 'savebox' || $mode != '' ) ? '<a href="' . append_si
 // ----------
 // Start main
 //
-if ( $mode == 'newpm' ) {
-	$gen_simple_header = TRUE;
+if ($mode == 'newpm') {
+    $gen_simple_header = true;
 
 	$page_title = $lang['Private_Messaging'];
 	include $phpbb_root_path . 'includes/page_header.php';
@@ -153,8 +152,8 @@ if ( $mode == 'newpm' ) {
     $template->pparse('body');
 
 	include $phpbb_root_path . 'includes/page_tail.php';
-	
-} elseif ( $mode == 'read' ) {
+
+} elseif ($mode == 'read') {
     if (!empty($_GET[POST_POST_URL])) {
         $privmsgs_id = (int)$_GET[POST_POST_URL];
     } else {
@@ -212,8 +211,7 @@ if ( $mode == 'newpm' ) {
 	// SQL to pull appropriate message, prevents nosey people
 	// reading other peoples messages ... hopefully!
 	//
-	switch( $folder )
-	{
+    switch ($folder) {
 		case 'inbox':
 			$l_box_name = $lang['Inbox'];
 
@@ -373,7 +371,7 @@ if ( $mode == 'newpm' ) {
 		'edit'     => '<a href="' . $post_urls['edit'] . '">' . $lang['Edit_pm'] . '</a>'
 	];
 
-	if ( $folder == 'inbox' ) {
+    if ($folder == 'inbox') {
 		$post_img = $post_icons['post_img'];
 		$reply_img = $post_icons['reply_img'];
 		$quote_img = $post_icons['quote_img'];
@@ -393,8 +391,8 @@ if ( $mode == 'newpm' ) {
 		$quote = '';
 		$edit = $post_icons['edit'];
 		$l_box_name = $lang['Outbox'];
-	} elseif ($folder == 'savebox') {
-		if ( $privmsg->privmsgs_type == PRIVMSGS_SAVED_IN_MAIL ) {
+    } elseif ($folder == 'savebox') {
+        if ($privmsg->privmsgs_type == PRIVMSGS_SAVED_IN_MAIL) {
 			$post_img = $post_icons['post_img'];
 			$reply_img = $post_icons['reply_img'];
 			$quote_img = $post_icons['quote_img'];
@@ -415,7 +413,7 @@ if ( $mode == 'newpm' ) {
 		}
 
 		$l_box_name = $lang['Saved'];
-	} elseif ( $folder == 'sentbox' ) {
+    } elseif ($folder == 'sentbox') {
 		$post_img = $post_icons['post_img'];
 		$reply_img = '';
 		$quote_img = '';
@@ -581,14 +579,14 @@ if ( $mode == 'newpm' ) {
 	$replacement_word = [];
 	obtain_word_list($orig_word, $replacement_word);
 
-	if ( count($orig_word) ) {
-		$post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
-		$private_message = preg_replace($orig_word, $replacement_word, $private_message);
-	}
+    if (count($orig_word)) {
+        $post_subject    = preg_replace($orig_word, $replacement_word, $post_subject);
+        $private_message = preg_replace($orig_word, $replacement_word, $private_message);
+    }
 
-	if ( $board_config['allow_smilies'] && $privmsg->privmsgs_enable_smilies ) {
-		$private_message = smilies_pass($private_message);
-	}
+    if ($board_config['allow_smilies'] && $privmsg->privmsgs_enable_smilies) {
+        $private_message = smilies_pass($private_message);
+    }
 
 	$private_message = str_replace("\n", '<br />', $private_message);
 
@@ -640,17 +638,17 @@ if ( $mode == 'newpm' ) {
 
 	include $phpbb_root_path . 'includes/page_tail.php';
 
-} elseif ( ( $delete && $mark_list ) || $delete_all ) {
-	if ( !$userdata['session_logged_in'] ) {
-		redirect(append_sid("login.php?redirect=privmsg.php&folder=inbox", true));
-	}
+} elseif (($delete && $mark_list) || $delete_all) {
+    if (!$userdata['session_logged_in']) {
+        redirect(append_sid("login.php?redirect=privmsg.php&folder=inbox", true));
+    }
 
-	if ( isset($mark_list) && !is_array($mark_list) ) {
-		// Set to empty array instead of '0' if nothing is selected.
-		$mark_list = [];
-	}
+    if (isset($mark_list) && !is_array($mark_list)) {
+        // Set to empty array instead of '0' if nothing is selected.
+        $mark_list = [];
+    }
 
-	if ( !$confirm ) {
+    if (!$confirm) {
 		$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" />';
 		$s_hidden_fields .= isset($_POST['delete']) ? '<input type="hidden" name="delete" value="true" />' : '<input type="hidden" name="deleteall" value="true" />';
 		$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
@@ -727,8 +725,8 @@ if ( $mode == 'newpm' ) {
 				break;
 		}
 
-		if ( count($mark_list) ) {
-			if ($folder == 'inbox' || $folder == 'outbox') {
+        if (count($mark_list)) {
+            if ($folder == 'inbox' || $folder == 'outbox') {
                 // Get information relevant to new or unread mail
                 // so we can adjust users counters appropriately
 			    $rows = dibi::select(['privmsgs_to_userid', 'privmsgs_type'])
@@ -1046,38 +1044,37 @@ if ( $mode == 'newpm' ) {
 		unset($row);
 	}
 
-	if ( $submit ) {
-		// session id check
-		if ($sid == '' || $sid != $userdata['session_id']) {
-			$error = true;
-			$error_msg .= ( !empty($error_msg) ? '<br />' : '' ) . $lang['Session_invalid'];
-		}
+    if ($submit) {
+        // session id check
+        if ($sid == '' || $sid != $userdata['session_id']) {
+            $error = true;
+            $error_msg .= (!empty($error_msg) ? '<br />' : '') . $lang['Session_invalid'];
+        }
 
-		if ( !empty($_POST['username']) ) {
-			$to_username = phpbb_clean_username($_POST['username']);
+        if (!empty($_POST['username'])) {
+            $to_username = phpbb_clean_username($_POST['username']);
 
             $to_userdata = dibi::select(['user_id', 'user_notify_pm', 'user_email', 'user_lang', 'user_active'])
                 ->from(USERS_TABLE)
                 ->where('username = %s', $to_username)
                 ->fetch();
 
-			if ( !$to_userdata) {
+            if (!$to_userdata) {
                 $error = true;
-				$error_msg = $lang['No_such_user'];
-			}
+                $error_msg = $lang['No_such_user'];
+            }
 
             $to_userdata = $to_userdata->toArray();
         } else {
-			$error = TRUE;
-			$error_msg .= ( !empty($error_msg) ? '<br />' : '' ) . $lang['No_to_user'];
-		}
+            $error = true;
+            $error_msg .= (!empty($error_msg) ? '<br />' : '') . $lang['No_to_user'];
+        }
 
-		$privmsg_subject = trim(htmlspecialchars($_POST['subject']));
-		if ( empty($privmsg_subject) )
-		{
-			$error = TRUE;
-			$error_msg .= ( !empty($error_msg) ? '<br />' : '' ) . $lang['Empty_subject'];
-		}
+        $privmsg_subject = trim(htmlspecialchars($_POST['subject']));
+        if (empty($privmsg_subject)) {
+            $error = true;
+            $error_msg .= (!empty($error_msg) ? '<br />' : '') . $lang['Empty_subject'];
+        }
 
         if (!empty($_POST['message'])) {
             if (!$error) {
@@ -1088,7 +1085,7 @@ if ( $mode == 'newpm' ) {
                 $privmsg_message = prepare_message($_POST['message'], $html_on, $bbcode_on, $smilies_on, $bbcode_uid);
             }
         } else {
-            $error     = true;
+            $error = true;
             $error_msg .= (!empty($error_msg) ? '<br />' : '') . $lang['Empty_message'];
         }
 	}
@@ -1106,8 +1103,7 @@ if ( $mode == 'newpm' ) {
 
 		$msg_time = time();
 
-		if ( $mode != 'edit' )
-		{
+        if ($mode != 'edit') {
 			//
 			// See if recipient is at their inbox limit
 			//
@@ -1180,7 +1176,7 @@ if ( $mode == 'newpm' ) {
                 ->execute();
 		}
 
-		if ( $mode != 'edit' ) {
+        if ($mode != 'edit') {
 			$insert_data = [
 			    'privmsgs_text_id' => $privmsg_sent_id,
                 'privmsgs_bbcode_uid' => $bbcode_uid,
@@ -1199,7 +1195,7 @@ if ( $mode == 'newpm' ) {
                 ->execute();
 		}
 
-		if ( $mode != 'edit' ) {
+        if ($mode != 'edit') {
 			//
 			// Add to the users new pm counter
 			//
@@ -1213,7 +1209,7 @@ if ( $mode == 'newpm' ) {
                 ->where('user_id = %i', $to_userdata['user_id'])
                 ->execute();
 
-			if ( $to_userdata['user_notify_pm'] && !empty($to_userdata['user_email']) && $to_userdata['user_active'] ) {
+            if ($to_userdata['user_notify_pm'] && !empty($to_userdata['user_email']) && $to_userdata['user_active']) {
 				$script_name = preg_replace('/^\/?(.*?)\/?$/', "\\1", trim($board_config['script_path']));
 				$script_name = ( $script_name != '' ) ? $script_name . '/privmsg.php' : 'privmsg.php';
 				$server_name = trim($board_config['server_name']);
@@ -1255,7 +1251,7 @@ if ( $mode == 'newpm' ) {
         $msg = $lang['Message_sent'] . '<br /><br />' . sprintf($lang['Click_return_inbox'], '<a href="' . append_sid("privmsg.php?folder=inbox") . '">', '</a> ') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
 
 		message_die(GENERAL_MESSAGE, $msg);
-	} elseif ( $preview || $refresh || $error ) {
+    } elseif ($preview || $refresh || $error) {
 
 		//
 		// If we're previewing or refreshing then obtain the data
@@ -1267,6 +1263,7 @@ if ( $mode == 'newpm' ) {
 		$privmsg_subject = isset($_POST['subject']) ? trim(htmlspecialchars(stripslashes($_POST['subject']))) : '';
 		$privmsg_message = isset($_POST['message']) ? trim($_POST['message']) : '';
 		// $privmsg_message = preg_replace('#<textarea>#si', '&lt;textarea&gt;', $privmsg_message);
+
 		if ( !$preview ) {
 			$privmsg_message = stripslashes($privmsg_message);
 		}
@@ -1274,16 +1271,16 @@ if ( $mode == 'newpm' ) {
 		//
 		// Do mode specific things
 		//
-		if ( $mode == 'post' ) {
-			$page_title = $lang['Post_new_pm'];
+        if ($mode == 'post') {
+            $page_title = $lang['Post_new_pm'];
 
-			$user_sig = ( $userdata['user_sig'] != '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : '';
-		} elseif ( $mode == 'reply' ) {
-			$page_title = $lang['Post_reply_pm'];
+            $user_sig = ($userdata['user_sig'] != '' && $board_config['allow_sig']) ? $userdata['user_sig'] : '';
+        } elseif ($mode == 'reply') {
+            $page_title = $lang['Post_reply_pm'];
 
-			$user_sig = ( $userdata['user_sig'] != '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : '';
-		} elseif ( $mode == 'edit' ) {
-			$page_title = $lang['Edit_pm'];
+            $user_sig = ($userdata['user_sig'] != '' && $board_config['allow_sig']) ? $userdata['user_sig'] : '';
+        } elseif ($mode == 'edit') {
+            $page_title = $lang['Edit_pm'];
 
             $postrow = dibi::select(['u.user_id', 'u.user_sig'])
                 ->from(PRIVMSGS_TABLE)
@@ -1299,13 +1296,13 @@ if ( $mode == 'newpm' ) {
             }
 
             $user_sig = ($postrow->user_sig != '' && $board_config['allow_sig']) ? $postrow->user_sig : '';
-		}
+        }
 	} else {
         if (!$privmsg_id && ($mode == 'reply' || $mode == 'edit' || $mode == 'quote')) {
             message_die(GENERAL_ERROR, $lang['No_post_id']);
         }
 
-		if ( !empty($_GET[POST_USERS_URL]) ) {
+        if (!empty($_GET[POST_USERS_URL])) {
 			$user_id = (int)$_GET[POST_USERS_URL];
 
 			$user_check = dibi::select('username')
@@ -1424,10 +1421,10 @@ if ( $mode == 'newpm' ) {
 	//
 	// Has admin prevented user from sending PM's?
 	//
-	if ( !$userdata['user_allow_pm'] && $mode != 'edit' ) {
-		$message = $lang['Cannot_send_privmsg'];
-		message_die(GENERAL_MESSAGE, $message);
-	}
+    if (!$userdata['user_allow_pm'] && $mode != 'edit') {
+        $message = $lang['Cannot_send_privmsg'];
+        message_die(GENERAL_MESSAGE, $message);
+    }
 
 	//
 	// Start output, first preview, then errors then post form
@@ -1435,12 +1432,12 @@ if ( $mode == 'newpm' ) {
 	$page_title = $lang['Send_private_message'];
 	include $phpbb_root_path . 'includes/page_header.php';
 
-	if ( $preview && !$error ) {
+    if ($preview && !$error) {
 		$orig_word = [];
 		$replacement_word = [];
 		obtain_word_list($orig_word, $replacement_word);
 
-		if ( $bbcode_on ) {
+        if ($bbcode_on) {
 			$bbcode_uid = make_bbcode_uid();
 		}
 

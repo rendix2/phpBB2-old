@@ -121,17 +121,17 @@ $server_port = ( $board_config['server_port'] <> 80 ) ? ':' . trim($board_config
 
 $server_url = $server_protocol . $server_name . $server_port . $script_name;
 
-if ( isset($_GET[POST_GROUPS_URL]) || isset($_POST[POST_GROUPS_URL]) ) {
-	$group_id = isset($_POST[POST_GROUPS_URL]) ? (int)$_POST[POST_GROUPS_URL] : (int)$_GET[POST_GROUPS_URL];
+if (isset($_GET[POST_GROUPS_URL]) || isset($_POST[POST_GROUPS_URL])) {
+    $group_id = isset($_POST[POST_GROUPS_URL]) ? (int)$_POST[POST_GROUPS_URL] : (int)$_GET[POST_GROUPS_URL];
 } else {
-	$group_id = '';
+    $group_id = '';
 }
 
-if ( isset($_POST['mode']) || isset($_GET['mode']) ) {
-	$mode = isset($_POST['mode']) ? $_POST['mode'] : $_GET['mode'];
-	$mode = htmlspecialchars($mode);
+if (isset($_POST['mode']) || isset($_GET['mode'])) {
+    $mode = isset($_POST['mode']) ? $_POST['mode'] : $_GET['mode'];
+    $mode = htmlspecialchars($mode);
 } else {
-	$mode = '';
+    $mode = '';
 }
 
 $confirm = isset($_POST['confirm']) ? TRUE : 0;
@@ -145,10 +145,10 @@ $start = ($start < 0) ? 0 : $start;
 //
 $is_moderator = false;
 
-if ( isset($_POST['groupstatus']) && $group_id ) {
-	if ( !$userdata['session_logged_in'] ) {
-		redirect(append_sid("login.php?redirect=groupcp.php&" . POST_GROUPS_URL . "=$group_id", true));
-	}
+if (isset($_POST['groupstatus']) && $group_id) {
+    if (!$userdata['session_logged_in']) {
+        redirect(append_sid("login.php?redirect=groupcp.php&" . POST_GROUPS_URL . "=$group_id", true));
+    }
 
     $group_moderator = dibi::select('group_moderator')
         ->from(GROUPS_TABLE)
@@ -186,11 +186,11 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 	// First, joining a group
 	// If the user isn't logged in redirect them to login
 	//
-	if ( !$userdata['session_logged_in'] ) {
-		redirect(append_sid("login.php?redirect=groupcp.php&" . POST_GROUPS_URL . "=$group_id", true));
-	} elseif ( $sid !== $userdata['session_id'] ) {
-		message_die(GENERAL_ERROR, $lang['Session_invalid']);
-	}
+    if (!$userdata['session_logged_in']) {
+        redirect(append_sid("login.php?redirect=groupcp.php&" . POST_GROUPS_URL . "=$group_id", true));
+    } elseif ($sid !== $userdata['session_id']) {
+        message_die(GENERAL_ERROR, $lang['Session_invalid']);
+    }
 
     $rows = dibi::select(['ug.user_id', 'g.group_type'])
         ->from(USER_GROUP_TABLE)
@@ -278,18 +278,18 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
     $message = $lang['Group_joined'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
 
 	message_die(GENERAL_MESSAGE, $message);
-} elseif ( isset($_POST['unsub']) || isset($_POST['unsubpending']) && $group_id ) {
+} elseif (isset($_POST['unsub']) || isset($_POST['unsubpending']) && $group_id) {
 	//
 	// Second, unsubscribing from a group
 	// Check for confirmation of unsub.
 	//
-	if ( $cancel ) {
-		redirect(append_sid("groupcp.php", true));
-	} elseif ( !$userdata['session_logged_in'] ) {
-		redirect(append_sid("login.php?redirect=groupcp.php&" . POST_GROUPS_URL . "=$group_id", true));
-	} elseif ( $sid !== $userdata['session_id'] ) {
-		message_die(GENERAL_ERROR, $lang['Session_invalid']);
-	}
+    if ($cancel) {
+        redirect(append_sid("groupcp.php", true));
+    } elseif (!$userdata['session_logged_in']) {
+        redirect(append_sid("login.php?redirect=groupcp.php&" . POST_GROUPS_URL . "=$group_id", true));
+    } elseif ($sid !== $userdata['session_id']) {
+        message_die(GENERAL_ERROR, $lang['Session_invalid']);
+    }
 
 	if ( $confirm ) {
 	    dibi::delete(USER_GROUP_TABLE)
@@ -297,24 +297,24 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
             ->where('group_id = %i', $group_id)
             ->execute();
 
-		if ( $userdata['user_level'] != ADMIN && $userdata['user_level'] == MOD ) {
+        if ($userdata['user_level'] != ADMIN && $userdata['user_level'] == MOD) {
             $is_auth_mod = dibi::select('COUNT(auth_mod)')
                 ->as('is_auth_mod')
                 ->from(AUTH_ACCESS_TABLE)
                 ->as('aa')
                 ->from(USER_GROUP_TABLE)
                 ->as('ug')
-                ->where('ug.user_id = %i', $userdata['user_id'] )
+                ->where('ug.user_id = %i', $userdata['user_id'])
                 ->where('aa.group_id = ug.group_id ')
                 ->where('aa.auth_mod = %i', 1)
                 ->fetchSingle();
 
             if (!$is_auth_mod) {
-			    dibi::update(USERS_TABLE, ['user_level' => USER])
+                dibi::update(USERS_TABLE, ['user_level' => USER])
                     ->where('user_id = %i', $userdata['user_id'])
                     ->execute();
-			}
-		}
+            }
+        }
 
         $template->assign_vars(
             [
@@ -357,11 +357,11 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 	// Did the group moderator get here through an email?
 	// If so, check to see if they are logged in.
 	//
-	if ( isset($_GET['validate']) ) {
-		if ( !$userdata['session_logged_in'] ) {
-			redirect(append_sid("login.php?redirect=groupcp.php&" . POST_GROUPS_URL . "=$group_id", true));
-		}
-	}
+    if (isset($_GET['validate'])) {
+        if (!$userdata['session_logged_in']) {
+            redirect(append_sid("login.php?redirect=groupcp.php&" . POST_GROUPS_URL . "=$group_id", true));
+        }
+    }
 
 	//
 	// For security, get the ID of the group moderator.
@@ -413,22 +413,22 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 
     if ($group_info) {
 		$group_moderator = $group_info->group_moderator;
-	
-		if ( $group_moderator == $userdata['user_id'] || $userdata['user_level'] == ADMIN ) {
-			$is_moderator = TRUE;
-		}
+
+        if ($group_moderator == $userdata['user_id'] || $userdata['user_level'] == ADMIN) {
+            $is_moderator = true;
+        }
 			
 		//
 		// Handle Additions, removals, approvals and denials
-		//
-		if ( !empty($_POST['add']) || !empty($_POST['remove']) || isset($_POST['approve']) || isset($_POST['deny']) ) {
-			if ( !$userdata['session_logged_in'] ) {
-				redirect(append_sid("login.php?redirect=groupcp.php&" . POST_GROUPS_URL . "=$group_id", true));
-			} elseif ( $sid !== $userdata['session_id'] ) {
-				message_die(GENERAL_ERROR, $lang['Session_invalid']);
-			}
+        //
+        if (!empty($_POST['add']) || !empty($_POST['remove']) || isset($_POST['approve']) || isset($_POST['deny'])) {
+            if (!$userdata['session_logged_in']) {
+                redirect(append_sid("login.php?redirect=groupcp.php&" . POST_GROUPS_URL . "=$group_id", true));
+            } elseif ($sid !== $userdata['session_id']) {
+                message_die(GENERAL_ERROR, $lang['Session_invalid']);
+            }
 
-			if ( !$is_moderator ) {
+            if (!$is_moderator) {
                 $template->assign_vars(
                     [
                         'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.php") . '">'
@@ -440,7 +440,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 				message_die(GENERAL_MESSAGE, $message);
 			}
 
-			if ( isset($_POST['add']) ) {
+            if (isset($_POST['add'])) {
 				$username = isset($_POST['username']) ? phpbb_clean_username($_POST['username']) : '';
 
 				$row = dibi::select(['user_id', 'user_email', 'user_lang', 'user_level'])
@@ -460,7 +460,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 					message_die(GENERAL_MESSAGE, $message);
 				}
 
-				if ( $row->user_id == ANONYMOUS ) {
+                if ($row->user_id == ANONYMOUS) {
                     $template->assign_vars(
                         [
                             'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">'
@@ -500,12 +500,12 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
                     ];
 
 				    dibi::insert(USER_GROUP_TABLE, $insert_data)->execute();
-					
-					if ( $row->user_level != ADMIN && $row->user_level != MOD && $group_info->auth_mod ) {
-					    dibi::update(USERS_TABLE, ['user_level' => MOD])
+
+                    if ($row->user_level != ADMIN && $row->user_level != MOD && $group_info->auth_mod) {
+                        dibi::update(USERS_TABLE, ['user_level' => MOD])
                             ->where('user_id = %i', $row->user_id)
                             ->execute();
-					}
+                    }
 
 					//
 					// Get the group name
@@ -517,9 +517,9 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
                         ->fetchSingle();
 
 					// TODO group not exists
-					if ( !$group_name ) {
-						message_die(GENERAL_ERROR, 'Could not get group information');
-					}
+                    if (!$group_name) {
+                        message_die(GENERAL_ERROR, 'Could not get group information');
+                    }
 
 					include $phpbb_root_path . 'includes/emailer.php';
 					$emailer = new emailer($board_config['smtp_delivery']);
@@ -548,8 +548,8 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 				if ( ( ( isset($_POST['approve']) || isset($_POST['deny']) ) && isset($_POST['pending_members']) ) || ( isset($_POST['remove']) && isset($_POST['members']) ) ) {
 					$members = ( isset($_POST['approve']) || isset($_POST['deny']) ) ? $_POST['pending_members'] : $_POST['members'];
 
-					if ( isset($_POST['approve']) ) {
-						if ( $group_info->auth_mod ) {
+                    if (isset($_POST['approve'])) {
+                        if ($group_info->auth_mod) {
 						    dibi::update(USERS_TABLE, ['user_level' => MOD])
                                 ->where('user_id IN %in', $members)
                                 ->where('user_level NOT IN %in', [MOD, ADMIN])
@@ -561,8 +561,8 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
                             ->where('group_id = %i', $group_id)
                             ->execute();
 
-					} elseif ( isset($_POST['deny']) || isset($_POST['remove']) ) {
-						if ( $group_info->auth_mod ) {
+                    } elseif (isset($_POST['deny']) || isset($_POST['remove'])) {
+                        if ($group_info->auth_mod) {
                             $group_check = dibi::select(['ug.user_id', 'ug.group_id '])
                                 ->from(AUTH_ACCESS_TABLE)
                                 ->as('aa')
@@ -608,7 +608,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 					//
 					// Email users when they are approved
 					//
-					if ( isset($_POST['approve']) ) {
+                    if (isset($_POST['approve'])) {
 
                         $bcc_list = dibi::select('user_email')
                             ->from(USERS_TABLE)
@@ -661,7 +661,6 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 		// END approve or deny
 		//
 	} else {
-	    bdump('b');
 		message_die(GENERAL_MESSAGE, $lang['No_groups_exist']);
 	}
 
@@ -780,39 +779,39 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
         }
     }
 
-	if ( $userdata['user_level'] == ADMIN ) {
+    if ($userdata['user_level'] == ADMIN) {
         $is_moderator = true;
-	}
+    }
 
-	if ( $userdata['user_id'] == $group_info->group_moderator ) {
-		$is_moderator = true;
+    if ($userdata['user_id'] == $group_info->group_moderator) {
+        $is_moderator = true;
 
-		$group_details =  $lang['Are_group_moderator'];
+        $group_details = $lang['Are_group_moderator'];
 
-		$s_hidden_fields = '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
-	} elseif ( $is_group_member || $is_group_pending_member ) {
-	    $template->assign_block_vars('switch_unsubscribe_group_input', []);
+        $s_hidden_fields = '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
+    } elseif ($is_group_member || $is_group_pending_member) {
+        $template->assign_block_vars('switch_unsubscribe_group_input', []);
 
-		$group_details =  $is_group_pending_member ? $lang['Pending_this_group'] : $lang['Member_this_group'];
+        $group_details = $is_group_pending_member ? $lang['Pending_this_group'] : $lang['Member_this_group'];
 
-		$s_hidden_fields = '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
-	} elseif ( $userdata['user_id'] == ANONYMOUS ) {
-		$group_details =  $lang['Login_to_join'];
-		$s_hidden_fields = '';
-	} else {
-		if ( $group_info->group_type == GROUP_OPEN ) {
-		    $template->assign_block_vars('switch_subscribe_group_input', []);
+        $s_hidden_fields = '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
+    } elseif ($userdata['user_id'] == ANONYMOUS) {
+        $group_details   = $lang['Login_to_join'];
+        $s_hidden_fields = '';
+    } else {
+        if ($group_info->group_type == GROUP_OPEN) {
+            $template->assign_block_vars('switch_subscribe_group_input', []);
 
-			$group_details =  $lang['This_open_group'];
-			$s_hidden_fields = '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
-		} elseif ( $group_info->group_type == GROUP_CLOSED ) {
-			$group_details =  $lang['This_closed_group'];
-			$s_hidden_fields = '';
-		} elseif ( $group_info->group_type == GROUP_HIDDEN ) {
-			$group_details =  $lang['This_hidden_group'];
-			$s_hidden_fields = '';
-		}
-	}
+            $group_details   = $lang['This_open_group'];
+            $s_hidden_fields = '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
+        } elseif ($group_info->group_type == GROUP_CLOSED) {
+            $group_details   = $lang['This_closed_group'];
+            $s_hidden_fields = '';
+        } elseif ($group_info->group_type == GROUP_HIDDEN) {
+            $group_details   = $lang['This_hidden_group'];
+            $s_hidden_fields = '';
+        }
+    }
 
 	$page_title = $lang['Group_Control_Panel'];
 	include $phpbb_root_path . 'includes/page_header.php';
@@ -916,7 +915,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 	//
 	// Dump out the remaining users
 	//
-	for ($i = $start; $i < min($board_config['topics_per_page'] + $start, $members_count); $i++) {
+    for ($i = $start; $i < min($board_config['topics_per_page'] + $start, $members_count); $i++) {
 		$username = $group_members[$i]['username'];
 		$user_id = $group_members[$i]['user_id'];
 
@@ -960,25 +959,24 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
                 ]
             );
 
-            if ( $is_moderator ) {
-				$template->assign_block_vars('member_row.switch_mod_option', []);
-			}
+            if ($is_moderator) {
+                $template->assign_block_vars('member_row.switch_mod_option', []);
+            }
 		}
 	}
 
-	if ( !$members_count ) {
-		//
-		// No group members
-		//
+    if (!$members_count) {
+        //
+        // No group members
+        //
         $template->assign_block_vars('switch_no_members', []);
-        $template->assign_vars(
-            [
+        $template->assign_vars([
                 'L_NO_MEMBERS' => $lang['No_group_members']
             ]
         );
     }
 
-    $current_page = ( !$members_count ) ? 1 : ceil( $members_count / $board_config['topics_per_page'] );
+    $current_page = (!$members_count) ? 1 : ceil($members_count / $board_config['topics_per_page']);
 
     $template->assign_vars(
         [
@@ -989,7 +987,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
         ]
     );
 
-    if ( $group_info->group_type == GROUP_HIDDEN && !$is_group_member && !$is_moderator ) {
+    if ($group_info->group_type == GROUP_HIDDEN && !$is_group_member && !$is_moderator) {
 		//
 		// No group members
 		//
@@ -1005,11 +1003,11 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 	// We've displayed the members who belong to the group, now we 
 	// do that pending memebers... 
 	//
-	if ( $is_moderator ) {
+    if ($is_moderator) {
 		//
 		// Users pending in ONLY THIS GROUP (which is moderated by this user)
 		//
-		if ( $modgroup_pending_count ) {
+        if ($modgroup_pending_count) {
             foreach ($modgroup_pending_list as $modgroup_pending_value) {
 				$username = $modgroup_pending_value->username;
 				$user_id = $modgroup_pending_value->user_id;
@@ -1072,10 +1070,10 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 		}
 	}
 
-	if ( $is_moderator ) {
-		$template->assign_block_vars('switch_mod_option', []);
-		$template->assign_block_vars('switch_add_member', []);
-	}
+    if ($is_moderator) {
+        $template->assign_block_vars('switch_mod_option', []);
+        $template->assign_block_vars('switch_add_member', []);
+    }
 
 	$template->pparse('info');
 } else {
@@ -1142,7 +1140,7 @@ if ( isset($_POST['groupstatus']) && $group_id ) {
 	}
 	$s_group_list = '<select name="' . POST_GROUPS_URL . '">' . $s_group_list_opt . '</select>';
 
-	if ( $s_group_list_opt != '' || $s_pending_groups_opt != '' || $s_member_groups_opt != '' ) {
+    if ($s_group_list_opt != '' || $s_pending_groups_opt != '' || $s_member_groups_opt != '') {
 		//
 		// Load and process templates
 		//

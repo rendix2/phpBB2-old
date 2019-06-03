@@ -194,9 +194,9 @@ $users = $users->fetchAll();
 		$posts = $user->user_posts ? $user->user_posts : 0;
 
 		$poster_avatar = '';
-		
-		if ( $user->user_avatar_type && $user_id != ANONYMOUS && $user->user_allowavatar ) {
-			switch( $user->user_avatar_type ) {
+
+        if ($user->user_avatar_type && $user_id != ANONYMOUS && $user->user_allowavatar) {
+            switch ($user->user_avatar_type) {
 				case USER_AVATAR_UPLOAD:
 					$poster_avatar = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $user->user_avatar . '" alt="" border="0" />' : '';
 					break;
@@ -209,7 +209,7 @@ $users = $users->fetchAll();
 			}
 		}
 
-		if ( !empty($user->user_viewemail) || $userdata['user_level'] == ADMIN ) {
+        if (!empty($user->user_viewemail) || $userdata['user_level'] == ADMIN) {
 			$email_uri = $board_config['board_email_form'] ? append_sid("profile.php?mode=email&amp;" . POST_USERS_URL .'=' . $user_id) : 'mailto:' . $user->user_email;
 
 			$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
@@ -230,8 +230,7 @@ $users = $users->fetchAll();
 		$www_img = $user->user_website ? '<a href="' . $user->user_website . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
 		$www = $user->user_website ? '<a href="' . $user->user_website . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
 
-		if ( !empty($user->user_icq) )
-		{
+        if (!empty($user->user_icq)) {
 			$icq_status_img = '<a href="http://wwp.icq.com/' . $user->user_icq . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $user->user_icq . '&img=5" width="18" height="18" border="0" /></a>';
 			$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $user->user_icq . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
 			$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $user->user_icq . '">' . $lang['ICQ'] . '</a>';

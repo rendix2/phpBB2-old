@@ -28,21 +28,21 @@ include $phpbb_root_path . 'common.php';
 //
 // Start initial var setup
 //
-if ( isset($_GET[POST_FORUM_URL]) || isset($_POST[POST_FORUM_URL]) ) {
-	$forum_id = isset($_GET[POST_FORUM_URL]) ? (int)$_GET[POST_FORUM_URL] : (int)$_POST[POST_FORUM_URL];
-} elseif ( isset($_GET['forum'])) {
-	$forum_id = (int)$_GET['forum'];
+if (isset($_GET[POST_FORUM_URL]) || isset($_POST[POST_FORUM_URL])) {
+    $forum_id = isset($_GET[POST_FORUM_URL]) ? (int)$_GET[POST_FORUM_URL] : (int)$_POST[POST_FORUM_URL];
+} elseif (isset($_GET['forum'])) {
+    $forum_id = (int)$_GET['forum'];
 } else {
-	$forum_id = '';
+    $forum_id = '';
 }
 
 $start = isset($_GET['start']) ? (int)$_GET['start'] : 0;
 $start = ($start < 0) ? 0 : $start;
 
-if ( isset($_GET['mark']) || isset($_POST['mark']) ) {
-	$mark_read = isset($_POST['mark']) ? $_POST['mark'] : $_GET['mark'];
+if (isset($_GET['mark']) || isset($_POST['mark'])) {
+    $mark_read = isset($_POST['mark']) ? $_POST['mark'] : $_GET['mark'];
 } else {
-	$mark_read = '';
+    $mark_read = '';
 }
 //
 // End initial var setup
@@ -89,11 +89,11 @@ $forum_all_cookie_name = $board_config['cookie_name'] . '_f_all';
 $is_auth = [];
 $is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_row);
 
-if ( !$is_auth['auth_read'] || !$is_auth['auth_view'] ) {
-	if ( !$userdata['session_logged_in'] ) {
-		$redirect = POST_FORUM_URL . "=$forum_id" . ( isset($start) ? "&start=$start" : '' );
-		redirect(append_sid("login.php?redirect=viewforum.php&$redirect", true));
-	}
+if (!$is_auth['auth_read'] || !$is_auth['auth_view']) {
+    if (!$userdata['session_logged_in']) {
+        $redirect = POST_FORUM_URL . "=$forum_id" . (isset($start) ? "&start=$start" : '');
+        redirect(append_sid("login.php?redirect=viewforum.php&$redirect", true));
+    }
 	//
 	// The user is not authed to read this forum ...
 	//
@@ -108,8 +108,8 @@ if ( !$is_auth['auth_read'] || !$is_auth['auth_view'] ) {
 //
 // Handle marking posts
 //
-if ( $mark_read == 'topics' ) {
-	if ( $userdata['session_logged_in'] ) {
+if ($mark_read == 'topics') {
+    if ($userdata['session_logged_in']) {
         $last_post = dibi::select('MAX(post_time)')
             ->as('last_post')
             ->from(POSTS_TABLE)
@@ -261,7 +261,7 @@ if (!empty($_POST['topicdays']) || !empty($_GET['topicdays']) ) {
 	$topics_count = $forum_topics ? $forum_topics : 1;
 	$limit_topics_time = true;
 
-	if ( !empty($_POST['topicdays']) ) {
+    if (!empty($_POST['topicdays'])) {
 		$start = 0;
 	}
 } else {
@@ -308,7 +308,6 @@ $topic_rowset = dibi::select(['t.*', 'u.username', 'u.user_id'])
     ->orderBy('t.topic_last_post_id', dibi::DESC)
     ->fetchAll();
 
-$topic_rowset = [];
 $total_announcements = count($topic_rowset);
 
 //
@@ -388,7 +387,7 @@ $s_auth_can .= ( $is_auth['auth_edit'] ? $lang['Rules_edit_can'] : $lang['Rules_
 $s_auth_can .= ( $is_auth['auth_delete'] ? $lang['Rules_delete_can'] : $lang['Rules_delete_cannot'] ) . '<br />';
 $s_auth_can .= ( $is_auth['auth_vote'] ? $lang['Rules_vote_can'] : $lang['Rules_vote_cannot'] ) . '<br />';
 
-if ( $is_auth['auth_mod'] ) {
+if ($is_auth['auth_mod']) {
 	$s_auth_can .= sprintf($lang['Rules_moderate'], "<a href=\"modcp.php?" . POST_FORUM_URL . "=$forum_id&amp;start=" . $start . "&amp;sid=" . $userdata['session_id'] . '">', '</a>');
 }
 
@@ -478,11 +477,11 @@ if ($total_topics) {
             $topic_type = '';
         }
 
-		if ( $topic->topic_vote ) {
-			$topic_type .= $lang['Topic_Poll'] . ' ';
-		}
-		
-		if ( $topic->topic_status == TOPIC_MOVED ) {
+        if ($topic->topic_vote) {
+            $topic_type .= $lang['Topic_Poll'] . ' ';
+        }
+
+        if ($topic->topic_status == TOPIC_MOVED) {
 			$topic_type = $lang['Topic_Moved'] . ' ';
 			$topic_id = $topic->topic_moved_id;
 
@@ -540,31 +539,31 @@ if ($total_topics) {
 							$newest_post_img = '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
 						} else {
 							$folder_image = $folder;
-							$folder_alt = ( $topic->topic_status == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
+							$folder_alt = $topic->topic_status == TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['No_new_posts'];
 
 							$newest_post_img = '';
 						}
 					} else {
 						$folder_image = $folder_new;
-						$folder_alt = ( $topic->topic_status == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['New_posts'];
+						$folder_alt = $topic->topic_status == TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['New_posts'];
 
 						$newest_post_img = '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
 					}
 				} else {
 					$folder_image = $folder;
-					$folder_alt = ( $topic->topic_status == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
+					$folder_alt = $topic->topic_status == TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['No_new_posts'];
 
 					$newest_post_img = '';
 				}
 			} else {
 				$folder_image = $folder;
-				$folder_alt = ( $topic->topic_status == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
+				$folder_alt = $topic->topic_status == TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['No_new_posts'];
 
 				$newest_post_img = '';
 			}
 		}
 
-		if (( $replies + 1 ) > $board_config['posts_per_page'] ) {
+        if (($replies + 1) > $board_config['posts_per_page']) {
 			$total_pages = ceil( ( $replies + 1 ) / $board_config['posts_per_page'] );
 			$goto_page = ' [ <img src="' . $images['icon_gotopost'] . '" alt="' . $lang['Goto_page'] . '" title="' . $lang['Goto_page'] . '" />' . $lang['Goto_page'] . ': ';
 

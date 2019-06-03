@@ -269,7 +269,6 @@ switch ( $mode ) {
 }
 
 if ($post_info) {
-
 	$forum_id = $post_info->forum_id;
 	$forum_name = $post_info->forum_name;
 
@@ -281,8 +280,7 @@ if ($post_info) {
         message_die(GENERAL_MESSAGE, $lang['Topic_locked']);
     }
 
-    if ( $mode == 'editpost' || $mode == 'delete' || $mode == 'poll_delete' )
-	{
+    if ( $mode == 'editpost' || $mode == 'delete' || $mode == 'poll_delete' ) {
 		$topic_id = $post_info->topic_id;
 
 		$post_data['poster_post'] = $post_info->poster_id == $userdata['user_id'];
@@ -293,8 +291,7 @@ if ($post_info) {
 		$post_data['topic_type'] = $post_info->topic_type;
 		$post_data['poster_id'] = $post_info->poster_id;
 
-		if ( $post_data['first_post'] && $post_data['has_poll'] )
-		{
+		if ( $post_data['first_post'] && $post_data['has_poll'] ) {
 		    $votes = dibi::select('*')
                 ->from(VOTE_DESC_TABLE)
                 ->as('vd')
@@ -535,8 +532,7 @@ if (($delete || $poll_delete || $mode == 'delete') && !$confirm) {
         $error_msg .= !empty($error_msg) ? '<br />' . $lang['Session_invalid'] : $lang['Session_invalid'];
     }
 
-	switch ( $mode )
-	{
+	switch ( $mode ) {
 		case 'editpost':
 		case 'newtopic':
 		case 'reply':
@@ -602,8 +598,7 @@ if (($delete || $poll_delete || $mode == 'delete') && !$confirm) {
 	}
 }
 
-if ($refresh || isset($_POST['del_poll_option']) || $error_msg != '' )
-{
+if ($refresh || isset($_POST['del_poll_option']) || $error_msg != '' ) {
 	$username = !empty($_POST['username']) ? htmlspecialchars(trim(stripslashes($_POST['username']))) : '';
 	$subject = !empty($_POST['subject']) ? htmlspecialchars(trim(stripslashes($_POST['subject']))) : '';
 	$message = !empty($_POST['message']) ? htmlspecialchars(trim(stripslashes($_POST['message']))) : '';
@@ -613,19 +608,19 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg != '' )
 
 	$poll_options = [];
 
-	if ( !empty($_POST['poll_option_text']) ) {
-	    foreach ($_POST['poll_option_text'] as $option_id => $option_text) {
-			if (isset($_POST['del_poll_option'][$option_id]) ) {
-				unset($poll_options[$option_id]);
-			} elseif ( !empty($option_text) ) {
+    if (!empty($_POST['poll_option_text'])) {
+        foreach ($_POST['poll_option_text'] as $option_id => $option_text) {
+            if (isset($_POST['del_poll_option'][$option_id])) {
+                unset($poll_options[$option_id]);
+            } elseif (!empty($option_text)) {
                 $poll_options[(int)$option_id] = htmlspecialchars(trim(stripslashes($option_text)));
-			}
-		}
-	}
+            }
+        }
+    }
 
-	if ( isset($poll_add) && !empty($_POST['add_poll_option_text']) ) {
-		$poll_options[] = htmlspecialchars(trim(stripslashes($_POST['add_poll_option_text'])));
-	}
+    if (isset($poll_add) && !empty($_POST['add_poll_option_text'])) {
+        $poll_options[] = htmlspecialchars(trim(stripslashes($_POST['add_poll_option_text'])));
+    }
 
 	if ( $mode == 'newtopic' || $mode == 'reply') {
 		$user_sig = ( $userdata['user_sig'] != '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : '';
@@ -713,7 +708,7 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg != '' )
 	//
 	// User default entry point
 	//
-	if ( $mode == 'newtopic' ) {
+    if ($mode == 'newtopic') {
 		$user_sig = ( $userdata['user_sig'] != '' ) ? $userdata['user_sig'] : '';
 
 		$username = $userdata['session_logged_in'] ? $userdata['username'] : '';
@@ -721,7 +716,7 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg != '' )
 		$poll_length = '';
 		$subject = '';
 		$message = '';
-	} elseif ( $mode == 'reply' ) {
+    } elseif ($mode == 'reply') {
 		$user_sig = ( $userdata['user_sig'] != '' ) ? $userdata['user_sig'] : '';
 
 		$username = $userdata['session_logged_in'] ? $userdata['username'] : '';
@@ -752,7 +747,7 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg != '' )
 		$message = str_replace('>', '&gt;', $message);
 		$message = str_replace('<br />', "\n", $message);
 
-		if ( $mode == 'quote' ) {
+        if ($mode == 'quote') {
 			$orig_word = [];
 			$replacement_word = [];
 			obtain_word_list($orig_word, $replace_word);
@@ -763,14 +758,14 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg != '' )
 			$quote_username = ( trim($post_info->post_username) != '' ) ? $post_info->post_username : $post_info->username;
 			$message = '[quote="' . $quote_username . '"]' . $message . '[/quote]';
 
-			if ( !empty($orig_word) ) {
-				$subject = !empty($subject) ? preg_replace($orig_word, $replace_word, $subject) : '';
-				$message = !empty($message) ? preg_replace($orig_word, $replace_word, $message) : '';
-			}
+            if (!empty($orig_word)) {
+                $subject = !empty($subject) ? preg_replace($orig_word, $replace_word, $subject) : '';
+                $message = !empty($message) ? preg_replace($orig_word, $replace_word, $message) : '';
+            }
 
-			if ( !preg_match('/^Re:/', $subject) && strlen($subject) > 0 ) {
-				$subject = 'Re: ' . $subject;
-			}
+            if (!preg_match('/^Re:/', $subject) && strlen($subject) > 0) {
+                $subject = 'Re: ' . $subject;
+            }
 
 			$mode = 'reply';
 		} else {
@@ -1005,7 +1000,7 @@ $template->assign_vars([
 //
 // Poll entry switch/output
 //
-if (( $mode == 'newtopic' || ( $mode == 'editpost' && $post_data['edit_poll']) ) && $is_auth['auth_pollcreate'] ) {
+if (($mode == 'newtopic' || ($mode == 'editpost' && $post_data['edit_poll'])) && $is_auth['auth_pollcreate']) {
     $template->assign_vars(
         [
             'L_ADD_A_POLL'          => $lang['Add_poll'],
