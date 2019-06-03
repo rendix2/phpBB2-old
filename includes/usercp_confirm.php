@@ -74,7 +74,9 @@ mt_srand($sec * $usec);
 
 $char_widths = [];
 
-for ($i = 0; $i < strlen($code); $i++) {
+$code_strlen = strlen($code);
+
+for ($i = 0; $i < $code_strlen; $i++) {
 	$char = $code{$i};
 
 	$width = mt_rand(0, 4);
@@ -97,7 +99,7 @@ for ($i = 0; $i < $total_height; $i++) {
 			$image .= chr(mt_rand(140, 255));
 		}
 
-		for ($k = 0; $k < strlen($code); $k++) {
+		for ($k = 0; $k < $code_strlen; $k++) {
 			$char = $code{$k};
 
 			if (empty($hold_chars[$char])) {

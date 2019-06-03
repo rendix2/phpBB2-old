@@ -66,15 +66,14 @@ switch( $mode )
 		if (isset($install_to) ) {
 			include $phpbb_root_path. "templates/" . basename($install_to) . "/theme_info.cfg";
 
-			$template_name = $$install_to;
-			$found = FALSE;
+			$template_names = $$install_to;
 
 			$insert_data = [];
 			
-			for ($i = 0; $i < count($template_name) && !$found; $i++) {
-				if ($template_name[$i]['style_name'] == $style_name ) {
-					foreach ($template_name[$i] as $key => $value) {
-                        $insert_data[$key] = $val;
+			foreach ($template_names as $template_name) {
+				if ($template_name['style_name'] == $style_name ) {
+					foreach ($template_name as $key => $value) {
+                        $insert_data[$key] = $value;
 					}
 				}
 			}
@@ -124,7 +123,7 @@ switch( $mode )
                     ]
                 );
 
-                for ($i = 0; $i < count($installable_themes); $i++) {
+                foreach ($installable_themes as $installable_theme) {
 					$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 					$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
@@ -132,10 +131,10 @@ switch( $mode )
                         [
                             "ROW_CLASS"     => $row_class,
                             "ROW_COLOR"     => "#" . $row_color,
-                            "STYLE_NAME"    => $installable_themes[$i]['style_name'],
-                            "TEMPLATE_NAME" => $installable_themes[$i]['template_name'],
+                            "STYLE_NAME"    => $installable_theme['style_name'],
+                            "TEMPLATE_NAME" => $installable_theme['template_name'],
 
-                            "U_STYLES_INSTALL" => append_sid("admin_styles.php?mode=addnew&amp;style=" . urlencode($installable_themes[$i]['style_name']) . "&amp;install_to=" . urlencode($installable_themes[$i]['template_name']))
+                            "U_STYLES_INSTALL" => append_sid("admin_styles.php?mode=addnew&amp;style=" . urlencode($installable_theme['style_name']) . "&amp;install_to=" . urlencode($installable_theme['template_name']))
                         ]
                     );
 

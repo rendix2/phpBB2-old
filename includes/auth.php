@@ -177,8 +177,9 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 	$is_admin = ( $userdata['user_level'] == ADMIN && $userdata['session_logged_in'] ) ? TRUE : 0;
 
 	$auth_user = [];
-	for ($i = 0; $i < count($auth_fields); $i++) {
-		$key = $auth_fields[$i];
+
+	foreach ($auth_fields as $auth_field) {
+		$key = $auth_field;
 
 		//
 		// If the user is logged on and the forum type is either ALL or REG then the user has access

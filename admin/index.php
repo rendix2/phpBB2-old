@@ -294,7 +294,6 @@ if (isset($_GET['pane']) && $_GET['pane'] == 'left' )
     if (count($onlinerow_reg)) {
         $registered_users = 0;
 
-        //for ($i = 0; $i < count($onlinerow_reg); $i++) {
         foreach ($onlinerow_reg as $online_user) {
             if (!in_array($online_user->user_id, $reg_userid_ary)) {
 				$reg_userid_ary[] = $online_user->user_id;
