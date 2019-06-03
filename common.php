@@ -108,7 +108,16 @@ $panel->register($connection);
 // even bother complaining ... go scream and shout at the idiots out there who feel
 // "clever" is doing harm rather than good ... karma is a great thing ... :)
 //
-$client_ip = !empty($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : ( !empty($_ENV['REMOTE_ADDR']) ? $_ENV['REMOTE_ADDR'] : getenv('REMOTE_ADDR') );
+if (!empty($_SERVER['REMOTE_ADDR'])) {
+    $client_ip = $_SERVER['REMOTE_ADDR'];
+} else {
+    if (!empty($_ENV['REMOTE_ADDR'])) {
+        $client_ip = $_ENV['REMOTE_ADDR'];
+    } else {
+        $client_ip = getenv('REMOTE_ADDR');
+    }
+}
+
 $user_ip = encode_ip($client_ip);
 
 //
