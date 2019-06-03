@@ -290,7 +290,7 @@ switch( $mode )
 				$style_id = (int)$_GET['style_id'];
 				
 				$selected_names = [];
-				$selected_values = [];
+
 				// 
 				// Fetch the Theme Info from the db
 				//
@@ -328,7 +328,6 @@ switch( $mode )
                             $s_template_select .= '<option value="' . $file . '">' . $file . "</option>\n";
                         }
                     }
-
 				}
 
 				$s_template_select .= '</select>';

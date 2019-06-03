@@ -208,7 +208,7 @@ if (empty($forum_id) ) {
 	//
     $template->set_filenames(['body' => 'admin/auth_forum_body.tpl']);
 
-    $forum_name = $forum_rows[0]['forum_name'];
+    $forum_name = $forum_rows[0]->forum_name;
 
     $matched_type = '';
 
@@ -217,7 +217,7 @@ if (empty($forum_id) ) {
 		foreach ($auth_levels as $k => $auth_level) {
 			$matched_type = $key;
 
-			if ( $forum_rows[0][$forum_auth_fields[$k]] != $auth_level ) {
+			if ( $forum_rows[0]->{$forum_auth_fields[$k]} != $auth_level ) {
 				$matched = 0;
 			}
 		}
@@ -260,7 +260,7 @@ if (empty($forum_id) ) {
 			$custom_auth[$key] = '&nbsp;<select name="' . $forum_auth_field . '">';
 
             foreach ($forum_auth_levels as $key2 => $forum_auth_level) {
-                $selected = ( $forum_rows[0][$forum_auth_field] == $forum_auth_const[$key2] ) ? ' selected="selected"' : '';
+                $selected = ( $forum_rows[0]->{$forum_auth_field} == $forum_auth_const[$key2] ) ? ' selected="selected"' : '';
                 $custom_auth[$key] .= '<option value="' . $forum_auth_const[$key2] . '"' . $selected . '>' . $lang['Forum_' . $forum_auth_level] . '</option>';
             }
 

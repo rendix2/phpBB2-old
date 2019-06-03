@@ -429,7 +429,7 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
 						GROUP BY u.user_id
 					)";
 
-				dibi::query($sql)->fetchPairs(null, 'user_id');;
+				dibi::query($sql)->fetchPairs(null, 'user_id');
 				break;
 			case 'oracle':
 				$sql = "SELECT u.user_id 

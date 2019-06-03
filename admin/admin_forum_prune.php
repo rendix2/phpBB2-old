@@ -90,12 +90,14 @@ if (isset($_POST['doprune']) ) {
         $row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
         $row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-        $template->assign_block_vars('prune_results', [
+        $template->assign_block_vars('prune_results',
+            [
                 'ROW_COLOR' => '#' . $row_color,
                 'ROW_CLASS' => $row_class,
                 'FORUM_NAME' => $forum->forum_name,
                 'FORUM_TOPICS' => $p_result['topics'],
-                'FORUM_POSTS' => $p_result['posts']]
+                'FORUM_POSTS' => $p_result['posts']
+            ]
         );   
     }
 

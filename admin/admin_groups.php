@@ -254,7 +254,7 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 			if ($group_info->group_moderator !== $group_moderator) {
                 if ($delete_old_moderator) {
                     dibi::delete(USER_GROUP_TABLE)
-                        ->where('user_id = %i', $group_info['group_moderator'])
+                        ->where('user_id = %i', $group_info->group_moderator)
                         ->where('group_id = %i', $group_id)
                         ->execute();
                 }
