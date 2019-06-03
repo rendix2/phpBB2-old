@@ -70,10 +70,8 @@ function make_download($dbms, $dbhost, $dbname, $dbuser, $dbpasswd, $table_prefi
 /* make all the vars safe to display in form inputs and on the user's screen. Borrowed from usercp_register.php */ 
 $check_var_list = array('dbms' => 'dbms', 'dbhost' => 'dbhost', 'dbname' => 'dbname', 'dbuser' => 'dbuser', 'dbpasswd' => 'dbpasswd', 'table_prefix' => 'table_prefix'); 
 
-while (list($var, $param) = each($check_var_list)) 
-{ 
-    if (!empty($_POST[$param]))
-    { 
+foreach ($check_var_list as $var => $param) {
+    if (!empty($_POST[$param])) {
         $$var = stripslashes(htmlspecialchars(strip_tags($_POST[$param])));
     } 
 } 
@@ -149,8 +147,7 @@ h3 {font-size:12pt;color:blue}
 <select name="dbms"> 
 <?php 
 /* loop through the dbms, with the correct one selected (hopefully!) */ 
-while (list($var, $param) = each($available_dbms)) 
-{ 
+foreach ($available_dbms as $var => $param) {
     $selected = ($dbms == $var) ? ' selected="selected"' : ''; 
     echo '<option value="' . $var . '"' . $selected . '>' . $param . '</option>'; 
 } 

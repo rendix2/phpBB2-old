@@ -257,9 +257,7 @@ class Template {
 	 */
 	function assign_vars($vararray)
 	{
-		reset ($vararray);
-		while (list($key, $val) = each($vararray))
-		{
+		foreach ($vararray as $key => $val) {
 			$this->_tpldata['.'][0][$key] = $val;
 		}
 

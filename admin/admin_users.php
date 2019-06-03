@@ -720,7 +720,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 
 			$s_categories = "";
 
-			while (list($key) = each($avatar_images) ) {
+			foreach ($avatar_images as $key => $value) {
 				$selected = ( $key == $category ) ? "selected=\"selected\"" : "";
 
 				if (count($avatar_images[$key]) ) {
