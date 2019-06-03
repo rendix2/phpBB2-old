@@ -146,7 +146,7 @@ echo 'Updated version &nbsp;:: <b>2' . $updates_to_version . '</b></p>' ."\n";
 switch ($row['config_value'])
 {
 	case '':
-		switch (SQL_LAYER)
+		switch ($dbms)
 		{
 			case 'mysql':
 				$sql[] = "ALTER TABLE " . USERS_TABLE . " DROP
@@ -364,7 +364,7 @@ switch ($row['config_value'])
 	case 'RC-3':
 	case 'RC-4':
 	case '.0.0':
-		switch (SQL_LAYER)
+		switch ($dbms)
 		{
 			case 'mysql':
 				$sql[] = "ALTER TABLE " . USERS_TABLE . "
@@ -385,7 +385,7 @@ switch ($row['config_value'])
 		}
 
 	case '.0.1':
-		switch (SQL_LAYER)
+		switch ($dbms)
 		{
 			case 'mysql':
 				$sql[] = "ALTER TABLE " . GROUPS_TABLE . "
@@ -421,7 +421,7 @@ switch ($row['config_value'])
 
 	case '.0.3':
 
-		switch (SQL_LAYER)
+		switch ($dbms)
 		{
 			case 'mysql':
 				// Add indexes to post_id in search match table (+ word_id for MS Access)
@@ -471,7 +471,7 @@ switch ($row['config_value'])
 
 	case '.0.4':
 
-		switch (SQL_LAYER)
+		switch ($dbms)
 		{
 			case 'mssql':
 			case 'mssql-odbc':
@@ -487,7 +487,7 @@ switch ($row['config_value'])
 
 		// Add tables for visual confirmation ... saves me the trouble of writing a seperate
 		// script :D
-		switch (SQL_LAYER)
+		switch ($dbms)
 		{
 			case 'mysql':
 				$sql[] = 'CREATE TABLE ' . $table_prefix . 'confirm (confirm_id char(32) DEFAULT \'\' NOT NULL, session_id char(32) DEFAULT \'\' NOT NULL, code char(6) DEFAULT \'\' NOT NULL, PRIMARY KEY (session_id, confirm_id))';
@@ -521,7 +521,7 @@ switch ($row['config_value'])
 	case '.0.13':
 	case '.0.14':
 
-		switch (SQL_LAYER)
+		switch ($dbms)
 		{
 			case 'mysql':
 				$sql[] = "ALTER TABLE " . SESSIONS_TABLE . "
@@ -552,7 +552,7 @@ switch ($row['config_value'])
 	case '.0.16':
 	case '.0.17':
 		// Add tables for session keys
-		switch (SQL_LAYER)
+		switch ($dbms)
 		{
 			case 'mysql':
 				$sql[] = 'CREATE TABLE ' . $table_prefix . 'sessions_keys (key_id varchar(32) DEFAULT \'0\' NOT NULL, user_id mediumint(8) DEFAULT \'0\' NOT NULL, last_ip varchar(8) DEFAULT \'0\' NOT NULL, last_login int(11) DEFAULT \'0\' NOT NULL, PRIMARY KEY (key_id, user_id), KEY last_login (last_login))';
@@ -580,7 +580,7 @@ switch ($row['config_value'])
 	case '.0.18':
 
 		// Add login columns to user table
-		switch (SQL_LAYER)
+		switch ($dbms)
 		{
 			case 'mysql':
 				$sql[] = "ALTER TABLE " . USERS_TABLE . "
@@ -621,7 +621,7 @@ switch ($row['config_value'])
 	case '.0.19':
 
 		// Add search time to the search table
-		switch (SQL_LAYER)
+		switch ($dbms)
 		{
 			case 'mysql':
 				$sql[] = "ALTER TABLE " . SEARCH_TABLE . "
@@ -653,7 +653,7 @@ switch ($row['config_value'])
 	case '.0.21':
 
 		// MySQL only change
-		switch (SQL_LAYER)
+		switch ($dbms)
 		{
 			case 'mysql':
 				$sql[] = 'ALTER TABLE ' . SEARCH_TABLE . '
@@ -1006,7 +1006,7 @@ switch ($row['config_value'])
 		// Reset any email addresses which are non-compliant ... something
 		// not done in the upgrade script and thus which may affect some 
 		// mysql users
-		switch (SQL_LAYER)
+		switch ($dbms)
 		{
 			case 'mysql':
 				$sql = "UPDATE " . USERS_TABLE . " 
@@ -1129,7 +1129,7 @@ _sql($sql, $errored, $error_ary);
 // Optimize/vacuum analyze the tables where appropriate 
 // this should be done for each version in future along with 
 // the version number update
-switch (SQL_LAYER)
+switch ($dbms)
 {
 	case 'mysql':
 		$sql = 'OPTIMIZE TABLE ' . $table_prefix . 'auth_access, ' . $table_prefix . 'banlist, ' . $table_prefix . 'categories, ' . $table_prefix . 'config, ' . $table_prefix . 'disallow, ' . $table_prefix . 'forum_prune, ' . $table_prefix . 'forums, ' . $table_prefix . 'groups, ' . $table_prefix . 'posts, ' . $table_prefix . 'posts_text, ' . $table_prefix . 'privmsgs, ' . $table_prefix . 'privmsgs_text, ' . $table_prefix . 'ranks, ' . $table_prefix . 'search_results, ' . $table_prefix . 'search_wordlist, ' . $table_prefix . 'search_wordmatch, ' . $table_prefix . 'sessions_keys, ' . $table_prefix . 'smilies, ' . $table_prefix . 'themes, ' . $table_prefix . 'themes_name, ' . $table_prefix . 'topics, ' . $table_prefix . 'topics_watch, ' . $table_prefix . 'user_group, ' . $table_prefix . 'users, ' . $table_prefix . 'vote_desc, ' . $table_prefix . 'vote_results, ' . $table_prefix . 'vote_voters, ' . $table_prefix . 'words';

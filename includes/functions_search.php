@@ -127,7 +127,7 @@ function split_words($entry, $mode = 'post')
 
 function add_search_words($mode, $post_id, $post_text, $post_title = '')
 {
-	global $phpbb_root_path, $board_config, $lang;
+	global $phpbb_root_path, $board_config, $lang, $dbms;
 
 	$stopword_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . "/search_stopwords.txt"); 
 	$synonym_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . "/search_synonyms.txt"); 
@@ -165,7 +165,7 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 		$words = array_unique($words);
 		$check_words = [];
 
-        switch (SQL_LAYER) {
+        switch ($dbms) {
             case 'postgresql':
             case 'msaccess':
             case 'mssql-odbc':
@@ -180,7 +180,7 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 
 		foreach ($words as $word) {
             if ( !isset($check_words[$word]) ) {
-                switch ( SQL_LAYER ) {
+                switch ($dbms) {
                     case 'mysql':
                         $insert_data = [
                             'word_text' => $word,
@@ -283,9 +283,11 @@ function remove_common($mode, $fraction, $word_id_list = [])
  */
 function remove_search_post(array $post_id_sql)
 {
+    global $dbms;
+
 	$words_removed = false;
 
-	switch ( SQL_LAYER ) {
+    switch ($dbms) {
 		case 'mysql':
         $words = dibi::select('word_id')
             ->from(SEARCH_MATCH_TABLE)

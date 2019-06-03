@@ -406,7 +406,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 		//
 
         // TODO
-        switch (SQL_LAYER) {
+        switch ($dbms) {
 			case 'postgresql':
 				$sql = "SELECT u.user_id 
 					FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug, " . AUTH_ACCESS_TABLE . " aa

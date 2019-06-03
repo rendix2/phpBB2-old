@@ -252,7 +252,7 @@ if ($userdata['session_logged_in'] ) {
             if ($_GET['unwatch'] === 'topic') {
 				$is_watching_topic = 0;
 
-				$sql_priority = (SQL_LAYER === 'mysql') ? 'LOW_PRIORITY' : '';
+				$sql_priority = ($dbms === 'mysql') ? 'LOW_PRIORITY' : '';
 
 				dibi::delete(TOPICS_WATCH_TABLE)
                     ->setFlag($sql_priority)
@@ -273,7 +273,7 @@ if ($userdata['session_logged_in'] ) {
 			$is_watching_topic = TRUE;
 
             if ($row->notify_status) {
-                $sql_priority = (SQL_LAYER === 'mysql') ? 'LOW_PRIORITY' : '';
+                $sql_priority = ($dbms === 'mysql') ? 'LOW_PRIORITY' : '';
 
 				dibi::update(TOPICS_WATCH_TABLE, ['notify_status' => 0])
                     ->setFlag($sql_priority)
@@ -287,7 +287,7 @@ if ($userdata['session_logged_in'] ) {
             if ($_GET['watch'] === 'topic') {
 				$is_watching_topic = TRUE;
 
-				$sql_priority = (SQL_LAYER === 'mysql') ? 'LOW_PRIORITY' : '';
+				$sql_priority = ($dbms === 'mysql') ? 'LOW_PRIORITY' : '';
 
                 $insert_data = [
                     'user_id' => $userdata['user_id'],

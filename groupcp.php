@@ -366,7 +366,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 	//
 	// For security, get the ID of the group moderator.
 	//
-	switch(SQL_LAYER) {
+	switch($dbms) {
 		case 'postgresql':
             $group_info = dibi::query('SELECT g.group_moderator, g.group_type, aa.auth_mod 
 				FROM " . GROUPS_TABLE . " g, " . AUTH_ACCESS_TABLE . " aa 

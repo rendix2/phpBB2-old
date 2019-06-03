@@ -190,7 +190,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
 	// This code is heavily influenced by a similar routine
 	// in phpMyAdmin 2.2.0
 	//
-	if (preg_match("/^mysql/", SQL_LAYER) ) {
+	if (preg_match("/^mysql/", $dbms) ) {
         $row = dibi::query('SELECT VERSION() AS mysql_version')->fetch();
 
 		if ($row) {
@@ -222,7 +222,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
         } else {
             $dbsize = $lang['Not_available'];
         }
-	} elseif (preg_match("/^mssql/", SQL_LAYER) ) {
+	} elseif (preg_match("/^mssql/", $dbms) ) {
         $dbsize = dibi::select('((SUM(size) * 8.0) * 1024.0)')
             ->as('dbsize')
             ->from('sysfiles')

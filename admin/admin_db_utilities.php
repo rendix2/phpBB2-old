@@ -704,7 +704,7 @@ if (isset($_GET['perform']) || isset($_POST['perform']) )
 
 							$result = $db->sql_query($sql);
 
-							if (!$result && ( !(SQL_LAYER == 'postgresql' && eregi("drop table", $sql) ) ) ) {
+							if (!$result && ( !($dbms == 'postgresql' && eregi("drop table", $sql) ) ) ) {
 								message_die(GENERAL_ERROR, "Error importing backup file", "", __LINE__, __FILE__, $sql);
 							}
 						}
