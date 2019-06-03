@@ -206,8 +206,8 @@ class emailer
 		}
 		else
 		{
-			$empty_to_header = ($to == '') ? TRUE : FALSE;
-			$to = ($to == '') ? ($board_config['sendmail_fix'] ? ' ' : 'Undisclosed-recipients:;') : $to;
+			$empty_to_header = ($to == '');
+			$to = ($empty_to_header) ? ($board_config['sendmail_fix'] ? ' ' : 'Undisclosed-recipients:;') : $to;
 	
 			$result = @mail($to, $this->subject, preg_replace("#(?<!\r)\n#s", "\n", $this->msg), $this->extra_headers);
 			
