@@ -103,7 +103,7 @@ class Template {
         $template_names = '';
         @reset($filename_array);
 
-        while (list($handle, $filename) = @each($filename_array)) {
+        foreach ($filename_array as $handle => $filename) {
             $this->files[$handle] = $this->make_filename($filename);
             $template_names       .= ($template_names != '') ? ", '" . addslashes($this->files[$handle]) . "'" : "'" . addslashes($this->files[$handle]) . "'";
         }

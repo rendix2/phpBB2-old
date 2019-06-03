@@ -613,7 +613,7 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] == 1 && empty($_POST['upg
 
 	$lang_select = '<select name="lang" onchange="this.form.submit()">';
 
-    while (list($displayname, $filename) = @each($lang_options)) {
+    foreach ($lang_options as $displayname => $filename) {
         $selected    = ($language == $filename) ? ' selected="selected"' : '';
         $lang_select .= '<option value="' . $filename . '"' . $selected . '>' . ucwords($displayname) . '</option>';
     }
@@ -622,7 +622,7 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] == 1 && empty($_POST['upg
 
 	$dbms_select = '<select name="dbms" onchange="if (this.form.upgrade.options[this.form.upgrade.selectedIndex].value == 1){ this.selectedIndex = 0;}">';
 
-    while (list($dbms_name, $details) = @each($available_dbms)) {
+	foreach ($available_dbms as $dbms_name => $details) {
         $selected    = ($dbms_name == $dbms) ? 'selected="selected"' : '';
         $dbms_select .= '<option value="' . $dbms_name . '">' . $details['LABEL'] . '</option>';
     }

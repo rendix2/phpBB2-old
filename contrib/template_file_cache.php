@@ -111,8 +111,8 @@ class Template {
 
 		$template_names = '';
 		@reset($filename_array);
-		while (list($handle, $filename) = @each($filename_array))
-		{
+
+		foreach ($filename_array as $handle => $filename) {
 			$this->filename[$handle] = $filename;
 			$this->files[$handle] = $this->make_filename($filename);
 		}

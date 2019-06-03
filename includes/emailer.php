@@ -143,8 +143,8 @@ class emailer
 
 		// Set vars
 		reset ($this->vars);
-		while (list($key, $val) = each($this->vars)) 
-		{
+
+		foreach ($this->vars as $key => $val) {
 			$$key = $val;
 		}
 
@@ -152,8 +152,8 @@ class emailer
 
 		// Clear vars
 		reset ($this->vars);
-		while (list($key, $val) = each($this->vars)) 
-		{
+
+		foreach ($this->vars as $key => $val) {
 			unset($$key);
 		}
 
