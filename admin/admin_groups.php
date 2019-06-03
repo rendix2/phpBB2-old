@@ -240,7 +240,7 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 			message_die(GENERAL_MESSAGE, $lang['No_group_moderator']);
 		}
 
-		if ($mode == "editgroup" ) {
+		if ($mode === "editgroup" ) {
 			$group_info = dibi::select('*')
 				->from(GROUPS_TABLE)
 				->where('group_single_user <> %i', 1)
@@ -290,7 +290,7 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 			$message = $lang['Updated_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . append_sid("admin_groups.php") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
-		} elseif ($mode == 'newgroup' ) {
+		} elseif ($mode === 'newgroup' ) {
 			$group_insert_data = [
 				'group_type'        => $group_type,
 				'group_name'        => $group_name,

@@ -63,7 +63,7 @@ $mode = in_array($mode, ['add', 'edit', 'save', 'delete'], true) ? $mode : '';
 
 if ($mode != "" )
 {
-	if ($mode == "edit" || $mode == "add" )
+	if ($mode === "edit" || $mode === "add" )
 	{
 		$word_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
@@ -72,7 +72,7 @@ if ($mode != "" )
         $word_info = ['word' => '', 'replacement' => ''];
         $s_hidden_fields = '';
 
-		if ($mode == "edit" ) {
+		if ($mode === "edit" ) {
 			if ($word_id ) {
                 $word_info = dibi::select('*')
                     ->from(WORDS_TABLE)
@@ -105,7 +105,7 @@ if ($mode != "" )
         $template->pparse("body");
 
 		include './page_footer_admin.php';
-	} elseif ($mode == "save" ) {
+	} elseif ($mode === "save" ) {
 		$word_id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
 		$word = isset($_POST['word']) ? trim($_POST['word']) : "";
 		$replacement = isset($_POST['replacement']) ? trim($_POST['replacement']) : "";
@@ -139,7 +139,7 @@ if ($mode != "" )
 		$message .= "<br /><br />" . sprintf($lang['Click_return_wordadmin'], "<a href=\"" . append_sid("admin_words.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
 
 		message_die(GENERAL_MESSAGE, $message);
-	} elseif ($mode == "delete" ) {
+	} elseif ($mode === "delete" ) {
         if (isset($_POST['id']) || isset($_GET['id'])) {
             $word_id = isset($_POST['id']) ? $_POST['id'] : $_GET['id'];
             $word_id = (int)$word_id;

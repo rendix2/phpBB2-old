@@ -197,7 +197,7 @@ function renumber_order($mode, $cat = 0)
 if (isset($_POST['addforum']) || isset($_POST['addcategory']) ) {
 	$mode = isset($_POST['addforum']) ? "addforum" : "addcat";
 
-	if ($mode == "addforum" ) {
+	if ($mode === "addforum" ) {
 		list($cat_id) = each($_POST['addforum']);
 		$cat_id = (int)$cat_id;
 		//
@@ -214,7 +214,7 @@ if (!empty($mode) ) {
 			//
 			// Show form to create/modify a forum
 			//
-			if ($mode == 'editforum') {
+			if ($mode === 'editforum') {
 				// $newmode determines if we are going to INSERT or UPDATE after posting?
 
 				$l_title = $lang['Edit_forum'];

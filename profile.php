@@ -72,17 +72,17 @@ if (isset($_GET['mode']) || isset($_POST['mode'])) {
     $mode = isset($_GET['mode']) ? $_GET['mode'] : $_POST['mode'];
     $mode = htmlspecialchars($mode);
 
-    if ($mode == 'viewprofile') {
+    if ($mode === 'viewprofile') {
         include $phpbb_root_path . 'includes/usercp_viewprofile.php';
         exit;
-    } elseif ($mode == 'editprofile' || $mode == 'register') {
-        if (!$userdata['session_logged_in'] && $mode == 'editprofile') {
+    } elseif ($mode === 'editprofile' || $mode === 'register') {
+        if (!$userdata['session_logged_in'] && $mode === 'editprofile') {
             redirect(append_sid("login.php?redirect=profile.php&mode=editprofile", true));
         }
 
         include $phpbb_root_path . 'includes/usercp_register.php';
         exit;
-    } elseif ($mode == 'confirm') {
+    } elseif ($mode === 'confirm') {
         // Visual Confirmation
         if ($userdata['session_logged_in']) {
             exit;
@@ -90,13 +90,13 @@ if (isset($_GET['mode']) || isset($_POST['mode'])) {
 
         include $phpbb_root_path . 'includes/usercp_confirm.php';
         exit;
-    } elseif ($mode == 'sendpassword') {
+    } elseif ($mode === 'sendpassword') {
         include $phpbb_root_path . 'includes/usercp_sendpasswd.php';
         exit;
-    } elseif ($mode == 'activate') {
+    } elseif ($mode === 'activate') {
         include $phpbb_root_path . 'includes/usercp_activate.php';
         exit;
-    } elseif ($mode == 'email') {
+    } elseif ($mode === 'email') {
         include $phpbb_root_path . 'includes/usercp_email.php';
         exit;
     }

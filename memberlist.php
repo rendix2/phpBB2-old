@@ -68,7 +68,7 @@ $select_sort_mode = '<select name="mode">';
 $count_mode_type_text = count($mode_types_text);
 
 foreach ($mode_types as $mode_type_key => $mode_types_value) {
-	$selected = ( $mode == $mode_type_key ) ? ' selected="selected"' : '';
+	$selected = ( $mode === $mode_type_key ) ? ' selected="selected"' : '';
 	$select_sort_mode .= '<option value="' . $mode_type_key . '"' . $selected . '>' . $mode_types_value . '</option>';
 }
 

@@ -107,7 +107,7 @@ $multibyte_charset = 'utf-8, big5, shift_jis, euc-kr, gb2312';
 //
 // Begin core code
 //
-if ($mode == 'searchuser') {
+if ($mode === 'searchuser') {
     //
     // This handles the simple windowed user search functions called from various other scripts
     //

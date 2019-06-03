@@ -101,18 +101,18 @@ foreach ($rows as $row) {
     if ($row->session_logged_in) {
 		$user_id = $row->user_id;
 
-        if ($user_id != $prev_user) {
+        if ($user_id !== $prev_user) {
 			$username = $row->username;
 
             $style_color = '';
-            if ($row->user_level == ADMIN) {
+            if ($row->user_level === ADMIN) {
                 $username = '<b style="color:#' . $theme['fontcolor3'] . '">' . $username . '</b>';
-            } elseif ($row->user_level == MOD) {
+            } elseif ($row->user_level === MOD) {
                 $username = '<b style="color:#' . $theme['fontcolor2'] . '">' . $username . '</b>';
             }
 
             if (!$row->user_allow_viewonline) {
-				$view_online = $userdata['user_level'] == ADMIN;
+				$view_online = $userdata['user_level'] === ADMIN;
 				$hidden_users++;
 
 				$username = '<i>' . $username . '</i>';
@@ -127,7 +127,7 @@ foreach ($rows as $row) {
 		}
 	}
 	else {
-        if ($row->session_ip != $prev_ip) {
+        if ($row->session_ip !== $prev_ip) {
 			$username = $lang['Guest'];
 			$view_online = true;
 			$guest_users++;

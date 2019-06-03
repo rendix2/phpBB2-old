@@ -122,7 +122,7 @@ $savebox_url = ( $folder != 'savebox' || $mode != '' ) ? '<a href="' . append_si
 // ----------
 // Start main
 //
-if ($mode == 'newpm') {
+if ($mode === 'newpm') {
     $gen_simple_header = true;
 
 	$page_title = $lang['Private_Messaging'];
@@ -153,7 +153,7 @@ if ($mode == 'newpm') {
 
 	include $phpbb_root_path . 'includes/page_tail.php';
 
-} elseif ($mode == 'read') {
+} elseif ($mode === 'read') {
     if (!empty($_GET[POST_POST_URL])) {
         $privmsgs_id = (int)$_GET[POST_POST_URL];
     } else {
@@ -1030,7 +1030,7 @@ if ($mode == 'newpm') {
 		//
 	}
 
-	if ($submit && $mode == 'edit') {
+	if ($submit && $mode === 'edit') {
 	    $row = dibi::select('privmsgs_from_userid')
             ->from(PRIVMSGS_TABLE)
             ->where('privmsgs_id = %i', (int) $privmsg_id)
@@ -1271,15 +1271,15 @@ if ($mode == 'newpm') {
 		//
 		// Do mode specific things
 		//
-        if ($mode == 'post') {
+        if ($mode === 'post') {
             $page_title = $lang['Post_new_pm'];
 
             $user_sig = ($userdata['user_sig'] != '' && $board_config['allow_sig']) ? $userdata['user_sig'] : '';
-        } elseif ($mode == 'reply') {
+        } elseif ($mode === 'reply') {
             $page_title = $lang['Post_reply_pm'];
 
             $user_sig = ($userdata['user_sig'] != '' && $board_config['allow_sig']) ? $userdata['user_sig'] : '';
-        } elseif ($mode == 'edit') {
+        } elseif ($mode === 'edit') {
             $page_title = $lang['Edit_pm'];
 
             $postrow = dibi::select(['u.user_id', 'u.user_sig'])
@@ -1298,7 +1298,7 @@ if ($mode == 'newpm') {
             $user_sig = ($postrow->user_sig != '' && $board_config['allow_sig']) ? $postrow->user_sig : '';
         }
 	} else {
-        if (!$privmsg_id && ($mode == 'reply' || $mode == 'edit' || $mode == 'quote')) {
+        if (!$privmsg_id && ($mode === 'reply' || $mode === 'edit' || $mode === 'quote')) {
             message_die(GENERAL_ERROR, $lang['No_post_id']);
         }
 
@@ -1317,7 +1317,7 @@ if ($mode == 'newpm') {
                 $error     = true;
                 $error_msg = $lang['No_such_user'];
             }
-		} elseif ( $mode == 'edit' ) {
+		} elseif ( $mode === 'edit' ) {
 		    $columns = [
 		        'pm.*',
                 'pmt.privmsgs_bbcode_uid',
@@ -1362,7 +1362,7 @@ if ($mode == 'newpm') {
 			$to_username = $privmsg->username;
 			$to_userid = $privmsg->user_id;
 
-		} elseif ( $mode == 'reply' || $mode == 'quote' ) {
+		} elseif ( $mode === 'reply' || $mode === 'quote' ) {
             $columns = [
                 'pm.privmsgs_subject',
                 'pm.privmsgs_date',
@@ -1398,7 +1398,7 @@ if ($mode == 'newpm') {
 			$to_username = $privmsg->username;
 			$to_userid = $privmsg->user_id;
 
-			if ( $mode == 'quote' ) {
+			if ( $mode === 'quote' ) {
 				$privmsg_message = $privmsg->privmsgs_text;
 				$privmsg_bbcode_uid = $privmsg->privmsgs_bbcode_uid;
 
@@ -1571,12 +1571,12 @@ if ($mode == 'newpm') {
         $template->assign_block_vars('switch_signature_checkbox', []);
     }
 
-    if ($mode == 'post') {
+    if ($mode === 'post') {
         $post_a = $lang['Send_a_new_message'];
-    } elseif ($mode == 'reply') {
+    } elseif ($mode === 'reply') {
         $post_a = $lang['Send_a_reply'];
         $mode   = 'post';
-    } elseif ($mode == 'edit') {
+    } elseif ($mode === 'edit') {
         $post_a = $lang['Edit_message'];
     }
 
@@ -1584,7 +1584,7 @@ if ($mode == 'newpm') {
 	$s_hidden_fields .= '<input type="hidden" name="mode" value="' . $mode . '" />';
 	$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
-    if ($mode == 'edit') {
+    if ($mode === 'edit') {
         $s_hidden_fields .= '<input type="hidden" name="' . POST_POST_URL . '" value="' . $privmsg_id . '" />';
     }
 

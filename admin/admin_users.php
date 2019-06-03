@@ -53,11 +53,11 @@ if (isset($_POST['mode']) || isset($_GET['mode'])) {
 //
 // Begin program
 //
-if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset($_GET[POST_USERS_URL]) || isset( $_POST[POST_USERS_URL]) ) ) {
+if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isset($_GET[POST_USERS_URL]) || isset($_POST[POST_USERS_URL]) ) ) {
 	//
 	// Ok, the profile has been modified and submitted, let's update
 	//
-	if ( ( $mode == 'save' && isset( $_POST['submit'] ) ) || isset( $_POST['avatargallery'] ) || isset( $_POST['submitavatar'] ) || isset( $_POST['cancelavatar'] ) ) {
+	if ( ( $mode === 'save' && isset( $_POST['submit'] ) ) || isset( $_POST['avatargallery'] ) || isset( $_POST['submitavatar'] ) || isset( $_POST['cancelavatar'] ) ) {
 		$user_id = (int)$_POST['id'];
 
 		if (!($this_userdata = get_userdata($user_id))) {

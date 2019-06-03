@@ -72,9 +72,9 @@ function show_coppa()
 
 $error = false;
 $error_msg = '';
-$page_title = ( $mode == 'editprofile' ) ? $lang['Edit_profile'] : $lang['Register'];
+$page_title = ( $mode === 'editprofile' ) ? $lang['Edit_profile'] : $lang['Register'];
 
-if ( $mode == 'register' && !isset($_POST['agreed']) && !isset($_GET['agreed']) )
+if ( $mode === 'register' && !isset($_POST['agreed']) && !isset($_GET['agreed']) )
 {
 	include $phpbb_root_path . 'includes/page_header.php';
 
@@ -93,13 +93,13 @@ if (
 	isset($_POST['avatargallery']) ||
 	isset($_POST['submitavatar']) ||
 	isset($_POST['cancelavatar']) ||
-	$mode == 'register'
+	$mode === 'register'
 ) {
 	include $phpbb_root_path . 'includes/functions_validate.php';
 	include $phpbb_root_path . 'includes/bbcode.php';
 	include $phpbb_root_path . 'includes/functions_post.php';
 
-	if ( $mode == 'editprofile' ) {
+	if ( $mode === 'editprofile' ) {
 		$user_id = (int)$_POST['user_id'];
 		$current_email = trim(htmlspecialchars($_POST['current_email']));
 	}
@@ -156,7 +156,7 @@ if (
 
     $sid = isset($_POST['sid']) ? $_POST['sid'] : 0;
 
-	if ( $mode == 'register' ) {
+	if ( $mode === 'register' ) {
         $attachsig    = isset($_POST['attachsig'])    ? (bool)$_POST['attachsig']    : $board_config['allow_sig'];
         $allowhtml    = isset($_POST['allowhtml'])    ? (bool)$_POST['allowhtml']    : $board_config['allow_html'];
         $allowbbcode  = isset($_POST['allowbbcode'])  ? (bool)$_POST['allowbbcode']  : $board_config['allow_bbcode'];
@@ -212,8 +212,8 @@ if (
 	$user_avatar_size     = !empty($_FILES['avatar']['size']) ? $_FILES['avatar']['size'] : 0;
 	$user_avatar_filetype = !empty($_FILES['avatar']['type']) ? $_FILES['avatar']['type'] : '';
 
-	$user_avatar      = ( empty($user_avatar_local) && $mode == 'editprofile' ) ? $userdata['user_avatar'] : '';
-	$user_avatar_type = ( empty($user_avatar_local) && $mode == 'editprofile' ) ? $userdata['user_avatar_type'] : '';
+	$user_avatar      = ( empty($user_avatar_local) && $mode === 'editprofile' ) ? $userdata['user_avatar'] : '';
+	$user_avatar_type = ( empty($user_avatar_local) && $mode === 'editprofile' ) ? $userdata['user_avatar_type'] : '';
 
 	if ( (isset($_POST['avatargallery']) || isset($_POST['submitavatar']) || isset($_POST['cancelavatar'])) && !isset($_POST['submit'])) {
 		$username = stripslashes($username);
@@ -248,7 +248,7 @@ if (
 // and ensure that they were trying to register a second time
 // (Prevents double registrations)
 //
-if ($mode == 'register' && ($userdata['session_logged_in'] || $username == $userdata['username'])) {
+if ($mode === 'register' && ($userdata['session_logged_in'] || $username == $userdata['username'])) {
 	message_die(GENERAL_MESSAGE, $lang['Username_taken'], '', __LINE__, __FILE__);
 }
 
@@ -265,19 +265,19 @@ if ( isset($_POST['submit']) )
 		$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Session_invalid'];
 	}
 
-	if ( $mode == 'editprofile' ) {
+	if ( $mode === 'editprofile' ) {
 		if ( $user_id != $userdata['user_id'] ) {
 			$error = true;
 			$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Wrong_Profile'];
 		}
-	} elseif ( $mode == 'register' ) {
+	} elseif ( $mode === 'register' ) {
 		if ( empty($username) || empty($new_password) || empty($password_confirm) || empty($email) ) {
 			$error = TRUE;
 			$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Fields_empty'];
 		}
 	}
 
-	if ($board_config['enable_confirm'] && $mode == 'register') {
+	if ($board_config['enable_confirm'] && $mode === 'register') {
 		if (empty($_POST['confirm_id'])) {
 			$error = TRUE;
 			$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Confirm_code_wrong'];
@@ -324,7 +324,7 @@ if ( isset($_POST['submit']) )
 			$error = TRUE;
 			$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Password_long'];
 		} else {
-			if ( $mode == 'editprofile' ) {
+			if ( $mode === 'editprofile' ) {
 			    $db_password = dibi::select('user_password')
                     ->from(USERS_TABLE)
                     ->where('user_id = %i', $user_id)
@@ -353,7 +353,7 @@ if ( isset($_POST['submit']) )
 	//
 	// Do a ban check on this email address
 	//
-	if ( $email != $userdata['user_email'] || $mode == 'register' )
+	if ( $email != $userdata['user_email'] || $mode === 'register' )
 	{
 		$result = validate_email($email);
 
@@ -364,7 +364,7 @@ if ( isset($_POST['submit']) )
 			$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $result['error_msg'];
 		}
 
-		if ( $mode == 'editprofile' ) {
+		if ( $mode === 'editprofile' ) {
             $db_password = dibi::select('user_password')
                 ->from(USERS_TABLE)
                 ->where('user_id = %i', $user_id)
@@ -384,12 +384,12 @@ if ( isset($_POST['submit']) )
 	}
 
 	$username_data = [];
-	if ( $board_config['allow_namechange'] || $mode == 'register' ) {
+	if ( $board_config['allow_namechange'] || $mode === 'register' ) {
 		if ( empty($username) ) {
 			// Error is already triggered, since one field is empty.
 			$error = TRUE;
-		} elseif ( $username != $userdata['username'] || $mode == 'register') {
-			if (strtolower($username) != strtolower($userdata['username']) || $mode == 'register') {
+		} elseif ( $username != $userdata['username'] || $mode === 'register') {
+			if (strtolower($username) != strtolower($userdata['username']) || $mode === 'register') {
 				$result = validate_username($username);
 
 				if ( $result['error'] ) {
@@ -422,7 +422,7 @@ if ( isset($_POST['submit']) )
 
 	$avatar_data = [];
 
-	if ( isset($_POST['avatardel']) && $mode == 'editprofile' ) {
+	if ( isset($_POST['avatardel']) && $mode === 'editprofile' ) {
 		$avatar_data = user_avatar_delete($userdata['user_avatar_type'], $userdata['user_avatar']);
 	} elseif ( ( !empty($user_avatar_upload) || !empty($user_avatar_name) ) && $board_config['allow_avatar_upload'] ) {
 		if ( !empty($user_avatar_upload) ) {
@@ -450,7 +450,7 @@ if ( isset($_POST['submit']) )
 		}
 	    */
 
-		if ( $mode == 'editprofile' ) {
+		if ( $mode === 'editprofile' ) {
 			if ( $email != $userdata['user_email'] && $board_config['require_activation'] != USER_ACTIVATION_NONE && $userdata['user_level'] != ADMIN ) {
 				$user_active = 0;
 
@@ -769,7 +769,7 @@ if ( $error ) {
 
 	$user_lang = stripslashes($user_lang);
 	$user_dateformat = stripslashes($user_dateformat);
-} elseif ( $mode == 'editprofile' && !isset($_POST['avatargallery']) && !isset($_POST['submitavatar']) && !isset($_POST['cancelavatar']) ) {
+} elseif ( $mode === 'editprofile' && !isset($_POST['avatargallery']) && !isset($_POST['submitavatar']) && !isset($_POST['cancelavatar']) ) {
 	$user_id = $userdata['user_id'];
 	$username = $userdata['username'];
 	$email = $userdata['user_email'];
@@ -815,7 +815,7 @@ include $phpbb_root_path . 'includes/page_header.php';
 
 make_jumpbox('viewforum.php');
 
-if ( $mode == 'editprofile' ) {
+if ( $mode === 'editprofile' ) {
 	if ( $user_id != $userdata['user_id'] ) {
 		$error = TRUE;
 		$error_msg = $lang['Wrong_Profile'];
@@ -861,7 +861,7 @@ if (isset($_POST['avatargallery']) && !$error ) {
 
 	$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';
 	$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
-	if ($mode == 'editprofile' ) {
+	if ($mode === 'editprofile' ) {
 		$s_hidden_fields .= '<input type="hidden" name="user_id" value="' . $userdata['user_id'] . '" />';
 		//
 		// Send the users current email address. If they change it, and account activation is turned on
@@ -886,11 +886,11 @@ if (isset($_POST['avatargallery']) && !$error ) {
 
     $template->set_filenames(['body' => 'profile_add_body.tpl']);
 
-    if ($mode == 'editprofile') {
+    if ($mode === 'editprofile') {
         $template->assign_block_vars('switch_edit_profile', []);
     }
 
-    if (($mode == 'register') || $board_config['allow_namechange']) {
+    if (($mode === 'register') || $board_config['allow_namechange']) {
         $template->assign_block_vars('switch_namechange_allowed', []);
     } else {
         $template->assign_block_vars('switch_namechange_disallowed', []);
@@ -898,7 +898,7 @@ if (isset($_POST['avatargallery']) && !$error ) {
 
 	// Visual Confirmation
 	$confirm_image = '';
-	if (!empty($board_config['enable_confirm']) && $mode == 'register') {
+	if (!empty($board_config['enable_confirm']) && $mode === 'register') {
 	    $sessions = dibi::select('session_id')
             ->from(SESSIONS_TABLE)
             ->fetchPairs(null, 'session_id');
@@ -997,11 +997,11 @@ if (isset($_POST['avatargallery']) && !$error ) {
             'SMILIES_STATUS' => $smilies_status,
 
             'L_CURRENT_PASSWORD' => $lang['Current_password'],
-            'L_NEW_PASSWORD' => ( $mode == 'register' ) ? $lang['Password'] : $lang['New_password'],
+            'L_NEW_PASSWORD' => ( $mode === 'register' ) ? $lang['Password'] : $lang['New_password'],
             'L_CONFIRM_PASSWORD' => $lang['Confirm_password'],
-            'L_CONFIRM_PASSWORD_EXPLAIN' => ( $mode == 'editprofile' ) ? $lang['Confirm_password_explain'] : '',
-            'L_PASSWORD_IF_CHANGED' => ( $mode == 'editprofile' ) ? $lang['password_if_changed'] : '',
-            'L_PASSWORD_CONFIRM_IF_CHANGED' => ( $mode == 'editprofile' ) ? $lang['password_confirm_if_changed'] : '',
+            'L_CONFIRM_PASSWORD_EXPLAIN' => ( $mode === 'editprofile' ) ? $lang['Confirm_password_explain'] : '',
+            'L_PASSWORD_IF_CHANGED' => ( $mode === 'editprofile' ) ? $lang['password_if_changed'] : '',
+            'L_PASSWORD_CONFIRM_IF_CHANGED' => ( $mode === 'editprofile' ) ? $lang['password_confirm_if_changed'] : '',
             'L_SUBMIT' => $lang['Submit'],
             'L_RESET' => $lang['Reset'],
             'L_ICQ_NUMBER' => $lang['ICQ'],

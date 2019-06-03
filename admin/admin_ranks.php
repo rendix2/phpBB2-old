@@ -60,8 +60,8 @@ if (isset($_GET['mode']) || isset($_POST['mode']) ) {
 // Restrict mode input to valid options
 $mode = in_array($mode, ['add', 'edit', 'save', 'delete'], true) ? $mode : '';
 
-if ($mode != "" ) {
-	if ($mode == "edit" || $mode == "add" ) {
+if ($mode !== "" ) {
+	if ($mode === "edit" || $mode === "add" ) {
 		//
 		// They want to add a new rank, show the form.
 		//
@@ -69,7 +69,7 @@ if ($mode != "" ) {
 		
 		$s_hidden_fields = "";
 		
-		if ($mode == "edit" ) {
+		if ($mode === "edit" ) {
 			if (empty($rank_id) ) {
 				message_die(GENERAL_MESSAGE, $lang['Must_select_rank']);
 			}
@@ -120,7 +120,7 @@ if ($mode != "" ) {
 				"S_HIDDEN_FIELDS" => $s_hidden_fields
 			]
 		);
-	} elseif ($mode == "save" ) {
+	} elseif ($mode === "save" ) {
 		//
 		// Ok, they sent us our info, let's update it.
 		//
@@ -185,7 +185,7 @@ if ($mode != "" ) {
 
 		message_die(GENERAL_MESSAGE, $message);
 
-	} elseif ($mode == "delete" ) {
+	} elseif ($mode === "delete" ) {
 		//
 		// Ok, they want to delete their rank
 		//

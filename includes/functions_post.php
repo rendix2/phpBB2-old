@@ -109,7 +109,7 @@ function prepare_post(&$mode, &$post_data, &$bbcode_on, &$html_on, &$smilies_on,
 	// Check subject
 	if (!empty($subject)) {
 		$subject = htmlspecialchars(trim($subject));
-	} elseif ($mode == 'newtopic' || ($mode == 'editpost' && $post_data['first_post'])) {
+	} elseif ($mode === 'newtopic' || ($mode === 'editpost' && $post_data['first_post'])) {
 		$error_msg .= !empty($error_msg) ? '<br />' . $lang['Empty_subject'] : $lang['Empty_subject'];
 	}
 
@@ -117,14 +117,14 @@ function prepare_post(&$mode, &$post_data, &$bbcode_on, &$html_on, &$smilies_on,
 	if (!empty($message)) {
 		$bbcode_uid = $bbcode_on ? make_bbcode_uid() : '';
 		$message = prepare_message(trim($message), $html_on, $bbcode_on, $smilies_on, $bbcode_uid);
-	} elseif ($mode != 'delete' && $mode != 'poll_delete')  {
+	} elseif ($mode !== 'delete' && $mode !== 'poll_delete')  {
 		$error_msg .= !empty($error_msg) ? '<br />' . $lang['Empty_message'] : $lang['Empty_message'];
 	}
 
 	//
 	// Handle poll stuff
 	//
-	if ($mode == 'newtopic' || ($mode == 'editpost' && $post_data['first_post'])) {
+	if ($mode === 'newtopic' || ($mode === 'editpost' && $post_data['first_post'])) {
 		$poll_length = isset($poll_length) ? max(0, (int)$poll_length) : 0;
 
 		if (!empty($poll_title)) {
@@ -168,7 +168,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 
 	$current_time = time();
 
-	if ($mode == 'newtopic' || $mode == 'reply' || $mode == 'editpost') {
+	if ($mode === 'newtopic' || $mode === 'reply' || $mode === 'editpost') {
 		//
 		// Flood control
 		//
@@ -191,14 +191,14 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
         }
 	}
 
-	if ($mode == 'editpost') {
+	if ($mode === 'editpost') {
 		remove_search_post([$post_id]);
 	}
 
-	if ($mode == 'newtopic' || ($mode == 'editpost' && $post_data['first_post'])) {
+	if ($mode === 'newtopic' || ($mode === 'editpost' && $post_data['first_post'])) {
 		$topic_vote = (!empty($poll_title) && count($poll_options) >= 2) ? 1 : 0;
 
-		if ($mode != "editpost") {
+		if ($mode !== "editpost") {
             $insert_data = [
                 'topic_title' => $post_subject,
                 'topic_poster' => $userdata['user_id'],
@@ -226,7 +226,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
         }
 	}
 
-	if ($mode != "editpost") {
+	if ($mode !== "editpost") {
         $insert_data = [
             'topic_id'       => $topic_id,
             'forum_id'       => $forum_id,
@@ -258,7 +258,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
             'enable_sig'     => $attach_sig
         ];
 
-        if ($mode == 'editpost' && !$post_data['last_post'] && $post_data['poster_post']) {
+        if ($mode === 'editpost' && !$post_data['last_post'] && $post_data['poster_post']) {
             $update_data['post_edit_time'] = $current_time;
             $update_data['post_edit_count%sql'] = 'post_edit_count + 1';
         }
@@ -283,7 +283,8 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	//
 	// Add poll
 	// 
-	if (($mode == 'newtopic' || ($mode == 'editpost' && $post_data['edit_poll'])) && !empty($poll_title) && count($poll_options) >= 2) {
+	if (($mode === 'newtopic' || ($mode === 'editpost' && $post_data['edit_poll'])) && !empty($poll_title) && count
+        ($poll_options) >= 2) {
 	    if (!$post_data['has_poll']) {
 	        $insert_data = [
 	            'topic_id' => $topic_id,
@@ -308,7 +309,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 		$delete_option_sql = [];
 		$old_poll_result = [];
 
-		if ($mode == 'editpost' && $post_data['has_poll']) {
+		if ($mode === 'editpost' && $post_data['has_poll']) {
 		    $votes = dibi::select(['vote_option_id', 'vote_result'])
                 ->from(VOTE_RESULTS_TABLE)
                 ->where('vote_id = %i', $poll_id)
@@ -329,9 +330,10 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
         foreach ($poll_options as $option_id => $option_text) {
             if (!empty($option_text)) {
                 $option_text = str_replace("\'", "''", htmlspecialchars($option_text));
-                $poll_result = ($mode == "editpost" && isset($old_poll_result[$option_id])) ? $old_poll_result[$option_id] : 0;
+                $poll_result = ($mode === "editpost" && isset($old_poll_result[$option_id])) ?
+                    $old_poll_result[$option_id] : 0;
 
-                if ($mode != "editpost" || !isset($old_poll_result[$option_id])) {
+                if ($mode !== "editpost" || !isset($old_poll_result[$option_id])) {
                     $insert_data = [
                         'vote_id' => $poll_id,
                         'vote_option_id' => $poll_option_id,
@@ -376,12 +378,12 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 //
 function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_id, &$user_id)
 {
-	$sign = ($mode == 'delete') ? '- 1' : '+ 1';
+	$sign = ($mode === 'delete') ? '- 1' : '+ 1';
 
 	$forum_update_sql = ['forum_posts%sql' => 'forum_posts ' . $sign];
 	$topic_update_sql = [];
 
-	if ($mode == 'delete') {
+	if ($mode === 'delete') {
 		if ($post_data['last_post']) {
 			if ($post_data['first_post']) {
 				$forum_update_sql['forum_topics%sql'] = 'forum_topics - 1';
@@ -428,16 +430,16 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
 		} else {
 			$topic_update_sql['topic_replies%sql'] = 'topic_replies - 1';
 		}
-	} elseif ($mode != 'poll_delete') {
+	} elseif ($mode !== 'poll_delete') {
         $forum_update_sql['forum_last_post_id'] = $post_id;
 
-        if ($mode == 'newtopic') {
+        if ($mode === 'newtopic') {
             $forum_update_sql['forum_topics%sql'] = 'forum_topics ' . $sign;
         }
 
 		$topic_update_sql['topic_last_post_id'] = $post_id;
 
-		if ($mode == 'reply') {
+		if ($mode === 'reply') {
             $topic_update_sql['topic_replies%sql'] = 'topic_replies ' . $sign;
         } else {
             $topic_update_sql['topic_first_post_id'] = $post_id;
@@ -446,7 +448,7 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
 	    $topic_update_sql['topic_vote'] = 0;
 	}
 
-	if ($mode != 'poll_delete') {
+	if ($mode !== 'poll_delete') {
 	    dibi::update(FORUMS_TABLE, $forum_update_sql)
             ->where('forum_id = %i', $forum_id)
             ->execute();
@@ -458,7 +460,7 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
             ->execute();
 	}
 
-	if ($mode != 'poll_delete') {
+	if ($mode !== 'poll_delete') {
 	    dibi::update(USERS_TABLE, ['user_posts%sql' => 'user_posts ' . $sign])
             ->where('user_id = %i', $user_id)
             ->execute();
@@ -473,7 +475,7 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	global $board_config, $lang, $phpbb_root_path;
 	global $userdata, $user_ip;
 
-	if ($mode != 'poll_delete') {
+	if ($mode !== 'poll_delete') {
 		include $phpbb_root_path . 'includes/functions_search.php';
 
 		dibi::delete(POSTS_TABLE)
@@ -502,7 +504,8 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 		remove_search_post([$post_id]);
 	}
 
-	if ($mode == 'poll_delete' || ($mode == 'delete' && $post_data['first_post'] && $post_data['last_post']) && $post_data['has_poll'] && $post_data['edit_poll']) {
+	if ($mode === 'poll_delete' || ($mode === 'delete' && $post_data['first_post'] && $post_data['last_post']) &&
+        $post_data['has_poll'] && $post_data['edit_poll']) {
 		dibi::delete(VOTE_DESC_TABLE)
             ->where('topic_id = %i', $topic_id)
             ->execute();
@@ -516,12 +519,12 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
             ->execute();
 	}
 
-	if ($mode == 'delete' && $post_data['first_post'] && $post_data['last_post']) {
+	if ($mode === 'delete' && $post_data['first_post'] && $post_data['last_post']) {
 		$meta = '<meta http-equiv="refresh" content="3;url=' . append_sid("viewforum.php?" . POST_FORUM_URL . '=' . $forum_id) . '">';
 		$message = $lang['Deleted'];
 	} else {
 		$meta = '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.php?" . POST_TOPIC_URL . '=' . $topic_id) . '">';
-		$message = (($mode == 'poll_delete') ? $lang['Poll_delete'] : $lang['Deleted']) . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id") . '">', '</a>');
+		$message = (($mode === 'poll_delete') ? $lang['Poll_delete'] : $lang['Deleted']) . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id") . '">', '</a>');
 	}
 
 	$message .=  '<br /><br />' . sprintf($lang['Click_return_forum'], '<a href="' . append_sid("viewforum.php?" . POST_FORUM_URL . "=$forum_id") . '">', '</a>');
@@ -539,8 +542,8 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 
 	$current_time = time();
 
-	if ($mode != 'delete') {
-		if ($mode == 'reply') {
+	if ($mode !== 'delete') {
+		if ($mode === 'reply') {
 		    $user_ids = dibi::select('ban_userid')
                 ->from(BANLIST_TABLE)
                 ->fetchPairs(null, 'ban_userid');
@@ -681,7 +684,7 @@ function generate_smilies($mode, $page_id)
 	$inline_rows = 5;
 	$window_columns = 8;
 
-	if ($mode == 'window') {
+	if ($mode === 'window') {
 		$userdata = session_pagestart($user_ip, $page_id);
 		init_userprefs($userdata);
 
@@ -711,8 +714,8 @@ function generate_smilies($mode, $page_id)
         }
 
 		if ($num_smilies) {
-			$smilies_count = ($mode == 'inline') ? min(19, $num_smilies) : $num_smilies;
-			$smilies_split_row = ($mode == 'inline') ? $inline_columns - 1 : $window_columns - 1;
+			$smilies_count = ($mode === 'inline') ? min(19, $num_smilies) : $num_smilies;
+			$smilies_split_row = ($mode === 'inline') ? $inline_columns - 1 : $window_columns - 1;
 
 			$s_colspan = 0;
 			$row = 0;
@@ -734,7 +737,7 @@ function generate_smilies($mode, $page_id)
                 $s_colspan = max($s_colspan, $col + 1);
 
                 if ($col == $smilies_split_row) {
-                    if ($mode == 'inline' && $row == $inline_rows - 1) {
+                    if ($mode === 'inline' && $row == $inline_rows - 1) {
                         break;
                     }
 
@@ -745,7 +748,7 @@ function generate_smilies($mode, $page_id)
                 }
 			}
 
-			if ($mode == 'inline' && $num_smilies > $inline_rows * $inline_columns) {
+			if ($mode === 'inline' && $num_smilies > $inline_rows * $inline_columns) {
 				$template->assign_block_vars('switch_smilies_extra', []);
 
                 $template->assign_vars(
@@ -766,7 +769,7 @@ function generate_smilies($mode, $page_id)
         }
     }
 
-    if ($mode == 'window') {
+    if ($mode === 'window') {
 		$template->pparse('smiliesbody');
 
 		include $phpbb_root_path . 'includes/page_tail.php';

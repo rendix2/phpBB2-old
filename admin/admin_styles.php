@@ -230,7 +230,7 @@ switch( $mode )
 			// Wheeeew! Thank heavens for copy and paste and search and replace :D
 			//
 			
-			if ($mode == "edit") {
+			if ($mode === "edit") {
 			    dibi::update(THEMES_TABLE, $updated)
                     ->where('themes_id = %i', $style_id)
                     ->execute();
@@ -283,7 +283,7 @@ switch( $mode )
 				message_die(GENERAL_MESSAGE, $message);
 			}
 		} else {
-			if ($mode == "edit") {
+			if ($mode === "edit") {
 				$themes_title = $lang['Edit_theme'];
 				$themes_explain = $lang['Edit_theme_explain'];
 				

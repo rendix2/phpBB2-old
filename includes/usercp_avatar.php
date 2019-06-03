@@ -84,7 +84,7 @@ function user_avatar_gallery($mode, &$error, &$error_msg, $avatar_filename, $ava
 		return [];
 	} 
 
-	if ( file_exists(@phpbb_realpath($board_config['avatar_gallery_path'] . '/' . $avatar_category . '/' . $avatar_filename)) && ($mode == 'editprofile') ) {
+	if ( file_exists(@phpbb_realpath($board_config['avatar_gallery_path'] . '/' . $avatar_category . '/' . $avatar_filename)) && ($mode === 'editprofile') ) {
 	    return ['user_avatar' => $avatar_category . '/' . $avatar_filename, 'user_avatar_type' => USER_AVATAR_GALLERY];
 	} else {
 		return [];
@@ -107,7 +107,7 @@ function user_avatar_url($mode, &$error, &$error_msg, $avatar_filename)
 		return [];
 	}
 
-	return ( $mode == 'editprofile' ) ? ['user_avatar' => $avatar_filename, 'user_avatar_type' => USER_AVATAR_REMOTE] : [];
+	return ( $mode === 'editprofile' ) ? ['user_avatar' => $avatar_filename, 'user_avatar_type' => USER_AVATAR_REMOTE] : [];
 
 }
 
@@ -120,7 +120,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 	$width = $height = 0;
 	$type = '';
 
-	if ( $avatar_mode == 'remote' && preg_match('/^(http:\/\/)?([\w\-\.]+)\:?([0-9]*)\/([^ \?&=\#\"\n\r\t<]*?(\.(jpg|jpeg|gif|png)))$/', $avatar_filename, $url_ary) ) {
+	if ( $avatar_mode === 'remote' && preg_match('/^(http:\/\/)?([\w\-\.]+)\:?([0-9]*)\/([^ \?&=\#\"\n\r\t<]*?(\.(jpg|jpeg|gif|png)))$/', $avatar_filename, $url_ary) ) {
 		if ( empty($url_ary[4]) ) {
 			$error = true;
 			$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $lang['Incomplete_URL'] : $lang['Incomplete_URL'];
@@ -239,7 +239,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 	{
 		$new_filename = uniqid(rand()) . $imgtype;
 
-		if ( $mode == 'editprofile' && $current_type == USER_AVATAR_UPLOAD && $current_avatar != '' ) {
+		if ( $mode === 'editprofile' && $current_type == USER_AVATAR_UPLOAD && $current_avatar != '' ) {
 			user_avatar_delete($current_type, $current_avatar);
 		}
 
