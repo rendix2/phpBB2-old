@@ -113,7 +113,7 @@ function user_avatar_url($mode, &$error, &$error_msg, $avatar_filename)
 
 function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_type, &$error, &$error_msg, $avatar_filename, $avatar_realname, $avatar_filesize, $avatar_filetype)
 {
-	global $board_config, $db, $lang;
+	global $board_config, $lang;
 
 	$ini_val = ( @PHP_VERSION >= '4.0.0' ) ? 'ini_get' : 'get_cfg_var';
 
@@ -278,7 +278,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 
 function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current_email, &$coppa, &$username, &$email, &$new_password, &$cur_password, &$password_confirm, &$icq, &$aim, &$msn, &$yim, &$website, &$location, &$occupation, &$interests, &$signature, &$viewemail, &$notifypm, &$popup_pm, &$notifyreply, &$attachsig, &$allowhtml, &$allowbbcode, &$allowsmilies, &$hideonline, &$style, &$language, &$timezone, &$dateformat, &$session_id)
 {
-	global $board_config, $db, $template, $lang, $images, $theme;
+	global $board_config, $template, $lang, $images, $theme;
 	global $phpbb_root_path;
 
 	$dir = @opendir($board_config['avatar_gallery_path']);

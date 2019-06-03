@@ -461,7 +461,7 @@ function session_end($session_id, $user_id)
 */
 function session_clean($session_id)
 {
-	global $board_config, $db;
+	global $board_config;
 
 	//
 	// Delete expired sessions

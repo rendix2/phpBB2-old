@@ -158,7 +158,7 @@ function get_userdata($user, $force_str = false)
 
 function make_jumpbox($action, $match_forum_id = 0)
 {
-	global $template, $userdata, $lang, $db, $nav_links, $SID;
+	global $template, $userdata, $lang, $nav_links, $SID;
 
 //	$is_auth = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
 
@@ -249,7 +249,7 @@ function make_jumpbox($action, $match_forum_id = 0)
 function init_userprefs($userdata)
 {
 	global $board_config, $theme, $images;
-	global $template, $lang, $phpbb_root_path, $db;
+	global $template, $lang, $phpbb_root_path;
 	global $nav_links;
 
     $default_lang = '';
