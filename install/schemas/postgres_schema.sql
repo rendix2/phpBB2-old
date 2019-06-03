@@ -447,6 +447,7 @@ CREATE TABLE phpbb_topics_watch (
 );
 CREATE  INDEX topic_id_phpbb_topics_watch_index ON phpbb_topics_watch (topic_id);
 CREATE  INDEX user_id_phpbb_topics_watch_index ON phpbb_topics_watch (user_id);
+CREATE  INDEX user_id_topic_id_phpbb_topics_watch_index ON phpbb_topics_watch (topic_id, user_id);
 
 
 /* --------------------------------------------------------

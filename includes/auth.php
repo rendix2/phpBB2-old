@@ -155,15 +155,17 @@ function auth($type, $forum_id, $userdata, $f_access = '')
             ->select('a.auth_mod ')
             ->from(AUTH_ACCESS_TABLE)
             ->as('a')
-            ->from(USER_GROUP_TABLE)
+            ->leftJoin(USER_GROUP_TABLE)
             ->as('ug')
+            ->on('a.group_id = ug.group_id')
             ->where('ug.user_id = %i', $userdata['user_id'])
-            ->where('ug.user_pending = %i', 0)
-            ->where('a.group_id = ug.group_id');
+            ->where('ug.user_pending = %i', 0);
 
         if ($forum_id !== AUTH_LIST_ALL) {
             $rows->where('a.forum_id = %i', $forum_id);
         }
+
+        $rows = $rows->fetchAll();
 
         foreach ($rows as $row) {
             if ($forum_id !== AUTH_LIST_ALL) {

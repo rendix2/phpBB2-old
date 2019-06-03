@@ -467,7 +467,8 @@ CREATE TABLE phpbb_topics_watch (
   notify_status tinyint(1) NOT NULL default '0',
   KEY topic_id (topic_id),
   KEY user_id (user_id),
-  KEY notify_status (notify_status)
+  KEY notify_status (notify_status),
+  KEY topic_id_user_id (topic_id,user_id)
 );
 
 
