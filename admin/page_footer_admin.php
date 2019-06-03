@@ -31,10 +31,16 @@ global $do_gzip_compress;
 //
 $template->set_filenames(['page_footer' => 'admin/page_footer.tpl']);
 
+if (isset($lang['TRANSLATION_INFO']) ) {
+    $translation_info = $lang['TRANSLATION_INFO'];
+} else {
+    $translation_info = isset($lang['TRANSLATION']) ? $lang['TRANSLATION'] : '';
+}
+
 $template->assign_vars(
     [
         'PHPBB_VERSION'    => ($userdata['user_level'] == ADMIN && $userdata['user_id'] != ANONYMOUS) ? '2' . $board_config['version'] : '',
-        'TRANSLATION_INFO' => isset($lang['TRANSLATION_INFO']) ? $lang['TRANSLATION_INFO'] : (isset($lang['TRANSLATION']) ? $lang['TRANSLATION'] : '')
+        'TRANSLATION_INFO' => $translation_info
     ]
 );
 

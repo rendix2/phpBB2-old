@@ -128,10 +128,11 @@ if (
 
 	$username = !empty($_POST['username']) ? phpbb_clean_username($_POST['username']) : '';
 
-    $trim_var_list = ['cur_password'     => 'cur_password',
-                      'new_password'     => 'new_password',
-                      'password_confirm' => 'password_confirm',
-                      'signature'        => 'signature'
+    $trim_var_list = [
+        'cur_password'     => 'cur_password',
+        'new_password'     => 'new_password',
+        'password_confirm' => 'password_confirm',
+        'signature'        => 'signature'
     ];
 
     foreach ($trim_var_list as $var => $param) {
@@ -147,25 +148,24 @@ if (
 	// empty strings if they fail.
 	validate_optional_fields($icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature);
 
-	$viewemail = isset($_POST['viewemail']) ? ($_POST['viewemail'] ? TRUE : 0 ) : 0;
-	$allowviewonline = isset($_POST['hideonline']) ? ($_POST['hideonline'] ? 0 : TRUE ) : TRUE;
-	$notifyreply = isset($_POST['notifyreply']) ? ($_POST['notifyreply'] ? TRUE : 0 ) : 0;
-	$notifypm = isset($_POST['notifypm']) ? ($_POST['notifypm'] ? TRUE : 0 ) : TRUE;
-	$popup_pm = isset($_POST['popup_pm']) ? ($_POST['popup_pm'] ? TRUE : 0 ) : TRUE;
-	$sid = isset($_POST['sid']) ? $_POST['sid'] : 0;
+    $viewemail       = isset($_POST['viewemail'])   ? (bool)$_POST['hideonline']  : 0;
+    $allowviewonline = isset($_POST['hideonline'])  ? (bool)!$_POST['hideonline'] : true;
+    $notifyreply     = isset($_POST['notifyreply']) ? (bool)$_POST['notifyreply'] : 0;
+    $notifypm        = isset($_POST['notifypm'])    ? (bool)$_POST['notifypm']    : true;
+    $popup_pm        = isset($_POST['popup_pm'])    ? (bool)$_POST['popup_pm']    : true;
+
+    $sid = isset($_POST['sid']) ? $_POST['sid'] : 0;
 
 	if ( $mode == 'register' ) {
-		$attachsig = isset($_POST['attachsig']) ? ($_POST['attachsig'] ? TRUE : 0 ) : $board_config['allow_sig'];
-
-		$allowhtml = isset($_POST['allowhtml']) ? ($_POST['allowhtml'] ? TRUE : 0 ) : $board_config['allow_html'];
-		$allowbbcode = isset($_POST['allowbbcode']) ? ($_POST['allowbbcode'] ? TRUE : 0 ) : $board_config['allow_bbcode'];
-		$allowsmilies = isset($_POST['allowsmilies']) ? ($_POST['allowsmilies'] ? TRUE : 0 ) : $board_config['allow_smilies'];
+        $attachsig    = isset($_POST['attachsig'])    ? (bool)$_POST['attachsig']    : $board_config['allow_sig'];
+        $allowhtml    = isset($_POST['allowhtml'])    ? (bool)$_POST['allowhtml']    : $board_config['allow_html'];
+        $allowbbcode  = isset($_POST['allowbbcode'])  ? (bool)$_POST['allowbbcode']  : $board_config['allow_bbcode'];
+        $allowsmilies = isset($_POST['allowsmilies']) ? (bool)$_POST['allowsmilies'] : $board_config['allow_smilies'];
 	} else {
-		$attachsig = isset($_POST['attachsig']) ? ($_POST['attachsig'] ? TRUE : 0 ) : $userdata['user_attachsig'];
-
-		$allowhtml = isset($_POST['allowhtml']) ? ($_POST['allowhtml'] ? TRUE : 0 ) : $userdata['user_allowhtml'];
-		$allowbbcode = isset($_POST['allowbbcode']) ? ($_POST['allowbbcode'] ? TRUE : 0 ) : $userdata['user_allowbbcode'];
-		$allowsmilies = isset($_POST['allowsmilies']) ? ($_POST['allowsmilies'] ? TRUE : 0 ) : $userdata['user_allowsmile'];
+		$attachsig    = isset($_POST['attachsig'])    ? (bool)$_POST['attachsig']    : $userdata['user_attachsig'];
+		$allowhtml    = isset($_POST['allowhtml'])    ? (bool)$_POST['allowhtml']    : $userdata['user_allowhtml'];
+		$allowbbcode  = isset($_POST['allowbbcode'])  ? (bool)$_POST['allowbbcode']  : $userdata['user_allowbbcode'];
+		$allowsmilies = isset($_POST['allowsmilies']) ? (bool)$_POST['allowsmilies'] : $userdata['user_allowsmile'];
 	}
 
 	$user_style = isset($_POST['style']) ? (int)$_POST['style'] : $board_config['default_style'];
@@ -192,16 +192,27 @@ if (
 	$board_config['default_dateformat'] = $board_default_dateformat;
 	$user_dateformat = !empty($_POST['dateformat']) ? trim(htmlspecialchars($_POST['dateformat'])) : $board_config['default_dateformat'];
 
-	$user_avatar_local = ( isset($_POST['avatarselect']) && !empty($_POST['submitavatar']) && $board_config['allow_avatar_local'] ) ? htmlspecialchars($_POST['avatarselect']) : ( isset($_POST['avatarlocal']) ? htmlspecialchars($_POST['avatarlocal']) : '' );
+	if ( isset($_POST['avatarselect']) && !empty($_POST['submitavatar']) && $board_config['allow_avatar_local'] ) {
+        $user_avatar_local = htmlspecialchars($_POST['avatarselect']);
+    } else {
+        $user_avatar_local = isset($_POST['avatarlocal']) ? htmlspecialchars($_POST['avatarlocal']) : '';
+    }
+
 	$user_avatar_category = ( isset($_POST['avatarcatname']) && $board_config['allow_avatar_local'] ) ? htmlspecialchars($_POST['avatarcatname']) : '' ;
 
 	$user_avatar_remoteurl = !empty($_POST['avatarremoteurl']) ? trim(htmlspecialchars($_POST['avatarremoteurl'])) : '';
-	$user_avatar_upload = !empty($_POST['avatarurl']) ? trim($_POST['avatarurl']) : ( ($_FILES['avatar']['tmp_name'] != "none") ? $_FILES['avatar']['tmp_name'] : '' );
-	$user_avatar_name = !empty($_FILES['avatar']['name']) ? $_FILES['avatar']['name'] : '';
-	$user_avatar_size = !empty($_FILES['avatar']['size']) ? $_FILES['avatar']['size'] : 0;
+
+	if (!empty($_POST['avatarurl'])) {
+        $user_avatar_upload = trim($_POST['avatarurl']);
+    } else {
+        $user_avatar_upload = $_FILES['avatar']['tmp_name'] != "none" ? $_FILES['avatar']['tmp_name'] : '';
+    }
+
+	$user_avatar_name     = !empty($_FILES['avatar']['name']) ? $_FILES['avatar']['name'] : '';
+	$user_avatar_size     = !empty($_FILES['avatar']['size']) ? $_FILES['avatar']['size'] : 0;
 	$user_avatar_filetype = !empty($_FILES['avatar']['type']) ? $_FILES['avatar']['type'] : '';
 
-	$user_avatar = ( empty($user_avatar_local) && $mode == 'editprofile' ) ? $userdata['user_avatar'] : '';
+	$user_avatar      = ( empty($user_avatar_local) && $mode == 'editprofile' ) ? $userdata['user_avatar'] : '';
 	$user_avatar_type = ( empty($user_avatar_local) && $mode == 'editprofile' ) ? $userdata['user_avatar_type'] : '';
 
 	if ( (isset($_POST['avatargallery']) || isset($_POST['submitavatar']) || isset($_POST['cancelavatar'])) && !isset($_POST['submit'])) {

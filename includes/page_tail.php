@@ -33,8 +33,14 @@ $admin_link = ($userdata['user_level'] == ADMIN ) ? '<a href="admin/index.php?si
 
 $template->set_filenames(['overall_footer' => empty($gen_simple_header) ? 'overall_footer.tpl' : 'simple_footer.tpl']);
 
+if (isset($lang['TRANSLATION_INFO'])) {
+    $translation_info = $lang['TRANSLATION_INFO'];
+} else {
+    $translation_info = isset($lang['TRANSLATION']) ? $lang['TRANSLATION'] : '';
+}
+
 $template->assign_vars([
-        'TRANSLATION_INFO' => isset($lang['TRANSLATION_INFO']) ? $lang['TRANSLATION_INFO'] : (isset($lang['TRANSLATION']) ? $lang['TRANSLATION'] : ''),
+        'TRANSLATION_INFO' => $translation_info,
         'ADMIN_LINK'       => $admin_link
     ]);
 

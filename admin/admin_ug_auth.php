@@ -593,7 +593,15 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
         $auth_access_count[$row->forum_id]++;
     }
 
-	$is_admin = ( $mode == 'user' ) ? ( ( $ug_info[0]->user_level == ADMIN && $ug_info[0]->user_id != ANONYMOUS ) ? 1 : 0 ) : 0;
+    if ($mode == 'user') {
+        if ( $ug_info[0]->user_level == ADMIN && $ug_info[0]->user_id != ANONYMOUS ) {
+            $is_admin = 1;
+        } else {
+            $is_admin = 0;
+        }
+    } else {
+        $is_admin = 0;
+    }
 
 	foreach ($forum_access as $forum_access_value) {
 		$forum_id = $forum_access_value['forum_id'];

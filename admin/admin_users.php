@@ -168,12 +168,12 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 
 		validate_optional_fields($icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature);
 
-		$viewemail = isset( $_POST['viewemail']) ? ($_POST['viewemail'] ? TRUE : 0 ) : 0;
-		$allowviewonline = isset( $_POST['hideonline']) ? ($_POST['hideonline'] ? 0 : TRUE ) : TRUE;
-		$notifyreply = isset( $_POST['notifyreply']) ? ($_POST['notifyreply'] ? TRUE : 0 ) : 0;
-		$notifypm = isset( $_POST['notifypm']) ? ($_POST['notifypm'] ? TRUE : 0 ) : TRUE;
-		$popuppm = isset( $_POST['popup_pm']) ? ($_POST['popup_pm'] ? TRUE : 0 ) : TRUE;
-		$attachsig = isset( $_POST['attachsig']) ? ($_POST['attachsig'] ? TRUE : 0 ) : 0;
+		$viewemail       = isset($_POST['viewemail'])   ? (bool)$_POST['viewemail']   : 0;
+        $allowviewonline = isset($_POST['hideonline'])  ? (bool)$_POST['hideonline']  : true;
+        $notifyreply     = isset($_POST['notifyreply']) ? (bool)$_POST['notifyreply'] : 0;
+        $notifypm        = isset($_POST['notifypm'])    ? (bool)$_POST['notifypm']    : true;
+        $popuppm         = isset($_POST['popup_pm'])    ? (bool)$_POST['popup_pm']    : true;
+        $attachsig       = isset($_POST['attachsig'])   ? (bool)$_POST['attachsig']   : 0;
 
 		$allowhtml = isset( $_POST['allowhtml']) ? (int)$_POST['allowhtml'] : $board_config['allow_html'];
 		$allowbbcode = isset( $_POST['allowbbcode']) ? (int)$_POST['allowbbcode'] : $board_config['allow_bbcode'];
@@ -184,7 +184,12 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($_POST['username']) || isset(
 		$user_timezone = isset( $_POST['timezone']) ? (float)$_POST['timezone'] : $board_config['board_timezone'];
 		$user_dateformat = $_POST['dateformat'] ? trim($_POST['dateformat'] ) : $board_config['default_dateformat'];
 
-		$user_avatar_local = ( isset( $_POST['avatarselect'] ) && !empty($_POST['submitavatar'] ) && $board_config['allow_avatar_local'] ) ? $_POST['avatarselect'] : ( isset( $_POST['avatarlocal'] ) ? $_POST['avatarlocal'] : '' );
+		if ( isset( $_POST['avatarselect'] ) && !empty($_POST['submitavatar'] ) && $board_config['allow_avatar_local'] ) {
+            $user_avatar_local = $_POST['avatarselect'];
+        } else {
+            $user_avatar_local = isset( $_POST['avatarlocal'] ) ? $_POST['avatarlocal'] : '';
+        }
+
 		$user_avatar_category = ( isset($_POST['avatarcatname']) && $board_config['allow_avatar_local'] ) ? htmlspecialchars($_POST['avatarcatname']) : '' ;
 
 		$user_avatar_remoteurl = !empty($_POST['avatarremoteurl']) ? trim($_POST['avatarremoteurl'] ) : '';
