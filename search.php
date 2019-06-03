@@ -308,8 +308,6 @@ if ($mode == 'searchuser') {
                         }
 
                         if ($current_match_type == 'and' && $word_count) {
-                            @reset($result_list);
-
                             foreach ($result_list as $post_id => $match_count) {
                                 if (!$row[$post_id]) {
                                     $result_list[$post_id] = 0;
@@ -320,8 +318,6 @@ if ($mode == 'searchuser') {
 						$word_count++;
 					}
 			}
-
-			@reset($result_list);
 
 			$search_ids = [];
 

@@ -43,7 +43,6 @@ $template->pparse('overall_footer');
 //
 // Close our DB connection.
 //
-$db->sql_close();
 dibi::disconnect();
 
 //

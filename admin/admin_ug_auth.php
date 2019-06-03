@@ -647,7 +647,7 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
     $optionlist_acl_adv = [];
 
 	$i = 0;
-	@reset($auth_ug);
+
     foreach ($auth_ug as $forum_id => $user_ary) {
         if (empty($adv)) {
             if ($forum_auth_level[$forum_id] == AUTH_ACL) {

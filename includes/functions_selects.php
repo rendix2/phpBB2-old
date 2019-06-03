@@ -30,24 +30,23 @@ function language_select($default, $select_name = "language", $dirname="language
 
 	$dir = opendir($phpbb_root_path . $dirname);
 
-	$lang = [];
+	$langs = [];
 	while ( $file = readdir($dir) ) {
 		if (preg_match('#^lang_#i', $file) && !is_file(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file)) && !is_link(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file))) {
 			$filename = trim(str_replace("lang_", "", $file));
 			$displayname = preg_replace("/^(.*?)_(.*)$/", "\\1 [ \\2 ]", $filename);
 			$displayname = preg_replace("/\[(.*?)_(.*)\]/", "[ \\1 - \\2 ]", $displayname);
-			$lang[$displayname] = $filename;
+			$langs[$displayname] = $filename;
 		}
 	}
 
 	closedir($dir);
 
-	@asort($lang);
-	@reset($lang);
+	@asort($langs);
 
 	$lang_select = '<select name="' . $select_name . '">';
 
-	foreach ($lang as $displayname => $filename) {
+	foreach ($langs as $displayname => $filename) {
 		$selected = ( strtolower($default) == strtolower($filename) ) ? ' selected="selected"' : '';
 		$lang_select .= '<option value="' . $filename . '"' . $selected . '>' . ucwords($displayname) . '</option>';
 	}

@@ -483,7 +483,6 @@ if (isset($_GET['pane']) && $_GET['pane'] == 'left' )
 
 	$template->pparse("body");
 
-	$db->sql_close();
 	dibi::disconnect();
 	exit;
 }

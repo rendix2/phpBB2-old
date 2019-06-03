@@ -522,7 +522,6 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] == 1 && empty($_POST['upg
 	closedir($dir);
 
 	@asort($lang_options);
-	@reset($lang_options);
 
 	$lang_select = '<select name="lang" onchange="this.form.submit()">';
 

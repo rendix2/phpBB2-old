@@ -210,8 +210,6 @@ if (empty($forum_id) ) {
 
     $forum_name = $forum_rows[0]['forum_name'];
 
-	@reset($simple_auth_ary);
-
     $matched_type = '';
 
 	foreach ($simple_auth_ary as $key => $auth_levels) {

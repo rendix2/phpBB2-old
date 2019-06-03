@@ -104,13 +104,11 @@ class Template {
 	 */
 	function set_filenames($filename_array)
 	{
-		if (!is_array($filename_array))
-		{
+		if (!is_array($filename_array)) {
 			return false;
 		}
 
 		$template_names = '';
-		@reset($filename_array);
 
 		foreach ($filename_array as $handle => $filename) {
 			$this->filename[$handle] = $filename;

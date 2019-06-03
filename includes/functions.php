@@ -423,9 +423,7 @@ function create_date($format, $gmepoch, $tz)
 	global $board_config, $lang;
 	static $translate;
 
-	if ( empty($translate) && $board_config['default_lang'] != 'english' ) {
-		@reset($lang['datetime']);
-
+    if (empty($translate) && $board_config['default_lang'] != 'english') {
 		foreach ($lang['datetime'] as $match => $replace) {
 			$translate[$match] = $replace;
 		}
@@ -736,12 +734,9 @@ function phpbb_realpath($path)
 
 function redirect($url)
 {
-	global $db, $board_config;
+	global $board_config;
 
-	if (!empty($db)) {
-	    dibi::disconnect();
-		$db->sql_close();
-	}
+	dibi::disconnect();
 
 	if (strstr(urldecode($url), "\n") || strstr(urldecode($url), "\r") || strstr(urldecode($url), ';url')) {
 		message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
