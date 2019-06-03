@@ -19,32 +19,7 @@
 *   the Free Software Foundation; either version 2 of the License, or 
 *   (at your option) any later version. 
 * 
-***************************************************************************/ 
-
-/* magic quotes, borrowed from install.php */ 
-set_magic_quotes_runtime(0); 
-if (!get_magic_quotes_gpc()) 
-{ 
-    if (is_array($HTTP_POST_VARS)) 
-    { 
-        while (list($k, $v) = each($HTTP_POST_VARS)) 
-        { 
-            if (is_array($HTTP_POST_VARS[$k])) 
-            { 
-                while (list($k2, $v2) = each($HTTP_POST_VARS[$k])) 
-                { 
-                    $HTTP_POST_VARS[$k][$k2] = addslashes($v2); 
-                } 
-                @reset($HTTP_POST_VARS[$k]); 
-            } 
-            else 
-            { 
-                $HTTP_POST_VARS[$k] = addslashes($v); 
-            } 
-        } 
-        @reset($HTTP_POST_VARS); 
-    } 
-} 
+***************************************************************************/
 
 $all_connected = false; 
 $error = false; 
@@ -97,9 +72,9 @@ $check_var_list = array('dbms' => 'dbms', 'dbhost' => 'dbhost', 'dbname' => 'dbn
 
 while (list($var, $param) = each($check_var_list)) 
 { 
-    if (!empty($HTTP_POST_VARS[$param])) 
+    if (!empty($_POST[$param]))
     { 
-        $$var = stripslashes(htmlspecialchars(strip_tags($HTTP_POST_VARS[$param]))); 
+        $$var = stripslashes(htmlspecialchars(strip_tags($_POST[$param])));
     } 
 } 
 
@@ -112,7 +87,7 @@ $available_dbms = array(
     'mssql-odbc' => 'MS SQL Server [ OBDC ]', 
 ); 
 
-if (isset($HTTP_POST_VARS['download_config']) && $HTTP_POST_VARS['download_config'] == true && isset($HTTP_POST_VARS['submit_download_config']) && $HTTP_POST_VARS['submit_download_config'] == 'Download') 
+if (isset($_POST['download_config']) && $_POST['download_config'] == true && isset($_POST['submit_download_config']) && $_POST['submit_download_config'] == 'Download')
 { 
     /* borrowed from install.php */ 
     header('Content-Type: text/x-delimtext; name="config.php"'); 
@@ -170,7 +145,7 @@ h3 {font-size:12pt;color:blue}
 <tr> 
 <td class="row1" align="right"><span class="gen">Database type: </span></td> 
 <td class="row2"> 
-<form action="<?php echo htmlspecialchars($HTTP_SERVER_VARS['PHP_SELF']); ?>" method="post"> 
+<form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post">
 <select name="dbms"> 
 <?php 
 /* loop through the dbms, with the correct one selected (hopefully!) */ 
@@ -205,7 +180,7 @@ while (list($var, $param) = each($available_dbms))
 <tr> 
 <td class="row1" align="right"><span class="gen">Generate a config file: </span></td> 
 </td> 
-<td class="row2"><input type="checkbox" name="generate_config" value="true" <?php $checked = (isset($HTTP_POST_VARS['generate_config']) && $HTTP_POST_VARS['generate_config'] == true) ? 'checked="checked"' : ''; echo $checked; ?> /></td> 
+<td class="row2"><input type="checkbox" name="generate_config" value="true" <?php $checked = (isset($_POST['generate_config']) && $_POST['generate_config'] == true) ? 'checked="checked"' : ''; echo $checked; ?> /></td>
 </tr> 
 <tr> 
 <td class="catbottom" align="center" colspan="2"> 
@@ -215,7 +190,7 @@ while (list($var, $param) = each($available_dbms))
 </tr> 
 </table> 
 <?php 
-if (!isset($HTTP_POST_VARS['submit'])) 
+if (!isset($_POST['submit']))
 { 
     echo '<br />Please enter your data.<br />'; 
 } 
@@ -376,7 +351,7 @@ else
 
                 while ($table = $db['fetch']($db['list'])) {
                     /* Highlight tables with the table_prefix specified */
-                    if (preg_match("/^$HTTP_POST_VARS[table_prefix]/i", $table[0])) {
+                    if (preg_match("/^$_POST[table_prefix]/i", $table[0])) {
                         echo '<li><b>' . htmlspecialchars($table[0]) . '</b></li><br />';
                     } else {
                         echo '<li>' . htmlspecialchars($table[0]) . '</li><br />';
@@ -393,7 +368,7 @@ else
         }
 
         /* Create a config file if checked and if the connection went OK */ 
-        if (isset($HTTP_POST_VARS['generate_config']) && $HTTP_POST_VARS['generate_config'] == true) 
+        if (isset($_POST['generate_config']) && $_POST['generate_config'] == true)
         { 
             echo '<a name="config"><h3><u>Config file</u></h3></a>';
 
@@ -406,7 +381,7 @@ else
                 echo 'Either copy the <b>19</b> lines below and save them as <u>config.php</u> or click on the <u>Download</u> button below. Then upload the file to your phpBB2 root directory (phpBB2/ by default). Make sure that there is nothing (this includes blank spaces) after the <u>?></u>.<br /><br />'; 
 
                 /* Create our config file */ 
-                echo '<form action="' . htmlspecialchars($HTTP_SERVER_VARS['PHP_SELF']) . '" method="post"><table cellspacing="1" cellpadding="3" border="0"><tr><td class="code">'; 
+                echo '<form action="' . htmlspecialchars($_SERVER['PHP_SELF']) . '" method="post"><table cellspacing="1" cellpadding="3" border="0"><tr><td class="code">';
                 echo make_config($dbms, $dbhost, $dbname, $dbuser, $dbpasswd, $table_prefix); 
                 echo '</td></tr></table>'; 
                 echo '<input type="hidden" name="dbms" value="' . $dbms . '" />'; 
