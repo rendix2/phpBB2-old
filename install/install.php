@@ -645,50 +645,12 @@ else
 	// MS Access is slightly different in that a pre-built, pre-
 	// populated DB is supplied, all we need do here is update
 	// the relevant entries
-    /*
-	if (isset($dbms))
-	{
-		switch($dbms)
-		{
-			case 'msaccess':
-			case 'mssql-odbc':
-				$check_exts = 'odbc';
-				$check_other = 'odbc';
-				break;
-
-			case 'mssql':
-				$check_exts = 'mssql';
-				$check_other = 'sybase';
-				break;
-
-			case 'mysql':
-			case 'mysql4':
-				$check_exts = 'mysql';
-				$check_other = 'mysql';
-				break;
-
-			case 'postgres':
-				$check_exts = 'pgsql';
-				$check_other = 'pgsql';
-				break;
-		}
-
-        if (!extension_loaded($check_exts) && !extension_loaded($check_other)) {
-            page_header($lang['Install'], '');
-            page_error($lang['Installer_Error'], $lang['Install_No_Ext']);
-            page_footer();
-            exit;
-        }
-
-		include $phpbb_root_path.'includes/db.php';
-	}
-	*/
 
     $connection = dibi::connect([
         'driver'   => 'PDO',
         'username' => $dbuser,
         'password' => $dbpasswd,
-        'dsn'      => 'mysql:host='.$dbhost.';dbname='.$dbname.';charset=utf8'
+        'dsn'      => $dbms.':host='.$dbhost.';dbname='.$dbname.';charset=utf8'
     ]);
 
     $connection->connect();

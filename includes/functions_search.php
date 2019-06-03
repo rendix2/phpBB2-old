@@ -182,7 +182,6 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
             if ( !isset($check_words[$word]) ) {
                 switch ( SQL_LAYER ) {
                     case 'mysql':
-                    case 'mysql4':
                         $insert_data = [
                             'word_text' => $word,
                             'word_common' => 0
@@ -288,7 +287,6 @@ function remove_search_post(array $post_id_sql)
 
 	switch ( SQL_LAYER ) {
 		case 'mysql':
-		case 'mysql4':
         $words = dibi::select('word_id')
             ->from(SEARCH_MATCH_TABLE)
             ->where('post_id IN %in', $post_id_sql)
