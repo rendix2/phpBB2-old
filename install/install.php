@@ -195,18 +195,13 @@ function guess_lang()
         'chinese_simplified'         => 'zh',
     ];
 
-    if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
-	{
-		$accept_lang_ary = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
-		for ($i = 0; $i < count($accept_lang_ary); $i++)
-		{
-			@reset($match_lang);
-			while (list($lang, $match) = each($match_lang))
-			{
-				if (preg_match('#' . $match . '#i', trim($accept_lang_ary[$i])))
-				{
-					if (file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $lang)))
-					{
+    if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+		$accept_languages = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
+
+		foreach ($accept_languages as $accept_language) {
+			foreach ($match_lang as $lang => $match) {
+				if (preg_match('#' . $match . '#i', trim($accept_language))) {
+					if (file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $lang))) {
 						return $lang;
 					}
 				}
