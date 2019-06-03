@@ -196,12 +196,9 @@ if ( isset($_POST['submit']) ) {
 	// initialisation resulting in an instant ban
 	//
 	if ( $kill_session_sql != '' ) {
-		$sql = "DELETE FROM " . SESSIONS_TABLE . "
-			WHERE $kill_session_sql";
-
-		if ( !$db->sql_query($sql) ) {
-			message_die(GENERAL_ERROR, "Couldn't delete banned sessions from database", "", __LINE__, __FILE__, $sql);
-		}
+	    dibi::delete(SESSIONS_TABLE)
+            ->where($kill_session_sql)
+            ->execute();
 	}
 
 	foreach ($email_list as $email_value) {

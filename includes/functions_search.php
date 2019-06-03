@@ -108,18 +108,18 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 	$words = [];
 	$word_insert_sql = [];
 
-    foreach ($search_raw_words as $word_in => $search_matches){
-		$word_insert_sql[$word_in] = '';
+    foreach ($search_raw_words as $word_in => $search_matches) {
+		$word_insert_sql[$word_in] = [];
 
-		if ( !empty($search_matches) ) {
-			for ($i = 0; $i < count($search_matches); $i++) {
-				$search_matches[$i] = trim($search_matches[$i]);
+        if (!empty($search_matches)) {
+            foreach ($search_matches as $search_match) {
+                $search_match = trim($search_match);
 
-				if ($search_matches[$i] != '' ) {
-					$words[] = $search_matches[$i];
+				if ($search_match != '' ) {
+					$words[] = $search_match;
 
-					if ( !strstr($word_insert_sql[$word_in], "'" . $search_matches[$i] . "'") ) {
-						$word_insert_sql[$word_in] .= ( $word_insert_sql[$word_in] != "" ) ? ", '" . $search_matches[$i] . "'" : "'" . $search_matches[$i] . "'";
+                    if (!in_array($search_match, $word_insert_sql[$word_in], true)) {
+						$word_insert_sql[$word_in][] = $search_match;
 					}
 				} 
 			}
@@ -175,15 +175,17 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 	foreach ($word_insert_sql as $word_in => $match_sql) {
 		$title_match = ( $word_in == 'title' ) ? 1 : 0;
 
-		if ( $match_sql != '' ) {
-			$sql = "INSERT INTO " . SEARCH_MATCH_TABLE . " (post_id, word_id, title_match) 
-				SELECT $post_id, word_id, $title_match  
-					FROM " . SEARCH_WORD_TABLE . " 
-					WHERE word_text IN ($match_sql)";
-
-			if ( !$db->sql_query($sql) ) {
-				message_die(GENERAL_ERROR, 'Could not insert new word matches', '', __LINE__, __FILE__, $sql);
-			}
+        if (count($match_sql)) {
+		    dibi::query('INSERT INTO %n (post_id, word_id, title_match) 
+                                SELECT %i, word_id, %i
+                                FROM %n
+                                WHERE word_text IN %in',
+                SEARCH_MATCH_TABLE,
+                $post_id,
+                $title_match,
+                SEARCH_WORD_TABLE,
+                $match_sql
+            );
 		}
 	}
 

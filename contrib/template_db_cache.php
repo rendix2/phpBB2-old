@@ -94,37 +94,25 @@ class Template {
 	 */
 	function set_filenames($filename_array)
 	{
-		global $table_prefix;
-
         if (!is_array($filename_array)) {
             return false;
         }
 
-        $template_names = '';
-        @reset($filename_array);
-
         foreach ($filename_array as $handle => $filename) {
             $this->files[$handle] = $this->make_filename($filename);
-            $template_names       .= ($template_names != '') ? ", '" . addslashes($this->files[$handle]) . "'" : "'" . addslashes($this->files[$handle]) . "'";
         }
 
-		$sql = "SELECT * 
-			FROM " . $table_prefix . "template_cache 
-			WHERE template_name IN ($template_names)";
+        $rows = dibi::select('*')
+            ->from(TEMPLATE_CACHE_TABLE)
+            ->where('template_name IN %in', $filename_array)
+            ->fetchAll();
 
-		if ( $result = $this->db->sql_query($sql) )
-		{
-			while ($row = $this->db->sql_fetchrow($result) )
-			{
-				if ($row['template_cached'] == filemtime($row['template_name']) )
-				{
-					$this->compiled_code[$row['template_handle']] = $row['template_compile'];
-					$this->echo_compiled[$row['template_handle']] = $row['template_echo'];
-				}
-			} 
-		} 
-
-		$this->db->sql_freeresult();
+        foreach ($rows as $row) {
+            if ($row->template_cached == filemtime($row->template_name) ) {
+                $this->compiled_code[$row->template_handle] = $row->template_compile;
+                $this->echo_compiled[$row->template_handle] = $row->template_echo;
+            }
+        }
 
 		return true;
 	}
@@ -152,12 +140,14 @@ class Template {
 			$this->echo_compiled[$handle] = 1;
 			$this->compiled_code[$handle] = $this->compile($this->uncompiled_code[$handle]);
 
-			$sql = "REPLACE INTO " . $table_prefix . "template_cache (template_name, template_handle, template_cached, template_compile) VALUES ('" . addslashes($this->files[$handle]) . "', '" . addslashes($handle) . "', " . filemtime($this->files[$handle]) . ", '" . addslashes($this->compiled_code[$handle]) . "')";
-			if ( !($result = $this->db->sql_query($sql)) )
-			{
-				die("Couldn't insert template into cache!");
-			}
+            $replace_data = [
+                'template_name'    => $this->files[$handle],
+                'template_handle'  => $handle,
+                'template_cached'  => filemtime($this->files[$handle]),
+                'template_compile' => $this->compiled_code[$handle]
+            ];
 
+            dibi::query('REPLACE INTO %n %v', TEMPLATE_CACHE_TABLE, $replace_data);
 		}
 
 		$_str = "";
@@ -192,11 +182,15 @@ class Template {
 
 			$code = $this->compile($this->uncompiled_code[$handle], true, '_str');
 
-			$sql = "REPLACE INTO " . $table_prefix . "template_cache (template_name, template_handle, template_echo, template_cached, template_compile) VALUES ('" . addslashes($this->files[$handle]) . "', '" . addslashes($handle) . "', 0, " . filemtime($this->files[$handle]) . ", '" . addslashes($code) . "')";
-			if ( !($result = $this->db->sql_query($sql)) )
-			{
-				die("Couldn't insert template into cache!");
-			}
+            $replace_data = [
+                'template_name'    => $this->files[$handle],
+                'template_handle'  => $handle,
+                'template_echo'    => 0,
+                'template_cached'  => filemtime($this->files[$handle]),
+                'template_compile' => $code
+            ];
+
+            dibi::query('REPLACE INTO %n %v', TEMPLATE_CACHE_TABLE, $replace_data);
 		}
 		else
 		{
