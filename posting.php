@@ -67,7 +67,7 @@ $orig_word = $replacement_word = [];
 // Set topic type
 //
 $topic_type = !empty($_POST['topictype']) ? (int)$_POST['topictype'] : POST_NORMAL;
-$topic_type = in_array($topic_type, [POST_NORMAL, POST_STICKY, POST_ANNOUNCE]) ? $topic_type : POST_NORMAL;
+$topic_type = in_array($topic_type, [POST_NORMAL, POST_STICKY, POST_ANNOUNCE], true) ? $topic_type : POST_NORMAL;
 
 //
 // If the mode is set to topic review then output

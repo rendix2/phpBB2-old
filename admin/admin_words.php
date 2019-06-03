@@ -59,7 +59,7 @@ if (isset($_GET['mode']) || isset($_POST['mode'])) {
 }
 
 // Restrict mode input to valid options
-$mode = in_array($mode, ['add', 'edit', 'save', 'delete']) ? $mode : '';
+$mode = in_array($mode, ['add', 'edit', 'save', 'delete'], true) ? $mode : '';
 
 if ($mode != "" )
 {

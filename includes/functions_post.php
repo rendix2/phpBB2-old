@@ -792,7 +792,7 @@ function clean_html($tag)
 	// Check if this is an end tag
 	preg_match('/<[^\w\/]*\/[\W]*(\w+)/', $tag[0], $matches);
 	if (count($matches)) {
-        if (in_array(strtolower($matches[1]), $allowed_html_tags)) {
+        if (in_array(strtolower($matches[1]), $allowed_html_tags, true)) {
             return '</' . $matches[1] . '>';
         } else {
             return htmlspecialchars('</' . $matches[1] . '>');
@@ -800,7 +800,7 @@ function clean_html($tag)
 	}
 
 	// Check if this is an allowed tag
-	if (in_array(strtolower($tag[1]), $allowed_html_tags)) {
+	if (in_array(strtolower($tag[1]), $allowed_html_tags, true)) {
 		$attributes = '';
 
 		if (!empty($tag[2])) {
@@ -814,7 +814,7 @@ function clean_html($tag)
 			}
 		}
 
-		if (in_array(strtolower($tag[1]), $allowed_html_tags)) {
+		if (in_array(strtolower($tag[1]), $allowed_html_tags, true)) {
 			return '<' . $tag[1] . $attributes . '>';
 		} else {
 			return htmlspecialchars('<' . $tag[1] . $attributes . '>');
