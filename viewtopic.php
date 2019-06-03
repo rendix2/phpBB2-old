@@ -56,7 +56,7 @@ $cookie_name_topic = $board_config['cookie_name'] . '_t';
 $cookie_name_forum = $board_config['cookie_name'] . '_f';
 
 if (isset($_GET['view']) && empty($_GET[POST_POST_URL])) {
-    if ($_GET['view'] == 'newest') {
+    if ($_GET['view'] === 'newest') {
 		if ( isset($_COOKIE[$cookie_name_sid]) || isset($_GET['sid']) ) {
 			$session_id = isset($_COOKIE[$cookie_name_sid]) ? $_COOKIE[$cookie_name_sid] : $_GET['sid'];
 
@@ -94,9 +94,9 @@ if (isset($_GET['view']) && empty($_GET[POST_POST_URL])) {
 		}
 
 		redirect(append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id", true));
-	} elseif ( $_GET['view'] == 'next' || $_GET['view'] == 'previous' ) {
-		$sql_condition = ( $_GET['view'] == 'next' ) ? '>' : '<';
-		$sql_ordering = ( $_GET['view'] == 'next' ) ? 'ASC' : 'DESC';
+	} elseif ( $_GET['view'] === 'next' || $_GET['view'] === 'previous' ) {
+		$sql_condition = ( $_GET['view'] === 'next' ) ? '>' : '<';
+		$sql_ordering = ( $_GET['view'] === 'next' ) ? 'ASC' : 'DESC';
 
 		$row = dibi::select('t.topic_id')
             ->from(TOPICS_TABLE)
@@ -113,7 +113,7 @@ if (isset($_GET['view']) && empty($_GET[POST_POST_URL])) {
         if ($row) {
 			$topic_id = (int)$row->topic_id;
 		} else {
-			$message = ( $_GET['view'] == 'next' ) ? 'No_newer_topics' : 'No_older_topics';
+			$message = ( $_GET['view'] === 'next' ) ? 'No_newer_topics' : 'No_older_topics';
 			message_die(GENERAL_MESSAGE, $message);
 		}
 	}
@@ -249,10 +249,10 @@ if ($userdata['session_logged_in'] ) {
 
     if ($row) {
         if (isset($_GET['unwatch'])) {
-            if ($_GET['unwatch'] == 'topic') {
+            if ($_GET['unwatch'] === 'topic') {
 				$is_watching_topic = 0;
 
-				$sql_priority = (SQL_LAYER == 'mysql') ? 'LOW_PRIORITY' : '';
+				$sql_priority = (SQL_LAYER === 'mysql') ? 'LOW_PRIORITY' : '';
 
 				dibi::delete(TOPICS_WATCH_TABLE)
                     ->setFlag($sql_priority)
@@ -273,7 +273,7 @@ if ($userdata['session_logged_in'] ) {
 			$is_watching_topic = TRUE;
 
             if ($row->notify_status) {
-                $sql_priority = (SQL_LAYER == 'mysql') ? 'LOW_PRIORITY' : '';
+                $sql_priority = (SQL_LAYER === 'mysql') ? 'LOW_PRIORITY' : '';
 
 				dibi::update(TOPICS_WATCH_TABLE, ['notify_status' => 0])
                     ->setFlag($sql_priority)
@@ -284,10 +284,10 @@ if ($userdata['session_logged_in'] ) {
 		}
 	} else {
         if (isset($_GET['watch'])) {
-            if ($_GET['watch'] == 'topic') {
+            if ($_GET['watch'] === 'topic') {
 				$is_watching_topic = TRUE;
 
-				$sql_priority = (SQL_LAYER == 'mysql') ? 'LOW_PRIORITY' : '';
+				$sql_priority = (SQL_LAYER === 'mysql') ? 'LOW_PRIORITY' : '';
 
                 $insert_data = [
                     'user_id' => $userdata['user_id'],
@@ -314,7 +314,7 @@ if ($userdata['session_logged_in'] ) {
 	}
 } else {
     if (isset($_GET['unwatch'])) {
-        if ($_GET['unwatch'] == 'topic') {
+        if ($_GET['unwatch'] === 'topic') {
 			redirect(append_sid("login.php?redirect=viewtopic.php&" . POST_TOPIC_URL . "=$topic_id&unwatch=topic", true));
 		}
 	} else {
@@ -369,7 +369,7 @@ if (!empty($_POST['postdays']) || !empty($_GET['postdays'])) {
 $select_post_days = '<select name="postdays">';
 
 foreach ($previous_days as $previous_day_key => $previous_days_value) {
-	$selected = ($post_days == $previous_day_key) ? ' selected="selected"' : '';
+	$selected = ($post_days === $previous_day_key) ? ' selected="selected"' : '';
 
 	$select_post_days .= '<option value="' . $previous_day_key . '"' . $selected . '>' . $previous_days_value . '</option>';
 }
@@ -381,7 +381,7 @@ $select_post_days .= '</select>';
 //
 if (!empty($_POST['postorder']) || !empty($_GET['postorder'])) {
 	$post_order = !empty($_POST['postorder']) ? htmlspecialchars($_POST['postorder']) : htmlspecialchars($_GET['postorder']);
-	$post_time_order = ($post_order == "asc") ? "ASC" : "DESC";
+	$post_time_order = ($post_order === "asc") ? "ASC" : "DESC";
 } else {
 	$post_order = 'asc';
 	$post_time_order = 'ASC';
@@ -389,7 +389,7 @@ if (!empty($_POST['postorder']) || !empty($_GET['postorder'])) {
 
 $select_post_order = '<select name="postorder">';
 
-if ($post_time_order == 'ASC') {
+if ($post_time_order === 'ASC') {
 	$select_post_order .= '<option value="asc" selected="selected">' . $lang['Oldest_First'] . '</option><option value="desc">' . $lang['Newest_First'] . '</option>';
 } else {
 	$select_post_order .= '<option value="asc">' . $lang['Oldest_First'] . '</option><option value="desc" selected="selected">' . $lang['Newest_First'] . '</option>';
@@ -547,8 +547,8 @@ $nav_links['up']   = [
     'title' => $forum_name
 ];
 
-$reply_img = ( $forum_topic_data->forum_status === FORUM_LOCKED || $forum_topic_data->topic_status == TOPIC_LOCKED ) ? $images['reply_locked'] : $images['reply_new'];
-$reply_alt = ( $forum_topic_data->forum_status === FORUM_LOCKED || $forum_topic_data->topic_status == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['Reply_to_topic'];
+$reply_img = ( $forum_topic_data->forum_status === FORUM_LOCKED || $forum_topic_data->topic_status === TOPIC_LOCKED ) ? $images['reply_locked'] : $images['reply_new'];
+$reply_alt = ( $forum_topic_data->forum_status === FORUM_LOCKED || $forum_topic_data->topic_status === TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['Reply_to_topic'];
 $post_img = ( $forum_topic_data->forum_status === FORUM_LOCKED ) ? $images['post_locked'] : $images['post_new'];
 $post_alt = ( $forum_topic_data->forum_status === FORUM_LOCKED ) ? $lang['Forum_locked'] : $lang['Post_new_topic'];
 
@@ -607,7 +607,7 @@ if ( $is_auth['auth_mod'] ) {
 
 	$topic_mod .= "<a href=\"modcp.php?" . POST_TOPIC_URL . "=$topic_id&amp;mode=move&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_move'] . '" alt="' . $lang['Move_topic'] . '" title="' . $lang['Move_topic'] . '" border="0" /></a>&nbsp;';
 
-	$topic_mod .= ( $forum_topic_data->topic_status == TOPIC_UNLOCKED ) ? "<a href=\"modcp.php?" . POST_TOPIC_URL . "=$topic_id&amp;mode=lock&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_lock'] . '" alt="' . $lang['Lock_topic'] . '" title="' . $lang['Lock_topic'] . '" border="0" /></a>&nbsp;' : "<a href=\"modcp.php?" . POST_TOPIC_URL . "=$topic_id&amp;mode=unlock&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_unlock'] . '" alt="' . $lang['Unlock_topic'] . '" title="' . $lang['Unlock_topic'] . '" border="0" /></a>&nbsp;';
+	$topic_mod .= ( $forum_topic_data->topic_status === TOPIC_UNLOCKED ) ? "<a href=\"modcp.php?" . POST_TOPIC_URL . "=$topic_id&amp;mode=lock&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_lock'] . '" alt="' . $lang['Lock_topic'] . '" title="' . $lang['Lock_topic'] . '" border="0" /></a>&nbsp;' : "<a href=\"modcp.php?" . POST_TOPIC_URL . "=$topic_id&amp;mode=unlock&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_unlock'] . '" alt="' . $lang['Unlock_topic'] . '" title="' . $lang['Unlock_topic'] . '" border="0" /></a>&nbsp;';
 
 	$topic_mod .= "<a href=\"modcp.php?" . POST_TOPIC_URL . "=$topic_id&amp;mode=split&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_split'] . '" alt="' . $lang['Split_topic'] . '" title="' . $lang['Split_topic'] . '" border="0" /></a>&nbsp;';
 }
@@ -724,14 +724,14 @@ if ( !empty($forum_topic_data->topic_vote) ) {
             ->fetch();
 
         if (isset($_GET['vote']) || isset($_POST['vote'])) {
-			$view_result = ( ( isset($_GET['vote']) ? $_GET['vote'] : $_POST['vote'] ) == 'viewresult' ) ? true : 0;
+			$view_result = ( ( isset($_GET['vote']) ? $_GET['vote'] : $_POST['vote'] ) === 'viewresult' ) ? true : 0;
 		} else {
 			$view_result = 0;
 		}
 
 		$poll_expired = $vote_info[0]->vote_length ? ( ($vote_info[0]->vote_start + $vote_info[0]->vote_length < time() ) ? true : 0 ) : 0;
 
-        if ($user_voted || $view_result || $poll_expired || !$is_auth['auth_vote'] || $forum_topic_data->topic_status == TOPIC_LOCKED) {
+        if ($user_voted || $view_result || $poll_expired || !$is_auth['auth_vote'] || $forum_topic_data->topic_status === TOPIC_LOCKED) {
             $template->set_filenames(['pollbox' => 'viewtopic_poll_result.tpl']);
 
             $vote_results_sum = 0;
@@ -832,7 +832,7 @@ dibi::update(TOPICS_TABLE, ['topic_views%sql' => 'topic_views + 1'])
 //
 foreach ($posts as $i => $post) {
 	$poster_id = $post->user_id;
-	$poster = ( $poster_id == ANONYMOUS ) ? $lang['Guest'] : $post->username;
+	$poster = ( $poster_id === ANONYMOUS ) ? $lang['Guest'] : $post->username;
 
 	$post_date = create_date($board_config['default_dateformat'], $post->post_time, $board_config['board_timezone']);
 
@@ -876,7 +876,7 @@ foreach ($posts as $i => $post) {
 	//
 	$poster_rank = '';
 	$rank_image = '';
-    if ($post->user_id == ANONYMOUS) {
+    if ($post->user_id === ANONYMOUS) {
 	    // WHAT WAS THERE???????
 	}
 	elseif ( $post->user_rank ) {
@@ -974,7 +974,7 @@ foreach ($posts as $i => $post) {
 	$search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $post->username) . '" title="' . sprintf($lang['Search_user_posts'], $post->username) . '" border="0" /></a>';
 	$search = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $post->username) . '</a>';
 
-    if (($userdata['user_id'] == $poster_id && $is_auth['auth_edit']) || $is_auth['auth_mod']) {
+    if (($userdata['user_id'] === $poster_id && $is_auth['auth_edit']) || $is_auth['auth_mod']) {
 		$temp_url = append_sid("posting.php?mode=editpost&amp;" . POST_POST_URL . "=" . $post->post_id);
 		$edit_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_edit'] . '" alt="' . $lang['Edit_delete_post'] . '" title="' . $lang['Edit_delete_post'] . '" border="0" /></a>';
 		$edit = '<a href="' . $temp_url . '">' . $lang['Edit_delete_post'] . '</a>';
@@ -995,7 +995,7 @@ foreach ($posts as $i => $post) {
 		$ip_img = '';
 		$ip = '';
 
-        if ($userdata['user_id'] == $poster_id && $is_auth['auth_delete'] && $forum_topic_data->topic_last_post_id == $post->post_id) {
+        if ($userdata['user_id'] === $poster_id && $is_auth['auth_delete'] && $forum_topic_data->topic_last_post_id === $post->post_id) {
 			$temp_url        = "posting.php?mode=delete&amp;" . POST_POST_URL . "=" . $post->post_id . "&amp;sid=" . $userdata['session_id'];
 			$delete_post_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_delpost'] . '" alt="' . $lang['Delete_post'] . '" title="' . $lang['Delete_post'] . '" border="0" /></a>';
 			$delete_post     = '<a href="' . $temp_url . '">' . $lang['Delete_post'] . '</a>';
@@ -1097,7 +1097,7 @@ foreach ($posts as $i => $post) {
 	// Editing information
 	//
     if ($post->post_edit_count) {
-		$l_edit_time_total = ( $post->post_edit_count == 1 ) ? $lang['Edited_time_total'] : $lang['Edited_times_total'];
+		$l_edit_time_total = ( $post->post_edit_count === 1 ) ? $lang['Edited_time_total'] : $lang['Edited_times_total'];
 
 		$l_edited_by = '<br /><br />' . sprintf($l_edit_time_total, $poster, create_date($board_config['default_dateformat'], $post->post_edit_time, $board_config['board_timezone']), $post->post_edit_count);
 	} else {

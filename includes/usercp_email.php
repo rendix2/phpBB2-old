@@ -53,7 +53,7 @@ $username   = $row->username;
 $user_email = $row->user_email;
 $user_lang  = $row->user_lang;
 
-if ($row->user_viewemail || $userdata['user_level'] == ADMIN) {
+if ($row->user_viewemail || $userdata['user_level'] === ADMIN) {
     if (time() - $userdata['user_emailtime'] < $board_config['flood_interval']) {
         message_die(GENERAL_MESSAGE, $lang['Flood_email_limit']);
     }

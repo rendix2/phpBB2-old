@@ -110,7 +110,7 @@ if ( !empty($topic_id) ) {
         message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
     }
 
-	$forum_topics = ( $topic_row->forum_topics == 0 ) ? 1 : $topic_row->forum_topics;
+	$forum_topics = ( $topic_row->forum_topics === 0 ) ? 1 : $topic_row->forum_topics;
 	$forum_id = $topic_row->forum_id;
 	$forum_name = $topic_row->forum_name;
 } elseif ( !empty($forum_id) ) {
@@ -123,7 +123,7 @@ if ( !empty($topic_id) ) {
         message_die(GENERAL_MESSAGE, 'Forum_not_exist');
     }
 
-	$forum_topics = ( $topic_row->forum_topics == 0 ) ? 1 : $topic_row->forum_topics;
+	$forum_topics = ( $topic_row->forum_topics === 0 ) ? 1 : $topic_row->forum_topics;
 	$forum_name = $topic_row->forum_name;
 } else {
 	message_die(GENERAL_MESSAGE, 'Forum_not_exist');
@@ -774,7 +774,8 @@ switch( $mode )
         }
 
 		$ip_this_post = decode_ip($post_row->poster_ip);
-		$ip_this_post = ( $rdns_ip_num == $ip_this_post ) ? htmlspecialchars(gethostbyaddr($ip_this_post)) : $ip_this_post;
+		$ip_this_post = ( $rdns_ip_num === $ip_this_post ) ? htmlspecialchars(gethostbyaddr($ip_this_post)) :
+            $ip_this_post;
 
 		$poster_id = $post_row->poster_id;
 
@@ -798,7 +799,7 @@ switch( $mode )
         //
 		// Get other IP's this user has posted under
 		//
-        $order_by = SQL_LAYER == 'msaccess' ? 'COUNT(*)' : 'postings';
+        $order_by = SQL_LAYER === 'msaccess' ? 'COUNT(*)' : 'postings';
 
         $rows = dibi::select('poster_ip')
             ->select('COUNT(*)')
@@ -812,17 +813,18 @@ switch( $mode )
         $i = 0;
 
         foreach ($rows as $row) {
-            if ( $row->poster_ip == $post_row->poster_ip ) {
+            if ( $row->poster_ip === $post_row->poster_ip ) {
                 $template->assign_vars(
                     [
-                        'POSTS' => $row->postings . ' ' . (($row->postings == 1) ? $lang['Post'] : $lang['Posts'])
+                        'POSTS' => $row->postings . ' ' . (($row->postings === 1) ? $lang['Post'] : $lang['Posts'])
                     ]
                 );
                 continue;
             }
 
             $ip = decode_ip($row->poster_ip);
-            $ip = ( $rdns_ip_num == $row->poster_ip || $rdns_ip_num == 'all') ? htmlspecialchars(gethostbyaddr($ip)) : $ip;
+            $ip = ( $rdns_ip_num === $row->poster_ip || $rdns_ip_num === 'all') ? htmlspecialchars(gethostbyaddr($ip))
+                : $ip;
 
             $row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
             $row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
@@ -832,7 +834,7 @@ switch( $mode )
                     'ROW_COLOR' => '#' . $row_color,
                     'ROW_CLASS' => $row_class,
                     'IP'        => $ip,
-                    'POSTS'     => $row->postings . ' ' . (($row->postings == 1) ? $lang['Post'] : $lang['Posts']),
+                    'POSTS'     => $row->postings . ' ' . (($row->postings === 1) ? $lang['Post'] : $lang['Posts']),
 
                     'U_LOOKUP_IP' => "modcp.php?mode=ip&amp;" . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=" . $row->poster_ip . "&amp;sid=" . $userdata['session_id']
                 ]
@@ -844,7 +846,7 @@ switch( $mode )
 		//
 		// Get other users who've posted under this IP
 		//
-        $order_by = SQL_LAYER == 'msaccess' ? 'COUNT(*)' : 'postings';
+        $order_by = SQL_LAYER === 'msaccess' ? 'COUNT(*)' : 'postings';
 
         $rows = dibi::select('u.user_id')
             ->select('u.username')
@@ -865,7 +867,7 @@ switch( $mode )
 
         foreach ($rows as $row) {
             $id = $row->user_id;
-            $username = ( $id == ANONYMOUS ) ? $lang['Guest'] : $row->username;
+            $username = ( $id === ANONYMOUS ) ? $lang['Guest'] : $row->username;
 
             $row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
             $row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
@@ -874,11 +876,11 @@ switch( $mode )
                 'ROW_COLOR'      => '#' . $row_color,
                 'ROW_CLASS'      => $row_class,
                 'USERNAME'       => $username,
-                'POSTS'          => $row->postings . ' ' . (($row->postings == 1) ? $lang['Post'] : $lang['Posts']),
+                'POSTS'          => $row->postings . ' ' . (($row->postings === 1) ? $lang['Post'] : $lang['Posts']),
                 'L_SEARCH_POSTS' => sprintf($lang['Search_user_posts'], $username),
 
-                'U_PROFILE'     => ($id == ANONYMOUS) ? "modcp.php?mode=ip&amp;" . POST_POST_URL . "=" . $post_id . "&amp;" . POST_TOPIC_URL . "=" . $topic_id . "&amp;sid=" . $userdata['session_id'] : append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$id"),
-                'U_SEARCHPOSTS' => append_sid("search.php?search_author=" . (($id == ANONYMOUS) ? 'Anonymous' : urlencode($username)) . "&amp;showresults=topics")
+                'U_PROFILE'     => ($id === ANONYMOUS) ? "modcp.php?mode=ip&amp;" . POST_POST_URL . "=" . $post_id . "&amp;" . POST_TOPIC_URL . "=" . $topic_id . "&amp;sid=" . $userdata['session_id'] : append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$id"),
+                'U_SEARCHPOSTS' => append_sid("search.php?search_author=" . (($id === ANONYMOUS) ? 'Anonymous' : urlencode($username)) . "&amp;showresults=topics")
             ]);
 
             $i++;
@@ -942,14 +944,14 @@ switch( $mode )
         foreach ($rows as $row) {
 			$topic_title = '';
 
-            if ($row->topic_status == TOPIC_LOCKED) {
+            if ($row->topic_status === TOPIC_LOCKED) {
                 $folder_img = $images['folder_locked'];
                 $folder_alt = $lang['Topic_locked'];
             } else {
-                if ($row->topic_type == POST_ANNOUNCE) {
+                if ($row->topic_type === POST_ANNOUNCE) {
                     $folder_img = $images['folder_announce'];
                     $folder_alt = $lang['Topic_Announcement'];
-                } elseif ($row->topic_type == POST_STICKY) {
+                } elseif ($row->topic_type === POST_STICKY) {
                     $folder_img = $images['folder_sticky'];
                     $folder_alt = $lang['Topic_Sticky'];
                 } else {
@@ -962,11 +964,11 @@ switch( $mode )
 			$topic_type = $row->topic_type;
 			$topic_status = $row->topic_status;
 
-            if ($topic_type == POST_ANNOUNCE) {
+            if ($topic_type === POST_ANNOUNCE) {
                 $topic_type = $lang['Topic_Announcement'] . ' ';
-            } elseif ($topic_type == POST_STICKY) {
+            } elseif ($topic_type === POST_STICKY) {
                 $topic_type = $lang['Topic_Sticky'] . ' ';
-            } elseif ($topic_status == TOPIC_MOVED) {
+            } elseif ($topic_status === TOPIC_MOVED) {
                 $topic_type = $lang['Topic_Moved'] . ' ';
             } else {
                 $topic_type = '';

@@ -131,7 +131,7 @@ if ($mode !== "" ) {
 		$min_posts = isset($_POST['min_posts']) ? (int)$_POST['min_posts'] : -1;
 		$rank_image = isset($_POST['rank_image']) ? trim($_POST['rank_image']) : "";
 
-		if ($rank_title == "" ) {
+		if ($rank_title === "" ) {
 			message_die(GENERAL_MESSAGE, $lang['Must_select_rank']);
 		}
 

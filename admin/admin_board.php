@@ -46,18 +46,18 @@ foreach ($configs as $config) {
 
 	$new[$config_name] = isset($_POST[$config_name]) ? $_POST[$config_name] : $default_config[$config_name];
 
-	if ($config_name == 'cookie_name') {
+	if ($config_name === 'cookie_name') {
 		$new['cookie_name'] = str_replace('.', '_', $new['cookie_name']);
 	}
 
 	// Attempt to prevent a common mistake with this value,
 	// http:// is the protocol and not part of the server name
-	if ($config_name == 'server_name') {
+	if ($config_name === 'server_name') {
 		$new['server_name'] = str_replace('http://', '', $new['server_name']);
 	}
 
 	// Attempt to prevent a mistake with this value.
-	if ($config_name == 'avatar_path') {
+	if ($config_name === 'avatar_path') {
 		$new['avatar_path'] = trim($new['avatar_path']);
 
 		if (strstr($new['avatar_path'], "\0") || !is_dir($phpbb_root_path . $new['avatar_path']) || !is_writable($phpbb_root_path . $new['avatar_path'])) {
@@ -99,9 +99,9 @@ $html_no = ( !$new['allow_html'] ) ? "checked=\"checked\"" : "";
 $bbcode_yes = $new['allow_bbcode'] ? "checked=\"checked\"" : "";
 $bbcode_no = ( !$new['allow_bbcode'] ) ? "checked=\"checked\"" : "";
 
-$activation_none = ( $new['require_activation'] == USER_ACTIVATION_NONE ) ? "checked=\"checked\"" : "";
-$activation_user = ( $new['require_activation'] == USER_ACTIVATION_SELF ) ? "checked=\"checked\"" : "";
-$activation_admin = ( $new['require_activation'] == USER_ACTIVATION_ADMIN ) ? "checked=\"checked\"" : "";
+$activation_none = ( $new['require_activation'] === USER_ACTIVATION_NONE ) ? "checked=\"checked\"" : "";
+$activation_user = ( $new['require_activation'] === USER_ACTIVATION_SELF ) ? "checked=\"checked\"" : "";
+$activation_admin = ( $new['require_activation'] === USER_ACTIVATION_ADMIN ) ? "checked=\"checked\"" : "";
 
 $confirm_yes = $new['enable_confirm'] ? 'checked="checked"' : '';
 $confirm_no = (!$new['enable_confirm']) ? 'checked="checked"' : '';

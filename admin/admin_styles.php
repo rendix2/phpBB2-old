@@ -322,7 +322,7 @@ switch( $mode )
                 $s_template_select = '<select name="template_name">';
 
                 while ($file = @readdir($dir)) {
-                    if (!is_file(phpbb_realpath($phpbb_root_path . 'templates/' . $file)) && !is_link(phpbb_realpath($phpbb_root_path . 'templates/' . $file)) && $file != "." && $file != ".." && $file != "CVS" ) {
+                    if (!is_file(phpbb_realpath($phpbb_root_path . 'templates/' . $file)) && !is_link(phpbb_realpath($phpbb_root_path . 'templates/' . $file)) && $file !== "." && $file !== ".." && $file !== "CVS" ) {
                         if ($file === $selected['template_name']) {
                             $s_template_select .= '<option value="' . $file . '" selected="selected">' . $file . "</option>\n";
                         } else {

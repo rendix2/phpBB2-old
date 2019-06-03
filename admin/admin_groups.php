@@ -106,9 +106,9 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 		$group_moderator = '';
 	}
 
-	$group_open = ( $group_info['group_type'] == GROUP_OPEN ) ? ' checked="checked"' : '';
-	$group_closed = ( $group_info['group_type'] == GROUP_CLOSED ) ? ' checked="checked"' : '';
-	$group_hidden = ( $group_info['group_type'] == GROUP_HIDDEN ) ? ' checked="checked"' : '';
+	$group_open = ( $group_info['group_type'] === GROUP_OPEN ) ? ' checked="checked"' : '';
+	$group_closed = ( $group_info['group_type'] === GROUP_CLOSED ) ? ' checked="checked"' : '';
+	$group_hidden = ( $group_info['group_type'] === GROUP_HIDDEN ) ? ' checked="checked"' : '';
 
 	$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
 
@@ -167,7 +167,7 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
             ->where('group_id = %i', $group_id)
             ->fetchSingle();
 
-		if ((int)$auth_mod == 1) {
+		if ((int)$auth_mod === 1) {
 			// Yes, get the assigned users and update their Permission if they are no longer moderator of one of the forums
 			$users = dibi::select('user_id')
                 ->from(USER_GROUP_TABLE)
@@ -227,9 +227,9 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 		$group_moderator = isset($_POST['username']) ? $_POST['username'] : '';
 		$delete_old_moderator = isset($_POST['delete_old_moderator']);
 
-        if ($group_name == '') {
+        if ($group_name === '') {
             message_die(GENERAL_MESSAGE, $lang['No_group_name']);
-        } elseif ($group_moderator == '') {
+        } elseif ($group_moderator === '') {
             message_die(GENERAL_MESSAGE, $lang['No_group_moderator']);
         }
 

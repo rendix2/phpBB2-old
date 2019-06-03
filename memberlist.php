@@ -43,9 +43,9 @@ if (isset($_GET['mode']) || isset($_POST['mode'])) {
 }
 
 if (isset($_POST['order'])) {
-    $sort_order = ($_POST['order'] == 'ASC') ? 'ASC' : 'DESC';
+    $sort_order = ($_POST['order'] === 'ASC') ? 'ASC' : 'DESC';
 } elseif (isset($_GET['order'])) {
-    $sort_order = ($_GET['order'] == 'ASC') ? 'ASC' : 'DESC';
+    $sort_order = ($_GET['order'] === 'ASC') ? 'ASC' : 'DESC';
 } else {
     $sort_order = 'ASC';
 }
@@ -75,7 +75,7 @@ foreach ($mode_types as $mode_type_key => $mode_types_value) {
 $select_sort_mode .= '</select>';
 $select_sort_order = '<select name="order">';
 
-if ($sort_order == 'ASC') {
+if ($sort_order === 'ASC') {
 	$select_sort_order .= '<option value="ASC" selected="selected">' . $lang['Sort_Ascending'] . '</option><option value="DESC">' . $lang['Sort_Descending'] . '</option>';
 } else {
 	$select_sort_order .= '<option value="ASC">' . $lang['Sort_Ascending'] . '</option><option value="DESC" selected="selected">' . $lang['Sort_Descending'] . '</option>';

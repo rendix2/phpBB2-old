@@ -254,7 +254,7 @@ function init_userprefs($userdata)
 
     $default_lang = '';
 
-    if ($userdata['user_id'] != ANONYMOUS) {
+    if ($userdata['user_id'] !== ANONYMOUS) {
         if (!empty($userdata['user_lang'])) {
             $default_lang = phpbb_ltrim(basename(phpbb_rtrim($userdata['user_lang'])), "'");
         }
@@ -271,7 +271,7 @@ function init_userprefs($userdata)
     }
 
 	if ( !file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $default_lang . '/lang_main.php')) ) {
-		if ( $userdata['user_id'] != ANONYMOUS ) {
+		if ( $userdata['user_id'] !== ANONYMOUS ) {
 			// For logged in users, try the board default language next
 			$default_lang = phpbb_ltrim(basename(phpbb_rtrim($board_config['default_lang'])), "'");
 		} else {
@@ -288,13 +288,13 @@ function init_userprefs($userdata)
 
 	// If we've had to change the value in any way then let's write it back to the database
 	// before we go any further since it means there is something wrong with it
-	if ( $userdata['user_id'] != ANONYMOUS && $userdata['user_lang'] !== $default_lang ) {
+	if ( $userdata['user_id'] !== ANONYMOUS && $userdata['user_lang'] !== $default_lang ) {
 	    dibi::update(USERS_TABLE, ['user_lang' => $default_lang])
             ->where('user_lang = %s', $userdata['user_lang'])
             ->execute();
 
 		$userdata['user_lang'] = $default_lang;
-	} elseif ( $userdata['user_id'] == ANONYMOUS && $board_config['default_lang'] !== $default_lang ) {
+	} elseif ( $userdata['user_id'] === ANONYMOUS && $board_config['default_lang'] !== $default_lang ) {
         dibi::update(CONFIG_TABLE, ['config_value' => $default_lang])
             ->where('config_name = %s', 'default_lang')
             ->execute();
@@ -316,7 +316,7 @@ function init_userprefs($userdata)
 	// Set up style
 	//
 	if ( !$board_config['override_user_style'] ) {
-		if ( $userdata['user_id'] != ANONYMOUS && $userdata['user_style'] > 0 ) {
+		if ( $userdata['user_id'] !== ANONYMOUS && $userdata['user_style'] > 0 ) {
 			if ( $theme = setup_style($userdata['user_style']) ) {
 				return;
 			}
@@ -681,13 +681,13 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 	// prevents debug info being output for general messages should DEBUG be
 	// set TRUE by accident (preventing confusion for the end user!)
 	//
-    if (DEBUG && ($msg_code == GENERAL_ERROR || $msg_code == CRITICAL_ERROR)) {
+    if (DEBUG && ($msg_code === GENERAL_ERROR || $msg_code === CRITICAL_ERROR)) {
         if ($debug_text != '') {
             $msg_text = $msg_text . '<br /><br /><b><u>DEBUG MODE</u></b>' . $debug_text;
         }
     }
 
-	if ( $msg_code != CRITICAL_ERROR )
+	if ( $msg_code !== CRITICAL_ERROR )
 	{
         if (!empty($lang[$msg_text])) {
             $msg_text = $lang[$msg_text];

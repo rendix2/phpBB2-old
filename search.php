@@ -61,16 +61,16 @@ if (isset($_POST['search_author']) || isset($_GET['search_author'])) {
 $search_id = isset($_GET['search_id']) ? $_GET['search_id'] : '';
 
 $show_results = isset($_POST['show_results']) ? $_POST['show_results'] : 'posts';
-$show_results = $show_results == 'topics' ? 'topics' : 'posts';
+$show_results = $show_results === 'topics' ? 'topics' : 'posts';
 
 if (isset($_POST['search_terms'])) {
-    $search_terms = ($_POST['search_terms'] == 'all') ? 1 : 0;
+    $search_terms = ($_POST['search_terms'] === 'all') ? 1 : 0;
 } else {
     $search_terms = 0;
 }
 
 if (isset($_POST['search_fields'])) {
-    $search_fields = ($_POST['search_fields'] == 'all') ? 1 : 0;
+    $search_fields = ($_POST['search_fields'] === 'all') ? 1 : 0;
 } else {
     $search_fields = 0;
 }
@@ -83,7 +83,7 @@ $search_forum = isset($_POST['search_forum']) ? (int)$_POST['search_forum'] : -1
 $sort_by = isset($_POST['sort_by']) ? (int)$_POST['sort_by'] : 0;
 
 if (isset($_POST['sort_dir'])) {
-    $sort_dir = ($_POST['sort_dir'] == 'DESC') ? 'DESC' : 'ASC';
+    $sort_dir = ($_POST['sort_dir'] === 'DESC') ? 'DESC' : 'ASC';
 } else {
     $sort_dir = 'DESC';
 }

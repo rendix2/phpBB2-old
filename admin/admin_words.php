@@ -110,7 +110,7 @@ if ($mode !== "" )
 		$word = isset($_POST['word']) ? trim($_POST['word']) : "";
 		$replacement = isset($_POST['replacement']) ? trim($_POST['replacement']) : "";
 
-		if ($word == "" || $replacement == "") {
+		if ($word === "" || $replacement === "") {
 			message_die(GENERAL_MESSAGE, $lang['Must_enter_word']);
 		}
 

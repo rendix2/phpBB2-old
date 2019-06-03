@@ -167,7 +167,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 			$bytes_written = @fwrite($fptr, $avatar_data, $avatar_filesize);
 			@fclose($fptr);
 
-			if ( $bytes_written != $avatar_filesize ) {
+			if ( $bytes_written !== $avatar_filesize ) {
 				@unlink($tmp_filename);
 				message_die(GENERAL_ERROR, 'Could not write avatar file to local storage. Please contact the board administrator with this message', '', __LINE__, __FILE__);
 			}

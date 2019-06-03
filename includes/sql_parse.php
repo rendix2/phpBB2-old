@@ -118,7 +118,7 @@ function split_sql_file($sql, $delimiter)
 			$unescaped_quotes = $total_quotes - $escaped_quotes;
 			
 			// If the number of unescaped quotes is even, then the delimiter did NOT occur inside a string literal.
-			if (($unescaped_quotes % 2) == 0) {
+			if (($unescaped_quotes % 2) === 0) {
 				// It's a complete sql statement.
 				$output[] = $token;
 				// save memory.
@@ -142,7 +142,7 @@ function split_sql_file($sql, $delimiter)
 			
 					$unescaped_quotes = $total_quotes - $escaped_quotes;
 					
-					if (($unescaped_quotes % 2) == 1) {
+					if (($unescaped_quotes % 2) === 1) {
 						// odd number of unescaped quotes. In combination with the previous incomplete
 						// statement(s), we now have a complete statement. (2 odds always make an even)
 						$output[] = $temp . $tokens[$j];

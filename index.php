@@ -89,17 +89,17 @@ $newest_userdata = get_db_stat('newestuser');
 $newest_user     = $newest_userdata['username'];
 $newest_uid      = $newest_userdata['user_id'];
 
-if ($total_posts == 0) {
+if ($total_posts === 0) {
     $l_total_post_s = $lang['Posted_articles_zero_total'];
-} elseif ($total_posts == 1) {
+} elseif ($total_posts === 1) {
     $l_total_post_s = $lang['Posted_article_total'];
 } else {
     $l_total_post_s = $lang['Posted_articles_total'];
 }
 
-if ($total_users == 0) {
+if ($total_users === 0) {
     $l_total_user_s = $lang['Registered_users_zero_total'];
-} elseif ($total_users == 1) {
+} elseif ($total_users === 1) {
     $l_total_user_s = $lang['Registered_user_total'];
 } else {
     $l_total_user_s = $lang['Registered_users_total'];
@@ -338,7 +338,7 @@ foreach ($categories as $category) {
                 'U_VIEWCAT' => append_sid("index.php?" . POST_CAT_URL . "=$cat_id")
             ]);
 
-        if ($view_category == $cat_id || $view_category === -1) {
+        if ($view_category === $cat_id || $view_category === -1) {
             foreach ($forum_data as $forum) {
                 if ($forum->cat_id === $cat_id) {
                     $forum_id = $forum->forum_id;
@@ -392,7 +392,7 @@ foreach ($categories as $category) {
 
                             $last_post = $last_post_time . '<br />';
 
-                            $last_post .= ($forum->user_id == ANONYMOUS) ? (($forum->post_username !== '') ? $forum->post_username . ' ' : $lang['Guest'] . ' ') : '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . '=' . $forum->user_id) . '">' . $forum->username . '</a> ';
+                            $last_post .= ($forum->user_id === ANONYMOUS) ? (($forum->post_username !== '') ? $forum->post_username . ' ' : $lang['Guest'] . ' ') : '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . '=' . $forum->user_id) . '">' . $forum->username . '</a> ';
 
                             $last_post .= '<a href="' . append_sid("viewtopic.php?" . POST_POST_URL . '=' . $forum->forum_last_post_id) . '#' . $forum->forum_last_post_id . '"><img src="' . $images['icon_latest_reply'] . '" border="0" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" /></a>';
                         } else {
@@ -402,7 +402,7 @@ foreach ($categories as $category) {
                         $moderators_forum_count = count($forum_moderators[$forum_id]);
 
                         if ($moderators_forum_count > 0) {
-                            $l_moderators   = $moderators_forum_count == 1 ? $lang['Moderator'] : $lang['Moderators'];
+                            $l_moderators   = $moderators_forum_count === 1 ? $lang['Moderator'] : $lang['Moderators'];
                             $moderator_list = implode(', ', $forum_moderators[$forum_id]);
                         } else {
                             $l_moderators   = '&nbsp;';

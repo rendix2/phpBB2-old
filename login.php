@@ -180,7 +180,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 	// Do a full login page dohickey if
 	// user not already logged in
 	//
-	if (!$userdata['session_logged_in'] || (isset($_GET['admin']) && $userdata['session_logged_in'] && $userdata['user_level'] == ADMIN)) {
+	if (!$userdata['session_logged_in'] || (isset($_GET['admin']) && $userdata['session_logged_in'] && $userdata['user_level'] === ADMIN)) {
 		$page_title = $lang['Login'];
 		include $phpbb_root_path . 'includes/page_header.php';
 

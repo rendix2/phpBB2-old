@@ -108,7 +108,7 @@ if (!$is_auth['auth_read'] || !$is_auth['auth_view']) {
 //
 // Handle marking posts
 //
-if ($mark_read == 'topics') {
+if ($mark_read === 'topics') {
     if ($userdata['session_logged_in']) {
         $last_post = dibi::select('MAX(post_time)')
             ->as('last_post')
@@ -223,7 +223,7 @@ foreach ($group_moderator_data as $row) {
     $moderators[] = '<a href="' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=" . $row->group_id) . '">' . $row->group_name . '</a>';
 }
 	
-$l_moderators = ( count($moderators) == 1 ) ? $lang['Moderator'] : $lang['Moderators'];
+$l_moderators = ( count($moderators) === 1 ) ? $lang['Moderator'] : $lang['Moderators'];
 $forum_moderators = count($moderators) ? implode(', ', $moderators) : $lang['None'];
 unset($moderators);
 
@@ -274,7 +274,7 @@ if (!empty($_POST['topicdays']) || !empty($_GET['topicdays']) ) {
 $select_topic_days = '<select name="topicdays">';
 
 foreach ($previous_days as $previous_day_key => $previous_day_value) {
-	$selected = ($topic_days == $previous_day_key) ? ' selected="selected"' : '';
+	$selected = ($topic_days === $previous_day_key) ? ' selected="selected"' : '';
 
 	$select_topic_days .= '<option value="' . $previous_day_key . '"' . $selected . '>' . $previous_day_value . '</option>';
 }
@@ -414,7 +414,7 @@ $template->assign_vars(
         'FORUM_ID'   => $forum_id,
         'FORUM_NAME' => $forum_row['forum_name'],
         'MODERATORS' => $forum_moderators,
-        'POST_IMG'   => ($forum_row['forum_status'] == FORUM_LOCKED) ? $images['post_locked'] : $images['post_new'],
+        'POST_IMG'   => ($forum_row['forum_status'] === FORUM_LOCKED) ? $images['post_locked'] : $images['post_new'],
 
         'FOLDER_IMG'              => $images['folder'],
         'FOLDER_NEW_IMG'          => $images['folder_new'],
@@ -434,7 +434,7 @@ $template->assign_vars(
         'L_LASTPOST'            => $lang['Last_Post'],
         'L_MODERATOR'           => $l_moderators,
         'L_MARK_TOPICS_READ'    => $lang['Mark_all_topics'],
-        'L_POST_NEW_TOPIC'      => ($forum_row['forum_status'] == FORUM_LOCKED) ? $lang['Forum_locked'] : $lang['Post_new_topic'],
+        'L_POST_NEW_TOPIC'      => ($forum_row['forum_status'] === FORUM_LOCKED) ? $lang['Forum_locked'] : $lang['Post_new_topic'],
         'L_NO_NEW_POSTS'        => $lang['No_new_posts'],
         'L_NEW_POSTS'           => $lang['New_posts'],
         'L_NO_NEW_POSTS_LOCKED' => $lang['No_new_posts_locked'],
@@ -469,9 +469,9 @@ if ($total_topics) {
 		$replies = $topic->topic_replies;
 		$topic_type = $topic->topic_type;
 
-        if ($topic_type == POST_ANNOUNCE) {
+        if ($topic_type === POST_ANNOUNCE) {
             $topic_type = $lang['Topic_Announcement'] . ' ';
-        } elseif ($topic_type == POST_STICKY) {
+        } elseif ($topic_type === POST_STICKY) {
             $topic_type = $lang['Topic_Sticky'] . ' ';
         } else {
             $topic_type = '';
@@ -481,7 +481,7 @@ if ($total_topics) {
             $topic_type .= $lang['Topic_Poll'] . ' ';
         }
 
-        if ($topic->topic_status == TOPIC_MOVED) {
+        if ($topic->topic_status === TOPIC_MOVED) {
 			$topic_type = $lang['Topic_Moved'] . ' ';
 			$topic_id = $topic->topic_moved_id;
 
@@ -489,13 +489,13 @@ if ($total_topics) {
 			$folder_alt = $lang['Topics_Moved'];
 			$newest_post_img = '';
 		} else {
-            if ($topic->topic_type == POST_ANNOUNCE) {
+            if ($topic->topic_type === POST_ANNOUNCE) {
 				$folder = $images['folder_announce'];
 				$folder_new = $images['folder_announce_new'];
-            } elseif ($topic->topic_type == POST_STICKY) {
+            } elseif ($topic->topic_type === POST_STICKY) {
 				$folder = $images['folder_sticky'];
 				$folder_new = $images['folder_sticky_new'];
-            } elseif ($topic->topic_status == TOPIC_LOCKED) {
+            } elseif ($topic->topic_status === TOPIC_LOCKED) {
 				$folder = $images['folder_locked'];
 				$folder_new = $images['folder_locked_new'];
 			} else {
@@ -539,25 +539,25 @@ if ($total_topics) {
 							$newest_post_img = '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
 						} else {
 							$folder_image = $folder;
-							$folder_alt = $topic->topic_status == TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['No_new_posts'];
+							$folder_alt = $topic->topic_status === TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['No_new_posts'];
 
 							$newest_post_img = '';
 						}
 					} else {
 						$folder_image = $folder_new;
-						$folder_alt = $topic->topic_status == TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['New_posts'];
+						$folder_alt = $topic->topic_status === TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['New_posts'];
 
 						$newest_post_img = '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
 					}
 				} else {
 					$folder_image = $folder;
-					$folder_alt = $topic->topic_status == TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['No_new_posts'];
+					$folder_alt = $topic->topic_status === TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['No_new_posts'];
 
 					$newest_post_img = '';
 				}
 			} else {
 				$folder_image = $folder;
-				$folder_alt = $topic->topic_status == TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['No_new_posts'];
+				$folder_alt = $topic->topic_status === TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['No_new_posts'];
 
 				$newest_post_img = '';
 			}
@@ -572,7 +572,7 @@ if ($total_topics) {
 			for ($j = 0; $j < $replies + 1; $j += $board_config['posts_per_page']) {
 				$goto_page .= '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=" . $topic_id . "&amp;start=$j") . '">' . $times . '</a>';
 				
-				if ($times == 1 && $total_pages > 4 ) {
+				if ($times === 1 && $total_pages > 4 ) {
 					$goto_page .= ' ... ';
 					$times = $total_pages - 3;
 					$j += ( $total_pages - 4 ) * $board_config['posts_per_page'];
@@ -648,7 +648,7 @@ if ($total_topics) {
 	//
 	// No topics
 	//
-	$no_topics_msg = $forum_row['forum_status'] == FORUM_LOCKED ? $lang['Forum_locked'] : $lang['No_topics_post_one'];
+	$no_topics_msg = $forum_row['forum_status'] === FORUM_LOCKED ? $lang['Forum_locked'] : $lang['No_topics_post_one'];
     $template->assign_vars(['L_NO_TOPICS' => $no_topics_msg]);
 
     $template->assign_block_vars('switch_no_topics', []);

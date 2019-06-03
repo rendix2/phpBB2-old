@@ -309,7 +309,7 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 		$avatar_sql = [];
 
 		if (isset($_POST['avatardel']) ) {
-			if ($this_userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] != "" ) {
+			if ($this_userdata['user_avatar_type'] === USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] != "" ) {
 				if (@file_exists(@phpbb_realpath('./../' . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar'])) ) {
 					@unlink('./../' . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']);
 				}
@@ -368,7 +368,7 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 
 								$avatar_filename = $user_id . $imgtype;
 
-								if ($this_userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] != "" ) {
+								if ($this_userdata['user_avatar_type'] === USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] != "" ) {
 									if (@file_exists(@phpbb_realpath("./../" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar'])) ) {
 										@unlink("./../" . $board_config['avatar_path'] . "/". $this_userdata['user_avatar']);
 									}
@@ -461,7 +461,8 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 
 										$avatar_filename = $user_id . $imgtype;
 
-										if ($this_userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] != "") {
+										if ($this_userdata['user_avatar_type'] === USER_AVATAR_UPLOAD &&
+                                            $this_userdata['user_avatar'] != "") {
 											if (file_exists(@phpbb_realpath("./../" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar'])) ) {
 												@unlink("./../" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']);
 											}
@@ -704,7 +705,7 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 
 							$avatar_col_count++;
 
-							if ($avatar_col_count == 5 ) {
+							if ($avatar_col_count === 5 ) {
 								$avatar_row_count++;
 								$avatar_col_count = 0;
 							}
@@ -726,7 +727,7 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 			$s_categories = "";
 
 			foreach ($avatar_images as $key => $value) {
-				$selected = ( $key == $category ) ? "selected=\"selected\"" : "";
+				$selected = ( $key === $category ) ? "selected=\"selected\"" : "";
 
 				if (count($avatar_images[$key]) ) {
 					$s_categories .= '<option value="' . $key . '"' . $selected . '>' . ucfirst($key) . '</option>';
@@ -750,7 +751,7 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
                 }
 			}
 
-			$coppa = ( ( !$_POST['coppa'] && !$_GET['coppa'] ) || $mode == "register") ? 0 : TRUE;
+			$coppa = ( ( !$_POST['coppa'] && !$_GET['coppa'] ) || $mode === "register") ? 0 : TRUE;
 
 			$s_hidden_fields = '<input type="hidden" name="mode" value="edit" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" /><input type="hidden" name="avatarcatname" value="' . $category . '" />';
 			$s_hidden_fields .= '<input type="hidden" name="id" value="' . $user_id . '" />';
@@ -834,7 +835,7 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 		$rank_select_box = '<option value="0">' . $lang['No_assigned_rank'] . '</option>';
 
 		foreach ($ranks as $rank) {
-			$selected = ( $this_userdata['user_rank'] == $rank->rank_id ) ? ' selected="selected"' : '';
+			$selected = ( $this_userdata['user_rank'] === $rank->rank_id ) ? ' selected="selected"' : '';
 			$rank_select_box .= '<option value="' . $rank->rank_id . '"' . $selected . '>' . $rank->rank_title . '</option>';
 		}
 

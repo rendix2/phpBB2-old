@@ -416,7 +416,7 @@ if ( isset($_POST['submit']) )
 		$signature = prepare_message($signature, $allowhtml, $allowbbcode, $allowsmilies, $signature_bbcode_uid);
 	}
 
-	if ( $website != '' ) {
+	if ( $website !== '' ) {
 		rawurlencode($website);
 	}
 
@@ -434,10 +434,10 @@ if ( isset($_POST['submit']) )
 			$error = true;
 			$error_msg .= ( !empty($error_msg) ? '<br />' : '' ) . $l_avatar_size;
 		}
-	} elseif ( $user_avatar_remoteurl != '' && $board_config['allow_avatar_remote'] ) {
+	} elseif ( $user_avatar_remoteurl !== '' && $board_config['allow_avatar_remote'] ) {
 		user_avatar_delete($userdata['user_avatar_type'], $userdata['user_avatar']);
 		$avatar_data = user_avatar_url($mode, $error, $error_msg, $user_avatar_remoteurl);
-	} elseif ( $user_avatar_local != '' && $board_config['allow_avatar_local'] ) {
+	} elseif ( $user_avatar_local !== '' && $board_config['allow_avatar_local'] ) {
 		user_avatar_delete($userdata['user_avatar_type'], $userdata['user_avatar']);
 		$avatar_data = user_avatar_gallery($mode, $error, $error_msg, $user_avatar_local, $user_avatar_category);
 	}
@@ -451,7 +451,7 @@ if ( isset($_POST['submit']) )
 	    */
 
 		if ( $mode === 'editprofile' ) {
-			if ( $email != $userdata['user_email'] && $board_config['require_activation'] != USER_ACTIVATION_NONE && $userdata['user_level'] != ADMIN ) {
+			if ( $email !== $userdata['user_email'] && $board_config['require_activation'] !== USER_ACTIVATION_NONE && $userdata['user_level'] !== ADMIN ) {
 				$user_active = 0;
 
 				$user_actkey = gen_rand_string(true);
@@ -515,7 +515,7 @@ if ( isset($_POST['submit']) )
 				include $phpbb_root_path . 'includes/emailer.php';
 				$emailer = new emailer($board_config['smtp_delivery']);
 
- 				if ( $board_config['require_activation'] != USER_ACTIVATION_ADMIN ) {
+ 				if ( $board_config['require_activation'] !== USER_ACTIVATION_ADMIN ) {
  					$emailer->from($board_config['board_email']);
  					$emailer->replyto($board_config['board_email']);
 

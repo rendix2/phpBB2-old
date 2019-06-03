@@ -198,7 +198,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 		$message = $lang['Auth_updated'] . '<br /><br />' . sprintf($lang['Click_return_userauth'], '<a href="' . append_sid("admin_ug_auth.php?mode=$mode") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');
 		message_die(GENERAL_MESSAGE, $message);
 	} else {
-		if ( $mode === 'user' && $_POST['userlevel'] == 'user' && $user_level == ADMIN ) {
+		if ( $mode === 'user' && $_POST['userlevel'] === 'user' && $user_level === ADMIN ) {
 			//
 			// Make admin a user (if already admin) ... ignore if you're trying
 			// to change yourself from an admin to user!
@@ -249,7 +249,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 					$forum_id = $access->forum_id;
 
 					foreach ($forum_auth_fields as $field) {
-						$forum_auth_level_fields[$forum_id][$field] = $access->{$field} == AUTH_ACL;
+						$forum_auth_level_fields[$forum_id][$field] = $access->{$field} === AUTH_ACL;
 					}
 				}
 
@@ -323,7 +323,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 				}
 
 				foreach ($forum_auth_fields as $auth_field) {
-					if ($access->{$auth_field} == AUTH_ACL && isset($change_acl_list[$forum_id][$auth_field]) ) {
+					if ($access->{$auth_field} === AUTH_ACL && isset($change_acl_list[$forum_id][$auth_field]) ) {
 						if ( ( empty($auth_access[$forum_id]['auth_mod']) && 
 							( isset($auth_access[$forum_id][$auth_field]) && $change_acl_list[$forum_id][$auth_field] !== $auth_access[$forum_id][$auth_field] ) ||
 							( !isset($auth_access[$forum_id][$auth_field]) && !empty($change_acl_list[$forum_id][$auth_field]) ) ) ||
@@ -332,7 +332,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 							$update_acl_status[$forum_id][$auth_field] = !empty($update_mod_status[$forum_id]) ? 0 : $change_acl_list[$forum_id][$auth_field];
 
                             if (isset($auth_access[$forum_id][$auth_field]) && empty($update_acl_status[$forum_id][$auth_field]) && $forum_auth_action[$forum_id] !== 'insert' && $forum_auth_action[$forum_id] !== 'update') {$forum_auth_action[$forum_id] = 'delete';
-                            } elseif (!isset($auth_access[$forum_id][$auth_field]) && !($forum_auth_action[$forum_id] == 'delete' && empty($update_acl_status[$forum_id][$auth_field]))) {
+                            } elseif (!isset($auth_access[$forum_id][$auth_field]) && !($forum_auth_action[$forum_id] === 'delete' && empty($update_acl_status[$forum_id][$auth_field]))) {
                                 $forum_auth_action[$forum_id] = 'insert';
                             } elseif (isset($auth_access[$forum_id][$auth_field]) && !empty($update_acl_status[$forum_id][$auth_field])) {
                                 $forum_auth_action[$forum_id] = 'update';
@@ -352,10 +352,10 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 			$delete_sql = [];
 
 			foreach ($forum_auth_action as $forum_id => $action) {
-				if ( $action == 'delete' ) {
+				if ( $action === 'delete' ) {
 					$delete_sql[] = $forum_id;
 				} else {
-					if ( $action == 'insert' ) {
+					if ( $action === 'insert' ) {
                         $update_acl_status[$forum_id]['auth_mod'] = isset($update_mod_status[$forum_id]) ? $update_mod_status[$forum_id] : 0;
                         $update_acl_status[$forum_id]['forum_id'] = $forum_id;
                         $update_acl_status[$forum_id]['group_id'] = $group_id;
@@ -536,7 +536,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 			foreach ($forum_auth_fields as $forum_auth_field) {
                 $access->{$forum_auth_field} . ' :: ';
 
-                if ($access->{$forum_auth_field} == AUTH_ACL) {
+                if ($access->{$forum_auth_field} === AUTH_ACL) {
 					$forum_auth_level[$forum_id] = AUTH_ACL;
 					$forum_auth_level_fields[$forum_id][] = $forum_auth_field;
 				}
@@ -657,7 +657,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 
     foreach ($auth_ug as $forum_id => $user_ary) {
         if (empty($adv)) {
-            if ($forum_auth_level[$forum_id] == AUTH_ACL) {
+            if ($forum_auth_level[$forum_id] === AUTH_ACL) {
                 $allowed = 1;
 
                 foreach ($forum_auth_level_fields[$forum_id] as $j => $auth_level_field) {
@@ -682,10 +682,10 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
             }
 		} else {
             foreach ($forum_access as $forum_access_value) {
-                if ($forum_access_value['forum_id'] == $forum_id) {
+                if ($forum_access_value['forum_id'] === $forum_id) {
                     foreach ($forum_auth_fields as $k => $field_name) {
 
-                        if ($forum_access_value[$field_name] == AUTH_ACL) {
+                        if ($forum_access_value[$field_name] === AUTH_ACL) {
                             $optionlist_acl_adv[$forum_id][$k] = '<select name="private_' . $field_name . '[' . $forum_id . ']">';
 
                             if (isset($auth_field_acl[$forum_id][$field_name]) && !($is_admin || $user_ary['auth_mod'])) {

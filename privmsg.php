@@ -371,7 +371,7 @@ if ($mode === 'newpm') {
 		'edit'     => '<a href="' . $post_urls['edit'] . '">' . $lang['Edit_pm'] . '</a>'
 	];
 
-    if ($folder == 'inbox') {
+    if ($folder === 'inbox') {
 		$post_img = $post_icons['post_img'];
 		$reply_img = $post_icons['reply_img'];
 		$quote_img = $post_icons['quote_img'];
@@ -381,7 +381,7 @@ if ($mode === 'newpm') {
 		$quote = $post_icons['quote'];
 		$edit = '';
 		$l_box_name = $lang['Inbox'];
-	} elseif ($folder == 'outbox') {
+	} elseif ($folder === 'outbox') {
 		$post_img = $post_icons['post_img'];
 		$reply_img = '';
 		$quote_img = '';
@@ -391,8 +391,8 @@ if ($mode === 'newpm') {
 		$quote = '';
 		$edit = $post_icons['edit'];
 		$l_box_name = $lang['Outbox'];
-    } elseif ($folder == 'savebox') {
-        if ($privmsg->privmsgs_type == PRIVMSGS_SAVED_IN_MAIL) {
+    } elseif ($folder === 'savebox') {
+        if ($privmsg->privmsgs_type === PRIVMSGS_SAVED_IN_MAIL) {
 			$post_img = $post_icons['post_img'];
 			$reply_img = $post_icons['reply_img'];
 			$quote_img = $post_icons['quote_img'];
@@ -413,7 +413,7 @@ if ($mode === 'newpm') {
 		}
 
 		$l_box_name = $lang['Saved'];
-    } elseif ($folder == 'sentbox') {
+    } elseif ($folder === 'sentbox') {
 		$post_img = $post_icons['post_img'];
 		$reply_img = '';
 		$quote_img = '';
@@ -493,7 +493,7 @@ if ($mode === 'newpm') {
 	$pm_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
 	$pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
 
-	if ( !empty($privmsg->user_viewemail) || $userdata['user_level'] == ADMIN )
+	if ( !empty($privmsg->user_viewemail) || $userdata['user_level'] === ADMIN )
 	{
 		$email_uri = $board_config['board_email_form'] ? append_sid("profile.php?mode=email&amp;" . POST_USERS_URL .'=' . $user_id_from) : 'mailto:' . $privmsg->user_email;
 
@@ -540,12 +540,12 @@ if ($mode === 'newpm') {
 	$bbcode_uid = $privmsg->privmsgs_bbcode_uid;
 
     if ($board_config['allow_sig']) {
-        $user_sig = ($privmsg->privmsgs_from_userid == $userdata['user_id']) ? $userdata['user_sig'] : $privmsg->user_sig;
+        $user_sig = ($privmsg->privmsgs_from_userid === $userdata['user_id']) ? $userdata['user_sig'] : $privmsg->user_sig;
     } else {
         $user_sig = '';
     }
 
-	$user_sig_bbcode_uid = ( $privmsg->privmsgs_from_userid == $userdata['user_id'] ) ? $userdata['user_sig_bbcode_uid'] : $privmsg->user_sig_bbcode_uid;
+	$user_sig_bbcode_uid = ( $privmsg->privmsgs_from_userid === $userdata['user_id'] ) ? $userdata['user_sig_bbcode_uid'] : $privmsg->user_sig_bbcode_uid;
 
 	//
 	// If the board has HTML off but the post has HTML
@@ -666,7 +666,7 @@ if ($mode === 'newpm') {
         $template->assign_vars(
             [
                 'MESSAGE_TITLE' => $lang['Information'],
-                'MESSAGE_TEXT'  => (count($mark_list) == 1) ? $lang['Confirm_delete_pm'] : $lang['Confirm_delete_pms'],
+                'MESSAGE_TEXT'  => (count($mark_list) === 1) ? $lang['Confirm_delete_pm'] : $lang['Confirm_delete_pms'],
 
                 'L_YES' => $lang['Yes'],
                 'L_NO'  => $lang['No'],
@@ -726,7 +726,7 @@ if ($mode === 'newpm') {
 		}
 
         if (count($mark_list)) {
-            if ($folder == 'inbox' || $folder == 'outbox') {
+            if ($folder === 'inbox' || $folder === 'outbox') {
                 // Get information relevant to new or unread mail
                 // so we can adjust users counters appropriately
 			    $rows = dibi::select(['privmsgs_to_userid', 'privmsgs_type'])
@@ -856,7 +856,7 @@ if ($mode === 'newpm') {
                 PRIVMSGS_SAVED_OUT_MAIL
             )->fetch();
 
-		$sql_priority = ( SQL_LAYER == 'mysql' ) ? 'LOW_PRIORITY' : '';
+		$sql_priority = ( SQL_LAYER === 'mysql' ) ? 'LOW_PRIORITY' : '';
 
         if ($saved_info) {
 			if ($board_config['max_savebox_privmsgs'] && $saved_info->savebox_items >= $board_config['max_savebox_privmsgs'] ) {
@@ -1121,7 +1121,7 @@ if ($mode === 'newpm') {
                 message_die(GENERAL_MESSAGE, $lang['No_such_user']);
             }
 
-            $sql_priority = (SQL_LAYER == 'mysql') ? 'LOW_PRIORITY' : '';
+            $sql_priority = (SQL_LAYER === 'mysql') ? 'LOW_PRIORITY' : '';
 
             if ($board_config['max_inbox_privmsgs'] && $inbox_info->inbox_items >= $board_config['max_inbox_privmsgs']) {
                 $old_privmsgs_id = dibi::select('privmsgs_id')
@@ -1348,7 +1348,7 @@ if ($mode === 'newpm') {
 			$privmsg_subject = $privmsg->privmsgs_subject;
 			$privmsg_message = $privmsg->privmsgs_text;
 			$privmsg_bbcode_uid = $privmsg->privmsgs_bbcode_uid;
-			$privmsg_bbcode_enabled = $privmsg->privmsgs_enable_bbcode == 1;
+			$privmsg_bbcode_enabled = $privmsg->privmsgs_enable_bbcode === 1;
 
             if ($privmsg_bbcode_enabled) {
                 $privmsg_message = preg_replace("/\:(([a-z0-9]:)?)$privmsg_bbcode_uid/si", '', $privmsg_message);
@@ -1357,7 +1357,7 @@ if ($mode === 'newpm') {
 			$privmsg_message = str_replace('<br />', "\n", $privmsg_message);
 			// $privmsg_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $privmsg_message);
 
-			$user_sig = $board_config['allow_sig'] ? (($privmsg->privmsgs_type == PRIVMSGS_NEW_MAIL) ? $user_sig : $privmsg->user_sig) : '';
+			$user_sig = $board_config['allow_sig'] ? (($privmsg->privmsgs_type === PRIVMSGS_NEW_MAIL) ? $user_sig : $privmsg->user_sig) : '';
 
 			$to_username = $privmsg->username;
 			$to_userid = $privmsg->user_id;
@@ -1853,7 +1853,7 @@ $previous_days = [
 $select_msg_days = '';
 
 foreach ($previous_days as $previous_day_key => $previous_days_value) {
-    $selected = ( $msg_days == $previous_day_key ) ? ' selected="selected"' : '';
+    $selected = ( $msg_days === $previous_day_key ) ? ' selected="selected"' : '';
 
     $select_msg_days .= '<option value="' . $previous_day_key . '"' . $selected . '>' . $previous_days_value . '</option>';
 }
@@ -1939,7 +1939,7 @@ $template->assign_vars(
         'L_SUBJECT'          => $lang['Subject'],
         'L_DATE'             => $lang['Date'],
         'L_DISPLAY_MESSAGES' => $lang['Display_messages'],
-        'L_FROM_OR_TO'       => ($folder == 'inbox' || $folder == 'savebox') ? $lang['From'] : $lang['To'],
+        'L_FROM_OR_TO'       => ($folder === 'inbox' || $folder === 'savebox') ? $lang['From'] : $lang['To'],
         'L_MARK_ALL'         => $lang['Mark_all'],
         'L_UNMARK_ALL'       => $lang['Unmark_all'],
         'L_DELETE_MARKED'    => $lang['Delete_marked'],
@@ -1970,8 +1970,8 @@ if (count($rows)) {
 
 		$flag = $row->privmsgs_type;
 
-		$icon_flag = ( $flag == PRIVMSGS_NEW_MAIL || $flag == PRIVMSGS_UNREAD_MAIL ) ? $images['pm_unreadmsg'] : $images['pm_readmsg'];
-		$icon_flag_alt = ( $flag == PRIVMSGS_NEW_MAIL || $flag == PRIVMSGS_UNREAD_MAIL ) ? $lang['Unread_message'] : $lang['Read_message'];
+		$icon_flag = ( $flag === PRIVMSGS_NEW_MAIL || $flag === PRIVMSGS_UNREAD_MAIL ) ? $images['pm_unreadmsg'] : $images['pm_readmsg'];
+		$icon_flag_alt = ( $flag === PRIVMSGS_NEW_MAIL || $flag === PRIVMSGS_UNREAD_MAIL ) ? $lang['Unread_message'] : $lang['Read_message'];
 
 		$msg_userid = $row->user_id;
 		$msg_username = $row->username;
@@ -1988,7 +1988,7 @@ if (count($rows)) {
 
 		$msg_date = create_date($board_config['default_dateformat'], $row->privmsgs_date, $board_config['board_timezone']);
 
-        if ($flag == PRIVMSGS_NEW_MAIL && $folder == 'inbox') {
+        if ($flag === PRIVMSGS_NEW_MAIL && $folder === 'inbox') {
             $msg_subject  = '<b>' . $msg_subject . '</b>';
             $msg_date     = '<b>' . $msg_date . '</b>';
             $msg_username = '<b>' . $msg_username . '</b>';

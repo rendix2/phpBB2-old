@@ -206,9 +206,9 @@ if (isset($_POST['groupstatus']) && $group_id) {
         message_die(GENERAL_MESSAGE, $lang['No_groups_exist']);
     }
 
-    if ($row[0]->group_type == GROUP_OPEN) {
+    if ($row[0]->group_type === GROUP_OPEN) {
         foreach ($rows as $row) {
-            if ($userdata['user_id'] == $row->user_id) {
+            if ($userdata['user_id'] === $row->user_id) {
                 $template->assign_vars(
                     [
                         'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.php") . '">'
@@ -297,7 +297,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
             ->where('group_id = %i', $group_id)
             ->execute();
 
-        if ($userdata['user_level'] !== ADMIN && $userdata['user_level'] == MOD) {
+        if ($userdata['user_level'] !== ADMIN && $userdata['user_level'] === MOD) {
             $is_auth_mod = dibi::select('COUNT(auth_mod)')
                 ->as('is_auth_mod')
                 ->from(AUTH_ACCESS_TABLE)
@@ -414,7 +414,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
     if ($group_info) {
 		$group_moderator = $group_info->group_moderator;
 
-        if ($group_moderator == $userdata['user_id'] || $userdata['user_level'] == ADMIN) {
+        if ($group_moderator === $userdata['user_id'] || $userdata['user_level'] === ADMIN) {
             $is_moderator = true;
         }
 			
@@ -460,7 +460,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 					message_die(GENERAL_MESSAGE, $message);
 				}
 
-                if ($row->user_id == ANONYMOUS) {
+                if ($row->user_id === ANONYMOUS) {
                     $template->assign_vars(
                         [
                             'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("groupcp.php?" . POST_GROUPS_URL . "=$group_id") . '">'
@@ -585,7 +585,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
                             if (count($group_check)) {
 								$remove_mod_sql = [];
 								foreach ($group_check as $user_id => $group_id) {
-                                    if (count($group_id) == 1) {
+                                    if (count($group_id) === 1) {
                                         $remove_mod_sql[] = $user_id;
                                     }
                                 }
@@ -779,7 +779,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
         }
     }
 
-    if ($userdata['user_level'] == ADMIN) {
+    if ($userdata['user_level'] === ADMIN) {
         $is_moderator = true;
     }
 
@@ -795,19 +795,19 @@ if (isset($_POST['groupstatus']) && $group_id) {
         $group_details = $is_group_pending_member ? $lang['Pending_this_group'] : $lang['Member_this_group'];
 
         $s_hidden_fields = '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
-    } elseif ($userdata['user_id'] == ANONYMOUS) {
+    } elseif ($userdata['user_id'] === ANONYMOUS) {
         $group_details   = $lang['Login_to_join'];
         $s_hidden_fields = '';
     } else {
-        if ($group_info->group_type == GROUP_OPEN) {
+        if ($group_info->group_type === GROUP_OPEN) {
             $template->assign_block_vars('switch_subscribe_group_input', []);
 
             $group_details   = $lang['This_open_group'];
             $s_hidden_fields = '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
-        } elseif ($group_info->group_type == GROUP_CLOSED) {
+        } elseif ($group_info->group_type === GROUP_CLOSED) {
             $group_details   = $lang['This_closed_group'];
             $s_hidden_fields = '';
-        } elseif ($group_info->group_type == GROUP_HIDDEN) {
+        } elseif ($group_info->group_type === GROUP_HIDDEN) {
             $group_details   = $lang['This_hidden_group'];
             $s_hidden_fields = '';
         }
@@ -903,9 +903,9 @@ if (isset($_POST['groupstatus']) && $group_id) {
 		'S_GROUP_OPEN_TYPE' => GROUP_OPEN,
 		'S_GROUP_CLOSED_TYPE' => GROUP_CLOSED,
 		'S_GROUP_HIDDEN_TYPE' => GROUP_HIDDEN,
-		'S_GROUP_OPEN_CHECKED' => ( $group_info->group_type == GROUP_OPEN ) ? ' checked="checked"' : '',
-		'S_GROUP_CLOSED_CHECKED' => ( $group_info->group_type == GROUP_CLOSED ) ? ' checked="checked"' : '',
-		'S_GROUP_HIDDEN_CHECKED' => ( $group_info->group_type == GROUP_HIDDEN ) ? ' checked="checked"' : '',
+		'S_GROUP_OPEN_CHECKED' => ( $group_info->group_type === GROUP_OPEN ) ? ' checked="checked"' : '',
+		'S_GROUP_CLOSED_CHECKED' => ( $group_info->group_type === GROUP_CLOSED ) ? ' checked="checked"' : '',
+		'S_GROUP_HIDDEN_CHECKED' => ( $group_info->group_type === GROUP_HIDDEN ) ? ' checked="checked"' : '',
 		'S_HIDDEN_FIELDS' => $s_hidden_fields, 
 		'S_MODE_SELECT' => $select_sort_mode,
 		'S_ORDER_SELECT' => $select_sort_order,
@@ -987,7 +987,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
         ]
     );
 
-    if ($group_info->group_type == GROUP_HIDDEN && !$is_group_member && !$is_moderator) {
+    if ($group_info->group_type === GROUP_HIDDEN && !$is_group_member && !$is_moderator) {
 		//
 		// No group members
 		//

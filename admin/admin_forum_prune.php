@@ -43,7 +43,7 @@ if (isset($_GET[POST_FORUM_URL]) || isset($_POST[POST_FORUM_URL]) )
 {
 	$forum_id = isset($_POST[POST_FORUM_URL]) ? $_POST[POST_FORUM_URL] : $_GET[POST_FORUM_URL];
 
-    if ($forum_id == -1) {
+    if ($forum_id === -1) {
         $forum_sql = false;
     } else {
         $forum_id = (int)$forum_id;
@@ -149,7 +149,7 @@ if (isset($_POST['doprune']) ) {
 		//
         $template->set_filenames(['body' => 'admin/forum_prune_body.tpl']);
 
-        $forum_name = ( $forum_id == -1 ) ? $lang['All_Forums'] : $forum_rows[0]['forum_name'];
+        $forum_name = ( $forum_id === -1 ) ? $lang['All_Forums'] : $forum_rows[0]['forum_name'];
 
 		$prune_data = $lang['Prune_topics_not_posted'] . " "; 
 		$prune_data .= '<input class="post" type="text" name="prunedays" size="4"> ' . $lang['Days'];

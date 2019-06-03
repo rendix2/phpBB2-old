@@ -33,7 +33,7 @@ require './pagestart.php';
 //
 // Generate relevant output
 //
-if (isset($_GET['pane']) && $_GET['pane'] == 'left' )
+if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
 {
 	$dir = @opendir(".");
 
@@ -95,7 +95,7 @@ if (isset($_GET['pane']) && $_GET['pane'] == 'left' )
 	$template->pparse("body");
 
 	include './page_footer_admin.php';
-} elseif (isset($_GET['pane']) && $_GET['pane'] == 'right' ) {
+} elseif (isset($_GET['pane']) && $_GET['pane'] === 'right' ) {
 
 	include './page_header_admin.php';
 
@@ -300,7 +300,7 @@ if (isset($_GET['pane']) && $_GET['pane'] == 'left' )
 
 				$username = $online_user->username;
 
-                if ($online_user->user_allow_viewonline || $userdata['user_level'] == ADMIN) {
+                if ($online_user->user_allow_viewonline || $userdata['user_level'] === ADMIN) {
                     $registered_users++;
                     $hidden = false;
                 } else {
