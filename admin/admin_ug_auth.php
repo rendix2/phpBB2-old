@@ -726,10 +726,10 @@ if ( isset($_POST['submit']) && ( ( $mode == 'user' && $user_id ) || ( $mode == 
                 ]
             );
         } else {
-            for ($j = 0; $j < count($forum_auth_fields); $j++) {
+            foreach ($optionlist_acl_adv[$forum_id] as $acl_select) {
                 $template->assign_block_vars('forums.aclvalues',
                     [
-                        'S_ACL_SELECT' => $optionlist_acl_adv[$forum_id][$j]
+                        'S_ACL_SELECT' => $acl_select
                     ]
                 );
             }

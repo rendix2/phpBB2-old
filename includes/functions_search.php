@@ -19,10 +19,42 @@
  *
  ***************************************************************************/
 
-function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
+function clean_words($mode, &$entry, array &$stopwords, array &$synonyms)
 {
-	static $drop_char_match =   ['^', '$', '&', '(', ')', '<', '>', '`', '\'', '"', '|', ',', '@', '_', '?', '%', '-', '~', '+', '.', '[', ']', '{', '}', ':', '\\', '/', '=', '#', '\'', ';', '!'];
-	static $drop_char_replace = [' ', ' ', ' ', ' ', ' ', ' ', ' ', '',  '',   ' ', ' ', ' ', ' ', '',  ' ', ' ', '', ' ',  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' , ' ', ' ', ' ', ' ',  ' ', ' '];
+    static $drop_char_matches = [
+        '^'  => ' ',
+        '$'  => ' ',
+        '&'  => ' ',
+        '('  => ' ',
+        ')'  => ' ',
+        '<'  => ' ',
+        '>'  => ' ',
+        '`'  => '',
+        '\'' => '',
+        '"'  => ' ',
+        '|'  => ' ',
+        ','  => ' ',
+        '@'  => ' ',
+        '_'  => '',
+        '?'  => ' ',
+        '%'  => ' ',
+        '-'  => '',
+        '~'  => ' ',
+        '+'  => ' ',
+        '.'  => ' ',
+        '['  => ' ',
+        ']'  => ' ',
+        '{'  => ' ',
+        '}'  => ' ',
+        ':'  => ' ',
+        '\\' => ' ',
+        '/'  => ' ',
+        '='  => ' ',
+        '#'  => ' ',
+        '\'' => ' ',
+        ';'  => ' ',
+        '!'  => ' '
+    ];
 
 	$entry = ' ' . strip_tags(strtolower($entry)) . ' ';
 
@@ -45,8 +77,8 @@ function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
 	//
 	// Filter out strange characters like ^, $, &, change "it's" to "its"
 	//
-	for ($i = 0; $i < count($drop_char_match); $i++) {
-		$entry =  str_replace($drop_char_match[$i], $drop_char_replace[$i], $entry);
+	foreach ($drop_char_matches as $key => $value) {
+		$entry = str_replace($key, $value, $entry);
 	}
 
 	if ( $mode == 'post' ) {
@@ -56,9 +88,9 @@ function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
 		$entry = preg_replace('/[ ]([\S]{1,2}|[\S]{21,})[ ]/',' ', $entry);
 	}
 
-	if ( !empty($stopword_list) ) {
-		for ($j = 0; $j < count($stopword_list); $j++) {
-			$stopword = trim($stopword_list[$j]);
+    if (!empty($stopwords)) {
+		foreach ($stopwords as &$stopword) {
+			$stopword = trim($stopword);
 
 			if ( $mode == 'post' || ( $stopword != 'not' && $stopword != 'and' && $stopword != 'or' ) ) {
 				$entry = str_replace(' ' . trim($stopword) . ' ', ' ', $entry);
@@ -66,9 +98,9 @@ function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
 		}
 	}
 
-	if ( !empty($synonym_list) ) {
-		for ($j = 0; $j < count($synonym_list); $j++) {
-			list($replace_synonym, $match_synonym) = explode(' ', trim(strtolower($synonym_list[$j])));
+    if (!empty($synonyms)) {
+		foreach ($synonyms as &$synonym) {
+			list($replace_synonym, $match_synonym) = explode(' ', trim(strtolower($synonym)));
 
 			if ( $mode == 'post' || ( $match_synonym != 'not' && $match_synonym != 'and' && $match_synonym != 'or' ) ) {
 				$entry =  str_replace(' ' . trim($match_synonym) . ' ', ' ' . trim($replace_synonym) . ' ', $entry);
