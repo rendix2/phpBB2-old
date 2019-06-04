@@ -290,7 +290,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	            'topic_id' => $topic_id,
                 'vote_text' => $poll_title,
                 'vote_start' => $current_time,
-                'vote_length' => ($poll_length * 86400)
+                'vote_length' => $poll_length * 86400
             ];
 
             $poll_id = dibi::insert(VOTE_DESC_TABLE, $insert_data)->execute(dibi::IDENTIFIER);

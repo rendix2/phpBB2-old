@@ -439,7 +439,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 					GROUP BY u.user_id 
 					HAVING SUM(aa.auth_mod) = 0";
 
-                dibi::query($sql)->fetchPairs(null, 'user_id');;
+                dibi::query($sql)->fetchPairs(null, 'user_id');
 				break;
 			default:
 			    // there was left join

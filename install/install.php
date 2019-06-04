@@ -658,7 +658,7 @@ else
 	$dbms_schema = 'schemas/' . $available_dbms[$dbms]['SCHEMA'] . '_schema.sql';
 	$dbms_basic = 'schemas/' . $available_dbms[$dbms]['SCHEMA'] . '_basic.sql';
 
-	$remove_remarks = $available_dbms[$dbms]['COMMENTS'];;
+	$remove_remarks = $available_dbms[$dbms]['COMMENTS'];
 	$delimiter = $available_dbms[$dbms]['DELIM']; 
 	$delimiter_basic = $available_dbms[$dbms]['DELIM_BASIC'];
 
