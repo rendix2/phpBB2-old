@@ -174,8 +174,7 @@ if ( !$is_auth['auth_mod'] ) {
 //
 // Do major work ...
 //
-switch( $mode )
-{
+switch ($mode) {
 	case 'delete':
         if (!$is_auth['auth_delete']) {
             message_die(GENERAL_MESSAGE, sprintf($lang['Sorry_auth_delete'], $is_auth['auth_delete_type']));
@@ -184,10 +183,10 @@ switch( $mode )
 		$page_title = $lang['Mod_CP'];
 		include $phpbb_root_path . 'includes/page_header.php';
 
-		if ( $confirm ) {
-  			if ( empty($_POST['topic_id_list']) && empty($topic_id) ) {
-				message_die(GENERAL_MESSAGE, $lang['None_selected']);
-			}
+        if ($confirm) {
+            if (empty($_POST['topic_id_list']) && empty($topic_id)) {
+                message_die(GENERAL_MESSAGE, $lang['None_selected']);
+            }
 
 			include $phpbb_root_path . 'includes/functions_search.php';
 
@@ -284,14 +283,14 @@ switch( $mode )
             message_die(GENERAL_MESSAGE, $lang['Topics_Removed'] . '<br /><br />' . $l_redirect);
 		} else {
 			// Not confirmed, show confirmation message
-			if ( empty($_POST['topic_id_list']) && empty($topic_id) ) {
-				message_die(GENERAL_MESSAGE, $lang['None_selected']);
+            if (empty($_POST['topic_id_list']) && empty($topic_id)) {
+                message_die(GENERAL_MESSAGE, $lang['None_selected']);
 			}
 
 			$hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
 
-			if ( isset($_POST['topic_id_list']) ) {
-				$topics = $_POST['topic_id_list'];
+            if (isset($_POST['topic_id_list'])) {
+                $topics = $_POST['topic_id_list'];
 
 				foreach ($topics as $topic) {
 					$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . (int)$topic . '" />';
@@ -328,10 +327,10 @@ switch( $mode )
 		$page_title = $lang['Mod_CP'];
 		include $phpbb_root_path . 'includes/page_header.php';
 
-		if ( $confirm ) {
-			if ( empty($_POST['topic_id_list']) && empty($topic_id) ) {
-				message_die(GENERAL_MESSAGE, $lang['None_selected']);
-			}
+        if ($confirm) {
+            if (empty($_POST['topic_id_list']) && empty($topic_id)) {
+                message_die(GENERAL_MESSAGE, $lang['None_selected']);
+            }
 
 			$new_forum_id = (int)$_POST['new_forum'];
 			$old_forum_id = $forum_id;
@@ -345,7 +344,7 @@ switch( $mode )
 				message_die(GENERAL_MESSAGE, 'New forum does not exist');
 			}
 
-			if ( $new_forum_id !== $old_forum_id ) {
+            if ($new_forum_id !== $old_forum_id) {
                 $topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topic_id];
 
 				$topic_rows = dibi::select('*')
@@ -357,8 +356,8 @@ switch( $mode )
 
                 foreach ($topic_rows as $topic_row) {
 					$topic_id = $row[$i]['topic_id'];
-					
-					if ( isset($_POST['move_leave_shadow']) ) {
+
+                    if (isset($_POST['move_leave_shadow'])) {
 					    $insert_data = [
 					        'forum_id' => $old_forum_id,
                             'topic_title' => $topic_row->topic_title,
@@ -397,7 +396,7 @@ switch( $mode )
 				$message = $lang['No_Topics_Moved'] . '<br /><br />';
 			}
 
-			if ( !empty($topic_id) ) {
+            if (!empty($topic_id)) {
 				$redirect_page = "viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'];
 				$message .= sprintf($lang['Click_return_topic'], '<a href="' . $redirect_page . '">', '</a>');
 			} else {
@@ -411,14 +410,14 @@ switch( $mode )
 
             message_die(GENERAL_MESSAGE, $message);
 		} else {
-			if ( empty($_POST['topic_id_list']) && empty($topic_id) ) {
-				message_die(GENERAL_MESSAGE, $lang['None_selected']);
-			}
+            if (empty($_POST['topic_id_list']) && empty($topic_id)) {
+                message_die(GENERAL_MESSAGE, $lang['None_selected']);
+            }
 
 			$hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
 
-			if ( isset($_POST['topic_id_list']) ) {
-				$topics = $_POST['topic_id_list'];
+            if (isset($_POST['topic_id_list'])) {
+                $topics = $_POST['topic_id_list'];
 
 				foreach ($topics as $topic) {
 					$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . (int)$topic . '" />';
@@ -459,9 +458,9 @@ switch( $mode )
 		break;
 
 	case 'lock':
-		if ( empty($_POST['topic_id_list']) && empty($topic_id) ) {
-			message_die(GENERAL_MESSAGE, $lang['None_selected']);
-		}
+        if (empty($_POST['topic_id_list']) && empty($topic_id)) {
+            message_die(GENERAL_MESSAGE, $lang['None_selected']);
+        }
 
         $topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topic_id];
 
@@ -472,7 +471,7 @@ switch( $mode )
             ->where('topic_moved_id = %i', 0)
             ->execute();
 
-		if ( !empty($topic_id) ) {
+        if (!empty($topic_id)) {
 			$redirect_page = "viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'];
 			$message = sprintf($lang['Click_return_topic'], '<a href="' . $redirect_page . '">', '</a>');
 		} else {
@@ -489,7 +488,7 @@ switch( $mode )
 		break;
 
 	case 'unlock':
-		if ( empty($_POST['topic_id_list']) && empty($topic_id) ) {
+        if (empty($_POST['topic_id_list']) && empty($topic_id)) {
 			message_die(GENERAL_MESSAGE, $lang['None_selected']);
 		}
 
@@ -503,7 +502,7 @@ switch( $mode )
             ->where('topic_moved_id = %i', 0)
             ->execute();
 
-		if ( !empty($topic_id) ) {
+        if (!empty($topic_id)) {
 			$redirect_page = "viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'];
 			$message = sprintf($lang['Click_return_topic'], '<a href="' . $redirect_page . '">', '</a>');
 		} else {
@@ -754,7 +753,7 @@ switch( $mode )
 
 		$rdns_ip_num = isset($_GET['rdns']) ? $_GET['rdns'] : "";
 
-		if ( !$post_id ) {
+        if (!$post_id) {
 			message_die(GENERAL_MESSAGE, $lang['No_such_post']);
 		}
 
@@ -774,8 +773,7 @@ switch( $mode )
         }
 
 		$ip_this_post = decode_ip($post_row->poster_ip);
-		$ip_this_post = ( $rdns_ip_num === $ip_this_post ) ? htmlspecialchars(gethostbyaddr($ip_this_post)) :
-            $ip_this_post;
+		$ip_this_post = ( $rdns_ip_num === $ip_this_post ) ? htmlspecialchars(gethostbyaddr($ip_this_post)) : $ip_this_post;
 
 		$poster_id = $post_row->poster_id;
 
@@ -813,7 +811,7 @@ switch( $mode )
         $i = 0;
 
         foreach ($rows as $row) {
-            if ( $row->poster_ip === $post_row->poster_ip ) {
+            if ($row->poster_ip === $post_row->poster_ip) {
                 $template->assign_vars(
                     [
                         'POSTS' => $row->postings . ' ' . (($row->postings === 1) ? $lang['Post'] : $lang['Posts'])
@@ -867,7 +865,7 @@ switch( $mode )
 
         foreach ($rows as $row) {
             $id = $row->user_id;
-            $username = ( $id === ANONYMOUS ) ? $lang['Guest'] : $row->username;
+            $username = ($id === ANONYMOUS) ? $lang['Guest'] : $row->username;
 
             $row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
             $row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];

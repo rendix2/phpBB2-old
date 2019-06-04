@@ -532,7 +532,7 @@ if (($delete || $poll_delete || $mode === 'delete') && !$confirm) {
         $error_msg .= !empty($error_msg) ? '<br />' . $lang['Session_invalid'] : $lang['Session_invalid'];
     }
 
-	switch ( $mode ) {
+    switch ($mode) {
 		case 'editpost':
 		case 'newtopic':
 		case 'reply':
@@ -564,7 +564,7 @@ if (($delete || $poll_delete || $mode === 'delete') && !$confirm) {
 			break;
 	}
 
-	if ( $error_msg === '' ) {
+    if ($error_msg === '') {
         if ($mode !== 'editpost') {
             $user_id = ($mode === 'reply' || $mode === 'newtopic') ? $userdata['user_id'] : $post_data['poster_id'];
             update_post_stats($mode, $post_data, $forum_id, $topic_id, $post_id, $user_id);
@@ -830,8 +830,7 @@ if ($userdata['session_logged_in'] && $is_auth['auth_read']) {
 //
 // Delete selection
 //
-if ($mode === 'editpost' && (($is_auth['auth_delete'] && $post_data['last_post'] && (!$post_data['has_poll'] ||
-                $post_data['edit_poll'])) || $is_auth['auth_mod'])) {
+if ($mode === 'editpost' && (($is_auth['auth_delete'] && $post_data['last_post'] && (!$post_data['has_poll'] || $post_data['edit_poll'])) || $is_auth['auth_mod'])) {
     $template->assign_block_vars('switch_delete_checkbox', []);
 }
 
