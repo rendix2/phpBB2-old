@@ -603,8 +603,8 @@ if (($delete || $poll_delete || $mode === 'delete') && !$confirm) {
 
 if ($refresh || isset($_POST['del_poll_option']) || $error_msg !== '' ) {
 	$username = !empty($_POST['username']) ? htmlspecialchars(trim(stripslashes($_POST['username']))) : '';
-	$subject = !empty($_POST['subject']) ? htmlspecialchars(trim(stripslashes($_POST['subject']))) : '';
-	$message = !empty($_POST['message']) ? htmlspecialchars(trim(stripslashes($_POST['message']))) : '';
+	$subject  = !empty($_POST['subject'])  ? htmlspecialchars(trim(stripslashes($_POST['subject'])))  : '';
+	$message  = !empty($_POST['message'])  ? htmlspecialchars(trim(stripslashes($_POST['message'])))  : '';
 
 	$poll_title = !empty($_POST['poll_title']) ? htmlspecialchars(trim(stripslashes($_POST['poll_title']))) : '';
 	$poll_length = isset($_POST['poll_length']) ? max(0, (int)$_POST['poll_length']) : 0;
@@ -870,7 +870,7 @@ if ($mode === 'newtopic' || ($mode === 'editpost' && $post_data['first_post'])) 
 $hidden_form_fields = '<input type="hidden" name="mode" value="' . $mode . '" />';
 $hidden_form_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
-switch( $mode ) {
+switch ($mode) {
 	case 'newtopic':
 		$page_title = $lang['Post_a_new_topic'];
 		$hidden_form_fields .= '<input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
