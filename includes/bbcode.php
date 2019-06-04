@@ -413,8 +413,8 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 			if ($found_start) {
 				// We have an opening tag.
 				// Push its position, the text we matched, and its index in the open_tag array on to the stack, and then keep going to the right.
-                $match = ["pos" => $curr_pos, "tag" => $which_start_tag, "index" => $start_tag_index];
-                array_push($stack, $match);
+                $match   = ["pos" => $curr_pos, "tag" => $which_start_tag, "index" => $start_tag_index];
+                $stack[] = $match;
 				//
 				// Rather than just increment $curr_pos
 				// Set it to the ending of the tag we just found
