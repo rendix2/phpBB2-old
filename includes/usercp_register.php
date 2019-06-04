@@ -205,7 +205,7 @@ if (
     if (!empty($_POST['avatarurl'])) {
         $user_avatar_upload = trim($_POST['avatarurl']);
     } else {
-        $user_avatar_upload = $_FILES['avatar']['tmp_name'] !== "none" ? $_FILES['avatar']['tmp_name'] : '';
+        $user_avatar_upload = isset($_FILES['avatar']['tmp_name']) ? $_FILES['avatar']['tmp_name'] : '';
     }
 
 	$user_avatar_name     = !empty($_FILES['avatar']['name']) ? $_FILES['avatar']['name'] : '';
