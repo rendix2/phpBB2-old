@@ -114,8 +114,6 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 {
 	global $board_config, $lang;
 
-	$ini_val = ( @PHP_VERSION >= '4.0.0' ) ? 'ini_get' : 'get_cfg_var';
-
 	$width = $height = 0;
 	$type = '';
 
@@ -159,7 +157,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 		if ( !$error && $avatar_filesize > 0 && $avatar_filesize < $board_config['avatar_filesize'] ) {
 			$avatar_data = substr($avatar_data, strlen($avatar_data) - $avatar_filesize, $avatar_filesize);
 
-			$tmp_path = ( !@$ini_val('safe_mode') ) ? '/tmp' : './' . $board_config['avatar_path'] . '/tmp';
+			$tmp_path = ( !@ini_get('safe_mode') ) ? '/tmp' : './' . $board_config['avatar_path'] . '/tmp';
 			$tmp_filename = tempnam($tmp_path, uniqid(rand()) . '-');
 
 			$fptr = @fopen($tmp_filename, 'wb');
@@ -242,8 +240,8 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 			@copy($tmp_filename, './' . $board_config['avatar_path'] . "/$new_filename");
 			@unlink($tmp_filename);
 		} else {
-            if (@$ini_val('open_basedir') !== '') {
-                if (@PHP_VERSION < '4.0.3') {
+            if (@ini_get('open_basedir') !== '') {
+                if (PHP_VERSION < '4.0.3') {
 					message_die(GENERAL_ERROR, 'open_basedir is set and your PHP version does not allow move_uploaded_file', '', __LINE__, __FILE__);
 				}
 

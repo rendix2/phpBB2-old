@@ -945,8 +945,7 @@ if (isset($_POST['avatargallery']) && !$error ) {
 	// Let's do an overall check for settings/versions which would prevent
 	// us from doing file uploads....
 	//
-	$ini_val = ( PHP_VERSION >= '4.0.0' ) ? 'ini_get' : 'get_cfg_var';
-	$form_enctype = ( @$ini_val('file_uploads') === '0' || strtolower(@$ini_val('file_uploads')) === 'off' || PHP_VERSION === '4.0.4pl1' || !$board_config['allow_avatar_upload'] || ( PHP_VERSION < '4.0.3' && @$ini_val('open_basedir') !== '' ) ) ? '' : 'enctype="multipart/form-data"';
+	$form_enctype = ( @ini_get('file_uploads') === '0' || strtolower(@ini_get('file_uploads')) === 'off' || PHP_VERSION === '4.0.4pl1' || !$board_config['allow_avatar_upload'] || ( PHP_VERSION < '4.0.3' && @ini_get('open_basedir') !== '' ) ) ? '' : 'enctype="multipart/form-data"';
 
 	$template->assign_vars(array(
             'USERNAME' => isset($username) ? $username : '',
