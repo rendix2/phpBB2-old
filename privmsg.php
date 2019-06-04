@@ -990,22 +990,22 @@ if ($mode === 'newpm') {
     if (!$board_config['allow_html']) {
         $html_on = 0;
     } else {
-        $html_on = ($submit || $refresh) ? !$_POST['disable_html'] : $userdata['user_allowhtml'];
+        $html_on = ($submit || $refresh) ? !isset($_POST['disable_html']) : $userdata['user_allowhtml'];
     }
 
     if (!$board_config['allow_bbcode']) {
         $bbcode_on = 0;
     } else {
-        $bbcode_on = ($submit || $refresh) ? !$_POST['disable_bbcode'] : $userdata['user_allowbbcode'];
+        $bbcode_on = ($submit || $refresh) ? !isset($_POST['disable_bbcode']) : $userdata['user_allowbbcode'];
     }
 
     if (!$board_config['allow_smilies']) {
         $smilies_on = 0;
     } else {
-        $smilies_on = ($submit || $refresh) ? !$_POST['disable_smilies'] : $userdata['user_allowsmile'];
+        $smilies_on = ($submit || $refresh) ? !isset($_POST['disable_smilies']) : $userdata['user_allowsmile'];
     }
 
-	$attach_sig = ( $submit || $refresh ) ? $_POST['attach_sig'] : $userdata['user_attachsig'];
+	$attach_sig = ( $submit || $refresh ) ? isset($_POST['attach_sig']) : $userdata['user_attachsig'];
 	$user_sig = ( $userdata['user_sig'] !== '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : "";
 	
 	if ( $submit && $mode !== 'edit' )

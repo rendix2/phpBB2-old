@@ -143,7 +143,7 @@ function prepare_post(&$mode, &$post_data, &$bbcode_on, &$html_on, &$smilies_on,
 			}
 			$option_text = $temp_option_text;
 
-            if (count($poll_options) < 2) {
+            if (count($poll_options) < 1) {
                 $error_msg .= !empty($error_msg) ? '<br />' . $lang['To_few_poll_options'] : $lang['To_few_poll_options'];
             } elseif (count($poll_options) > $board_config['max_poll_options']) {
                 $error_msg .= !empty($error_msg) ? '<br />' . $lang['To_many_poll_options'] : $lang['To_many_poll_options'];

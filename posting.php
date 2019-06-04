@@ -402,7 +402,7 @@ if ($board_config['allow_html']) {
 
 if ($board_config['allow_bbcode']) {
     if ($submit || $refresh) {
-        $bbcode_on = !$_POST['disable_bbcode'];
+        $bbcode_on = !isset($_POST['disable_bbcode']);
     } else {
         if ($userdata['user_id'] === ANONYMOUS) {
             $bbcode_on = $board_config['allow_bbcode'];
@@ -416,7 +416,7 @@ if ($board_config['allow_bbcode']) {
 
 if ($board_config['allow_smilies']) {
     if ($submit || $refresh) {
-        $smilies_on = !$_POST['disable_smilies'];
+        $smilies_on = !isset($_POST['disable_smilies']);
     } else {
         if ($userdata['user_id'] === ANONYMOUS) {
             $smilies_on = $board_config['allow_smilies'];
@@ -445,7 +445,7 @@ if (($submit || $refresh) && $is_auth['auth_read']) {
 }
 
 if ( $submit || $refresh ) {
-    $attach_sig = $_POST['attach_sig'];
+    $attach_sig = isset($_POST['attach_sig']);
 } else {
     if ($userdata['user_id'] === ANONYMOUS ) {
         $attach_sig = 0;
@@ -523,7 +523,7 @@ if (($delete || $poll_delete || $mode === 'delete') && !$confirm) {
         ->where('vote_user_id = %i', $userdata['user_id'])
         ->fetch();
 
-    if (!$row) {
+    if ($row) {
         message_die(GENERAL_MESSAGE, $lang['Already_voted']);
     }
 
@@ -758,6 +758,8 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg !== '' ) {
 		$message = '';
 
     } elseif ($mode === 'quote' || $mode === 'editpost') {
+        $poll_title = '';
+        $poll_length = '';
 		$subject = $post_data['first_post'] ? $post_info->topic_title : $post_info->post_subject;
 		$message = $post_info->post_text;
 
