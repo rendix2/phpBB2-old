@@ -88,12 +88,12 @@ class emailer
 	{
 		global $board_config, $phpbb_root_path;
 
-		if (trim($template_file) == '')
+		if (trim($template_file) === '')
 		{
 			message_die(GENERAL_ERROR, 'No template file set', '', __LINE__, __FILE__);
 		}
 
-		if (trim($template_lang) == '')
+		if (trim($template_lang) === '')
 		{
 			$template_lang = $board_config['default_lang'];
 		}
@@ -206,7 +206,7 @@ class emailer
 		}
 		else
 		{
-			$empty_to_header = ($to == '');
+			$empty_to_header = ($to === '');
 			$to = ($empty_to_header) ? ($board_config['sendmail_fix'] ? ' ' : 'Undisclosed-recipients:;') : $to;
 	
 			$result = @mail($to, $this->subject, preg_replace("#(?<!\r)\n#s", "\n", $this->msg), $this->extra_headers);
@@ -239,7 +239,7 @@ class emailer
 	// scenario IMO
 	function encode($str)
 	{
-		if ($this->encoding == '')
+		if ($this->encoding === '')
 		{
 			return $str;
 		}
@@ -286,7 +286,7 @@ class emailer
 		$this->mimeOut .= "Content-Transfer-Encoding: quoted-printable\n";
 		$this->mimeOut .= "Content-Disposition: attachment;\n\tfilename=\"$szFilenameToDisplay\"\n\n";
 
-		if ( $mimetype == "message/rfc822" )
+		if ( $mimetype === "message/rfc822" )
 		{
 			$this->mimeOut .= "From: ".$szFromAddress."\n";
 			$this->mimeOut .= "To: ".$this->emailAddress."\n";

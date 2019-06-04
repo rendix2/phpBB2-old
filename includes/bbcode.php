@@ -320,7 +320,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 {
 	$open_tag_count = 0;
 
-	if (!$close_tag_new || ($close_tag_new == ''))
+	if (!$close_tag_new || ($close_tag_new === ''))
 	{
 		$close_tag_new = $close_tag;
 	}
@@ -334,7 +334,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 	$stack = [];
 
 	if (is_array($open_tag)) {
-		if (0 == count($open_tag)) {
+		if (0 === count($open_tag)) {
 			// No opening tags to match, so return.
 			return $text;
 		}
@@ -416,7 +416,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 				else
 				{
 					// straightforward string comparison.
-					if (0 == strcasecmp($open_tag[$i], $possible_start))
+					if (0 === strcasecmp($open_tag[$i], $possible_start))
 					{
 						$found_start = true;
 						$which_start_tag = $open_tag[$i];
@@ -444,7 +444,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 			{
 				// check for a closing tag..
 				$possible_end = substr($text, $curr_pos, $close_tag_length);
-				if (0 == strcasecmp($close_tag, $possible_end))
+				if (0 === strcasecmp($close_tag, $possible_end))
 				{
 					// We have an ending tag.
 					// Check if we've already found a matching starting tag.
@@ -480,9 +480,9 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 						$after_end_tag = substr($text, $curr_pos + $close_tag_length);
 
 						// Mark the lowest nesting level if needed.
-						if ($mark_lowest_level && ($curr_nesting_depth == 1))
+						if ($mark_lowest_level && ($curr_nesting_depth === 1))
 						{
-							if ($open_tag[0] == '[code]')
+							if ($open_tag[0] === '[code]')
 							{
                                 $code_entities_match = ['#<#', '#>#', '#"#', '#:#', '#\[#', '#\]#', '#\(#', '#\)#', '#\{#', '#\}#'];
                                 $code_entities_replace = ['&lt;', '&gt;', '&quot;', '&#58;', '&#91;', '&#93;', '&#40;', '&#41;', '&#123;', '&#125;'];
@@ -493,7 +493,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 						}
 						else
 						{
-							if ($open_tag[0] == '[code]')
+							if ($open_tag[0] === '[code]')
 							{
 								$text = $before_start_tag . '&#91;code&#93;';
 								$text .= $between_tags . '&#91;/code&#93;';
@@ -706,7 +706,7 @@ function smilies_pass($message)
 
 function smiley_sort($a, $b)
 {
-	if ( strlen($a->code) == strlen($b->code) ) {
+	if ( strlen($a->code) === strlen($b->code) ) {
 		return 0;
 	}
 

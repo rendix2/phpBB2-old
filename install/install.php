@@ -366,13 +366,13 @@ include $phpbb_root_path.'language/lang_' . $language . '/lang_admin.php';
 // Ok for the time being I'm commenting this out whilst I'm working on
 // better integration of the install with upgrade as per Bart's request
 // JLH
-if ($upgrade == 1) {
+if ($upgrade === 1) {
     // require('upgrade.php');
     $install_step = 1;
 }
 
 // What do we need to do?
-if (!empty($_POST['send_file']) && $_POST['send_file'] == 1 && empty($_POST['upgrade_now'])) {
+if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['upgrade_now'])) {
     header('Content-Type: text/x-delimtext; name="config.php"');
     header('Content-disposition: attachment; filename="config.php"');
 
@@ -382,11 +382,11 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] == 1 && empty($_POST['upg
     echo stripslashes($_POST['config_data']);
 
     exit;
-} elseif (!empty($_POST['send_file']) && $_POST['send_file'] == 2) {
+} elseif (!empty($_POST['send_file']) && $_POST['send_file'] === 2) {
     $s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars(stripslashes($_POST['config_data'])) . '" />';
     $s_hidden_fields .= '<input type="hidden" name="ftp_file" value="1" />';
 
-    if ($upgrade == 1) {
+    if ($upgrade === 1) {
         $s_hidden_fields .= '<input type="hidden" name="upgrade" value="1" />';
     }
 
@@ -427,7 +427,7 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] == 1 && empty($_POST['upg
 		$s_hidden_fields .= '<input type="hidden" name="send_file" value="1" />';
 
 		// If we're upgrading ...
-        if ($upgrade == 1) {
+        if ($upgrade === 1) {
             $s_hidden_fields .= '<input type="hidden" name="upgrade" value="1" />';
             $s_hidden_fields .= '<input type="hidden" name="dbms" value="' . $dmbs . '" />';
             $s_hidden_fields .= '<input type="hidden" name="prefix" value="' . $table_prefix . '" />';
@@ -471,7 +471,7 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] == 1 && empty($_POST['upg
 
 		unlink($tmpfname);
 
-		if ($upgrade == 1)	
+		if ($upgrade === 1)
 		{
 			require 'upgrade.php';
 			exit;
@@ -501,7 +501,7 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] == 1 && empty($_POST['upg
 	$instruction_text = $lang['Inst_Step_0'];
 
     if (!empty($install_step)) {
-        if ($_POST['admin_pass1'] !== $_POST['admin_pass2'] || (empty($_POST['admin_pass1']) || empty($dbhost)) && $_POST['cur_lang'] == $language) {
+        if ($_POST['admin_pass1'] !== $_POST['admin_pass2'] || (empty($_POST['admin_pass1']) || empty($dbhost)) && $_POST['cur_lang'] === $language) {
             $error = $lang['Password_mismatch'];
         }
     }
@@ -526,7 +526,7 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] == 1 && empty($_POST['upg
 	$lang_select = '<select name="lang" onchange="this.form.submit()">';
 
     foreach ($lang_options as $displayname => $filename) {
-        $selected    = ($language == $filename) ? ' selected="selected"' : '';
+        $selected    = ($language === $filename) ? ' selected="selected"' : '';
         $lang_select .= '<option value="' . $filename . '"' . $selected . '>' . ucwords($displayname) . '</option>';
     }
 
@@ -535,7 +535,7 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] == 1 && empty($_POST['upg
 	$dbms_select = '<select name="dbms" onchange="if (this.form.upgrade.options[this.form.upgrade.selectedIndex].value == 1){ this.selectedIndex = 0;}">';
 
 	foreach ($available_dbms as $dbms_name => $details) {
-        $selected    = ($dbms_name == $dbms) ? 'selected="selected"' : '';
+        $selected    = ($dbms_name === $dbms) ? 'selected="selected"' : '';
         $dbms_select .= '<option value="' . $dbms_name . '">' . $details['LABEL'] . '</option>';
     }
 
@@ -688,13 +688,13 @@ else
                 $lines = file($dbms_basic);
 
                 foreach ($lines as $line) {
-                    if (substr($line, 0, 2) == '--' || $line == '') {
+                    if (substr($line, 0, 2) === '--' || $line === '') {
                         continue;
                     }
 
                     $templine .= $line;
 
-                    if (substr(trim($line), -1, 1) == ';') {
+                    if (substr(trim($line), -1, 1) === ';') {
                         // Perform the query
                         dibi::query($templine);
                         // Reset temp variable to empty
@@ -727,7 +727,7 @@ else
                     ->execute();
 			}
 
-			$admin_pass_bcrypt = ($confirm && $userdata['user_level'] == ADMIN) ? $admin_pass1 : password_hash($admin_pass1, PASSWORD_BCRYPT);
+			$admin_pass_bcrypt = ($confirm && $userdata['user_level'] === ADMIN) ? $admin_pass1 : password_hash($admin_pass1, PASSWORD_BCRYPT);
 
             $update_data = [
                 'username'      => $admin_name,
@@ -795,7 +795,7 @@ else
 					$s_hidden_fields .= '<input type="hidden" name="send_file" value="1" />';
 				}
 
-				if ($upgrade == 1) {
+				if ($upgrade === 1) {
                     $s_hidden_fields .= '<input type="hidden" name="upgrade" value="1" />';
                     $s_hidden_fields .= '<input type="hidden" name="dbms" value="' . $dbms . '" />';
                     $s_hidden_fields .= '<input type="hidden" name="prefix" value="' . $table_prefix . '" />';
@@ -827,7 +827,7 @@ else
 		}
 
 		// First off let's check and see if we are supposed to be doing an upgrade.
-		if ($upgrade == 1 && $upgrade_now == $lang['upgrade_submit']) {
+		if ($upgrade === 1 && $upgrade_now === $lang['upgrade_submit']) {
 			define('INSTALLING', true);
 			require 'upgrade.php';
 			exit;
