@@ -601,7 +601,9 @@ if (($delete || $poll_delete || $mode === 'delete') && !$confirm) {
             update_post_stats($mode, $post_data, $forum_id, $topic_id, $post_id, $user_id);
         }
 
-		if ($error_msg === '' && $mode !== 'poll_delete') {
+        // $mode !== 'newtopic' is because we dont have topic_title :)
+        // AND we simply dont have who we should notify :D
+		if ($error_msg === '' && $mode !== 'poll_delete' && $mode !== 'newtopic') {
 			user_notification($mode, $post_data, $post_info->topic_title, $forum_id, $topic_id, $post_id, $notify_user);
 		}
 
