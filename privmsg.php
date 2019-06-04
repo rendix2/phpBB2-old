@@ -1327,7 +1327,7 @@ if ($mode === 'newpm') {
                 'pmt.privmsgs_text',
                 'u.username',
                 'u.user_id',
-                'u.user_sig '
+                'u.user_sig'
             ];
 
             $privmsg = dibi::select($columns)
@@ -1587,9 +1587,11 @@ if ($mode === 'newpm') {
         $l_box_name = $lang['Send_a_new_message'];
     } elseif ($mode === 'reply') {
         $post_a = $lang['Send_a_reply'];
+        $l_box_name = $lang['Send_a_reply'];
         $mode   = 'post';
     } elseif ($mode === 'edit') {
         $post_a = $lang['Edit_message'];
+        $l_box_name = $lang['Edit_message'];
     }
 
 	$s_hidden_fields = '<input type="hidden" name="folder" value="' . $folder . '" />';

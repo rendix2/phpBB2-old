@@ -343,6 +343,10 @@ if ($post_info) {
             $post_data['topic_type'] = POST_NORMAL;
         }
 
+        if ($mode === 'reply') {
+            $post_data['topic_type'] = $post_info->topic_type;
+        }
+
 		$post_data['first_post'] = ( $mode === 'newtopic' ) ? true : 0;
 		$post_data['last_post'] = false;
 		$post_data['has_poll'] = false;
