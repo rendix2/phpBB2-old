@@ -581,8 +581,8 @@ if ($mode === 'searchuser') {
 		}
 		*/
 
-        for ($i = 0; $i < count($store_vars); $i++) {
-            $store_search_data[$store_vars[$i]] = $$store_vars[$i];
+        foreach ($store_vars as $store_var) {
+            $store_search_data[$store_var] = $$store_var;
         }
 
 		$result_array = serialize($store_search_data);
@@ -624,8 +624,8 @@ if ($mode === 'searchuser') {
 
             $search_data = unserialize($row->search_array);
 
-            for ($i = 0; $i < count($store_vars); $i++) {
-                $$store_vars[$i] = $search_data[$store_vars[$i]];
+            foreach ($store_vars as $store_var) {
+                $$store_var = $search_data[$store_var];
             }
 		}
 	}

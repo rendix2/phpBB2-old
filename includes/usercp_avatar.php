@@ -326,22 +326,22 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 
 	$s_colspan = 0;
 
-	for ($i = 0; $i < count($avatar_images[$category]); $i++) {
+	foreach ($avatar_images[$category] as $i => $avatar_image) {
 		$template->assign_block_vars("avatar_row", []);
 
-		$s_colspan = max($s_colspan, count($avatar_images[$category][$i]));
+		$s_colspan = max($s_colspan, count($avatar_image));
 
-		for ($j = 0; $j < count($avatar_images[$category][$i]); $j++) {
+		foreach ($avatar_image as $j =>  $avatar_image_value) {
             $template->assign_block_vars('avatar_row.avatar_column',
                 [
-                    "AVATAR_IMAGE" => $board_config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_images[$category][$i][$j],
+                    "AVATAR_IMAGE" => $board_config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_image_value,
                     "AVATAR_NAME"  => $avatar_name[$category][$i][$j]
                 ]
             );
 
             $template->assign_block_vars('avatar_row.avatar_option_column',
                 [
-                    "S_OPTIONS_AVATAR" => $avatar_images[$category][$i][$j]
+                    "S_OPTIONS_AVATAR" => $avatar_image_value
                 ]
             );
         }
