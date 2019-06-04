@@ -535,8 +535,6 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 			$forum_auth_level[$forum_id] = AUTH_ALL;
 
 			foreach ($forum_auth_fields as $forum_auth_field) {
-                $access->{$forum_auth_field} . ' :: ';
-
                 if ($access->{$forum_auth_field} === AUTH_ACL) {
 					$forum_auth_level[$forum_id] = AUTH_ACL;
 					$forum_auth_level_fields[$forum_id][] = $forum_auth_field;
