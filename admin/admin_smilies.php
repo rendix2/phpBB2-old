@@ -122,8 +122,8 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 			message_die(GENERAL_ERROR, "Couldn't read smiley pak file", "", __LINE__, __FILE__);
 		}
 
-		for ($i = 0; $i < count($fcontents); $i++ ) {
-			$smile_data = explode($delimeter, trim(addslashes($fcontents[$i])));
+		foreach ($fcontents as $line) {
+			$smile_data = explode($delimeter, trim(addslashes($line)));
 
 			for ($j = 2; $j < count($smile_data); $j++) {
 				//
@@ -237,8 +237,8 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 
     $filename_list = "";
 
-	for ($i = 0; $i < count($smiley_images); $i++ ) {
-		$filename_list .= '<option value="' . $smiley_images[$i] . '">' . $smiley_images[$i] . '</option>';
+	foreach ($smiley_images as $smiley_image) {
+		$filename_list .= '<option value="' . $smiley_image . '">' . $smiley_image . '</option>';
 	}
 
 	$s_hidden_fields = '<input type="hidden" name="mode" value="savenew" />';
@@ -325,15 +325,15 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 
 			$filename_list = "";
 
-			for ($i = 0; $i < count($smiley_images); $i++ ) {
-				if ($smiley_images[$i] === $smile_data->smile_url ) {
+			foreach ($smiley_images as $smiley_mage) {
+				if ($smiley_mage === $smile_data->smile_url ) {
 					$smiley_selected = "selected=\"selected\"";
-					$smiley_edit_img = $smiley_images[$i];
+					$smiley_edit_img = $smiley_mage;
 				} else {
 					$smiley_selected = "";
 				}
 
-				$filename_list .= '<option value="' . $smiley_images[$i] . '"' . $smiley_selected . '>' . $smiley_images[$i] . '</option>';
+				$filename_list .= '<option value="' . $smiley_mage . '"' . $smiley_selected . '>' . $smiley_mage . '</option>';
 			}
 
             $template->set_filenames(["body" => "admin/smile_edit_body.tpl"]);
