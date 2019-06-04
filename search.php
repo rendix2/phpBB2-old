@@ -233,13 +233,13 @@ if ($mode === 'searchuser') {
 			$word_match = [];
 			$result_list = [];
 
-            for ($i = 0; $i < count($split_search); $i++) {
-                if (strlen(str_replace(['*', '%'], '', trim($split_search[$i]))) < $board_config['search_min_chars']) {
-					$split_search[$i] = '';
+            foreach ($split_search as $split_search_value) {
+                if (strlen(str_replace(['*', '%'], '', trim($split_search_value))) < $board_config['search_min_chars']) {
+                    $split_search_value = '';
 					continue;
 				}
 
-				switch ( $split_search[$i] ) {
+				switch ( $split_search_value ) {
 					case 'and':
 						$current_match_type = 'and';
 						break;
@@ -259,7 +259,7 @@ if ($mode === 'searchuser') {
 
 						if ( !strstr($multibyte_charset, $lang['ENCODING']) ) {
 
-							$match_word = str_replace('*', '%', $split_search[$i]);
+							$match_word = str_replace('*', '%', $split_search_value);
 
 							// TODO THERE WAS LIKE 'awwdawd' WITHOUT LIKE '%%'
 							$post_ids = dibi::select('m.post_id')
@@ -277,7 +277,7 @@ if ($mode === 'searchuser') {
 
                             $post_ids = $post_ids->fetchPairs(null, 'post_id');
 						} else {
-							$match_word =  addslashes('%' . str_replace('*', '', $split_search[$i]) . '%');
+							$match_word =  addslashes('%' . str_replace('*', '', $split_search_value) . '%');
 
                             // TODO THERE WAS LIKE 'awwdawd' WITHOUT LIKE '%%'
                             if ($search_fields) {
@@ -316,7 +316,7 @@ if ($mode === 'searchuser') {
                         }
 
 						$word_count++;
-					}
+                }
 			}
 
 			$search_ids = [];

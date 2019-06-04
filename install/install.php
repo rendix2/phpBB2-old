@@ -672,15 +672,15 @@ else
 				// and work on building the table.. probably ought to provide some
 				// kind of feedback to the user as we are working here in order
 				// to let them know we are actually doing something.
-				$sql_query = @fread(@fopen($dbms_schema, 'r'), @filesize($dbms_schema));
-				$sql_query = preg_replace('/phpbb_/', $table_prefix, $sql_query);
+				$sql_queries = @fread(@fopen($dbms_schema, 'r'), @filesize($dbms_schema));
+                $sql_queries = preg_replace('/phpbb_/', $table_prefix, $sql_queries);
 
-				$sql_query = $remove_remarks($sql_query);
-				$sql_query = split_sql_file($sql_query, $delimiter);
+                $sql_queries = $remove_remarks($sql_queries);
+                $sql_queries = split_sql_file($sql_queries, $delimiter);
 
-				for ($i = 0; $i < count($sql_query); $i++) {
-					if (trim($sql_query[$i]) !== '') {
-					    $result = dibi::query($sql_query[$i]);
+				foreach ($sql_queries as $sql_query) {
+					if (trim($sql_query) !== '') {
+					    $result = dibi::query($sql_query);
 					}
 				}
 		

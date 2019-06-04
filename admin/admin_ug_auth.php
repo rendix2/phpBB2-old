@@ -104,15 +104,15 @@ function check_auth($type, $key, $u_access, $is_admin)
 	$auth_user = 0;
 
 	if (count($u_access) ) {
-		for ($j = 0; $j < count($u_access); $j++) {
+		foreach ($u_access as $u_access_value) {
 			$result = 0;
 
 			switch($type) {
 				case AUTH_ACL:
-					$result = $u_access[$j][$key];
+					$result = $u_access_value[$key];
 
 				case AUTH_MOD:
-					$result = $result || $u_access[$j]['auth_mod'];
+					$result = $result || $u_access_value['auth_mod'];
 
 				case AUTH_ADMIN:
 					$result = $result || $is_admin;
@@ -752,26 +752,31 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
         $t_groupname = $ug_info[0]->group_name;
     }
 
-	$name = [];
-	$id = [];
+	$names = [];
 
-    for ($i = 0; $i < count($ug_info); $i++) {
-        if (($mode === 'user' && !$ug_info[$i]->group_single_user) || $mode === 'group') {
-            $name[] = ($mode === 'user') ? $ug_info[$i]->group_name : $ug_info[$i]->username;
-            $id[]   = ($mode === 'user') ? (int)$ug_info[$i]->group_id : (int)$ug_info[$i]->user_id;
+    foreach ($ug_info as $i => $ug_info_value) {
+        if (($mode === 'user' && !$ug_info_value->group_single_user) || $mode === 'group') {
+            // TODO IF $mode is user.. put group? :O :O
+            // check it
+            if ($mode === 'user') {
+                $names[$i] = ['id' => (int)$ug_info_value->group_id , 'name' => $ug_info_value->group_name];
+            } else {
+                $names[$i] = ['id' => (int)$ug_info_value->user_id , 'name' => $ug_info_value->username];
+            }
         }
     }
 
 	$t_usergroup_list = $t_pending_list = '';
 
-    if (count($name)) {
-        for ($i = 0; $i < count($ug_info); $i++) {
+    // TODO i hope we can do it in one foreach!
+    if (count($names)) {
+        foreach ($ug_info as $i => $ug_info_value) {
             $ug = ($mode === 'user') ? 'group&amp;' . POST_GROUPS_URL : 'user&amp;' . POST_USERS_URL;
 
-            if (!$ug_info[$i]->user_pending) {
-                $t_usergroup_list .= (($t_usergroup_list !== '') ? ', ' : '') . '<a href="' . append_sid("admin_ug_auth.php?mode=$ug=" . $id[$i]) . '">' . $name[$i] . '</a>';
+            if (!$ug_info_value->user_pending) {
+                $t_usergroup_list .= (($t_usergroup_list !== '') ? ', ' : '') . '<a href="' . append_sid("admin_ug_auth.php?mode=$ug=" . $names[$i]['id']) . '">' . $names[$i]['name'] . '</a>';
             } else {
-                $t_pending_list .= (($t_pending_list !== '') ? ', ' : '') . '<a href="' . append_sid("admin_ug_auth.php?mode=$ug=" . $id[$i]) . '">' . $name[$i] . '</a>';
+                $t_pending_list .= (($t_pending_list !== '') ? ', ' : '') . '<a href="' . append_sid("admin_ug_auth.php?mode=$ug=" . $names[$i]['id']) . '">' . $names[$i]['name'] . '</a>';
             }
         }
     }
