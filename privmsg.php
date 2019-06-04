@@ -198,14 +198,17 @@ if ($mode === 'newpm') {
         ->select($columns)
         ->from(PRIVMSGS_TABLE)
         ->as('pm')
-        ->from(PRIVMSGS_TEXT_TABLE)
+        ->innerJoin(PRIVMSGS_TEXT_TABLE)
         ->as('pmt')
-        ->from(USERS_TABLE)
+        ->on('pmt.privmsgs_text_id = pm.privmsgs_id')
+        ->innerJoin(USERS_TABLE)
         ->as('u')
-        ->from(USERS_TABLE)
+        ->on('u.user_id = pm.privmsgs_from_userid')
+        ->innerJoin(USERS_TABLE)
         ->as('u2')
-        ->where('pm.privmsgs_id = %i', $privmsgs_id)
-        ->where('pmt.privmsgs_text_id = pm.privmsgs_id');
+        ->on('u2.user_id = pm.privmsgs_to_userid')
+        ->where('pm.privmsgs_id = %i', $privmsgs_id);
+
 
 	//
 	// SQL to pull appropriate message, prevents nosey people
@@ -249,9 +252,7 @@ if ($mode === 'newpm') {
 			break;
 	}
 
-	$privmsg = $privmsg->where('u.user_id = pm.privmsgs_from_userid')
-        ->where('u2.user_id = pm.privmsgs_to_userid')
-        ->fetch();
+	$privmsg = $privmsg->fetch();
 
 	//
 	// Did the query return any data?
@@ -1285,10 +1286,10 @@ if ($mode === 'newpm') {
             $postrow = dibi::select(['u.user_id', 'u.user_sig'])
                 ->from(PRIVMSGS_TABLE)
                 ->as('pm')
-                ->from(USERS_TABLE)
+                ->innerJoin(USERS_TABLE)
                 ->as('u')
+                ->on('u.user_id = pm.privmsgs_from_userid')
                 ->where('pm.privmsgs_id = %i', $privmsg_id)
-                ->where('u.user_id = pm.privmsgs_from_userid')
                 ->fetch();
 
             if ($userdata['user_id'] !== $postrow->user_id) {
@@ -1330,15 +1331,15 @@ if ($mode === 'newpm') {
             $privmsg = dibi::select($columns)
                 ->from(PRIVMSGS_TABLE)
                 ->as('pm')
-                ->from(PRIVMSGS_TEXT_TABLE)
+                ->innerJoin(PRIVMSGS_TEXT_TABLE)
                 ->as('pmt')
-                ->from(USERS_TABLE)
+                ->on('pmt.privmsgs_text_id = pm.privmsgs_id')
+                ->innerJoin(USERS_TABLE)
                 ->as('u')
+                ->on('u.user_id = pm.privmsgs_to_userid')
                 ->where('pm.privmsgs_id = %i', $privmsg_id)
-                ->where('pmt.privmsgs_text_id = pm.privmsgs_id')
                 ->where('pm.privmsgs_from_userid = %i', $userdata['user_id'])
                 ->where('(pm.privmsgs_type = %i OR privmsgs_type = %i)', PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL)
-                ->where('u.user_id = pm.privmsgs_to_userid"')
                 ->fetch();
 
             if (!$privmsg) {
@@ -1375,14 +1376,14 @@ if ($mode === 'newpm') {
             $privmsg = dibi::select($columns)
                 ->from(PRIVMSGS_TABLE)
                 ->as('pm')
-                ->from(PRIVMSGS_TEXT_TABLE)
+                ->innerJoin(PRIVMSGS_TEXT_TABLE)
                 ->as('pmt')
-                ->from(USERS_TABLE)
+                ->on('pmt.privmsgs_text_id = pm.privmsgs_id')
+                ->innerJoin(USERS_TABLE)
                 ->as('u')
+                ->on('u.user_id = pm.privmsgs_from_userid')
                 ->where('pm.privmsgs_id = %i', $privmsg_id)
-                ->where('pmt.privmsgs_text_id = pm.privmsgs_id')
                 ->where('pm.privmsgs_to_userid = %i', $userdata['user_id'])
-                ->where('u.user_id = pm.privmsgs_from_userid')
                 ->fetch();
 
             if (!$privmsg) {

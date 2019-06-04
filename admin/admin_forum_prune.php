@@ -60,9 +60,9 @@ if (isset($_GET[POST_FORUM_URL]) || isset($_POST[POST_FORUM_URL]) )
 $forums = dibi::select('f.*')
     ->from(FORUMS_TABLE)
     ->as('f')
-    ->from(CATEGORIES_TABLE)
+    ->innerJoin(CATEGORIES_TABLE)
     ->as('c')
-    ->where('c.cat_id = f.cat_id');
+    ->on('c.cat_id = f.cat_id');
 
 if ($forum_sql) {
     $forums->where('forum_id = %i', $forum_id);

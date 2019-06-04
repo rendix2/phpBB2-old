@@ -85,9 +85,9 @@ if (defined('SHOW_ONLINE')) {
 	$rows = dibi::select(['u.username', 'u.user_id', 'u.user_allow_viewonline', 'u.user_level', 's.session_logged_in', 's.session_ip'])
         ->from(USERS_TABLE)
         ->as('u')
-        ->from(SESSIONS_TABLE)
+        ->innerJoin(SESSIONS_TABLE)
         ->as('s')
-        ->where('u.user_id = s.session_user_id')
+        ->on('u.user_id = s.session_user_id')
         ->where('s.session_time >= %i', time() - 300);
 
 	if (!empty($forum_id)) {

@@ -550,10 +550,10 @@ if (!empty($mode) ) {
                 $vote_ids = dibi::select('v.vote_id')
                     ->from(VOTE_DESC_TABLE)
                     ->as('v')
-                    ->from(TOPICS_TABLE)
+                    ->innerJoin(TOPICS_TABLE)
                     ->as('t')
+                    ->on('v.topic_id = t.topic_id')
                     ->where('t.forum_id = %i', $from_id)
-                    ->where('v.topic_id = t.topic_id')
                     ->fetchPairs(null, 'vote_id');
 
                 if (count($vote_ids)) {
@@ -597,22 +597,22 @@ if (!empty($mode) ) {
 			$user_mods_ids = dibi::select('ug.user_id')
                 ->from(AUTH_ACCESS_TABLE)
                 ->as('a')
-                ->from(USER_GROUP_TABLE)
+                ->innerJoin(USER_GROUP_TABLE)
                 ->as('ug')
+                ->on('ug.group_id = a.group_id')
                 ->where('a.forum_id <> %i', $from_id)
                 ->where('a.auth_mod = %i', 1)
-                ->where('ug.group_id = a.group_id')
                 ->fetchPairs(null, 'user_id');
 
 			if(count($user_mods_ids)) {
                 $user_ids = dibi::select('ug.user_id')
                     ->from(AUTH_ACCESS_TABLE)
                     ->as('a')
-                    ->from(USER_GROUP_TABLE)
+                    ->innerJoin(USER_GROUP_TABLE)
                     ->as('ug')
+                    ->on('ug.group_id = a.group_id')
                     ->where('a.forum_id = %i', $from_id)
                     ->where('a.auth_mod = %i', 1)
-                    ->where('ug.group_id = a.group_id')
                     ->where('ug.user_id NOT IN %in', $user_mods_ids)
                     ->fetchPairs(null, 'user_id');
 

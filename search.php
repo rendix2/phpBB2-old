@@ -146,9 +146,9 @@ if ($mode === 'searchuser') {
             ->as('last_search_time')
             ->from(SEARCH_TABLE)
             ->as('sr')
-            ->from(SESSIONS_TABLE)
+            ->innerJoin(SESSIONS_TABLE)
             ->as('se')
-            ->where('sr.session_id = se.session_id');
+            ->on('sr.session_id = se.session_id');
 
 		if ($userdata['user_id'] === ANONYMOUS) {
 		    $result->where('se.session_ip = %s', $user_ip);
@@ -265,10 +265,10 @@ if ($mode === 'searchuser') {
 							$post_ids = dibi::select('m.post_id')
                                 ->from(SEARCH_WORD_TABLE)
                                 ->as('w')
-                                ->from(SEARCH_MATCH_TABLE)
+                                ->innerJoin(SEARCH_MATCH_TABLE)
                                 ->as('m')
+                                ->on('m.word_id = w.word_id')
                                 ->where('w.word_text LIKE %~like~', $match_word)
-                                ->where('m.word_id = w.word_id')
                                 ->where('w.word_common <> %i', 1);
 
                             if (!$search_fields) {
@@ -492,8 +492,8 @@ if ($mode === 'searchuser') {
                         if ($auth_sql !== '') {
                             $search_ids->from(FORUMS_TABLE)
                                 ->as('f')
-                            ->where('f.forum_id = p.forum_id')
-                            ->where($auth_sql);
+                                ->where('f.forum_id = p.forum_id')
+                                ->where($auth_sql);
                         }
 
                         if ($search_author !== '') {
@@ -521,10 +521,10 @@ if ($mode === 'searchuser') {
                 $search_ids = dibi::select(['t.topic_id', 'f.forum_id'])
                     ->from(TOPICS_TABLE)
                     ->as('t')
-                    ->from(FORUMS_TABLE)
+                    ->innerJoin(FORUMS_TABLE)
                     ->as('f')
+                    ->on('t.forum_id = f.forum_id')
                     ->where('t.topic_replies = %i', 0)
-                    ->where('t.forum_id = f.forum_id')
                     ->where('t.topic_moved_id = %i', 0)
                     ->where($auth_sql)
                     ->fetchPairs(null, 'topic_id');
@@ -652,19 +652,19 @@ if ($mode === 'searchuser') {
             $search_sets = dibi::select($columns)
                 ->from(FORUMS_TABLE)
                 ->as('f')
-                ->from(TOPICS_TABLE)
+                ->innerJoin(TOPICS_TABLE)
                 ->as('t')
-                ->from(USERS_TABLE)
+                ->on('p.topic_id = t.topic_id')
+                ->innerJoin(USERS_TABLE)
                 ->as('u')
-                ->from(POSTS_TABLE)
+                ->on('p.poster_id = u.user_id')
+                ->innerJoin(POSTS_TABLE)
                 ->as('p')
-                ->from(POSTS_TEXT_TABLE)
+                ->on('f.forum_id = p.forum_id')
+                ->innerJoin(POSTS_TEXT_TABLE)
                 ->as('pt')
-                ->where('p.post_id IN %in', $search_ids)
-                ->where('pt.post_id = p.post_id')
-                ->where('f.forum_id = p.forum_id')
-                ->where('p.topic_id = t.topic_id')
-                ->where('p.poster_id = u.user_id');
+                ->on('pt.post_id = p.post_id')
+                ->where('p.post_id IN %in', $search_ids);
 		} else {
             $columns = [
                 't.*',
@@ -687,25 +687,25 @@ if ($mode === 'searchuser') {
                 ->select('pt.post_text')
                 ->from(TOPICS_TABLE)
                 ->as('t')
-                ->from(FORUMS_TABLE)
+                ->innerJoin(FORUMS_TABLE)
                 ->as('f')
-                ->from(USERS_TABLE)
+                ->on('f.forum_id = t.forum_id')
+                ->innerJoin(USERS_TABLE)
                 ->as('u')
-                ->from(POSTS_TABLE)
+                ->on('t.topic_poster = u.user_id')
+                ->innerJoin(POSTS_TABLE)
                 ->as('p')
-                ->from(POSTS_TABLE)
+                ->on('p.post_id = t.topic_first_post_id')
+                ->innerJoin(POSTS_TABLE)
                 ->as('p2')
-                ->from(USERS_TABLE)
+                ->on('p2.post_id = t.topic_last_post_id')
+                ->innerJoin(USERS_TABLE)
                 ->as('u2')
-                ->from(POSTS_TEXT_TABLE)
+                ->on('u2.user_id = p2.poster_id')
+                ->innerJoin(POSTS_TEXT_TABLE)
                 ->as('pt')
-                ->where('p.post_id = pt.post_id')
-                ->where('t.topic_id IN %in', $search_ids)
-                ->where('t.topic_poster = u.user_id')
-                ->where('f.forum_id = t.forum_id')
-                ->where('p.post_id = t.topic_first_post_id')
-                ->where('p2.post_id = t.topic_last_post_id')
-                ->where('u2.user_id = p2.poster_id');
+                ->on('p.post_id = pt.post_id')
+                ->where('t.topic_id IN %in', $search_ids);
 		}
 
 		$per_page = ( $show_results === 'posts' ) ? $board_config['posts_per_page'] : $board_config['topics_per_page'];
@@ -1157,9 +1157,9 @@ if ($mode === 'searchuser') {
 $result = dibi::select(['c.cat_title', 'c.cat_id', 'f.forum_name', 'f.forum_id'])
     ->from(CATEGORIES_TABLE)
     ->as('c')
-    ->from(FORUMS_TABLE)
+    ->innerJoin(FORUMS_TABLE)
     ->as('f')
-    ->where('f.cat_id = c.cat_id')
+    ->on('f.cat_id = c.cat_id')
     ->orderBy('c.cat_order')
     ->orderBy('f.forum_order')
     ->fetchAll();

@@ -167,9 +167,9 @@ function make_jumpbox($action, $match_forum_id = 0)
     $categories = dibi::select(['c.cat_id', 'c.cat_title', 'c.cat_order'])
         ->from(CATEGORIES_TABLE)
         ->as('c')
-        ->from(FORUMS_TABLE)
+        ->innerJoin(FORUMS_TABLE)
         ->as('f')
-        ->where('f.cat_id = c.cat_id')
+        ->on('f.cat_id = c.cat_id')
         ->groupBy('c.cat_id')
         ->groupBy('c.cat_title')
         ->groupBy(' c.cat_order')
@@ -365,7 +365,8 @@ function setup_style($style)
             message_die(CRITICAL_ERROR, "Could not set up default theme");
         }
 
-	    $default_theme = dibi::select('*')->from(THEMES_TABLE)
+	    $default_theme = dibi::select('*')
+            ->from(THEMES_TABLE)
             ->where('themes_id = %i',(int) $board_config['default_style'])
             ->fetch();
 

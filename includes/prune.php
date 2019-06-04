@@ -43,16 +43,15 @@ function prune($forum_id, $prune_date, $prune_all = false)
     $topic_query = dibi::select('t.topic_id')
         ->from(POSTS_TABLE)
         ->as('p')
-        ->from(TOPICS_TABLE)
+        ->innerJoin(TOPICS_TABLE)
         ->as('t')
+        ->on('p.post_id = t.topic_last_post_id')
         ->where('t.forum_id = %i', $forum_id);
 
     if (!$prune_all) {
         $topic_query->where('t.topic_vote = %i', 0)
             ->where('t.topic_type <> %i', POST_ANNOUNCE);
     }
-
-    $topic_query->where('p.post_id = t.topic_last_post_id');
 
 	if ($prune_date) {
 	    $topic_query->where('p.post_time < %i', $prune_date);

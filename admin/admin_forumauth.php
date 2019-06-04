@@ -163,9 +163,9 @@ if (isset($_POST['submit'])) {
 $forum_rows = dibi::select('f.*')
     ->from(FORUMS_TABLE)
     ->as('f')
-    ->from(CATEGORIES_TABLE)
+    ->innerJoin(CATEGORIES_TABLE)
     ->as('c')
-    ->where('c.cat_id = f.cat_id');
+    ->on('c.cat_id = f.cat_id');
 
 if ($forum_sql) {
     $forum_rows->where('forum_id = %i', $forum_id);

@@ -68,10 +68,10 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
             $row =  dibi::select('g.group_id')
                 ->from(USER_GROUP_TABLE)
                 ->as('ug')
-                ->from(GROUPS_TABLE)
+                ->innerJoin(GROUPS_TABLE)
                 ->as('g')
+                ->on('g.group_id = ug.group_id')
                 ->where('ug.user_id = %i', $user_id)
-                ->where('g.group_id = ug.group_id')
                 ->where('g.group_single_user = %i', 1)
                 ->fetch();
 

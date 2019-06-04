@@ -553,12 +553,12 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 		    $users = dibi::select(['u.user_id', 'u.user_email','u.user_lang'])
                 ->from(TOPICS_WATCH_TABLE)
                 ->as('tw')
-                ->from(USERS_TABLE)
+                ->innerJoin(USERS_TABLE)
                 ->as('u')
+                ->on('u.user_id = tw.user_id')
                 ->where('tw.topic_id = %i', $topic_id)
                 ->where('tw.user_id NOT IN %in', $topic_not_id)
                 ->where('tw.notify_status = %i', TOPIC_WATCH_UN_NOTIFIED)
-                ->where('u.user_id = tw.user_id')
                 ->fetchAll();
 
 			$update_watched_sql = [];

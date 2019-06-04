@@ -178,10 +178,10 @@ switch ( $mode ) {
     $post_info = dibi::select(['f.*', 't.topic_status', 't.topic_title', 't.topic_type'])
             ->from(FORUMS_TABLE)
             ->as('f')
-            ->from(TOPICS_TABLE)
+            ->innerJoin(TOPICS_TABLE)
             ->as('t')
+            ->on('f.forum_id = t.forum_id')
             ->where('t.topic_id = %i', $topic_id)
-            ->where('f.forum_id = t.forum_id')
             ->fetch();
 		break;
 
@@ -222,19 +222,19 @@ switch ( $mode ) {
             $post_info = dibi::select($columns)
                 ->from(POSTS_TABLE)
                 ->as('p')
-                ->from(TOPICS_TABLE)
+                ->innerJoin(TOPICS_TABLE)
                 ->as('t')
-                ->from(FORUMS_TABLE)
+                ->on('t.topic_id = p.topic_id')
+                ->innerJoin(FORUMS_TABLE)
                 ->as('f')
-                ->from(POSTS_TEXT_TABLE)
+                ->on('f.forum_id = p.forum_id')
+                ->innerJoin(POSTS_TEXT_TABLE)
                 ->as('pt')
-                ->from(USERS_TABLE)
+                ->on('pt.post_id = p.post_id')
+                ->innerJoin(USERS_TABLE)
                 ->as('u')
+                ->on('u.user_id = p.poster_id')
                 ->where('p.post_id = %i', $post_id)
-                ->where('t.topic_id = p.topic_id')
-                ->where('f.forum_id = p.forum_id')
-                ->where('pt.post_id = p.post_id')
-                ->where('u.user_id = p.poster_id')
                 ->fetch();
         } else {
             $columns = [
@@ -252,13 +252,13 @@ switch ( $mode ) {
             $post_info = dibi::select($columns)
                 ->from(POSTS_TABLE)
                 ->as('p')
-                ->from(TOPICS_TABLE)
+                ->innerJoin(TOPICS_TABLE)
                 ->as('t')
-                ->from(FORUMS_TABLE)
+                ->on('t.topic_id = p.topic_id')
+                ->innerJoin(FORUMS_TABLE)
                 ->as('f')
+                ->on('f.forum_id = p.forum_id')
                 ->where('p.post_id = %i', $post_id)
-                ->where('t.topic_id = p.topic_id')
-                ->where('f.forum_id = p.forum_id')
                 ->fetch();
         }
 
@@ -295,10 +295,10 @@ if ($post_info) {
 		    $votes = dibi::select('*')
                 ->from(VOTE_DESC_TABLE)
                 ->as('vd')
-                ->from(VOTE_RESULTS_TABLE)
+                ->innerJoin(VOTE_RESULTS_TABLE)
                 ->as('vr')
+                ->on('vr.vote_id = vd.vote_id')
                 ->where('vd.topic_id = %i', $topic_id)
-                ->where('vr.vote_id = vd.vote_id')
                 ->orderBy('vr.vote_option_id')
                 ->fetchAll();
 
@@ -472,10 +472,10 @@ if (($delete || $poll_delete || $mode === 'delete') && !$confirm) {
     $vote_info = dibi::select('vd.vote_id')
         ->from(VOTE_DESC_TABLE)
         ->as('vd')
-        ->from(VOTE_RESULTS_TABLE)
+        ->innerJoin(VOTE_RESULTS_TABLE)
         ->as('vr')
+        ->on('vr.vote_id = vd.vote_id')
         ->where('vd.topic_id = %i', $topic_id)
-        ->where('vr.vote_id = vd.vote_id')
         ->where('vr.vote_option_id = %i', $vote_option_id)
         ->groupBy('vd.vote_id')
         ->fetch();

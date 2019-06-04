@@ -71,11 +71,11 @@ if ( isset($_POST['submit']) ) {
         $bcc_list = dibi::select('u.user_email')
             ->from(USERS_TABLE)
             ->as('u')
-            ->from(USER_GROUP_TABLE)
+            ->innerJoin(USER_GROUP_TABLE)
             ->as('ug')
+            ->on('u.user_id = ug.user_id')
             ->where('ug.group_id = %i', $group_id)
             ->where('ug.user_pending <> %i', 1)
-            ->where('u.user_id = ug.user_id')
             ->fetchPairs(null, 'user_email');
     } else {
         $bbc_list = dibi::select('user_email')

@@ -74,11 +74,11 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
             $userdata = dibi::select('u.*')
                 ->from(USERS_TABLE)
                 ->as('u')
-                ->from(SESSIONS_KEYS_TABLE)
+                ->innerJoin(SESSIONS_KEYS_TABLE)
                 ->as('k')
+                ->on('k.user_id = u.user_id')
                 ->where('u.user_id = %i', (int) $user_id)
                 ->where('u.user_active = %i', 1)
-                ->where('k.user_id = u.user_id')
                 ->where('k.key_id = %s', md5($sessiondata['autologinid']))
                 ->fetch();
 
@@ -319,10 +319,10 @@ function session_pagestart($user_ip, $thispage_id)
         $userdata = dibi::select('u.*, s.*')
             ->from(SESSIONS_TABLE)
             ->as('s')
-            ->from(USERS_TABLE)
+            ->innerJoin(USERS_TABLE)
             ->as('u')
+            ->on('u.user_id = s.session_user_id')
             ->where('session_id = %s', $session_id)
-            ->where('u.user_id = s.session_user_id')
             ->fetch();
 
 		//
