@@ -55,10 +55,9 @@ class Template {
 	 */
 	function Template($root = '.')
 	{
-		global $board_config, $db;
+		global $board_config;
 
 		$this->set_rootdir($root);
-		$this->db = $db;
 	}
 
 	/**
@@ -221,8 +220,9 @@ class Template {
 			$blockcount = count($blocks) - 1;
 
 			$str = &$this->_tpldata; 
-			foreach ($blocks as $block) {
-				$str = &$str[$block];
+			for ($i = 0; $i < $blockcount; $i++) 
+			{
+				$str = &$str[$blocks[$i]]; 
 				$str = &$str[count($str) - 1]; 
 			} 
 
@@ -506,9 +506,9 @@ class Template {
 		$blockcount = count($blocks) - 1;
 		$varref = '$this->_tpldata';
 		// Build up the string with everything but the last child.
-
-		foreach ($blocks as $block) {
-			$varref .= "['" . $block . "'][\$_" . $block . '_i]';
+		for ($i = 0; $i < $blockcount; $i++)
+		{
+			$varref .= "['" . $blocks[$i] . "'][\$_" . $blocks[$i] . '_i]';
 		}
 		// Add the block reference for the last child.
 		$varref .= "['" . $blocks[$blockcount] . "']";

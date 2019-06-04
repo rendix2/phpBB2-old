@@ -165,8 +165,7 @@ class Template {
 			$blocks = explode('.', $blockname);
 			$blockcount = count($blocks) - 1;
 			$str = '$this->_tpldata';
-			for ($i = 0; $i < $blockcount; $i++)
-			{
+			for ($i = 0; $i < $blockcount; $i++) {
 				$str .= '[\'' . $blocks[$i] . '.\']';
 				eval('$lastiteration = count(' . $str . ') - 1;');
 				$str .= '[' . $lastiteration . ']';
@@ -455,8 +454,7 @@ class Template {
 		$blockcount = count($blocks) - 1;
 		$varref = '$this->_tpldata';
 		// Build up the string with everything but the last child.
-		for ($i = 0; $i < $blockcount; $i++)
-		{
+		for ($i = 0; $i < $blockcount; $i++) {
 			$varref .= '[\'' . $blocks[$i] . '.\'][$_' . $blocks[$i] . '_i]';
 		}
 		// Add the block reference for the last child.
