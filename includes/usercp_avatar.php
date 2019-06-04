@@ -73,8 +73,8 @@ function user_avatar_gallery($mode, &$error, &$error_msg, $avatar_filename, $ava
 {
 	global $board_config;
 
-	$avatar_filename = phpbb_ltrim(basename($avatar_filename), "'");
-	$avatar_category = phpbb_ltrim(basename($avatar_category), "'");
+	$avatar_filename = ltrim(basename($avatar_filename), "'");
+	$avatar_category = ltrim(basename($avatar_category), "'");
 	
 	if (!preg_match('/(\.gif$|\.png$|\.jpg|\.jpeg)$/is', $avatar_filename)) {
 		return [];

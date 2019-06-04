@@ -522,7 +522,7 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 			}
 		} elseif ($user_avatar_local !== "" && count($avatar_sql) === 0 && !$error ) {
 		    $avatar_sql = [
-		        'user_avatar'      => phpbb_ltrim(basename($user_avatar_category), "'") . '/' . phpbb_ltrim(basename($user_avatar_local), "'"),
+		        'user_avatar'      => ltrim(basename($user_avatar_category), "'") . '/' . ltrim(basename($user_avatar_local), "'"),
                 'user_avatar_type' => USER_AVATAR_GALLERY
             ];
 		}

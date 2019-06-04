@@ -54,55 +54,10 @@ function get_db_stat($mode)
 function phpbb_clean_username($username)
 {
 	$username = substr(htmlspecialchars(str_replace("\'", "'", trim($username))), 0, 25);
-	$username = phpbb_rtrim($username, "\\");
+	$username = rtrim($username, "\\");
 	$username = str_replace("'", "\'", $username);
 
 	return $username;
-}
-
-/**
-* This function is a wrapper for ltrim, as charlist is only supported in php >= 4.1.0
-* Added in phpBB 2.0.18
-*/
-function phpbb_ltrim($str, $charlist = false)
-{
-    if ($charlist === false) {
-        return ltrim($str);
-    }
-	
-	$php_version = explode('.', PHP_VERSION);
-
-	// php version < 4.1.0
-    if ((int)$php_version[0] < 4 || ((int)$php_version[0] === 4 && (int)$php_version[1] < 1)) {
-        while ($str{0} === $charlist) {
-            $str = substr($str, 1);
-        }
-    } else {
-        $str = ltrim($str, $charlist);
-    }
-
-	return $str;
-}
-
-// added at phpBB 2.0.12 to fix a bug in PHP 4.3.10 (only supporting charlist in php >= 4.1.0)
-function phpbb_rtrim($str, $charlist = false)
-{
-    if ($charlist === false) {
-        return rtrim($str);
-    }
-	
-	$php_version = explode('.', PHP_VERSION);
-
-	// php version < 4.1.0
-    if ((int)$php_version[0] < 4 || ((int)$php_version[0] === 4 && (int)$php_version[1] < 1)) {
-        while ($str{strlen($str) - 1} === $charlist) {
-            $str = substr($str, 0, strlen($str) - 1);
-        }
-    } else {
-        $str = rtrim($str, $charlist);
-    }
-
-	return $str;
 }
 
 /**
@@ -256,7 +211,7 @@ function init_userprefs($userdata)
 
     if ($userdata['user_id'] !== ANONYMOUS) {
         if (!empty($userdata['user_lang'])) {
-            $default_lang = phpbb_ltrim(basename(phpbb_rtrim($userdata['user_lang'])), "'");
+            $default_lang = ltrim(basename(rtrim($userdata['user_lang'])), "'");
         }
 
         if (!empty($userdata['user_dateformat'])) {
@@ -267,13 +222,13 @@ function init_userprefs($userdata)
             $board_config['board_timezone'] = $userdata['user_timezone'];
         }
     } else {
-        $default_lang = phpbb_ltrim(basename(phpbb_rtrim($board_config['default_lang'])), "'");
+        $default_lang = ltrim(basename(rtrim($board_config['default_lang'])), "'");
     }
 
 	if ( !file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $default_lang . '/lang_main.php')) ) {
 		if ( $userdata['user_id'] !== ANONYMOUS ) {
 			// For logged in users, try the board default language next
-			$default_lang = phpbb_ltrim(basename(phpbb_rtrim($board_config['default_lang'])), "'");
+			$default_lang = ltrim(basename(rtrim($board_config['default_lang'])), "'");
 		} else {
 			// For guests it means the default language is not present, try english
 			// This is a long shot since it means serious errors in the setup to reach here,

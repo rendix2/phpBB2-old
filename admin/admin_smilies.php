@@ -377,7 +377,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 			//
 			$smile_code = isset($_POST['smile_code']) ? trim($_POST['smile_code']) : '';
 			$smile_url = isset($_POST['smile_url']) ? trim($_POST['smile_url']) : '';
-			$smile_url = phpbb_ltrim(basename($smile_url), "'");
+			$smile_url = ltrim(basename($smile_url), "'");
 			$smile_emotion = isset($_POST['smile_emotion']) ? htmlspecialchars(trim($_POST['smile_emotion'])) : '';
 			$smile_id = isset($_POST['smile_id']) ? (int)$_POST['smile_id'] : 0;
 			$smile_code = trim($smile_code);
@@ -424,7 +424,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 			//
 			$smile_code = isset($_POST['smile_code']) ? $_POST['smile_code'] : '';
 			$smile_url = isset($_POST['smile_url']) ? $_POST['smile_url'] : '';
-			$smile_url = phpbb_ltrim(basename($smile_url), "'");
+			$smile_url = ltrim(basename($smile_url), "'");
 			$smile_emotion = isset($_POST['smile_emotion']) ? htmlspecialchars(trim($_POST['smile_emotion'])) : '';
 			$smile_code = trim($smile_code);
 			$smile_url = trim($smile_url);
