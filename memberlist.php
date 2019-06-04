@@ -183,116 +183,116 @@ switch ($mode) {
 
 $users = $users->fetchAll();
 
-	$i = 0;
-	
-	foreach ($users as $user) {
-		$username = $user->username;
-		$user_id = $user->user_id;
+$i = 0;
 
-		$from = !empty($user->user_from) ? $user->user_from : '&nbsp;';
-		$joined = create_date($lang['DATE_FORMAT'], $user->user_regdate, $board_config['board_timezone']);
-		$posts = $user->user_posts ? $user->user_posts : 0;
+foreach ($users as $user) {
+    $username = $user->username;
+    $user_id = $user->user_id;
 
-		$poster_avatar = '';
+    $from = !empty($user->user_from) ? $user->user_from : '&nbsp;';
+    $joined = create_date($lang['DATE_FORMAT'], $user->user_regdate, $board_config['board_timezone']);
+    $posts = $user->user_posts ? $user->user_posts : 0;
 
-        if ($user->user_avatar_type && $user_id !== ANONYMOUS && $user->user_allowavatar) {
-            switch ($user->user_avatar_type) {
-				case USER_AVATAR_UPLOAD:
-					$poster_avatar = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $user->user_avatar . '" alt="" border="0" />' : '';
-					break;
-				case USER_AVATAR_REMOTE:
-					$poster_avatar = $board_config['allow_avatar_remote'] ? '<img src="' . $user->user_avatar . '" alt="" border="0" />' : '';
-					break;
-				case USER_AVATAR_GALLERY:
-					$poster_avatar = $board_config['allow_avatar_local'] ? '<img src="' . $board_config['avatar_gallery_path'] . '/' . $user->user_avatar . '" alt="" border="0" />' : '';
-					break;
-			}
-		}
+    $poster_avatar = '';
 
-        if (!empty($user->user_viewemail) || $userdata['user_level'] === ADMIN) {
-			$email_uri = $board_config['board_email_form'] ? append_sid("profile.php?mode=email&amp;" . POST_USERS_URL .'=' . $user_id) : 'mailto:' . $user->user_email;
+    if ($user->user_avatar_type && $user_id !== ANONYMOUS && $user->user_allowavatar) {
+        switch ($user->user_avatar_type) {
+            case USER_AVATAR_UPLOAD:
+                $poster_avatar = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $user->user_avatar . '" alt="" border="0" />' : '';
+                break;
+            case USER_AVATAR_REMOTE:
+                $poster_avatar = $board_config['allow_avatar_remote'] ? '<img src="' . $user->user_avatar . '" alt="" border="0" />' : '';
+                break;
+            case USER_AVATAR_GALLERY:
+                $poster_avatar = $board_config['allow_avatar_local'] ? '<img src="' . $board_config['avatar_gallery_path'] . '/' . $user->user_avatar . '" alt="" border="0" />' : '';
+                break;
+        }
+    }
 
-			$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
-			$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
-		} else {
-			$email_img = '&nbsp;';
-			$email = '&nbsp;';
-		}
+    if (!empty($user->user_viewemail) || $userdata['user_level'] === ADMIN) {
+        $email_uri = $board_config['board_email_form'] ? append_sid("profile.php?mode=email&amp;" . POST_USERS_URL . '=' . $user_id) : 'mailto:' . $user->user_email;
 
-		$temp_url = append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id");
-		$profile_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_profile'] . '" alt="' . $lang['Read_profile'] . '" title="' . $lang['Read_profile'] . '" border="0" /></a>';
-		$profile = '<a href="' . $temp_url . '">' . $lang['Read_profile'] . '</a>';
+        $email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
+        $email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
+    } else {
+        $email_img = '&nbsp;';
+        $email = '&nbsp;';
+    }
 
-		$temp_url = append_sid("privmsg.php?mode=post&amp;" . POST_USERS_URL . "=$user_id");
-		$pm_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
-		$pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
+    $temp_url = append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id");
+    $profile_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_profile'] . '" alt="' . $lang['Read_profile'] . '" title="' . $lang['Read_profile'] . '" border="0" /></a>';
+    $profile = '<a href="' . $temp_url . '">' . $lang['Read_profile'] . '</a>';
 
-		$www_img = $user->user_website ? '<a href="' . $user->user_website . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
-		$www = $user->user_website ? '<a href="' . $user->user_website . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
+    $temp_url = append_sid("privmsg.php?mode=post&amp;" . POST_USERS_URL . "=$user_id");
+    $pm_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
+    $pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
 
-        if (!empty($user->user_icq)) {
-			$icq_status_img = '<a href="http://wwp.icq.com/' . $user->user_icq . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $user->user_icq . '&img=5" width="18" height="18" border="0" /></a>';
-			$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $user->user_icq . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
-			$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $user->user_icq . '">' . $lang['ICQ'] . '</a>';
-		} else {
-			$icq_status_img = '';
-			$icq_img = '';
-			$icq = '';
-		}
+    $www_img = $user->user_website ? '<a href="' . $user->user_website . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
+    $www = $user->user_website ? '<a href="' . $user->user_website . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
 
-		$aim_img = $user->user_aim ? '<a href="aim:goim?screenname=' . $user->user_aim . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
-		$aim = $user->user_aim ? '<a href="aim:goim?screenname=' . $user->user_aim . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
+    if (!empty($user->user_icq)) {
+        $icq_status_img = '<a href="http://wwp.icq.com/' . $user->user_icq . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $user->user_icq . '&img=5" width="18" height="18" border="0" /></a>';
+        $icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $user->user_icq . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
+        $icq = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $user->user_icq . '">' . $lang['ICQ'] . '</a>';
+    } else {
+        $icq_status_img = '';
+        $icq_img = '';
+        $icq = '';
+    }
 
-		$temp_url = append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id");
-		$msn_img = $user->user_msnm ? '<a href="' . $temp_url . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
-		$msn = $user->user_msnm ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
+    $aim_img = $user->user_aim ? '<a href="aim:goim?screenname=' . $user->user_aim . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
+    $aim = $user->user_aim ? '<a href="aim:goim?screenname=' . $user->user_aim . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
 
-		$yim_img = $user->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $user->user_yim . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
-		$yim = $user->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $user->user_yim . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
+    $temp_url = append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id");
+    $msn_img = $user->user_msnm ? '<a href="' . $temp_url . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
+    $msn = $user->user_msnm ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
 
-		$temp_url = append_sid("search.php?search_author=" . urlencode($username) . "&amp;showresults=posts");
-		$search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $username) . '" title="' . sprintf($lang['Search_user_posts'], $username) . '" border="0" /></a>';
-		$search = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $username) . '</a>';
+    $yim_img = $user->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $user->user_yim . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
+    $yim = $user->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $user->user_yim . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
 
-		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+    $temp_url = append_sid("search.php?search_author=" . urlencode($username) . "&amp;showresults=posts");
+    $search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $username) . '" title="' . sprintf($lang['Search_user_posts'], $username) . '" border="0" /></a>';
+    $search = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $username) . '</a>';
 
-        $template->assign_block_vars('memberrow',
-            [
-                'ROW_NUMBER'     => $i + ($start + 1),
-                'ROW_COLOR'      => '#' . $row_color,
-                'ROW_CLASS'      => $row_class,
-                'USERNAME'       => $username,
-                'FROM'           => $from,
-                'JOINED'         => $joined,
-                'POSTS'          => $posts,
-                'AVATAR_IMG'     => $poster_avatar,
-                'PROFILE_IMG'    => $profile_img,
-                'PROFILE'        => $profile,
-                'SEARCH_IMG'     => $search_img,
-                'SEARCH'         => $search,
-                'PM_IMG'         => $pm_img,
-                'PM'             => $pm,
-                'EMAIL_IMG'      => $email_img,
-                'EMAIL'          => $email,
-                'WWW_IMG'        => $www_img,
-                'WWW'            => $www,
-                'ICQ_STATUS_IMG' => $icq_status_img,
-                'ICQ_IMG'        => $icq_img,
-                'ICQ'            => $icq,
-                'AIM_IMG'        => $aim_img,
-                'AIM'            => $aim,
-                'MSN_IMG'        => $msn_img,
-                'MSN'            => $msn,
-                'YIM_IMG'        => $yim_img,
-                'YIM'            => $yim,
+    $row_color = (!($i % 2)) ? $theme['td_color1'] : $theme['td_color2'];
+    $row_class = (!($i % 2)) ? $theme['td_class1'] : $theme['td_class2'];
 
-                'U_VIEWPROFILE' => append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id")
-            ]
-        );
+    $template->assign_block_vars('memberrow',
+        [
+            'ROW_NUMBER' => $i + ($start + 1),
+            'ROW_COLOR' => '#' . $row_color,
+            'ROW_CLASS' => $row_class,
+            'USERNAME' => $username,
+            'FROM' => $from,
+            'JOINED' => $joined,
+            'POSTS' => $posts,
+            'AVATAR_IMG' => $poster_avatar,
+            'PROFILE_IMG' => $profile_img,
+            'PROFILE' => $profile,
+            'SEARCH_IMG' => $search_img,
+            'SEARCH' => $search,
+            'PM_IMG' => $pm_img,
+            'PM' => $pm,
+            'EMAIL_IMG' => $email_img,
+            'EMAIL' => $email,
+            'WWW_IMG' => $www_img,
+            'WWW' => $www,
+            'ICQ_STATUS_IMG' => $icq_status_img,
+            'ICQ_IMG' => $icq_img,
+            'ICQ' => $icq,
+            'AIM_IMG' => $aim_img,
+            'AIM' => $aim,
+            'MSN_IMG' => $msn_img,
+            'MSN' => $msn,
+            'YIM_IMG' => $yim_img,
+            'YIM' => $yim,
 
-        $i++;
-	}
+            'U_VIEWPROFILE' => append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id")
+        ]
+    );
+
+    $i++;
+}
 
 
 if ($mode !== 'topten' || $board_config['members_per_page'] < 10) {
