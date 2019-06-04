@@ -128,6 +128,8 @@ if ($mode === 'searchuser') {
         'show_results',
         'return_chars'
     ];
+
+    $split_search = [];
     $search_results = '';
 
 	//
