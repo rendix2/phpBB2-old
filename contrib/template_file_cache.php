@@ -128,12 +128,12 @@ class Template {
 	{
 		$cache_file = $this->cachedir . $this->filename[$handle] . '.php';
 
-		if (@filemtime($cache_file) == @filemtime($this->files[$handle]))
+		if (@filemtime($cache_file) === @filemtime($this->files[$handle]))
 		{
 			$_str = '';
 			include $cache_file;
 
-			if ($_str != '')
+			if ($_str !== '')
 			{
 				echo $_str;
 			}
@@ -173,7 +173,7 @@ class Template {
 	{
 		$cache_file = $this->cachedir . $this->filename[$handle] . '.php';
 
-		if (@filemtime($cache_file) == @filemtime($this->files[$handle]))
+		if (@filemtime($cache_file) === @filemtime($this->files[$handle]))
 		{
 			$_str = '';
 			include $cache_file;
@@ -275,7 +275,7 @@ class Template {
 	function make_filename($filename)
 	{
 		// Check if it's an absolute or relative path.
-		if (substr($filename, 0, 1) != '/')
+		if (substr($filename, 0, 1) !== '/')
 		{
 			$filename = phpbb_realpath($this->root . '/' . $filename);
 		}

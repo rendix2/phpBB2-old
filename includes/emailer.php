@@ -163,17 +163,17 @@ class emailer
 		$match = [];
 		if (preg_match('#^(Subject:(.*?))$#m', $this->msg, $match))
 		{
-			$this->subject = (trim($match[2]) != '') ? trim($match[2]) : (($this->subject != '') ? $this->subject : 'No Subject');
+			$this->subject = (trim($match[2]) !== '') ? trim($match[2]) : (($this->subject !== '') ? $this->subject : 'No Subject');
 			$drop_header .= '[\r\n]*?' . preg_quote($match[1], '#');
 		}
 		else
 		{
-			$this->subject = (($this->subject != '') ? $this->subject : 'No Subject');
+			$this->subject = (($this->subject !== '') ? $this->subject : 'No Subject');
 		}
 
 		if (preg_match('#^(Charset:(.*?))$#m', $this->msg, $match))
 		{
-			$this->encoding = (trim($match[2]) != '') ? trim($match[2]) : trim($lang['ENCODING']);
+			$this->encoding = (trim($match[2]) !== '') ? trim($match[2]) : trim($lang['ENCODING']);
 			$drop_header .= '[\r\n]*?' . preg_quote($match[1], '#');
 		}
 		else
@@ -181,7 +181,7 @@ class emailer
 			$this->encoding = trim($lang['ENCODING']);
 		}
 
-		if ($drop_header != '')
+		if ($drop_header !== '')
 		{
 			$this->msg = trim(preg_replace('#' . $drop_header . '#s', '', $this->msg));
 		}
@@ -192,7 +192,7 @@ class emailer
 		$bcc = count($this->addresses['bcc']) ? implode(', ', $this->addresses['bcc']) : '';
 
 		// Build header
-		$this->extra_headers = (($this->reply_to != '') ? "Reply-to: $this->reply_to\n" : '') . (($this->from != '') ? "From: $this->from\n" : "From: " . $board_config['board_email'] . "\n") . "Return-Path: " . $board_config['board_email'] . "\nMessage-ID: <" . md5(uniqid(time())) . "@" . $board_config['server_name'] . ">\nMIME-Version: 1.0\nContent-type: text/plain; charset=" . $this->encoding . "\nContent-transfer-encoding: 8bit\nDate: " . date('r', time()) . "\nX-Priority: 3\nX-MSMail-Priority: Normal\nX-Mailer: PHP\nX-MimeOLE: Produced By phpBB2\n" . $this->extra_headers . (($cc != '') ? "Cc: $cc\n" : '')  . (($bcc != '') ? "Bcc: $bcc\n" : ''); 
+		$this->extra_headers = (($this->reply_to !== '') ? "Reply-to: $this->reply_to\n" : '') . (($this->from !== '') ? "From: $this->from\n" : "From: " . $board_config['board_email'] . "\n") . "Return-Path: " . $board_config['board_email'] . "\nMessage-ID: <" . md5(uniqid(time())) . "@" . $board_config['server_name'] . ">\nMIME-Version: 1.0\nContent-type: text/plain; charset=" . $this->encoding . "\nContent-transfer-encoding: 8bit\nDate: " . date('r', time()) . "\nX-Priority: 3\nX-MSMail-Priority: Normal\nX-Mailer: PHP\nX-MimeOLE: Produced By phpBB2\n" . $this->extra_headers . (($cc != '') ? "Cc: $cc\n" : '')  . (($bcc != '') ? "Bcc: $bcc\n" : '');
 
 		// Send message ... removed $this->encode() from subject for time being
 		if ( $this->use_smtp )

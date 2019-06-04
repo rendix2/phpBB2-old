@@ -50,7 +50,7 @@ $forum_all_cookie_name = $board_config['cookie_name'] . '_f_all';
 //
 // Handle marking posts
 //
-if ($mark_read == 'forums') {
+if ($mark_read === 'forums') {
     if ($userdata['session_logged_in']) {
         setcookie(
             $forum_all_cookie_name,

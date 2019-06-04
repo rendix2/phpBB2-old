@@ -71,7 +71,7 @@ switch( $mode )
 			$insert_data = [];
 			
 			foreach ($template_names as $template_name) {
-				if ($template_name['style_name'] == $style_name ) {
+				if ($template_name['style_name'] === $style_name ) {
 					foreach ($template_name as $key => $value) {
                         $insert_data[$key] = $value;
 					}
@@ -485,7 +485,7 @@ switch( $mode )
 
             foreach ($themes as $theme) {
                 foreach ($theme as $key => $value) {
-                    if (!(int)$key && $key != "0" && $key != "themes_id") {
+                    if (!(int)$key && $key !== "0" && $key !== "themes_id") {
                         $theme_data .= '$' . $template_name . "[$i]['$key'] = \"" . addslashes($value) . "\";\n";
                     }
                 }
@@ -572,7 +572,7 @@ switch( $mode )
 		$style_id = isset($_GET['style_id']) ? (int)$_GET['style_id'] : (int)$_POST['style_id'];
 		
 		if (!$confirm ) {
-			if ($style_id == $board_config['default_style']) {
+			if ($style_id === $board_config['default_style']) {
 				message_die(GENERAL_MESSAGE, $lang['Cannot_remove_style']);
 			}
 			

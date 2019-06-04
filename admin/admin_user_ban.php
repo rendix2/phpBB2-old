@@ -70,10 +70,10 @@ if ( isset($_POST['submit']) ) {
 				$ip_1_end = $ip_range_explode[5];
 
 				while ( $ip_1_counter <= $ip_1_end ) {
-					$ip_2_counter = ( $ip_1_counter == $ip_range_explode[1] ) ? $ip_range_explode[2] : 0;
+					$ip_2_counter = ( $ip_1_counter === $ip_range_explode[1] ) ? $ip_range_explode[2] : 0;
 					$ip_2_end = ( $ip_1_counter < $ip_1_end ) ? 254 : $ip_range_explode[6];
 
-					if ( $ip_2_counter == 0 && $ip_2_end == 254 ) {
+					if ( $ip_2_counter === 0 && $ip_2_end === 254 ) {
 						$ip_2_counter = 255;
 						$ip_2_fragment = 255;
 
@@ -81,10 +81,10 @@ if ( isset($_POST['submit']) ) {
 					}
 
 					while ( $ip_2_counter <= $ip_2_end ) {
-						$ip_3_counter = ( $ip_2_counter == $ip_range_explode[2] && $ip_1_counter == $ip_range_explode[1] ) ? $ip_range_explode[3] : 0;
+						$ip_3_counter = ( $ip_2_counter === $ip_range_explode[2] && $ip_1_counter === $ip_range_explode[1] ) ? $ip_range_explode[3] : 0;
 						$ip_3_end = ( $ip_2_counter < $ip_2_end || $ip_1_counter < $ip_1_end ) ? 254 : $ip_range_explode[7];
 
-						if ( $ip_3_counter == 0 && $ip_3_end == 254 ) {
+						if ( $ip_3_counter === 0 && $ip_3_end === 254 ) {
 							$ip_3_counter = 255;
 							$ip_3_fragment = 255;
 
@@ -92,10 +92,10 @@ if ( isset($_POST['submit']) ) {
 						}
 
 						while ( $ip_3_counter <= $ip_3_end ) {
-							$ip_4_counter = ( $ip_3_counter == $ip_range_explode[3] && $ip_2_counter == $ip_range_explode[2] && $ip_1_counter == $ip_range_explode[1] ) ? $ip_range_explode[4] : 0;
+							$ip_4_counter = ( $ip_3_counter === $ip_range_explode[3] && $ip_2_counter === $ip_range_explode[2] && $ip_1_counter === $ip_range_explode[1] ) ? $ip_range_explode[4] : 0;
 							$ip_4_end = ( $ip_3_counter < $ip_3_end || $ip_2_counter < $ip_2_end ) ? 254 : $ip_range_explode[8];
 
-							if ( $ip_4_counter == 0 && $ip_4_end == 254 ) {
+							if ( $ip_4_counter === 0 && $ip_4_end === 254 ) {
 								$ip_4_counter = 255;
 								$ip_4_fragment = 255;
 
@@ -155,13 +155,13 @@ if ( isset($_POST['submit']) ) {
 		$in_banlist = false;
 
 		foreach ($bans as $ban) {
-            if ($user_value == $ban->ban_userid) {
+            if ($user_value === $ban->ban_userid) {
                 $in_banlist = true;
             }
         }
 
 		if ( !$in_banlist ) {
-			$kill_session_sql .= ( ( $kill_session_sql != '' ) ? ' OR ' : '' ) . "session_user_id = " . $user_value;
+			$kill_session_sql .= ( ( $kill_session_sql !== '' ) ? ' OR ' : '' ) . "session_user_id = " . $user_value;
 
 			dibi::insert(BANLIST_TABLE, ['ban_userid' => $user_value ])
                 ->execute();
@@ -172,7 +172,7 @@ if ( isset($_POST['submit']) ) {
 		$in_banlist = false;
 
 		foreach ($bans as $ban) {
-		    if ($ip_value == $ban->ban_ip) {
+		    if ($ip_value === $ban->ban_ip) {
 		        $in_banlist = true;
             }
         }
@@ -184,7 +184,7 @@ if ( isset($_POST['submit']) ) {
 				$kill_ip_sql = "session_ip = '" . $ip_value . "'";
 			}
 
-			$kill_session_sql .= ( ( $kill_session_sql != '' ) ? ' OR ' : '' ) . $kill_ip_sql;
+			$kill_session_sql .= ( ( $kill_session_sql !== '' ) ? ' OR ' : '' ) . $kill_ip_sql;
 
 			dibi::insert(BANLIST_TABLE, ['ban_ip' => $ip_value])->execute();
 		}
@@ -195,7 +195,7 @@ if ( isset($_POST['submit']) ) {
 	// user or IP info just entered into the ban table ... this will force a session
 	// initialisation resulting in an instant ban
 	//
-	if ( $kill_session_sql != '' ) {
+	if ( $kill_session_sql !== '' ) {
 	    dibi::delete(SESSIONS_TABLE)
             ->where($kill_session_sql)
             ->execute();
@@ -205,7 +205,7 @@ if ( isset($_POST['submit']) ) {
 		$in_banlist = false;
 
 		foreach ($bans as $ban) {
-            if ( $email_value == $ban->ban_email ) {
+            if ( $email_value === $ban->ban_email ) {
                 $in_banlist = true;
             }
         }
@@ -222,7 +222,7 @@ if ( isset($_POST['submit']) ) {
         $user_list = $_POST['unban_user'];
 
         foreach ($user_list as $user_value) {
-            if ($user_value != -1) {
+            if ($user_value !== -1) {
                 $where_sql[] = (int)$user_value;
             }
         }
@@ -232,7 +232,7 @@ if ( isset($_POST['submit']) ) {
         $ip_list = $_POST['unban_ip'];
 
         foreach ($ip_list as $ip_value) {
-            if ($ip_value != -1) {
+            if ($ip_value !== -1) {
                 $where_sql[] = $ip_value;
             }
         }
@@ -242,7 +242,7 @@ if ( isset($_POST['submit']) ) {
         $email_list = $_POST['unban_email'];
 
         foreach ($email_list as $email_value) {
-            if ($email_value != -1) {
+            if ($email_value !== -1) {
                 $where_sql[] = $email_value;
             }
         }
@@ -306,7 +306,7 @@ if ( isset($_POST['submit']) ) {
 		$select_userlist .= '<option value="' . $user_item->ban_id . '">' . $user_item->username . '</option>';
 	}
 
-	if ($select_userlist == '' ) {
+	if ($select_userlist === '' ) {
 		$select_userlist = '<option value="-1">' . $lang['No_banned_users'] . '</option>';
 	}
 
@@ -333,11 +333,11 @@ if ( isset($_POST['submit']) ) {
 		}
 	}
 
-	if ( $select_iplist == '' ) {
+	if ( $select_iplist === '' ) {
 		$select_iplist = '<option value="-1">' . $lang['No_banned_ip'] . '</option>';
 	}
 
-	if ( $select_emaillist == '' ) {
+	if ( $select_emaillist === '' ) {
 		$select_emaillist = '<option value="-1">' . $lang['No_banned_email'] . '</option>';
 	}
 

@@ -766,7 +766,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 	$is_group_member = 0;
 
     foreach ($group_members as $group_member) {
-        if ($group_member->user_id == $userdata['user_id'] && $userdata['session_logged_in']) {
+        if ($group_member->user_id === $userdata['user_id'] && $userdata['session_logged_in']) {
             $is_group_member = true;
         }
     }
@@ -774,7 +774,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 	$is_group_pending_member = 0;
 
     foreach ($modgroup_pending_list as $modgroup_pending_value) {
-        if ($modgroup_pending_value->user_id == $userdata['user_id'] && $userdata['session_logged_in']) {
+        if ($modgroup_pending_value->user_id === $userdata['user_id'] && $userdata['session_logged_in']) {
             $is_group_pending_member = true;
         }
     }
@@ -783,7 +783,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
         $is_moderator = true;
     }
 
-    if ($userdata['user_id'] == $group_info->group_moderator) {
+    if ($userdata['user_id'] === $group_info->group_moderator) {
         $is_moderator = true;
 
         $group_details = $lang['Are_group_moderator'];

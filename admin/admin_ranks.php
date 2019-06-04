@@ -127,7 +127,7 @@ if ($mode !== "" ) {
 		
 		$rank_id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
 		$rank_title = isset($_POST['title']) ? trim($_POST['title']) : "";
-		$special_rank = ( $_POST['special_rank'] == 1 ) ? TRUE : 0;
+		$special_rank = ( $_POST['special_rank'] === 1 ) ? TRUE : 0;
 		$min_posts = isset($_POST['min_posts']) ? (int)$_POST['min_posts'] : -1;
 		$rank_image = isset($_POST['rank_image']) ? trim($_POST['rank_image']) : "";
 
@@ -135,7 +135,7 @@ if ($mode !== "" ) {
 			message_die(GENERAL_MESSAGE, $lang['Must_select_rank']);
 		}
 
-		if ($special_rank == 1 ) {
+		if ($special_rank === 1 ) {
 			$max_posts = -1;
 			$min_posts = -1;
 		}
@@ -143,7 +143,7 @@ if ($mode !== "" ) {
 		//
 		// The rank image has to be a jpg, gif or png
 		//
-		if ($rank_image != "") {
+		if ($rank_image !== "") {
 			if ( !preg_match("/(\.gif|\.png|\.jpg)$/is", $rank_image)) {
 				$rank_image = "";
 			}
@@ -277,7 +277,7 @@ foreach ($ranks as $i => $rank) {
 	$rank_id = $rank->rank_id;
 	$rank_min = $rank->rank_min;
 	
-	if ($special_rank == 1 ) {
+	if ($special_rank === 1 ) {
 		$rank_min = $rank_max = "-";
 	}
 

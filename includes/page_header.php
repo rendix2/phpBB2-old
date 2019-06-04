@@ -111,10 +111,10 @@ if (defined('SHOW_ONLINE')) {
 			if ( $row->user_id !== $prev_user_id ) {
 				$style_color = '';
 				
-				if ( $row->user_level == ADMIN ) {
+				if ( $row->user_level === ADMIN ) {
 					$row->username = '<b>' . $row->username . '</b>';
 					$style_color = 'style="color:#' . $theme['fontcolor3'] . '"';
-				} elseif ( $row->user_level == MOD ) {
+				} elseif ( $row->user_level === MOD ) {
 					$row->username = '<b>' . $row->username . '</b>';
 					$style_color = 'style="color:#' . $theme['fontcolor2'] . '"';
 				}
@@ -127,7 +127,7 @@ if (defined('SHOW_ONLINE')) {
 					$logged_hidden_online++;
 				}
 
-				if ( $row->user_allow_viewonline || $userdata['user_level'] == ADMIN ) {
+				if ( $row->user_allow_viewonline || $userdata['user_level'] === ADMIN ) {
 					$online_userlist .= ( $online_userlist !== '' ) ? ', ' . $user_online_link : $user_online_link;
 				}
 			}
@@ -164,34 +164,34 @@ if (defined('SHOW_ONLINE')) {
             ->execute();
 	}
 
-	if ( $total_online_users == 0 ) {
+	if ( $total_online_users === 0 ) {
 		$l_t_user_s = $lang['Online_users_zero_total'];
-	} elseif ( $total_online_users == 1 ) {
+	} elseif ( $total_online_users === 1 ) {
 		$l_t_user_s = $lang['Online_user_total'];
 	} else {
 		$l_t_user_s = $lang['Online_users_total'];
 	}
 
-	if ( $logged_visible_online == 0 ) {
+	if ( $logged_visible_online === 0 ) {
 		$l_r_user_s = $lang['Reg_users_zero_total'];
 	}
-	elseif ( $logged_visible_online == 1 ) {
+	elseif ( $logged_visible_online === 1 ) {
 		$l_r_user_s = $lang['Reg_user_total'];
 	} else {
 		$l_r_user_s = $lang['Reg_users_total'];
 	}
 
-	if ( $logged_hidden_online == 0 ) {
+	if ( $logged_hidden_online === 0 ) {
 		$l_h_user_s = $lang['Hidden_users_zero_total'];
-	} elseif ( $logged_hidden_online == 1 ) {
+	} elseif ( $logged_hidden_online === 1 ) {
 		$l_h_user_s = $lang['Hidden_user_total'];
 	} else {
 		$l_h_user_s = $lang['Hidden_users_total'];
 	}
 
-	if ( $guests_online == 0 ) {
+	if ( $guests_online === 0 ) {
 		$l_g_user_s = $lang['Guest_users_zero_total'];
-	} elseif ( $guests_online == 1 ) {
+	} elseif ( $guests_online === 1 ) {
 		$l_g_user_s = $lang['Guest_user_total'];
 	} else {
 		$l_g_user_s = $lang['Guest_users_total'];
@@ -209,7 +209,7 @@ if (defined('SHOW_ONLINE')) {
 //
 if ( $userdata['session_logged_in'] && empty($gen_simple_header)) {
 	if ($userdata['user_new_privmsg'] ) {
-		$l_message_new = ($userdata['user_new_privmsg'] == 1 ) ? $lang['New_pm'] : $lang['New_pms'];
+		$l_message_new = ($userdata['user_new_privmsg'] === 1 ) ? $lang['New_pm'] : $lang['New_pms'];
 		$l_privmsgs_text = sprintf($l_message_new, $userdata['user_new_privmsg']);
 
 		if ($userdata['user_last_privmsg'] > $userdata['user_lastvisit'] ) {
@@ -231,7 +231,7 @@ if ( $userdata['session_logged_in'] && empty($gen_simple_header)) {
 	}
 
 	if ($userdata['user_unread_privmsg'] ) {
-		$l_message_unread = ($userdata['user_unread_privmsg'] == 1 ) ? $lang['Unread_pm'] : $lang['Unread_pms'];
+		$l_message_unread = ($userdata['user_unread_privmsg'] === 1 ) ? $lang['Unread_pm'] : $lang['Unread_pms'];
 		$l_privmsgs_text_unread = sprintf($l_message_unread, $userdata['user_unread_privmsg']);
 	} else {
 		$l_privmsgs_text_unread = $lang['No_unread_pm'];

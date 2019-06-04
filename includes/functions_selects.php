@@ -47,7 +47,7 @@ function language_select($default, $select_name = "language", $dirname="language
 	$lang_select = '<select name="' . $select_name . '">';
 
 	foreach ($langs as $displayname => $filename) {
-		$selected = ( strtolower($default) == strtolower($filename) ) ? ' selected="selected"' : '';
+		$selected = ( strtolower($default) === strtolower($filename) ) ? ' selected="selected"' : '';
 		$lang_select .= '<option value="' . $filename . '"' . $selected . '>' . ucwords($displayname) . '</option>';
 	}
 
@@ -74,7 +74,7 @@ function style_select($default_style, $select_name = "style", $dirname = "templa
 	$style_select = '<select name="' . $select_name . '">';
 
 	foreach ($themes as $themes_id => $style_name) {
-		$selected = ( $themes_id == $default_style ) ? ' selected="selected"' : '';
+		$selected = ( $themes_id === $default_style ) ? ' selected="selected"' : '';
 
 		$style_select .= '<option value="' . $themes_id . '"' . $selected . '>' . $style_name . '</option>';
 	}
@@ -92,13 +92,13 @@ function tz_select($default, $select_name = 'timezone')
 	global $sys_timezone, $lang;
 
 	if ( !isset($default) ) {
-		$default == $sys_timezone;
+		$default === $sys_timezone;
 	}
 
 	$tz_select = '<select name="' . $select_name . '">';
 
 	foreach ($lang['tz'] as $offset => $zone) {
-		$selected = ( $offset == $default ) ? ' selected="selected"' : '';
+		$selected = ( $offset === $default ) ? ' selected="selected"' : '';
 		$tz_select .= '<option value="' . $offset . '"' . $selected . '>' . $zone . '</option>';
 	}
 

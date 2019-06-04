@@ -41,7 +41,7 @@ if (isset($_POST['add_name']) ) {
 
 	$disallowed_user = isset($_POST['disallowed_user']) ? trim($_POST['disallowed_user']) : trim($_GET['disallowed_user']);
 
-	if ($disallowed_user == '') {
+	if ($disallowed_user === '') {
 		message_die(GENERAL_MESSAGE, $lang['Fields_empty']);
 	}
 

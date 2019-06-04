@@ -69,7 +69,7 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 		$message = preg_replace($html_entities_match, $html_entities_replace, $message);
 	}
 
-	if ($bbcode_on && $bbcode_uid != '') {
+	if ($bbcode_on && $bbcode_uid !== '') {
 		$message = bbencode_first_pass($message, $bbcode_uid);
 	}
 
@@ -147,7 +147,7 @@ function prepare_post(&$mode, &$post_data, &$bbcode_on, &$html_on, &$smilies_on,
                 $error_msg .= !empty($error_msg) ? '<br />' . $lang['To_few_poll_options'] : $lang['To_few_poll_options'];
             } elseif (count($poll_options) > $board_config['max_poll_options']) {
                 $error_msg .= !empty($error_msg) ? '<br />' . $lang['To_many_poll_options'] : $lang['To_many_poll_options'];
-            } elseif ($poll_title == '') {
+            } elseif ($poll_title === '') {
                 $error_msg .= !empty($error_msg) ? '<br />' . $lang['Empty_poll_title'] : $lang['Empty_poll_title'];
             }
 		}
@@ -176,7 +176,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
             ->as('last_post_time')
             ->from(POSTS_TABLE);
 
-		if ($userdata['user_id'] == ANONYMOUS) {
+		if ($userdata['user_id'] === ANONYMOUS) {
 		    $max_post_time->where('poster_ip = %s', $user_ip);
         } else {
             $max_post_time->where('poster_id = %i', $userdata['user_id']);
@@ -736,8 +736,8 @@ function generate_smilies($mode, $page_id)
 
                 $s_colspan = max($s_colspan, $col + 1);
 
-                if ($col == $smilies_split_row) {
-                    if ($mode === 'inline' && $row == $inline_rows - 1) {
+                if ($col === $smilies_split_row) {
+                    if ($mode === 'inline' && $row === $inline_rows - 1) {
                         break;
                     }
 

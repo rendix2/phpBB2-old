@@ -300,14 +300,14 @@ if ($mode === 'searchuser') {
 
                             if (!$word_count) {
                                 $result_list[$post_id] = 1;
-                            } elseif ($current_match_type == 'or') {
+                            } elseif ($current_match_type === 'or') {
                                 $result_list[$post_id] = 1;
-                            } elseif ($current_match_type == 'not') {
+                            } elseif ($current_match_type === 'not') {
                                 $result_list[$post_id] = 0;
                             }
                         }
 
-                        if ($current_match_type == 'and' && $word_count) {
+                        if ($current_match_type === 'and' && $word_count) {
                             foreach ($result_list as $post_id => $match_count) {
                                 if (!$row[$post_id]) {
                                     $result_list[$post_id] = 0;
@@ -388,7 +388,7 @@ if ($mode === 'searchuser') {
 
                 if (count($search_ids) > $limiter) {
                     foreach ($search_ids as $search_id) {
-                        if ($count == $limiter) {
+                        if ($count === $limiter) {
                             $chunk++;
                             $count = 0;
                         }
@@ -459,7 +459,7 @@ if ($mode === 'searchuser') {
 
                 if (count($search_ids) > $limiter) {
                     foreach ($search_ids as $search_id) {
-                        if ($count == $limiter) {
+                        if ($count === $limiter) {
                             $chunk++;
                             $count = 0;
                         }
@@ -708,11 +708,11 @@ if ($mode === 'searchuser') {
                 ->where('u2.user_id = p2.poster_id');
 		}
 
-		$per_page = ( $show_results == 'posts' ) ? $board_config['posts_per_page'] : $board_config['topics_per_page'];
+		$per_page = ( $show_results === 'posts' ) ? $board_config['posts_per_page'] : $board_config['topics_per_page'];
 
 		switch ( $sort_by ) {
 			case 1:
-                $order_by = ($show_results == 'posts') ? 'pt.post_subject' : 't.topic_title';
+                $order_by = ($show_results === 'posts') ? 'pt.post_subject' : 't.topic_title';
                 $search_sets->orderBy($order_by, $sort_dir);
 				break;
 			case 2:
@@ -725,7 +725,7 @@ if ($mode === 'searchuser') {
                 $search_sets->orderBy('f.forum_id', $sort_dir);
 				break;
 			default:
-                $order_by = ( $show_results == 'posts' ) ? 'p.post_time' : 'p2.post_time';
+                $order_by = ( $show_results === 'posts' ) ? 'p.post_time' : 'p2.post_time';
                 $search_sets->orderBy($order_by, $sort_dir);
 				break;
 		}
@@ -747,7 +747,7 @@ if ($mode === 'searchuser') {
 		$page_title = $lang['Search'];
 		include $phpbb_root_path . 'includes/page_header.php';
 
-        if ($show_results == 'posts') {
+        if ($show_results === 'posts') {
             $template->set_filenames(['body' => 'search_results_posts.tpl']);
         } else {
             $template->set_filenames(['body' => 'search_results_topics.tpl']);
@@ -755,7 +755,7 @@ if ($mode === 'searchuser') {
 
         make_jumpbox('viewforum.php');
 
-		$l_search_matches = ( $total_match_count == 1 ) ? sprintf($lang['Found_search_match'], $total_match_count) : sprintf($lang['Found_search_matches'], $total_match_count);
+		$l_search_matches = ( $total_match_count === 1 ) ? sprintf($lang['Found_search_match'], $total_match_count) : sprintf($lang['Found_search_matches'], $total_match_count);
 
         $template->assign_vars(
             [
@@ -775,7 +775,7 @@ if ($mode === 'searchuser') {
 				foreach ($synonym_array as $synonym) {
 					list($replace_synonym, $match_synonym) = explode(' ', trim(strtolower($synonym)));
 
-					if ( $replace_synonym == $split_word ) {
+					if ( $replace_synonym === $split_word ) {
 						$highlight_match[] = '#\b(' . str_replace("*", "([\w]+)?", $replace_synonym) . ')\b#is';
 						$highlight_active .= ' ' . $match_synonym;
 					}
@@ -802,7 +802,7 @@ if ($mode === 'searchuser') {
 			$forum_id = $search_set->forum_id;
 			$topic_id = $search_set->topic_id;
 
-            if ($show_results == 'posts') {
+            if ($show_results === 'posts') {
                 if (isset($return_chars)) {
 					$bbcode_uid = $search_set->bbcode_uid;
 
@@ -850,9 +850,9 @@ if ($mode === 'searchuser') {
 											$end_counter = 1;
 
                                             while ($end_counter && $end_html < strlen($message)) {
-                                                if (substr($message, $end_html, 1) == '>') {
+                                                if (substr($message, $end_html, 1) === '>') {
                                                     $end_counter--;
-                                                } elseif (substr($message, $end_html, 1) == '<') {
+                                                } elseif (substr($message, $end_html, 1) === '<') {
                                                     $end_counter++;
                                                 }
 
@@ -863,9 +863,9 @@ if ($mode === 'searchuser') {
 											$hold_string = substr($message, $start_html, $length);
 											$hold_string = str_replace('<!-- #sh -->', '', $hold_string);
 											$hold_string = str_replace('<!-- #eh -->', '', $hold_string);
-										} elseif ( $hold_string == '<!-- #sh -->' ) {
+										} elseif ( $hold_string === '<!-- #sh -->' ) {
 											$hold_string = str_replace('<!-- #sh -->', '<span style="color:#' . $theme['fontcolor3'] . '"><b>', $hold_string);
-                                        } elseif ($hold_string == '<!-- #eh -->') {
+                                        } elseif ($hold_string === '<!-- #eh -->') {
                                             $hold_string = str_replace('<!-- #eh -->', '</b></span>', $hold_string);
                                         }
 
@@ -996,7 +996,7 @@ if ($mode === 'searchuser') {
                     $goto_page = '';
                 }
 
-                if ($search_set->topic_status == TOPIC_MOVED) {
+                if ($search_set->topic_status === TOPIC_MOVED) {
 					$topic_type = $lang['Topic_Moved'] . ' ';
 					$topic_id = $search_set->topic_moved_id;
 
@@ -1052,7 +1052,7 @@ if ($mode === 'searchuser') {
 
                                     $newest_post_img = '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
                                 } else {
-                                    $folder_alt = ($search_set->topic_status == TOPIC_LOCKED) ? $lang['Topic_locked'] : $lang['No_new_posts'];
+                                    $folder_alt = ($search_set->topic_status === TOPIC_LOCKED) ? $lang['Topic_locked'] : $lang['No_new_posts'];
 
                                     $folder_image = $folder;
                                     $newest_post_img = '';
@@ -1065,17 +1065,17 @@ if ($mode === 'searchuser') {
 								$newest_post_img = '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
 							} else {
 								$folder_image = $folder;
-								$folder_alt = ( $search_set->topic_status == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
+								$folder_alt = ( $search_set->topic_status === TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
 								$newest_post_img = '';
 							}
 						} else {
 							$folder_image = $folder;
-							$folder_alt = ( $search_set->topic_status == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
+							$folder_alt = ( $search_set->topic_status === TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
 							$newest_post_img = '';
 						}
 					} else {
 						$folder_image = $folder;
-						$folder_alt = ( $search_set->topic_status == TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
+						$folder_alt = ( $search_set->topic_status === TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
 						$newest_post_img = '';
 					}
 				}
@@ -1203,7 +1203,7 @@ $s_characters .= '<option value="25">25</option>';
 $s_characters .= '<option value="50">50</option>';
 
 for ($i = 100; $i < 1100; $i += 100) {
-	$selected = ( $i == 200 ) ? ' selected="selected"' : '';
+	$selected = ( $i === 200 ) ? ' selected="selected"' : '';
 	$s_characters .= '<option value="' . $i . '"' . $selected . '>' . $i . '</option>';
 }
 
@@ -1241,7 +1241,7 @@ $previous_days = [
 $s_time = '';
 
 foreach ($previous_days as $previous_day_key => $previous_days_value) {
-	$selected = ( $topic_days == $previous_day_key ) ? ' selected="selected"' : '';
+	$selected = ( $topic_days === $previous_day_key ) ? ' selected="selected"' : '';
 
 	$s_time .= '<option value="' . $previous_day_key . '"' . $selected . '>' . $previous_days_value . '</option>';
 }

@@ -205,7 +205,7 @@ if (
 	if (!empty($_POST['avatarurl'])) {
         $user_avatar_upload = trim($_POST['avatarurl']);
     } else {
-        $user_avatar_upload = $_FILES['avatar']['tmp_name'] != "none" ? $_FILES['avatar']['tmp_name'] : '';
+        $user_avatar_upload = $_FILES['avatar']['tmp_name'] !== "none" ? $_FILES['avatar']['tmp_name'] : '';
     }
 
 	$user_avatar_name     = !empty($_FILES['avatar']['name']) ? $_FILES['avatar']['name'] : '';
@@ -248,7 +248,7 @@ if (
 // and ensure that they were trying to register a second time
 // (Prevents double registrations)
 //
-if ($mode === 'register' && ($userdata['session_logged_in'] || $username == $userdata['username'])) {
+if ($mode === 'register' && ($userdata['session_logged_in'] || $username === $userdata['username'])) {
 	message_die(GENERAL_MESSAGE, $lang['Username_taken'], '', __LINE__, __FILE__);
 }
 
@@ -260,13 +260,13 @@ if ( isset($_POST['submit']) )
 	include $phpbb_root_path . 'includes/usercp_avatar.php';
 
 	// session id check
-	if ($sid == '' || $sid != $userdata['session_id']) {
+	if ($sid === '' || $sid !== $userdata['session_id']) {
 		$error = true;
 		$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Session_invalid'];
 	}
 
 	if ( $mode === 'editprofile' ) {
-		if ( $user_id != $userdata['user_id'] ) {
+		if ( $user_id !== $userdata['user_id'] ) {
 			$error = true;
 			$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Wrong_Profile'];
 		}
@@ -298,7 +298,7 @@ if ( isset($_POST['submit']) )
 			if ($row) {
                 // IT WAS LOOKE
                 //if ($row->code != $confirm_code) {
-				if ($row->code != $_POST['confirm_code']) {
+				if ($row->code !== $_POST['confirm_code']) {
 					$error = TRUE;
 					$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Confirm_code_wrong'];
 				} else {
@@ -317,7 +317,7 @@ if ( isset($_POST['submit']) )
 	$user_password_data = [];
 
 	if ( !empty($new_password) && !empty($password_confirm) ) {
-		if ( $new_password != $password_confirm ) {
+		if ( $new_password !== $password_confirm ) {
 			$error = TRUE;
 			$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Password_mismatch'];
 		} elseif ( strlen($new_password) > 32 ) {
@@ -353,7 +353,7 @@ if ( isset($_POST['submit']) )
 	//
 	// Do a ban check on this email address
 	//
-	if ( $email != $userdata['user_email'] || $mode === 'register' )
+	if ( $email !== $userdata['user_email'] || $mode === 'register' )
 	{
 		$result = validate_email($email);
 
@@ -388,8 +388,8 @@ if ( isset($_POST['submit']) )
 		if ( empty($username) ) {
 			// Error is already triggered, since one field is empty.
 			$error = TRUE;
-		} elseif ( $username != $userdata['username'] || $mode === 'register') {
-			if (strtolower($username) != strtolower($userdata['username']) || $mode === 'register') {
+		} elseif ( $username !== $userdata['username'] || $mode === 'register') {
+			if (strtolower($username) !== strtolower($userdata['username']) || $mode === 'register') {
 				$result = validate_username($username);
 
 				if ( $result['error'] ) {
@@ -404,13 +404,13 @@ if ( isset($_POST['submit']) )
 		}
 	}
 
-	if ( $signature != '' ) {
+	if ( $signature !== '' ) {
 		if ( strlen($signature) > $board_config['max_sig_chars'] ) {
 			$error = TRUE;
 			$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Signature_too_long'];
 		}
 
-		if ( !isset($signature_bbcode_uid) || $signature_bbcode_uid == '' ) {
+		if ( !isset($signature_bbcode_uid) || $signature_bbcode_uid === '' ) {
 			$signature_bbcode_uid = $allowbbcode ? make_bbcode_uid() : '';
 		}
 		$signature = prepare_message($signature, $allowhtml, $allowbbcode, $allowsmilies, $signature_bbcode_uid);
@@ -534,7 +534,7 @@ if ( isset($_POST['submit']) )
                     );
                     $emailer->send();
  					$emailer->reset();
- 				} elseif ( $board_config['require_activation'] == USER_ACTIVATION_ADMIN ) {
+ 				} elseif ( $board_config['require_activation'] === USER_ACTIVATION_ADMIN ) {
  				    $admins = dibi::select(['user_email', 'user_lang'])
                         ->from(USERS_TABLE)
                         ->where('user_level = %i', ADMIN)
@@ -615,7 +615,7 @@ if ( isset($_POST['submit']) )
 
             $insert_data = array_merge($insert_data, $avatar_data);
 
-			if ( $board_config['require_activation'] == USER_ACTIVATION_SELF || $board_config['require_activation'] == USER_ACTIVATION_ADMIN || $coppa ) {
+			if ( $board_config['require_activation'] === USER_ACTIVATION_SELF || $board_config['require_activation'] === USER_ACTIVATION_ADMIN || $coppa ) {
 				$user_actkey = gen_rand_string(true);
 				$key_len = 54 - strlen($server_url);
 				$key_len = ( $key_len > 6 ) ? $key_len : 6;
@@ -650,10 +650,10 @@ if ( isset($_POST['submit']) )
 			if ( $coppa ) {
 				$message = $lang['COPPA'];
 				$email_template = 'coppa_welcome_inactive';
-			} elseif ( $board_config['require_activation'] == USER_ACTIVATION_SELF ) {
+			} elseif ( $board_config['require_activation'] === USER_ACTIVATION_SELF ) {
 				$message = $lang['Account_inactive'];
 				$email_template = 'user_welcome_inactive';
-			} elseif ( $board_config['require_activation'] == USER_ACTIVATION_ADMIN ) {
+			} elseif ( $board_config['require_activation'] === USER_ACTIVATION_ADMIN ) {
 				$message = $lang['Account_inactive_admin'];
 				$email_template = 'admin_welcome_inactive';
 			} else {
@@ -710,7 +710,7 @@ if ( isset($_POST['submit']) )
 			$emailer->send();
 			$emailer->reset();
 
-			if ( $board_config['require_activation'] == USER_ACTIVATION_ADMIN ) {
+			if ( $board_config['require_activation'] === USER_ACTIVATION_ADMIN ) {
 			    $admins = dibi::select(['user_email', 'user_lang'])
                     ->from(USERS_TABLE)
                     ->where('user_level = %i', ADMIN)
@@ -765,7 +765,7 @@ if ( $error ) {
 	$occupation = stripslashes($occupation);
 	$interests = stripslashes($interests);
 	$signature = stripslashes($signature);
-	$signature = ($signature_bbcode_uid != '') ? preg_replace("/:(([a-z0-9]+:)?)$signature_bbcode_uid(=|\])/si", '\\3', $signature) : $signature;
+	$signature = ($signature_bbcode_uid !== '') ? preg_replace("/:(([a-z0-9]+:)?)$signature_bbcode_uid(=|\])/si", '\\3', $signature) : $signature;
 
 	$user_lang = stripslashes($user_lang);
 	$user_dateformat = stripslashes($user_dateformat);
@@ -787,7 +787,7 @@ if ( $error ) {
 	$occupation = $userdata['user_occ'];
 	$interests = $userdata['user_interests'];
 	$signature_bbcode_uid = $userdata['user_sig_bbcode_uid'];
-	$signature = ($signature_bbcode_uid != '') ? preg_replace("/:(([a-z0-9]+:)?)$signature_bbcode_uid(=|\])/si", '\\3', $userdata['user_sig']) : $userdata['user_sig'];
+	$signature = ($signature_bbcode_uid !== '') ? preg_replace("/:(([a-z0-9]+:)?)$signature_bbcode_uid(=|\])/si", '\\3', $userdata['user_sig']) : $userdata['user_sig'];
 
 	$viewemail = $userdata['user_viewemail'];
 	$notifypm = $userdata['user_notify_pm'];
@@ -816,7 +816,7 @@ include $phpbb_root_path . 'includes/page_header.php';
 make_jumpbox('viewforum.php');
 
 if ( $mode === 'editprofile' ) {
-	if ( $user_id != $userdata['user_id'] ) {
+	if ( $user_id !== $userdata['user_id'] ) {
 		$error = TRUE;
 		$error_msg = $lang['Wrong_Profile'];
 	}
@@ -949,7 +949,7 @@ if (isset($_POST['avatargallery']) && !$error ) {
 	// us from doing file uploads....
 	//
 	$ini_val = ( PHP_VERSION >= '4.0.0' ) ? 'ini_get' : 'get_cfg_var';
-	$form_enctype = ( @$ini_val('file_uploads') == '0' || strtolower(@$ini_val('file_uploads') == 'off') || PHP_VERSION == '4.0.4pl1' || !$board_config['allow_avatar_upload'] || ( PHP_VERSION < '4.0.3' && @$ini_val('open_basedir') != '' ) ) ? '' : 'enctype="multipart/form-data"';
+	$form_enctype = ( @$ini_val('file_uploads') === '0' || strtolower(@$ini_val('file_uploads')) === 'off' || PHP_VERSION === '4.0.4pl1' || !$board_config['allow_avatar_upload'] || ( PHP_VERSION < '4.0.3' && @$ini_val('open_basedir') !== '' ) ) ? '' : 'enctype="multipart/form-data"';
 
 	$template->assign_vars(array(
             'USERNAME' => isset($username) ? $username : '',
@@ -1075,7 +1075,7 @@ if (isset($_POST['avatargallery']) && !$error ) {
 			$template->assign_block_vars('switch_avatar_block', [] );
 
 			if ( $board_config['allow_avatar_upload'] && file_exists(@phpbb_realpath('./' . $board_config['avatar_path'])) ) {
-				if ( $form_enctype != '' ) {
+				if ( $form_enctype !== '' ) {
 					$template->assign_block_vars('switch_avatar_block.switch_avatar_local_upload', [] );
 				}
 

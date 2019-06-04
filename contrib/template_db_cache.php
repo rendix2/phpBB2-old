@@ -108,7 +108,7 @@ class Template {
             ->fetchAll();
 
         foreach ($rows as $row) {
-            if ($row->template_cached == filemtime($row->template_name) ) {
+            if ($row->template_cached === filemtime($row->template_name) ) {
                 $this->compiled_code[$row->template_handle] = $row->template_compile;
                 $this->echo_compiled[$row->template_handle] = $row->template_echo;
             }
@@ -153,7 +153,7 @@ class Template {
 		$_str = "";
 		eval($this->compiled_code[$handle]);
 
-		if ($_str != "" )
+		if ($_str !== "" )
 		{
 			echo $_str;
 		}
@@ -278,7 +278,7 @@ class Template {
 	function make_filename($filename)
 	{
 		// Check if it's an absolute or relative path.
-		if (substr($filename, 0, 1) != '/')
+		if (substr($filename, 0, 1) !== '/')
 		{
 			$filename = $this->root . '/' . $filename;
 		}

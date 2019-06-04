@@ -38,7 +38,7 @@ if (!empty($setmodules) ) {
 
 	$file_uploads = (@PHP_VERSION >= '4.0.0') ? @ini_get('file_uploads') : @get_cfg_var('file_uploads');
 
-	if ((empty($file_uploads) || $file_uploads != 0) && (strtolower($file_uploads) != 'off') && (@PHP_VERSION != '4.0.4pl1') ) {
+	if ((empty($file_uploads) || $file_uploads !== 0) && (strtolower($file_uploads) !== 'off') && (@PHP_VERSION !== '4.0.4pl1') ) {
 		$module['Database']['Restore_DB'] = $filename . "?perform=restore";
 	}
 
@@ -123,10 +123,10 @@ if (isset($_GET['perform']) || isset($_POST['perform']) ) {
 				// If no file was uploaded report an error...
 				//
 				$backup_file_name = !empty($_FILES['backup_file']['name']) ? $_FILES['backup_file']['name'] : "";
-				$backup_file_tmpname = ($_FILES['backup_file']['tmp_name'] != "none") ? $_FILES['backup_file']['tmp_name'] : "";
+				$backup_file_tmpname = ($_FILES['backup_file']['tmp_name'] !== "none") ? $_FILES['backup_file']['tmp_name'] : "";
 				$backup_file_type = !empty($_FILES['backup_file']['type']) ? $_FILES['backup_file']['type'] : "";
 
-				if ($backup_file_tmpname == "" || $backup_file_name == "") {
+				if ($backup_file_tmpname === "" || $backup_file_name === "") {
 					message_die(GENERAL_MESSAGE, $lang['Restore_Error_no_file']);
 				}
 				//

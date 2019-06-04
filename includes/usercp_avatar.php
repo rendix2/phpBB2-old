@@ -52,7 +52,7 @@ function user_avatar_delete($avatar_type, $avatar_file)
 
 	$avatar_file = basename($avatar_file);
 
-	if ( $avatar_type == USER_AVATAR_UPLOAD && $avatar_file !== '' ) {
+	if ( $avatar_type === USER_AVATAR_UPLOAD && $avatar_file !== '' ) {
 		if ( @file_exists(@phpbb_realpath('./' . $board_config['avatar_path'] . '/' . $avatar_file)) ) {
 			@unlink('./' . $board_config['avatar_path'] . '/' . $avatar_file);
 		}
@@ -80,7 +80,7 @@ function user_avatar_gallery($mode, &$error, &$error_msg, $avatar_filename, $ava
 		return [];
 	}
 
-	if ($avatar_filename == "" || $avatar_category == "") {
+	if ($avatar_filename === "" || $avatar_category === "") {
 		return [];
 	} 
 
@@ -299,7 +299,7 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 
 					$avatar_col_count++;
 
-					if ($avatar_col_count == 5 ) {
+					if ($avatar_col_count === 5 ) {
 						$avatar_row_count++;
 						$avatar_col_count = 0;
 					}
@@ -322,7 +322,7 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 	$s_categories = '<select name="avatarcategory">';
 
 	foreach ($avatar_images as $key => $value) {
-		$selected = ( $key == $category ) ? ' selected="selected"' : '';
+		$selected = ( $key === $category ) ? ' selected="selected"' : '';
 
 		if (count($avatar_images[$key]) ) {
 			$s_categories .= '<option value="' . $key . '"' . $selected . '>' . ucfirst($key) . '</option>';

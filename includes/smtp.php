@@ -29,7 +29,7 @@ define('SMTP_INCLUDED', 1);
 function server_parse($socket, $response, $line = __LINE__) 
 {
 	$server_response = '';
-	while (substr($server_response, 3, 1) != ' ') 
+	while (substr($server_response, 3, 1) !== ' ')
 	{
 		if (!($server_response = fgets($socket, 256))) 
 		{ 
@@ -37,7 +37,7 @@ function server_parse($socket, $response, $line = __LINE__)
 		} 
 	} 
 
-	if (!(substr($server_response, 0, 3) == $response)) 
+	if (!(substr($server_response, 0, 3) === $response))
 	{ 
 		message_die(GENERAL_ERROR, "Ran into problems sending Mail. Response: $server_response", "", $line, __FILE__); 
 	} 
@@ -51,7 +51,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 	// Fix any bare linefeeds in the message to make it RFC821 Compliant.
 	$message = preg_replace("#(?<!\r)\n#si", "\r\n", $message);
 
-	if ($headers != '')
+	if ($headers !== '')
 	{
 		if (is_array($headers))
 		{
@@ -85,7 +85,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 				$bcc = preg_replace('#^bcc:(.*)#si', '\1', $header);
 				$header = '';
 			}
-			$headers .= ($header != '') ? $header . "\r\n" : '';
+			$headers .= ($header !== '') ? $header . "\r\n" : '';
 		}
 
 		$headers = rtrim($headers);
@@ -93,12 +93,12 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 		$bcc = explode(', ', $bcc);
 	}
 
-	if (trim($subject) == '')
+	if (trim($subject) === '')
 	{
 		message_die(GENERAL_ERROR, "No email Subject specified", "", __LINE__, __FILE__);
 	}
 
-	if (trim($message) == '')
+	if (trim($message) === '')
 	{
 		message_die(GENERAL_ERROR, "Email message was blank", "", __LINE__, __FILE__);
 	}
@@ -144,7 +144,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 	$to_header = '';
 
 	// Add an additional bit of error checking to the To field.
-	$mail_to = (trim($mail_to) == '') ? 'Undisclosed-recipients:;' : trim($mail_to);
+	$mail_to = (trim($mail_to) === '') ? 'Undisclosed-recipients:;' : trim($mail_to);
 	if (preg_match('#[^ ]+\@[^ ]+#', $mail_to))
 	{
 		fwrite($socket, "RCPT TO: <$mail_to>\r\n");

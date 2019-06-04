@@ -73,8 +73,8 @@ function phpbb_ltrim($str, $charlist = false)
 	$php_version = explode('.', PHP_VERSION);
 
 	// php version < 4.1.0
-    if ((int)$php_version[0] < 4 || ((int)$php_version[0] == 4 && (int)$php_version[1] < 1)) {
-        while ($str{0} == $charlist) {
+    if ((int)$php_version[0] < 4 || ((int)$php_version[0] === 4 && (int)$php_version[1] < 1)) {
+        while ($str{0} === $charlist) {
             $str = substr($str, 1);
         }
     } else {
@@ -94,8 +94,8 @@ function phpbb_rtrim($str, $charlist = false)
 	$php_version = explode('.', PHP_VERSION);
 
 	// php version < 4.1.0
-    if ((int)$php_version[0] < 4 || ((int)$php_version[0] == 4 && (int)$php_version[1] < 1)) {
-        while ($str{strlen($str) - 1} == $charlist) {
+    if ((int)$php_version[0] < 4 || ((int)$php_version[0] === 4 && (int)$php_version[1] < 1)) {
+        while ($str{strlen($str) - 1} === $charlist) {
             $str = substr($str, 0, strlen($str) - 1);
         }
     } else {
@@ -190,11 +190,11 @@ function make_jumpbox($action, $match_forum_id = 0)
 				$boxstring_forums = '';
 
 				foreach ($forums as $forum) {
-					if ( $forum->cat_id == $category->cat_id && $forum->auth_view <= AUTH_REG ) {
+					if ( $forum->cat_id === $category->cat_id && $forum->auth_view <= AUTH_REG ) {
 
 //					if ( $forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $is_auth[$forum_rows[$j]['forum_id']]['auth_view'] )
 //					{
-						$selected = ( $forum->forum_id == $match_forum_id ) ? 'selected="selected"' : '';
+						$selected = ( $forum->forum_id === $match_forum_id ) ? 'selected="selected"' : '';
 						$boxstring_forums .=  '<option value="' . $forum->forum_id . '"' . $selected . '>' . $forum->forum_name . '</option>';
 
 						//
@@ -208,7 +208,7 @@ function make_jumpbox($action, $match_forum_id = 0)
 					}
 				}
 
-				if ( $boxstring_forums != '' )
+				if ( $boxstring_forums !== '' )
 				{
 					$boxstring .= '<option value="-1">&nbsp;</option>';
 					$boxstring .= '<option value="-1">' . $category->cat_title . '</option>';
@@ -423,7 +423,7 @@ function create_date($format, $gmepoch, $tz)
 	global $board_config, $lang;
 	static $translate;
 
-    if (empty($translate) && $board_config['default_lang'] != 'english') {
+    if (empty($translate) && $board_config['default_lang'] !== 'english') {
 		foreach ($lang['datetime'] as $match => $replace) {
 			$translate[$match] = $replace;
 		}
@@ -442,7 +442,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 	$total_pages = ceil($num_items/$per_page);
 
-	if ( $total_pages == 1 ) {
+	if ( $total_pages === 1 ) {
 		return '';
 	}
 
@@ -453,7 +453,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 		$init_page_max = ( $total_pages > 3 ) ? 3 : $total_pages;
 
 		for ($i = 1; $i < $init_page_max + 1; $i++) {
-			$page_string .= ( $i == $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+			$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
 			if ( $i <  $init_page_max ) {
 				$page_string .= ", ";
@@ -468,7 +468,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 				$init_page_max = ( $on_page < $total_pages - 4 ) ? $on_page : $total_pages - 4;
 
 				for ($i = $init_page_min - 1; $i < $init_page_max + 2; $i++) {
-					$page_string .= ($i == $on_page) ? '<b>' . $i . '</b>' : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+					$page_string .= ($i === $on_page) ? '<b>' . $i . '</b>' : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
 					if ( $i <  $init_page_max + 1 ) {
 						$page_string .= ', ';
@@ -481,7 +481,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 			}
 
 			for ($i = $total_pages - 2; $i < $total_pages + 1; $i++) {
-				$page_string .= ( $i == $on_page ) ? '<b>' . $i . '</b>'  : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+				$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>'  : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
 				if ($i <  $total_pages ) {
 					$page_string .= ", ";
@@ -491,7 +491,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 	}
 	else {
 		for ($i = 1; $i < $total_pages + 1; $i++) {
-			$page_string .= ( $i == $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+			$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
 			if ( $i <  $total_pages ) {
 				$page_string .= ', ';
@@ -585,13 +585,13 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 	// Get SQL error if we are debugging. Do this as soon as possible to prevent 
 	// subsequent queries from overwriting the status of sql_error()
 	//
-	if ( DEBUG && ( $msg_code == GENERAL_ERROR || $msg_code == CRITICAL_ERROR ) ) {
-		if ( $err_line != '' && $err_file != '' ) {
+	if ( DEBUG && ( $msg_code === GENERAL_ERROR || $msg_code === CRITICAL_ERROR ) ) {
+		if ( $err_line !== '' && $err_file !== '' ) {
 			$debug_text .= '<br /><br />Line : ' . $err_line . '<br />File : ' . basename($err_file);
 		}
 	}
 
-	if (empty($userdata) && ( $msg_code == GENERAL_MESSAGE || $msg_code == GENERAL_ERROR ) ) {
+	if (empty($userdata) && ( $msg_code === GENERAL_MESSAGE || $msg_code === GENERAL_ERROR ) ) {
 		$userdata = session_pagestart($user_ip, PAGE_INDEX);
 		init_userprefs($userdata);
 	}
@@ -599,7 +599,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 	//
 	// If the header hasn't been output then do it
 	//
-	if ( !defined('HEADER_INC') && $msg_code != CRITICAL_ERROR ) {
+	if ( !defined('HEADER_INC') && $msg_code !== CRITICAL_ERROR ) {
 		if ( empty($lang) ) {
 			if ( !empty($board_config['default_lang']) ) {
 				include $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.php';
@@ -625,23 +625,23 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 	switch($msg_code)
 	{
 		case GENERAL_MESSAGE:
-			if ( $msg_title == '' ) {
+			if ( $msg_title === '' ) {
 				$msg_title = $lang['Information'];
 			}
 			break;
 
 		case CRITICAL_MESSAGE:
-			if ( $msg_title == '' ) {
+			if ( $msg_title === '' ) {
 				$msg_title = $lang['Critical_Information'];
 			}
 			break;
 
 		case GENERAL_ERROR:
-			if ( $msg_text == '' ) {
+			if ( $msg_text === '' ) {
 				$msg_text = $lang['An_error_occured'];
 			}
 
-			if ( $msg_title == '' ) {
+			if ( $msg_title === '' ) {
 				$msg_title = $lang['General_Error'];
 			}
 			break;
@@ -653,11 +653,11 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 			//
 			include $phpbb_root_path . 'language/lang_english/lang_main.php';
 
-			if ( $msg_text == '' ) {
+			if ( $msg_text === '' ) {
 				$msg_text = $lang['A_critical_error'];
 			}
 
-			if ( $msg_title == '' ) {
+			if ( $msg_title === '' ) {
 				$msg_title = 'phpBB : <b>' . $lang['Critical_Error'] . '</b>';
 			}
 			break;
@@ -669,7 +669,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 	// set TRUE by accident (preventing confusion for the end user!)
 	//
     if (DEBUG && ($msg_code === GENERAL_ERROR || $msg_code === CRITICAL_ERROR)) {
-        if ($debug_text != '') {
+        if ($debug_text !== '') {
             $msg_text = $msg_text . '<br /><br /><b><u>DEBUG MODE</u></b>' . $debug_text;
         }
     }
@@ -733,7 +733,7 @@ function redirect($url)
 	$server_name = preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['server_name']));
 	$server_port = ($board_config['server_port'] <> 80) ? ':' . trim($board_config['server_port']) : '';
 	$script_name = preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['script_path']));
-	$script_name = ($script_name == '') ? $script_name : '/' . $script_name;
+	$script_name = ($script_name === '') ? $script_name : '/' . $script_name;
 	$url = preg_replace('#^\/?(.*?)\/?$#', '/\1', trim($url));
 
 	// Redirect via an HTML form for PITA webservers

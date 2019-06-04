@@ -40,7 +40,7 @@ if (trim($user->user_actkey) !== '' && trim($row['user_actkey']) !== trim($_GET[
     message_die(GENERAL_MESSAGE, $lang['Wrong_activation']);
 }
 
-if ($row['user_active'] && trim($row['user_actkey']) == '') {
+if ($row['user_active'] && trim($row['user_actkey']) === '') {
     $template->assign_vars(
         ['META' => '<meta http-equiv="refresh" content="10;url=' . append_sid("index.php") . '">']
     );
@@ -51,7 +51,7 @@ if ($row['user_active'] && trim($row['user_actkey']) == '') {
 // we have done some basic checks
 // now we can active user
 
-if ((int)$board_config['require_activation'] == USER_ACTIVATION_ADMIN && $row['user_newpasswd'] == '') {
+if ((int)$board_config['require_activation'] === USER_ACTIVATION_ADMIN && $row['user_newpasswd'] === '') {
     if (!$userdata['session_logged_in']) {
         redirect(append_sid('login.php?redirect=profile.php&mode=activate&' . POST_USERS_URL . '=' . $row['user_id'] . '&act_key=' . trim($_GET['act_key'])));
     } elseif ($userdata['user_level'] !== ADMIN) {
@@ -73,7 +73,7 @@ dibi::update(USERS_TABLE, $update_data)
     ->where('user_id = %i', $row['user_id'])
     ->execute();
 
-if ((int)$board_config['require_activation'] == USER_ACTIVATION_ADMIN && $sql_update_pass == '') {
+if ((int)$board_config['require_activation'] === USER_ACTIVATION_ADMIN && $sql_update_pass === '') {
     include $phpbb_root_path . 'includes/emailer.php';
     $emailer = new emailer($board_config['smtp_delivery']);
 
@@ -104,7 +104,7 @@ if ((int)$board_config['require_activation'] == USER_ACTIVATION_ADMIN && $sql_up
         'META' => '<meta http-equiv="refresh" content="10;url=' . append_sid("index.php") . '">'
     ]);
 
-    $message = ($sql_update_pass == '') ? $lang['Account_active'] : $lang['Password_activated'];
+    $message = ($sql_update_pass === '') ? $lang['Account_active'] : $lang['Password_activated'];
     message_die(GENERAL_MESSAGE, $message);
 }
 

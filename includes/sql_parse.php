@@ -73,8 +73,8 @@ function remove_remarks($sql)
 	$output = "";
 
 	foreach ($lines as $i => $line) {
-		if (($i != ($linecount - 1)) || (strlen($line) > 0)) {
-			if ($line[0] != "#") {
+		if (($i !== ($linecount - 1)) || (strlen($line) > 0)) {
+			if ($line[0] !== "#") {
 				$output .= $line . "\n";
 			} else {
 				$output .= "\n";
@@ -108,7 +108,7 @@ function split_sql_file($sql, $delimiter)
 	$token_count = count($tokens);
 	foreach ($tokens as $i => $token) {
 		// Don't wanna add an empty string as the last thing in the array.
-		if (($i != ($token_count - 1)) || strlen($token > 0)) {
+		if (($i !== ($token_count - 1)) || strlen($token > 0)) {
 			// This is the total number of single quotes in the token.
 			$total_quotes = preg_match_all("/'/", $token, $matches);
 			// Counts single quotes that are preceded by an odd number of backslashes, 

@@ -338,7 +338,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
                                 $forum_auth_action[$forum_id] = 'update';
                             }
 						} elseif ( ( empty($auth_access[$forum_id]['auth_mod']) &&
-							( isset($auth_access[$forum_id][$auth_field]) && $change_acl_list[$forum_id][$auth_field] == $auth_access[$forum_id][$auth_field] ) ) && $forum_auth_action[$forum_id] == 'delete'
+							( isset($auth_access[$forum_id][$auth_field]) && $change_acl_list[$forum_id][$auth_field] === $auth_access[$forum_id][$auth_field] ) ) && $forum_auth_action[$forum_id] === 'delete'
                         ) {
 							$forum_auth_action[$forum_id] = 'update';
 						}

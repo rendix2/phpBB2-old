@@ -132,7 +132,7 @@ if ($mode === 'newpm') {
 
     if ($userdata['session_logged_in']) {
         if ($userdata['user_new_privmsg']) {
-            $l_new_message = ($userdata['user_new_privmsg'] == 1) ? $lang['You_new_pm'] : $lang['You_new_pms'];
+            $l_new_message = ($userdata['user_new_privmsg'] === 1) ? $lang['You_new_pm'] : $lang['You_new_pms'];
         } else {
             $l_new_message = $lang['You_no_new_pm'];
         }
@@ -266,7 +266,7 @@ if ($mode === 'newpm') {
 	// Is this a new message in the inbox? If it is then save
 	// a copy in the posters sent box
 	//
-	if (($privmsg->privmsgs_type == PRIVMSGS_NEW_MAIL || $privmsg->privmsgs_type == PRIVMSGS_UNREAD_MAIL) && $folder == 'inbox') {
+	if (($privmsg->privmsgs_type === PRIVMSGS_NEW_MAIL || $privmsg->privmsgs_type === PRIVMSGS_UNREAD_MAIL) && $folder === 'inbox') {
 		// Update appropriate counter
 		switch ($privmsg->privmsgs_type) {
 			case PRIVMSGS_NEW_MAIL:
@@ -293,7 +293,7 @@ if ($mode === 'newpm') {
             ->where('privmsgs_from_userid = %i', $privmsg->privmsgs_from_userid)
             ->fetch();
 
-		$sql_priority = ( $dbms == 'mysql' ) ? 'LOW_PRIORITY' : '';
+		$sql_priority = ( $dbms === 'mysql' ) ? 'LOW_PRIORITY' : '';
 
         if ($sent_info) {
 			if ($board_config['max_sentbox_privmsgs'] && $sent_info->sent_items >= $board_config['max_sentbox_privmsgs']) {

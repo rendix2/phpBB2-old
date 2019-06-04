@@ -132,7 +132,7 @@ function get_list($mode, $id, $select)
 	foreach ($rows as $key => $value) {
 		$selected = '';
 
-		if ($key == $id) {
+		if ($key === $id) {
             $selected = ' selected="selected"';
 		}
 
@@ -260,7 +260,7 @@ if (!empty($mode) ) {
 
 			$catlist = get_list('category', $cat_id, TRUE);
 
-			$forumstatus == FORUM_LOCKED ? $forumlocked = "selected=\"selected\"" : $forumunlocked = "selected=\"selected\"";
+			$forumstatus === FORUM_LOCKED ? $forumlocked = "selected=\"selected\"" : $forumunlocked = "selected=\"selected\"";
 
 			// These two options ($lang['Status_unlocked'] and $lang['Status_locked']) seem to be missing from
 			// the language files.
@@ -309,7 +309,7 @@ if (!empty($mode) ) {
 			//
 			// Create a forum in the DB
 			//
-			if (trim($_POST['forumname']) == "" ) {
+			if (trim($_POST['forumname']) === "" ) {
 				message_die(GENERAL_ERROR, "Can't create a forum without a name");
 			}
 
@@ -340,7 +340,7 @@ if (!empty($mode) ) {
 
 			if ($_POST['prune_enable'] ) {
 
-				if ($_POST['prune_days'] == "" || $_POST['prune_freq'] == "") {
+				if ($_POST['prune_days'] === "" || $_POST['prune_freq'] === "") {
 					message_die(GENERAL_MESSAGE, $lang['Set_prune_data']);
 				}
 
@@ -362,7 +362,7 @@ if (!empty($mode) ) {
 		case 'modforum':
 			// Modify a forum in the DB
 			if (isset($_POST['prune_enable'])) {
-				if ($_POST['prune_enable'] != 1 ) {
+				if ($_POST['prune_enable'] !== 1 ) {
 					$_POST['prune_enable'] = 0;
 				}
 			}
@@ -379,8 +379,8 @@ if (!empty($mode) ) {
                 ->where('forum_id = %i', (int)$_POST[POST_FORUM_URL])
                 ->execute();
 
-			if ($_POST['prune_enable'] == 1 ) {
-				if ($_POST['prune_days'] == "" || $_POST['prune_freq'] == "" ) {
+			if ($_POST['prune_enable'] === 1 ) {
+				if ($_POST['prune_days'] === "" || $_POST['prune_freq'] === "" ) {
 					message_die(GENERAL_MESSAGE, $lang['Set_prune_data']);
 				}
 
@@ -423,7 +423,7 @@ if (!empty($mode) ) {
 
 		case 'addcat':
 			// Create a category in the DB
-			if (trim($_POST['categoryname']) == '') {
+			if (trim($_POST['categoryname']) === '') {
 				message_die(GENERAL_ERROR, "Can't create a category without a name");
 			}
 
@@ -544,7 +544,7 @@ if (!empty($mode) ) {
 			$delete_old = (int)$_POST['delete_old'];
 
 			// Either delete or move all posts in a forum
-			if ($to_id == -1) {
+			if ($to_id === -1) {
 				// Delete polls in this forum
 
                 $vote_ids = dibi::select('v.vote_id')
@@ -653,7 +653,7 @@ if (!empty($mode) ) {
 			$catinfo = get_info('category', $cat_id);
 			$name = $catinfo['cat_title'];
 
-			if ($catinfo['number'] == 1) {
+			if ($catinfo['number'] === 1) {
                 $count = dibi::select('COUNT(*)')
                     ->select('total')
                     ->as(FORUMS_TABLE)
@@ -885,7 +885,7 @@ if ($category_count) {
             $forum_i++;
 			$forum_id = $forum->forum_id;
 
-			if ($forum->cat_id == $cat_id) {
+			if ($forum->cat_id === $cat_id) {
                 $row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
                 $row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 

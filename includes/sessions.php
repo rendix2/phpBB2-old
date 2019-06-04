@@ -337,8 +337,8 @@ function session_pagestart($user_ip, $thispage_id)
 			$ip_check_s = substr($userdata['session_ip'], 0, 6);
 			$ip_check_u = substr($user_ip, 0, 6);
 
-			if ($ip_check_s == $ip_check_u) {
-				$SID = ($sessionmethod == SESSION_METHOD_GET || defined('IN_ADMIN')) ? 'sid=' . $session_id : '';
+			if ($ip_check_s === $ip_check_u) {
+				$SID = ($sessionmethod === SESSION_METHOD_GET || defined('IN_ADMIN')) ? 'sid=' . $session_id : '';
 
 				//
 				// Only update session DB a minute or so after last update
@@ -493,7 +493,7 @@ function session_reset_keys($user_id, $user_ip)
 {
 	global $userdata, $board_config;
 
-    $key_sql = $user_id == $userdata['user_id'] && !empty($userdata['session_key']);
+    $key_sql = $user_id === $userdata['user_id'] && !empty($userdata['session_key']);
 
 	$delete_session_keys = dibi::delete(SESSIONS_KEYS_TABLE)
         ->where('user_id = %i', $user_id);
@@ -507,7 +507,7 @@ function session_reset_keys($user_id, $user_ip)
     $delete_session = dibi::delete(SESSIONS_TABLE)
         ->where('session_user_id = %i', $user_id);
 
-    if ($user_id == $userdata['user_id']) {
+    if ($user_id === $userdata['user_id']) {
         $delete_session->where('session_id <> %s', $userdata['session_id']);
     }
 

@@ -121,9 +121,9 @@ $is_auth = [];
 
 switch ($mode) {
     case 'newtopic':
-        if ($topic_type == POST_ANNOUNCE) {
+        if ($topic_type === POST_ANNOUNCE) {
             $is_auth_type = 'auth_announce';
-        } elseif ($topic_type == POST_STICKY) {
+        } elseif ($topic_type === POST_STICKY) {
             $is_auth_type = 'auth_sticky';
         } else {
             $is_auth_type = 'auth_post';
@@ -274,19 +274,19 @@ if ($post_info) {
 
 	$is_auth = auth(AUTH_ALL, $forum_id, $userdata, $post_info);
 
-    if ($post_info->forum_status == FORUM_LOCKED && !$is_auth['auth_mod']) {
+    if ($post_info->forum_status === FORUM_LOCKED && !$is_auth['auth_mod']) {
         message_die(GENERAL_MESSAGE, $lang['Forum_locked']);
-    } elseif ($mode !== 'newtopic' && $post_info->topic_status == TOPIC_LOCKED && !$is_auth['auth_mod']) {
+    } elseif ($mode !== 'newtopic' && $post_info->topic_status === TOPIC_LOCKED && !$is_auth['auth_mod']) {
         message_die(GENERAL_MESSAGE, $lang['Topic_locked']);
     }
 
     if ( $mode === 'editpost' || $mode === 'delete' || $mode === 'poll_delete' ) {
 		$topic_id = $post_info->topic_id;
 
-		$post_data['poster_post'] = $post_info->poster_id == $userdata['user_id'];
-		$post_data['first_post'] = $post_info->topic_first_post_id == $post_id;
-		$post_data['last_post'] = $post_info->topic_last_post_id == $post_id;
-		$post_data['last_topic'] = $post_info->forum_last_post_id == $post_id;
+		$post_data['poster_post'] = $post_info->poster_id === $userdata['user_id'];
+		$post_data['first_post'] = $post_info->topic_first_post_id === $post_id;
+		$post_data['last_post'] = $post_info->topic_last_post_id === $post_id;
+		$post_data['last_topic'] = $post_info->forum_last_post_id === $post_id;
 		$post_data['has_poll'] = $post_info->topic_vote ? true : false;
 		$post_data['topic_type'] = $post_info->topic_type;
 		$post_data['poster_id'] = $post_info->poster_id;
@@ -389,19 +389,19 @@ if (!$is_auth[$is_auth_type]) {
 if (!$board_config['allow_html']) {
     $html_on = 0;
 } else {
-    $html_on = ($submit || $refresh) ? (!empty($_POST['disable_html']) ? 0 : true) : (($userdata['user_id'] == ANONYMOUS) ? $board_config['allow_html'] : $userdata['user_allowhtml']);
+    $html_on = ($submit || $refresh) ? (!empty($_POST['disable_html']) ? 0 : true) : (($userdata['user_id'] === ANONYMOUS) ? $board_config['allow_html'] : $userdata['user_allowhtml']);
 }
 
 if (!$board_config['allow_bbcode']) {
     $bbcode_on = 0;
 } else {
-    $bbcode_on = ($submit || $refresh) ? (!empty($_POST['disable_bbcode']) ? 0 : true) : (($userdata['user_id'] == ANONYMOUS) ? $board_config['allow_bbcode'] : $userdata['user_allowbbcode']);
+    $bbcode_on = ($submit || $refresh) ? (!empty($_POST['disable_bbcode']) ? 0 : true) : (($userdata['user_id'] === ANONYMOUS) ? $board_config['allow_bbcode'] : $userdata['user_allowbbcode']);
 }
 
 if (!$board_config['allow_smilies']) {
     $smilies_on = 0;
 } else {
-    $smilies_on = ($submit || $refresh) ? (!empty($_POST['disable_smilies']) ? 0 : true) : (($userdata['user_id'] == ANONYMOUS) ? $board_config['allow_smilies'] : $userdata['user_allowsmile']);
+    $smilies_on = ($submit || $refresh) ? (!empty($_POST['disable_smilies']) ? 0 : true) : (($userdata['user_id'] === ANONYMOUS) ? $board_config['allow_smilies'] : $userdata['user_allowsmile']);
 }
 
 if (($submit || $refresh) && $is_auth['auth_read']) {
@@ -421,7 +421,7 @@ if (($submit || $refresh) && $is_auth['auth_read']) {
 	}
 }
 
-$attach_sig = ( $submit || $refresh ) ? ( !empty($_POST['attach_sig']) ? TRUE : 0 ) : ( ($userdata['user_id'] == ANONYMOUS ) ? 0 : $userdata['user_attachsig'] );
+$attach_sig = ( $submit || $refresh ) ? ( !empty($_POST['attach_sig']) ? TRUE : 0 ) : ( ($userdata['user_id'] === ANONYMOUS ) ? 0 : $userdata['user_attachsig'] );
 
 // --------------------
 //  What shall we do?
@@ -570,7 +570,7 @@ if (($delete || $poll_delete || $mode === 'delete') && !$confirm) {
             update_post_stats($mode, $post_data, $forum_id, $topic_id, $post_id, $user_id);
         }
 
-		if ($error_msg == '' && $mode !== 'poll_delete') {
+		if ($error_msg === '' && $mode !== 'poll_delete') {
 			user_notification($mode, $post_data, $post_info->topic_title, $forum_id, $topic_id, $post_id, $notify_user);
 		}
 
@@ -578,7 +578,7 @@ if (($delete || $poll_delete || $mode === 'delete') && !$confirm) {
 			$tracking_topics = !empty($_COOKIE[$board_config['cookie_name'] . '_t']) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_t']) : [];
 			$tracking_forums = !empty($_COOKIE[$board_config['cookie_name'] . '_f']) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_f']) : [];
 
-			if ( count($tracking_topics) + count($tracking_forums) == 100 && empty($tracking_topics[$topic_id]) ) {
+			if ( count($tracking_topics) + count($tracking_forums) === 100 && empty($tracking_topics[$topic_id]) ) {
 				asort($tracking_topics);
 				unset($tracking_topics[key($tracking_topics)]);
 			}
@@ -811,7 +811,7 @@ if ($board_config['allow_smilies']) {
     $smilies_status = $lang['Smilies_are_OFF'];
 }
 
-if (!$userdata['session_logged_in'] || ($mode === 'editpost' && $post_info->poster_id == ANONYMOUS)) {
+if (!$userdata['session_logged_in'] || ($mode === 'editpost' && $post_info->poster_id === ANONYMOUS)) {
     $template->assign_block_vars('switch_username_select', []);
 }
 
@@ -842,7 +842,7 @@ if ($mode === 'newtopic' || ($mode === 'editpost' && $post_data['first_post'])) 
 	if ($is_auth['auth_sticky']) {
 		$topic_type_toggle .= '<input type="radio" name="topictype" value="' . POST_STICKY . '"';
 
-        if ($post_data['topic_type'] == POST_STICKY || $topic_type == POST_STICKY) {
+        if ($post_data['topic_type'] === POST_STICKY || $topic_type === POST_STICKY) {
             $topic_type_toggle .= ' checked="checked"';
         }
 
@@ -852,7 +852,7 @@ if ($mode === 'newtopic' || ($mode === 'editpost' && $post_data['first_post'])) 
     if ($is_auth['auth_announce']) {
 		$topic_type_toggle .= '<input type="radio" name="topictype" value="' . POST_ANNOUNCE . '"';
 
-        if ($post_data['topic_type'] == POST_ANNOUNCE || $topic_type == POST_ANNOUNCE) {
+        if ($post_data['topic_type'] === POST_ANNOUNCE || $topic_type === POST_ANNOUNCE) {
             $topic_type_toggle .= ' checked="checked"';
         }
 
@@ -860,7 +860,7 @@ if ($mode === 'newtopic' || ($mode === 'editpost' && $post_data['first_post'])) 
 	}
 
     if ($topic_type_toggle !== '') {
-		$topic_type_toggle = $lang['Post_topic_as'] . ': <input type="radio" name="topictype" value="' . POST_NORMAL .'"' . ( ( $post_data['topic_type'] == POST_NORMAL || $topic_type == POST_NORMAL ) ? ' checked="checked"' : '' ) . ' /> ' . $lang['Post_Normal'] . '&nbsp;&nbsp;' . $topic_type_toggle;
+		$topic_type_toggle = $lang['Post_topic_as'] . ': <input type="radio" name="topictype" value="' . POST_NORMAL .'"' . ( ( $post_data['topic_type'] === POST_NORMAL || $topic_type === POST_NORMAL ) ? ' checked="checked"' : '' ) . ' /> ' . $lang['Post_Normal'] . '&nbsp;&nbsp;' . $topic_type_toggle;
 	}
 }
 

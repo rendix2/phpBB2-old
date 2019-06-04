@@ -43,7 +43,7 @@ $no_page_header = $cancel;
 //
 // Load default header
 //
-if ((!empty($_GET['export_pack']) && $_GET['export_pack'] == 'send') || (!empty($_GET['export_pack']) && $_GET['export_pack'] == 'send')) {
+if ((!empty($_GET['export_pack']) && $_GET['export_pack'] === 'send') || (!empty($_GET['export_pack']) && $_GET['export_pack'] === 'send')) {
 	$no_page_header = true;
 }
 
@@ -133,7 +133,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 				$smile_data[$j] = str_replace(">", "&gt;", $smile_data[$j]);
 				$k = $smile_data[$j];
 
-				if ($smiles[$k] == 1 ) {
+				if ($smiles[$k] === 1 ) {
 					if (!empty($replace_existing) ) {
 					    $update_data = [
                             'smile_url' => $smile_data[0],
@@ -203,7 +203,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 	//
 	// Export our smiley config as a smiley pak...
 	//
-	if ( $_GET['export_pack'] == "send" ) {
+	if ( $_GET['export_pack'] === "send" ) {
         $resultset = dibi::select('*')
             ->from(SMILIES_TABLE)
             ->fetchAll();
@@ -326,7 +326,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 			$filename_list = "";
 
 			for ($i = 0; $i < count($smiley_images); $i++ ) {
-				if ($smiley_images[$i] == $smile_data->smile_url ) {
+				if ($smiley_images[$i] === $smile_data->smile_url ) {
 					$smiley_selected = "selected=\"selected\"";
 					$smiley_edit_img = $smiley_images[$i];
 				} else {
@@ -384,7 +384,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 			$smile_url = trim($smile_url);
 
 			// If no code was entered complain ...
-            if ($smile_code == '' || $smile_url == '') {
+            if ($smile_code === '' || $smile_url === '') {
                 message_die(GENERAL_MESSAGE, $lang['Fields_empty']);
             }
 
@@ -430,7 +430,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 			$smile_url = trim($smile_url);
 
 			// If no code was entered complain ...
-            if ($smile_code == '' || $smile_url == '') {
+            if ($smile_code === '' || $smile_url === '') {
                 message_die(GENERAL_MESSAGE, $lang['Fields_empty']);
             }
 

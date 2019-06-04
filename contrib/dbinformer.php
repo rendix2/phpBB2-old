@@ -304,7 +304,7 @@ else
         break; 
     } 
      
-    if ($error == true && $error_msg != '') 
+    if ($error === true && $error_msg !== '')
     { 
         echo '<br /><b>ERROR:</b> ' . $error_msg . '<br />'; 
     } 
@@ -365,11 +365,11 @@ else
         }
 
         /* Create a config file if checked and if the connection went OK */ 
-        if (isset($_POST['generate_config']) && $_POST['generate_config'] == true)
+        if (isset($_POST['generate_config']) && $_POST['generate_config'] === true)
         { 
             echo '<a name="config"><h3><u>Config file</u></h3></a>';
 
-            if ($all_connected != true) 
+            if ($all_connected !== true)
             { 
                 echo 'The database has not been successfully connected to so no config file has been generated.<br />'; 
             } 
