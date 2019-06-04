@@ -540,134 +540,135 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 	global $board_config, $lang, $phpbb_root_path;
 	global $userdata, $user_ip;
 
-	$current_time = time();
+	if ($mode === 'delete') {
+        return;
+    }
 
-	if ($mode !== 'delete') {
-		if ($mode === 'reply') {
-		    $user_ids = dibi::select('ban_userid')
-                ->from(BANLIST_TABLE)
-                ->fetchPairs(null, 'ban_userid');
+    if ($mode === 'reply') {
+        $user_ids = dibi::select('ban_userid')
+            ->from(BANLIST_TABLE)
+            ->fetchPairs(null, 'ban_userid');
 
-		    $topic_not_id = array_merge([$userdata['user_id']], [ANONYMOUS], $user_ids);
+        $topic_not_id = array_merge([$userdata['user_id']], [ANONYMOUS], $user_ids);
 
-		    $users = dibi::select(['u.user_id', 'u.user_email','u.user_lang'])
-                ->from(TOPICS_WATCH_TABLE)
-                ->as('tw')
-                ->innerJoin(USERS_TABLE)
-                ->as('u')
-                ->on('u.user_id = tw.user_id')
-                ->where('tw.topic_id = %i', $topic_id)
-                ->where('tw.user_id NOT IN %in', $topic_not_id)
-                ->where('tw.notify_status = %i', TOPIC_WATCH_UN_NOTIFIED)
-                ->fetchAll();
+        $users = dibi::select(['u.user_id', 'u.user_email', 'u.user_lang'])
+            ->from(TOPICS_WATCH_TABLE)
+            ->as('tw')
+            ->innerJoin(USERS_TABLE)
+            ->as('u')
+            ->on('u.user_id = tw.user_id')
+            ->where('tw.topic_id = %i', $topic_id)
+            ->where('tw.user_id NOT IN %in', $topic_not_id)
+            ->where('tw.notify_status = %i', TOPIC_WATCH_UN_NOTIFIED)
+            ->fetchAll();
 
-			$update_watched_sql = [];
-			$bcc_list_ary = [];
-			
-			if (count($users)) {
-				// Sixty second limit
-				@set_time_limit(60);
+        $update_watched_sql = [];
+        $bcc_list_ary = [];
 
-				foreach ($users as $user) {
-                    if ($user->user_email !== '') {
-                        $bcc_list_ary[$user->user_lang][] = $user->user_email;
-                    }
+        if (count($users)) {
+            // Sixty second limit
+            @set_time_limit(60);
 
-                    $update_watched_sql[] = $user->user_id;
+            foreach ($users as $user) {
+                if ($user->user_email !== '') {
+                    $bcc_list_ary[$user->user_lang][] = $user->user_email;
                 }
 
-				//
-				// Let's do some checking to make sure that mass mail functions
-				// are working in win32 versions of php.
-				//
-				if (preg_match('/[c-z]:\\\.*/i', getenv('PATH')) && !$board_config['smtp_delivery']) {
-					$ini_val = (@PHP_VERSION >= '4.0.0') ? 'ini_get' : 'get_cfg_var';
-
-					// We are running on windows, force delivery to use our smtp functions
-					// since php's are broken by default
-					$board_config['smtp_delivery'] = 1;
-					$board_config['smtp_host'] = @$ini_val('SMTP');
-				}
-
-				if (count($bcc_list_ary)) {
-					include $phpbb_root_path . 'includes/emailer.php';
-					$emailer = new emailer($board_config['smtp_delivery']);
-
-					$script_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['script_path']));
-					$script_name = ($script_name !== '') ? $script_name . '/viewtopic.php' : 'viewtopic.php';
-					$server_name = trim($board_config['server_name']);
-					$server_protocol = $board_config['cookie_secure'] ? 'https://' : 'http://';
-					$server_port = ($board_config['server_port'] <> 80) ? ':' . trim($board_config['server_port']) . '/' : '/';
-
-					$orig_word = [];
-					$replacement_word = [];
-					obtain_word_list($orig_word, $replacement_word);
-
-					$emailer->from($board_config['board_email']);
-					$emailer->replyto($board_config['board_email']);
-
-					$topic_title = count($orig_word) ? preg_replace($orig_word, $replacement_word, unprepare_message($topic_title)) : unprepare_message($topic_title);
-
-					foreach ($bcc_list_ary as $user_lang => $bcc_list) {
-						$emailer->use_template('topic_notify', $user_lang);
-
-						foreach ($bcc_list as $bcc_value) {
-							$emailer->bcc($bcc_value);
-						}
-
-						// The Topic_reply_notification lang string below will be used
-						// if for some reason the mail template subject cannot be read 
-						// ... note it will not necessarily be in the posters own language!
-						$emailer->set_subject($lang['Topic_reply_notification']); 
-						
-						// This is a nasty kludge to remove the username var ... till (if?)
-						// translators update their templates
-						$emailer->msg = preg_replace('#[ ]?{USERNAME}#', '', $emailer->msg);
-
-						$emailer->assign_vars(array(
-                                'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
-                                'SITENAME' => $board_config['sitename'],
-                                'TOPIC_TITLE' => $topic_title,
-
-                                'U_TOPIC' => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_POST_URL . "=$post_id#$post_id",
-                                'U_STOP_WATCHING_TOPIC' => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_TOPIC_URL . "=$topic_id&unwatch=topic")
-						);
-
-						$emailer->send();
-						$emailer->reset();
-					}
-				}
-			}
-
-            if (count($update_watched_sql)) {
-                dibi::update(TOPICS_WATCH_TABLE, ['notify_status' => TOPIC_WATCH_NOTIFIED])
-                    ->where('topic_id = %i', $topic_id)
-                    ->where('user_id IN %in', $update_watched_sql)
-                    ->execute();
+                $update_watched_sql[] = $user->user_id;
             }
-		}
 
-		$topic_watch = dibi::select('topic_id')
-            ->from(TOPICS_WATCH_TABLE)
+            //
+            // Let's do some checking to make sure that mass mail functions
+            // are working in win32 versions of php.
+            //
+            if (preg_match('/[c-z]:\\\.*/i', getenv('PATH')) && !$board_config['smtp_delivery']) {
+                $ini_val = (@PHP_VERSION >= '4.0.0') ? 'ini_get' : 'get_cfg_var';
+
+                // We are running on windows, force delivery to use our smtp functions
+                // since php's are broken by default
+                $board_config['smtp_delivery'] = 1;
+                $board_config['smtp_host'] = @$ini_val('SMTP');
+            }
+
+            if (count($bcc_list_ary)) {
+                include $phpbb_root_path . 'includes/emailer.php';
+                $emailer = new emailer($board_config['smtp_delivery']);
+
+                $script_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['script_path']));
+                $script_name = ($script_name !== '') ? $script_name . '/viewtopic.php' : 'viewtopic.php';
+                $server_name = trim($board_config['server_name']);
+                $server_protocol = $board_config['cookie_secure'] ? 'https://' : 'http://';
+                $server_port = ($board_config['server_port'] <> 80) ? ':' . trim($board_config['server_port']) . '/' : '/';
+
+                $orig_word = [];
+                $replacement_word = [];
+                obtain_word_list($orig_word, $replacement_word);
+
+                $emailer->from($board_config['board_email']);
+                $emailer->replyto($board_config['board_email']);
+
+                $topic_title = count($orig_word) ? preg_replace($orig_word, $replacement_word, unprepare_message($topic_title)) : unprepare_message($topic_title);
+
+                foreach ($bcc_list_ary as $user_lang => $bcc_list) {
+                    $emailer->use_template('topic_notify', $user_lang);
+
+                    foreach ($bcc_list as $bcc_value) {
+                        $emailer->bcc($bcc_value);
+                    }
+
+                    // The Topic_reply_notification lang string below will be used
+                    // if for some reason the mail template subject cannot be read
+                    // ... note it will not necessarily be in the posters own language!
+                    $emailer->set_subject($lang['Topic_reply_notification']);
+
+                    // This is a nasty kludge to remove the username var ... till (if?)
+                    // translators update their templates
+                    $emailer->msg = preg_replace('#[ ]?{USERNAME}#', '', $emailer->msg);
+
+                    $emailer->assign_vars([
+                            'EMAIL_SIG'   => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
+                            'SITENAME'    => $board_config['sitename'],
+                            'TOPIC_TITLE' => $topic_title,
+
+                            'U_TOPIC'               => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_POST_URL . "=$post_id#$post_id",
+                            'U_STOP_WATCHING_TOPIC' => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_TOPIC_URL . "=$topic_id&unwatch=topic"
+                        ]);
+
+                    $emailer->send();
+                    $emailer->reset();
+                }
+            }
+        }
+
+        if (count($update_watched_sql)) {
+            dibi::update(TOPICS_WATCH_TABLE, ['notify_status' => TOPIC_WATCH_NOTIFIED])
+                ->where('topic_id = %i', $topic_id)
+                ->where('user_id IN %in', $update_watched_sql)
+                ->execute();
+        }
+    }
+
+    $topic_watch = dibi::select('topic_id')
+        ->from(TOPICS_WATCH_TABLE)
+        ->where('topic_id = %i', $topic_id)
+        ->where('user_id = %i', $userdata['user_id'])
+        ->fetchSingle();
+
+    if (!$notify_user && $topic_watch) {
+        dibi::delete(TOPICS_WATCH_TABLE)
             ->where('topic_id = %i', $topic_id)
             ->where('user_id = %i', $userdata['user_id'])
-            ->fetchSingle();
+            ->execute();
+    } elseif ($notify_user && $topic_watch === false) {
+        $insert_data = [
+            'user_id'       => $userdata['user_id'],
+            'topic_id'      => $topic_id,
+            'notify_status' => 0
+        ];
 
-		if (!$notify_user && $topic_watch) {
-		    dibi::delete(TOPICS_WATCH_TABLE)
-                ->where('topic_id = %i', $topic_id)
-                ->where('user_id = %i', $userdata['user_id'])
-                ->execute();
-		} elseif ($notify_user && $topic_watch === false) {
-		    $insert_data = [
-		        'user_id'  => $userdata['user_id'],
-                'topic_id' => $topic_id,
-                'notify_status' => 0
-            ];
-
-		    dibi::insert(TOPICS_WATCH_TABLE, $insert_data)->execute();
-		}
-	}
+        dibi::insert(TOPICS_WATCH_TABLE, $insert_data)
+            ->execute();
+    }
 }
 
 //

@@ -102,7 +102,7 @@ function sync($type, $id = false)
                 ->where('forum_id = %i', $id)
                 ->fetchSingle();
 
-            if ( $total_topics === false ) {
+            if ($total_topics === false) {
                 message_die(GENERAL_ERROR, 'Could not get topic count');
             }
 
@@ -116,8 +116,8 @@ function sync($type, $id = false)
 
 			break;
 
-		case 'topic':
-		    $row = dibi::select('MAX(post_id)')
+        case 'topic':
+            $row = dibi::select('MAX(post_id)')
                 ->as('last_post')
                 ->select('MIN(post_id)')
                 ->as('first_post')
@@ -128,33 +128,35 @@ function sync($type, $id = false)
                 ->fetch();
 
             if ($row) {
-				if ($row->total_posts) {
-					// Correct the details of this topic
+                if ($row->total_posts) {
+                    // Correct the details of this topic
                     $update_data = [
-                        'topic_replies' => $row->total_posts - 1,
+                        'topic_replies'       => $row->total_posts - 1,
                         'topic_first_post_id' => $row->first_post,
-                        'topic_last_post_id' => $row->last_post
+                        'topic_last_post_id'  => $row->last_post
                     ];
 
                     dibi::update(TOPICS_TABLE, $update_data)
                         ->where('topic_id = %i', $id)
                         ->execute();
-				} else {
-					// There are no replies to this topic
-					// Check if it is a move stub
-					$topic_moved_id = dibi::select('topic_moved_id')
+                } else {
+                    // There are no replies to this topic
+                    // Check if it is a move stub
+                    $topic_moved_id = dibi::select('topic_moved_id')
                         ->from(TOPICS_TABLE)
                         ->where('topic_id = %i', $id)
                         ->fetch();
 
-					if ($topic_moved_id) {
-						if (!$topic_moved_id->topic_moved_id) {
-						    dibi::delete(TOPICS_TABLE)->where('topic_id = %i', $id)->execute();
-						}
-					}
-				}
-			}
-			break;
+                    if ($topic_moved_id) {
+                        if (!$topic_moved_id->topic_moved_id) {
+                            dibi::delete(TOPICS_TABLE)
+                                ->where('topic_id = %i', $id)
+                                ->execute();
+                        }
+                    }
+                }
+            }
+            break;
 	}
 	
 	return true;

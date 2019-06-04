@@ -54,7 +54,7 @@ dibi::disconnect();
 //
 // Compress buffered output if required and send to browser
 //
-if ( $do_gzip_compress ) {
+if ($do_gzip_compress) {
 	//
 	// Borrowed from php.net!
 	//

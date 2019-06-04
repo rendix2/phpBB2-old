@@ -75,40 +75,39 @@ function user_avatar_gallery($mode, &$error, &$error_msg, $avatar_filename, $ava
 
 	$avatar_filename = ltrim(basename($avatar_filename), "'");
 	$avatar_category = ltrim(basename($avatar_category), "'");
-	
-	if (!preg_match('/(\.gif$|\.png$|\.jpg|\.jpeg)$/is', $avatar_filename)) {
-		return [];
-	}
 
-	if ($avatar_filename === "" || $avatar_category === "") {
-		return [];
-	} 
+    if (!preg_match('/(\.gif$|\.png$|\.jpg|\.jpeg)$/is', $avatar_filename)) {
+        return [];
+    }
 
-	if ( file_exists(@phpbb_realpath($board_config['avatar_gallery_path'] . '/' . $avatar_category . '/' . $avatar_filename)) && ($mode === 'editprofile') ) {
-	    return ['user_avatar' => $avatar_category . '/' . $avatar_filename, 'user_avatar_type' => USER_AVATAR_GALLERY];
-	} else {
-		return [];
-	}
+    if ($avatar_filename === "" || $avatar_category === "") {
+        return [];
+    }
+
+    if (file_exists(@phpbb_realpath($board_config['avatar_gallery_path'] . '/' . $avatar_category . '/' . $avatar_filename)) && ($mode === 'editprofile')) {
+        return ['user_avatar' => $avatar_category . '/' . $avatar_filename, 'user_avatar_type' => USER_AVATAR_GALLERY];
+    } else {
+        return [];
+    }
 }
 
 function user_avatar_url($mode, &$error, &$error_msg, $avatar_filename)
 {
 	global $lang;
 
-	if ( !preg_match('#^(http)|(ftp):\/\/#i', $avatar_filename) ) {
+    if (!preg_match('#^(http)|(ftp):\/\/#i', $avatar_filename)) {
 		$avatar_filename = 'http://' . $avatar_filename;
 	}
 
 	$avatar_filename = substr($avatar_filename, 0, 100);
 
-	if ( !preg_match("#^((ht|f)tp://)([^ \?&=\#\"\n\r\t<]*?(\.(jpg|jpeg|gif|png))$)#is", $avatar_filename) ) {
+    if (!preg_match("#^((ht|f)tp://)([^ \?&=\#\"\n\r\t<]*?(\.(jpg|jpeg|gif|png))$)#is", $avatar_filename)) {
 		$error = true;
 		$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $lang['Wrong_remote_avatar_format'] : $lang['Wrong_remote_avatar_format'];
 		return [];
 	}
 
 	return ( $mode === 'editprofile' ) ? ['user_avatar' => $avatar_filename, 'user_avatar_type' => USER_AVATAR_REMOTE] : [];
-
 }
 
 function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_type, &$error, &$error_msg, $avatar_filename, $avatar_realname, $avatar_filesize, $avatar_filetype)
@@ -121,7 +120,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 	$type = '';
 
 	if ( $avatar_mode === 'remote' && preg_match('/^(http:\/\/)?([\w\-\.]+)\:?([0-9]*)\/([^ \?&=\#\"\n\r\t<]*?(\.(jpg|jpeg|gif|png)))$/', $avatar_filename, $url_ary) ) {
-		if ( empty($url_ary[4]) ) {
+        if (empty($url_ary[4])) {
 			$error = true;
 			$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $lang['Incomplete_URL'] : $lang['Incomplete_URL'];
 			return [];
@@ -130,7 +129,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 		$base_get = '/' . $url_ary[4];
 		$port = !empty($url_ary[3]) ? $url_ary[3] : 80;
 
-		if ( !($fsock = @fsockopen($url_ary[2], $port, $errno, $errstr)) ) {
+        if (!($fsock = @fsockopen($url_ary[2], $port, $errno, $errstr))) {
 			$error = true;
 			$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $lang['No_connection_URL'] : $lang['No_connection_URL'];
 			return [];
@@ -154,8 +153,8 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 			return [];
 		}
 
-		$avatar_filesize = $file_data1[1]; 
-		$avatar_filetype = $file_data2[1]; 
+		$avatar_filesize = $file_data1[1];
+		$avatar_filetype = $file_data2[1];
 
 		if ( !$error && $avatar_filesize > 0 && $avatar_filesize < $board_config['avatar_filesize'] ) {
 			$avatar_data = substr($avatar_data, strlen($avatar_data) - $avatar_filesize, $avatar_filesize);
@@ -179,8 +178,8 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 			$error = true;
 			$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $l_avatar_size : $l_avatar_size;
 		}
-	} elseif ( file_exists(@phpbb_realpath($avatar_filename)) && preg_match('/\.(jpg|jpeg|gif|png)$/i', $avatar_realname) ) {
-		if ( $avatar_filesize <= $board_config['avatar_filesize'] && $avatar_filesize > 0 ) {
+	} elseif (file_exists(@phpbb_realpath($avatar_filename)) && preg_match('/\.(jpg|jpeg|gif|png)$/i', $avatar_realname)) {
+        if ($avatar_filesize <= $board_config['avatar_filesize'] && $avatar_filesize > 0) {
 			preg_match('#image\/[x\-]*([a-z]+)#', $avatar_filetype, $avatar_filetype);
 			$avatar_filetype = $avatar_filetype[1];
 		} else {
@@ -194,15 +193,14 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 		list($width, $height, $type) = @getimagesize($avatar_filename);
 	}
 
-	if ( !($imgtype = check_image_type($avatar_filetype, $error, $error_msg)) ) {
+    if (!($imgtype = check_image_type($avatar_filetype, $error, $error_msg))) {
 		return [];
 	}
 
 	switch ($type) {
 		// GIF
 		case 1:
-			if ($imgtype !== '.gif')
-			{
+			if ($imgtype !== '.gif') {
 				@unlink($tmp_filename);
 				message_die(GENERAL_ERROR, 'Unable to upload file', '', __LINE__, __FILE__);
 			}
@@ -214,8 +212,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 		case 10:
 		case 11:
 		case 12:
-			if ($imgtype !== '.jpg' && $imgtype !== '.jpeg')
-			{
+			if ($imgtype !== '.jpg' && $imgtype !== '.jpeg') {
 				@unlink($tmp_filename);
 				message_die(GENERAL_ERROR, 'Unable to upload file', '', __LINE__, __FILE__);
 			}
@@ -223,8 +220,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 
 		// PNG
 		case 3:
-			if ($imgtype !== '.png')
-			{
+			if ($imgtype !== '.png') {
 				@unlink($tmp_filename);
 				message_die(GENERAL_ERROR, 'Unable to upload file', '', __LINE__, __FILE__);
 			}
@@ -235,8 +231,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 			message_die(GENERAL_ERROR, 'Unable to upload file', '', __LINE__, __FILE__);
 	}
 
-	if ( $width > 0 && $height > 0 && $width <= $board_config['avatar_max_width'] && $height <= $board_config['avatar_max_height'] )
-	{
+	if ( $width > 0 && $height > 0 && $width <= $board_config['avatar_max_width'] && $height <= $board_config['avatar_max_height'] ) {
 		$new_filename = uniqid(rand()) . $imgtype;
 
 		if ( $mode === 'editprofile' && $current_type === USER_AVATAR_UPLOAD && $current_avatar !== '' ) {
@@ -247,8 +242,8 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 			@copy($tmp_filename, './' . $board_config['avatar_path'] . "/$new_filename");
 			@unlink($tmp_filename);
 		} else {
-			if ( @$ini_val('open_basedir') !== '' ) {
-				if ( @PHP_VERSION < '4.0.3' ) {
+            if (@$ini_val('open_basedir') !== '') {
+                if (@PHP_VERSION < '4.0.3') {
 					message_die(GENERAL_ERROR, 'open_basedir is set and your PHP version does not allow move_uploaded_file', '', __LINE__, __FILE__);
 				}
 
@@ -257,7 +252,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 				$move_file = 'copy';
 			}
 
-			if (!is_uploaded_file($avatar_filename)) {
+            if (!is_uploaded_file($avatar_filename)) {
 				message_die(GENERAL_ERROR, 'Unable to upload file', '', __LINE__, __FILE__);
 			}
 			$move_file($avatar_filename, './' . $board_config['avatar_path'] . "/$new_filename");
@@ -294,7 +289,7 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 
 			while ($sub_file = @readdir($sub_dir) ) {
 				if (preg_match('/(\.gif$|\.png$|\.jpg|\.jpeg)$/is', $sub_file) ) {
-					$avatar_images[$file][$avatar_row_count][$avatar_col_count] = $sub_file; 
+					$avatar_images[$file][$avatar_row_count][$avatar_col_count] = $sub_file;
 					$avatar_name[$file][$avatar_row_count][$avatar_col_count] = ucfirst(str_replace("_", " ", preg_replace('/^(.*)\..*$/', '\1', $sub_file)));
 
 					$avatar_col_count++;

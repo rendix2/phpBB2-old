@@ -21,8 +21,8 @@
  *
  ***************************************************************************/
 
-if ( !defined('IN_PHPBB') ) {
-	die('Hacking attempt');
+if (!defined('IN_PHPBB')) {
+    die('Hacking attempt');
 }
 
 $columns = ['user_active', 'user_id', 'username', 'user_email', 'user_newpasswd', 'user_lang', 'user_actkey'];

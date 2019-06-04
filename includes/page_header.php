@@ -143,15 +143,15 @@ if (defined('SHOW_ONLINE')) {
 		$prev_session_ip = $row->session_ip;
 	}
 
-	if ( empty($online_userlist) ) {
-		$online_userlist = $lang['None'];
-	}
+    if (empty($online_userlist)) {
+        $online_userlist = $lang['None'];
+    }
 	
 	$online_userlist = ( isset($forum_id) ? $lang['Browsing_forum'] : $lang['Registered_users'] ) . ' ' . $online_userlist;
 
 	$total_online_users = $logged_visible_online + $logged_hidden_online + $guests_online;
 
-	if ( $total_online_users > $board_config['record_online_users']) {
+    if ($total_online_users > $board_config['record_online_users']) {
 		$board_config['record_online_users'] = $total_online_users;
 		$board_config['record_online_date'] = time();
 
@@ -164,38 +164,37 @@ if (defined('SHOW_ONLINE')) {
             ->execute();
 	}
 
-	if ( $total_online_users === 0 ) {
-		$l_t_user_s = $lang['Online_users_zero_total'];
-	} elseif ( $total_online_users === 1 ) {
-		$l_t_user_s = $lang['Online_user_total'];
-	} else {
-		$l_t_user_s = $lang['Online_users_total'];
-	}
+    if ($total_online_users === 0) {
+        $l_t_user_s = $lang['Online_users_zero_total'];
+    } elseif ($total_online_users === 1) {
+        $l_t_user_s = $lang['Online_user_total'];
+    } else {
+        $l_t_user_s = $lang['Online_users_total'];
+    }
 
-	if ( $logged_visible_online === 0 ) {
-		$l_r_user_s = $lang['Reg_users_zero_total'];
-	}
-	elseif ( $logged_visible_online === 1 ) {
-		$l_r_user_s = $lang['Reg_user_total'];
-	} else {
-		$l_r_user_s = $lang['Reg_users_total'];
-	}
+    if ($logged_visible_online === 0) {
+        $l_r_user_s = $lang['Reg_users_zero_total'];
+    } elseif ($logged_visible_online === 1) {
+        $l_r_user_s = $lang['Reg_user_total'];
+    } else {
+        $l_r_user_s = $lang['Reg_users_total'];
+    }
 
-	if ( $logged_hidden_online === 0 ) {
-		$l_h_user_s = $lang['Hidden_users_zero_total'];
-	} elseif ( $logged_hidden_online === 1 ) {
-		$l_h_user_s = $lang['Hidden_user_total'];
-	} else {
-		$l_h_user_s = $lang['Hidden_users_total'];
-	}
+    if ($logged_hidden_online === 0) {
+        $l_h_user_s = $lang['Hidden_users_zero_total'];
+    } elseif ($logged_hidden_online === 1) {
+        $l_h_user_s = $lang['Hidden_user_total'];
+    } else {
+        $l_h_user_s = $lang['Hidden_users_total'];
+    }
 
-	if ( $guests_online === 0 ) {
-		$l_g_user_s = $lang['Guest_users_zero_total'];
-	} elseif ( $guests_online === 1 ) {
-		$l_g_user_s = $lang['Guest_user_total'];
-	} else {
-		$l_g_user_s = $lang['Guest_users_total'];
-	}
+    if ($guests_online === 0) {
+        $l_g_user_s = $lang['Guest_users_zero_total'];
+    } elseif ($guests_online === 1) {
+        $l_g_user_s = $lang['Guest_user_total'];
+    } else {
+        $l_g_user_s = $lang['Guest_users_total'];
+    }
 
 	$l_online_users = sprintf($l_t_user_s, $total_online_users);
 	$l_online_users .= sprintf($l_r_user_s, $logged_visible_online);
@@ -207,8 +206,8 @@ if (defined('SHOW_ONLINE')) {
 // Obtain number of new private messages
 // if user is logged in
 //
-if ( $userdata['session_logged_in'] && empty($gen_simple_header)) {
-	if ($userdata['user_new_privmsg'] ) {
+if ($userdata['session_logged_in'] && empty($gen_simple_header)) {
+    if ($userdata['user_new_privmsg']) {
 		$l_message_new = ($userdata['user_new_privmsg'] === 1 ) ? $lang['New_pm'] : $lang['New_pms'];
 		$l_privmsgs_text = sprintf($l_message_new, $userdata['user_new_privmsg']);
 
@@ -375,21 +374,21 @@ $template->assign_vars(array(
 //
 // Login box?
 //
-if ( !$userdata['session_logged_in'] ) {
-	$template->assign_block_vars('switch_user_logged_out', []);
-	//
-	// Allow autologin?
-	//
-	if (!isset($board_config['allow_autologin']) || $board_config['allow_autologin'] ) {
-		$template->assign_block_vars('switch_allow_autologin', []);
-		$template->assign_block_vars('switch_user_logged_out.switch_allow_autologin', []);
-	}
+if (!$userdata['session_logged_in']) {
+    $template->assign_block_vars('switch_user_logged_out', []);
+    //
+    // Allow autologin?
+    //
+    if (!isset($board_config['allow_autologin']) || $board_config['allow_autologin']) {
+        $template->assign_block_vars('switch_allow_autologin', []);
+        $template->assign_block_vars('switch_user_logged_out.switch_allow_autologin', []);
+    }
 } else {
-	$template->assign_block_vars('switch_user_logged_in', []);
+    $template->assign_block_vars('switch_user_logged_in', []);
 
-	if ( !empty($userdata['user_popup_pm']) ) {
-		$template->assign_block_vars('switch_enable_pm_popup', []);
-	}
+    if (!empty($userdata['user_popup_pm'])) {
+        $template->assign_block_vars('switch_enable_pm_popup', []);
+    }
 }
 
 // Add no-cache control for cookies if they are set
@@ -398,12 +397,12 @@ if ( !$userdata['session_logged_in'] ) {
 // Work around for "current" Apache 2 + PHP module which seems to not
 // cope with private cache control setting
 if (!empty($_SERVER['SERVER_SOFTWARE']) && strstr($_SERVER['SERVER_SOFTWARE'], 'Apache/2')) {
-	header ('Cache-Control: no-cache, pre-check=0, post-check=0');
-} else{
-	header ('Cache-Control: private, pre-check=0, post-check=0, max-age=0');
+    header('Cache-Control: no-cache, pre-check=0, post-check=0');
+} else {
+    header('Cache-Control: private, pre-check=0, post-check=0, max-age=0');
 }
-header ('Expires: 0');
-header ('Pragma: no-cache');
+header('Expires: 0');
+header('Pragma: no-cache');
 
 $template->pparse('overall_header');
 

@@ -27,10 +27,10 @@ function topic_review($topic_id, $is_inline_review)
 	global $userdata, $user_ip;
 	global $orig_word, $replacement_word;
 
-	if ( !$is_inline_review ) {
-		if ( !isset($topic_id) || !$topic_id) {
-			message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
-		}
+    if (!$is_inline_review) {
+        if (!isset($topic_id) || !$topic_id) {
+            message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
+        }
 
 		$columns = [
 		    't.topic_title',
@@ -81,15 +81,15 @@ function topic_review($topic_id, $is_inline_review)
 		// TODO for now to arrary
 		$is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_row->toArray());
 
-		if ( !$is_auth['auth_read'] ) {
-			message_die(GENERAL_MESSAGE, sprintf($lang['Sorry_auth_read'], $is_auth['auth_read_type']));
-		}
+        if (!$is_auth['auth_read']) {
+            message_die(GENERAL_MESSAGE, sprintf($lang['Sorry_auth_read'], $is_auth['auth_read_type']));
+        }
 	}
 
 	//
 	// Define censored word matches
 	//
-	if ( empty($orig_word) && empty($replacement_word) ) {
+    if (empty($orig_word) && empty($replacement_word)) {
 		$orig_word = [];
 		$replacement_word = [];
 
@@ -99,7 +99,7 @@ function topic_review($topic_id, $is_inline_review)
 	//
 	// Dump out the page header and load viewtopic body template
 	//
-	if ( !$is_inline_review ) {
+    if (!$is_inline_review) {
 		$gen_simple_header = true;
 
 		$page_title = $lang['Topic_review'] . ' - ' . $topic_title;

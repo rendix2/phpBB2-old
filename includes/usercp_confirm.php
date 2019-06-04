@@ -33,8 +33,7 @@ if ( !defined('IN_PHPBB') )
 // than the GPL. We will be watching ... ;)
 
 // Do we have an id? No, then just exit
-if (empty($_GET['id']))
-{
+if (empty($_GET['id'])) {
 	exit;
 }
 
