@@ -19,7 +19,7 @@
  *
  ***************************************************************************/
 
-if ( !defined('IN_PHPBB') ) {
+if (!defined('IN_PHPBB')) {
 	die("Hacking attempt");
 }
 
@@ -130,16 +130,14 @@ function bbencode_second_pass($text, $uid)
 	$text = " " . $text;
 
 	// First: If there isn't a "[" and a "]" in the message, don't bother.
-	if (! (strpos($text, "[") && strpos($text, "]")) )
-	{
+	if (! (strpos($text, "[") && strpos($text, "]")) ) {
 		// Remove padding, return.
 		$text = substr($text, 1);
 		return $text;
 	}
 
 	// Only load the templates ONCE..
-	if (!defined("BBCODE_TPL_READY"))
-	{
+	if (!defined("BBCODE_TPL_READY")) {
 		// load templates from file into array.
 		$bbcode_tpl = load_bbcode_template();
 
@@ -320,8 +318,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 {
 	$open_tag_count = 0;
 
-	if (!$close_tag_new || ($close_tag_new === ''))
-	{
+	if (!$close_tag_new || ($close_tag_new === '')) {
 		$close_tag_new = $close_tag;
 	}
 
@@ -349,75 +346,62 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 
 	$open_is_regexp = false;
 
-	if ($open_regexp_replace)
-	{
+	if ($open_regexp_replace) {
 		$open_is_regexp = true;
-		if (!is_array($open_regexp_replace))
-		{
+
+		if (!is_array($open_regexp_replace)) {
 			$open_regexp_temp = $open_regexp_replace;
 			$open_regexp_replace = [];
 			$open_regexp_replace[0] = $open_regexp_temp;
 		}
 	}
 
-	if ($mark_lowest_level && $open_is_regexp)
-	{
+	if ($mark_lowest_level && $open_is_regexp) {
 		message_die(GENERAL_ERROR, "Unsupported operation for bbcode_first_pass_pda().");
 	}
 
 	// Start at the 2nd char of the string, looking for opening tags.
 	$curr_pos = 1;
-	while ($curr_pos && ($curr_pos < strlen($text)))
-	{
+	while ($curr_pos && ($curr_pos < strlen($text))) {
 		$curr_pos = strpos($text, "[", $curr_pos);
 
 		// If not found, $curr_pos will be 0, and the loop will end.
-		if ($curr_pos)
-		{
+		if ($curr_pos) {
 			// We found a [. It starts at $curr_pos.
 			// check if it's a starting or ending tag.
 			$found_start = false;
 			$which_start_tag = "";
 			$start_tag_index = -1;
 
-			for ($i = 0; $i < $open_tag_count; $i++)
-			{
+			for ($i = 0; $i < $open_tag_count; $i++) {
 				// Grab everything until the first "]"...
 				$possible_start = substr($text, $curr_pos, strpos($text, ']', $curr_pos + 1) - $curr_pos + 1);
 
 				//
 				// We're going to try and catch usernames with "[' characters.
 				//
-				if (preg_match('#\[quote=\\\&quot;#si', $possible_start, $match) && !preg_match('#\[quote=\\\&quot;(.*?)\\\&quot;\]#si', $possible_start) )
-				{
+				if (preg_match('#\[quote=\\\&quot;#si', $possible_start, $match) && !preg_match('#\[quote=\\\&quot;(.*?)\\\&quot;\]#si', $possible_start) ) {
 					// OK we are in a quote tag that probably contains a ] bracket.
 					// Grab a bit more of the string to hopefully get all of it..
-					if ($close_pos = strpos($text, '&quot;]', $curr_pos + 14))
-					{
-						if (strpos(substr($text, $curr_pos + 14, $close_pos - ($curr_pos + 14)), '[quote') === false)
-						{
+					if ($close_pos = strpos($text, '&quot;]', $curr_pos + 14)) {
+						if (strpos(substr($text, $curr_pos + 14, $close_pos - ($curr_pos + 14)), '[quote') === false) {
 							$possible_start = substr($text, $curr_pos, $close_pos - $curr_pos + 7);
 						}
 					}
 				}
 
 				// Now compare, either using regexp or not.
-				if ($open_is_regexp)
-				{
+				if ($open_is_regexp) {
 					$match_result = [];
-					if (preg_match($open_tag[$i], $possible_start, $match_result))
-					{
+					if (preg_match($open_tag[$i], $possible_start, $match_result)) {
 						$found_start = true;
 						$which_start_tag = $match_result[0];
 						$start_tag_index = $i;
 						break;
 					}
-				}
-				else
-				{
+				} else {
 					// straightforward string comparison.
-					if (0 === strcasecmp($open_tag[$i], $possible_start))
-					{
+					if (0 === strcasecmp($open_tag[$i], $possible_start)) {
 						$found_start = true;
 						$which_start_tag = $open_tag[$i];
 						$start_tag_index = $i;
@@ -426,8 +410,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 				}
 			}
 
-			if ($found_start)
-			{
+			if ($found_start) {
 				// We have an opening tag.
 				// Push its position, the text we matched, and its index in the open_tag array on to the stack, and then keep going to the right.
                 $match = ["pos" => $curr_pos, "tag" => $which_start_tag, "index" => $start_tag_index];
@@ -439,17 +422,13 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 				// of table structure..
 				//
 				$curr_pos += strlen($possible_start);
-			}
-			else
-			{
+			} else {
 				// check for a closing tag..
 				$possible_end = substr($text, $curr_pos, $close_tag_length);
-				if (0 === strcasecmp($close_tag, $possible_end))
-				{
+				if (0 === strcasecmp($close_tag, $possible_end)) {
 					// We have an ending tag.
 					// Check if we've already found a matching starting tag.
-					if (count($stack) > 0)
-					{
+					if (count($stack) > 0) {
 						// There exists a starting tag.
 						$curr_nesting_depth = count($stack);
 						// We need to do 2 replacements now.
@@ -459,8 +438,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 						$start_length = strlen($start_tag);
 						$start_tag_index = $match['index'];
 
-						if ($open_is_regexp)
-						{
+						if ($open_is_regexp) {
 							$start_tag = preg_replace($open_tag[$start_tag_index], $open_regexp_replace[$start_tag_index], $start_tag);
 						}
 
@@ -471,8 +449,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 						$between_tags = substr($text, $start_index + $start_length, $curr_pos - $start_index - $start_length);
 
 						// Run the given function on the text between the tags..
-						if ($use_function_pointer)
-						{
+						if ($use_function_pointer) {
 							$between_tags = $func($between_tags, $uid);
 						}
 
@@ -480,32 +457,23 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 						$after_end_tag = substr($text, $curr_pos + $close_tag_length);
 
 						// Mark the lowest nesting level if needed.
-						if ($mark_lowest_level && ($curr_nesting_depth === 1))
-						{
-							if ($open_tag[0] === '[code]')
-							{
+						if ($mark_lowest_level && ($curr_nesting_depth === 1)) {
+							if ($open_tag[0] === '[code]') {
                                 $code_entities_match = ['#<#', '#>#', '#"#', '#:#', '#\[#', '#\]#', '#\(#', '#\)#', '#\{#', '#\}#'];
                                 $code_entities_replace = ['&lt;', '&gt;', '&quot;', '&#58;', '&#91;', '&#93;', '&#40;', '&#41;', '&#123;', '&#125;'];
                                 $between_tags = preg_replace($code_entities_match, $code_entities_replace, $between_tags);
 							}
+
 							$text = $before_start_tag . substr($start_tag, 0, $start_length - 1) . ":$curr_nesting_depth:$uid]";
 							$text .= $between_tags . substr($close_tag_new, 0, $close_tag_new_length - 1) . ":$curr_nesting_depth:$uid]";
-						}
-						else
-						{
-							if ($open_tag[0] === '[code]')
-							{
+						} else {
+							if ($open_tag[0] === '[code]') {
 								$text = $before_start_tag . '&#91;code&#93;';
 								$text .= $between_tags . '&#91;/code&#93;';
-							}
-							else
-							{
-								if ($open_is_regexp)
-								{
+							} else {
+								if ($open_is_regexp) {
 									$text = $before_start_tag . $start_tag;
-								}
-								else
-								{
+								} else {
 									$text = $before_start_tag . substr($start_tag, 0, $start_length - 1) . ":$uid]";
 								}
 								$text .= $between_tags . substr($close_tag_new, 0, $close_tag_new_length - 1) . ":$uid]";
@@ -517,25 +485,18 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 						// Now.. we've screwed up the indices by changing the length of the string.
 						// So, if there's anything in the stack, we want to resume searching just after it.
 						// otherwise, we go back to the start.
-						if (count($stack) > 0)
-						{
+						if (count($stack) > 0) {
 							$match = array_pop($stack);
 							$curr_pos = $match['pos'];
 //							++$curr_pos;
-						}
-						else
-						{
+						} else {
 							$curr_pos = 1;
 						}
-					}
-					else
-					{
+					} else {
 						// No matching start tag found. Increment pos, keep going.
 						++$curr_pos;
 					}
-				}
-				else
-				{
+				} else {
 					// No starting tag or ending tag.. Increment pos, keep looping.,
 					++$curr_pos;
 				}
@@ -566,8 +527,7 @@ function bbencode_second_pass_code($text, $uid, $bbcode_tpl)
 	// so they have to be handled differently.
 	$match_count = preg_match_all("#\[code:1:$uid\](.*?)\[/code:1:$uid\]#si", $text, $matches);
 
-	for ($i = 0; $i < $match_count; $i++)
-	{
+	for ($i = 0; $i < $match_count; $i++) {
 		$before_replace = $matches[1][$i];
 		$after_replace = $matches[1][$i];
 
@@ -676,8 +636,7 @@ function smilies_pass($message)
 {
 	static $orig, $repl;
 
-	if (!isset($orig))
-	{
+	if (!isset($orig)) {
 		global $board_config;
 		$orig = $repl = [];
 
@@ -695,8 +654,7 @@ function smilies_pass($message)
 		}
 	}
 
-	if (count($orig))
-	{
+	if (count($orig)) {
 		$message = preg_replace($orig, $repl, ' ' . $message . ' ');
 		$message = substr($message, 1, -1);
 	}

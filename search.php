@@ -785,8 +785,10 @@ if ($mode === 'searchuser') {
 
 		$highlight_active = urlencode(trim($highlight_active));
 
-		$tracking_topics = isset($_COOKIE[$board_config['cookie_name'] . '_t']) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_t']) : [];
-		$tracking_forums = isset($_COOKIE[$board_config['cookie_name'] . '_f']) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_f']) : [];
+        // define cookie names
+        $topic_cookie_name = $board_config['cookie_name'] . '_t';
+        $forum_cookie_name = $board_config['cookie_name'] . '_f';
+        $forum_all_cookie_name = $board_config['cookie_name'] . '_f_all';
 
 		foreach ($search_sets as $search_set) {
 			$forum_url = append_sid("viewforum.php?" . POST_FORUM_URL . '=' . $search_set->forum_id);
@@ -1024,7 +1026,7 @@ if ($mode === 'searchuser') {
 
                     if ($userdata['session_logged_in']) {
                         if ($search_set->post_time > $userdata['user_lastvisit']) {
-                            if (!empty($tracking_topics) || !empty($tracking_forums) || isset($_COOKIE[$board_config['cookie_name'] . '_f_all'])) {
+                            if (!empty($tracking_topics) || !empty($tracking_forums) || isset($_COOKIE[$forum_all_cookie_name])) {
 
 								$unread_topics = true;
 
@@ -1040,8 +1042,8 @@ if ($mode === 'searchuser') {
                                     }
                                 }
 
-                                if (isset($_COOKIE[$board_config['cookie_name'] . '_f_all'])) {
-                                    if ($_COOKIE[$board_config['cookie_name'] . '_f_all'] > $search_set->post_time) {
+                                if (isset($_COOKIE[$forum_all_cookie_name])) {
+                                    if ($_COOKIE[$forum_all_cookie_name] > $search_set->post_time) {
                                         $unread_topics = false;
                                     }
                                 }

@@ -34,9 +34,12 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 	$cookiedomain = $board_config['cookie_domain'];
 	$cookiesecure = $board_config['cookie_secure'];
 
-	if ( isset($_COOKIE[$cookiename . '_sid']) || isset($_COOKIE[$cookiename . '_data']) ) {
-		$session_id = isset($_COOKIE[$cookiename . '_sid']) ? $_COOKIE[$cookiename . '_sid'] : '';
-		$sessiondata = isset($_COOKIE[$cookiename . '_data']) ? unserialize(stripslashes($_COOKIE[$cookiename . '_data'])) : [];
+	$data_cookie_name = $cookiename . '_data';
+	$sid_cookie_name  = $cookiename . '_sid';
+
+	if ( isset($_COOKIE[$sid_cookie_name]) || isset($_COOKIE[$data_cookie_name]) ) {
+		$session_id  = isset($_COOKIE[$sid_cookie_name])  ? $_COOKIE[$sid_cookie_name] : '';
+		$sessiondata = isset($_COOKIE[$data_cookie_name]) ? unserialize(stripslashes($_COOKIE[$data_cookie_name])) : [];
 		$sessionmethod = SESSION_METHOD_COOKIE;
 	} else {
 		$sessiondata = [];
@@ -266,8 +269,8 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 	$userdata['session_admin'] = $admin;
 	$userdata['session_key'] = $sessiondata['autologinid'];
 
-	setcookie($cookiename . '_data', serialize($sessiondata), $current_time + 31536000, $cookiepath, $cookiedomain, $cookiesecure);
-	setcookie($cookiename . '_sid', $session_id, 0, $cookiepath, $cookiedomain, $cookiesecure);
+	setcookie($data_cookie_name, serialize($sessiondata), $current_time + 31536000, $cookiepath, $cookiedomain, $cookiesecure);
+	setcookie($sid_cookie_name, $session_id, 0, $cookiepath, $cookiedomain, $cookiesecure);
 
 	$SID = 'sid=' . $session_id;
 
@@ -288,12 +291,15 @@ function session_pagestart($user_ip, $thispage_id)
 	$cookiedomain = $board_config['cookie_domain'];
 	$cookiesecure = $board_config['cookie_secure'];
 
+    $data_cookie_name = $cookiename . '_data';
+    $sid_cookie_name  = $cookiename . '_sid';
+
 	$current_time = time();
 	unset($userdata);
 
-	if ( isset($_COOKIE[$cookiename . '_sid']) || isset($_COOKIE[$cookiename . '_data']) ) {
-		$sessiondata = isset( $_COOKIE[$cookiename . '_data'] ) ? unserialize(stripslashes($_COOKIE[$cookiename . '_data'])) : [];
-		$session_id = isset( $_COOKIE[$cookiename . '_sid'] ) ? $_COOKIE[$cookiename . '_sid'] : '';
+	if ( isset($_COOKIE[$sid_cookie_name]) || isset($_COOKIE[$data_cookie_name]) ) {
+		$sessiondata = isset( $_COOKIE[$data_cookie_name] ) ? unserialize(stripslashes($_COOKIE[$data_cookie_name])) : [];
+		$session_id = isset( $_COOKIE[$sid_cookie_name] ) ? $_COOKIE[$sid_cookie_name] : '';
 		$sessionmethod = SESSION_METHOD_COOKIE;
 	} else {
 		$sessiondata = [];
@@ -367,8 +373,8 @@ function session_pagestart($user_ip, $thispage_id)
 
 					session_clean($userdata['session_id']);
 
-					setcookie($cookiename . '_data', serialize($sessiondata), $current_time + 31536000, $cookiepath, $cookiedomain, $cookiesecure);
-					setcookie($cookiename . '_sid', $session_id, 0, $cookiepath, $cookiedomain, $cookiesecure);
+					setcookie($data_cookie_name, serialize($sessiondata), $current_time + 31536000, $cookiepath, $cookiedomain, $cookiesecure);
+					setcookie($sid_cookie_name, $session_id, 0, $cookiepath, $cookiedomain, $cookiesecure);
 				}
 
 				// Add the session_key to the userdata array if it is set
@@ -410,6 +416,9 @@ function session_end($session_id, $user_id)
 	$cookiedomain = $board_config['cookie_domain'];
 	$cookiesecure = $board_config['cookie_secure'];
 
+    $data_cookie_name = $cookiename . '_data';
+    $sid_cookie_name  = $cookiename . '_sid';
+
 	$current_time = time();
 
 	if (!preg_match('/^[A-Za-z0-9]*$/', $session_id)) {
@@ -450,8 +459,8 @@ function session_end($session_id, $user_id)
         message_die(CRITICAL_ERROR, 'Error obtaining user details');
     }
 
-	setcookie($cookiename . '_data', '', $current_time - 31536000, $cookiepath, $cookiedomain, $cookiesecure);
-	setcookie($cookiename . '_sid', '', $current_time - 31536000, $cookiepath, $cookiedomain, $cookiesecure);
+	setcookie($data_cookie_name, '', $current_time - 31536000, $cookiepath, $cookiedomain, $cookiesecure);
+	setcookie($sid_cookie_name, '', $current_time - 31536000, $cookiepath, $cookiedomain, $cookiesecure);
 
 	return true;
 }

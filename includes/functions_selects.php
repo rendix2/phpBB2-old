@@ -67,9 +67,9 @@ function style_select($default_style, $select_name = "style", $dirname = "templa
         ->orderBy('themes_id')
         ->fetchPairs('themes_id', 'style_name');
 
-	if ( !count($themes) ) {
-		message_die(GENERAL_ERROR, 'Could not query themes table.');
-	}
+    if (!count($themes)) {
+        message_die(GENERAL_ERROR, 'Could not query themes table.');
+    }
 
 	$style_select = '<select name="' . $select_name . '">';
 
@@ -91,9 +91,9 @@ function tz_select($default, $select_name = 'timezone')
 {
 	global $sys_timezone, $lang;
 
-	if ( !isset($default) ) {
-		$default === $sys_timezone;
-	}
+    if (!isset($default)) {
+        $default === $sys_timezone;
+    }
 
 	$tz_select = '<select name="' . $select_name . '">';
 

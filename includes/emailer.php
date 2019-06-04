@@ -88,22 +88,18 @@ class emailer
 	{
 		global $board_config, $phpbb_root_path;
 
-		if (trim($template_file) === '')
-		{
+		if (trim($template_file) === '') {
 			message_die(GENERAL_ERROR, 'No template file set', '', __LINE__, __FILE__);
 		}
 
-		if (trim($template_lang) === '')
-		{
+		if (trim($template_lang) === '') {
 			$template_lang = $board_config['default_lang'];
 		}
 
-		if (empty($this->tpl_msg[$template_lang . $template_file]))
-		{
+		if (empty($this->tpl_msg[$template_lang . $template_file])) {
 			$tpl_file = $phpbb_root_path . 'language/lang_' . $template_lang . '/email/' . $template_file . '.tpl';
 
-			if (!@file_exists(@phpbb_realpath($tpl_file)))
-			{
+			if (!@file_exists(@phpbb_realpath($tpl_file))) {
 				$tpl_file = $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/email/' . $template_file . '.tpl';
 
 				if (!@file_exists(@phpbb_realpath($tpl_file)))
@@ -112,8 +108,7 @@ class emailer
 				}
 			}
 
-			if (!($fd = @fopen($tpl_file, 'r')))
-			{
+			if (!($fd = @fopen($tpl_file, 'r'))) {
 				message_die(GENERAL_ERROR, 'Failed opening template file :: ' . $tpl_file, '', __LINE__, __FILE__);
 			}
 
@@ -161,28 +156,21 @@ class emailer
 		// do this here because the subject may contain a variable
 		$drop_header = '';
 		$match = [];
-		if (preg_match('#^(Subject:(.*?))$#m', $this->msg, $match))
-		{
+		if (preg_match('#^(Subject:(.*?))$#m', $this->msg, $match)) {
 			$this->subject = (trim($match[2]) !== '') ? trim($match[2]) : (($this->subject !== '') ? $this->subject : 'No Subject');
 			$drop_header .= '[\r\n]*?' . preg_quote($match[1], '#');
-		}
-		else
-		{
+		} else {
 			$this->subject = (($this->subject !== '') ? $this->subject : 'No Subject');
 		}
 
-		if (preg_match('#^(Charset:(.*?))$#m', $this->msg, $match))
-		{
+		if (preg_match('#^(Charset:(.*?))$#m', $this->msg, $match)) {
 			$this->encoding = (trim($match[2]) !== '') ? trim($match[2]) : trim($lang['ENCODING']);
 			$drop_header .= '[\r\n]*?' . preg_quote($match[1], '#');
-		}
-		else
-		{
+		} else {
 			$this->encoding = trim($lang['ENCODING']);
 		}
 
-		if ($drop_header !== '')
-		{
+		if ($drop_header !== '') {
 			$this->msg = trim(preg_replace('#' . $drop_header . '#s', '', $this->msg));
 		}
 
@@ -195,24 +183,19 @@ class emailer
 		$this->extra_headers = (($this->reply_to !== '') ? "Reply-to: $this->reply_to\n" : '') . (($this->from !== '') ? "From: $this->from\n" : "From: " . $board_config['board_email'] . "\n") . "Return-Path: " . $board_config['board_email'] . "\nMessage-ID: <" . md5(uniqid(time())) . "@" . $board_config['server_name'] . ">\nMIME-Version: 1.0\nContent-type: text/plain; charset=" . $this->encoding . "\nContent-transfer-encoding: 8bit\nDate: " . date('r', time()) . "\nX-Priority: 3\nX-MSMail-Priority: Normal\nX-Mailer: PHP\nX-MimeOLE: Produced By phpBB2\n" . $this->extra_headers . (($cc != '') ? "Cc: $cc\n" : '')  . (($bcc != '') ? "Bcc: $bcc\n" : '');
 
 		// Send message ... removed $this->encode() from subject for time being
-		if ( $this->use_smtp )
-		{
-			if ( !defined('SMTP_INCLUDED') ) 
-			{
+		if ( $this->use_smtp ) {
+			if ( !defined('SMTP_INCLUDED') ) {
 				include $phpbb_root_path . 'includes/smtp.php';
 			}
 
 			$result = smtpmail($to, $this->subject, $this->msg, $this->extra_headers);
-		}
-		else
-		{
+		} else {
 			$empty_to_header = ($to === '');
 			$to = ($empty_to_header) ? ($board_config['sendmail_fix'] ? ' ' : 'Undisclosed-recipients:;') : $to;
 	
 			$result = @mail($to, $this->subject, preg_replace("#(?<!\r)\n#s", "\n", $this->msg), $this->extra_headers);
 			
-			if (!$result && !$board_config['sendmail_fix'] && $empty_to_header)
-			{
+			if (!$result && !$board_config['sendmail_fix'] && $empty_to_header) {
 				$to = ' ';
 
 				dibi::update(CONFIG_TABLE, ['config_value' => 1])
@@ -225,8 +208,7 @@ class emailer
 		}
 
 		// Did it work?
-		if (!$result)
-		{
+		if (!$result) {
 			message_die(GENERAL_ERROR, 'Failed sending email :: ' . ($this->use_smtp ? 'SMTP' : 'PHP') . ' :: ' . $result, '', __LINE__, __FILE__);
 		}
 
@@ -239,8 +221,7 @@ class emailer
 	// scenario IMO
 	function encode($str)
 	{
-		if ($this->encoding === '')
-		{
+		if ($this->encoding === '') {
 			return $str;
 		}
 
@@ -272,8 +253,7 @@ class emailer
 
 		$this->msg = '--' . $mime_boundary . "\nContent-Type: text/plain;\n\tcharset=\"" . $lang['ENCODING'] . "\"\n\n" . $this->msg;
 
-		if ($mime_filename)
-		{
+		if ($mime_filename) {
 			$filename = $mime_filename;
 			$encoded = $this->encode_file($filename);
 		}
@@ -286,8 +266,7 @@ class emailer
 		$this->mimeOut .= "Content-Transfer-Encoding: quoted-printable\n";
 		$this->mimeOut .= "Content-Disposition: attachment;\n\tfilename=\"$szFilenameToDisplay\"\n\n";
 
-		if ( $mimetype === "message/rfc822" )
-		{
+		if ( $mimetype === "message/rfc822" ) {
 			$this->mimeOut .= "From: ".$szFromAddress."\n";
 			$this->mimeOut .= "To: ".$this->emailAddress."\n";
 			$this->mimeOut .= "Date: ".date("D, d M Y H:i:s") . " UT\n";
@@ -308,8 +287,7 @@ class emailer
 	{
 		$mime_boundary = "--==================_846811060==_";
 
-		if ($mime_filename)
-		{
+		if ($mime_filename) {
 			$filename = $mime_filename;
 		}
 
@@ -330,16 +308,12 @@ class emailer
 		$len = strlen($stmp);
 		$out = "";
 
-		while ($len > 0)
-		{
-			if ($len >= 76)
-			{
+		while ($len > 0) {
+			if ($len >= 76) {
 				$out .= substr($stmp, 0, 76) . "\r\n";
 				$stmp = substr($stmp, 76);
 				$len = $len - 76;
-			}
-			else
-			{
+			} else {
 				$out .= $stmp . "\r\n";
 				$stmp = "";
 				$len = 0;
@@ -353,12 +327,12 @@ class emailer
 	//
 	function encode_file($sourcefile)
 	{
-		if (is_readable(phpbb_realpath($sourcefile)))
-		{
-			$fd = fopen($sourcefile, "r");
+		if (is_readable(phpbb_realpath($sourcefile))) {
+		    $fd = fopen($sourcefile, "r");
 			$contents = fread($fd, filesize($sourcefile));
-	      $encoded = $this->myChunkSplit(base64_encode($contents));
-	      fclose($fd);
+	        $encoded = $this->myChunkSplit(base64_encode($contents));
+
+	        fclose($fd);
 		}
 
 		return $encoded;

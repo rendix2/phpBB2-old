@@ -575,17 +575,20 @@ if (($delete || $poll_delete || $mode === 'delete') && !$confirm) {
 		}
 
 		if ( $mode === 'newtopic' || $mode === 'reply' ) {
-			$tracking_topics = !empty($_COOKIE[$board_config['cookie_name'] . '_t']) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_t']) : [];
-			$tracking_forums = !empty($_COOKIE[$board_config['cookie_name'] . '_f']) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_f']) : [];
+            $topic_cookie_name = $board_config['cookie_name'] . '_t';
+            $forum_cookie_name = $board_config['cookie_name'] . '_f';
 
-			if ( count($tracking_topics) + count($tracking_forums) === 100 && empty($tracking_topics[$topic_id]) ) {
+			$tracking_topics = !empty($_COOKIE[$topic_cookie_name]) ? unserialize($_COOKIE[$topic_cookie_name]) : [];
+			$tracking_forums = !empty($_COOKIE[$forum_cookie_name]) ? unserialize($_COOKIE[$forum_cookie_name]) : [];
+
+            if (count($tracking_topics) + count($tracking_forums) === 100 && empty($tracking_topics[$topic_id])) {
 				asort($tracking_topics);
 				unset($tracking_topics[key($tracking_topics)]);
 			}
 
 			$tracking_topics[$topic_id] = time();
 
-			setcookie($board_config['cookie_name'] . '_t', serialize($tracking_topics), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+			setcookie($topic_cookie_name, serialize($tracking_topics), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 		}
 
         $template->assign_vars(
