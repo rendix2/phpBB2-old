@@ -467,7 +467,7 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['up
 
 		$res = ftp_put($conn_id, 'config.php', $tmpfname, FTP_ASCII);
 
-		@ftp_quit($conn_id);
+		@ftp_close($conn_id);
 
 		unlink($tmpfname);
 

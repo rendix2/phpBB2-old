@@ -367,7 +367,7 @@ class Template {
 		$line_count = count($code_lines);
 		for ($i = 0; $i < $line_count; $i++)
 		{
-			$code_lines[$i] = chop($code_lines[$i]);
+			$code_lines[$i] = rtrim($code_lines[$i]);
 			if (preg_match('#<!-- BEGIN (.*?) -->#', $code_lines[$i], $m))
 			{
 				$n[0] = $m[0];
