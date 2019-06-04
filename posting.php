@@ -386,29 +386,52 @@ if (!$is_auth[$is_auth_type]) {
 //
 // Set toggles for various options
 //
-if (!$board_config['allow_html']) {
+if ($board_config['allow_html']) {
+    if ($submit || $refresh) {
+        $html_on = !$_POST['disable_html'];
+    } else {
+        if ($userdata['user_id'] === ANONYMOUS) {
+            $html_on = $board_config['allow_html'];
+        } else {
+            $html_on = $userdata['user_allowhtml'];
+        }
+    }
+} else {
     $html_on = 0;
-} else {
-    $html_on = ($submit || $refresh) ? (!empty($_POST['disable_html']) ? 0 : true) : (($userdata['user_id'] === ANONYMOUS) ? $board_config['allow_html'] : $userdata['user_allowhtml']);
 }
 
-if (!$board_config['allow_bbcode']) {
+if ($board_config['allow_bbcode']) {
+    if ($submit || $refresh) {
+        $bbcode_on = !$_POST['disable_bbcode'];
+    } else {
+        if ($userdata['user_id'] === ANONYMOUS) {
+            $bbcode_on = $board_config['allow_bbcode'];
+        } else {
+            $bbcode_on = $userdata['user_allowbbcode'];
+        }
+    }
+} else {
     $bbcode_on = 0;
-} else {
-    $bbcode_on = ($submit || $refresh) ? (!empty($_POST['disable_bbcode']) ? 0 : true) : (($userdata['user_id'] === ANONYMOUS) ? $board_config['allow_bbcode'] : $userdata['user_allowbbcode']);
 }
 
-if (!$board_config['allow_smilies']) {
-    $smilies_on = 0;
+if ($board_config['allow_smilies']) {
+    if ($submit || $refresh) {
+        $smilies_on = !$_POST['disable_smilies'];
+    } else {
+        if ($userdata['user_id'] === ANONYMOUS) {
+            $smilies_on = $board_config['allow_smilies'];
+        } else {
+            $smilies_on = $userdata['user_allowsmile'];
+        }
+    }
 } else {
-    $smilies_on = ($submit || $refresh) ? (!empty($_POST['disable_smilies']) ? 0 : true) : (($userdata['user_id'] === ANONYMOUS) ? $board_config['allow_smilies'] : $userdata['user_allowsmile']);
+    $smilies_on = 0;
 }
 
 if (($submit || $refresh) && $is_auth['auth_read']) {
     $notify_user = !empty($_POST['notify']) ? true : 0;
 } else {
-	if ( $mode !== 'newtopic' && $userdata['session_logged_in'] && $is_auth['auth_read'] )
-	{
+    if ($mode !== 'newtopic' && $userdata['session_logged_in'] && $is_auth['auth_read']) {
         $notify_user = dibi::select('topic_id')
             ->from(TOPICS_WATCH_TABLE)
             ->where('topic_id = %i', $topic_id)
@@ -421,7 +444,15 @@ if (($submit || $refresh) && $is_auth['auth_read']) {
 	}
 }
 
-$attach_sig = ( $submit || $refresh ) ? ( !empty($_POST['attach_sig']) ? TRUE : 0 ) : ( ($userdata['user_id'] === ANONYMOUS ) ? 0 : $userdata['user_attachsig'] );
+if ( $submit || $refresh ) {
+    $attach_sig = $_POST['attach_sig'];
+} else {
+    if ($userdata['user_id'] === ANONYMOUS ) {
+        $attach_sig = 0;
+    } else {
+        $attach_sig = $userdata['user_attachsig'];
+    }
+}
 
 // --------------------
 //  What shall we do?
