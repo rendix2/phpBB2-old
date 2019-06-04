@@ -393,7 +393,15 @@ foreach ($categories as $category) {
 
                             $last_post = $last_post_time . '<br />';
 
-                            $last_post .= ($forum->user_id === ANONYMOUS) ? (($forum->post_username !== '') ? $forum->post_username . ' ' : $lang['Guest'] . ' ') : '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . '=' . $forum->user_id) . '">' . $forum->username . '</a> ';
+                            if ($forum->user_id === ANONYMOUS) {
+                                if ($forum->post_username !== '') {
+                                    $last_post .= $forum->post_username . ' ';
+                                } else {
+                                    $last_post .= $lang['Guest'];
+                                }
+                            } else {
+                                $last_post .= '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . '=' . $forum->user_id) . '">' . $forum->username . '</a> ';
+                            }
 
                             $last_post .= '<a href="' . append_sid("viewtopic.php?" . POST_POST_URL . '=' . $forum->forum_last_post_id) . '#' . $forum->forum_last_post_id . '"><img src="' . $images['icon_latest_reply'] . '" border="0" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" /></a>';
                         } else {

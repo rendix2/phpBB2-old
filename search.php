@@ -908,7 +908,17 @@ if ($mode === 'searchuser') {
 				}
 
 				$poster = ( $search_set->user_id !== ANONYMOUS ) ? '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $search_set->user_id) . '">' : '';
-				$poster .= ( $search_set->user_id !== ANONYMOUS ) ? $search_set->username : (($search_set->post_username !== "" ) ? $search_set->post_username : $lang['Guest'] );
+
+                if ( $search_set->user_id !== ANONYMOUS ) {
+                    $poster .= $search_set->username;
+                } else {
+                    if ($search_set->post_username !== "" ) {
+                        $poster .= $search_set->post_username;
+                    } else {
+                        $poster .= $lang['Guest'];
+                    }
+                }
+
 				$poster .= ( $search_set->user_id !== ANONYMOUS ) ? '</a>' : '';
 
                 if ($userdata['session_logged_in'] && $search_set->post_time > $userdata['user_lastvisit']) {
@@ -1083,7 +1093,16 @@ if ($mode === 'searchuser') {
 				}
 
 				$topic_author = ( $search_set->user_id !== ANONYMOUS ) ? '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . '=' . $search_set->user_id) . '">' : '';
-				$topic_author .= ( $search_set->user_id !== ANONYMOUS ) ? $search_set->username : (($search_set->post_username !== '' ) ? $search_set->post_username : $lang['Guest'] );
+
+                if ($search_set->user_id !== ANONYMOUS) {
+                    $topic_author .= $search_set->username;
+                } else {
+                    if ($search_set->post_username !== '') {
+                        $topic_author .= $search_set->post_username;
+                    } else {
+                        $topic_author .= $lang['Guest'];
+                    }
+                }
 
 				$topic_author .= ( $search_set->user_id !== ANONYMOUS ) ? '</a>' : '';
 
@@ -1091,7 +1110,15 @@ if ($mode === 'searchuser') {
 
 				$last_post_time = create_date($board_config['default_dateformat'], $search_set->post_time, $board_config['board_timezone']);
 
-				$last_post_author = ( $search_set->id2 === ANONYMOUS ) ? ( ($search_set->post_username2 !== '' ) ? $search_set->post_username2 . ' ' : $lang['Guest'] . ' ' ) : '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . '='  . $search_set->id2) . '">' . $search_set->user2 . '</a>';
+                if ($search_set->id2 === ANONYMOUS) {
+                    if ($search_set->post_username2 !== '') {
+                        $last_post_author = $search_set->post_username2;
+                    } else {
+                        $last_post_author = $lang['Guest'];
+                    }
+                } else {
+                    $last_post_author = '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . '=' . $search_set->id2) . '">' . $search_set->user2 . '</a>';
+                }
 
 				$last_post_url = '<a href="' . append_sid("viewtopic.php?"  . POST_POST_URL . '=' . $search_set->topic_last_post_id) . '#' . $search_set->topic_last_post_id . '"><img src="' . $images['icon_latest_reply'] . '" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" border="0" /></a>';
 

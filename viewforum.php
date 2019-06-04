@@ -595,7 +595,16 @@ if ($total_topics) {
 		$view_topic_url = append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id");
 
 		$topic_author = ( $topic->user_id !== ANONYMOUS ) ? '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . '=' . $topic->user_id) . '">' : '';
-		$topic_author .= ( $topic->user_id !== ANONYMOUS ) ? $topic->username : ( ( $topic->post_username !== '' ) ? $topic->post_username : $lang['Guest'] );
+
+		if ($topic->user_id !== ANONYMOUS) {
+            $topic_author .=  $topic->username;
+        } else {
+		    if ( $topic->post_username !== '' ) {
+                $topic_author .= $topic->post_username;
+            } else {
+                $topic_author .= $lang['Guest'];
+            }
+        }
 
 		$topic_author .= ( $topic->user_id !== ANONYMOUS ) ? '</a>' : '';
 
@@ -603,7 +612,15 @@ if ($total_topics) {
 
 		$last_post_time = create_date($board_config['default_dateformat'], $topic->post_time, $board_config['board_timezone']);
 
-		$last_post_author = ( $topic->id2 === ANONYMOUS ) ? ( ($topic->post_username2 !== '' ) ? $topic->post_username2 . ' ' : $lang['Guest'] . ' ' ) : '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . '='  . $topic->id2) . '">' . $topic->user2 . '</a>';
+        if ($topic->id2 === ANONYMOUS) {
+            if ($topic->post_username2 !== '') {
+                $last_post_author = $topic->post_username2 . ' ';
+            } else {
+                $last_post_author = $lang['Guest'];
+            }
+        } else {
+            $last_post_author = '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . '='  . $topic->id2) . '">' . $topic->user2 . '</a>';
+        }
 
 		$last_post_url = '<a href="' . append_sid("viewtopic.php?"  . POST_POST_URL . '=' . $topic->topic_last_post_id) . '#' . $topic->topic_last_post_id . '"><img src="' . $images['icon_latest_reply'] . '" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" border="0" /></a>';
 

@@ -729,7 +729,11 @@ if ( !empty($forum_topic_data->topic_vote) ) {
 			$view_result = 0;
 		}
 
-		$poll_expired = $vote_info[0]->vote_length ? ( ($vote_info[0]->vote_start + $vote_info[0]->vote_length < time() ) ? true : 0 ) : 0;
+        if ($vote_info[0]->vote_length && ($vote_info[0]->vote_start + $vote_info[0]->vote_length < time())) {
+            $poll_expired = true;
+        } else {
+            $poll_expired = false;
+        }
 
         if ($user_voted || $view_result || $poll_expired || !$is_auth['auth_vote'] || $forum_topic_data->topic_status === TOPIC_LOCKED) {
             $template->set_filenames(['pollbox' => 'viewtopic_poll_result.tpl']);
@@ -1005,7 +1009,7 @@ foreach ($posts as $i => $post) {
 		}
 	}
 
-	$post_subject = ( $post->post_subject !== '' ) ? $post->post_subject : '';
+	$post_subject = $post->post_subject;
 
 	$message = $post->post_text;
 	$bbcode_uid = $post->bbcode_uid;

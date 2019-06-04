@@ -990,22 +990,22 @@ if ($mode === 'newpm') {
     if (!$board_config['allow_html']) {
         $html_on = 0;
     } else {
-        $html_on = ($submit || $refresh) ? (!empty($_POST['disable_html']) ? 0 : true) : $userdata['user_allowhtml'];
+        $html_on = ($submit || $refresh) ? !$_POST['disable_html'] : $userdata['user_allowhtml'];
     }
 
     if (!$board_config['allow_bbcode']) {
         $bbcode_on = 0;
     } else {
-        $bbcode_on = ($submit || $refresh) ? (!empty($_POST['disable_bbcode']) ? 0 : true) : $userdata['user_allowbbcode'];
+        $bbcode_on = ($submit || $refresh) ? !$_POST['disable_bbcode'] : $userdata['user_allowbbcode'];
     }
 
     if (!$board_config['allow_smilies']) {
         $smilies_on = 0;
     } else {
-        $smilies_on = ($submit || $refresh) ? (!empty($_POST['disable_smilies']) ? 0 : true) : $userdata['user_allowsmile'];
+        $smilies_on = ($submit || $refresh) ? !$_POST['disable_smilies'] : $userdata['user_allowsmile'];
     }
 
-	$attach_sig = ( $submit || $refresh ) ? ( !empty($_POST['attach_sig']) ? TRUE : 0 ) : $userdata['user_attachsig'];
+	$attach_sig = ( $submit || $refresh ) ? $_POST['attach_sig'] : $userdata['user_attachsig'];
 	$user_sig = ( $userdata['user_sig'] !== '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : "";
 	
 	if ( $submit && $mode !== 'edit' )
@@ -1358,7 +1358,11 @@ if ($mode === 'newpm') {
 			$privmsg_message = str_replace('<br />', "\n", $privmsg_message);
 			// $privmsg_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $privmsg_message);
 
-			$user_sig = $board_config['allow_sig'] ? (($privmsg->privmsgs_type === PRIVMSGS_NEW_MAIL) ? $user_sig : $privmsg->user_sig) : '';
+            if ($board_config['allow_sig'] && $privmsg->privmsgs_type !== PRIVMSGS_NEW_MAIL) {
+                $user_sig = $privmsg->user_sig;
+            } else {
+                $user_sig = '';
+            }
 
 			$to_username = $privmsg->username;
 			$to_userid = $privmsg->user_id;
