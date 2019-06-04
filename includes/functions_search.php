@@ -360,7 +360,7 @@ function username_search($search_match)
                 $username_list .= '<option value="' . $username . '">' . $username . '</option>';
             }
         } else {
-            $username_list .= '<option>' . $lang['No_match']. '</option>';
+            $username_list .= '<option value="-1">' . $lang['No_match']. '</option>';
         }
 	}
 

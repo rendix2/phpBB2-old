@@ -489,6 +489,7 @@ $lang['Notification_subject'] = 'New Private Message has arrived!';
 $lang['Find_username'] = 'Find a username';
 $lang['Find'] = 'Find';
 $lang['No_match'] = 'No matches found.';
+$lang['Select_username'] = 'Select username';
 
 $lang['No_post_id'] = 'No post ID was specified';
 $lang['No_such_folder'] = 'No such folder exists';

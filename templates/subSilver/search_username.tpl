@@ -3,6 +3,10 @@
 <!--
 function refresh_username(selected_username)
 {
+	if (selected_username === '-1' ) {
+		return false;
+	}
+
 	opener.document.forms['post'].username.value = selected_username;
 	opener.focus();
 	window.close();
