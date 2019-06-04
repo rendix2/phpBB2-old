@@ -487,7 +487,7 @@ function session_clean($session_id)
 	//
 	if (!empty($board_config['max_autologin_time']) && $board_config['max_autologin_time'] > 0) {
 	    dibi::delete(SESSIONS_KEYS_TABLE)
-            ->where('last_login < %i', (time() - (86400 * (int) $board_config['max_autologin_time'])))
+            ->where('last_login < %i', time() - (86400 * (int)$board_config['max_autologin_time']))
             ->execute();
 	}
 

@@ -310,9 +310,9 @@ class emailer
 
 		while ($len > 0) {
 			if ($len >= 76) {
-				$out .= substr($stmp, 0, 76) . "\r\n";
+				$out  .= substr($stmp, 0, 76) . "\r\n";
 				$stmp = substr($stmp, 76);
-				$len = $len - 76;
+				$len  -= 76;
 			} else {
 				$out .= $stmp . "\r\n";
 				$stmp = "";

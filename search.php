@@ -552,7 +552,7 @@ if ($mode === 'searchuser') {
 		// Delete old data from the search result table
 		//
         dibi::delete(SEARCH_TABLE)
-            ->where('search_time < %i', ($current_time - (int) $board_config['session_length']))
+            ->where('search_time < %i', $current_time - (int)$board_config['session_length'])
             ->execute();
 
 		//

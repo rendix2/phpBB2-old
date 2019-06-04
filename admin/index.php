@@ -165,7 +165,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
         } elseif ($avatar_dir_size >= 1024) {
             $avatar_dir_size = round($avatar_dir_size / 1024 * 100) / 100 . " KB";
         } else {
-            $avatar_dir_size = $avatar_dir_size . " Bytes";
+            $avatar_dir_size .= " Bytes";
         }
 	} else {
 		// Couldn't open Avatar dir.

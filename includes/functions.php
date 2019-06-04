@@ -302,8 +302,6 @@ function init_userprefs($userdata)
         'url' => append_sid($phpbb_root_path . 'memberlist.php'),
         'title' => $lang['Memberlist']
     ];
-
-	return;
 }
 
 function setup_style($style)
