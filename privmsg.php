@@ -1046,6 +1046,8 @@ if ($mode === 'newpm') {
 	}
 
     if ($submit) {
+        $error_msg = '';
+
         // session id check
         if ($sid === '' || $sid !== $userdata['session_id']) {
             $error = true;
@@ -1578,6 +1580,8 @@ if ($mode === 'newpm') {
 
     if ($mode === 'post') {
         $post_a = $lang['Send_a_new_message'];
+        $privmsg_subject = isset($_POST['subject']) ? $_POST['subject'] : '';
+        $privmsg_message  = isset($_POST['message']) ? $_POST['message'] : '';
 
         // $l_box_name was undefined :O
         $l_box_name = $lang['Send_a_new_message'];
