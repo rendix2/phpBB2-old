@@ -571,19 +571,19 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['up
 					</tr>
 					<tr>
 						<td class="row1" align="right"><span class="gen"><?php echo $lang['DB_Host']; ?>: </span></td>
-						<td class="row2"><input type="text" name="dbhost" value="<?php echo ($dbhost !== '') ? $dbhost : ''; ?>" /></td>
+						<td class="row2"><input type="text" name="dbhost" value="<?php echo $dbhost; ?>" /></td>
 					</tr>
 					<tr>
 						<td class="row1" align="right"><span class="gen"><?php echo $lang['DB_Name']; ?>: </span></td>
-						<td class="row2"><input type="text" name="dbname" value="<?php echo ($dbname !== '') ? $dbname : ''; ?>" /></td>
+						<td class="row2"><input type="text" name="dbname" value="<?php echo $dbname; ?>" /></td>
 					</tr>
 					<tr>
 						<td class="row1" align="right"><span class="gen"><?php echo $lang['DB_Username']; ?>: </span></td>
-						<td class="row2"><input type="text" name="dbuser" value="<?php echo ($dbuser !== '') ? $dbuser : ''; ?>" /></td>
+						<td class="row2"><input type="text" name="dbuser" value="<?php echo $dbuser; ?>" /></td>
 					</tr>
 					<tr>
 						<td class="row1" align="right"><span class="gen"><?php echo $lang['DB_Password']; ?>: </span></td>
-						<td class="row2"><input type="password" name="dbpasswd" value="<?php echo ($dbpasswd !== '') ? $dbpasswd : ''; ?>" /></td>
+						<td class="row2"><input type="password" name="dbpasswd" value="<?php echo $dbpasswd; ?>" /></td>
 					</tr>
 					<tr>
 						<td class="row1" align="right"><span class="gen"><?php echo $lang['Table_Prefix']; ?>: </span></td>
