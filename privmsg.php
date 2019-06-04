@@ -1578,6 +1578,9 @@ if ($mode === 'newpm') {
 
     if ($mode === 'post') {
         $post_a = $lang['Send_a_new_message'];
+
+        // $l_box_name was undefined :O
+        $l_box_name = $lang['Send_a_new_message'];
     } elseif ($mode === 'reply') {
         $post_a = $lang['Send_a_reply'];
         $mode   = 'post';
