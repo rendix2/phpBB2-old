@@ -366,7 +366,7 @@ class Emailer
      *
      * @return mixed
      */
-	public function attachFile($filename, $mimetype = 'application/octet-stream', $szFromAddress, $szFilenameToDisplay)
+	public function attachFile($filename, $szFromAddress, $szFilenameToDisplay, $mimetype = 'application/octet-stream')
 	{
 		global $lang;
 		$mime_boundary = '--==================_846811060==_';
