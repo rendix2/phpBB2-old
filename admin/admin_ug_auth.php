@@ -109,10 +109,10 @@ function check_auth($type, $key, $u_access, $is_admin)
 
 			switch($type) {
 				case AUTH_ACL:
-					$result = $u_access_value[$key];
+					$result = $u_access_value->{$key};
 
 				case AUTH_MOD:
-					$result = $result || $u_access_value['auth_mod'];
+					$result = $result || $u_access_value->auth_mod;
 
 				case AUTH_ADMIN:
 					$result = $result || $is_admin;
@@ -143,13 +143,13 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
         $row = dibi::select(['g.group_id', 'u.user_level'])
             ->from(USER_GROUP_TABLE)
             ->as('ug')
-            ->innerJoin(USERS_TABLE)
+            ->from(USERS_TABLE)
             ->as('u')
-            ->on('ug.user_id = u.user_id')
-            ->innerJoin(GROUPS_TABLE)
+            ->from(GROUPS_TABLE)
             ->as('g')
-            ->on('g.group_id = ug.group_id ')
             ->where('u.user_id = %i', $user_id)
+            ->where('ug.user_id = u.user_id')
+            ->where('g.group_id = ug.group_id')
             ->where('g.group_single_user = %i', 1)
             ->fetch();
 
@@ -389,12 +389,12 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
         $set_mod = dibi::select('u.user_id')
             ->from(AUTH_ACCESS_TABLE)
             ->as('aa')
-            ->innerJoin(USER_GROUP_TABLE)
+            ->from(USER_GROUP_TABLE)
             ->as('ug')
-            ->on('u.user_id = ug.user_id')
-            ->innerJoin(USERS_TABLE)
+            ->from(USERS_TABLE)
             ->as('u')
-            ->on('ug.group_id = aa.group_id')
+            ->where('ug.group_id = aa.group_id')
+            ->where('u.user_id = ug.user_id')
             ->where('ug.user_pending = %i', 0)
             ->where('u.user_level NOT IN %in', [MOD, ADMIN])
             ->groupBy('u.user_id')
@@ -491,7 +491,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 
 		foreach ($rows as $row) {
             if ($row->is_auth_mod) {
-                unset($group_user[$row->user_id]);
+                unset($group_user->{$row->user_id});
             }
         }
 
@@ -529,6 +529,8 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
         ->fetchAll();
 
 	if (empty($adv) ) {
+        $forum_auth_level = [];
+
 		foreach ($forum_access as $access) {
 			$forum_id = $access->forum_id;
 
@@ -600,6 +602,8 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
     } else {
         $is_admin = 0;
     }
+    $auth_ug = [];
+    $auth_field_acl = [];
 
 	foreach ($forum_access as $forum_access_value) {
 		$forum_id = $forum_access_value['forum_id'];
@@ -688,10 +692,10 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
                             $optionlist_acl_adv[$forum_id][$k] = '<select name="private_' . $field_name . '[' . $forum_id . ']">';
 
                             if (isset($auth_field_acl[$forum_id][$field_name]) && !($is_admin || $user_ary['auth_mod'])) {
-                                if (!$auth_field_acl[$forum_id][$field_name]) {
-                                    $optionlist_acl_adv[$forum_id][$k] .= '<option value="1">' . $lang['ON'] . '</option><option value="0" selected="selected">' . $lang['OFF'] . '</option>';
-                                } else {
+                                if ($auth_field_acl[$forum_id][$field_name]) {
                                     $optionlist_acl_adv[$forum_id][$k] .= '<option value="1" selected="selected">' . $lang['ON'] . '</option><option value="0">' . $lang['OFF'] . '</option>';
+                                } else {
+                                    $optionlist_acl_adv[$forum_id][$k] .= '<option value="1">' . $lang['ON'] . '</option><option value="0" selected="selected">' . $lang['OFF'] . '</option>';
                                 }
                             } else {
                                 if ($is_admin || $user_ary['auth_mod']) {
