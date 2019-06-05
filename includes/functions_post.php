@@ -281,8 +281,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	//
 	// Add poll
 	// 
-	if (($mode === 'newtopic' || ($mode === 'editpost' && $post_data['edit_poll'])) && !empty($poll_title) && count
-        ($poll_options) >= 2) {
+	if (($mode === 'newtopic' || ($mode === 'editpost' && $post_data['edit_poll'])) && !empty($poll_title) && count($poll_options) >= 2) {
 	    if (!$post_data['has_poll']) {
 	        $insert_data = [
 	            'topic_id' => $topic_id,

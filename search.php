@@ -775,7 +775,7 @@ if ($mode === 'searchuser') {
 				$highlight_active .= ' ' . $split_word;
 
 				foreach ($synonym_array as $synonym) {
-					list($replace_synonym, $match_synonym) = explode(' ', trim(strtolower($synonym)));
+					list($replace_synonym, $match_synonym) = explode(' ', strtolower(trim($synonym)));
 
 					if ( $replace_synonym === $split_word ) {
 						$highlight_match[] = '#\b(' . str_replace('*', "([\w]+)?", $replace_synonym) . ')\b#is';

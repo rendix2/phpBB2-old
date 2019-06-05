@@ -100,7 +100,7 @@ function clean_words($mode, &$entry, array &$stopwords, array &$synonyms)
 
     if (!empty($synonyms)) {
 		foreach ($synonyms as &$synonym) {
-			list($replace_synonym, $match_synonym) = explode(' ', trim(strtolower($synonym)));
+			list($replace_synonym, $match_synonym) = explode(' ', strtolower(trim($synonym)));
 
 			if ( $mode === 'post' || ( $match_synonym !== 'not' && $match_synonym !== 'and' && $match_synonym !== 'or' )
             ) {

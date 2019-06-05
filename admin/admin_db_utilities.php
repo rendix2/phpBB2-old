@@ -38,7 +38,7 @@ if (!empty($setmodules) ) {
 
 	$file_uploads = @ini_get('file_uploads');
 
-	if ((empty($file_uploads) || $file_uploads !== 0) && (strtolower($file_uploads) !== 'off') && (PHP_VERSION !== '4.0.4pl1') ) {
+	if ((empty($file_uploads) || $file_uploads !== 0) && (strtolower($file_uploads) !== 'off')) {
 		$module['Database']['Restore_DB'] = $filename . '?perform=restore';
 	}
 
@@ -74,7 +74,7 @@ if (isset($_GET['perform']) || isset($_POST['perform']) ) {
 	switch($perform) {
 		case 'backup':
 			$dumper = new Mysqldump(
-				'mysql:host='.$dbhost.';dbname='.$dbname.';charset=utf8',
+				$dbms.':host='.$dbhost.';dbname='.$dbname.';charset=utf8',
 				$dbuser,
 				$dbpasswd
 			);

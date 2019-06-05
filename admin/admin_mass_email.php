@@ -97,7 +97,7 @@ if ( isset($_POST['submit']) ) {
 		// Let's do some checking to make sure that mass mail functions
 		// are working in win32 versions of php.
 		//
-		if ( preg_match('/[c-z]:\\\.*/i', getenv('PATH')) && !$board_config['smtp_delivery']) {
+		if (!$board_config['smtp_delivery'] && preg_match('/[c-z]:\\\.*/i', getenv('PATH'))) {
 			// We are running on windows, force delivery to use our smtp functions
 			// since php's are broken by default
 			$board_config['smtp_delivery'] = 1;
