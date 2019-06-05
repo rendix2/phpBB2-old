@@ -585,8 +585,8 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
             }
 
             if (count($bcc_list_ary)) {
-                include $phpbb_root_path . 'includes/emailer.php';
-                $emailer = new emailer($board_config['smtp_delivery']);
+                include $phpbb_root_path . 'includes/Emailer.php';
+                $emailer = new Emailer($board_config['smtp_delivery']);
 
                 $script_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['script_path']));
                 $script_name = ($script_name !== '') ? $script_name . '/viewtopic.php' : 'viewtopic.php';

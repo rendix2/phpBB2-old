@@ -91,7 +91,7 @@ if ( isset($_POST['submit']) ) {
     }
 
 	if ( !$error ) {
-		include $phpbb_root_path . 'includes/emailer.php';
+		include $phpbb_root_path . 'includes/Emailer.php';
 
 		//
 		// Let's do some checking to make sure that mass mail functions
@@ -104,7 +104,7 @@ if ( isset($_POST['submit']) ) {
 			$board_config['smtp_host'] = @ini_get('SMTP');
 		}
 
-		$emailer = new emailer($board_config['smtp_delivery']);
+		$emailer = new Emailer($board_config['smtp_delivery']);
 	
 		$emailer->from($board_config['board_email']);
 		$emailer->replyto($board_config['board_email']);

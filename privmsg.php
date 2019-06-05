@@ -1219,8 +1219,8 @@ if ($mode === 'newpm') {
 				$server_protocol = $board_config['cookie_secure'] ? 'https://' : 'http://';
 				$server_port = ( $board_config['server_port'] <> 80 ) ? ':' . trim($board_config['server_port']) . '/' : '/';
 
-				include $phpbb_root_path . 'includes/emailer.php';
-				$emailer = new emailer($board_config['smtp_delivery']);
+				include $phpbb_root_path . 'includes/Emailer.php';
+				$emailer = new Emailer($board_config['smtp_delivery']);
 					
 				$emailer->from($board_config['board_email']);
 				$emailer->replyto($board_config['board_email']);

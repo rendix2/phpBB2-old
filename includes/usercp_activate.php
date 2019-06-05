@@ -74,8 +74,8 @@ dibi::update(USERS_TABLE, $update_data)
     ->execute();
 
 if ((int)$board_config['require_activation'] === USER_ACTIVATION_ADMIN && $sql_update_pass === '') {
-    include $phpbb_root_path . 'includes/emailer.php';
-    $emailer = new emailer($board_config['smtp_delivery']);
+    include $phpbb_root_path . 'includes/Emailer.php';
+    $emailer = new Emailer($board_config['smtp_delivery']);
 
     $emailer->from($board_config['board_email']);
     $emailer->replyto($board_config['board_email']);

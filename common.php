@@ -71,7 +71,7 @@ if (!defined('PHPBB_INSTALLED') ) {
 }
 
 include $phpbb_root_path . 'includes/constants.php';
-include $phpbb_root_path . 'includes/template.php';
+include $phpbb_root_path . 'includes/Template.php';
 include $phpbb_root_path . 'includes/sessions.php';
 include $phpbb_root_path . 'includes/auth.php';
 include $phpbb_root_path . 'includes/functions.php';

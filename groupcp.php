@@ -249,8 +249,8 @@ if (isset($_POST['groupstatus']) && $group_id) {
         ->where('g.group_id = %i', $group_id)
         ->fetch();
 
-	include $phpbb_root_path . 'includes/emailer.php';
-	$emailer = new emailer($board_config['smtp_delivery']);
+	include $phpbb_root_path . 'includes/Emailer.php';
+	$emailer = new Emailer($board_config['smtp_delivery']);
 
 	$emailer->from($board_config['board_email']);
 	$emailer->replyto($board_config['board_email']);
@@ -522,8 +522,8 @@ if (isset($_POST['groupstatus']) && $group_id) {
                         message_die(GENERAL_ERROR, 'Could not get group information');
                     }
 
-					include $phpbb_root_path . 'includes/emailer.php';
-					$emailer = new emailer($board_config['smtp_delivery']);
+					include $phpbb_root_path . 'includes/Emailer.php';
+					$emailer = new Emailer($board_config['smtp_delivery']);
 
 					$emailer->from($board_config['board_email']);
 					$emailer->replyto($board_config['board_email']);
@@ -630,8 +630,8 @@ if (isset($_POST['groupstatus']) && $group_id) {
 
 						$group_name = $group_name_row;
 
-						include $phpbb_root_path . 'includes/emailer.php';
-						$emailer = new emailer($board_config['smtp_delivery']);
+						include $phpbb_root_path . 'includes/Emailer.php';
+						$emailer = new Emailer($board_config['smtp_delivery']);
 
 						$emailer->from($board_config['board_email']);
 						$emailer->replyto($board_config['board_email']);

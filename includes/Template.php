@@ -51,13 +51,14 @@ class Template {
 	// This will hold the uncompiled code for that handle.
 	var $uncompiled_code = [];
 
-	/**
-	 * Constructor. Simply sets the root dir.
-	 *
-	 */
-	function Template($root = '.')
+    /**
+     * Constructor. Simply sets the root dir.
+     *
+     * @param string $root
+     */
+	public function __construct($root = '.')
 	{
-		$this->set_rootdir($root);
+		$this->setRootDir($root);
 	}
 
 	/**
@@ -72,7 +73,7 @@ class Template {
 	/**
 	 * Sets the template root directory for this Template object.
 	 */
-	function set_rootdir($dir)
+	function setRootDir($dir)
 	{
 		if (!is_dir($dir))
 		{

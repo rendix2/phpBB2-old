@@ -61,8 +61,8 @@ if (isset($_POST['submit'])) {
         ->where('user_id = %i', $row->user_id)
         ->execute();
 
-    include $phpbb_root_path . 'includes/emailer.php';
-    $emailer = new emailer($board_config['smtp_delivery']);
+    include $phpbb_root_path . 'includes/Emailer.php';
+    $emailer = new Emailer($board_config['smtp_delivery']);
 
     $emailer->from($board_config['board_email']);
     $emailer->replyto($board_config['board_email']);

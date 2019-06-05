@@ -1,12 +1,12 @@
 <?php
 /***************************************************************************
-                                emailer.php
+                                Emailer.php
                              -------------------
     begin                : Sunday Aug. 12, 2001
     copyright            : (C) 2001 The phpBB Group
     email                : support@phpbb.com
 
-    $Id: emailer.php 5261 2005-10-05 17:42:04Z grahamje $
+    $Id: Emailer.php 5261 2005-10-05 17:42:04Z grahamje $
 
 ***************************************************************************/
 
@@ -24,7 +24,7 @@
 // in the 2.0 release but we can probable find some way of using it in a future
 // release
 //
-class emailer
+class Emailer
 {
 	var $msg, $subject, $extra_headers;
 	var $addresses, $reply_to, $from;
@@ -32,7 +32,12 @@ class emailer
 
 	var $tpl_msg = [];
 
-	function emailer($use_smtp)
+    /**
+     * Emailer constructor.
+     *
+     * @param bool  $use_smtp
+     */
+    public function __construct($use_smtp)
 	{
 		$this->reset();
 		$this->use_smtp = $use_smtp;

@@ -509,8 +509,8 @@ if (isset($_POST['submit'])) {
 				//
 				// The users account has been deactivated, send them an email with a new activation key
 				//
-				include $phpbb_root_path . 'includes/emailer.php';
-				$emailer = new emailer($board_config['smtp_delivery']);
+				include $phpbb_root_path . 'includes/Emailer.php';
+				$emailer = new Emailer($board_config['smtp_delivery']);
 
                 if ($board_config['require_activation'] !== USER_ACTIVATION_ADMIN) {
  					$emailer->from($board_config['board_email']);
@@ -658,8 +658,8 @@ if (isset($_POST['submit'])) {
 				$email_template = 'user_welcome';
 			}
 
-			include $phpbb_root_path . 'includes/emailer.php';
-			$emailer = new emailer($board_config['smtp_delivery']);
+			include $phpbb_root_path . 'includes/Emailer.php';
+			$emailer = new Emailer($board_config['smtp_delivery']);
 
 			$emailer->from($board_config['board_email']);
 			$emailer->replyto($board_config['board_email']);
