@@ -36,7 +36,6 @@
 
 if ( !defined('IN_PHPBB') ) {
 	die("Hacking attempt");
-	exit;
 }
 
 $unhtml_specialchars_match   = ['#&gt;#', '#&lt;#', '#&quot;#', '#&amp;#'];

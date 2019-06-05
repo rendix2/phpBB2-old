@@ -23,7 +23,6 @@
 
 if ( !defined('IN_PHPBB') ) {
 	die("Hacking attempt");
-	exit;
 }
 
 if ( empty($_GET[POST_USERS_URL]) || $_GET[POST_USERS_URL] === ANONYMOUS ) {

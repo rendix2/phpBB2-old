@@ -22,7 +22,6 @@
 if ( !defined('IN_PHPBB') )
 {
 	die('Hacking attempt');
-	exit;
 }
 
 // Note to potential users of this code ...
