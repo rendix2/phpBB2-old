@@ -883,7 +883,7 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
                 'AVATAR' => $avatar,
                 'LANGUAGE_SELECT' => language_select($user_lang),
                 'TIMEZONE_SELECT' => tz_select($user_timezone),
-                'STYLE_SELECT' => style_select($user_style, 'style'),
+                'STYLE_SELECT' => style_select($user_style),
                 'DATE_FORMAT' => $user_dateformat,
                 'ALLOW_PM_YES' => $user_allowpm ? 'checked="checked"' : '',
                 'ALLOW_PM_NO' => (!$user_allowpm) ? 'checked="checked"' : '',

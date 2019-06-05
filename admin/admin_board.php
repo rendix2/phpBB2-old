@@ -79,7 +79,7 @@ if (isset($_POST['submit']) ) {
 }
 
 $style_select = style_select($new['default_style'], 'default_style', '../templates');
-$lang_select = language_select($new['default_lang'], 'default_lang', 'language');
+$lang_select = language_select($new['default_lang'], 'default_lang');
 $timezone_select = tz_select($new['board_timezone'], 'board_timezone');
 
 $disable_board_yes = $new['board_disable'] ? 'checked="checked"' : '';

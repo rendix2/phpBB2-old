@@ -89,9 +89,9 @@ class Template {
 			@umask(0);
 			if (!file_exists($this->cachedir))
 			{
-				mkdir($this->cachedir, 0777);
+				mkdir($this->cachedir);
 			}
-			mkdir($this->cachedir . 'admin/', 0777);
+			mkdir($this->cachedir . 'admin/');
 		}
 
 		return true;
