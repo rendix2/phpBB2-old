@@ -208,7 +208,6 @@ init_userprefs($userdata);
 //
 // Start auth check
 //
-$is_auth = [];
 $is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_topic_data);
 
 if (!$is_auth['auth_view'] || !$is_auth['auth_read'] ) {

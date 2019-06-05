@@ -86,7 +86,6 @@ $forum_all_cookie_name = $board_config['cookie_name'] . '_f_all';
 //
 // Start auth check
 //
-$is_auth = [];
 $is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_row);
 
 if (!$is_auth['auth_read'] || !$is_auth['auth_view']) {

@@ -77,7 +77,6 @@ function topic_review($topic_id, $is_inline_review)
 		// End session management
 		//
 
-		$is_auth = [];
 		// TODO for now to arrary
 		$is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_row->toArray());
 

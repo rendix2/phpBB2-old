@@ -67,7 +67,6 @@ $forum_data = dibi::select(['forum_id', 'forum_name'])
 //
 // Get auth data
 //
-$is_auth_ary = [];
 $is_auth_ary = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
 
 //
