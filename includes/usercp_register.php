@@ -513,14 +513,14 @@ if (isset($_POST['submit'])) {
 				$emailer = new Emailer($board_config['smtp_delivery']);
 
                 if ($board_config['require_activation'] !== USER_ACTIVATION_ADMIN) {
- 					$emailer->from($board_config['board_email']);
- 					$emailer->replyto($board_config['board_email']);
+ 					$emailer->setFrom($board_config['board_email']);
+ 					$emailer->setReplyTo($board_config['board_email']);
 
  					$emailer->use_template('user_activate', stripslashes($user_lang));
- 					$emailer->email_address($email);
- 					$emailer->set_subject($lang['Reactivate']);
+ 					$emailer->setEmailAddress($email);
+ 					$emailer->setSubject($lang['Reactivate']);
 
-                    $emailer->assign_vars(
+                    $emailer->assignVars(
                         [
                             'SITENAME'  => $board_config['sitename'],
                             'USERNAME'  => preg_replace($unhtml_specialchars_match, $unhtml_specialchars_replace, substr(str_replace("\'", "'", $username), 0, 25)),
@@ -538,14 +538,14 @@ if (isset($_POST['submit'])) {
                         ->fetchAll();
 
                     foreach ($admins as $admin) {
-                        $emailer->from($board_config['board_email']);
-                        $emailer->replyto($board_config['board_email']);
+                        $emailer->setFrom($board_config['board_email']);
+                        $emailer->setReplyTo($board_config['board_email']);
 
-                        $emailer->email_address(trim($admin->user_email));
+                        $emailer->setEmailAddress(trim($admin->user_email));
                         $emailer->use_template('admin_activate', $admin->user_lang);
-                        $emailer->set_subject($lang['Reactivate']);
+                        $emailer->setSubject($lang['Reactivate']);
 
-                        $emailer->assign_vars(
+                        $emailer->assignVars(
                             [
                                 'USERNAME'  => preg_replace($unhtml_specialchars_match, $unhtml_specialchars_replace, substr(str_replace("\'", "'", $username), 0, 25)),
                                 'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
@@ -661,15 +661,15 @@ if (isset($_POST['submit'])) {
 			include $phpbb_root_path . 'includes/Emailer.php';
 			$emailer = new Emailer($board_config['smtp_delivery']);
 
-			$emailer->from($board_config['board_email']);
-			$emailer->replyto($board_config['board_email']);
+			$emailer->setFrom($board_config['board_email']);
+			$emailer->setReplyTo($board_config['board_email']);
 
 			$emailer->use_template($email_template, stripslashes($user_lang));
-			$emailer->email_address($email);
-			$emailer->set_subject(sprintf($lang['Welcome_subject'], $board_config['sitename']));
+			$emailer->setEmailAddress($email);
+			$emailer->setSubject(sprintf($lang['Welcome_subject'], $board_config['sitename']));
 
             if ($coppa) {
-                $emailer->assign_vars(
+                $emailer->assignVars(
                     [
                         'SITENAME'    => $board_config['sitename'],
                         'WELCOME_MSG' => sprintf($lang['Welcome_subject'], $board_config['sitename']),
@@ -691,7 +691,7 @@ if (isset($_POST['submit'])) {
                     ]
                 );
             } else {
-                $emailer->assign_vars(
+                $emailer->assignVars(
                     [
                         'SITENAME'    => $board_config['sitename'],
                         'WELCOME_MSG' => sprintf($lang['Welcome_subject'], $board_config['sitename']),
@@ -714,14 +714,14 @@ if (isset($_POST['submit'])) {
                     ->fetchAll();
 
                 foreach ($admins as $admin) {
-					$emailer->from($board_config['board_email']);
-					$emailer->replyto($board_config['board_email']);
+					$emailer->setFrom($board_config['board_email']);
+					$emailer->setReplyTo($board_config['board_email']);
 
-					$emailer->email_address(trim($admin->user_email));
+					$emailer->setEmailAddress(trim($admin->user_email));
 					$emailer->use_template('admin_activate', $admin->user_lang);
-					$emailer->set_subject($lang['New_account_subject']);
+					$emailer->setSubject($lang['New_account_subject']);
 
-                    $emailer->assign_vars(
+                    $emailer->assignVars(
                         [
                             'USERNAME'  => preg_replace($unhtml_specialchars_match, $unhtml_specialchars_replace, substr(str_replace("\'", "'", $username), 0, 25)),
                             'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),

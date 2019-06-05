@@ -87,8 +87,8 @@ if ($row->user_viewemail || $userdata['user_level'] === ADMIN) {
             include $phpbb_root_path . 'includes/Emailer.php';
             $emailer = new Emailer($board_config['smtp_delivery']);
 
-            $emailer->from($userdata['user_email']);
-            $emailer->replyto($userdata['user_email']);
+            $emailer->setFrom($userdata['user_email']);
+            $emailer->setReplyTo($userdata['user_email']);
 
             $email_headers = 'X-AntiAbuse: Board servername - ' . $server_name . "\n";
             $email_headers .= 'X-AntiAbuse: User_id - ' . $userdata['user_id'] . "\n";
@@ -96,34 +96,38 @@ if ($row->user_viewemail || $userdata['user_level'] === ADMIN) {
             $email_headers .= 'X-AntiAbuse: User IP - ' . decode_ip($user_ip) . "\n";
 
             $emailer->use_template('profile_send_email', $user_lang);
-            $emailer->email_address($user_email);
-            $emailer->set_subject($subject);
-            $emailer->extra_headers($email_headers);
+            $emailer->setEmailAddress($user_email);
+            $emailer->setSubject($subject);
+            $emailer->addExtraHeaders($email_headers);
 
-            $emailer->assign_vars([
-                'SITENAME'      => $board_config['sitename'],
-                'BOARD_EMAIL'   => $board_config['board_email'],
-                'FROM_USERNAME' => $userdata['username'],
-                'TO_USERNAME'   => $username,
-                'MESSAGE'       => $message
-            ]);
-            $emailer->send();
-            $emailer->reset();
-
-            if (!empty($_POST['cc_email'])) {
-                $emailer->from($userdata['user_email']);
-                $emailer->replyto($userdata['user_email']);
-                $emailer->use_template('profile_send_email');
-                $emailer->email_address($userdata['user_email']);
-                $emailer->set_subject($subject);
-
-                $emailer->assign_vars([
+            $emailer->assignVars(
+                [
                     'SITENAME'      => $board_config['sitename'],
                     'BOARD_EMAIL'   => $board_config['board_email'],
                     'FROM_USERNAME' => $userdata['username'],
                     'TO_USERNAME'   => $username,
                     'MESSAGE'       => $message
-                ]);
+                ]
+            );
+            $emailer->send();
+            $emailer->reset();
+
+            if (!empty($_POST['cc_email'])) {
+                $emailer->setFrom($userdata['user_email']);
+                $emailer->setReplyTo($userdata['user_email']);
+                $emailer->use_template('profile_send_email');
+                $emailer->setEmailAddress($userdata['user_email']);
+                $emailer->setSubject($subject);
+
+                $emailer->assignVars(
+                    [
+                        'SITENAME'      => $board_config['sitename'],
+                        'BOARD_EMAIL'   => $board_config['board_email'],
+                        'FROM_USERNAME' => $userdata['username'],
+                        'TO_USERNAME'   => $username,
+                        'MESSAGE'       => $message
+                    ]
+                );
                 $emailer->send();
                 $emailer->reset();
             }

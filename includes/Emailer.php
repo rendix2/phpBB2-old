@@ -26,11 +26,60 @@
 //
 class Emailer
 {
-	var $msg, $subject, $extra_headers;
-	var $addresses, $reply_to, $from;
-	var $use_smtp;
+    /**
+     * @var string $msg
+     */
+	private $msg;
 
-	var $tpl_msg = [];
+    /**
+     * @var string $subject
+     */
+	private $subject;
+
+    /**
+     * @var string $extra_headers
+     */
+	private $extra_headers;
+
+    /**
+     * @var array $addresses
+     */
+	private $addresses;
+
+    /**
+     * @var string $reply_to
+     */
+	private $reply_to;
+
+    /**
+     * @var string $from
+     */
+	private $from;
+
+    /**
+     * @var bool $use_smtp
+     */
+	private $use_smtp;
+
+    /**
+     * @var array $tpl_msg
+     */
+	private $tpl_msg;
+
+    /**
+     * @var array $vars
+     */
+	private $vars;
+
+    /**
+     * @var string $mimeOut
+     */
+	private $mimeOut;
+
+    /**
+     * @var string $encoding
+     */
+	private $encoding;
 
     /**
      * Emailer constructor.
@@ -42,54 +91,101 @@ class Emailer
 		$this->reset();
 		$this->use_smtp = $use_smtp;
 		$this->reply_to = $this->from = '';
+		$this->tpl_msg = [];
 	}
 
+    /**
+     * @return string
+     */
+	public function getMsg()
+    {
+        return $this->msg;
+    }
+
 	// Resets all the data (address, template file, etc etc to default
-	function reset()
+	public function reset()
 	{
 		$this->addresses = [];
 		$this->vars = $this->msg = $this->extra_headers = '';
 	}
 
-	// Sets an email address to send to
-	function email_address($address)
+    /**
+     * Sets an email address to send to
+     *
+     * @param string $address
+     */
+	public function setEmailAddress($address)
 	{
 		$this->addresses['to'] = trim($address);
 	}
 
-	function cc($address)
+    /**
+     * @param string $msg
+     */
+	public function setMsg($msg)
+    {
+	    $this->msg = $msg;
+    }
+
+    /**
+     * @param string $address
+     */
+	public function addCc($address)
 	{
 		$this->addresses['cc'][] = trim($address);
 	}
 
-	function bcc($address)
+    /**
+     * @param string $address
+     */
+	public function addBcc($address)
 	{
 		$this->addresses['bcc'][] = trim($address);
 	}
 
-	function replyto($address)
+    /**
+     * @param string $address
+     */
+	public function setReplyTo($address)
 	{
 		$this->reply_to = trim($address);
 	}
 
-	function from($address)
+    /**
+     * @param string $address
+     */
+	public function setFrom($address)
 	{
 		$this->from = trim($address);
 	}
 
-	// set up subject for mail
-	function set_subject($subject = '')
+    /**
+     * set up subject for mail
+     *
+     * @param string $subject
+     */
+	public function setSubject($subject = '')
 	{
 		$this->subject = trim(preg_replace('#[\n\r]+#s', '', $subject));
 	}
 
-	// set up extra mail headers
-	function extra_headers($headers)
+    /**
+     * set up extra mail headers
+     *
+     * @param string $headers
+     */
+	public function addExtraHeaders($headers)
 	{
 		$this->extra_headers .= trim($headers) . "\n";
 	}
 
-	function use_template($template_file, $template_lang = '')
+    /**
+     * @param string $template_file
+     * @param string $template_lang
+     *
+     * @return bool
+     */
+	public function use_template($template_file, $template_lang = '')
 	{
 		global $board_config, $phpbb_root_path;
 
@@ -126,14 +222,22 @@ class Emailer
 		return true;
 	}
 
-	// assign variables
-	function assign_vars($vars)
+    /**
+     * assign variables
+     *
+     * @param array $vars
+     */
+	public function assignVars(array $vars)
 	{
 		$this->vars = empty($this->vars) ? $vars : $this->vars . $vars;
 	}
 
-	// Send the mail out to the recipients set previously in var $this->address
-	function send()
+    /**
+     * Send the mail out to the recipients set previously in var $this->address
+     *
+     * @return bool
+     */
+	public function send()
 	{
 		global $board_config, $lang, $phpbb_root_path;
 
@@ -142,8 +246,6 @@ class Emailer
 		$this->msg = preg_replace('#\{([a-z0-9\-_]*?)\}#is', "' . $\\1 . '", $this->msg);
 
 		// Set vars
-		reset ($this->vars);
-
 		foreach ($this->vars as $key => $val) {
 			$$key = $val;
 		}
@@ -151,8 +253,6 @@ class Emailer
 		eval("\$this->msg = '$this->msg';");
 
 		// Clear vars
-		reset ($this->vars);
-
 		foreach ($this->vars as $key => $val) {
 			unset($$key);
 		}
@@ -220,11 +320,18 @@ class Emailer
 		return true;
 	}
 
-	// Encodes the given string for proper display for this encoding ... nabbed 
-	// from php.net and modified. There is an alternative encoding method which 
-	// may produce lesd output but it's questionable as to its worth in this 
-	// scenario IMO
-	function encode($str)
+    /**
+     *
+     * Encodes the given string for proper display for this encoding ... nabbed
+     * from php.net and modified. There is an alternative encoding method which
+     * may produce lesd output but it's questionable as to its worth in this
+     * scenario IMO
+     *
+     * @param string $str
+     *
+     * @return string|string[]|null
+     */
+	public  function encode($str)
 	{
 		if ($this->encoding === '') {
 			return $str;
@@ -248,10 +355,17 @@ class Emailer
 		return $start . $str . $end;
 	}
 
-	//
-	// Attach files via MIME.
-	//
-	function attachFile($filename, $mimetype = 'application/octet-stream', $szFromAddress, $szFilenameToDisplay)
+    /**
+     * Attach files via MIME.
+     *
+     * @param string $filename
+     * @param string $mimetype
+     * @param string $szFromAddress
+     * @param string $szFilenameToDisplay
+     *
+     * @return mixed
+     */
+	public function attachFile($filename, $mimetype = 'application/octet-stream', $szFromAddress, $szFilenameToDisplay)
 	{
 		global $lang;
 		$mime_boundary = '--==================_846811060==_';
@@ -260,7 +374,7 @@ class Emailer
 
 		if ($mime_filename) {
 			$filename = $mime_filename;
-			$encoded = $this->encode_file($filename);
+			$encoded = $this->encodeFile($filename);
 		}
 
 		$fd = fopen($filename, 'rb');
@@ -273,10 +387,10 @@ class Emailer
 
 		if ( $mimetype === 'message/rfc822') {
 			$this->mimeOut .= 'From: ' .$szFromAddress."\n";
-			$this->mimeOut .= 'To: ' .$this->emailAddress."\n";
+			$this->mimeOut .= 'To: ' .$this->addresses['to']."\n";
 			$this->mimeOut .= 'Date: ' .date('D, d M Y H:i:s') . " UT\n";
 			$this->mimeOut .= 'Reply-To:' .$szFromAddress."\n";
-			$this->mimeOut .= 'Subject: ' .$this->mailSubject."\n";
+			$this->mimeOut .= 'Subject: ' .$this->subject."\n";
 			$this->mimeOut .= 'X-Mailer: PHP/' . PHP_VERSION ."\n";
 			$this->mimeOut .= "MIME-Version: 1.0\n";
 		}
@@ -288,7 +402,13 @@ class Emailer
 		// added -- to notify email client attachment is done
 	}
 
-	function getMimeHeaders($filename, $mime_filename= '')
+    /**
+     * @param string $filename
+     * @param string $mime_filename
+     *
+     * @return string
+     */
+	public function getMimeHeaders($filename, $mime_filename= '')
 	{
 		$mime_boundary = '--==================_846811060==_';
 
@@ -304,10 +424,14 @@ class Emailer
 		return $out;
 	}
 
-	//
-   // Split string by RFC 2045 semantics (76 chars per line, end with \r\n).
-	//
-	function myChunkSplit($str)
+    /**
+     * Split string by RFC 2045 semantics (76 chars per line, end with \r\n).
+     *
+     * @param string $str
+     *
+     * @return string
+     */
+	private function myChunkSplit($str)
 	{
 		$stmp = $str;
 		$len = strlen($stmp);
@@ -330,11 +454,11 @@ class Emailer
 	//
    // Split the specified file up into a string and return it
 	//
-	function encode_file($sourcefile)
+	private function encodeFile($sourceFile)
 	{
-		if (is_readable(phpbb_realpath($sourcefile))) {
-		    $fd = fopen($sourcefile, 'rb');
-			$contents = fread($fd, filesize($sourcefile));
+		if (is_readable(phpbb_realpath($sourceFile))) {
+		    $fd = fopen($sourceFile, 'rb');
+			$contents = fread($fd, filesize($sourceFile));
 	        $encoded = $this->myChunkSplit(base64_encode($contents));
 
 	        fclose($fd);
@@ -342,7 +466,6 @@ class Emailer
 
 		return $encoded;
 	}
-
-} // class emailer
+}
 
 ?>

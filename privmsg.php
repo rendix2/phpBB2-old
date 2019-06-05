@@ -1222,14 +1222,14 @@ if ($mode === 'newpm') {
 				include $phpbb_root_path . 'includes/Emailer.php';
 				$emailer = new Emailer($board_config['smtp_delivery']);
 					
-				$emailer->from($board_config['board_email']);
-				$emailer->replyto($board_config['board_email']);
+				$emailer->setFrom($board_config['board_email']);
+				$emailer->setReplyTo($board_config['board_email']);
 
 				$emailer->use_template('privmsg_notify', $to_userdata['user_lang']);
-				$emailer->email_address($to_userdata['user_email']);
-				$emailer->set_subject($lang['Notification_subject']);
+				$emailer->setEmailAddress($to_userdata['user_email']);
+				$emailer->setSubject($lang['Notification_subject']);
 
-                $emailer->assign_vars(
+                $emailer->assignVars(
                     [
                         'USERNAME'  => stripslashes($to_username),
                         'SITENAME'  => $board_config['sitename'],

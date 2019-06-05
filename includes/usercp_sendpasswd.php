@@ -64,14 +64,14 @@ if (isset($_POST['submit'])) {
     include $phpbb_root_path . 'includes/Emailer.php';
     $emailer = new Emailer($board_config['smtp_delivery']);
 
-    $emailer->from($board_config['board_email']);
-    $emailer->replyto($board_config['board_email']);
+    $emailer->setFrom($board_config['board_email']);
+    $emailer->setReplyTo($board_config['board_email']);
 
     $emailer->use_template('user_activate_passwd', $row->user_lang);
-    $emailer->email_address($row->user_email);
-    $emailer->set_subject($lang['New_password_activation']);
+    $emailer->setEmailAddress($row->user_email);
+    $emailer->setSubject($lang['New_password_activation']);
 
-    $emailer->assign_vars(
+    $emailer->assignVars(
         [
             'SITENAME'  => $board_config['sitename'],
             'USERNAME'  => $username,

@@ -252,19 +252,21 @@ if (isset($_POST['groupstatus']) && $group_id) {
 	include $phpbb_root_path . 'includes/Emailer.php';
 	$emailer = new Emailer($board_config['smtp_delivery']);
 
-	$emailer->from($board_config['board_email']);
-	$emailer->replyto($board_config['board_email']);
+	$emailer->setFrom($board_config['board_email']);
+	$emailer->setReplyTo($board_config['board_email']);
 
 	$emailer->use_template('group_request', $moderator->user_lang);
-	$emailer->email_address($moderator->user_email);
-	$emailer->set_subject($lang['Group_request']);
+	$emailer->setEmailAddress($moderator->user_email);
+	$emailer->setSubject($lang['Group_request']);
 
-	$emailer->assign_vars([
+	$emailer->assignVars(
+	    [
             'SITENAME' => $board_config['sitename'],
             'GROUP_MODERATOR' => $moderator->username,
             'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
 
-            'U_GROUPCP' => $server_url . '?' . POST_GROUPS_URL . "=$group_id&validate=true"]
+            'U_GROUPCP' => $server_url . '?' . POST_GROUPS_URL . "=$group_id&validate=true"
+        ]
 	);
 	$emailer->send();
 	$emailer->reset();
@@ -525,14 +527,14 @@ if (isset($_POST['groupstatus']) && $group_id) {
 					include $phpbb_root_path . 'includes/Emailer.php';
 					$emailer = new Emailer($board_config['smtp_delivery']);
 
-					$emailer->from($board_config['board_email']);
-					$emailer->replyto($board_config['board_email']);
+					$emailer->setFrom($board_config['board_email']);
+					$emailer->setReplyTo($board_config['board_email']);
 
 					$emailer->use_template('group_added', $row->user_lang);
-					$emailer->email_address($row->user_email);
-					$emailer->set_subject($lang['Group_added']);
+					$emailer->setEmailAddress($row->user_email);
+					$emailer->setSubject($lang['Group_added']);
 
-                    $emailer->assign_vars(
+                    $emailer->assignVars(
                         [
                             'SITENAME'   => $board_config['sitename'],
                             'GROUP_NAME' => $group_name,
@@ -633,17 +635,17 @@ if (isset($_POST['groupstatus']) && $group_id) {
 						include $phpbb_root_path . 'includes/Emailer.php';
 						$emailer = new Emailer($board_config['smtp_delivery']);
 
-						$emailer->from($board_config['board_email']);
-						$emailer->replyto($board_config['board_email']);
+						$emailer->setFrom($board_config['board_email']);
+						$emailer->setReplyTo($board_config['board_email']);
 
 						foreach($bcc_list as $bcc_value) {
-							$emailer->bcc($bcc_value);
+							$emailer->addBcc($bcc_value);
 						}
 
 						$emailer->use_template('group_approved');
-						$emailer->set_subject($lang['Group_approved']);
+						$emailer->setSubject($lang['Group_approved']);
 
-                        $emailer->assign_vars(
+                        $emailer->assignVars(
                             [
                                 'SITENAME'   => $board_config['sitename'],
                                 'GROUP_NAME' => $group_name,

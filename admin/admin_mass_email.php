@@ -106,11 +106,11 @@ if ( isset($_POST['submit']) ) {
 
 		$emailer = new Emailer($board_config['smtp_delivery']);
 	
-		$emailer->from($board_config['board_email']);
-		$emailer->replyto($board_config['board_email']);
+		$emailer->setFrom($board_config['board_email']);
+		$emailer->setReplyTo($board_config['board_email']);
 
 		foreach ($bbc_list as $email) {
-            $emailer->bcc($email);
+            $emailer->addBcc($email);
         }
 
 		$email_headers = 'X-AntiAbuse: Board servername - ' . $board_config['server_name'] . "\n";
@@ -119,11 +119,11 @@ if ( isset($_POST['submit']) ) {
 		$email_headers .= 'X-AntiAbuse: User IP - ' . decode_ip($user_ip) . "\n";
 
 		$emailer->use_template('admin_send_email');
-		$emailer->email_address($board_config['board_email']);
-		$emailer->set_subject($subject);
-		$emailer->extra_headers($email_headers);
+		$emailer->setEmailAddress($board_config['board_email']);
+		$emailer->setSubject($subject);
+		$emailer->addExtraHeaders($email_headers);
 
-        $emailer->assign_vars(
+        $emailer->assignVars(
             [
                 'SITENAME'    => $board_config['sitename'],
                 'BOARD_EMAIL' => $board_config['board_email'],

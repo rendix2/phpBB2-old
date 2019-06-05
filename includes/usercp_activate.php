@@ -77,14 +77,14 @@ if ((int)$board_config['require_activation'] === USER_ACTIVATION_ADMIN && $sql_u
     include $phpbb_root_path . 'includes/Emailer.php';
     $emailer = new Emailer($board_config['smtp_delivery']);
 
-    $emailer->from($board_config['board_email']);
-    $emailer->replyto($board_config['board_email']);
+    $emailer->setFrom($board_config['board_email']);
+    $emailer->setReplyTo($board_config['board_email']);
 
     $emailer->use_template('admin_welcome_activated', $row['user_lang']);
-    $emailer->email_address($row['user_email']);
-    $emailer->set_subject($lang['Account_activated_subject']);
+    $emailer->setEmailAddress($row['user_email']);
+    $emailer->setSubject($lang['Account_activated_subject']);
 
-    $emailer->assign_vars([
+    $emailer->assignVars([
         'SITENAME'  => $board_config['sitename'],
         'USERNAME'  => $row['username'],
         'PASSWORD'  => $password_confirm,
