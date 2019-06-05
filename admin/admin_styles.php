@@ -496,7 +496,7 @@ switch( $mode )
 			
 			@umask(0111);
 
-			$fp = @fopen($phpbb_root_path . 'templates/' . basename($template_name) . '/theme_info.cfg', 'w');
+			$fp = @fopen($phpbb_root_path . 'templates/' . basename($template_name) . '/theme_info.cfg', 'wb');
 
 			if (!$fp ) {
 				//

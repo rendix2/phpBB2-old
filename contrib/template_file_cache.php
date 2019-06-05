@@ -147,7 +147,7 @@ class Template {
 			// Actually compile the code now.
 			$this->compiled_code[$handle] = $this->compile($this->uncompiled_code[$handle]);
 
-			$fp = fopen($cache_file, 'w+');
+			$fp = fopen($cache_file, 'wb+');
 			fwrite ($fp, '<?php' . "\n" . $this->compiled_code[$handle] . "\n?" . '>');
 			fclose($fp);
 
@@ -186,7 +186,7 @@ class Template {
 
 			$code = $this->compile($this->uncompiled_code[$handle], true, '_str');
 
-			$fp = fopen($cache_file, 'w+');
+			$fp = fopen($cache_file, 'wb+');
 			fwrite ($fp, '<?php' . "\n" . $code . "\n?" . '>');
 			fclose($fp);
 

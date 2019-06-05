@@ -456,7 +456,7 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['up
 
 		@unlink($tmpfname); // unlink for safety on php4.0.3+
 
-		$fp = @fopen($tmpfname, 'w');
+		$fp = @fopen($tmpfname, 'wb');
 
 		@fwrite($fp, stripslashes($_POST['config_data']));
 
@@ -672,7 +672,7 @@ else
 				// and work on building the table.. probably ought to provide some
 				// kind of feedback to the user as we are working here in order
 				// to let them know we are actually doing something.
-				$sql_queries = @fread(@fopen($dbms_schema, 'r'), @filesize($dbms_schema));
+				$sql_queries = @fread(@fopen($dbms_schema, 'rb'), @filesize($dbms_schema));
                 $sql_queries = preg_replace('/phpbb_/', $table_prefix, $sql_queries);
 
                 $sql_queries = $remove_remarks($sql_queries);
@@ -770,7 +770,7 @@ else
 
 			// Unable to open the file writeable do something here as an attempt
 			// to get around that...
-			if (!($fp = @fopen($phpbb_root_path . 'config.php', 'w'))) {
+			if (!($fp = @fopen($phpbb_root_path . 'config.php', 'wb'))) {
 				$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars($config_data) . '" />';
 
 				if (@extension_loaded('ftp') && !defined('NO_FTP')) {

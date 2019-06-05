@@ -113,7 +113,7 @@ class Emailer
 				}
 			}
 
-			if (!($fd = @fopen($tpl_file, 'r'))) {
+			if (!($fd = @fopen($tpl_file, 'rb'))) {
 				message_die(GENERAL_ERROR, 'Failed opening template file :: ' . $tpl_file, '', __LINE__, __FILE__);
 			}
 
@@ -263,7 +263,7 @@ class Emailer
 			$encoded = $this->encode_file($filename);
 		}
 
-		$fd = fopen($filename, 'r');
+		$fd = fopen($filename, 'rb');
 		$contents = fread($fd, filesize($filename));
 
 		$this->mimeOut = '--' . $mime_boundary . "\n";
@@ -333,7 +333,7 @@ class Emailer
 	function encode_file($sourcefile)
 	{
 		if (is_readable(phpbb_realpath($sourcefile))) {
-		    $fd = fopen($sourcefile, 'r');
+		    $fd = fopen($sourcefile, 'rb');
 			$contents = fread($fd, filesize($sourcefile));
 	        $encoded = $this->myChunkSplit(base64_encode($contents));
 

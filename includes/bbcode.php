@@ -43,7 +43,7 @@ function load_bbcode_template()
 {
 	global $template;
 	$tpl_filename = $template->make_filename('bbcode.tpl');
-	$tpl = fread(fopen($tpl_filename, 'r'), filesize($tpl_filename));
+	$tpl = fread(fopen($tpl_filename, 'rb'), filesize($tpl_filename));
 
 	// replace \ with \\ and then ' with \'.
 	$tpl = str_replace('\\', '\\\\', $tpl);
