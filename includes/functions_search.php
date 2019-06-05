@@ -275,10 +275,10 @@ function remove_common($mode, $fraction, $word_id_list = [])
 }
 
 /**
- * @param array $post_id_sql
+ * @param array $post_ids
  * @return int
  */
-function remove_search_post(array $post_id_sql)
+function remove_search_post(array $post_ids)
 {
     global $dbms;
 
@@ -288,7 +288,7 @@ function remove_search_post(array $post_id_sql)
         case 'mysql':
             $words = dibi::select('word_id')
                 ->from(SEARCH_MATCH_TABLE)
-                ->where('post_id IN %in', $post_id_sql)
+                ->where('post_id IN %in', $post_ids)
                 ->groupBy('word_id')
                 ->fetchPairs(null, 'word_id');
 
@@ -318,7 +318,7 @@ function remove_search_post(array $post_id_sql)
 
                             dibi::select('word_id')
                                 ->from(SEARCH_MATCH_TABLE)
-                                ->where('post_id IN', $post_id_sql))
+                                ->where('post_id IN', $post_ids))
                         ->groupBy('word_id')
                         ->having('COUNT(word_id) = %i', 1))
                 ->execute(dibi::AFFECTED_ROWS);
@@ -327,7 +327,7 @@ function remove_search_post(array $post_id_sql)
 	}
 
 	dibi::delete(SEARCH_MATCH_TABLE)
-        ->where('post_id IN %in', $post_id_sql)
+        ->where('post_id IN %in', $post_ids)
         ->execute();
 
 	return $words_removed;

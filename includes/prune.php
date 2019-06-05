@@ -67,6 +67,27 @@ function prune($forum_id, $prune_date, $prune_all = false)
             ->fetchPairs(null, 'post_id');
 
 		if ( count($post_ids) ) {
+		    $user_ids = dibi::select('poster_id')
+                ->from(POSTS_TABLE)
+                ->where('post_id IN %in', $post_ids)
+                ->fetchPairs(null, 'user_id');
+
+		    $user_count = [];
+
+		    foreach ($user_ids as $user_id) {
+		        if (isset($user_count[$user_id])) {
+                    $user_count[$user_id]++;
+                } else {
+		            $user_count[$user_id] = 1;
+                }
+            }
+
+		    foreach ($user_count as $user_id => $user_count) {
+                dibi::update(USERS_TABLE, ['user_posts%sql' => 'user_posts - ' . $user_count])
+                    ->where('user_id = %i', $user_id)
+                    ->execute();
+            }
+
 		    dibi::delete(TOPICS_WATCH_TABLE)
                 ->where('topic_id IN %in', $topic_data)
                 ->execute();

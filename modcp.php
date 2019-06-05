@@ -216,7 +216,7 @@ switch ($mode) {
                     ->execute();
             }
 
-			$posts_of_topic = dibi::select('post_id')
+            $post_ids = dibi::select('post_id')
                 ->from(POSTS_TABLE)
                 ->where('topic_id IN %in', $topic_ids)
                 ->fetchPairs(null, 'post_id');
@@ -234,16 +234,16 @@ switch ($mode) {
                 ->where('topic_id IN %in OR topic_moved_in', $topic_ids, $topic_ids)
                 ->execute();
 
-            if (count($posts_of_topic)) {
+            if (count($post_ids)) {
                 dibi::delete(POSTS_TABLE)
-                    ->where('post_id IN %in', $posts_of_topic)
+                    ->where('post_id IN %in', $post_ids)
                     ->execute();
 
                 dibi::delete(POSTS_TEXT_TABLE)
-                    ->where('post_id IN %in', $posts_of_topic)
+                    ->where('post_id IN %in', $post_ids)
                     ->execute();
 
-                remove_search_post($posts_of_topic);
+                remove_search_post($post_ids);
             }
 
             if (count($votes)) {
