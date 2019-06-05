@@ -592,7 +592,8 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
                 $script_name = ($script_name !== '') ? $script_name . '/viewtopic.php' : 'viewtopic.php';
                 $server_name = trim($board_config['server_name']);
                 $server_protocol = $board_config['cookie_secure'] ? 'https://' : 'http://';
-                $server_port = ($board_config['server_port'] <> 80) ? ':' . trim($board_config['server_port']) . '/' : '/';
+                $server_port = ($board_config['server_port'] !== 80) ? ':' . trim($board_config['server_port']) . '/' :
+                '/';
 
                 $orig_word = [];
                 $replacement_word = [];

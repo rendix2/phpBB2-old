@@ -48,7 +48,7 @@ $script_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['script_
 $script_name = ( $script_name !== '' ) ? $script_name . '/profile.php' : 'profile.php';
 $server_name = trim($board_config['server_name']);
 $server_protocol = $board_config['cookie_secure'] ? 'https://' : 'http://';
-$server_port = ( $board_config['server_port'] <> 80 ) ? ':' . trim($board_config['server_port']) . '/' : '/';
+$server_port = ( $board_config['server_port'] !== 80 ) ? ':' . trim($board_config['server_port']) . '/' : '/';
 
 $server_url = $server_protocol . $server_name . $server_port . $script_name;
 

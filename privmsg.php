@@ -1217,7 +1217,8 @@ if ($mode === 'newpm') {
 				$script_name = ( $script_name !== '' ) ? $script_name . '/privmsg.php' : 'privmsg.php';
 				$server_name = trim($board_config['server_name']);
 				$server_protocol = $board_config['cookie_secure'] ? 'https://' : 'http://';
-				$server_port = ( $board_config['server_port'] <> 80 ) ? ':' . trim($board_config['server_port']) . '/' : '/';
+				$server_port = ( $board_config['server_port'] !== 80 ) ? ':' . trim($board_config['server_port']) . '/'
+                : '/';
 
 				include $phpbb_root_path . 'includes/Emailer.php';
 				$emailer = new Emailer($board_config['smtp_delivery']);
