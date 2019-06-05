@@ -808,8 +808,10 @@ function clean_html($tag)
 
 		if (!empty($tag[2])) {
 			preg_match_all('/[\W]*?(\w+)[\W]*?=[\W]*?(["\'])((?:(?!\2).)*)\2/', $tag[2], $test);
+			$count_test_zero = count($test[0]);
 
-			for ($i = 0; $i < count($test[0]); $i++) {
+
+			for ($i = 0; $i < $count_test_zero; $i++) {
 				if (preg_match($disallowed_attributes, $test[1][$i])) {
 					continue;
 				}

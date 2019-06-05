@@ -124,8 +124,9 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 
 		foreach ($fcontents as $line) {
 			$smile_data = explode($delimeter, trim(addslashes($line)));
+            $smile_data_count = count($smile_data);
 
-			for ($j = 2; $j < count($smile_data); $j++) {
+			for ($j = 2; $j < $smile_data_count; $j++) {
 				//
 				// Replace > and < with the proper html_entities for matching.
 				//

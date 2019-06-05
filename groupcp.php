@@ -918,7 +918,10 @@ if (isset($_POST['groupstatus']) && $group_id) {
 	//
 	// Dump out the remaining users
 	//
-    for ($i = $start; $i < min($board_config['topics_per_page'] + $start, $members_count); $i++) {
+
+    $min = min($board_config['topics_per_page'] + $start, $members_count);
+
+    for ($i = $start; $i < $min; $i++) {
 		$username = $group_members[$i]['username'];
 		$user_id = $group_members[$i]['user_id'];
 

@@ -194,9 +194,10 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 			if (preg_match("/^redirect=([a-z0-9\.#\/\?&=\+\-_]+)/si", $forward_to, $forward_matches) ) {
 				$forward_to = !empty($forward_matches[3]) ? $forward_matches[3] : $forward_matches[1];
 				$forward_match = explode('&', $forward_to);
+				$count_forward_match = count($forward_match);
 
-				if (count($forward_match) > 1) {
-					for ($i = 1; $i < count($forward_match); $i++) {
+				if ($count_forward_match > 1) {
+					for ($i = 1; $i < $count_forward_match; $i++) {
 						if (!preg_match('/sid=/', $forward_match[$i]) ) {
 							if ($forward_page !== '' ) {
 								$forward_page .= '&';
