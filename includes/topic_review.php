@@ -166,7 +166,7 @@ function topic_review($topic_id, $is_inline_review)
                 $message = preg_replace('#(<)([\/]?.*?)(>)#is', '&lt;\2&gt;', $message);
             }
 
-            if ($bbcode_uid !== "") {
+            if ($bbcode_uid !== '') {
                 $message = $board_config['allow_bbcode'] ? bbencode_second_pass($message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
             }
 

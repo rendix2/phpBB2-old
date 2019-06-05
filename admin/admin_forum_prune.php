@@ -31,7 +31,7 @@ if (!empty($setmodules)) {
 //
 // Load default header
 //
-$phpbb_root_path = "./../";
+$phpbb_root_path = './../';
 require './pagestart.php';
 require $phpbb_root_path . 'includes/prune.php';
 require $phpbb_root_path . 'includes/functions_admin.php';
@@ -132,12 +132,12 @@ if (isset($_POST['doprune']) ) {
 		// Assign the template variables.
 		//
 		$template->assign_vars([
-			'L_FORUM_PRUNE' => $lang['Forum_Prune'],
-			'L_SELECT_FORUM' => $lang['Select_a_Forum'], 
-			'L_LOOK_UP' => $lang['Look_up_Forum'],
+                'L_FORUM_PRUNE' => $lang['Forum_Prune'],
+                'L_SELECT_FORUM' => $lang['Select_a_Forum'],
+                'L_LOOK_UP' => $lang['Look_up_Forum'],
 
-			'S_FORUMPRUNE_ACTION' => append_sid("admin_forum_prune.php"),
-			'S_FORUMS_SELECT' => $select_list]
+                'S_FORUMPRUNE_ACTION' => append_sid('admin_forum_prune.php'),
+                'S_FORUMS_SELECT' => $select_list]
 		);
 	}
 	else
@@ -151,7 +151,7 @@ if (isset($_POST['doprune']) ) {
 
         $forum_name = ( $forum_id === -1 ) ? $lang['All_Forums'] : $forum_rows[0]['forum_name'];
 
-		$prune_data = $lang['Prune_topics_not_posted'] . " "; 
+		$prune_data = $lang['Prune_topics_not_posted'] . ' ';
 		$prune_data .= '<input class="post" type="text" name="prunedays" size="4"> ' . $lang['Days'];
 
 		$hidden_input = '<input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
@@ -160,16 +160,16 @@ if (isset($_POST['doprune']) ) {
 		// Assign the template variables.
 		//
 		$template->assign_vars([
-			'FORUM_NAME' => $forum_name,
+                'FORUM_NAME' => $forum_name,
 
-			'L_FORUM' => $lang['Forum'],
-			'L_FORUM_PRUNE' => $lang['Forum_Prune'],
-			'L_FORUM_PRUNE_EXPLAIN' => $lang['Forum_Prune_explain'],
-			'L_DO_PRUNE' => $lang['Do_Prune'],
+                'L_FORUM' => $lang['Forum'],
+                'L_FORUM_PRUNE' => $lang['Forum_Prune'],
+                'L_FORUM_PRUNE_EXPLAIN' => $lang['Forum_Prune_explain'],
+                'L_DO_PRUNE' => $lang['Do_Prune'],
 
-			'S_FORUMPRUNE_ACTION' => append_sid("admin_forum_prune.php"),
-			'S_PRUNE_DATA' => $prune_data,
-			'S_HIDDEN_VARS' => $hidden_input]
+                'S_FORUMPRUNE_ACTION' => append_sid('admin_forum_prune.php'),
+                'S_PRUNE_DATA' => $prune_data,
+                'S_HIDDEN_VARS' => $hidden_input]
 		);
 	}
 }

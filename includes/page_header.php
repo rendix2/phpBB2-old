@@ -21,7 +21,7 @@
  ***************************************************************************/
 
 if ( !defined('IN_PHPBB') ) {
-	die("Hacking attempt");
+	die('Hacking attempt');
 }
 
 define('HEADER_INC', TRUE);
@@ -120,10 +120,10 @@ if (defined('SHOW_ONLINE')) {
 				}
 
 				if ( $row->user_allow_viewonline ) {
-					$user_online_link = '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row->user_id) . '"' . $style_color .'>' . $row->username . '</a>';
+					$user_online_link = '<a href="' . append_sid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $row->user_id) . '"' . $style_color .'>' . $row->username . '</a>';
 					$logged_visible_online++;
 				} else {
-					$user_online_link = '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row->user_id) . '"' . $style_color .'><i>' . $row->username . '</i></a>';
+					$user_online_link = '<a href="' . append_sid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $row->user_id) . '"' . $style_color .'><i>' . $row->username . '</i></a>';
 					$logged_hidden_online++;
 				}
 

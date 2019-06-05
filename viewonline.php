@@ -144,46 +144,46 @@ foreach ($rows as $row) {
             switch ($row->session_page) {
 				case PAGE_INDEX:
 					$location = $lang['Forum_index'];
-					$location_url = "index.php";
+					$location_url = 'index.php';
 					break;
 				case PAGE_POSTING:
 					$location = $lang['Posting_message'];
-					$location_url = "index.pphp";
+					$location_url = 'index.pphp';
 					break;
 				case PAGE_LOGIN:
 					$location = $lang['Logging_on'];
-					$location_url = "index.php";
+					$location_url = 'index.php';
 					break;
 				case PAGE_SEARCH:
 					$location = $lang['Searching_forums'];
-					$location_url = "search.php";
+					$location_url = 'search.php';
 					break;
 				case PAGE_PROFILE:
 					$location = $lang['Viewing_profile'];
-					$location_url = "index.php";
+					$location_url = 'index.php';
 					break;
 				case PAGE_VIEWONLINE:
 					$location = $lang['Viewing_online'];
-					$location_url = "viewonline.php";
+					$location_url = 'viewonline.php';
 					break;
 				case PAGE_VIEWMEMBERS:
 					$location = $lang['Viewing_member_list'];
-					$location_url = "memberlist.php";
+					$location_url = 'memberlist.php';
 					break;
 				case PAGE_PRIVMSGS:
 					$location = $lang['Viewing_priv_msgs'];
-					$location_url = "privmsg.php";
+					$location_url = 'privmsg.php';
 					break;
 				case PAGE_FAQ:
 					$location = $lang['Viewing_FAQ'];
-					$location_url = "faq.php";
+					$location_url = 'faq.php';
 					break;
 				default:
 					$location = $lang['Forum_index'];
-					$location_url = "index.php";
+					$location_url = 'index.php';
 			}
 		} else {
-			$location_url = append_sid("viewforum.php?" . POST_FORUM_URL . '=' . $row->session_page);
+			$location_url = append_sid('viewforum.php?' . POST_FORUM_URL . '=' . $row->session_page);
 			$location = $forum_data[$row->session_page];
 		}
 
@@ -198,7 +198,7 @@ foreach ($rows as $row) {
                 'LASTUPDATE'     => create_date($board_config['default_dateformat'], $row->session_time, $board_config['board_timezone']),
                 'FORUM_LOCATION' => $location,
 
-                'U_USER_PROFILE'   => append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . '=' . $user_id),
+                'U_USER_PROFILE'   => append_sid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $user_id),
                 'U_FORUM_LOCATION' => append_sid($location_url)
             ]
         );

@@ -129,8 +129,8 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 {
 	global $phpbb_root_path, $board_config, $lang, $dbms;
 
-	$stopword_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . "/search_stopwords.txt");
-	$synonym_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . "/search_synonyms.txt");
+	$stopword_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/search_stopwords.txt');
+	$synonym_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/search_synonyms.txt');
 
 	$search_raw_words = [];
 	$search_raw_words['text'] = split_words(clean_words('post', $post_text, $stopword_array, $synonym_array));
@@ -381,7 +381,7 @@ function username_search($search_match)
             'L_SEARCH_EXPLAIN'  => $lang['Search_author_explain'],
 
             'S_USERNAME_OPTIONS' => $username_list,
-            'S_SEARCH_ACTION'    => append_sid("search.php?mode=searchuser")
+            'S_SEARCH_ACTION'    => append_sid('search.php?mode=searchuser')
         ]
     );
 

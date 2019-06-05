@@ -149,11 +149,11 @@ if ($sid === '' || $sid !== $userdata['session_id']) {
 //
 if (isset($_POST['cancel'])) {
     if ($topic_id) {
-        $redirect = "viewtopic.php?" . POST_TOPIC_URL . "=$topic_id";
+        $redirect = 'viewtopic.php?' . POST_TOPIC_URL . "=$topic_id";
     } elseif ($forum_id) {
-        $redirect = "viewforum.php?" . POST_FORUM_URL . "=$forum_id";
+        $redirect = 'viewforum.php?' . POST_FORUM_URL . "=$forum_id";
     } else {
-        $redirect = "index.php";
+        $redirect = 'index.php';
     }
 
     redirect(append_sid($redirect, true));
@@ -267,10 +267,10 @@ switch ($mode) {
 			sync('forum', $forum_id);
 
             if (!empty($topic_id)) {
-                $redirect_page = "viewforum.php?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'];
+                $redirect_page = 'viewforum.php?' . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'];
                 $l_redirect    = sprintf($lang['Click_return_forum'], '<a href="' . $redirect_page . '">', '</a>');
             } else {
-                $redirect_page = "modcp.php?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'];
+                $redirect_page = 'modcp.php?' . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'];
                 $l_redirect    = sprintf($lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
             }
 
@@ -312,7 +312,7 @@ switch ($mode) {
                     'L_YES' => $lang['Yes'],
                     'L_NO'  => $lang['No'],
 
-                    'S_CONFIRM_ACTION' => append_sid("modcp.php"),
+                    'S_CONFIRM_ACTION' => append_sid('modcp.php'),
                     'S_HIDDEN_FIELDS'  => $hidden_fields
                 ]
             );
@@ -397,14 +397,14 @@ switch ($mode) {
 			}
 
             if (!empty($topic_id)) {
-				$redirect_page = "viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'];
+				$redirect_page = 'viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'];
 				$message .= sprintf($lang['Click_return_topic'], '<a href="' . $redirect_page . '">', '</a>');
 			} else {
-				$redirect_page = "modcp.php?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'];
+				$redirect_page = 'modcp.php?' . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'];
 				$message .= sprintf($lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
 			}
 
-			$message = $message . '<br \><br \>' . sprintf($lang['Click_return_forum'], '<a href="' . "viewforum.php?" . POST_FORUM_URL . "=$old_forum_id&amp;sid=" . $userdata['session_id'] . '">', '</a>');
+			$message = $message . '<br \><br \>' . sprintf($lang['Click_return_forum'], '<a href="' . 'viewforum.php?' . POST_FORUM_URL . "=$old_forum_id&amp;sid=" . $userdata['session_id'] . '">', '</a>');
 
             $template->assign_vars(['META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">']);
 
@@ -446,7 +446,7 @@ switch ($mode) {
                     'L_NO'            => $lang['No'],
 
                     'S_FORUM_SELECT'  => make_forum_select('new_forum', $forum_id),
-                    'S_MODCP_ACTION'  => append_sid("modcp.php"),
+                    'S_MODCP_ACTION'  => append_sid('modcp.php'),
                     'S_HIDDEN_FIELDS' => $hidden_fields
                 ]
             );
@@ -472,14 +472,14 @@ switch ($mode) {
             ->execute();
 
         if (!empty($topic_id)) {
-			$redirect_page = "viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'];
+			$redirect_page = 'viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'];
 			$message = sprintf($lang['Click_return_topic'], '<a href="' . $redirect_page . '">', '</a>');
 		} else {
-			$redirect_page = "modcp.php?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'];
+			$redirect_page = 'modcp.php?' . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'];
 			$message = sprintf($lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
 		}
 
-		$message = $message . '<br \><br \>' . sprintf($lang['Click_return_forum'], '<a href="' . "viewforum.php?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'] . '">', '</a>');
+		$message = $message . '<br \><br \>' . sprintf($lang['Click_return_forum'], '<a href="' . 'viewforum.php?' . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'] . '">', '</a>');
 
         $template->assign_vars(['META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">']);
 
@@ -503,14 +503,14 @@ switch ($mode) {
             ->execute();
 
         if (!empty($topic_id)) {
-			$redirect_page = "viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'];
+			$redirect_page = 'viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'];
 			$message = sprintf($lang['Click_return_topic'], '<a href="' . $redirect_page . '">', '</a>');
 		} else {
-			$redirect_page = "modcp.php?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'];
+			$redirect_page = 'modcp.php?' . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'];
 			$message = sprintf($lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
 		}
 
-		$message = $message . '<br \><br \>' . sprintf($lang['Click_return_forum'], '<a href="' . "viewforum.php?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'] . '">', '</a>');
+		$message = $message . '<br \><br \>' . sprintf($lang['Click_return_forum'], '<a href="' . 'viewforum.php?' . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'] . '">', '</a>');
 
         $template->assign_vars(
             [
@@ -618,11 +618,11 @@ switch ($mode) {
 
                 $template->assign_vars(
                     [
-                        'META' => '<meta http-equiv="refresh" content="3;url=' . "viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'] . '">'
+                        'META' => '<meta http-equiv="refresh" content="3;url=' . 'viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'] . '">'
                     ]
                 );
 
-                $message = $lang['Topic_split'] . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . "viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'] . '">', '</a>');
+                $message = $lang['Topic_split'] . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . 'viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'] . '">', '</a>');
 				message_die(GENERAL_MESSAGE, $message);
 			}
 		} else {
@@ -669,11 +669,11 @@ switch ($mode) {
 
                         'FORUM_NAME' => $forum_name,
 
-                        'U_VIEW_FORUM' => append_sid("viewforum.php?" . POST_FORUM_URL . "=$forum_id"),
+                        'U_VIEW_FORUM' => append_sid('viewforum.php?' . POST_FORUM_URL . "=$forum_id"),
 
-                        'S_SPLIT_ACTION'  => append_sid("modcp.php"),
+                        'S_SPLIT_ACTION'  => append_sid('modcp.php'),
                         'S_HIDDEN_FIELDS' => $s_hidden_fields,
-                        'S_FORUM_SELECT'  => make_forum_select("new_forum_id", false, $forum_id)
+                        'S_FORUM_SELECT'  => make_forum_select('new_forum_id', false, $forum_id)
                     ]
                 );
 
@@ -751,7 +751,7 @@ switch ($mode) {
 		$page_title = $lang['Mod_CP'];
 		include $phpbb_root_path . 'includes/page_header.php';
 
-		$rdns_ip_num = isset($_GET['rdns']) ? $_GET['rdns'] : "";
+		$rdns_ip_num = isset($_GET['rdns']) ? $_GET['rdns'] : '';
 
         if (!$post_id) {
 			message_die(GENERAL_MESSAGE, $lang['No_such_post']);
@@ -790,7 +790,7 @@ switch ($mode) {
 
                 'IP' => $ip_this_post,
 
-                'U_LOOKUP_IP' => "modcp.php?mode=ip&amp;" . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=$ip_this_post&amp;sid=" . $userdata['session_id']
+                'U_LOOKUP_IP' => 'modcp.php?mode=ip&amp;' . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=$ip_this_post&amp;sid=" . $userdata['session_id']
             ]
         );
 
@@ -834,7 +834,7 @@ switch ($mode) {
                     'IP'        => $ip,
                     'POSTS'     => $row->postings . ' ' . (($row->postings === 1) ? $lang['Post'] : $lang['Posts']),
 
-                    'U_LOOKUP_IP' => "modcp.php?mode=ip&amp;" . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=" . $row->poster_ip . "&amp;sid=" . $userdata['session_id']
+                    'U_LOOKUP_IP' => 'modcp.php?mode=ip&amp;' . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=" . $row->poster_ip . '&amp;sid=' . $userdata['session_id']
                 ]
             );
 
@@ -877,8 +877,8 @@ switch ($mode) {
                 'POSTS'          => $row->postings . ' ' . (($row->postings === 1) ? $lang['Post'] : $lang['Posts']),
                 'L_SEARCH_POSTS' => sprintf($lang['Search_user_posts'], $username),
 
-                'U_PROFILE'     => ($id === ANONYMOUS) ? "modcp.php?mode=ip&amp;" . POST_POST_URL . "=" . $post_id . "&amp;" . POST_TOPIC_URL . "=" . $topic_id . "&amp;sid=" . $userdata['session_id'] : append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$id"),
-                'U_SEARCHPOSTS' => append_sid("search.php?search_author=" . (($id === ANONYMOUS) ? 'Anonymous' : urlencode($username)) . "&amp;showresults=topics")
+                'U_PROFILE'     => ($id === ANONYMOUS) ? 'modcp.php?mode=ip&amp;' . POST_POST_URL . '=' . $post_id . '&amp;' . POST_TOPIC_URL . '=' . $topic_id . '&amp;sid=' . $userdata['session_id'] : append_sid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$id"),
+                'U_SEARCHPOSTS' => append_sid('search.php?search_author=' . (($id === ANONYMOUS) ? 'Anonymous' : urlencode($username)) . '&amp;showresults=topics')
             ]);
 
             $i++;
@@ -907,9 +907,9 @@ switch ($mode) {
                 'L_REPLIES'        => $lang['Replies'],
                 'L_LASTPOST'       => $lang['Last_Post'],
 
-                'U_VIEW_FORUM'    => append_sid("viewforum.php?" . POST_FORUM_URL . "=$forum_id"),
+                'U_VIEW_FORUM'    => append_sid('viewforum.php?' . POST_FORUM_URL . "=$forum_id"),
                 'S_HIDDEN_FIELDS' => '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />',
-                'S_MODCP_ACTION'  => append_sid("modcp.php")
+                'S_MODCP_ACTION'  => append_sid('modcp.php')
             ]
         );
 
@@ -982,7 +982,7 @@ switch ($mode) {
                 $topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
             }
 
-			$u_view_topic = "modcp.php?mode=split&amp;" . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'];
+			$u_view_topic = 'modcp.php?mode=split&amp;' . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'];
 			$topic_replies = $row->topic_replies;
 
 			$last_post_time = create_date($board_config['default_dateformat'], $row->post_time, $board_config['board_timezone']);
@@ -1004,10 +1004,10 @@ switch ($mode) {
         }
 
         $template->assign_vars([
-                'PAGINATION'  => generate_pagination("modcp.php?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'], $forum_topics, $board_config['topics_per_page'], $start),
-                'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $board_config['topics_per_page']) + 1, ceil($forum_topics / $board_config['topics_per_page'])),
+            'PAGINATION'  => generate_pagination('modcp.php?' . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'], $forum_topics, $board_config['topics_per_page'], $start),
+            'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $board_config['topics_per_page']) + 1, ceil($forum_topics / $board_config['topics_per_page'])),
 
-                'L_GOTO_PAGE' => $lang['Goto_page']
+            'L_GOTO_PAGE' => $lang['Goto_page']
             ]);
 
         $template->pparse('body');

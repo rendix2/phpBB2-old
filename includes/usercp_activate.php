@@ -42,7 +42,7 @@ if (trim($user->user_actkey) !== '' && trim($row['user_actkey']) !== trim($_GET[
 
 if ($row['user_active'] && trim($row['user_actkey']) === '') {
     $template->assign_vars(
-        ['META' => '<meta http-equiv="refresh" content="10;url=' . append_sid("index.php") . '">']
+        ['META' => '<meta http-equiv="refresh" content="10;url=' . append_sid('index.php') . '">']
     );
 
     message_die(GENERAL_MESSAGE, $lang['Already_activated']);
@@ -95,13 +95,13 @@ if ((int)$board_config['require_activation'] === USER_ACTIVATION_ADMIN && $sql_u
     $emailer->reset();
 
     $template->assign_vars([
-        'META' => '<meta http-equiv="refresh" content="10;url=' . append_sid("index.php") . '">'
+        'META' => '<meta http-equiv="refresh" content="10;url=' . append_sid('index.php') . '">'
     ]);
 
     message_die(GENERAL_MESSAGE, $lang['Account_active_admin']);
 } else {
     $template->assign_vars([
-        'META' => '<meta http-equiv="refresh" content="10;url=' . append_sid("index.php") . '">'
+        'META' => '<meta http-equiv="refresh" content="10;url=' . append_sid('index.php') . '">'
     ]);
 
     $message = ($sql_update_pass === '') ? $lang['Account_active'] : $lang['Password_activated'];

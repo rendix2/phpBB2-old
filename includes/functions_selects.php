@@ -24,7 +24,7 @@
 //
 // Pick a language, any language ...
 //
-function language_select($default, $select_name = "language", $dirname="language")
+function language_select($default, $select_name = 'language', $dirname= 'language')
 {
 	global $phpbb_root_path;
 
@@ -33,8 +33,8 @@ function language_select($default, $select_name = "language", $dirname="language
 	$langs = [];
 	while ( $file = readdir($dir) ) {
 		if (preg_match('#^lang_#i', $file) && !is_file(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file)) && !is_link(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file))) {
-			$filename = trim(str_replace("lang_", "", $file));
-			$displayname = preg_replace("/^(.*?)_(.*)$/", "\\1 [ \\2 ]", $filename);
+			$filename = trim(str_replace('lang_', '', $file));
+			$displayname = preg_replace('/^(.*?)_(.*)$/', "\\1 [ \\2 ]", $filename);
 			$displayname = preg_replace("/\[(.*?)_(.*)\]/", "[ \\1 - \\2 ]", $displayname);
 			$langs[$displayname] = $filename;
 		}
@@ -59,7 +59,7 @@ function language_select($default, $select_name = "language", $dirname="language
 //
 // Pick a template/theme combo, 
 //
-function style_select($default_style, $select_name = "style", $dirname = "templates")
+function style_select($default_style, $select_name = 'style', $dirname = 'templates')
 {
     $themes = dibi::select(['themes_id', 'style_name'])
         ->from(THEMES_TABLE)
@@ -79,7 +79,7 @@ function style_select($default_style, $select_name = "style", $dirname = "templa
 		$style_select .= '<option value="' . $themes_id . '"' . $selected . '>' . $style_name . '</option>';
 	}
 
-	$style_select .= "</select>";
+	$style_select .= '</select>';
 
 	return $style_select;
 }

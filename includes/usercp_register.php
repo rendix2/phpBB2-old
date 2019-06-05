@@ -35,7 +35,7 @@
 */
 
 if ( !defined('IN_PHPBB') ) {
-	die("Hacking attempt");
+	die('Hacking attempt');
 }
 
 $unhtml_specialchars_match   = ['#&gt;#', '#&lt;#', '#&quot;#', '#&amp;#'];
@@ -55,12 +55,12 @@ function show_coppa()
         [
             'REGISTRATION'   => $lang['Registration'],
             'AGREEMENT'      => $lang['Reg_agreement'],
-            "AGREE_OVER_13"  => $lang['Agree_over_13'],
-            "AGREE_UNDER_13" => $lang['Agree_under_13'],
+            'AGREE_OVER_13'  => $lang['Agree_over_13'],
+            'AGREE_UNDER_13' => $lang['Agree_under_13'],
             'DO_NOT_AGREE'   => $lang['Agree_not'],
 
-            "U_AGREE_OVER13"  => append_sid("profile.php?mode=register&amp;agreed=true"),
-            "U_AGREE_UNDER13" => append_sid("profile.php?mode=register&amp;agreed=true&amp;coppa=true")
+            'U_AGREE_OVER13'  => append_sid('profile.php?mode=register&amp;agreed=true'),
+            'U_AGREE_UNDER13' => append_sid('profile.php?mode=register&amp;agreed=true&amp;coppa=true')
         ]
     );
 
@@ -542,7 +542,7 @@ if (isset($_POST['submit'])) {
                         $emailer->replyto($board_config['board_email']);
 
                         $emailer->email_address(trim($admin->user_email));
-                        $emailer->use_template("admin_activate", $admin->user_lang);
+                        $emailer->use_template('admin_activate', $admin->user_lang);
                         $emailer->set_subject($lang['Reactivate']);
 
                         $emailer->assign_vars(
@@ -558,14 +558,14 @@ if (isset($_POST['submit'])) {
                     }
  				}
 
-				$message = $lang['Profile_updated_inactive'] . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . append_sid("index.php") . '">', '</a>');
+				$message = $lang['Profile_updated_inactive'] . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . append_sid('index.php') . '">', '</a>');
 			} else {
-				$message = $lang['Profile_updated'] . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . append_sid("index.php") . '">', '</a>');
+				$message = $lang['Profile_updated'] . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . append_sid('index.php') . '">', '</a>');
 			}
 
             $template->assign_vars(
                 [
-                    "META" => '<meta http-equiv="refresh" content="5;url=' . append_sid("index.php") . '">'
+                    'META' => '<meta http-equiv="refresh" content="5;url=' . append_sid('index.php') . '">'
                 ]
             );
 
@@ -718,7 +718,7 @@ if (isset($_POST['submit'])) {
 					$emailer->replyto($board_config['board_email']);
 
 					$emailer->email_address(trim($admin->user_email));
-					$emailer->use_template("admin_activate", $admin->user_lang);
+					$emailer->use_template('admin_activate', $admin->user_lang);
 					$emailer->set_subject($lang['New_account_subject']);
 
                     $emailer->assign_vars(
@@ -734,7 +734,7 @@ if (isset($_POST['submit'])) {
 				}
 			}
 
-			$message = $message . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . append_sid("index.php") . '">', '</a>');
+			$message = $message . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . append_sid('index.php') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		} // if mode == register
@@ -988,7 +988,7 @@ if (isset($_POST['avatargallery']) && !$error ) {
             'TIMEZONE_SELECT' => tz_select($user_timezone, 'timezone'),
             'DATE_FORMAT' => $user_dateformat,
             'HTML_STATUS' => $html_status,
-            'BBCODE_STATUS' => sprintf($bbcode_status, '<a href="' . append_sid("faq.php?mode=bbcode") . '" target="_phpbbcode">', '</a>'),
+            'BBCODE_STATUS' => sprintf($bbcode_status, '<a href="' . append_sid('faq.php?mode=bbcode') . '" target="_phpbbcode">', '</a>'),
             'SMILIES_STATUS' => $smilies_status,
 
             'L_CURRENT_PASSWORD' => $lang['Current_password'],
@@ -1057,7 +1057,7 @@ if (isset($_POST['avatargallery']) && !$error ) {
             'S_ALLOW_AVATAR_REMOTE' => $board_config['allow_avatar_remote'],
             'S_HIDDEN_FIELDS' => $s_hidden_fields,
             'S_FORM_ENCTYPE' => $form_enctype,
-            'S_PROFILE_ACTION' => append_sid("profile.php"))
+            'S_PROFILE_ACTION' => append_sid('profile.php'))
 	);
 
 	//

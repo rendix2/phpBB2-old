@@ -355,7 +355,7 @@ if (@file_exists(@phpbb_realpath('config.php'))) {
 }
 
 // Is phpBB already installed? Yes? Redirect to the index
-if (defined("PHPBB_INSTALLED")) {
+if (defined('PHPBB_INSTALLED')) {
     redirect('../index.php');
 }
 
@@ -587,7 +587,7 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['up
 					</tr>
 					<tr>
 						<td class="row1" align="right"><span class="gen"><?php echo $lang['Table_Prefix']; ?>: </span></td>
-						<td class="row2"><input type="text" name="prefix" value="<?php echo !empty($table_prefix) ? $table_prefix : "phpbb_"; ?>" /></td>
+						<td class="row2"><input type="text" name="prefix" value="<?php echo !empty($table_prefix) ? $table_prefix : 'phpbb_'; ?>" /></td>
 					</tr>
 					<tr>
 						<th colspan="2"><?php echo $lang['Admin_config']; ?></th>
@@ -736,11 +736,11 @@ else
                 'user_email'    => $board_email,
             ];
 
-            dibi::update($table_prefix . "users", $update_data)
+            dibi::update($table_prefix . 'users', $update_data)
                 ->where('username = %s', 'Admin')
                 ->execute();
 
-            dibi::update($table_prefix . "users", ['user_regdate' => time()])
+            dibi::update($table_prefix . 'users', ['user_regdate' => time()])
             ->execute();
 
 			if ($error !== '') {

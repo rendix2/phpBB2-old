@@ -21,7 +21,7 @@
  ***************************************************************************/
 
 if (!defined('IN_PHPBB')) {
-    die("Hacking attempt");
+    die('Hacking attempt');
 }
 
 define('IN_ADMIN', true);
@@ -38,17 +38,17 @@ init_userprefs($userdata);
 //
 
 if (!$userdata['session_logged_in']) {
-    redirect(append_sid("login.php?redirect=admin/index.php", true));
+    redirect(append_sid('login.php?redirect=admin/index.php', true));
 } elseif ($userdata['user_level'] !== ADMIN) {
     message_die(GENERAL_MESSAGE, $lang['Not_admin']);
 }
 
 if ($_GET['sid'] !== $userdata['session_id']) {
-    redirect("index.php?sid=" . $userdata['session_id']);
+    redirect('index.php?sid=' . $userdata['session_id']);
 }
 
 if (!$userdata['session_admin']) {
-    redirect(append_sid("login.php?redirect=admin/index.php&admin=1", true));
+    redirect(append_sid('login.php?redirect=admin/index.php&admin=1', true));
 }
 
 if (empty($no_page_header)) {

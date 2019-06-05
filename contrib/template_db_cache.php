@@ -28,7 +28,7 @@
  */
 
 class Template {
-	var $classname = "Template";
+	var $classname = 'Template';
 
 	// variable that holds all the data we'll be substituting into
 	// the compiled templates.
@@ -43,7 +43,7 @@ class Template {
 	var $files = [];
 
 	// Root template directory.
-	var $root = "";
+	var $root = '';
 
 	// this will hash handle names to the compiled code for that handle.
 	var $compiled_code = [];
@@ -147,10 +147,10 @@ class Template {
             dibi::query('REPLACE INTO %n %v', TEMPLATE_CACHE_TABLE, $replace_data);
 		}
 
-		$_str = "";
+		$_str = '';
 		eval($this->compiled_code[$handle]);
 
-		if ($_str !== "" )
+		if ($_str !== '')
 		{
 			echo $_str;
 		}
@@ -195,7 +195,7 @@ class Template {
 		}
 
 		// Compile It, With The "no Echo Statements" Option On.
-		$_str = "";
+		$_str = '';
 		// evaluate the variable assignment.
 		eval($code);
 		// assign the value of the generated variable to the given varname.
@@ -308,7 +308,7 @@ class Template {
 
 		$filename = $this->files[$handle];
 
-		$str = implode("", @file($filename));
+		$str = implode('', @file($filename));
 		if (empty($str))
 		{
 			die("Template->loadfile(): File $filename for handle $handle is empty");
@@ -357,7 +357,7 @@ class Template {
 
 		$block_nesting_level = 0;
 		$block_names = [];
-		$block_names[0] = ".";
+		$block_names[0] = '.';
 
 		// Second: prepend echo ', append ' . "\n"; to each line.
 		$line_count = count($code_lines);
@@ -500,7 +500,7 @@ class Template {
 	function generate_block_data_ref($blockname, $include_last_iterator)
 	{
 		// Get an array of the blocks involved.
-		$blocks = explode(".", $blockname);
+		$blocks = explode('.', $blockname);
 		$blockcount = count($blocks) - 1;
 		$varref = '$this->_tpldata';
 		// Build up the string with everything but the last child.

@@ -77,7 +77,7 @@ if (isset($_GET['mode']) || isset($_POST['mode'])) {
         exit;
     } elseif ($mode === 'editprofile' || $mode === 'register') {
         if (!$userdata['session_logged_in'] && $mode === 'editprofile') {
-            redirect(append_sid("login.php?redirect=profile.php&mode=editprofile", true));
+            redirect(append_sid('login.php?redirect=profile.php&mode=editprofile', true));
         }
 
         include $phpbb_root_path . 'includes/usercp_register.php';
@@ -102,6 +102,6 @@ if (isset($_GET['mode']) || isset($_POST['mode'])) {
     }
 }
 
-redirect(append_sid("index.php", true));
+redirect(append_sid('index.php', true));
 
 ?>

@@ -172,7 +172,7 @@ if ($mode === 'searchuser') {
                         ->where('post_time >= %i', $userdata['user_lastvisit'])
                         ->fetchPairs(null, 'post_id');
 				} else {
-					redirect(append_sid("login.php?redirect=search.php&search_id=newposts", true));
+					redirect(append_sid('login.php?redirect=search.php&search_id=newposts', true));
 				}
 
 				$show_results = 'topics';
@@ -185,7 +185,7 @@ if ($mode === 'searchuser') {
                         ->where('poster_id = %i', $userdata['user_id'])
                         ->fetchPairs(null, 'post_id');
                 } else {
-                    redirect(append_sid("login.php?redirect=search.php&search_id=egosearch", true));
+                    redirect(append_sid('login.php?redirect=search.php&search_id=egosearch', true));
                 }
 
 				$show_results = 'topics';
@@ -417,7 +417,7 @@ if ($mode === 'searchuser') {
                         $search_ids = $search_ids->groupBy('topic_id')
                             ->fetchPairs(null, 'topic_id');
                     } else {
-						$from_sql = POSTS_TABLE . " p";
+						$from_sql = POSTS_TABLE . ' p';
 
                         $search_ids = dibi::select('p.topic_id')
                             ->from(POSTS_TABLE)
@@ -771,14 +771,14 @@ if ($mode === 'searchuser') {
 
         foreach ($split_search as $split_word) {
 			if ( $split_word !== 'and' && $split_word !== 'or' && $split_word !== 'not' ) {
-				$highlight_match[] = '#\b(' . str_replace("*", "([\w]+)?", $split_word) . ')\b#is';
-				$highlight_active .= " " . $split_word;
+				$highlight_match[] = '#\b(' . str_replace('*', "([\w]+)?", $split_word) . ')\b#is';
+				$highlight_active .= ' ' . $split_word;
 
 				foreach ($synonym_array as $synonym) {
 					list($replace_synonym, $match_synonym) = explode(' ', trim(strtolower($synonym)));
 
 					if ( $replace_synonym === $split_word ) {
-						$highlight_match[] = '#\b(' . str_replace("*", "([\w]+)?", $replace_synonym) . ')\b#is';
+						$highlight_match[] = '#\b(' . str_replace('*', "([\w]+)?", $replace_synonym) . ')\b#is';
 						$highlight_active .= ' ' . $match_synonym;
 					}
 				}
@@ -793,9 +793,9 @@ if ($mode === 'searchuser') {
         $forum_all_cookie_name = $board_config['cookie_name'] . '_f_all';
 
 		foreach ($search_sets as $search_set) {
-			$forum_url = append_sid("viewforum.php?" . POST_FORUM_URL . '=' . $search_set->forum_id);
-			$topic_url = append_sid("viewtopic.php?" . POST_TOPIC_URL . '=' . $search_set->topic_id . "&amp;highlight=$highlight_active");
-			$post_url = append_sid("viewtopic.php?" . POST_POST_URL . '=' . $search_set->post_id . "&amp;highlight=$highlight_active") . '#' . $search_set->post_id;
+			$forum_url = append_sid('viewforum.php?' . POST_FORUM_URL . '=' . $search_set->forum_id);
+			$topic_url = append_sid('viewtopic.php?' . POST_TOPIC_URL . '=' . $search_set->topic_id . "&amp;highlight=$highlight_active");
+			$post_url = append_sid('viewtopic.php?' . POST_POST_URL . '=' . $search_set->post_id . "&amp;highlight=$highlight_active") . '#' . $search_set->post_id;
 
 			$post_date = create_date($board_config['default_dateformat'], $search_set->post_time,
 			$board_config['board_timezone']);
@@ -893,7 +893,7 @@ if ($mode === 'searchuser') {
 
                     if (count($orig_word)) {
 						$topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
-						$post_subject = ( $search_set->post_subject !== "" ) ? preg_replace($orig_word,
+						$post_subject = ( $search_set->post_subject !== '') ? preg_replace($orig_word,
                             $replacement_word, $search_set->post_subject) : $topic_title;
 
 						$message = preg_replace($orig_word, $replacement_word, $message);
@@ -909,12 +909,12 @@ if ($mode === 'searchuser') {
 
 				}
 
-				$poster = ( $search_set->user_id !== ANONYMOUS ) ? '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $search_set->user_id) . '">' : '';
+				$poster = ( $search_set->user_id !== ANONYMOUS ) ? '<a href="' . append_sid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $search_set->user_id) . '">' : '';
 
                 if ( $search_set->user_id !== ANONYMOUS ) {
                     $poster .= $search_set->username;
                 } else {
-                    if ($search_set->post_username !== "" ) {
+                    if ($search_set->post_username !== '') {
                         $poster .= $search_set->post_username;
                     } else {
                         $poster .= $lang['Guest'];
@@ -942,7 +942,7 @@ if ($mode === 'searchuser') {
                     $mini_post_alt = $lang['Post'];
                 }
 
-                $template->assign_block_vars("searchresults",
+                $template->assign_block_vars('searchresults',
                     [
                         'TOPIC_TITLE'   => $topic_title,
                         'FORUM_NAME'    => $search_set->forum_name,
@@ -992,7 +992,7 @@ if ($mode === 'searchuser') {
 					$times = 1;
 
                     for ($j = 0; $j < $replies + 1; $j += $board_config['posts_per_page']) {
-						$goto_page .= '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=" . $topic_id . "&amp;start=$j") . '">' . $times . '</a>';
+						$goto_page .= '<a href="' . append_sid('viewtopic.php?' . POST_TOPIC_URL . '=' . $topic_id . "&amp;start=$j") . '">' . $times . '</a>';
 
                         if ($times === 1 && $total_pages > 4) {
                             $goto_page .= ' ... ';
@@ -1064,7 +1064,7 @@ if ($mode === 'searchuser') {
                                     $folder_image = $folder_new;
                                     $folder_alt = $lang['New_posts'];
 
-                                    $newest_post_img = '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
+                                    $newest_post_img = '<a href="' . append_sid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
                                 } else {
                                     $folder_alt = ($search_set->topic_status === TOPIC_LOCKED) ? $lang['Topic_locked'] : $lang['No_new_posts'];
 
@@ -1076,7 +1076,7 @@ if ($mode === 'searchuser') {
 								$folder_image = $folder_new;
 								$folder_alt = $lang['New_posts'];
 
-								$newest_post_img = '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
+								$newest_post_img = '<a href="' . append_sid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
 							} else {
 								$folder_image = $folder;
 								$folder_alt = ( $search_set->topic_status === TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
@@ -1094,7 +1094,7 @@ if ($mode === 'searchuser') {
 					}
 				}
 
-				$topic_author = ( $search_set->user_id !== ANONYMOUS ) ? '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . '=' . $search_set->user_id) . '">' : '';
+				$topic_author = ( $search_set->user_id !== ANONYMOUS ) ? '<a href="' . append_sid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $search_set->user_id) . '">' : '';
 
                 if ($search_set->user_id !== ANONYMOUS) {
                     $topic_author .= $search_set->username;
@@ -1119,10 +1119,10 @@ if ($mode === 'searchuser') {
                         $last_post_author = $lang['Guest'];
                     }
                 } else {
-                    $last_post_author = '<a href="' . append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . '=' . $search_set->id2) . '">' . $search_set->user2 . '</a>';
+                    $last_post_author = '<a href="' . append_sid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $search_set->id2) . '">' . $search_set->user2 . '</a>';
                 }
 
-				$last_post_url = '<a href="' . append_sid("viewtopic.php?"  . POST_POST_URL . '=' . $search_set->topic_last_post_id) . '#' . $search_set->topic_last_post_id . '"><img src="' . $images['icon_latest_reply'] . '" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" border="0" /></a>';
+				$last_post_url = '<a href="' . append_sid('viewtopic.php?' . POST_POST_URL . '=' . $search_set->topic_last_post_id) . '#' . $search_set->topic_last_post_id . '"><img src="' . $images['icon_latest_reply'] . '" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" border="0" /></a>';
 
                 $template->assign_block_vars('searchresults',
                     [
@@ -1249,7 +1249,7 @@ $sort_by_types = [
     $lang['Sort_Forum']
 ];
 
-$s_sort_by = "";
+$s_sort_by = '';
 
 foreach ($sort_by_types as $i => $sort_by_type) {
 	$s_sort_by .= '<option value="' . $i . '">' . $sort_by_type . '</option>';
@@ -1310,7 +1310,7 @@ $template->assign_vars(
         'L_TOPICS'                  => $lang['Topics'],
         'L_POSTS'                   => $lang['Posts'],
 
-        'S_SEARCH_ACTION'     => append_sid("search.php?mode=results"),
+        'S_SEARCH_ACTION'     => append_sid('search.php?mode=results'),
         'S_CHARACTER_OPTIONS' => $s_characters,
         'S_FORUM_OPTIONS'     => $s_forums,
         'S_CATEGORY_OPTIONS'  => $s_categories,

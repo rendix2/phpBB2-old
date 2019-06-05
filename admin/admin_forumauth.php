@@ -147,10 +147,10 @@ if (isset($_POST['submit'])) {
 
     $template->assign_vars(
         [
-            'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("admin_forumauth.php?" . POST_FORUM_URL . "=$forum_id") . '">'
+            'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid('admin_forumauth.php?' . POST_FORUM_URL . "=$forum_id") . '">'
         ]
     );
-    $message = $lang['Forum_auth_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumauth'],  '<a href="' . append_sid("admin_forumauth.php") . '">', "</a>");
+    $message = $lang['Forum_auth_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumauth'],  '<a href="' . append_sid('admin_forumauth.php') . '">', '</a>');
 	message_die(GENERAL_MESSAGE, $message);
 
 } // End of submit
@@ -197,7 +197,7 @@ if (empty($forum_id) ) {
             'L_AUTH_SELECT'  => $lang['Select_a_Forum'],
             'L_LOOK_UP'      => $lang['Look_up_Forum'],
 
-            'S_AUTH_ACTION' => append_sid("admin_forumauth.php"),
+            'S_AUTH_ACTION' => append_sid('admin_forumauth.php'),
             'S_AUTH_SELECT' => $select_list
         ]
     );
@@ -276,26 +276,26 @@ if (empty($forum_id) ) {
 	}
 
 	$adv_mode = empty($adv) ? '1' : '0';
-	$switch_mode = append_sid("admin_forumauth.php?" . POST_FORUM_URL . "=" . $forum_id . "&adv=". $adv_mode);
+	$switch_mode = append_sid('admin_forumauth.php?' . POST_FORUM_URL . '=' . $forum_id . '&adv=' . $adv_mode);
 	$switch_mode_text = empty($adv) ? $lang['Advanced_mode'] : $lang['Simple_mode'];
 	$u_switch_mode = '<a href="' . $switch_mode . '">' . $switch_mode_text . '</a>';
 
 	$s_hidden_fields = '<input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '">';
 
 	$template->assign_vars([
-		'FORUM_NAME' => $forum_name,
+            'FORUM_NAME' => $forum_name,
 
-		'L_FORUM' => $lang['Forum'], 
-		'L_AUTH_TITLE' => $lang['Auth_Control_Forum'],
-		'L_AUTH_EXPLAIN' => $lang['Forum_auth_explain'],
-		'L_SUBMIT' => $lang['Submit'],
-		'L_RESET' => $lang['Reset'],
+            'L_FORUM' => $lang['Forum'],
+            'L_AUTH_TITLE' => $lang['Auth_Control_Forum'],
+            'L_AUTH_EXPLAIN' => $lang['Forum_auth_explain'],
+            'L_SUBMIT' => $lang['Submit'],
+            'L_RESET' => $lang['Reset'],
 
-		'U_SWITCH_MODE' => $u_switch_mode,
+            'U_SWITCH_MODE' => $u_switch_mode,
 
-		'S_FORUMAUTH_ACTION' => append_sid("admin_forumauth.php"),
-		'S_COLUMN_SPAN' => $s_column_span,
-		'S_HIDDEN_FIELDS' => $s_hidden_fields]
+            'S_FORUMAUTH_ACTION' => append_sid('admin_forumauth.php'),
+            'S_COLUMN_SPAN' => $s_column_span,
+            'S_HIDDEN_FIELDS' => $s_hidden_fields]
 	);
 
 }

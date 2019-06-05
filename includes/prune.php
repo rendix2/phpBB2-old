@@ -21,7 +21,7 @@
  ***************************************************************************/
 
 if ( !defined('IN_PHPBB') ) {
-   die("Hacking attempt");
+   die('Hacking attempt');
 }
 
 require $phpbb_root_path . 'includes/functions_search.php';

@@ -34,12 +34,12 @@ define('IN_PHPBB', 1);
 
 if (!empty($setmodules) ) {
 	$filename = basename(__FILE__);
-	$module['Database']['Backup_DB'] = $filename . "?perform=backup";
+	$module['Database']['Backup_DB'] = $filename . '?perform=backup';
 
 	$file_uploads = @ini_get('file_uploads');
 
 	if ((empty($file_uploads) || $file_uploads !== 0) && (strtolower($file_uploads) !== 'off') && (PHP_VERSION !== '4.0.4pl1') ) {
-		$module['Database']['Restore_DB'] = $filename . "?perform=restore";
+		$module['Database']['Restore_DB'] = $filename . '?perform=restore';
 	}
 
 	return;
@@ -49,7 +49,7 @@ if (!empty($setmodules) ) {
 // Load default header
 //
 $no_page_header = TRUE;
-$phpbb_root_path = "./../";
+$phpbb_root_path = './../';
 
 require './pagestart.php';
 include $phpbb_root_path . 'includes/sql_parse.php';
@@ -57,7 +57,7 @@ include $phpbb_root_path . 'includes/sql_parse.php';
 //
 // Set VERBOSE to 1  for debugging info..
 //
-define("VERBOSE", 0);
+define('VERBOSE', 0);
 
 //
 // Increase maximum execution time, but don't complain about it if it isn't
@@ -85,8 +85,8 @@ if (isset($_GET['perform']) || isset($_POST['perform']) ) {
 			$dumper->start($backup_file_name);
 
 			header('Content-Type: application/octet-stream');
-			header("Content-Transfer-Encoding: Binary");
-			header("Content-disposition: attachment; filename=\"" . basename($backup_file_name) . "\"");
+			header('Content-Transfer-Encoding: Binary');
+			header('Content-disposition: attachment; filename="' . basename($backup_file_name) . '"');
 			readfile($backup_file_name); // do the double-download-dance (dirty but worky)
 			unlink($backup_file_name);
 			exit;
@@ -98,22 +98,22 @@ if (isset($_GET['perform']) || isset($_POST['perform']) ) {
 				//
 				include './page_header_admin.php';
 
-				$template->set_filenames(["body" => "admin/db_utils_restore_body.tpl"]);
+				$template->set_filenames(['body' => 'admin/db_utils_restore_body.tpl']);
 
 				$s_hidden_fields = "<input type=\"hidden\" name=\"perform\" value=\"restore\" /><input type=\"hidden\" name=\"perform\" value=\"$perform\" />";
 
 				$template->assign_vars(
 					[
-						"L_DATABASE_RESTORE" => $lang['Database_Utilities'] . " : " . $lang['Restore'],
-						"L_RESTORE_EXPLAIN"  => $lang['Restore_explain'],
-						"L_SELECT_FILE"      => $lang['Select_file'],
-						"L_START_RESTORE"    => $lang['Start_Restore'],
+                        'L_DATABASE_RESTORE' => $lang['Database_Utilities'] . ' : ' . $lang['Restore'],
+                        'L_RESTORE_EXPLAIN'  => $lang['Restore_explain'],
+                        'L_SELECT_FILE'      => $lang['Select_file'],
+                        'L_START_RESTORE'    => $lang['Start_Restore'],
 
-						"S_DBUTILS_ACTION" => append_sid("admin_db_utilities.php"),
-						"S_HIDDEN_FIELDS"  => $s_hidden_fields
+                        'S_DBUTILS_ACTION' => append_sid('admin_db_utilities.php'),
+                        'S_HIDDEN_FIELDS'  => $s_hidden_fields
 					]
 				);
-				$template->pparse("body");
+				$template->pparse('body');
 
 				break;
 
@@ -122,11 +122,11 @@ if (isset($_GET['perform']) || isset($_POST['perform']) ) {
 				// Handle the file upload ....
 				// If no file was uploaded report an error...
 				//
-				$backup_file_name = !empty($_FILES['backup_file']['name']) ? $_FILES['backup_file']['name'] : "";
-				$backup_file_tmpname = ($_FILES['backup_file']['tmp_name'] !== "none") ? $_FILES['backup_file']['tmp_name'] : "";
-				$backup_file_type = !empty($_FILES['backup_file']['type']) ? $_FILES['backup_file']['type'] : "";
+				$backup_file_name = !empty($_FILES['backup_file']['name']) ? $_FILES['backup_file']['name'] : '';
+				$backup_file_tmpname = ($_FILES['backup_file']['tmp_name'] !== 'none') ? $_FILES['backup_file']['tmp_name'] : '';
+				$backup_file_type = !empty($_FILES['backup_file']['type']) ? $_FILES['backup_file']['type'] : '';
 
-				if ($backup_file_tmpname === "" || $backup_file_name === "") {
+				if ($backup_file_tmpname === '' || $backup_file_name === '') {
 					message_die(GENERAL_MESSAGE, $lang['Restore_Error_no_file']);
 				}
 				//
@@ -143,18 +143,18 @@ if (isset($_GET['perform']) || isset($_POST['perform']) ) {
 
 				include './page_header_admin.php';
 
-				$template->set_filenames(["body" => "admin/admin_message_body.tpl"]);
+				$template->set_filenames(['body' => 'admin/admin_message_body.tpl']);
 
 				$message = $lang['Restore_success'];
 
 				$template->assign_vars(
 					[
-						"MESSAGE_TITLE" => $lang['Database_Utilities'] . " : " . $lang['Restore'],
-						"MESSAGE_TEXT"  => $message
+                        'MESSAGE_TITLE' => $lang['Database_Utilities'] . ' : ' . $lang['Restore'],
+                        'MESSAGE_TEXT'  => $message
 					]
 				);
 
-				$template->pparse("body");
+				$template->pparse('body');
 				break;
 			}
 			break;

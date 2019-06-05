@@ -24,7 +24,7 @@
 // Allow people to reach login page if
 // board is shut down
 //
-define("IN_LOGIN", true);
+define('IN_LOGIN', true);
 
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
@@ -69,7 +69,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 
 		if ($row) {
             if ($row->user_level !== ADMIN && $board_config['board_disable'] ) {
-				redirect(append_sid("index.php", true));
+				redirect(append_sid('index.php', true));
 			} else {
 				// If the last login is more than x minutes ago, then reset the login tries/time
 				if ($row->user_last_login_try && $board_config['login_reset_time'] && $row->user_last_login_try < (time() - ($board_config['login_reset_time'] * 60))) {
@@ -101,10 +101,10 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
                         ->execute();
 
                     if ($session_id) {
-						$url = !empty($_POST['redirect']) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : "index.php";
+						$url = !empty($_POST['redirect']) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : 'index.php';
 						redirect(append_sid($url, true));
 					} else {
-						message_die(CRITICAL_ERROR, "Couldn't start session : login", "", __LINE__, __FILE__);
+						message_die(CRITICAL_ERROR, "Couldn't start session : login", '', __LINE__, __FILE__);
 					}
 				}
 				// Only store a failed login attempt for an active user - inactive users can't login even with a correct password
@@ -132,13 +132,13 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
                     ]
                 );
 
-                $message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], "<a href=\"login.php?redirect=$redirect\">", '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
+                $message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], "<a href=\"login.php?redirect=$redirect\">", '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid('index.php') . '">', '</a>');
 
 				message_die(GENERAL_MESSAGE, $message);
 			}
 		} else {
-			$redirect = !empty($_POST['redirect']) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : "";
-			$redirect = str_replace("?", "&", $redirect);
+			$redirect = !empty($_POST['redirect']) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : '';
+			$redirect = str_replace('?', '&', $redirect);
 
 			if (strstr(urldecode($redirect), "\n") || strstr(urldecode($redirect), "\r") || strstr(urldecode($redirect), ';url')) {
 				message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
@@ -150,7 +150,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
                 ]
             );
 
-            $message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], "<a href=\"login.php?redirect=$redirect\">", '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
+            $message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], "<a href=\"login.php?redirect=$redirect\">", '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid('index.php') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		}
@@ -169,10 +169,10 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 			$url = str_replace('&amp;', '&', $url);
 			redirect(append_sid($url, true));
 		} else {
-			redirect(append_sid("index.php", true));
+			redirect(append_sid('index.php', true));
 		}
 	} else {
-		$url = !empty($_POST['redirect']) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : "index.php";
+		$url = !empty($_POST['redirect']) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : 'index.php';
 		redirect(append_sid($url, true));
 	}
 } else {
@@ -197,7 +197,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 
 				if (count($forward_match) > 1) {
 					for ($i = 1; $i < count($forward_match); $i++) {
-						if (!preg_match("/sid=/", $forward_match[$i]) ) {
+						if (!preg_match('/sid=/', $forward_match[$i]) ) {
 							if ($forward_page !== '' ) {
 								$forward_page .= '&';
 							}
@@ -226,7 +226,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
                 'L_ENTER_PASSWORD' => isset($_GET['admin']) ? $lang['Admin_reauthenticate'] : $lang['Enter_password'],
                 'L_SEND_PASSWORD'  => $lang['Forgotten_password'],
 
-                'U_SEND_PASSWORD' => append_sid("profile.php?mode=sendpassword"),
+                'U_SEND_PASSWORD' => append_sid('profile.php?mode=sendpassword'),
 
                 'S_HIDDEN_FIELDS' => $s_hidden_fields
             ]
@@ -236,7 +236,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 
 		include $phpbb_root_path . 'includes/page_tail.php';
 	} else {
-		redirect(append_sid("index.php", true));
+		redirect(append_sid('index.php', true));
 	}
 }
 

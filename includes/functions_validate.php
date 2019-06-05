@@ -61,7 +61,7 @@ function validate_username($username)
         ->fetchAll();
 
 	foreach ($disallows as $disallow) {
-        if (preg_match("#\b(" . str_replace("\*", ".*?", preg_quote($disallow->disallow_username, '#')) . ")\b#i", $username)) {
+        if (preg_match("#\b(" . str_replace("\*", '.*?', preg_quote($disallow->disallow_username, '#')) . ")\b#i", $username)) {
             return ['error' => true, 'error_msg' => $lang['Username_disallowed']];
         }
     }
@@ -71,7 +71,7 @@ function validate_username($username)
         ->fetchAll();
 
 	foreach ($words as $word) {
-        if (preg_match("#\b(" . str_replace("\*", ".*?", preg_quote($word->word, '#')) . ")\b#i", $username)) {
+        if (preg_match("#\b(" . str_replace("\*", '.*?', preg_quote($word->word, '#')) . ")\b#i", $username)) {
 
             return ['error' => true, 'error_msg' => $lang['Username_disallowed']];
         }
@@ -146,7 +146,7 @@ function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$loca
 	
 	// website has to start with http://, followed by something with length at least 3 that
 	// contains at least one dot.
-	if ($website !== "") {
+	if ($website !== '') {
 		if (!preg_match('#^http[s]?:\/\/#i', $website)) {
 			$website = 'http://' . $website;
 		}

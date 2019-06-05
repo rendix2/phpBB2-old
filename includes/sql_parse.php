@@ -35,7 +35,7 @@
 function remove_comments(&$output)
 {
 	$lines = explode("\n", $output);
-	$output = "";
+	$output = '';
 
 	// try to keep mem. use down
 	$linecount = count($lines);
@@ -67,20 +67,20 @@ function remove_remarks($sql)
 	$lines = explode("\n", $sql);
 	
 	// try to keep mem. use down
-	$sql = "";
+	$sql = '';
 	
 	$linecount = count($lines);
-	$output = "";
+	$output = '';
 
 	foreach ($lines as $i => $line) {
 		if (($i !== ($linecount - 1)) || (strlen($line) > 0)) {
-			if ($line[0] !== "#") {
+			if ($line[0] !== '#') {
 				$output .= $line . "\n";
 			} else {
 				$output .= "\n";
 			}
 			// Trading a bit of speed for lower mem. use here.
-			$lines[$i] = "";
+			$lines[$i] = '';
 		}
 	}
 	
@@ -98,7 +98,7 @@ function split_sql_file($sql, $delimiter)
 	$tokens = explode($delimiter, $sql);
 
 	// try to save mem.
-	$sql = "";
+	$sql = '';
 	$output = [];
 	
 	// we don't actually care about the matches preg gives us.
@@ -122,13 +122,13 @@ function split_sql_file($sql, $delimiter)
 				// It's a complete sql statement.
 				$output[] = $token;
 				// save memory.
-                $token = "";
+                $token = '';
 			} else {
 				// incomplete sql statement. keep adding tokens until we have a complete one.
 				// $temp will hold what we have so far.
 				$temp = $token . $delimiter;
 				// save memory..
-                $token = "";
+                $token = '';
 				
 				// Do we have a complete statement yet? 
 				$complete_stmt = false;
@@ -148,8 +148,8 @@ function split_sql_file($sql, $delimiter)
 						$output[] = $temp . $tokens[$j];
 
 						// save memory.
-						$tokens[$j] = "";
-						$temp = "";
+						$tokens[$j] = '';
+						$temp = '';
 						
 						// exit the loop.
 						$complete_stmt = true;
@@ -160,7 +160,7 @@ function split_sql_file($sql, $delimiter)
 						// (1 odd and 1 even always make an odd)
 						$temp .= $tokens[$j] . $delimiter;
 						// save memory.
-						$tokens[$j] = "";
+						$tokens[$j] = '';
 					}
 					
 				} // for..

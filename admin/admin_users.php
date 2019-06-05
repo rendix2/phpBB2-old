@@ -144,7 +144,7 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
                     ->execute();
             }
 
-			$message = $lang['User_deleted'] . '<br /><br />' . sprintf($lang['Click_return_useradmin'], '<a href="' . append_sid("admin_users.php") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');
+			$message = $lang['User_deleted'] . '<br /><br />' . sprintf($lang['Click_return_useradmin'], '<a href="' . append_sid('admin_users.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		}
@@ -194,7 +194,7 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 
 		$user_avatar_remoteurl = !empty($_POST['avatarremoteurl']) ? trim($_POST['avatarremoteurl'] ) : '';
 		$user_avatar_url = !empty($_POST['avatarurl']) ? trim($_POST['avatarurl'] ) : '';
-		$user_avatar_loc = ( $_FILES['avatar']['tmp_name'] !== "none") ? $_FILES['avatar']['tmp_name'] : '';
+		$user_avatar_loc = ( $_FILES['avatar']['tmp_name'] !== 'none') ? $_FILES['avatar']['tmp_name'] : '';
 		$user_avatar_name = !empty($_FILES['avatar']['name']) ? $_FILES['avatar']['name'] : '';
 		$user_avatar_size = !empty($_FILES['avatar']['size']) ? $_FILES['avatar']['size'] : 0;
 		$user_avatar_filetype = !empty($_FILES['avatar']['type']) ? $_FILES['avatar']['type'] : '';
@@ -309,14 +309,14 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 		$avatar_sql = [];
 
 		if (isset($_POST['avatardel']) ) {
-			if ($this_userdata['user_avatar_type'] === USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] !== "" ) {
-				if (@file_exists(@phpbb_realpath('./../' . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar'])) ) {
-					@unlink('./../' . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']);
+			if ($this_userdata['user_avatar_type'] === USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] !== '') {
+				if (@file_exists(@phpbb_realpath('./../' . $board_config['avatar_path'] . '/' . $this_userdata['user_avatar'])) ) {
+					@unlink('./../' . $board_config['avatar_path'] . '/' . $this_userdata['user_avatar']);
 				}
 			}
 
 			$avatar_sql = ['user_avatar' => '', 'user_avatar_type' => USER_AVATAR_NONE];
-		} elseif (( $user_avatar_loc !== "" || !empty($user_avatar_url) ) && !$error ) {
+		} elseif (( $user_avatar_loc !== '' || !empty($user_avatar_url) ) && !$error ) {
 			//
 			// Only allow one type of upload, either a
 			// filename or a URL
@@ -325,14 +325,14 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 				$error = TRUE;
 
 				if (isset($error_msg) ) {
-					$error_msg .= "<br />";
+					$error_msg .= '<br />';
 				}
 
 				$error_msg .= $lang['Only_one_avatar'];
 			}
 
-			if ($user_avatar_loc !== "" ) {
-				if (file_exists(@phpbb_realpath($user_avatar_loc)) && preg_match("#.jpg$|.gif$|.png$#", $user_avatar_name) ) {
+			if ($user_avatar_loc !== '') {
+				if (file_exists(@phpbb_realpath($user_avatar_loc)) && preg_match('#.jpg$|.gif$|.png$#', $user_avatar_name) ) {
 					if ($user_avatar_size <= $board_config['avatar_filesize'] && $user_avatar_size > 0) {
 						$error_type = false;
 
@@ -343,20 +343,20 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 						$user_avatar_filetype = $user_avatar_filetype[1];
 
 						switch( $user_avatar_filetype ) {
-							case "jpeg":
-							case "pjpeg":
-							case "jpg":
+							case 'jpeg':
+							case 'pjpeg':
+							case 'jpg':
 								$imgtype = '.jpg';
 								break;
-							case "gif":
+							case 'gif':
 								$imgtype = '.gif';
 								break;
-							case "png":
+							case 'png':
 								$imgtype = '.png';
 								break;
 							default:
 								$error = true;
-								$error_msg = !empty($error_msg) ? $error_msg . "<br />" . $lang['Avatar_filetype'] : $lang['Avatar_filetype'];
+								$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $lang['Avatar_filetype'] : $lang['Avatar_filetype'];
 								break;
 						}
 
@@ -368,30 +368,30 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 
 								$avatar_filename = $user_id . $imgtype;
 
-								if ($this_userdata['user_avatar_type'] === USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] !== "" ) {
-									if (@file_exists(@phpbb_realpath("./../" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar'])) ) {
-										@unlink("./../" . $board_config['avatar_path'] . "/". $this_userdata['user_avatar']);
+								if ($this_userdata['user_avatar_type'] === USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] !== '') {
+									if (@file_exists(@phpbb_realpath('./../' . $board_config['avatar_path'] . '/' . $this_userdata['user_avatar'])) ) {
+										@unlink('./../' . $board_config['avatar_path'] . '/' . $this_userdata['user_avatar']);
 									}
 								}
-								@copy($user_avatar_loc, "./../" . $board_config['avatar_path'] . "/$avatar_filename");
+								@copy($user_avatar_loc, './../' . $board_config['avatar_path'] . "/$avatar_filename");
 
                                 $avatar_sql[] = ['user_avatar' => $avatar_filename, 'user_avatar_type' => USER_AVATAR_UPLOAD];
 							} else {
 								$l_avatar_size = sprintf($lang['Avatar_imagesize'], $board_config['avatar_max_width'], $board_config['avatar_max_height']);
 
 								$error = true;
-								$error_msg = !empty($error_msg) ? $error_msg . "<br />" . $l_avatar_size : $l_avatar_size;
+								$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $l_avatar_size : $l_avatar_size;
 							}
 						}
 					} else {
 						$l_avatar_size = sprintf($lang['Avatar_filesize'], round($board_config['avatar_filesize'] / 1024));
 
 						$error = true;
-						$error_msg = !empty($error_msg) ? $error_msg . "<br />" . $l_avatar_size : $l_avatar_size;
+						$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $l_avatar_size : $l_avatar_size;
 					}
 				} else {
 					$error = true;
-					$error_msg = !empty($error_msg) ? $error_msg . "<br />" . $lang['Avatar_filetype'] : $lang['Avatar_filetype'];
+					$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $lang['Avatar_filetype'] : $lang['Avatar_filetype'];
 				}
 			} elseif (!empty($user_avatar_url) ) {
 				//
@@ -407,13 +407,13 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 					$fsock = @fsockopen($url_ary[2], $port, $errno, $errstr);
 
 					if ($fsock ) {
-						$base_get = "/" . $url_ary[4];
+						$base_get = '/' . $url_ary[4];
 
 						//
 						// Uses HTTP 1.1, could use HTTP 1.0 ...
 						//
 						@fwrite($fsock, "GET $base_get HTTP/1.1\r\n");
-						@fwrite($fsock, "HOST: " . $url_ary[2] . "\r\n");
+						@fwrite($fsock, 'HOST: ' . $url_ary[2] . "\r\n");
 						@fwrite($fsock, "Connection: close\r\n\r\n");
 
 						unset($avatar_data);
@@ -428,28 +428,28 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 							$file_type = $file_data2[1];
 
 							switch( $file_type ) {
-								case "jpeg":
-								case "pjpeg":
-								case "jpg":
+								case 'jpeg':
+								case 'pjpeg':
+								case 'jpg':
 									$imgtype = '.jpg';
 									break;
-								case "gif":
+								case 'gif':
 									$imgtype = '.gif';
 									break;
-								case "png":
+								case 'png':
 									$imgtype = '.png';
 									break;
 								default:
 									$error = true;
-									$error_msg = !empty($error_msg) ? $error_msg . "<br />" . $lang['Avatar_filetype'] : $lang['Avatar_filetype'];
+									$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $lang['Avatar_filetype'] : $lang['Avatar_filetype'];
 									break;
 							}
 
 							if (!$error && $file_size > 0 && $file_size < $board_config['avatar_filesize'] ) {
 								$avatar_data = substr($avatar_data, strlen($avatar_data) - $file_size, $file_size);
 
-								$tmp_filename = tempnam ("/tmp", $this_userdata['user_id'] . "-");
-								$fptr = @fopen($tmp_filename, "wb");
+								$tmp_filename = tempnam ('/tmp', $this_userdata['user_id'] . '-');
+								$fptr = @fopen($tmp_filename, 'wb');
 								$bytes_written = @fwrite($fptr, $avatar_data, $file_size);
 								@fclose($fptr);
 
@@ -462,12 +462,12 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 										$avatar_filename = $user_id . $imgtype;
 
 										if ($this_userdata['user_avatar_type'] === USER_AVATAR_UPLOAD &&
-                                            $this_userdata['user_avatar'] !== "") {
-											if (file_exists(@phpbb_realpath("./../" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar'])) ) {
-												@unlink("./../" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']);
+                                            $this_userdata['user_avatar'] !== '') {
+											if (file_exists(@phpbb_realpath('./../' . $board_config['avatar_path'] . '/' . $this_userdata['user_avatar'])) ) {
+												@unlink('./../' . $board_config['avatar_path'] . '/' . $this_userdata['user_avatar']);
 											}
 										}
-										@copy($tmp_filename, "./../" . $board_config['avatar_path'] . "/$avatar_filename");
+										@copy($tmp_filename, './../' . $board_config['avatar_path'] . "/$avatar_filename");
 										@unlink($tmp_filename);
 
                                         $avatar_sql = ['user_avatar' => $avatar_filename, 'user_avatar_type' => USER_AVATAR_UPLOAD];
@@ -475,14 +475,14 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 										$l_avatar_size = sprintf($lang['Avatar_imagesize'], $board_config['avatar_max_width'], $board_config['avatar_max_height']);
 
 										$error = true;
-										$error_msg = !empty($error_msg) ? $error_msg . "<br />" . $l_avatar_size : $l_avatar_size;
+										$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $l_avatar_size : $l_avatar_size;
 									}
 								} else {
 									//
 									// Error writing file
 									//
 									@unlink($tmp_filename);
-									message_die(GENERAL_ERROR, "Could not write avatar file to local storage. Please contact the board administrator with this message", "", __LINE__, __FILE__);
+									message_die(GENERAL_ERROR, 'Could not write avatar file to local storage. Please contact the board administrator with this message', '', __LINE__, __FILE__);
 								}
 							}
 						} else {
@@ -490,37 +490,37 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 							// No data
 							//
 							$error = true;
-							$error_msg = !empty($error_msg) ? $error_msg . "<br />" . $lang['File_no_data'] : $lang['File_no_data'];
+							$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $lang['File_no_data'] : $lang['File_no_data'];
 						}
 					} else {
 						//
 						// No connection
 						//
 						$error = true;
-						$error_msg = !empty($error_msg) ? $error_msg . "<br />" . $lang['No_connection_URL'] : $lang['No_connection_URL'];
+						$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $lang['No_connection_URL'] : $lang['No_connection_URL'];
 					}
 				} else {
 					$error = true;
-					$error_msg = !empty($error_msg) ? $error_msg . "<br />" . $lang['Incomplete_URL'] : $lang['Incomplete_URL'];
+					$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $lang['Incomplete_URL'] : $lang['Incomplete_URL'];
 				}
 			} elseif (!empty($user_avatar_name) ) {
 				$l_avatar_size = sprintf($lang['Avatar_filesize'], round($board_config['avatar_filesize'] / 1024));
 
 				$error = true;
-				$error_msg = !empty($error_msg) ? $error_msg . "<br />" . $l_avatar_size : $l_avatar_size;
+				$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $l_avatar_size : $l_avatar_size;
 			}
-		} elseif ($user_avatar_remoteurl !== "" && count($avatar_sql) === 0 && !$error ) {
+		} elseif ($user_avatar_remoteurl !== '' && count($avatar_sql) === 0 && !$error ) {
 			if (!preg_match("#^http:\/\/#i", $user_avatar_remoteurl) ) {
-				$user_avatar_remoteurl = "http://" . $user_avatar_remoteurl;
+				$user_avatar_remoteurl = 'http://' . $user_avatar_remoteurl;
 			}
 
 			if (preg_match("#^(http:\/\/[a-z0-9\-]+?\.([a-z0-9\-]+\.)*[a-z]+\/.*?\.(gif|jpg|png)$)#is", $user_avatar_remoteurl) ) {
                 $avatar_sql = ['user_avatar' => $user_avatar_remoteurl, 'user_avatar_type' =>USER_AVATAR_REMOTE];
 			} else {
 				$error = true;
-				$error_msg = !empty($error_msg) ? $error_msg . "<br />" . $lang['Wrong_remote_avatar_format'] : $lang['Wrong_remote_avatar_format'];
+				$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $lang['Wrong_remote_avatar_format'] : $lang['Wrong_remote_avatar_format'];
 			}
-		} elseif ($user_avatar_local !== "" && count($avatar_sql) === 0 && !$error ) {
+		} elseif ($user_avatar_local !== '' && count($avatar_sql) === 0 && !$error ) {
 		    $avatar_sql = [
 		        'user_avatar'      => ltrim(basename($user_avatar_category), "'") . '/' . ltrim(basename($user_avatar_local), "'"),
                 'user_avatar_type' => USER_AVATAR_GALLERY
@@ -588,7 +588,7 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
             }
 
             $message .= $lang['Admin_user_updated'];
-			$message .= '<br /><br />' . sprintf($lang['Click_return_useradmin'], '<a href="' . append_sid("admin_users.php") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');
+			$message .= '<br /><br />' . sprintf($lang['Click_return_useradmin'], '<a href="' . append_sid('admin_users.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		} else {
@@ -687,14 +687,14 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 		if (!$error ) {
 			$user_id = (int)$_POST['id'];
 
-            $template->set_filenames(["body" => "admin/user_avatar_gallery.tpl"]);
+            $template->set_filenames(['body' => 'admin/user_avatar_gallery.tpl']);
 
-            $dir = @opendir("../" . $board_config['avatar_gallery_path']);
+            $dir = @opendir('../' . $board_config['avatar_gallery_path']);
 
 			$avatar_images = [];
 			while ($file = @readdir($dir) ) {
-				if ($file !== "." && $file !== ".." && !is_file(phpbb_realpath("./../" . $board_config['avatar_gallery_path'] . "/" . $file)) && !is_link(phpbb_realpath("./../" . $board_config['avatar_gallery_path'] . "/" . $file)) ) {
-					$sub_dir = @opendir("../" . $board_config['avatar_gallery_path'] . "/" . $file);
+				if ($file !== '.' && $file !== '..' && !is_file(phpbb_realpath('./../' . $board_config['avatar_gallery_path'] . '/' . $file)) && !is_link(phpbb_realpath('./../' . $board_config['avatar_gallery_path'] . '/' . $file)) ) {
+					$sub_dir = @opendir('../' . $board_config['avatar_gallery_path'] . '/' . $file);
 
 					$avatar_row_count = 0;
 					$avatar_col_count = 0;
@@ -724,10 +724,10 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 
 			@reset($avatar_images);
 
-			$s_categories = "";
+			$s_categories = '';
 
 			foreach ($avatar_images as $key => $value) {
-				$selected = ( $key === $category ) ? "selected=\"selected\"" : "";
+				$selected = ( $key === $category ) ? 'selected="selected"' : '';
 
 				if (count($avatar_images[$key]) ) {
 					$s_categories .= '<option value="' . $key . '"' . $selected . '>' . ucfirst($key) . '</option>';
@@ -736,39 +736,39 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 
 			$s_colspan = 0;
 			foreach ($avatar_images[$category] as $avatar_image) {
-                $template->assign_block_vars("avatar_row", []);
+                $template->assign_block_vars('avatar_row', []);
 
                 $s_colspan = max($s_colspan, count($avatar_image));
 
 				foreach ($avatar_image as $avatar_image_value) {
-                    $template->assign_block_vars("avatar_row.avatar_column", [
-                            'AVATAR_IMAGE' => "../" . $board_config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_image_value
+                    $template->assign_block_vars('avatar_row.avatar_column', [
+                            'AVATAR_IMAGE' => '../' . $board_config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_image_value
                         ]
                     );
 
-                    $template->assign_block_vars("avatar_row.avatar_option_column", [
+                    $template->assign_block_vars('avatar_row.avatar_option_column', [
                             'S_OPTIONS_AVATAR' => $avatar_image_value
                         ]
                     );
                 }
 			}
 
-			$coppa = ( ( !$_POST['coppa'] && !$_GET['coppa'] ) || $mode === "register") ? 0 : TRUE;
+			$coppa = ( ( !$_POST['coppa'] && !$_GET['coppa'] ) || $mode === 'register') ? 0 : TRUE;
 
 			$s_hidden_fields = '<input type="hidden" name="mode" value="edit" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" /><input type="hidden" name="avatarcatname" value="' . $category . '" />';
 			$s_hidden_fields .= '<input type="hidden" name="id" value="' . $user_id . '" />';
 
-			$s_hidden_fields .= '<input type="hidden" name="username" value="' . str_replace("\"", "&quot;", $username) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="email" value="' . str_replace("\"", "&quot;", $email) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="icq" value="' . str_replace("\"", "&quot;", $icq) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="aim" value="' . str_replace("\"", "&quot;", $aim) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="msn" value="' . str_replace("\"", "&quot;", $msn) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="yim" value="' . str_replace("\"", "&quot;", $yim) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="website" value="' . str_replace("\"", "&quot;", $website) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="location" value="' . str_replace("\"", "&quot;", $location) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="occupation" value="' . str_replace("\"", "&quot;", $occupation) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="interests" value="' . str_replace("\"", "&quot;", $interests) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="signature" value="' . str_replace("\"", "&quot;", $signature) . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="username" value="' . str_replace('"', '&quot;', $username) . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="email" value="' . str_replace('"', '&quot;', $email) . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="icq" value="' . str_replace('"', '&quot;', $icq) . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="aim" value="' . str_replace('"', '&quot;', $aim) . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="msn" value="' . str_replace('"', '&quot;', $msn) . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="yim" value="' . str_replace('"', '&quot;', $yim) . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="website" value="' . str_replace('"', '&quot;', $website) . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="location" value="' . str_replace('"', '&quot;', $location) . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="occupation" value="' . str_replace('"', '&quot;', $occupation) . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="interests" value="' . str_replace('"', '&quot;', $interests) . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="signature" value="' . str_replace('"', '&quot;', $signature) . '" />';
 			$s_hidden_fields .= '<input type="hidden" name="viewemail" value="' . $viewemail . '" />';
 			$s_hidden_fields .= '<input type="hidden" name="notifypm" value="' . $notifypm . '" />';
 			$s_hidden_fields .= '<input type="hidden" name="popup_pm" value="' . $popuppm . '" />';
@@ -781,7 +781,7 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 			$s_hidden_fields .= '<input type="hidden" name="style" value="' . $user_style . '" />'; 
 			$s_hidden_fields .= '<input type="hidden" name="language" value="' . $user_lang . '" />';
 			$s_hidden_fields .= '<input type="hidden" name="timezone" value="' . $user_timezone . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="dateformat" value="' . str_replace("\"", "&quot;", $user_dateformat) . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="dateformat" value="' . str_replace('"', '&quot;', $user_dateformat) . '" />';
 
 			$s_hidden_fields .= '<input type="hidden" name="user_status" value="' . $user_status . '" />';
 			$s_hidden_fields .= '<input type="hidden" name="user_allowpm" value="' . $user_allowpm . '" />';
@@ -789,18 +789,18 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 			$s_hidden_fields .= '<input type="hidden" name="user_rank" value="' . $user_rank . '" />';
 
             $template->assign_vars([
-                    "L_USER_TITLE"     => $lang['User_admin'],
-                    "L_USER_EXPLAIN"   => $lang['User_admin_explain'],
-                    "L_AVATAR_GALLERY" => $lang['Avatar_gallery'],
-                    "L_SELECT_AVATAR"  => $lang['Select_avatar'],
-                    "L_RETURN_PROFILE" => $lang['Return_profile'],
-                    "L_CATEGORY"       => $lang['Select_category'],
-                    "L_GO"             => $lang['Go'],
+                'L_USER_TITLE'     => $lang['User_admin'],
+                'L_USER_EXPLAIN'   => $lang['User_admin_explain'],
+                'L_AVATAR_GALLERY' => $lang['Avatar_gallery'],
+                'L_SELECT_AVATAR'  => $lang['Select_avatar'],
+                'L_RETURN_PROFILE' => $lang['Return_profile'],
+                'L_CATEGORY'       => $lang['Select_category'],
+                'L_GO'             => $lang['Go'],
 
-                    "S_OPTIONS_CATEGORIES" => $s_categories,
-                    "S_COLSPAN"            => $s_colspan,
-                    "S_PROFILE_ACTION"     => append_sid("admin_users.php?mode=$mode"),
-                    "S_HIDDEN_FIELDS"      => $s_hidden_fields
+                'S_OPTIONS_CATEGORIES' => $s_categories,
+                'S_COLSPAN'            => $s_colspan,
+                'S_PROFILE_ACTION'     => append_sid("admin_users.php?mode=$mode"),
+                'S_HIDDEN_FIELDS'      => $s_hidden_fields
                 ]);
         }
     } else {
@@ -825,7 +825,7 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 					break;
 			}
 		} else {
-			$avatar = "";
+			$avatar = '';
 		}
 
 		$ranks = dibi::select('*')
@@ -841,7 +841,7 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 			$rank_select_box .= '<option value="' . $rank->rank_id . '"' . $selected . '>' . $rank->rank_title . '</option>';
 		}
 
-        $template->set_filenames(["body" => "admin/user_edit_body.tpl"]);
+        $template->set_filenames(['body' => 'admin/user_edit_body.tpl']);
 
         //
 		// Let's do an overall check for settings/versions which would prevent
@@ -954,7 +954,7 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
                 'S_FORM_ENCTYPE' => $form_enctype,
 
                 'HTML_STATUS' => $html_status,
-                'BBCODE_STATUS' => sprintf($bbcode_status, '<a href="../' . append_sid("faq.php?mode=bbcode") . '" target="_phpbbcode">', '</a>'),
+                'BBCODE_STATUS' => sprintf($bbcode_status, '<a href="../' . append_sid('faq.php?mode=bbcode') . '" target="_phpbbcode">', '</a>'),
                 'SMILIES_STATUS' => $smilies_status,
 
                 'L_DELETE_USER' => $lang['User_delete'],
@@ -962,7 +962,7 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
                 'L_SELECT_RANK' => $lang['Rank_title'],
 
                 'S_HIDDEN_FIELDS' => $s_hidden_fields,
-                'S_PROFILE_ACTION' => append_sid("admin_users.php")
+                'S_PROFILE_ACTION' => append_sid('admin_users.php')
             ]
 		);
 
@@ -1000,9 +1000,9 @@ else
             'L_LOOK_UP'       => $lang['Look_up_user'],
             'L_FIND_USERNAME' => $lang['Find_username'],
 
-            'U_SEARCH_USER' => append_sid("./../search.php?mode=searchuser"),
+            'U_SEARCH_USER' => append_sid('./../search.php?mode=searchuser'),
 
-            'S_USER_ACTION' => append_sid("admin_users.php"),
+            'S_USER_ACTION' => append_sid('admin_users.php'),
             'S_USER_SELECT' => $select_list
         ]
     );

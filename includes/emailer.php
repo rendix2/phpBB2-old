@@ -180,7 +180,7 @@ class emailer
 		$bcc = count($this->addresses['bcc']) ? implode(', ', $this->addresses['bcc']) : '';
 
 		// Build header
-		$this->extra_headers = (($this->reply_to !== '') ? "Reply-to: $this->reply_to\n" : '') . (($this->from !== '') ? "From: $this->from\n" : "From: " . $board_config['board_email'] . "\n") . "Return-Path: " . $board_config['board_email'] . "\nMessage-ID: <" . md5(uniqid(time())) . "@" . $board_config['server_name'] . ">\nMIME-Version: 1.0\nContent-type: text/plain; charset=" . $this->encoding . "\nContent-transfer-encoding: 8bit\nDate: " . date('r', time()) . "\nX-Priority: 3\nX-MSMail-Priority: Normal\nX-Mailer: PHP\nX-MimeOLE: Produced By phpBB2\n" . $this->extra_headers . (($cc != '') ? "Cc: $cc\n" : '')  . (($bcc != '') ? "Bcc: $bcc\n" : '');
+		$this->extra_headers = (($this->reply_to !== '') ? "Reply-to: $this->reply_to\n" : '') . (($this->from !== '') ? "From: $this->from\n" : 'From: ' . $board_config['board_email'] . "\n") . 'Return-Path: ' . $board_config['board_email'] . "\nMessage-ID: <" . md5(uniqid(time())) . '@' . $board_config['server_name'] . ">\nMIME-Version: 1.0\nContent-type: text/plain; charset=" . $this->encoding . "\nContent-transfer-encoding: 8bit\nDate: " . date('r', time()) . "\nX-Priority: 3\nX-MSMail-Priority: Normal\nX-Mailer: PHP\nX-MimeOLE: Produced By phpBB2\n" . $this->extra_headers . (($cc != '') ? "Cc: $cc\n" : '')  . (($bcc != '') ? "Bcc: $bcc\n" : '');
 
 		// Send message ... removed $this->encode() from subject for time being
 		if ( $this->use_smtp ) {
@@ -226,7 +226,7 @@ class emailer
 		}
 
 		// define start delimimter, end delimiter and spacer
-		$end = "?=";
+		$end = '?=';
 		$start = "=?$this->encoding?B?";
 		$spacer = "$end\r\n $start";
 
@@ -246,10 +246,10 @@ class emailer
 	//
 	// Attach files via MIME.
 	//
-	function attachFile($filename, $mimetype = "application/octet-stream", $szFromAddress, $szFilenameToDisplay)
+	function attachFile($filename, $mimetype = 'application/octet-stream', $szFromAddress, $szFilenameToDisplay)
 	{
 		global $lang;
-		$mime_boundary = "--==================_846811060==_";
+		$mime_boundary = '--==================_846811060==_';
 
 		$this->msg = '--' . $mime_boundary . "\nContent-Type: text/plain;\n\tcharset=\"" . $lang['ENCODING'] . "\"\n\n" . $this->msg;
 
@@ -258,34 +258,34 @@ class emailer
 			$encoded = $this->encode_file($filename);
 		}
 
-		$fd = fopen($filename, "r");
+		$fd = fopen($filename, 'r');
 		$contents = fread($fd, filesize($filename));
 
-		$this->mimeOut = "--" . $mime_boundary . "\n";
-		$this->mimeOut .= "Content-Type: " . $mimetype . ";\n\tname=\"$szFilenameToDisplay\"\n";
+		$this->mimeOut = '--' . $mime_boundary . "\n";
+		$this->mimeOut .= 'Content-Type: ' . $mimetype . ";\n\tname=\"$szFilenameToDisplay\"\n";
 		$this->mimeOut .= "Content-Transfer-Encoding: quoted-printable\n";
 		$this->mimeOut .= "Content-Disposition: attachment;\n\tfilename=\"$szFilenameToDisplay\"\n\n";
 
-		if ( $mimetype === "message/rfc822" ) {
-			$this->mimeOut .= "From: ".$szFromAddress."\n";
-			$this->mimeOut .= "To: ".$this->emailAddress."\n";
-			$this->mimeOut .= "Date: ".date("D, d M Y H:i:s") . " UT\n";
-			$this->mimeOut .= "Reply-To:".$szFromAddress."\n";
-			$this->mimeOut .= "Subject: ".$this->mailSubject."\n";
-			$this->mimeOut .= "X-Mailer: PHP/". PHP_VERSION ."\n";
+		if ( $mimetype === 'message/rfc822') {
+			$this->mimeOut .= 'From: ' .$szFromAddress."\n";
+			$this->mimeOut .= 'To: ' .$this->emailAddress."\n";
+			$this->mimeOut .= 'Date: ' .date('D, d M Y H:i:s') . " UT\n";
+			$this->mimeOut .= 'Reply-To:' .$szFromAddress."\n";
+			$this->mimeOut .= 'Subject: ' .$this->mailSubject."\n";
+			$this->mimeOut .= 'X-Mailer: PHP/' . PHP_VERSION ."\n";
 			$this->mimeOut .= "MIME-Version: 1.0\n";
 		}
 
 		$this->mimeOut .= $contents."\n";
-		$this->mimeOut .= "--" . $mime_boundary . "--" . "\n";
+		$this->mimeOut .= '--' . $mime_boundary . '--' . "\n";
 
 		return $out;
 		// added -- to notify email client attachment is done
 	}
 
-	function getMimeHeaders($filename, $mime_filename="")
+	function getMimeHeaders($filename, $mime_filename= '')
 	{
-		$mime_boundary = "--==================_846811060==_";
+		$mime_boundary = '--==================_846811060==_';
 
 		if ($mime_filename) {
 			$filename = $mime_filename;
@@ -294,7 +294,7 @@ class emailer
 		$out = "MIME-Version: 1.0\n";
 		$out .= "Content-Type: multipart/mixed;\n\tboundary=\"$mime_boundary\"\n\n";
 		$out .= "This message is in MIME format. Since your mail reader does not understand\n";
-		$out .= "this format, some or all of this message may not be legible.";
+		$out .= 'this format, some or all of this message may not be legible.';
 
 		return $out;
 	}
@@ -306,7 +306,7 @@ class emailer
 	{
 		$stmp = $str;
 		$len = strlen($stmp);
-		$out = "";
+		$out = '';
 
 		while ($len > 0) {
 			if ($len >= 76) {
@@ -315,7 +315,7 @@ class emailer
 				$len  -= 76;
 			} else {
 				$out .= $stmp . "\r\n";
-				$stmp = "";
+				$stmp = '';
 				$len = 0;
 			}
 		}
@@ -328,7 +328,7 @@ class emailer
 	function encode_file($sourcefile)
 	{
 		if (is_readable(phpbb_realpath($sourcefile))) {
-		    $fd = fopen($sourcefile, "r");
+		    $fd = fopen($sourcefile, 'r');
 			$contents = fread($fd, filesize($sourcefile));
 	        $encoded = $this->myChunkSplit(base64_encode($contents));
 

@@ -20,10 +20,10 @@
  ***************************************************************************/
 
 if (!defined('IN_PHPBB')) {
-	die("Hacking attempt");
+	die('Hacking attempt');
 }
 
-define("BBCODE_UID_LEN", 10);
+define('BBCODE_UID_LEN', 10);
 
 // global that holds loaded-and-prepared bbcode templates, so we only have to do
 // that stuff once.
@@ -108,7 +108,7 @@ function prepare_bbcode_template($bbcode_tpl)
 
 	$bbcode_tpl['email'] = str_replace('{EMAIL}', '\\1', $bbcode_tpl['email']);
 
-	define("BBCODE_TPL_READY", true);
+	define('BBCODE_TPL_READY', true);
 
 	return $bbcode_tpl;
 }
@@ -127,17 +127,17 @@ function bbencode_second_pass($text, $uid)
 
 	// pad it with a space so we can distinguish between FALSE and matching the 1st char (index 0).
 	// This is important; bbencode_quote(), bbencode_list(), and bbencode_code() all depend on it.
-	$text = " " . $text;
+	$text = ' ' . $text;
 
 	// First: If there isn't a "[" and a "]" in the message, don't bother.
-	if (! (strpos($text, "[") && strpos($text, "]")) ) {
+	if (! (strpos($text, '[') && strpos($text, ']')) ) {
 		// Remove padding, return.
 		$text = substr($text, 1);
 		return $text;
 	}
 
 	// Only load the templates ONCE..
-	if (!defined("BBCODE_TPL_READY")) {
+	if (!defined('BBCODE_TPL_READY')) {
 		// load templates from file into array.
 		$bbcode_tpl = load_bbcode_template();
 
@@ -246,7 +246,7 @@ function bbencode_first_pass($text, $uid)
 {
 	// pad it with a space so we can distinguish between FALSE and matching the 1st char (index 0).
 	// This is important; bbencode_quote(), bbencode_list(), and bbencode_code() all depend on it.
-	$text = " " . $text;
+	$text = ' ' . $text;
 
 	// [CODE] and [/CODE] for posting code (HTML, PHP, C etc etc) in your posts.
 	$text = bbencode_first_pass_pda($text, $uid, '[code]', '[/code]', '', true, '');
@@ -257,16 +257,16 @@ function bbencode_first_pass($text, $uid)
 
 	// [list] and [list=x] for (un)ordered lists.
 	$open_tag = [];
-	$open_tag[0] = "[list]";
+	$open_tag[0] = '[list]';
 
 	// unordered..
-	$text = bbencode_first_pass_pda($text, $uid, $open_tag, "[/list]", "[/list:u]", false, 'replace_listitems');
+	$text = bbencode_first_pass_pda($text, $uid, $open_tag, '[/list]', '[/list:u]', false, 'replace_listitems');
 
-	$open_tag[0] = "[list=1]";
-	$open_tag[1] = "[list=a]";
+	$open_tag[0] = '[list=1]';
+	$open_tag[1] = '[list=a]';
 
 	// ordered.
-	$text = bbencode_first_pass_pda($text, $uid, $open_tag, "[/list]", "[/list:o]",  false, 'replace_listitems');
+	$text = bbencode_first_pass_pda($text, $uid, $open_tag, '[/list]', '[/list:o]',  false, 'replace_listitems');
 
 	// [color] and [/color] for setting text color
 	$text = preg_replace("#\[color=(\#[0-9A-F]{6}|[a-z\-]+)\](.*?)\[/color\]#si", "[color=\\1:$uid]\\2[/color:$uid]", $text);
@@ -357,20 +357,20 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 	}
 
 	if ($mark_lowest_level && $open_is_regexp) {
-		message_die(GENERAL_ERROR, "Unsupported operation for bbcode_first_pass_pda().");
+		message_die(GENERAL_ERROR, 'Unsupported operation for bbcode_first_pass_pda().');
 	}
 
 	// Start at the 2nd char of the string, looking for opening tags.
 	$curr_pos = 1;
 	while ($curr_pos && ($curr_pos < strlen($text))) {
-		$curr_pos = strpos($text, "[", $curr_pos);
+		$curr_pos = strpos($text, '[', $curr_pos);
 
 		// If not found, $curr_pos will be 0, and the loop will end.
 		if ($curr_pos) {
 			// We found a [. It starts at $curr_pos.
 			// check if it's a starting or ending tag.
 			$found_start = false;
-			$which_start_tag = "";
+			$which_start_tag = '';
 			$start_tag_index = -1;
 
 			for ($i = 0; $i < $open_tag_count; $i++) {
@@ -413,7 +413,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 			if ($found_start) {
 				// We have an opening tag.
 				// Push its position, the text we matched, and its index in the open_tag array on to the stack, and then keep going to the right.
-                $match   = ["pos" => $curr_pos, "tag" => $which_start_tag, "index" => $start_tag_index];
+                $match   = ['pos' => $curr_pos, 'tag' => $which_start_tag, 'index' => $start_tag_index];
                 $stack[] = $match;
 				//
 				// Rather than just increment $curr_pos
@@ -532,15 +532,15 @@ function bbencode_second_pass_code($text, $uid, $bbcode_tpl)
 		$after_replace = $matches[1][$i];
 
 		// Replace 2 spaces with "&nbsp; " so non-tabbed code indents without making huge long lines.
-		$after_replace = str_replace("  ", "&nbsp; ", $after_replace);
+		$after_replace = str_replace('  ', '&nbsp; ', $after_replace);
 		// now Replace 2 spaces with " &nbsp;" to catch odd #s of spaces.
-		$after_replace = str_replace("  ", " &nbsp;", $after_replace);
+		$after_replace = str_replace('  ', ' &nbsp;', $after_replace);
 
 		// Replace tabs with "&nbsp; &nbsp;" so tabbed code indents sorta right without making huge long lines.
-		$after_replace = str_replace("\t", "&nbsp; &nbsp;", $after_replace);
+		$after_replace = str_replace("\t", '&nbsp; &nbsp;', $after_replace);
 
 		// now Replace space occurring at the beginning of a line
-		$after_replace = preg_replace("/^ {1}/m", '&nbsp;', $after_replace);
+		$after_replace = preg_replace('/^ {1}/m', '&nbsp;', $after_replace);
 
 		$str_to_match = "[code:1:$uid]" . $before_replace . "[/code:1:$uid]";
 
@@ -608,8 +608,8 @@ function make_clickable($text)
  */
 function undo_make_clickable($text)
 {
-	$text = preg_replace("#<!-- BBCode auto-link start --><a href=\"(.*?)\" target=\"_blank\">.*?</a><!-- BBCode auto-link end -->#i", "\\1", $text);
-	$text = preg_replace("#<!-- BBcode auto-mailto start --><a href=\"mailto:(.*?)\">.*?</a><!-- BBCode auto-mailto end -->#i", "\\1", $text);
+	$text = preg_replace('#<!-- BBCode auto-link start --><a href="(.*?)" target="_blank">.*?</a><!-- BBCode auto-link end -->#i', "\\1", $text);
+	$text = preg_replace('#<!-- BBcode auto-mailto start --><a href="mailto:(.*?)">.*?</a><!-- BBCode auto-mailto end -->#i', "\\1", $text);
 
 	return $text;
 
@@ -623,7 +623,7 @@ function undo_make_clickable($text)
  */
 function replace_listitems($text, $uid)
 {
-	$text = str_replace("[*]", "[*:$uid]", $text);
+	$text = str_replace('[*]', "[*:$uid]", $text);
 
 	return $text;
 }
@@ -648,7 +648,7 @@ function smilies_pass($message)
 			usort($smilies, 'smiley_sort');
 
 			foreach ($smilies as $smiley) {
-                $orig[] = "/(?<=.\W|\W.|^\W)" . preg_quote($smiley->code, "/") . "(?=.\W|\W.|\W$)/";
+                $orig[] = "/(?<=.\W|\W.|^\W)" . preg_quote($smiley->code, '/') . "(?=.\W|\W.|\W$)/";
                 $repl[] = '<img src="'. $board_config['smilies_path'] . '/' . $smiley->smile_url . '" alt="' . $smiley->emoticon . '" border="0" />';
             }
 		}

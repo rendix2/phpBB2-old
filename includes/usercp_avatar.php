@@ -80,7 +80,7 @@ function user_avatar_gallery($mode, &$error, &$error_msg, $avatar_filename, $ava
         return [];
     }
 
-    if ($avatar_filename === "" || $avatar_category === "") {
+    if ($avatar_filename === '' || $avatar_category === '') {
         return [];
     }
 
@@ -134,7 +134,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 		}
 
 		@fwrite($fsock, "GET $base_get HTTP/1.1\r\n");
-		@fwrite($fsock, "HOST: " . $url_ary[2] . "\r\n");
+		@fwrite($fsock, 'HOST: ' . $url_ary[2] . "\r\n");
 		@fwrite($fsock, "Connection: close\r\n\r\n");
 
 		unset($avatar_data);
@@ -288,7 +288,7 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 			while ($sub_file = @readdir($sub_dir) ) {
 				if (preg_match('/(\.gif$|\.png$|\.jpg|\.jpeg)$/is', $sub_file) ) {
 					$avatar_images[$file][$avatar_row_count][$avatar_col_count] = $sub_file;
-					$avatar_name[$file][$avatar_row_count][$avatar_col_count] = ucfirst(str_replace("_", " ", preg_replace('/^(.*)\..*$/', '\1', $sub_file)));
+					$avatar_name[$file][$avatar_row_count][$avatar_col_count] = ucfirst(str_replace('_', ' ', preg_replace('/^(.*)\..*$/', '\1', $sub_file)));
 
 					$avatar_col_count++;
 
@@ -327,21 +327,21 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 	$s_colspan = 0;
 
 	foreach ($avatar_images[$category] as $i => $avatar_image) {
-		$template->assign_block_vars("avatar_row", []);
+		$template->assign_block_vars('avatar_row', []);
 
 		$s_colspan = max($s_colspan, count($avatar_image));
 
 		foreach ($avatar_image as $j =>  $avatar_image_value) {
             $template->assign_block_vars('avatar_row.avatar_column',
                 [
-                    "AVATAR_IMAGE" => $board_config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_image_value,
-                    "AVATAR_NAME"  => $avatar_name[$category][$i][$j]
+                    'AVATAR_IMAGE' => $board_config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_image_value,
+                    'AVATAR_NAME'  => $avatar_name[$category][$i][$j]
                 ]
             );
 
             $template->assign_block_vars('avatar_row.avatar_option_column',
                 [
-                    "S_OPTIONS_AVATAR" => $avatar_image_value
+                    'S_OPTIONS_AVATAR' => $avatar_image_value
                 ]
             );
         }

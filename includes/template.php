@@ -28,7 +28,7 @@
  */
 
 class Template {
-	var $classname = "Template";
+	var $classname = 'Template';
 
 	// variable that holds all the data we'll be substituting into
 	// the compiled templates.
@@ -43,7 +43,7 @@ class Template {
 	var $files = [];
 
 	// Root template directory.
-	var $root = "";
+	var $root = '';
 
 	// this will hash handle names to the compiled code for that handle.
 	var $compiled_code = [];
@@ -55,7 +55,7 @@ class Template {
 	 * Constructor. Simply sets the root dir.
 	 *
 	 */
-	function Template($root = ".")
+	function Template($root = '.')
 	{
 		$this->set_rootdir($root);
 	}
@@ -141,7 +141,7 @@ class Template {
 		}
 
 		// Compile it, with the "no echo statements" option on.
-		$_str = "";
+		$_str = '';
 		$code = $this->compile($this->uncompiled_code[$handle], true, '_str');
 
 		// evaluate the variable assignment.
@@ -258,7 +258,7 @@ class Template {
 
 		$filename = $this->files[$handle];
 
-		$str = implode("", @file($filename));
+		$str = implode('', @file($filename));
 		if (empty($str))
 		{
 			die("Template->loadfile(): File $filename for handle $handle is empty");
@@ -307,7 +307,7 @@ class Template {
 
 		$block_nesting_level = 0;
 		$block_names = [];
-		$block_names[0] = ".";
+		$block_names[0] = '.';
 
 		// Second: prepend echo ', append ' . "\n"; to each line.
 		$line_count = count($code_lines);
@@ -401,7 +401,7 @@ class Template {
 				}
 				else
 				{
-					$code_lines[$i] = '$' . $retvar . '.= \'' . $code_lines[$i] . '\' . "\\n";'; 
+					$code_lines[$i] = '$' . $retvar . '.= \'' . $code_lines[$i] . '\' . "\\n";';
 				}
 			}
 		}
@@ -450,7 +450,7 @@ class Template {
 	function generate_block_data_ref($blockname, $include_last_iterator)
 	{
 		// Get an array of the blocks involved.
-		$blocks = explode(".", $blockname);
+		$blocks = explode('.', $blockname);
 		$blockcount = count($blocks) - 1;
 		$varref = '$this->_tpldata';
 		// Build up the string with everything but the last child.

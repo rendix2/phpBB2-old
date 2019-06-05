@@ -98,16 +98,16 @@ init_userprefs($userdata);
 //
 if (isset($_POST['cancel'])) {
     if ($post_id) {
-        $redirect    = "viewtopic.php?" . POST_POST_URL . "=$post_id";
+        $redirect    = 'viewtopic.php?' . POST_POST_URL . "=$post_id";
         $post_append = "#$post_id";
     } elseif ($topic_id) {
-        $redirect    = "viewtopic.php?" . POST_TOPIC_URL . "=$topic_id";
+        $redirect    = 'viewtopic.php?' . POST_TOPIC_URL . "=$topic_id";
         $post_append = '';
     } elseif ($forum_id) {
-        $redirect    = "viewforum.php?" . POST_FORUM_URL . "=$forum_id";
+        $redirect    = 'viewforum.php?' . POST_FORUM_URL . "=$forum_id";
         $post_append = '';
     } else {
-        $redirect    = "index.php";
+        $redirect    = 'index.php';
         $post_append = '';
     }
 
@@ -327,7 +327,7 @@ if ($post_info) {
 		//
         if ($post_info->poster_id !== $userdata['user_id'] && !$is_auth['auth_mod']) {
 			$message = ( $delete || $mode === 'delete' ) ? $lang['Delete_own_posts'] : $lang['Edit_own_posts'];
-			$message .= '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id") . '">', '</a>');
+			$message .= '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . append_sid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id") . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
         } elseif (!$post_data['last_post'] && !$is_auth['auth_mod'] && ($mode === 'delete' || $delete)) {
@@ -366,25 +366,25 @@ if ($post_info) {
 //
 if (!$is_auth[$is_auth_type]) {
     if ($userdata['session_logged_in']) {
-        message_die(GENERAL_MESSAGE, sprintf($lang['Sorry_' . $is_auth_type], $is_auth[$is_auth_type . "_type"]));
+        message_die(GENERAL_MESSAGE, sprintf($lang['Sorry_' . $is_auth_type], $is_auth[$is_auth_type . '_type']));
     }
 
 	switch( $mode )
 	{
 		case 'newtopic':
-			$redirect = "mode=newtopic&" . POST_FORUM_URL . "=" . $forum_id;
+			$redirect = 'mode=newtopic&' . POST_FORUM_URL . '=' . $forum_id;
 			break;
 		case 'reply':
 		case 'topicreview':
-			$redirect = "mode=reply&" . POST_TOPIC_URL . "=" . $topic_id;
+			$redirect = 'mode=reply&' . POST_TOPIC_URL . '=' . $topic_id;
 			break;
 		case 'quote':
 		case 'editpost':
-			$redirect = "mode=quote&" . POST_POST_URL ."=" . $post_id;
+			$redirect = 'mode=quote&' . POST_POST_URL . '=' . $post_id;
 			break;
 	}
 
-	redirect(append_sid("login.php?redirect=posting.php&" . $redirect, true));
+	redirect(append_sid('login.php?redirect=posting.php&' . $redirect, true));
 }
 
 //
@@ -466,7 +466,7 @@ if (($delete || $poll_delete || $mode === 'delete') && !$confirm) {
 	// Confirm deletion
 	//
 	$s_hidden_fields = '<input type="hidden" name="' . POST_POST_URL . '" value="' . $post_id . '" />';
-	$s_hidden_fields .= ( $delete || $mode === "delete" ) ? '<input type="hidden" name="mode" value="delete" />' : '<input type="hidden" name="mode" value="poll_delete" />';
+	$s_hidden_fields .= ( $delete || $mode === 'delete') ? '<input type="hidden" name="mode" value="delete" />' : '<input type="hidden" name="mode" value="poll_delete" />';
 	$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
 	$l_confirm = ( $delete || $mode === 'delete' ) ? $lang['Confirm_delete'] : $lang['Confirm_delete_poll'];
@@ -486,7 +486,7 @@ if (($delete || $poll_delete || $mode === 'delete') && !$confirm) {
             'L_YES' => $lang['Yes'],
             'L_NO'  => $lang['No'],
 
-            'S_CONFIRM_ACTION' => append_sid("posting.php"),
+            'S_CONFIRM_ACTION' => append_sid('posting.php'),
             'S_HIDDEN_FIELDS'  => $s_hidden_fields
         ]
     );
@@ -499,7 +499,7 @@ if (($delete || $poll_delete || $mode === 'delete') && !$confirm) {
     // Vote in a poll
     //
     if (empty($_POST['vote_id'])) {
-        redirect(append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id", true));
+        redirect(append_sid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id", true));
     }
 
     $vote_option_id = (int)$_POST['vote_id'];
@@ -546,12 +546,12 @@ if (($delete || $poll_delete || $mode === 'delete') && !$confirm) {
 
     $template->assign_vars(
         [
-            'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id") . '">'
+            'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id") . '">'
         ]
     );
 
     $message = $lang['Vote_cast'];
-    $message .= '<br /><br />' . sprintf($lang['Click_view_message'], '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id") . '">', '</a>');
+    $message .= '<br /><br />' . sprintf($lang['Click_view_message'], '<a href="' . append_sid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id") . '">', '</a>');
 
     message_die(GENERAL_MESSAGE, $message);
 
@@ -948,7 +948,7 @@ $template->assign_vars(
         'L_POST_A'       => $page_title,
         'L_POST_SUBJECT' => $lang['Post_subject'],
 
-        'U_VIEW_FORUM' => append_sid("viewforum.php?" . POST_FORUM_URL . "=$forum_id")
+        'U_VIEW_FORUM' => append_sid('viewforum.php?' . POST_FORUM_URL . "=$forum_id")
     ]
 );
 
@@ -962,81 +962,81 @@ $template->assign_block_vars('switch_not_privmsg', []);
 // Output the data to the template
 //
 $template->assign_vars([
-        'USERNAME'       => $username,
-        'SUBJECT'        => $subject,
-        'MESSAGE'        => $message,
-        'HTML_STATUS'    => $html_status,
-        'BBCODE_STATUS'  => sprintf($bbcode_status, '<a href="' . append_sid("faq.php?mode=bbcode") . '" target="_phpbbcode">', '</a>'),
-        'SMILIES_STATUS' => $smilies_status,
+    'USERNAME'       => $username,
+    'SUBJECT'        => $subject,
+    'MESSAGE'        => $message,
+    'HTML_STATUS'    => $html_status,
+    'BBCODE_STATUS'  => sprintf($bbcode_status, '<a href="' . append_sid('faq.php?mode=bbcode') . '" target="_phpbbcode">', '</a>'),
+    'SMILIES_STATUS' => $smilies_status,
 
-        'L_SUBJECT'          => $lang['Subject'],
-        'L_MESSAGE_BODY'     => $lang['Message_body'],
-        'L_OPTIONS'          => $lang['Options'],
-        'L_PREVIEW'          => $lang['Preview'],
-        'L_SPELLCHECK'       => $lang['Spellcheck'],
-        'L_SUBMIT'           => $lang['Submit'],
-        'L_CANCEL'           => $lang['Cancel'],
-        'L_CONFIRM_DELETE'   => $lang['Confirm_delete'],
-        'L_DISABLE_HTML'     => $lang['Disable_HTML_post'],
-        'L_DISABLE_BBCODE'   => $lang['Disable_BBCode_post'],
-        'L_DISABLE_SMILIES'  => $lang['Disable_Smilies_post'],
-        'L_ATTACH_SIGNATURE' => $lang['Attach_signature'],
-        'L_NOTIFY_ON_REPLY'  => $lang['Notify'],
-        'L_DELETE_POST'      => $lang['Delete_post'],
+    'L_SUBJECT'          => $lang['Subject'],
+    'L_MESSAGE_BODY'     => $lang['Message_body'],
+    'L_OPTIONS'          => $lang['Options'],
+    'L_PREVIEW'          => $lang['Preview'],
+    'L_SPELLCHECK'       => $lang['Spellcheck'],
+    'L_SUBMIT'           => $lang['Submit'],
+    'L_CANCEL'           => $lang['Cancel'],
+    'L_CONFIRM_DELETE'   => $lang['Confirm_delete'],
+    'L_DISABLE_HTML'     => $lang['Disable_HTML_post'],
+    'L_DISABLE_BBCODE'   => $lang['Disable_BBCode_post'],
+    'L_DISABLE_SMILIES'  => $lang['Disable_Smilies_post'],
+    'L_ATTACH_SIGNATURE' => $lang['Attach_signature'],
+    'L_NOTIFY_ON_REPLY'  => $lang['Notify'],
+    'L_DELETE_POST'      => $lang['Delete_post'],
 
-        'L_BBCODE_B_HELP' => $lang['bbcode_b_help'],
-        'L_BBCODE_I_HELP' => $lang['bbcode_i_help'],
-        'L_BBCODE_U_HELP' => $lang['bbcode_u_help'],
-        'L_BBCODE_Q_HELP' => $lang['bbcode_q_help'],
-        'L_BBCODE_C_HELP' => $lang['bbcode_c_help'],
-        'L_BBCODE_L_HELP' => $lang['bbcode_l_help'],
-        'L_BBCODE_O_HELP' => $lang['bbcode_o_help'],
-        'L_BBCODE_P_HELP' => $lang['bbcode_p_help'],
-        'L_BBCODE_W_HELP' => $lang['bbcode_w_help'],
-        'L_BBCODE_A_HELP' => $lang['bbcode_a_help'],
-        'L_BBCODE_S_HELP' => $lang['bbcode_s_help'],
-        'L_BBCODE_F_HELP' => $lang['bbcode_f_help'],
-        'L_EMPTY_MESSAGE' => $lang['Empty_message'],
+    'L_BBCODE_B_HELP' => $lang['bbcode_b_help'],
+    'L_BBCODE_I_HELP' => $lang['bbcode_i_help'],
+    'L_BBCODE_U_HELP' => $lang['bbcode_u_help'],
+    'L_BBCODE_Q_HELP' => $lang['bbcode_q_help'],
+    'L_BBCODE_C_HELP' => $lang['bbcode_c_help'],
+    'L_BBCODE_L_HELP' => $lang['bbcode_l_help'],
+    'L_BBCODE_O_HELP' => $lang['bbcode_o_help'],
+    'L_BBCODE_P_HELP' => $lang['bbcode_p_help'],
+    'L_BBCODE_W_HELP' => $lang['bbcode_w_help'],
+    'L_BBCODE_A_HELP' => $lang['bbcode_a_help'],
+    'L_BBCODE_S_HELP' => $lang['bbcode_s_help'],
+    'L_BBCODE_F_HELP' => $lang['bbcode_f_help'],
+    'L_EMPTY_MESSAGE' => $lang['Empty_message'],
 
-        'L_FONT_COLOR'      => $lang['Font_color'],
-        'L_COLOR_DEFAULT'   => $lang['color_default'],
-        'L_COLOR_DARK_RED'  => $lang['color_dark_red'],
-        'L_COLOR_RED'       => $lang['color_red'],
-        'L_COLOR_ORANGE'    => $lang['color_orange'],
-        'L_COLOR_BROWN'     => $lang['color_brown'],
-        'L_COLOR_YELLOW'    => $lang['color_yellow'],
-        'L_COLOR_GREEN'     => $lang['color_green'],
-        'L_COLOR_OLIVE'     => $lang['color_olive'],
-        'L_COLOR_CYAN'      => $lang['color_cyan'],
-        'L_COLOR_BLUE'      => $lang['color_blue'],
-        'L_COLOR_DARK_BLUE' => $lang['color_dark_blue'],
-        'L_COLOR_INDIGO'    => $lang['color_indigo'],
-        'L_COLOR_VIOLET'    => $lang['color_violet'],
-        'L_COLOR_WHITE'     => $lang['color_white'],
-        'L_COLOR_BLACK'     => $lang['color_black'],
+    'L_FONT_COLOR'      => $lang['Font_color'],
+    'L_COLOR_DEFAULT'   => $lang['color_default'],
+    'L_COLOR_DARK_RED'  => $lang['color_dark_red'],
+    'L_COLOR_RED'       => $lang['color_red'],
+    'L_COLOR_ORANGE'    => $lang['color_orange'],
+    'L_COLOR_BROWN'     => $lang['color_brown'],
+    'L_COLOR_YELLOW'    => $lang['color_yellow'],
+    'L_COLOR_GREEN'     => $lang['color_green'],
+    'L_COLOR_OLIVE'     => $lang['color_olive'],
+    'L_COLOR_CYAN'      => $lang['color_cyan'],
+    'L_COLOR_BLUE'      => $lang['color_blue'],
+    'L_COLOR_DARK_BLUE' => $lang['color_dark_blue'],
+    'L_COLOR_INDIGO'    => $lang['color_indigo'],
+    'L_COLOR_VIOLET'    => $lang['color_violet'],
+    'L_COLOR_WHITE'     => $lang['color_white'],
+    'L_COLOR_BLACK'     => $lang['color_black'],
 
-        'L_FONT_SIZE'   => $lang['Font_size'],
-        'L_FONT_TINY'   => $lang['font_tiny'],
-        'L_FONT_SMALL'  => $lang['font_small'],
-        'L_FONT_NORMAL' => $lang['font_normal'],
-        'L_FONT_LARGE'  => $lang['font_large'],
-        'L_FONT_HUGE'   => $lang['font_huge'],
+    'L_FONT_SIZE'   => $lang['Font_size'],
+    'L_FONT_TINY'   => $lang['font_tiny'],
+    'L_FONT_SMALL'  => $lang['font_small'],
+    'L_FONT_NORMAL' => $lang['font_normal'],
+    'L_FONT_LARGE'  => $lang['font_large'],
+    'L_FONT_HUGE'   => $lang['font_huge'],
 
-        'L_BBCODE_CLOSE_TAGS' => $lang['Close_Tags'],
-        'L_STYLES_TIP'        => $lang['Styles_tip'],
+    'L_BBCODE_CLOSE_TAGS' => $lang['Close_Tags'],
+    'L_STYLES_TIP'        => $lang['Styles_tip'],
 
-        'U_VIEWTOPIC'    => $mode === 'reply' ? append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;postorder=desc") : '',
-        'U_REVIEW_TOPIC' => $mode === 'reply' ? append_sid("posting.php?mode=topicreview&amp;" . POST_TOPIC_URL . "=$topic_id") : '',
+    'U_VIEWTOPIC'    => $mode === 'reply' ? append_sid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;postorder=desc") : '',
+    'U_REVIEW_TOPIC' => $mode === 'reply' ? append_sid('posting.php?mode=topicreview&amp;' . POST_TOPIC_URL . "=$topic_id") : '',
 
-        'S_HTML_CHECKED'       => (!$html_on) ? 'checked="checked"' : '',
-        'S_BBCODE_CHECKED'     => (!$bbcode_on) ? 'checked="checked"' : '',
-        'S_SMILIES_CHECKED'    => (!$smilies_on) ? 'checked="checked"' : '',
-        'S_SIGNATURE_CHECKED'  => $attach_sig ? 'checked="checked"' : '',
-        'S_NOTIFY_CHECKED'     => $notify_user ? 'checked="checked"' : '',
-        'S_TYPE_TOGGLE'        => $topic_type_toggle,
-        'S_TOPIC_ID'           => $topic_id,
-        'S_POST_ACTION'        => append_sid("posting.php"),
-        'S_HIDDEN_FORM_FIELDS' => $hidden_form_fields
+    'S_HTML_CHECKED'       => (!$html_on) ? 'checked="checked"' : '',
+    'S_BBCODE_CHECKED'     => (!$bbcode_on) ? 'checked="checked"' : '',
+    'S_SMILIES_CHECKED'    => (!$smilies_on) ? 'checked="checked"' : '',
+    'S_SIGNATURE_CHECKED'  => $attach_sig ? 'checked="checked"' : '',
+    'S_NOTIFY_CHECKED'     => $notify_user ? 'checked="checked"' : '',
+    'S_TYPE_TOGGLE'        => $topic_type_toggle,
+    'S_TOPIC_ID'           => $topic_id,
+    'S_POST_ACTION'        => append_sid('posting.php'),
+    'S_HIDDEN_FORM_FIELDS' => $hidden_form_fields
     ]);
 
 //

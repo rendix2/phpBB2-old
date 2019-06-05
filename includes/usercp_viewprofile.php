@@ -22,7 +22,7 @@
  ***************************************************************************/
 
 if ( !defined('IN_PHPBB') ) {
-	die("Hacking attempt");
+	die('Hacking attempt');
 }
 
 if ( empty($_GET[POST_USERS_URL]) || $_GET[POST_USERS_URL] === ANONYMOUS ) {
@@ -97,12 +97,12 @@ if ($profile_data['user_rank'] ) {
     }
 }
 
-$temp_url = append_sid("privmsg.php?mode=post&amp;" . POST_USERS_URL . "=" . $profile_data['user_id']);
+$temp_url = append_sid('privmsg.php?mode=post&amp;' . POST_USERS_URL . '=' . $profile_data['user_id']);
 $pm_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
 $pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
 
 if ( !empty($profile_data['user_viewemail']) || $userdata['user_level'] === ADMIN ) {
-	$email_uri = $board_config['board_email_form'] ? append_sid("profile.php?mode=email&amp;" . POST_USERS_URL .'=' . $profile_data['user_id']) : 'mailto:' . $profile_data['user_email'];
+	$email_uri = $board_config['board_email_form'] ? append_sid('profile.php?mode=email&amp;' . POST_USERS_URL .'=' . $profile_data['user_id']) : 'mailto:' . $profile_data['user_email'];
 
 	$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
 	$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
@@ -133,7 +133,7 @@ $msn = $msn_img;
 $yim_img = $profile_data['user_yim'] ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $profile_data['user_yim'] . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
 $yim = $profile_data['user_yim'] ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $profile_data['user_yim'] . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
 
-$temp_url = append_sid("search.php?search_author=" . urlencode($profile_data['username']) . "&amp;showresults=posts");
+$temp_url = append_sid('search.php?search_author=' . urlencode($profile_data['username']) . '&amp;showresults=posts');
 $search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $profile_data['username']) . '" title="' . sprintf($lang['Search_user_posts'], $profile_data['username']) . '" border="0" /></a>';
 $search = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $profile_data['username']) . '</a>';
 
@@ -203,9 +203,9 @@ $template->assign_vars(array(
         'L_OCCUPATION' => $lang['Occupation'],
         'L_INTERESTS' => $lang['Interests'],
 
-        'U_SEARCH_USER' => append_sid("search.php?search_author=" . $u_search_author),
+        'U_SEARCH_USER' => append_sid('search.php?search_author=' . $u_search_author),
 
-        'S_PROFILE_ACTION' => append_sid("profile.php"))
+        'S_PROFILE_ACTION' => append_sid('profile.php'))
 );
 
 $template->pparse('body');

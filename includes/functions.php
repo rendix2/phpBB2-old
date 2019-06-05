@@ -157,8 +157,8 @@ function make_jumpbox($action, $match_forum_id = 0)
 						// 'chapter' and 'forum' can create multiple items, therefore we are using a nested array.
 						//
 						$nav_links['chapter forum'][$forum->forum_id] = array (
-							'url' => append_sid("viewforum.php?" . POST_FORUM_URL . "=" . $forum->forum_id),
-							'title' => $forum->forum_name
+                            'url' => append_sid('viewforum.php?' . POST_FORUM_URL . '=' . $forum->forum_id),
+                            'title' => $forum->forum_name
 						);
 					}
 				}
@@ -315,7 +315,7 @@ function setup_style($style)
 
 	if ( !$theme ) {
         if ($board_config['default_style'] === $style) {
-            message_die(CRITICAL_ERROR, "Could not set up default theme");
+            message_die(CRITICAL_ERROR, 'Could not set up default theme');
         }
 
 	    $default_theme = dibi::select('*')
@@ -407,10 +407,10 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 		$init_page_max = ( $total_pages > 3 ) ? 3 : $total_pages;
 
 		for ($i = 1; $i < $init_page_max + 1; $i++) {
-			$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+			$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . append_sid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
 			if ( $i <  $init_page_max ) {
-				$page_string .= ", ";
+				$page_string .= ', ';
 			}
 		}
 
@@ -422,7 +422,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 				$init_page_max = ( $on_page < $total_pages - 4 ) ? $on_page : $total_pages - 4;
 
 				for ($i = $init_page_min - 1; $i < $init_page_max + 2; $i++) {
-					$page_string .= ($i === $on_page) ? '<b>' . $i . '</b>' : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+					$page_string .= ($i === $on_page) ? '<b>' . $i . '</b>' : '<a href="' . append_sid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
 					if ( $i <  $init_page_max + 1 ) {
 						$page_string .= ', ';
@@ -435,17 +435,17 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 			}
 
 			for ($i = $total_pages - 2; $i < $total_pages + 1; $i++) {
-				$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>'  : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+				$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>'  : '<a href="' . append_sid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
 				if ($i <  $total_pages ) {
-					$page_string .= ", ";
+					$page_string .= ', ';
 				}
 			}
 		}
 	}
 	else {
 		for ($i = 1; $i < $total_pages + 1; $i++) {
-			$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+			$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . append_sid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
 			if ( $i <  $total_pages ) {
 				$page_string .= ', ';
@@ -455,11 +455,11 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
     if ($add_prevnext_text) {
         if ($on_page > 1) {
-            $page_string = ' <a href="' . append_sid($base_url . "&amp;start=" . (($on_page - 2) * $per_page)) . '">' . $lang['Previous'] . '</a>&nbsp;&nbsp;' . $page_string;
+            $page_string = ' <a href="' . append_sid($base_url . '&amp;start=' . (($on_page - 2) * $per_page)) . '">' . $lang['Previous'] . '</a>&nbsp;&nbsp;' . $page_string;
         }
 
         if ($on_page < $total_pages) {
-            $page_string .= '&nbsp;&nbsp;<a href="' . append_sid($base_url . "&amp;start=" . ($on_page * $per_page)) . '">' . $lang['Next'] . '</a>';
+            $page_string .= '&nbsp;&nbsp;<a href="' . append_sid($base_url . '&amp;start=' . ($on_page * $per_page)) . '">' . $lang['Next'] . '</a>';
         }
 
     }

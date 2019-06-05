@@ -35,7 +35,7 @@ if (!empty($setmodules) ) {
 	return;
 }
 
-$phpbb_root_path = "./../";
+$phpbb_root_path = './../';
 
 $cancel = isset($_POST['cancel']);
 $no_page_header = $cancel;
@@ -50,7 +50,7 @@ if ((!empty($_GET['export_pack']) && $_GET['export_pack'] === 'send') || (!empty
 require './pagestart.php';
 
 if ($cancel) {
-	redirect('admin/' . append_sid("admin_smilies.php", true));
+	redirect('admin/' . append_sid('admin_smilies.php', true));
 }
 
 //
@@ -60,7 +60,7 @@ if (isset($_POST['mode']) || isset($_GET['mode']) ) {
 	$mode = isset($_POST['mode']) ? $_POST['mode'] : $_GET['mode'];
 	$mode = htmlspecialchars($mode);
 } else {
-	$mode = "";
+	$mode = '';
 }
 
 $delimeter  = '=+:';
@@ -119,7 +119,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 		$fcontents = @file($phpbb_root_path . $board_config['smilies_path'] . '/'. $smile_pak);
 
 		if (empty($fcontents) ) {
-			message_die(GENERAL_ERROR, "Couldn't read smiley pak file", "", __LINE__, __FILE__);
+			message_die(GENERAL_ERROR, "Couldn't read smiley pak file", '', __LINE__, __FILE__);
 		}
 
 		foreach ($fcontents as $line) {
@@ -129,8 +129,8 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 				//
 				// Replace > and < with the proper html_entities for matching.
 				//
-				$smile_data[$j] = str_replace("<", "&lt;", $smile_data[$j]);
-				$smile_data[$j] = str_replace(">", "&gt;", $smile_data[$j]);
+				$smile_data[$j] = str_replace('<', '&lt;', $smile_data[$j]);
+				$smile_data[$j] = str_replace('>', '&gt;', $smile_data[$j]);
 				$k = $smile_data[$j];
 
 				if ($smiles[$k] === 1 ) {
@@ -157,7 +157,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 			}
 		}
 
-		$message = $lang['smiley_import_success'] . "<br /><br />" . sprintf($lang['Click_return_smileadmin'], "<a href=\"" . append_sid("admin_smilies.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
+		$message = $lang['smiley_import_success'] . '<br /><br />' . sprintf($lang['Click_return_smileadmin'], '<a href="' . append_sid('admin_smilies.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
 
 		message_die(GENERAL_MESSAGE, $message);
 		
@@ -165,50 +165,50 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 		//
 		// Display the script to get the smile_pak cfg file...
 		//
-		$smile_paks_select = "<select name='smile_pak'><option value=''>" . $lang['Select_pak'] . "</option>";
+		$smile_paks_select = "<select name='smile_pak'><option value=''>" . $lang['Select_pak'] . '</option>';
 
 		foreach ($smiley_paks as $key => $value) {
 			if ( !empty($value) ) {
-				$smile_paks_select .= "<option>" . $value . "</option>";
+				$smile_paks_select .= '<option>' . $value . '</option>';
 			}
 		}
 
-		$smile_paks_select .= "</select>";
+		$smile_paks_select .= '</select>';
 
 		$hidden_vars = "<input type='hidden' name='mode' value='import'>";
 
-        $template->set_filenames(["body" => "admin/smile_import_body.tpl"]);
+        $template->set_filenames(['body' => 'admin/smile_import_body.tpl']);
 
         $template->assign_vars(
             [
-                "L_SMILEY_TITLE"     => $lang['smiley_title'],
-                "L_SMILEY_EXPLAIN"   => $lang['smiley_import_inst'],
-                "L_SMILEY_IMPORT"    => $lang['smiley_import'],
-                "L_SELECT_LBL"       => $lang['choose_smile_pak'],
-                "L_IMPORT"           => $lang['import'],
-                "L_CONFLICTS"        => $lang['smile_conflicts'],
-                "L_DEL_EXISTING"     => $lang['del_existing_smileys'],
-                "L_REPLACE_EXISTING" => $lang['replace_existing'],
-                "L_KEEP_EXISTING"    => $lang['keep_existing'],
+                'L_SMILEY_TITLE'     => $lang['smiley_title'],
+                'L_SMILEY_EXPLAIN'   => $lang['smiley_import_inst'],
+                'L_SMILEY_IMPORT'    => $lang['smiley_import'],
+                'L_SELECT_LBL'       => $lang['choose_smile_pak'],
+                'L_IMPORT'           => $lang['import'],
+                'L_CONFLICTS'        => $lang['smile_conflicts'],
+                'L_DEL_EXISTING'     => $lang['del_existing_smileys'],
+                'L_REPLACE_EXISTING' => $lang['replace_existing'],
+                'L_KEEP_EXISTING'    => $lang['keep_existing'],
 
-                "S_SMILEY_ACTION" => append_sid("admin_smilies.php"),
-                "S_SMILE_SELECT"  => $smile_paks_select,
-                "S_HIDDEN_FIELDS" => $hidden_vars
+                'S_SMILEY_ACTION' => append_sid('admin_smilies.php'),
+                'S_SMILE_SELECT'  => $smile_paks_select,
+                'S_HIDDEN_FIELDS' => $hidden_vars
             ]
         );
 
-        $template->pparse("body");
+        $template->pparse('body');
 	}
 } elseif (isset($_POST['export_pack']) || isset($_GET['export_pack']) ) {
 	//
 	// Export our smiley config as a smiley pak...
 	//
-	if ( $_GET['export_pack'] === "send" ) {
+	if ( $_GET['export_pack'] === 'send') {
         $resultset = dibi::select('*')
             ->from(SMILIES_TABLE)
             ->fetchAll();
 
-		$smile_pak = "";
+		$smile_pak = '';
 
 		foreach ($resultset as $value) {
             $smile_pak .= $value->smile_url . $delimeter;
@@ -216,15 +216,15 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
             $smile_pak .= $value->code . "\n";
         }
 
-		header("Content-Type: text/x-delimtext; name=\"smiles.pak\"");
-		header("Content-disposition: attachment; filename=smiles.pak");
+		header('Content-Type: text/x-delimtext; name="smiles.pak"');
+		header('Content-disposition: attachment; filename=smiles.pak');
 
 		echo $smile_pak;
 
 		exit;
 	}
 
-	$message = sprintf($lang['export_smiles'], "<a href=\"" . append_sid("admin_smilies.php?export_pack=send", true) . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_smileadmin'], "<a href=\"" . append_sid("admin_smilies.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
+	$message = sprintf($lang['export_smiles'], '<a href="' . append_sid('admin_smilies.php?export_pack=send', true) . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_smileadmin'], '<a href="' . append_sid('admin_smilies.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
 
 	message_die(GENERAL_MESSAGE, $message);
 
@@ -233,9 +233,9 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 	// Admin has selected to add a smiley.
 	//
 
-    $template->set_filenames(["body" => "admin/smile_edit_body.tpl"]);
+    $template->set_filenames(['body' => 'admin/smile_edit_body.tpl']);
 
-    $filename_list = "";
+    $filename_list = '';
 
 	foreach ($smiley_images as $smiley_image) {
 		$filename_list .= '<option value="' . $smiley_image . '">' . $smiley_image . '</option>';
@@ -245,26 +245,26 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 
     $template->assign_vars(
         [
-            "L_SMILEY_TITLE"   => $lang['smiley_title'],
-            "L_SMILEY_CONFIG"  => $lang['smiley_config'],
-            "L_SMILEY_EXPLAIN" => $lang['smile_desc'],
-            "L_SMILEY_CODE"    => $lang['smiley_code'],
-            "L_SMILEY_URL"     => $lang['smiley_url'],
-            "L_SMILEY_EMOTION" => $lang['smiley_emot'],
-            "L_SUBMIT"         => $lang['Submit'],
-            "L_RESET"          => $lang['Reset'],
+            'L_SMILEY_TITLE'   => $lang['smiley_title'],
+            'L_SMILEY_CONFIG'  => $lang['smiley_config'],
+            'L_SMILEY_EXPLAIN' => $lang['smile_desc'],
+            'L_SMILEY_CODE'    => $lang['smiley_code'],
+            'L_SMILEY_URL'     => $lang['smiley_url'],
+            'L_SMILEY_EMOTION' => $lang['smiley_emot'],
+            'L_SUBMIT'         => $lang['Submit'],
+            'L_RESET'          => $lang['Reset'],
 
-            "SMILEY_IMG" => $phpbb_root_path . $board_config['smilies_path'] . '/' . $smiley_images[0],
+            'SMILEY_IMG' => $phpbb_root_path . $board_config['smilies_path'] . '/' . $smiley_images[0],
 
-            "S_SMILEY_ACTION"    => append_sid("admin_smilies.php"),
-            "S_HIDDEN_FIELDS"    => $s_hidden_fields,
-            "S_FILENAME_OPTIONS" => $filename_list,
-            "S_SMILEY_BASEDIR"   => $phpbb_root_path . $board_config['smilies_path']
+            'S_SMILEY_ACTION'    => append_sid('admin_smilies.php'),
+            'S_HIDDEN_FIELDS'    => $s_hidden_fields,
+            'S_FILENAME_OPTIONS' => $filename_list,
+            'S_SMILEY_BASEDIR'   => $phpbb_root_path . $board_config['smilies_path']
         ]
     );
 
-    $template->pparse("body");
-} elseif ( $mode !== "" ) {
+    $template->pparse('body');
+} elseif ( $mode !== '') {
 	switch( $mode ) {
 		case 'delete':
 			//
@@ -281,7 +281,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
                     ->where('smilies_id = %i', $smiley_id)
                     ->execute();
 
-				$message = $lang['smiley_del_success'] . "<br /><br />" . sprintf($lang['Click_return_smileadmin'], "<a href=\"" . append_sid("admin_smilies.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
+				$message = $lang['smiley_del_success'] . '<br /><br />' . sprintf($lang['Click_return_smileadmin'], '<a href="' . append_sid('admin_smilies.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
 
 				message_die(GENERAL_MESSAGE, $message);
 			} else {
@@ -298,7 +298,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
                         'L_YES' => $lang['Yes'],
                         'L_NO'  => $lang['No'],
 
-                        'S_CONFIRM_ACTION' => append_sid("admin_smilies.php"),
+                        'S_CONFIRM_ACTION' => append_sid('admin_smilies.php'),
                         'S_HIDDEN_FIELDS'  => $hidden_fields
                     ]
                 );
@@ -323,50 +323,50 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
                 message_die(GENERAL_ERROR, 'Could not obtain emoticon information');
             }
 
-			$filename_list = "";
+			$filename_list = '';
 
 			foreach ($smiley_images as $smiley_mage) {
 				if ($smiley_mage === $smile_data->smile_url ) {
-					$smiley_selected = "selected=\"selected\"";
+					$smiley_selected = 'selected="selected"';
 					$smiley_edit_img = $smiley_mage;
 				} else {
-					$smiley_selected = "";
+					$smiley_selected = '';
 				}
 
 				$filename_list .= '<option value="' . $smiley_mage . '"' . $smiley_selected . '>' . $smiley_mage . '</option>';
 			}
 
-            $template->set_filenames(["body" => "admin/smile_edit_body.tpl"]);
+            $template->set_filenames(['body' => 'admin/smile_edit_body.tpl']);
 
             $s_hidden_fields = '<input type="hidden" name="mode" value="save" /><input type="hidden" name="smile_id" value="' . $smile_data->smilies_id . '" />';
 
             $template->assign_vars(
                 [
-                    "SMILEY_CODE"     => $smile_data->code,
-                    "SMILEY_EMOTICON" => $smile_data->emoticon,
+                    'SMILEY_CODE'     => $smile_data->code,
+                    'SMILEY_EMOTICON' => $smile_data->emoticon,
 
-                    "L_SMILEY_TITLE"   => $lang['smiley_title'],
-                    "L_SMILEY_CONFIG"  => $lang['smiley_config'],
-                    "L_SMILEY_EXPLAIN" => $lang['smile_desc'],
-                    "L_SMILEY_CODE"    => $lang['smiley_code'],
-                    "L_SMILEY_URL"     => $lang['smiley_url'],
-                    "L_SMILEY_EMOTION" => $lang['smiley_emot'],
-                    "L_SUBMIT"         => $lang['Submit'],
-                    "L_RESET"          => $lang['Reset'],
+                    'L_SMILEY_TITLE'   => $lang['smiley_title'],
+                    'L_SMILEY_CONFIG'  => $lang['smiley_config'],
+                    'L_SMILEY_EXPLAIN' => $lang['smile_desc'],
+                    'L_SMILEY_CODE'    => $lang['smiley_code'],
+                    'L_SMILEY_URL'     => $lang['smiley_url'],
+                    'L_SMILEY_EMOTION' => $lang['smiley_emot'],
+                    'L_SUBMIT'         => $lang['Submit'],
+                    'L_RESET'          => $lang['Reset'],
 
-                    "SMILEY_IMG" => $phpbb_root_path . $board_config['smilies_path'] . '/' . $smiley_edit_img,
+                    'SMILEY_IMG' => $phpbb_root_path . $board_config['smilies_path'] . '/' . $smiley_edit_img,
 
-                    "S_SMILEY_ACTION"    => append_sid("admin_smilies.php"),
-                    "S_HIDDEN_FIELDS"    => $s_hidden_fields,
-                    "S_FILENAME_OPTIONS" => $filename_list,
-                    "S_SMILEY_BASEDIR"   => $phpbb_root_path . $board_config['smilies_path']
+                    'S_SMILEY_ACTION'    => append_sid('admin_smilies.php'),
+                    'S_HIDDEN_FIELDS'    => $s_hidden_fields,
+                    'S_FILENAME_OPTIONS' => $filename_list,
+                    'S_SMILEY_BASEDIR'   => $phpbb_root_path . $board_config['smilies_path']
                 ]
             );
 
-            $template->pparse("body");
+            $template->pparse('body');
 			break;
 
-		case "save":
+		case 'save':
 			//
 			// Admin has submitted changes while editing a smiley.
 			//
@@ -408,12 +408,12 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
                 ->where('smilies_id = %i', $smile_id)
                 ->execute();
 
-			$message = $lang['smiley_edit_success'] . "<br /><br />" . sprintf($lang['Click_return_smileadmin'], "<a href=\"" . append_sid("admin_smilies.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
+			$message = $lang['smiley_edit_success'] . '<br /><br />' . sprintf($lang['Click_return_smileadmin'], '<a href="' . append_sid('admin_smilies.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 			break;
 
-		case "savenew":
+		case 'savenew':
 			//
 			// Admin has submitted changes while adding a new smiley.
 			//
@@ -452,7 +452,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 
             dibi::insert(SMILIES_TABLE, $insert_data)->execute();
 
-			$message = $lang['smiley_add_success'] . "<br /><br />" . sprintf($lang['Click_return_smileadmin'], "<a href=\"" . append_sid("admin_smilies.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
+			$message = $lang['smiley_add_success'] . '<br /><br />' . sprintf($lang['Click_return_smileadmin'], '<a href="' . append_sid('admin_smilies.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 			break;
@@ -467,24 +467,24 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
         ->from(SMILIES_TABLE)
         ->fetchAll();
 
-    $template->set_filenames(["body" => "admin/smile_list_body.tpl"]);
+    $template->set_filenames(['body' => 'admin/smile_list_body.tpl']);
 
     $template->assign_vars(
         [
-            "L_ACTION"       => $lang['Action'],
-            "L_SMILEY_TITLE" => $lang['smiley_title'],
-            "L_SMILEY_TEXT"  => $lang['smile_desc'],
-            "L_DELETE"       => $lang['Delete'],
-            "L_EDIT"         => $lang['Edit'],
-            "L_SMILEY_ADD"   => $lang['smile_add'],
-            "L_CODE"         => $lang['Code'],
-            "L_EMOT"         => $lang['Emotion'],
-            "L_SMILE"        => $lang['Smile'],
-            "L_IMPORT_PACK"  => $lang['import_smile_pack'],
-            "L_EXPORT_PACK"  => $lang['export_smile_pack'],
+            'L_ACTION'       => $lang['Action'],
+            'L_SMILEY_TITLE' => $lang['smiley_title'],
+            'L_SMILEY_TEXT'  => $lang['smile_desc'],
+            'L_DELETE'       => $lang['Delete'],
+            'L_EDIT'         => $lang['Edit'],
+            'L_SMILEY_ADD'   => $lang['smile_add'],
+            'L_CODE'         => $lang['Code'],
+            'L_EMOT'         => $lang['Emotion'],
+            'L_SMILE'        => $lang['Smile'],
+            'L_IMPORT_PACK'  => $lang['import_smile_pack'],
+            'L_EXPORT_PACK'  => $lang['export_smile_pack'],
 
-            "S_HIDDEN_FIELDS" => $s_hidden_fields,
-            "S_SMILEY_ACTION" => append_sid("admin_smilies.php")
+            'S_HIDDEN_FIELDS' => $s_hidden_fields,
+            'S_SMILEY_ACTION' => append_sid('admin_smilies.php')
         ]
     );
 
@@ -501,23 +501,23 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
         $row_color = (!($i % 2)) ? $theme['td_color1'] : $theme['td_color2'];
         $row_class = (!($i % 2)) ? $theme['td_class1'] : $theme['td_class2'];
 
-        $template->assign_block_vars("smiles", [
-                "ROW_COLOR" => "#" . $row_color,
-                "ROW_CLASS" => $row_class,
+        $template->assign_block_vars('smiles', [
+            'ROW_COLOR' => '#' . $row_color,
+            'ROW_CLASS' => $row_class,
 
-                "SMILEY_IMG" => $phpbb_root_path . $board_config['smilies_path'] . '/' . $smiley->smile_url,
-                "CODE"       => $smiley->code,
-                "EMOT"       => $smiley->emoticon,
+            'SMILEY_IMG' => $phpbb_root_path . $board_config['smilies_path'] . '/' . $smiley->smile_url,
+            'CODE'       => $smiley->code,
+            'EMOT'       => $smiley->emoticon,
 
-                "U_SMILEY_EDIT"   => append_sid("admin_smilies.php?mode=edit&amp;id=" . $smiley->smilies_id),
-                "U_SMILEY_DELETE" => append_sid("admin_smilies.php?mode=delete&amp;id=" . $smiley->smilies_id)
+            'U_SMILEY_EDIT'   => append_sid('admin_smilies.php?mode=edit&amp;id=' . $smiley->smilies_id),
+            'U_SMILEY_DELETE' => append_sid('admin_smilies.php?mode=delete&amp;id=' . $smiley->smilies_id)
             ]);
     }
 
     //
 	// Spit out the page.
 	//
-	$template->pparse("body");
+	$template->pparse('body');
 }
 
 //

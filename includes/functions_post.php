@@ -196,7 +196,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	if ($mode === 'newtopic' || ($mode === 'editpost' && $post_data['first_post'])) {
 		$topic_vote = (!empty($poll_title) && count($poll_options) >= 2) ? 1 : 0;
 
-		if ($mode !== "editpost") {
+		if ($mode !== 'editpost') {
             $insert_data = [
                 'topic_title' => $post_subject,
                 'topic_poster' => $userdata['user_id'],
@@ -224,7 +224,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
         }
 	}
 
-	if ($mode !== "editpost") {
+	if ($mode !== 'editpost') {
         $insert_data = [
             'topic_id'       => $topic_id,
             'forum_id'       => $forum_id,
@@ -328,10 +328,10 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
         foreach ($poll_options as $option_id => $option_text) {
             if (!empty($option_text)) {
                 $option_text = str_replace("\'", "''", htmlspecialchars($option_text));
-                $poll_result = ($mode === "editpost" && isset($old_poll_result[$option_id])) ?
+                $poll_result = ($mode === 'editpost' && isset($old_poll_result[$option_id])) ?
                     $old_poll_result[$option_id] : 0;
 
-                if ($mode !== "editpost" || !isset($old_poll_result[$option_id])) {
+                if ($mode !== 'editpost' || !isset($old_poll_result[$option_id])) {
                     $insert_data = [
                         'vote_id' => $poll_id,
                         'vote_option_id' => $poll_option_id,
@@ -365,8 +365,8 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 		}
 	}
 
-	$meta = '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.php?" . POST_POST_URL . "=" . $post_id) . '#' . $post_id . '">';
-	$message = $lang['Stored'] . '<br /><br />' . sprintf($lang['Click_view_message'], '<a href="' . append_sid("viewtopic.php?" . POST_POST_URL . "=" . $post_id) . '#' . $post_id . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_forum'], '<a href="' . append_sid("viewforum.php?" . POST_FORUM_URL . "=$forum_id") . '">', '</a>');
+	$meta = '<meta http-equiv="refresh" content="3;url=' . append_sid('viewtopic.php?' . POST_POST_URL . '=' . $post_id) . '#' . $post_id . '">';
+	$message = $lang['Stored'] . '<br /><br />' . sprintf($lang['Click_view_message'], '<a href="' . append_sid('viewtopic.php?' . POST_POST_URL . '=' . $post_id) . '#' . $post_id . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_forum'], '<a href="' . append_sid('viewforum.php?' . POST_FORUM_URL . "=$forum_id") . '">', '</a>');
 
 	return false;
 }
@@ -518,14 +518,14 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	}
 
 	if ($mode === 'delete' && $post_data['first_post'] && $post_data['last_post']) {
-		$meta = '<meta http-equiv="refresh" content="3;url=' . append_sid("viewforum.php?" . POST_FORUM_URL . '=' . $forum_id) . '">';
+		$meta = '<meta http-equiv="refresh" content="3;url=' . append_sid('viewforum.php?' . POST_FORUM_URL . '=' . $forum_id) . '">';
 		$message = $lang['Deleted'];
 	} else {
-		$meta = '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.php?" . POST_TOPIC_URL . '=' . $topic_id) . '">';
-		$message = (($mode === 'poll_delete') ? $lang['Poll_delete'] : $lang['Deleted']) . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id") . '">', '</a>');
+		$meta = '<meta http-equiv="refresh" content="3;url=' . append_sid('viewtopic.php?' . POST_TOPIC_URL . '=' . $topic_id) . '">';
+		$message = (($mode === 'poll_delete') ? $lang['Poll_delete'] : $lang['Deleted']) . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . append_sid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id") . '">', '</a>');
 	}
 
-	$message .=  '<br /><br />' . sprintf($lang['Click_return_forum'], '<a href="' . append_sid("viewforum.php?" . POST_FORUM_URL . "=$forum_id") . '">', '</a>');
+	$message .=  '<br /><br />' . sprintf($lang['Click_return_forum'], '<a href="' . append_sid('viewforum.php?' . POST_FORUM_URL . "=$forum_id") . '">', '</a>');
 }
 
 //
@@ -749,7 +749,7 @@ function generate_smilies($mode, $page_id)
                 $template->assign_vars(
                     [
                         'L_MORE_SMILIES' => $lang['More_emoticons'],
-                        'U_MORE_SMILIES' => append_sid("posting.php?mode=smilies")
+                        'U_MORE_SMILIES' => append_sid('posting.php?mode=smilies')
                     ]
                 );
             }

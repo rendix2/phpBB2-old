@@ -32,7 +32,7 @@ if (!empty($setmodules) ) {
 //
 // Include required files and check permissions
 //
-$phpbb_root_path = "./../";
+$phpbb_root_path = './../';
 
 require './pagestart.php';
 
@@ -53,7 +53,7 @@ if (isset($_POST['add_name']) ) {
 		$message = $lang['Disallow_successful'];
 	}
 
-	$message .= "<br /><br />" . sprintf($lang['Click_return_disallowadmin'], "<a href=\"" . append_sid("admin_disallow.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
+	$message .= '<br /><br />' . sprintf($lang['Click_return_disallowadmin'], '<a href="' . append_sid('admin_disallow.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
 
 	message_die(GENERAL_MESSAGE, $message);
 } elseif (isset($_POST['delete_name']) ) {
@@ -63,7 +63,7 @@ if (isset($_POST['add_name']) ) {
         ->where('disallow_id = %i', $disallowed_id)
         ->execute();
 
-	$message .= $lang['Disallowed_deleted'] . "<br /><br />" . sprintf($lang['Click_return_disallowadmin'], "<a href=\"" . append_sid("admin_disallow.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
+	$message .= $lang['Disallowed_deleted'] . '<br /><br />' . sprintf($lang['Click_return_disallowadmin'], '<a href="' . append_sid('admin_disallow.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
 
 	message_die(GENERAL_MESSAGE, $message);
 }
@@ -94,27 +94,27 @@ if (!count($disallowed)) {
 
 $disallow_select .= '</select>';
 
-$template->set_filenames(["body" => "admin/disallow_body.tpl"]);
+$template->set_filenames(['body' => 'admin/disallow_body.tpl']);
 
 $template->assign_vars(
     [
-        "S_DISALLOW_SELECT" => $disallow_select,
-        "S_FORM_ACTION"     => append_sid("admin_disallow.php"),
+        'S_DISALLOW_SELECT' => $disallow_select,
+        'S_FORM_ACTION'     => append_sid('admin_disallow.php'),
 
-        "L_INFO"             => $output_info,
-        "L_DISALLOW_TITLE"   => $lang['Disallow_control'],
-        "L_DISALLOW_EXPLAIN" => $lang['Disallow_explain'],
-        "L_DELETE"           => $lang['Delete_disallow'],
-        "L_DELETE_DISALLOW"  => $lang['Delete_disallow_title'],
-        "L_DELETE_EXPLAIN"   => $lang['Delete_disallow_explain'],
-        "L_ADD"              => $lang['Add_disallow'],
-        "L_ADD_DISALLOW"     => $lang['Add_disallow_title'],
-        "L_ADD_EXPLAIN"      => $lang['Add_disallow_explain'],
-        "L_USERNAME"         => $lang['Username']
+        'L_INFO'             => $output_info,
+        'L_DISALLOW_TITLE'   => $lang['Disallow_control'],
+        'L_DISALLOW_EXPLAIN' => $lang['Disallow_explain'],
+        'L_DELETE'           => $lang['Delete_disallow'],
+        'L_DELETE_DISALLOW'  => $lang['Delete_disallow_title'],
+        'L_DELETE_EXPLAIN'   => $lang['Delete_disallow_explain'],
+        'L_ADD'              => $lang['Add_disallow'],
+        'L_ADD_DISALLOW'     => $lang['Add_disallow_title'],
+        'L_ADD_EXPLAIN'      => $lang['Add_disallow_explain'],
+        'L_USERNAME'         => $lang['Username']
     ]
 );
 
-$template->pparse("body");
+$template->pparse('body');
 
 include './page_footer_admin.php';
 
