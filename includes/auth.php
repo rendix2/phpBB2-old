@@ -291,17 +291,21 @@ function auth_check_user($type, $key, $u_access, $is_admin)
 	if ( count($u_access) ) {
 		foreach ($u_access as $u_access_value) {
 			$result = 0;
-			switch($type) {
-				case AUTH_ACL:
-					$result = $u_access_value[$key];
 
-				case AUTH_MOD:
-					$result = $result || $u_access_value['auth_mod'];
+            if ($type === AUTH_ACL) {
+                $result = $u_access_value[$key];
+            }
 
-				case AUTH_ADMIN:
-					$result = $result || $is_admin;
-					break;
-			}
+            if ($type === AUTH_MOD) {
+                $result = $result || $u_access_value['auth_mod'];
+            }
+
+            if ($type === AUTH_ADMIN) {
+                $result = $result || $is_admin;
+
+                // TODO CHECK THIS if its needed
+                break;
+            }
 
 			$auth_user = $auth_user || $result;
 		}
