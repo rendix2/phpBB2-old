@@ -28,7 +28,7 @@ function make_forum_select($box_name, $ignore_forum = false, $select_forum = '')
 {
 	global $userdata, $lang;
 
-	$is_auth_ary = auth(AUTH_READ, AUTH_LIST_ALL, $userdata);
+	$is_auth_ary = Auth::authorize(AUTH_READ, AUTH_LIST_ALL, $userdata);
 
 	$forums = dibi::select(['f.forum_id', 'f.forum_name'])
         ->from(CATEGORIES_TABLE)

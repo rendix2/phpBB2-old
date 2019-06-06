@@ -162,7 +162,7 @@ if (isset($_POST['cancel'])) {
 //
 // Start auth check
 //
-$is_auth = auth(AUTH_ALL, $forum_id, $userdata);
+$is_auth = Auth::authorize(AUTH_ALL, $forum_id, $userdata);
 
 if ( !$is_auth['auth_mod'] ) {
 	message_die(GENERAL_MESSAGE, $lang['Not_Moderator'], $lang['Not_Authorised']);

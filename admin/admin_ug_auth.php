@@ -96,44 +96,6 @@ $field_names = [
     'auth_pollcreate' => $lang['Pollcreate']
 ];
 
-// ---------------
-// Start Functions
-//
-function check_auth($type, $key, $u_access, $is_admin)
-{
-	$auth_user = 0;
-
-	if (count($u_access) ) {
-		foreach ($u_access as $u_access_value) {
-			$result = 0;
-
-			if ($type === AUTH_ACL) {
-                $result = $u_access_value->{$key};
-            }
-
-			if ($type === AUTH_MOD) {
-                $result = $result || $u_access_value->auth_mod;
-            }
-
-            if ($type === AUTH_ADMIN) {
-                $result = $result || $is_admin;
-
-                // TODO CHECK THIS if its needed
-                break;
-            }
-
-			$auth_user = $auth_user || $result;
-		}
-	} else {
-		$auth_user = $is_admin;
-	}
-
-	return $auth_user;
-}
-//
-// End Functions
-// -------------
-
 if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode === 'group' && $group_id ) ) )
 {
 	$user_level = '';
@@ -624,7 +586,8 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 					break;
 
 				case AUTH_ACL:
-					$auth_ug[$forum_id][$key] = !empty($auth_access_count[$forum_id]) ? check_auth(AUTH_ACL, $key, $auth_access[$forum_id], $is_admin) : 0;
+					$auth_ug[$forum_id][$key] = !empty($auth_access_count[$forum_id]) ? Auth::auth_check_user(AUTH_ACL, $key,
+                        $auth_access[$forum_id], $is_admin) : 0;
 					$auth_field_acl[$forum_id][$key] = $auth_ug[$forum_id][$key];
 
                     if (isset($prev_acl_setting)) {
@@ -638,7 +601,8 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 					break;
 
 				case AUTH_MOD:
-					$auth_ug[$forum_id][$key] = !empty($auth_access_count[$forum_id]) ? check_auth(AUTH_MOD, $key, $auth_access[$forum_id], $is_admin) : 0;
+					$auth_ug[$forum_id][$key] = !empty($auth_access_count[$forum_id]) ? Auth::auth_check_user(AUTH_MOD,
+                        $key, $auth_access[$forum_id], $is_admin) : 0;
 					break;
 
 				case AUTH_ADMIN:
@@ -654,7 +618,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 		//
 		// Is user a moderator?
 		//
-		$auth_ug[$forum_id]['auth_mod'] = !empty($auth_access_count[$forum_id]) ? check_auth(AUTH_MOD, 'auth_mod', $auth_access[$forum_id], 0) : 0;
+		$auth_ug[$forum_id]['auth_mod'] = !empty($auth_access_count[$forum_id]) ? Auth::auth_check_user(AUTH_MOD, 'auth_mod', $auth_access[$forum_id], 0) : 0;
 	}
 
     $optionlist_acl_adv = [];

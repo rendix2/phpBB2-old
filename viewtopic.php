@@ -208,7 +208,7 @@ init_userprefs($userdata);
 //
 // Start auth check
 //
-$is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_topic_data);
+$is_auth = Auth::authorize(AUTH_ALL, $forum_id, $userdata, $forum_topic_data);
 
 if (!$is_auth['auth_view'] || !$is_auth['auth_read'] ) {
 	if ( !$userdata['session_logged_in'] ) {

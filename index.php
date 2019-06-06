@@ -266,7 +266,7 @@ foreach ($forum_moderators_data as $row) {
 //
 // Find which forums are visible for this user
 //
-$is_auth_array = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata, $forum_data);
+$is_auth_array = Auth::authorize(AUTH_VIEW, AUTH_LIST_ALL, $userdata, $forum_data);
 
 //
 // Start output of page

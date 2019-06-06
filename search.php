@@ -341,7 +341,7 @@ if ($mode === 'searchuser') {
 		//
 		$auth_sql = '';
         if ($search_forum !== -1) {
-            $is_auth = auth(AUTH_READ, $search_forum, $userdata);
+            $is_auth = Auth::authorize(AUTH_READ, $search_forum, $userdata);
 
             if (!$is_auth['auth_read']) {
                 message_die(GENERAL_MESSAGE, $lang['No_searchable_forums']);
@@ -349,7 +349,7 @@ if ($mode === 'searchuser') {
 
             $auth_sql = "f.forum_id = $search_forum";
         } else {
-            $is_auth_ary = auth(AUTH_READ, AUTH_LIST_ALL, $userdata);
+            $is_auth_ary = Auth::authorize(AUTH_READ, AUTH_LIST_ALL, $userdata);
 
             if ($search_cat !== -1) {
                 $auth_sql = "f.cat_id = $search_cat";
@@ -1195,7 +1195,7 @@ $result = dibi::select(['c.cat_title', 'c.cat_id', 'f.forum_name', 'f.forum_id']
     ->orderBy('f.forum_order')
     ->fetchAll();
 
-$is_auth_ary = auth(AUTH_READ, AUTH_LIST_ALL, $userdata);
+$is_auth_ary = Auth::authorize(AUTH_READ, AUTH_LIST_ALL, $userdata);
 
 $s_forums = '';
 $list_cat = [];
