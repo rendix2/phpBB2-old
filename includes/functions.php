@@ -157,7 +157,7 @@ function make_jumpbox($action, $match_forum_id = 0)
 						// 'chapter' and 'forum' can create multiple items, therefore we are using a nested array.
 						//
 						$nav_links['chapter forum'][$forum->forum_id] = array (
-                            'url' => append_sid('viewforum.php?' . POST_FORUM_URL . '=' . $forum->forum_id),
+                            'url' => Session::appendSid('viewforum.php?' . POST_FORUM_URL . '=' . $forum->forum_id),
                             'title' => $forum->forum_name
 						);
 					}
@@ -193,7 +193,7 @@ function make_jumpbox($action, $match_forum_id = 0)
             'L_SELECT_FORUM' => $lang['Select_forum'],
 
             'S_JUMPBOX_SELECT' => $boxstring,
-            'S_JUMPBOX_ACTION' => append_sid($action)
+            'S_JUMPBOX_ACTION' => Session::appendSid($action)
         ]
     );
     $template->assign_var_from_handle('JUMPBOX', 'jumpbox');
@@ -287,19 +287,19 @@ function init_userprefs($userdata)
 	// and be able to change the variables within code.
 	//
     $nav_links['top'] = [
-        'url' => append_sid($phpbb_root_path . 'index.php'),
+        'url' => Session::appendSid($phpbb_root_path . 'index.php'),
         'title' => sprintf($lang['Forum_Index'], $board_config['sitename'])
     ];
     $nav_links['search'] = [
-        'url' => append_sid($phpbb_root_path . 'search.php'),
+        'url' => Session::appendSid($phpbb_root_path . 'search.php'),
         'title' => $lang['Search']
     ];
     $nav_links['help'] = [
-        'url' => append_sid($phpbb_root_path . 'faq.php'),
+        'url' => Session::appendSid($phpbb_root_path . 'faq.php'),
         'title' => $lang['FAQ']
     ];
     $nav_links['author'] = [
-        'url' => append_sid($phpbb_root_path . 'memberlist.php'),
+        'url' => Session::appendSid($phpbb_root_path . 'memberlist.php'),
         'title' => $lang['Memberlist']
     ];
 }
@@ -407,7 +407,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 		$init_page_max = ( $total_pages > 3 ) ? 3 : $total_pages;
 
 		for ($i = 1; $i < $init_page_max + 1; $i++) {
-			$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . append_sid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+			$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . Session::appendSid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
 			if ( $i <  $init_page_max ) {
 				$page_string .= ', ';
@@ -422,7 +422,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 				$init_page_max = ( $on_page < $total_pages - 4 ) ? $on_page : $total_pages - 4;
 
 				for ($i = $init_page_min - 1; $i < $init_page_max + 2; $i++) {
-					$page_string .= ($i === $on_page) ? '<b>' . $i . '</b>' : '<a href="' . append_sid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+					$page_string .= ($i === $on_page) ? '<b>' . $i . '</b>' : '<a href="' . Session::appendSid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
 					if ( $i <  $init_page_max + 1 ) {
 						$page_string .= ', ';
@@ -435,7 +435,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 			}
 
 			for ($i = $total_pages - 2; $i < $total_pages + 1; $i++) {
-				$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>'  : '<a href="' . append_sid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+				$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>'  : '<a href="' . Session::appendSid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
 				if ($i <  $total_pages ) {
 					$page_string .= ', ';
@@ -445,7 +445,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 	}
 	else {
 		for ($i = 1; $i < $total_pages + 1; $i++) {
-			$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . append_sid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+			$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . Session::appendSid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
 			if ( $i <  $total_pages ) {
 				$page_string .= ', ';
@@ -455,11 +455,11 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
     if ($add_prevnext_text) {
         if ($on_page > 1) {
-            $page_string = ' <a href="' . append_sid($base_url . '&amp;start=' . (($on_page - 2) * $per_page)) . '">' . $lang['Previous'] . '</a>&nbsp;&nbsp;' . $page_string;
+            $page_string = ' <a href="' . Session::appendSid($base_url . '&amp;start=' . (($on_page - 2) * $per_page)) . '">' . $lang['Previous'] . '</a>&nbsp;&nbsp;' . $page_string;
         }
 
         if ($on_page < $total_pages) {
-            $page_string .= '&nbsp;&nbsp;<a href="' . append_sid($base_url . '&amp;start=' . ($on_page * $per_page)) . '">' . $lang['Next'] . '</a>';
+            $page_string .= '&nbsp;&nbsp;<a href="' . Session::appendSid($base_url . '&amp;start=' . ($on_page * $per_page)) . '">' . $lang['Next'] . '</a>';
         }
 
     }
@@ -534,7 +534,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 	}
 
 	if (empty($userdata) && ( $msg_code === GENERAL_MESSAGE || $msg_code === GENERAL_ERROR ) ) {
-		$userdata = session_pagestart($user_ip, PAGE_INDEX);
+		$userdata = Session::pageStart($user_ip, PAGE_INDEX);
 		init_userprefs($userdata);
 	}
 

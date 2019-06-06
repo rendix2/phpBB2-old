@@ -132,7 +132,7 @@ if ( !empty($topic_id) ) {
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, $forum_id);
+$userdata = Session::pageStart($user_ip, $forum_id);
 init_userprefs($userdata);
 //
 // End session management
@@ -156,7 +156,7 @@ if (isset($_POST['cancel'])) {
         $redirect = 'index.php';
     }
 
-    redirect(append_sid($redirect, true));
+    redirect(Session::appendSid($redirect, true));
 }
 
 //
@@ -312,7 +312,7 @@ switch ($mode) {
                     'L_YES' => $lang['Yes'],
                     'L_NO'  => $lang['No'],
 
-                    'S_CONFIRM_ACTION' => append_sid('modcp.php'),
+                    'S_CONFIRM_ACTION' => Session::appendSid('modcp.php'),
                     'S_HIDDEN_FIELDS'  => $hidden_fields
                 ]
             );
@@ -446,7 +446,7 @@ switch ($mode) {
                     'L_NO'            => $lang['No'],
 
                     'S_FORUM_SELECT'  => make_forum_select('new_forum', $forum_id),
-                    'S_MODCP_ACTION'  => append_sid('modcp.php'),
+                    'S_MODCP_ACTION'  => Session::appendSid('modcp.php'),
                     'S_HIDDEN_FIELDS' => $hidden_fields
                 ]
             );
@@ -669,9 +669,9 @@ switch ($mode) {
 
                         'FORUM_NAME' => $forum_name,
 
-                        'U_VIEW_FORUM' => append_sid('viewforum.php?' . POST_FORUM_URL . "=$forum_id"),
+                        'U_VIEW_FORUM' => Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forum_id"),
 
-                        'S_SPLIT_ACTION'  => append_sid('modcp.php'),
+                        'S_SPLIT_ACTION'  => Session::appendSid('modcp.php'),
                         'S_HIDDEN_FIELDS' => $s_hidden_fields,
                         'S_FORUM_SELECT'  => make_forum_select('new_forum_id', false, $forum_id)
                     ]
@@ -877,8 +877,8 @@ switch ($mode) {
                 'POSTS'          => $row->postings . ' ' . (($row->postings === 1) ? $lang['Post'] : $lang['Posts']),
                 'L_SEARCH_POSTS' => sprintf($lang['Search_user_posts'], $username),
 
-                'U_PROFILE'     => ($id === ANONYMOUS) ? 'modcp.php?mode=ip&amp;' . POST_POST_URL . '=' . $post_id . '&amp;' . POST_TOPIC_URL . '=' . $topic_id . '&amp;sid=' . $userdata['session_id'] : append_sid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$id"),
-                'U_SEARCHPOSTS' => append_sid('search.php?search_author=' . (($id === ANONYMOUS) ? 'Anonymous' : urlencode($username)) . '&amp;showresults=topics')
+                'U_PROFILE'     => ($id === ANONYMOUS) ? 'modcp.php?mode=ip&amp;' . POST_POST_URL . '=' . $post_id . '&amp;' . POST_TOPIC_URL . '=' . $topic_id . '&amp;sid=' . $userdata['session_id'] : Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$id"),
+                'U_SEARCHPOSTS' => Session::appendSid('search.php?search_author=' . (($id === ANONYMOUS) ? 'Anonymous' : urlencode($username)) . '&amp;showresults=topics')
             ]);
 
             $i++;
@@ -907,9 +907,9 @@ switch ($mode) {
                 'L_REPLIES'        => $lang['Replies'],
                 'L_LASTPOST'       => $lang['Last_Post'],
 
-                'U_VIEW_FORUM'    => append_sid('viewforum.php?' . POST_FORUM_URL . "=$forum_id"),
+                'U_VIEW_FORUM'    => Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forum_id"),
                 'S_HIDDEN_FIELDS' => '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />',
-                'S_MODCP_ACTION'  => append_sid('modcp.php')
+                'S_MODCP_ACTION'  => Session::appendSid('modcp.php')
             ]
         );
 

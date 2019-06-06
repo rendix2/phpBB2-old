@@ -395,7 +395,7 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 
             'S_CATEGORY_SELECT' => $s_categories,
             'S_COLSPAN'         => $s_colspan,
-            'S_PROFILE_ACTION'  => append_sid("profile.php?mode=$mode"),
+            'S_PROFILE_ACTION'  => Session::appendSid("profile.php?mode=$mode"),
             'S_HIDDEN_FIELDS'   => $s_hidden_vars
         ]
     );

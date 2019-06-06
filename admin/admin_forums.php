@@ -276,7 +276,7 @@ if (!empty($mode) ) {
 
         $template->assign_vars(
             [
-                'S_FORUM_ACTION'  => append_sid('admin_forums.php'),
+                'S_FORUM_ACTION'  => Session::appendSid('admin_forums.php'),
                 'S_HIDDEN_FIELDS' => $s_hidden_fields,
                 'S_SUBMIT_VALUE'  => $buttonvalue,
                 'S_CAT_LIST'      => $catlist,
@@ -353,7 +353,7 @@ if (!empty($mode) ) {
 				dibi::insert(PRUNE_TABLE, $insert_data)->execute();
 			}
 
-			$message = $lang['Forums_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="' . append_sid('admin_forums.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
+			$message = $lang['Forums_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 
@@ -415,7 +415,7 @@ if (!empty($mode) ) {
 				}
 			}
 
-			$message = $lang['Forums_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="' . append_sid('admin_forums.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
+			$message = $lang['Forums_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 
@@ -445,7 +445,7 @@ if (!empty($mode) ) {
 
             dibi::insert(CATEGORIES_TABLE, $insert_data)->execute();
 
-			$message = $lang['Forums_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="' . append_sid('admin_forums.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
+			$message = $lang['Forums_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 
@@ -477,7 +477,7 @@ if (!empty($mode) ) {
 
                     'S_HIDDEN_FIELDS' => $s_hidden_fields,
                     'S_SUBMIT_VALUE'  => $buttonvalue,
-                    'S_FORUM_ACTION'  => append_sid('admin_forums.php')
+                    'S_FORUM_ACTION'  => Session::appendSid('admin_forums.php')
                 ]
             );
 
@@ -490,7 +490,7 @@ if (!empty($mode) ) {
                 ->where('cat_id = %i', (int)$_POST[POST_CAT_URL])
                 ->execute();
 
-			$message = $lang['Forums_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="' . append_sid('admin_forums.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
+			$message = $lang['Forums_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 
@@ -526,7 +526,7 @@ if (!empty($mode) ) {
                     'L_FORUM_NAME'           => $lang['Forum_name'],
 
                     'S_HIDDEN_FIELDS' => $s_hidden_fields,
-                    'S_FORUM_ACTION'  => append_sid('admin_forums.php'),
+                    'S_FORUM_ACTION'  => Session::appendSid('admin_forums.php'),
                     'S_SELECT_TO'     => $select_to,
                     'S_SUBMIT_VALUE'  => $buttonvalue
                 ]
@@ -636,7 +636,7 @@ if (!empty($mode) ) {
                 ->where('forum_id = %i', $from_id)
                 ->execute();
 
-			$message = $lang['Forums_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="' . append_sid('admin_forums.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
+			$message = $lang['Forums_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 
@@ -688,7 +688,7 @@ if (!empty($mode) ) {
                     'L_FORUM_NAME'           => $lang['Forum_name'],
 
                     'S_HIDDEN_FIELDS' => $s_hidden_fields,
-                    'S_FORUM_ACTION'  => append_sid('admin_forums.php'),
+                    'S_FORUM_ACTION'  => Session::appendSid('admin_forums.php'),
                     'S_SELECT_TO'     => $select_to,
                     'S_SUBMIT_VALUE'  => $buttonvalue
                 ]
@@ -723,7 +723,7 @@ if (!empty($mode) ) {
                 ->where('cat_id = %i', $from_id)
                 ->execute();
 
-			$message = $lang['Forums_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="' . append_sid('admin_forums.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
+			$message = $lang['Forums_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 
@@ -801,7 +801,7 @@ $template->set_filenames(['body' => 'admin/forum_admin_body.tpl']);
 
 $template->assign_vars(
     [
-        'S_FORUM_ACTION'    => append_sid('admin_forums.php'),
+        'S_FORUM_ACTION'    => Session::appendSid('admin_forums.php'),
         'L_FORUM_TITLE'     => $lang['Forum_admin'],
         'L_FORUM_EXPLAIN'   => $lang['Forum_admin_explain'],
         'L_CREATE_FORUM'    => $lang['Create_forum'],
@@ -863,11 +863,11 @@ if ($category_count) {
                 'L_POSTS'  => $lang['Number_posts'],
                 'L_TOPICS' => $lang['Number_topics'],
 
-                'U_CAT_EDIT'      => append_sid('admin_forums.php?mode=editcat&amp;' . POST_CAT_URL . "=$cat_id"),
-                'U_CAT_DELETE'    => append_sid('admin_forums.php?mode=deletecat&amp;' . POST_CAT_URL . "=$cat_id"),
-                'U_CAT_MOVE_UP'   => append_sid('admin_forums.php?mode=cat_order&amp;move=-15&amp;' . POST_CAT_URL . "=$cat_id"),
-                'U_CAT_MOVE_DOWN' => append_sid('admin_forums.php?mode=cat_order&amp;move=15&amp;' . POST_CAT_URL . "=$cat_id"),
-                'U_VIEWCAT'       => append_sid($phpbb_root_path . 'index.php?' . POST_CAT_URL . "=$cat_id")
+                'U_CAT_EDIT'      => Session::appendSid('admin_forums.php?mode=editcat&amp;' . POST_CAT_URL . "=$cat_id"),
+                'U_CAT_DELETE'    => Session::appendSid('admin_forums.php?mode=deletecat&amp;' . POST_CAT_URL . "=$cat_id"),
+                'U_CAT_MOVE_UP'   => Session::appendSid('admin_forums.php?mode=cat_order&amp;move=-15&amp;' . POST_CAT_URL . "=$cat_id"),
+                'U_CAT_MOVE_DOWN' => Session::appendSid('admin_forums.php?mode=cat_order&amp;move=15&amp;' . POST_CAT_URL . "=$cat_id"),
+                'U_VIEWCAT'       => Session::appendSid($phpbb_root_path . 'index.php?' . POST_CAT_URL . "=$cat_id")
             ]
         );
 
@@ -899,12 +899,12 @@ if ($category_count) {
                         'NUM_TOPICS' => $forum->forum_topics,
                         'NUM_POSTS'  => $forum->forum_posts,
 
-                        'U_VIEWFORUM'       => append_sid($phpbb_root_path . 'viewforum.php?' . POST_FORUM_URL . "=$forum_id"),
-                        'U_FORUM_EDIT'      => append_sid('admin_forums.php?mode=editforum&amp;' . POST_FORUM_URL . "=$forum_id"),
-                        'U_FORUM_DELETE'    => append_sid('admin_forums.php?mode=deleteforum&amp;' . POST_FORUM_URL . "=$forum_id"),
-                        'U_FORUM_MOVE_UP'   => append_sid('admin_forums.php?mode=forum_order&amp;move=-15&amp;' . POST_FORUM_URL . "=$forum_id"),
-                        'U_FORUM_MOVE_DOWN' => append_sid('admin_forums.php?mode=forum_order&amp;move=15&amp;' . POST_FORUM_URL . "=$forum_id"),
-                        'U_FORUM_RESYNC'    => append_sid('admin_forums.php?mode=forum_sync&amp;' . POST_FORUM_URL . "=$forum_id")
+                        'U_VIEWFORUM'       => Session::appendSid($phpbb_root_path . 'viewforum.php?' . POST_FORUM_URL . "=$forum_id"),
+                        'U_FORUM_EDIT'      => Session::appendSid('admin_forums.php?mode=editforum&amp;' . POST_FORUM_URL . "=$forum_id"),
+                        'U_FORUM_DELETE'    => Session::appendSid('admin_forums.php?mode=deleteforum&amp;' . POST_FORUM_URL . "=$forum_id"),
+                        'U_FORUM_MOVE_UP'   => Session::appendSid('admin_forums.php?mode=forum_order&amp;move=-15&amp;' . POST_FORUM_URL . "=$forum_id"),
+                        'U_FORUM_MOVE_DOWN' => Session::appendSid('admin_forums.php?mode=forum_order&amp;move=15&amp;' . POST_FORUM_URL . "=$forum_id"),
+                        'U_FORUM_RESYNC'    => Session::appendSid('admin_forums.php?mode=forum_sync&amp;' . POST_FORUM_URL . "=$forum_id")
                     ]
                 );
 

@@ -54,8 +54,8 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
     $template->set_filenames(['body' => 'admin/index_navigate.tpl']);
 
     $template->assign_vars([
-        'U_FORUM_INDEX' => append_sid('../index.php'),
-        'U_ADMIN_INDEX' => append_sid('index.php?pane=right'),
+        'U_FORUM_INDEX' => Session::appendSid('../index.php'),
+        'U_ADMIN_INDEX' => Session::appendSid('index.php?pane=right'),
 
         'L_FORUM_INDEX'   => $lang['Main_index'],
         'L_ADMIN_INDEX'   => $lang['Admin_Index'],
@@ -85,7 +85,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
                     'ROW_CLASS' => $row_class,
 
                     'ADMIN_MODULE'   => $action,
-                    'U_ADMIN_MODULE' => append_sid($file)
+                    'U_ADMIN_MODULE' => Session::appendSid($file)
                 ]
             );
             $row_count++;
@@ -351,7 +351,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
 							$location_url = 'index.php?pane=right';
 					}
 				} else {
-					$location_url = append_sid('admin_forums.php?mode=editforum&amp;' . POST_FORUM_URL . '=' . $online_user->user_session_page);
+					$location_url = Session::appendSid('admin_forums.php?mode=editforum&amp;' . POST_FORUM_URL . '=' . $online_user->user_session_page);
 					$location = $forum_data[$online_user->user_session_page];
 				}
 
@@ -371,8 +371,8 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
                         'IP_ADDRESS'     => $reg_ip,
 
                         'U_WHOIS_IP'       => "http://network-tools.com/default.asp?host=$reg_ip",
-                        'U_USER_PROFILE'   => append_sid('admin_users.php?mode=edit&amp;' . POST_USERS_URL . '=' . $online_user->user_id),
-                        'U_FORUM_LOCATION' => append_sid($location_url)
+                        'U_USER_PROFILE'   => Session::appendSid('admin_users.php?mode=edit&amp;' . POST_USERS_URL . '=' . $online_user->user_id),
+                        'U_FORUM_LOCATION' => Session::appendSid($location_url)
                     ]
                 );
             }
@@ -435,7 +435,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
 						$location_url = 'index.php?pane=right';
 				}
 			} else {
-				$location_url = append_sid('admin_forums.php?mode=editforum&amp;' . POST_FORUM_URL . '=' . $guest->session_page);
+				$location_url = Session::appendSid('admin_forums.php?mode=editforum&amp;' . POST_FORUM_URL . '=' . $guest->session_page);
 				$location = $forum_data[$guest->session_page];
 			}
 
@@ -454,7 +454,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
                     'IP_ADDRESS'     => $guest_ip,
 
                     'U_WHOIS_IP'       => "http://network-tools.com/default.asp?host=$guest_ip",
-                    'U_FORUM_LOCATION' => append_sid($location_url)
+                    'U_FORUM_LOCATION' => Session::appendSid($location_url)
                 ]
             );
         }
@@ -473,8 +473,8 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
 
     $template->assign_vars(
         [
-            'S_FRAME_NAV'  => append_sid('index.php?pane=left'),
-            'S_FRAME_MAIN' => append_sid('index.php?pane=right')
+            'S_FRAME_NAV'  => Session::appendSid('index.php?pane=left'),
+            'S_FRAME_MAIN' => Session::appendSid('index.php?pane=right')
         ]
     );
 

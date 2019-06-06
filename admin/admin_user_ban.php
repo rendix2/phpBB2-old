@@ -254,7 +254,7 @@ if ( isset($_POST['submit']) ) {
             ->execute();
     }
 
-	$message = $lang['Ban_update_sucessful'] . '<br /><br />' . sprintf($lang['Click_return_banadmin'], '<a href="' . append_sid('admin_user_ban.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
+	$message = $lang['Ban_update_sucessful'] . '<br /><br />' . sprintf($lang['Click_return_banadmin'], '<a href="' . Session::appendSid('admin_user_ban.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 	message_die(GENERAL_MESSAGE, $message);
 
@@ -270,7 +270,7 @@ if ( isset($_POST['submit']) ) {
             'L_SUBMIT'           => $lang['Submit'],
             'L_RESET'            => $lang['Reset'],
 
-            'S_BANLIST_ACTION' => append_sid('admin_user_ban.php')
+            'S_BANLIST_ACTION' => Session::appendSid('admin_user_ban.php')
         ]);
 
     $template->assign_vars(
@@ -356,11 +356,11 @@ if ( isset($_POST['submit']) ) {
             'L_LOOK_UP'             => $lang['Look_up_User'],
             'L_FIND_USERNAME'       => $lang['Find_username'],
 
-            'U_SEARCH_USER'            => append_sid('./../search.php?mode=searchuser'),
+            'U_SEARCH_USER'            => Session::appendSid('./../search.php?mode=searchuser'),
             'S_UNBAN_USERLIST_SELECT'  => $select_userlist,
             'S_UNBAN_IPLIST_SELECT'    => $select_iplist,
             'S_UNBAN_EMAILLIST_SELECT' => $select_emaillist,
-            'S_BAN_ACTION'             => append_sid('admin_user_ban.php')
+            'S_BAN_ACTION'             => Session::appendSid('admin_user_ban.php')
         ]
     );
 }

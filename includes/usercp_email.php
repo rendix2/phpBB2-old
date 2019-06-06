@@ -27,7 +27,7 @@ if ( !defined('IN_PHPBB') ) {
 
 // Is send through board enabled? No, return to index
 if (!$board_config['board_email_form']) {
-	redirect(append_sid('index.php', true));
+	redirect(Session::appendSid('index.php', true));
 }
 
 if (!empty($_GET[POST_USERS_URL]) || !empty($_POST[POST_USERS_URL]))  {
@@ -37,7 +37,7 @@ if (!empty($_GET[POST_USERS_URL]) || !empty($_POST[POST_USERS_URL]))  {
 }
 
 if ( !$userdata['session_logged_in'] ) {
-	redirect(append_sid('login.php?redirect=profile.php&mode=email&' . POST_USERS_URL . "=$user_id", true));
+	redirect(Session::appendSid('login.php?redirect=profile.php&mode=email&' . POST_USERS_URL . "=$user_id", true));
 }
 
 $row = dibi::select(['username', 'user_email', 'user_viewemail', 'user_lang'])
@@ -134,11 +134,11 @@ if ($row->user_viewemail || $userdata['user_level'] === ADMIN) {
 
             $template->assign_vars(
                 [
-                    'META' => '<meta http-equiv="refresh" content="5;url=' . append_sid('index.php') . '">'
+                    'META' => '<meta http-equiv="refresh" content="5;url=' . Session::appendSid('index.php') . '">'
                 ]
             );
 
-            $message = $lang['Email_sent'] . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid('index.php') . '">', '</a>');
+            $message = $lang['Email_sent'] . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
             message_die(GENERAL_MESSAGE, $message);
         }
@@ -160,7 +160,7 @@ if ($row->user_viewemail || $userdata['user_level'] === ADMIN) {
             'USERNAME' => $username,
 
             'S_HIDDEN_FIELDS' => '',
-            'S_POST_ACTION'   => append_sid('profile.php?mode=email&amp;' . POST_USERS_URL . "=$user_id"),
+            'S_POST_ACTION'   => Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL . "=$user_id"),
 
             'L_SEND_EMAIL_MSG'      => $lang['Send_email_msg'],
             'L_RECIPIENT'           => $lang['Recipient'],

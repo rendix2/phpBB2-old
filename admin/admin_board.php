@@ -73,7 +73,7 @@ foreach ($configs as $config) {
 }
 
 if (isset($_POST['submit']) ) {
-	$message = $lang['Config_updated'] . '<br /><br />' . sprintf($lang['Click_return_config'], '<a href="' . append_sid('admin_board.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
+	$message = $lang['Config_updated'] . '<br /><br />' . sprintf($lang['Click_return_config'], '<a href="' . Session::appendSid('admin_board.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 	message_die(GENERAL_MESSAGE, $message);
 }
@@ -149,7 +149,7 @@ $template->set_filenames(['body' => 'admin/board_config_body.tpl']);
 $new['site_desc'] = str_replace('"', '&quot;', $new['site_desc']);
 $new['sitename'] = str_replace('"', '&quot;', strip_tags($new['sitename']));
 $template->assign_vars(array(
-		'S_CONFIG_ACTION' => append_sid('admin_board.php'),
+		'S_CONFIG_ACTION' => Session::appendSid('admin_board.php'),
 
 		'L_YES'                           => $lang['Yes'],
 		'L_NO'                            => $lang['No'],

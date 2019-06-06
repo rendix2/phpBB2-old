@@ -28,7 +28,7 @@ include $phpbb_root_path . 'common.php';
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, PAGE_VIEWONLINE);
+$userdata = Session::pageStart($user_ip, PAGE_VIEWONLINE);
 init_userprefs($userdata);
 //
 // End session management
@@ -182,7 +182,7 @@ foreach ($rows as $row) {
 					$location_url = 'index.php';
 			}
 		} else {
-			$location_url = append_sid('viewforum.php?' . POST_FORUM_URL . '=' . $row->session_page);
+			$location_url = Session::appendSid('viewforum.php?' . POST_FORUM_URL . '=' . $row->session_page);
 			$location = $forum_data[$row->session_page];
 		}
 
@@ -197,8 +197,8 @@ foreach ($rows as $row) {
                 'LASTUPDATE'     => create_date($board_config['default_dateformat'], $row->session_time, $board_config['board_timezone']),
                 'FORUM_LOCATION' => $location,
 
-                'U_USER_PROFILE'   => append_sid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $user_id),
-                'U_FORUM_LOCATION' => append_sid($location_url)
+                'U_USER_PROFILE'   => Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $user_id),
+                'U_FORUM_LOCATION' => Session::appendSid($location_url)
             ]
         );
 

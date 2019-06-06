@@ -133,7 +133,7 @@ if ( isset($_POST['submit']) ) {
         $emailer->send();
 		$emailer->reset();
 
-		message_die(GENERAL_MESSAGE, $lang['Email_sent'] . '<br /><br />' . sprintf($lang['Click_return_admin_index'],  '<a href="' . append_sid('index.php?pane=right') . '">', '</a>'));
+		message_die(GENERAL_MESSAGE, $lang['Email_sent'] . '<br /><br />' . sprintf($lang['Click_return_admin_index'],  '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>'));
 	}
 }
 
@@ -181,7 +181,7 @@ $template->assign_vars(
         'L_EMAIL'         => $lang['Email'],
         'L_NOTICE'        => $notice,
 
-        'S_USER_ACTION'  => append_sid('admin_mass_email.php'),
+        'S_USER_ACTION'  => Session::appendSid('admin_mass_email.php'),
         'S_GROUP_SELECT' => $select_list
     ]
 );

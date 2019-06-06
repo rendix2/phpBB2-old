@@ -42,7 +42,7 @@ if (trim($user->user_actkey) !== '' && trim($row['user_actkey']) !== trim($_GET[
 
 if ($row['user_active'] && trim($row['user_actkey']) === '') {
     $template->assign_vars(
-        ['META' => '<meta http-equiv="refresh" content="10;url=' . append_sid('index.php') . '">']
+        ['META' => '<meta http-equiv="refresh" content="10;url=' . Session::appendSid('index.php') . '">']
     );
 
     message_die(GENERAL_MESSAGE, $lang['Already_activated']);
@@ -53,7 +53,7 @@ if ($row['user_active'] && trim($row['user_actkey']) === '') {
 
 if ((int)$board_config['require_activation'] === USER_ACTIVATION_ADMIN && $row['user_newpasswd'] === '') {
     if (!$userdata['session_logged_in']) {
-        redirect(append_sid('login.php?redirect=profile.php&mode=activate&' . POST_USERS_URL . '=' . $row['user_id'] . '&act_key=' . trim($_GET['act_key'])));
+        redirect(Session::appendSid('login.php?redirect=profile.php&mode=activate&' . POST_USERS_URL . '=' . $row['user_id'] . '&act_key=' . trim($_GET['act_key'])));
     } elseif ($userdata['user_level'] !== ADMIN) {
         message_die(GENERAL_MESSAGE, $lang['Not_Authorised']);
     }
@@ -95,13 +95,13 @@ if ((int)$board_config['require_activation'] === USER_ACTIVATION_ADMIN && $sql_u
     $emailer->reset();
 
     $template->assign_vars([
-        'META' => '<meta http-equiv="refresh" content="10;url=' . append_sid('index.php') . '">'
+        'META' => '<meta http-equiv="refresh" content="10;url=' . Session::appendSid('index.php') . '">'
     ]);
 
     message_die(GENERAL_MESSAGE, $lang['Account_active_admin']);
 } else {
     $template->assign_vars([
-        'META' => '<meta http-equiv="refresh" content="10;url=' . append_sid('index.php') . '">'
+        'META' => '<meta http-equiv="refresh" content="10;url=' . Session::appendSid('index.php') . '">'
     ]);
 
     $message = ($sql_update_pass === '') ? $lang['Account_active'] : $lang['Password_activated'];

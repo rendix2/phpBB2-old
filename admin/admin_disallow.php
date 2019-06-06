@@ -53,7 +53,7 @@ if (isset($_POST['add_name']) ) {
 		$message = $lang['Disallow_successful'];
 	}
 
-	$message .= '<br /><br />' . sprintf($lang['Click_return_disallowadmin'], '<a href="' . append_sid('admin_disallow.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
+	$message .= '<br /><br />' . sprintf($lang['Click_return_disallowadmin'], '<a href="' . Session::appendSid('admin_disallow.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 	message_die(GENERAL_MESSAGE, $message);
 } elseif (isset($_POST['delete_name']) ) {
@@ -63,7 +63,7 @@ if (isset($_POST['add_name']) ) {
         ->where('disallow_id = %i', $disallowed_id)
         ->execute();
 
-	$message .= $lang['Disallowed_deleted'] . '<br /><br />' . sprintf($lang['Click_return_disallowadmin'], '<a href="' . append_sid('admin_disallow.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
+	$message .= $lang['Disallowed_deleted'] . '<br /><br />' . sprintf($lang['Click_return_disallowadmin'], '<a href="' . Session::appendSid('admin_disallow.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 	message_die(GENERAL_MESSAGE, $message);
 }
@@ -99,7 +99,7 @@ $template->set_filenames(['body' => 'admin/disallow_body.tpl']);
 $template->assign_vars(
     [
         'S_DISALLOW_SELECT' => $disallow_select,
-        'S_FORM_ACTION'     => append_sid('admin_disallow.php'),
+        'S_FORM_ACTION'     => Session::appendSid('admin_disallow.php'),
 
         'L_INFO'             => $output_info,
         'L_DISALLOW_TITLE'   => $lang['Disallow_control'],

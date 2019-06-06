@@ -27,7 +27,7 @@ include $phpbb_root_path . 'common.php';
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, PAGE_VIEWMEMBERS);
+$userdata = Session::pageStart($user_ip, PAGE_VIEWMEMBERS);
 init_userprefs($userdata);
 //
 // End session management
@@ -113,7 +113,7 @@ $template->assign_vars(
 
         'S_MODE_SELECT'  => $select_sort_mode,
         'S_ORDER_SELECT' => $select_sort_order,
-        'S_MODE_ACTION'  => append_sid('memberlist.php')
+        'S_MODE_ACTION'  => Session::appendSid('memberlist.php')
     ]
 );
 
@@ -210,7 +210,7 @@ foreach ($users as $user) {
     }
 
     if (!empty($user->user_viewemail) || $userdata['user_level'] === ADMIN) {
-        $email_uri = $board_config['board_email_form'] ? append_sid('profile.php?mode=email&amp;' . POST_USERS_URL . '=' . $user_id) : 'mailto:' . $user->user_email;
+        $email_uri = $board_config['board_email_form'] ? Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL . '=' . $user_id) : 'mailto:' . $user->user_email;
 
         $email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
         $email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
@@ -219,11 +219,11 @@ foreach ($users as $user) {
         $email = '&nbsp;';
     }
 
-    $temp_url = append_sid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$user_id");
+    $temp_url = Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$user_id");
     $profile_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_profile'] . '" alt="' . $lang['Read_profile'] . '" title="' . $lang['Read_profile'] . '" border="0" /></a>';
     $profile = '<a href="' . $temp_url . '">' . $lang['Read_profile'] . '</a>';
 
-    $temp_url = append_sid('privmsg.php?mode=post&amp;' . POST_USERS_URL . "=$user_id");
+    $temp_url = Session::appendSid('privmsg.php?mode=post&amp;' . POST_USERS_URL . "=$user_id");
     $pm_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
     $pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
 
@@ -243,14 +243,14 @@ foreach ($users as $user) {
     $aim_img = $user->user_aim ? '<a href="aim:goim?screenname=' . $user->user_aim . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
     $aim = $user->user_aim ? '<a href="aim:goim?screenname=' . $user->user_aim . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
 
-    $temp_url = append_sid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$user_id");
+    $temp_url = Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$user_id");
     $msn_img = $user->user_msnm ? '<a href="' . $temp_url . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
     $msn = $user->user_msnm ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
 
     $yim_img = $user->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $user->user_yim . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
     $yim = $user->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $user->user_yim . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
 
-    $temp_url = append_sid('search.php?search_author=' . urlencode($username) . '&amp;showresults=posts');
+    $temp_url = Session::appendSid('search.php?search_author=' . urlencode($username) . '&amp;showresults=posts');
     $search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $username) . '" title="' . sprintf($lang['Search_user_posts'], $username) . '" border="0" /></a>';
     $search = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $username) . '</a>';
 
@@ -287,7 +287,7 @@ foreach ($users as $user) {
             'YIM_IMG' => $yim_img,
             'YIM' => $yim,
 
-            'U_VIEWPROFILE' => append_sid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$user_id")
+            'U_VIEWPROFILE' => Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$user_id")
         ]
     );
 

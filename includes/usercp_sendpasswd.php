@@ -86,11 +86,11 @@ if (isset($_POST['submit'])) {
 
     $template->assign_vars(
         [
-            'META' => '<meta http-equiv="refresh" content="15;url=' . append_sid('index.php') . '">'
+            'META' => '<meta http-equiv="refresh" content="15;url=' . Session::appendSid('index.php') . '">'
         ]
     );
 
-    $message = $lang['Password_updated'] . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid('index.php') . '">', '</a>');
+    $message = $lang['Password_updated'] . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
     message_die(GENERAL_MESSAGE, $message);
 }
@@ -115,7 +115,7 @@ $template->assign_vars(
         'L_RESET'          => $lang['Reset'],
 
         'S_HIDDEN_FIELDS'  => '',
-        'S_PROFILE_ACTION' => append_sid('profile.php?mode=sendpassword')
+        'S_PROFILE_ACTION' => Session::appendSid('profile.php?mode=sendpassword')
     ]
 );
 

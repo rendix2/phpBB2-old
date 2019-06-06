@@ -381,7 +381,7 @@ function username_search($search_match)
             'L_SEARCH_EXPLAIN'  => $lang['Search_author_explain'],
 
             'S_USERNAME_OPTIONS' => $username_list,
-            'S_SEARCH_ACTION'    => append_sid('search.php?mode=searchuser')
+            'S_SEARCH_ACTION'    => Session::appendSid('search.php?mode=searchuser')
         ]
     );
 

@@ -136,7 +136,7 @@ if (isset($_POST['doprune']) ) {
                 'L_SELECT_FORUM' => $lang['Select_a_Forum'],
                 'L_LOOK_UP' => $lang['Look_up_Forum'],
 
-                'S_FORUMPRUNE_ACTION' => append_sid('admin_forum_prune.php'),
+                'S_FORUMPRUNE_ACTION' => Session::appendSid('admin_forum_prune.php'),
                 'S_FORUMS_SELECT' => $select_list]
 		);
 	}
@@ -167,7 +167,7 @@ if (isset($_POST['doprune']) ) {
                 'L_FORUM_PRUNE_EXPLAIN' => $lang['Forum_Prune_explain'],
                 'L_DO_PRUNE' => $lang['Do_Prune'],
 
-                'S_FORUMPRUNE_ACTION' => append_sid('admin_forum_prune.php'),
+                'S_FORUMPRUNE_ACTION' => Session::appendSid('admin_forum_prune.php'),
                 'S_PRUNE_DATA' => $prune_data,
                 'S_HIDDEN_VARS' => $hidden_input]
 		);

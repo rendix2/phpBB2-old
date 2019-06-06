@@ -47,7 +47,7 @@ $no_page_header = !empty($_POST['send_file']) || !empty($_POST['send_file']) || 
 require './pagestart.php';
 
 if ($cancel) {
-    redirect('admin/' . append_sid('admin_styles.php', true));
+    redirect('admin/' . Session::appendSid('admin_styles.php', true));
 }
 
 if (isset($_GET['mode']) || isset($_POST['mode'])) {
@@ -80,7 +80,7 @@ switch( $mode )
 
 			dibi::insert(THEMES_TABLE, $insert_data)->execute();
 			
-			$message = $lang['Theme_installed'] . '<br /><br />' . sprintf($lang['Click_return_styleadmin'], '<a href="' . append_sid('admin_styles.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
+			$message = $lang['Theme_installed'] . '<br /><br />' . sprintf($lang['Click_return_styleadmin'], '<a href="' . Session::appendSid('admin_styles.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		} else {
@@ -135,7 +135,7 @@ switch( $mode )
                             'STYLE_NAME'    => $installable_theme['style_name'],
                             'TEMPLATE_NAME' => $installable_theme['template_name'],
 
-                            'U_STYLES_INSTALL' => append_sid('admin_styles.php?mode=addnew&amp;style=' . urlencode($installable_theme['style_name']) . '&amp;install_to=' . urlencode($installable_theme['template_name']))
+                            'U_STYLES_INSTALL' => Session::appendSid('admin_styles.php?mode=addnew&amp;style=' . urlencode($installable_theme['style_name']) . '&amp;install_to=' . urlencode($installable_theme['template_name']))
                         ]
                     );
 
@@ -254,7 +254,7 @@ switch( $mode )
 				    dibi::insert(THEMES_NAME_TABLE, $updated_name)->execute();
 				}
 							
-				$message = $lang['Theme_updated'] . '<br /><br />' . sprintf($lang['Click_return_styleadmin'], '<a href="' . append_sid('admin_styles.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
+				$message = $lang['Theme_updated'] . '<br /><br />' . sprintf($lang['Click_return_styleadmin'], '<a href="' . Session::appendSid('admin_styles.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 				message_die(GENERAL_MESSAGE, $message);
 			} else {
@@ -279,7 +279,7 @@ switch( $mode )
 
                 dibi::insert(THEMES_NAME_TABLE, $updated_name)->execute();
 				
-				$message = $lang['Theme_created'] . '<br /><br />' . sprintf($lang['Click_return_styleadmin'], '<a href="' . append_sid('admin_styles.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
+				$message = $lang['Theme_created'] . '<br /><br />' . sprintf($lang['Click_return_styleadmin'], '<a href="' . Session::appendSid('admin_styles.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 				message_die(GENERAL_MESSAGE, $message);
 			}
@@ -458,7 +458,7 @@ switch( $mode )
                     'SPAN_CLASS2_NAME' => $selected['span_class2_name'],
                     'SPAN_CLASS3_NAME' => $selected['span_class3_name'],
 
-                    'S_THEME_ACTION'    => append_sid('admin_styles.php'),
+                    'S_THEME_ACTION'    => Session::appendSid('admin_styles.php'),
                     'S_TEMPLATE_SELECT' => $s_template_select,
                     'S_HIDDEN_FIELDS'   => $s_hidden_fields)
 			);
@@ -506,7 +506,7 @@ switch( $mode )
 				$s_hidden_fields = '<input type="hidden" name="theme_info" value="' . htmlspecialchars($theme_data) . '" />';
 				$s_hidden_fields .= '<input type="hidden" name="send_file" value="1" /><input type="hidden" name="mode" value="export" />';
 				
-				$download_form = '<form action="' . append_sid('admin_styles.php') . '" method="post"><input class="mainoption" type="submit" name="submit" value="' . $lang['Download'] . '" />' . $s_hidden_fields;
+				$download_form = '<form action="' . Session::appendSid('admin_styles.php') . '" method="post"><input class="mainoption" type="submit" name="submit" value="' . $lang['Download'] . '" />' . $s_hidden_fields;
 
                 $template->set_filenames(['body' => 'message_body.tpl']);
 
@@ -524,7 +524,7 @@ switch( $mode )
 			$result = @fwrite($fp, $theme_data, strlen($theme_data));
 			fclose($fp);
 			
-			$message = $lang['Theme_info_saved'] . '<br /><br />' . sprintf($lang['Click_return_styleadmin'], '<a href="' . append_sid('admin_styles.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
+			$message = $lang['Theme_info_saved'] . '<br /><br />' . sprintf($lang['Click_return_styleadmin'], '<a href="' . Session::appendSid('admin_styles.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 
@@ -558,7 +558,7 @@ switch( $mode )
                     'L_TEMPLATE_SELECT'  => $lang['Select_template'],
                     'L_SUBMIT'           => $lang['Submit'],
 
-                    'S_EXPORTER_ACTION' => append_sid('admin_styles.php?mode=export'),
+                    'S_EXPORTER_ACTION' => Session::appendSid('admin_styles.php?mode=export'),
                     'S_TEMPLATE_SELECT' => $s_template_select
                 ]
             );
@@ -591,7 +591,7 @@ switch( $mode )
                     'L_YES' => $lang['Yes'],
                     'L_NO'  => $lang['No'],
 
-                    'S_CONFIRM_ACTION' => append_sid('admin_styles.php'),
+                    'S_CONFIRM_ACTION' => Session::appendSid('admin_styles.php'),
                     'S_HIDDEN_FIELDS'  => $hidden_fields
                 ]
             );
@@ -621,7 +621,7 @@ switch( $mode )
                 ->where('user_style = %i', $style_id)
                 ->execute();
 			
-			$message = $lang['Style_removed'] . '<br /><br />' . sprintf($lang['Click_return_styleadmin'], '<a href="' . append_sid('admin_styles.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
+			$message = $lang['Style_removed'] . '<br /><br />' . sprintf($lang['Click_return_styleadmin'], '<a href="' . Session::appendSid('admin_styles.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		}
@@ -660,8 +660,8 @@ switch( $mode )
                     'STYLE_NAME'    => $style->style_name,
                     'TEMPLATE_NAME' => $style->template_name,
 
-                    'U_STYLES_EDIT'   => append_sid('admin_styles.php?mode=edit&amp;style_id=' . $style->themes_id),
-                    'U_STYLES_DELETE' => append_sid('admin_styles.php?mode=delete&amp;style_id=' . $style->themes_id)
+                    'U_STYLES_EDIT'   => Session::appendSid('admin_styles.php?mode=edit&amp;style_id=' . $style->themes_id),
+                    'U_STYLES_DELETE' => Session::appendSid('admin_styles.php?mode=delete&amp;style_id=' . $style->themes_id)
                 ]
             );
         }

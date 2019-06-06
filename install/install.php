@@ -233,7 +233,7 @@ $error = false;
 // Include some required functions
 include $phpbb_root_path.'includes/constants.php';
 include $phpbb_root_path.'includes/functions.php';
-include $phpbb_root_path.'includes/sessions.php';
+include $phpbb_root_path.'includes/Session.php.php';
 include $phpbb_root_path .'vendor/autoload.php';
 
 // Define schema info

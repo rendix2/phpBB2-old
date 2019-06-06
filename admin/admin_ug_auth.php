@@ -198,7 +198,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
                 ->execute();
 		}
 
-		$message = $lang['Auth_updated'] . '<br /><br />' . sprintf($lang['Click_return_userauth'], '<a href="' . append_sid("admin_ug_auth.php?mode=$mode") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
+		$message = $lang['Auth_updated'] . '<br /><br />' . sprintf($lang['Click_return_userauth'], '<a href="' . Session::appendSid("admin_ug_auth.php?mode=$mode") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 		message_die(GENERAL_MESSAGE, $message);
 	} else {
 		if ( $mode === 'user' && $_POST['userlevel'] === 'user' && $user_level === ADMIN ) {
@@ -230,7 +230,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
                     ->execute();
 			}
 
-			$message = $lang['Auth_updated'] . '<br /><br />' . sprintf($lang['Click_return_userauth'], '<a href="' . append_sid("admin_ug_auth.php?mode=$mode") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
+			$message = $lang['Auth_updated'] . '<br /><br />' . sprintf($lang['Click_return_userauth'], '<a href="' . Session::appendSid("admin_ug_auth.php?mode=$mode") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 		} else {
 	
 			$change_mod_list = isset($_POST['moderator']) ? $_POST['moderator'] : [];
@@ -383,7 +383,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 			}
 
 			$l_auth_return = ( $mode === 'user' ) ? $lang['Click_return_userauth'] : $lang['Click_return_groupauth'];
-			$message = $lang['Auth_updated'] . '<br /><br />' . sprintf($l_auth_return, '<a href="' . append_sid("admin_ug_auth.php?mode=$mode") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
+			$message = $lang['Auth_updated'] . '<br /><br />' . sprintf($l_auth_return, '<a href="' . Session::appendSid("admin_ug_auth.php?mode=$mode") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 		}
 
 		//
@@ -727,7 +727,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
             'ROW_CLASS'  => $row_class,
             'FORUM_NAME' => $forum_access[$i]['forum_name'],
 
-            'U_FORUM_AUTH' => append_sid('admin_forumauth.php?f=' . $forum_access[$i]['forum_id']),
+            'U_FORUM_AUTH' => Session::appendSid('admin_forumauth.php?f=' . $forum_access[$i]['forum_id']),
 
             'S_MOD_SELECT' => $optionlist_mod
             ]);
@@ -781,9 +781,9 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
             $ug = ($mode === 'user') ? 'group&amp;' . POST_GROUPS_URL : 'user&amp;' . POST_USERS_URL;
 
             if (!$ug_info_value->user_pending) {
-                $t_usergroup_list .= (($t_usergroup_list !== '') ? ', ' : '') . '<a href="' . append_sid("admin_ug_auth.php?mode=$ug=" . $names[$i]['id']) . '">' . $names[$i]['name'] . '</a>';
+                $t_usergroup_list .= (($t_usergroup_list !== '') ? ', ' : '') . '<a href="' . Session::appendSid("admin_ug_auth.php?mode=$ug=" . $names[$i]['id']) . '">' . $names[$i]['name'] . '</a>';
             } else {
-                $t_pending_list .= (($t_pending_list !== '') ? ', ' : '') . '<a href="' . append_sid("admin_ug_auth.php?mode=$ug=" . $names[$i]['id']) . '">' . $names[$i]['name'] . '</a>';
+                $t_pending_list .= (($t_pending_list !== '') ? ', ' : '') . '<a href="' . Session::appendSid("admin_ug_auth.php?mode=$ug=" . $names[$i]['id']) . '">' . $names[$i]['name'] . '</a>';
             }
         }
     }
@@ -814,7 +814,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 
     $adv_switch = empty($adv) ? 1 : 0;
 	$u_ug_switch = ( $mode === 'user' ) ? POST_USERS_URL . '=' . $user_id : POST_GROUPS_URL . '=' . $group_id;
-	$switch_mode = append_sid("admin_ug_auth.php?mode=$mode&amp;" . $u_ug_switch . "&amp;adv=$adv_switch");
+	$switch_mode = Session::appendSid("admin_ug_auth.php?mode=$mode&amp;" . $u_ug_switch . "&amp;adv=$adv_switch");
 	$switch_mode_text = empty($adv) ? $lang['Advanced_mode'] : $lang['Simple_mode'];
 	$u_switch_mode = '<a href="' . $switch_mode . '">' . $switch_mode_text . '</a>';
 
@@ -854,11 +854,11 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
             'L_RESET'            => $lang['Reset'],
             'L_FORUM'            => $lang['Forum'],
 
-            'U_USER_OR_GROUP' => append_sid('admin_ug_auth.php'),
+            'U_USER_OR_GROUP' => Session::appendSid('admin_ug_auth.php'),
             'U_SWITCH_MODE'   => $u_switch_mode,
 
             'S_COLUMN_SPAN'   => $s_column_span,
-            'S_AUTH_ACTION'   => append_sid('admin_ug_auth.php'),
+            'S_AUTH_ACTION'   => Session::appendSid('admin_ug_auth.php'),
             'S_HIDDEN_FIELDS' => $s_hidden_fields
         ]
     );
@@ -875,7 +875,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
             [
                 'L_FIND_USERNAME' => $lang['Find_username'],
 
-                'U_SEARCH_USER' => append_sid('../search.php?mode=searchuser')
+                'U_SEARCH_USER' => Session::appendSid('../search.php?mode=searchuser')
             ]
         );
     } else {
@@ -907,7 +907,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
             'L_LOOK_UP'                 => ($mode === 'user') ? $lang['Look_up_User'] : $lang['Look_up_Group'],
 
             'S_HIDDEN_FIELDS'          => $s_hidden_fields,
-            'S_' . $l_type . '_ACTION' => append_sid('admin_ug_auth.php')
+            'S_' . $l_type . '_ACTION' => Session::appendSid('admin_ug_auth.php')
         ]
     );
 }

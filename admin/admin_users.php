@@ -144,7 +144,7 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
                     ->execute();
             }
 
-			$message = $lang['User_deleted'] . '<br /><br />' . sprintf($lang['Click_return_useradmin'], '<a href="' . append_sid('admin_users.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
+			$message = $lang['User_deleted'] . '<br /><br />' . sprintf($lang['Click_return_useradmin'], '<a href="' . Session::appendSid('admin_users.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		}
@@ -584,11 +584,11 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
             // We remove all stored login keys since the password has been updated
             // and change the current one (if applicable)
             if (count($passwd_sql)) {
-                session_reset_keys($user_id, $user_ip);
+                Session::resetKeys($user_id, $user_ip);
             }
 
             $message .= $lang['Admin_user_updated'];
-			$message .= '<br /><br />' . sprintf($lang['Click_return_useradmin'], '<a href="' . append_sid('admin_users.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
+			$message .= '<br /><br />' . sprintf($lang['Click_return_useradmin'], '<a href="' . Session::appendSid('admin_users.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		} else {
@@ -799,7 +799,7 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 
                 'S_OPTIONS_CATEGORIES' => $s_categories,
                 'S_COLSPAN'            => $s_colspan,
-                'S_PROFILE_ACTION'     => append_sid("admin_users.php?mode=$mode"),
+                'S_PROFILE_ACTION'     => Session::appendSid("admin_users.php?mode=$mode"),
                 'S_HIDDEN_FIELDS'      => $s_hidden_fields
                 ]);
         }
@@ -954,7 +954,7 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
                 'S_FORM_ENCTYPE' => $form_enctype,
 
                 'HTML_STATUS' => $html_status,
-                'BBCODE_STATUS' => sprintf($bbcode_status, '<a href="../' . append_sid('faq.php?mode=bbcode') . '" target="_phpbbcode">', '</a>'),
+                'BBCODE_STATUS' => sprintf($bbcode_status, '<a href="../' . Session::appendSid('faq.php?mode=bbcode') . '" target="_phpbbcode">', '</a>'),
                 'SMILIES_STATUS' => $smilies_status,
 
                 'L_DELETE_USER' => $lang['User_delete'],
@@ -962,7 +962,7 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
                 'L_SELECT_RANK' => $lang['Rank_title'],
 
                 'S_HIDDEN_FIELDS' => $s_hidden_fields,
-                'S_PROFILE_ACTION' => append_sid('admin_users.php')
+                'S_PROFILE_ACTION' => Session::appendSid('admin_users.php')
             ]
 		);
 
@@ -1000,9 +1000,9 @@ else
             'L_LOOK_UP'       => $lang['Look_up_user'],
             'L_FIND_USERNAME' => $lang['Find_username'],
 
-            'U_SEARCH_USER' => append_sid('./../search.php?mode=searchuser'),
+            'U_SEARCH_USER' => Session::appendSid('./../search.php?mode=searchuser'),
 
-            'S_USER_ACTION' => append_sid('admin_users.php'),
+            'S_USER_ACTION' => Session::appendSid('admin_users.php'),
             'S_USER_SELECT' => $select_list
         ]
     );

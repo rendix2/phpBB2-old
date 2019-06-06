@@ -109,7 +109,7 @@ if (isset($_GET['perform']) || isset($_POST['perform']) ) {
                         'L_SELECT_FILE'      => $lang['Select_file'],
                         'L_START_RESTORE'    => $lang['Start_Restore'],
 
-                        'S_DBUTILS_ACTION' => append_sid('admin_db_utilities.php'),
+                        'S_DBUTILS_ACTION' => Session::appendSid('admin_db_utilities.php'),
                         'S_HIDDEN_FIELDS'  => $s_hidden_fields
 					]
 				);

@@ -86,7 +86,7 @@ if ($mode === 'topicreview') {
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, PAGE_POSTING);
+$userdata = Session::pageStart($user_ip, PAGE_POSTING);
 init_userprefs($userdata);
 //
 // End session management
@@ -111,7 +111,7 @@ if (isset($_POST['cancel'])) {
         $post_append = '';
     }
 
-    redirect(append_sid($redirect, true) . $post_append);
+    redirect(Session::appendSid($redirect, true) . $post_append);
 }
 
 //
@@ -327,7 +327,7 @@ if ($post_info) {
 		//
         if ($post_info->poster_id !== $userdata['user_id'] && !$is_auth['auth_mod']) {
 			$message = ( $delete || $mode === 'delete' ) ? $lang['Delete_own_posts'] : $lang['Edit_own_posts'];
-			$message .= '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . append_sid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id") . '">', '</a>');
+			$message .= '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id") . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
         } elseif (!$post_data['last_post'] && !$is_auth['auth_mod'] && ($mode === 'delete' || $delete)) {
@@ -384,7 +384,7 @@ if (!$is_auth[$is_auth_type]) {
 			break;
 	}
 
-	redirect(append_sid('login.php?redirect=posting.php&' . $redirect, true));
+	redirect(Session::appendSid('login.php?redirect=posting.php&' . $redirect, true));
 }
 
 //
@@ -486,7 +486,7 @@ if (($delete || $poll_delete || $mode === 'delete') && !$confirm) {
             'L_YES' => $lang['Yes'],
             'L_NO'  => $lang['No'],
 
-            'S_CONFIRM_ACTION' => append_sid('posting.php'),
+            'S_CONFIRM_ACTION' => Session::appendSid('posting.php'),
             'S_HIDDEN_FIELDS'  => $s_hidden_fields
         ]
     );
@@ -499,7 +499,7 @@ if (($delete || $poll_delete || $mode === 'delete') && !$confirm) {
     // Vote in a poll
     //
     if (empty($_POST['vote_id'])) {
-        redirect(append_sid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id", true));
+        redirect(Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id", true));
     }
 
     $vote_option_id = (int)$_POST['vote_id'];
@@ -546,12 +546,12 @@ if (($delete || $poll_delete || $mode === 'delete') && !$confirm) {
 
     $template->assign_vars(
         [
-            'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id") . '">'
+            'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id") . '">'
         ]
     );
 
     $message = $lang['Vote_cast'];
-    $message .= '<br /><br />' . sprintf($lang['Click_view_message'], '<a href="' . append_sid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id") . '">', '</a>');
+    $message .= '<br /><br />' . sprintf($lang['Click_view_message'], '<a href="' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id") . '">', '</a>');
 
     message_die(GENERAL_MESSAGE, $message);
 
@@ -948,7 +948,7 @@ $template->assign_vars(
         'L_POST_A'       => $page_title,
         'L_POST_SUBJECT' => $lang['Post_subject'],
 
-        'U_VIEW_FORUM' => append_sid('viewforum.php?' . POST_FORUM_URL . "=$forum_id")
+        'U_VIEW_FORUM' => Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forum_id")
     ]
 );
 
@@ -966,7 +966,7 @@ $template->assign_vars([
     'SUBJECT'        => $subject,
     'MESSAGE'        => $message,
     'HTML_STATUS'    => $html_status,
-    'BBCODE_STATUS'  => sprintf($bbcode_status, '<a href="' . append_sid('faq.php?mode=bbcode') . '" target="_phpbbcode">', '</a>'),
+    'BBCODE_STATUS'  => sprintf($bbcode_status, '<a href="' . Session::appendSid('faq.php?mode=bbcode') . '" target="_phpbbcode">', '</a>'),
     'SMILIES_STATUS' => $smilies_status,
 
     'L_SUBJECT'          => $lang['Subject'],
@@ -1025,8 +1025,8 @@ $template->assign_vars([
     'L_BBCODE_CLOSE_TAGS' => $lang['Close_Tags'],
     'L_STYLES_TIP'        => $lang['Styles_tip'],
 
-    'U_VIEWTOPIC'    => $mode === 'reply' ? append_sid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;postorder=desc") : '',
-    'U_REVIEW_TOPIC' => $mode === 'reply' ? append_sid('posting.php?mode=topicreview&amp;' . POST_TOPIC_URL . "=$topic_id") : '',
+    'U_VIEWTOPIC'    => $mode === 'reply' ? Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;postorder=desc") : '',
+    'U_REVIEW_TOPIC' => $mode === 'reply' ? Session::appendSid('posting.php?mode=topicreview&amp;' . POST_TOPIC_URL . "=$topic_id") : '',
 
     'S_HTML_CHECKED'       => (!$html_on) ? 'checked="checked"' : '',
     'S_BBCODE_CHECKED'     => (!$bbcode_on) ? 'checked="checked"' : '',
@@ -1035,7 +1035,7 @@ $template->assign_vars([
     'S_NOTIFY_CHECKED'     => $notify_user ? 'checked="checked"' : '',
     'S_TYPE_TOGGLE'        => $topic_type_toggle,
     'S_TOPIC_ID'           => $topic_id,
-    'S_POST_ACTION'        => append_sid('posting.php'),
+    'S_POST_ACTION'        => Session::appendSid('posting.php'),
     'S_HIDDEN_FORM_FIELDS' => $hidden_form_fields
     ]);
 

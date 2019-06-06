@@ -71,7 +71,7 @@ function topic_review($topic_id, $is_inline_review)
 		//
 		// Start session management
 		//
-		$userdata = session_pagestart($user_ip, $forum_id);
+		$userdata = Session::pageStart($user_ip, $forum_id);
 		init_userprefs($userdata);
 		//
 		// End session management

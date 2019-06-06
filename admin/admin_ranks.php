@@ -38,7 +38,7 @@ $no_page_header = $cancel;
 require './pagestart.php';
 
 if ($cancel) {
-	redirect('admin/' . append_sid('admin_ranks.php', true));
+	redirect('admin/' . Session::appendSid('admin_ranks.php', true));
 }
 
 if (isset($_GET['mode']) || isset($_POST['mode']) ) {
@@ -116,7 +116,7 @@ if ($mode !== '') {
                 'L_YES'                => $lang['Yes'],
                 'L_NO'                 => $lang['No'],
 
-                'S_RANK_ACTION'   => append_sid('admin_ranks.php'),
+                'S_RANK_ACTION'   => Session::appendSid('admin_ranks.php'),
                 'S_HIDDEN_FIELDS' => $s_hidden_fields
 			]
 		);
@@ -181,7 +181,7 @@ if ($mode !== '') {
 			$message = $lang['Rank_added'];
 		}
 
-		$message .= '<br /><br />' . sprintf($lang['Click_return_rankadmin'], '<a href="' . append_sid('admin_ranks.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
+		$message .= '<br /><br />' . sprintf($lang['Click_return_rankadmin'], '<a href="' . Session::appendSid('admin_ranks.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 		message_die(GENERAL_MESSAGE, $message);
 
@@ -211,7 +211,7 @@ if ($mode !== '') {
 				message_die(GENERAL_ERROR, $lang['No_update_ranks']);
 			}
 
-			$message = $lang['Rank_removed'] . '<br /><br />' . sprintf($lang['Click_return_rankadmin'], '<a href="' . append_sid('admin_ranks.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
+			$message = $lang['Rank_removed'] . '<br /><br />' . sprintf($lang['Click_return_rankadmin'], '<a href="' . Session::appendSid('admin_ranks.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 
@@ -229,7 +229,7 @@ if ($mode !== '') {
                     'L_YES' => $lang['Yes'],
                     'L_NO'  => $lang['No'],
 
-                    'S_CONFIRM_ACTION' => append_sid('admin_ranks.php'),
+                    'S_CONFIRM_ACTION' => Session::appendSid('admin_ranks.php'),
                     'S_HIDDEN_FIELDS'  => $hidden_fields
 				]
 			);
@@ -268,7 +268,7 @@ $template->assign_vars(
         'L_ADD_RANK'     => $lang['Add_new_rank'],
         'L_ACTION'       => $lang['Action'],
 
-        'S_RANKS_ACTION' => append_sid('admin_ranks.php')
+        'S_RANKS_ACTION' => Session::appendSid('admin_ranks.php')
 	]
 );
 
@@ -294,8 +294,8 @@ foreach ($ranks as $i => $rank) {
             'SPECIAL_RANK' => $rank_is_special,
             'RANK_MIN'     => $rank_min,
 
-            'U_RANK_EDIT'   => append_sid("admin_ranks.php?mode=edit&amp;id=$rank_id"),
-            'U_RANK_DELETE' => append_sid("admin_ranks.php?mode=delete&amp;id=$rank_id")
+            'U_RANK_EDIT'   => Session::appendSid("admin_ranks.php?mode=edit&amp;id=$rank_id"),
+            'U_RANK_DELETE' => Session::appendSid("admin_ranks.php?mode=delete&amp;id=$rank_id")
 		]
 	);
 }

@@ -28,7 +28,7 @@ include $phpbb_root_path . 'common.php';
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, PAGE_INDEX);
+$userdata = Session::pageStart($user_ip, PAGE_INDEX);
 init_userprefs($userdata);
 //
 // End session management
@@ -64,11 +64,11 @@ if ($mark_read === 'forums') {
 
     $template->assign_vars(
         [
-            'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid('index.php') . '">'
+            'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('index.php') . '">'
         ]
     );
 
-    $message = $lang['Forums_marked_read'] . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid('index.php') . '">', '</a> ');
+    $message = $lang['Forums_marked_read'] . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a> ');
 
     message_die(GENERAL_MESSAGE, $message);
 }
@@ -237,7 +237,7 @@ $forum_moderators_data = dibi::select('aa.forum_id, u.user_id, u.username')
 $forum_moderators = [];
 
 foreach ($forum_moderators_data as $row) {
-    $forum_moderators[$row->forum_id][] = '<a href="' . append_sid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $row->user_id) . '">' . $row->username . '</a>';
+    $forum_moderators[$row->forum_id][] = '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $row->user_id) . '">' . $row->username . '</a>';
 }
 
 $forum_moderators_data = dibi::select('aa.forum_id, g.group_id, g.group_name')
@@ -260,7 +260,7 @@ $forum_moderators_data = dibi::select('aa.forum_id, g.group_id, g.group_name')
     ->fetchAll();
 
 foreach ($forum_moderators_data as $row) {
-    $forum_moderators[$row->forum_id][] = '<a href="' . append_sid('groupcp.php?' . POST_GROUPS_URL . '=' . $row->group_id) . '">' . $row->group_name . '</a>';
+    $forum_moderators[$row->forum_id][] = '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . '=' . $row->group_id) . '">' . $row->group_name . '</a>';
 }
 
 //
@@ -281,7 +281,7 @@ $template->assign_vars(
     [
         'TOTAL_POSTS' => sprintf($l_total_post_s, $total_posts),
         'TOTAL_USERS' => sprintf($l_total_user_s, $total_users),
-        'NEWEST_USER' => sprintf($lang['Newest_user'], '<a href="' . append_sid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$newest_uid") . '">', $newest_user, '</a>'),
+        'NEWEST_USER' => sprintf($lang['Newest_user'], '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$newest_uid") . '">', $newest_user, '</a>'),
 
         'FORUM_IMG'        => $images['forum'],
         'FORUM_NEW_IMG'    => $images['forum_new'],
@@ -303,7 +303,7 @@ $template->assign_vars(
         'L_FORUM_LOCKED'     => $lang['Forum_is_locked'],
         'L_MARK_FORUMS_READ' => $lang['Mark_all_forums'],
 
-        'U_MARK_READ' => append_sid('index.php?mark=forums')
+        'U_MARK_READ' => Session::appendSid('index.php?mark=forums')
     ]
 );
 
@@ -335,7 +335,7 @@ foreach ($categories as $category) {
         $template->assign_block_vars('catrow', [
                 'CAT_ID'    => $cat_id,
                 'CAT_DESC'  => $category->cat_title,
-                'U_VIEWCAT' => append_sid('index.php?' . POST_CAT_URL . "=$cat_id")
+                'U_VIEWCAT' => Session::appendSid('index.php?' . POST_CAT_URL . "=$cat_id")
             ]);
 
         if ($view_category === $cat_id || $view_category === -1) {
@@ -399,10 +399,10 @@ foreach ($categories as $category) {
                                     $last_post .= $lang['Guest'];
                                 }
                             } else {
-                                $last_post .= '<a href="' . append_sid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $forum->user_id) . '">' . $forum->username . '</a> ';
+                                $last_post .= '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $forum->user_id) . '">' . $forum->username . '</a> ';
                             }
 
-                            $last_post .= '<a href="' . append_sid('viewtopic.php?' . POST_POST_URL . '=' . $forum->forum_last_post_id) . '#' . $forum->forum_last_post_id . '"><img src="' . $images['icon_latest_reply'] . '" border="0" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" /></a>';
+                            $last_post .= '<a href="' . Session::appendSid('viewtopic.php?' . POST_POST_URL . '=' . $forum->forum_last_post_id) . '#' . $forum->forum_last_post_id . '"><img src="' . $images['icon_latest_reply'] . '" border="0" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" /></a>';
                         } else {
                             $last_post = $lang['No_Posts'];
                         }
@@ -434,7 +434,7 @@ foreach ($categories as $category) {
                             'L_MODERATOR'        => $l_moderators,
                             'L_FORUM_FOLDER_ALT' => $folder_alt,
 
-                            'U_VIEWFORUM' => append_sid('viewforum.php?' . POST_FORUM_URL . "=$forum_id")
+                            'U_VIEWFORUM' => Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forum_id")
                         ];
 
                         $template->assign_block_vars('catrow.forumrow', $catRowData);

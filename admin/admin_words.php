@@ -39,7 +39,7 @@ $no_page_header = $cancel;
 require './pagestart.php';
 
 if ($cancel) {
-    redirect('admin/' . append_sid('admin_words.php', true));
+    redirect('admin/' . Session::appendSid('admin_words.php', true));
 }
 
 if (isset($_GET['mode']) || isset($_POST['mode'])) {
@@ -97,7 +97,7 @@ if ($mode !== '')
                 'L_REPLACEMENT' => $lang['Replacement'],
                 'L_SUBMIT'      => $lang['Submit'],
 
-                'S_WORDS_ACTION'  => append_sid('admin_words.php'),
+                'S_WORDS_ACTION'  => Session::appendSid('admin_words.php'),
                 'S_HIDDEN_FIELDS' => $s_hidden_fields
             ]
         );
@@ -136,7 +136,7 @@ if ($mode !== '')
 			$message = $lang['Word_added'];
 		}
 
-		$message .= '<br /><br />' . sprintf($lang['Click_return_wordadmin'], '<a href="' . append_sid('admin_words.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
+		$message .= '<br /><br />' . sprintf($lang['Click_return_wordadmin'], '<a href="' . Session::appendSid('admin_words.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 		message_die(GENERAL_MESSAGE, $message);
 	} elseif ($mode === 'delete') {
@@ -154,7 +154,7 @@ if ($mode !== '')
                 ->where('word_id = %i', $word_id)
                 ->execute();
 
-			$message = $lang['Word_removed'] . '<br /><br />' . sprintf($lang['Click_return_wordadmin'], '<a href="' . append_sid('admin_words.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid('index.php?pane=right') . '">', '</a>');
+			$message = $lang['Word_removed'] . '<br /><br />' . sprintf($lang['Click_return_wordadmin'], '<a href="' . Session::appendSid('admin_words.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		} elseif ($word_id && !$confirm) {
@@ -171,7 +171,7 @@ if ($mode !== '')
                     'L_YES' => $lang['Yes'],
                     'L_NO'  => $lang['No'],
 
-                    'S_CONFIRM_ACTION' => append_sid('admin_words.php'),
+                    'S_CONFIRM_ACTION' => Session::appendSid('admin_words.php'),
                     'S_HIDDEN_FIELDS'  => $hidden_fields
                 ]
             );
@@ -198,7 +198,7 @@ if ($mode !== '')
             'L_ADD_WORD'    => $lang['Add_new_word'],
             'L_ACTION'      => $lang['Action'],
 
-            'S_WORDS_ACTION'  => append_sid('admin_words.php'),
+            'S_WORDS_ACTION'  => Session::appendSid('admin_words.php'),
             'S_HIDDEN_FIELDS' => ''
         ]
     );
@@ -216,8 +216,8 @@ if ($mode !== '')
                 'WORD'        => htmlspecialchars($word->word),
                 'REPLACEMENT' => htmlspecialchars($word->replacement),
 
-                'U_WORD_EDIT'   => append_sid("admin_words.php?mode=edit&amp;id=$word_id"),
-                'U_WORD_DELETE' => append_sid("admin_words.php?mode=delete&amp;id=$word_id")
+                'U_WORD_EDIT'   => Session::appendSid("admin_words.php?mode=edit&amp;id=$word_id"),
+                'U_WORD_DELETE' => Session::appendSid("admin_words.php?mode=delete&amp;id=$word_id")
             ]
         );
     }

@@ -31,14 +31,14 @@ include $phpbb_root_path . 'common.php';
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, PAGE_INDEX);
+$userdata = Session::pageStart($user_ip, PAGE_INDEX);
 init_userprefs($userdata);
 //
 // End session management
 //
 
 if (!$userdata['session_logged_in']) {
-    redirect(append_sid('login.php?redirect=admin/index.php', true));
+    redirect(Session::appendSid('login.php?redirect=admin/index.php', true));
 } elseif ($userdata['user_level'] !== ADMIN) {
     message_die(GENERAL_MESSAGE, $lang['Not_admin']);
 }
@@ -48,7 +48,7 @@ if ($_GET['sid'] !== $userdata['session_id']) {
 }
 
 if (!$userdata['session_admin']) {
-    redirect(append_sid('login.php?redirect=admin/index.php&admin=1', true));
+    redirect(Session::appendSid('login.php?redirect=admin/index.php&admin=1', true));
 }
 
 if (empty($no_page_header)) {
