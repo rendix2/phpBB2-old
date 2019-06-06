@@ -64,7 +64,11 @@ $update_data = [
     'user_actkey' => ''
 ];
 
+$update_password = false;
+
 if ($row['user_newpasswd'] !== '') {
+    $update_password = true;
+
     $update_data['user_password'] = $row['user_newpasswd'];
     $update_data['user_newpasswd'] = '';
 }
@@ -73,7 +77,7 @@ dibi::update(USERS_TABLE, $update_data)
     ->where('user_id = %i', $row['user_id'])
     ->execute();
 
-if ((int)$board_config['require_activation'] === USER_ACTIVATION_ADMIN && $sql_update_pass === '') {
+if (!$update_password && (int)$board_config['require_activation'] === USER_ACTIVATION_ADMIN) {
     include $phpbb_root_path . 'includes/Emailer.php';
     $emailer = new Emailer($board_config['smtp_delivery']);
 
@@ -104,7 +108,7 @@ if ((int)$board_config['require_activation'] === USER_ACTIVATION_ADMIN && $sql_u
         'META' => '<meta http-equiv="refresh" content="10;url=' . Session::appendSid('index.php') . '">'
     ]);
 
-    $message = ($sql_update_pass === '') ? $lang['Account_active'] : $lang['Password_activated'];
+    $message = $update_password ? $lang['Password_activated'] : $lang['Account_active'];
     message_die(GENERAL_MESSAGE, $message);
 }
 
