@@ -210,6 +210,7 @@ switch ( $mode ) {
                 'p.enable_smilies',
                 'p.enable_sig',
                 'p.post_username',
+                'p.post_time',
                 'pt.post_subject',
                 'pt.post_text',
                 'pt.bbcode_uid',
@@ -246,7 +247,8 @@ switch ( $mode ) {
                 't.topic_last_post_id',
                 't.topic_vote',
                 'p.post_id',
-                'p.poster_id'
+                'p.poster_id',
+                'p.post_time'
             ];
 
             $post_info = dibi::select($columns)
@@ -769,6 +771,8 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg !== '' ) {
 		$subject = $post_data['first_post'] ? $post_info->topic_title : $post_info->post_subject;
 		$message = $post_info->post_text;
 
+        $username = $userdata['session_logged_in'] ? $userdata['username'] : '';
+
         if ($mode === 'editpost') {
 			$attach_sig = ( $post_info->enable_sig && $post_info->user_sig !== '' ) ? TRUE : 0;
 			$user_sig = $post_info->user_sig;
@@ -794,7 +798,7 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg !== '' ) {
 			$replacement_word = [];
 			obtain_word_list($orig_word, $replace_word);
 
-			$msg_date =  create_date($board_config['default_dateformat'], $postrow['post_time'], $board_config['board_timezone']);
+			$msg_date =  create_date($board_config['default_dateformat'], $post_info->post_time, $board_config['board_timezone']);
 
 			// Use trim to get rid of spaces placed there by MS-SQL 2000
 			$quote_username = ( trim($post_info->post_username) !== '' ) ? $post_info->post_username : $post_info->username;
