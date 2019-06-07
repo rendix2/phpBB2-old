@@ -30,34 +30,68 @@ include $phpbb_root_path . 'includes/functions_post.php';
 //
 // Check and set various parameters
 //
-$params = ['submit'      => 'post',
-           'preview'     => 'preview',
-           'delete'      => 'delete',
-           'poll_delete' => 'poll_delete',
-           'poll_add'    => 'add_poll_option',
-           'poll_edit'   => 'edit_poll_option',
-           'mode'        => 'mode'
-];
 
-foreach ($params as $var => $param) {
-    if (!empty($_POST[$param]) || !empty($_GET[$param])) {
-        $$var = !empty($_POST[$param]) ? htmlspecialchars($_POST[$param]) : htmlspecialchars($_GET[$param]);
-    } else {
-        $$var = '';
-    }
+if (!empty($_POST['post']) || !empty($_GET['post'])) {
+    $submit = !empty($_POST['post']) ? htmlspecialchars($_POST['post']) : htmlspecialchars($_GET['post']);
+} else {
+    $submit = '';
+}
+
+if (!empty($_POST['preview']) || !empty($_GET['preview'])) {
+    $preview = !empty($_POST['preview']) ? htmlspecialchars($_POST['preview']) : htmlspecialchars($_GET['preview']);
+} else {
+    $preview = '';
+}
+
+if (!empty($_POST['delete']) || !empty($_GET['delete'])) {
+    $delete = !empty($_POST['delete']) ? htmlspecialchars($_POST['delete']) : htmlspecialchars($_GET['delete']);
+} else {
+    $delete = '';
+}
+
+if (!empty($_POST['poll_delete']) || !empty($_GET['poll_delete'])) {
+    $poll_delete = !empty($_POST['poll_delete']) ? htmlspecialchars($_POST['poll_delete']) : htmlspecialchars($_GET['poll_delete']);
+} else {
+    $poll_delete = '';
+}
+
+if (!empty($_POST['add_poll_option']) || !empty($_GET['add_poll_option'])) {
+    $poll_add = !empty($_POST['add_poll_option']) ? htmlspecialchars($_POST['add_poll_option']) : htmlspecialchars($_GET['add_poll_option']);
+} else {
+    $poll_add= '';
+}
+
+if (!empty($_POST['edit_poll_option']) || !empty($_GET['edit_poll_option'])) {
+    $poll_edit = !empty($_POST['edit_poll_option']) ? htmlspecialchars($_POST['edit_poll_option']) : htmlspecialchars($_GET['edit_poll_option']);
+} else {
+    $poll_edit = '';
+}
+
+if (!empty($_POST['mode']) || !empty($_GET['mode'])) {
+    $mode = !empty($_POST['mode']) ? htmlspecialchars($_POST['mode']) : htmlspecialchars($_GET['mode']);
+} else {
+    $mode = '';
 }
 
 $confirm = isset($_POST['confirm']);
 $sid = isset($_POST['sid']) ? $_POST['sid'] : 0;
 
-$params = ['forum_id' => POST_FORUM_URL, 'topic_id' => POST_TOPIC_URL, 'post_id' => POST_POST_URL];
+if (!empty($_POST[POST_FORUM_URL]) || !empty($_GET[POST_FORUM_URL])) {
+    $forum_id = !empty($_POST[POST_FORUM_URL]) ? (int)$_POST[POST_FORUM_URL] : (int)$_GET[POST_FORUM_URL];
+} else {
+    $forum_id = '';
+}
 
-foreach ($params as $var => $param) {
-    if (!empty($_POST[$param]) || !empty($_GET[$param])) {
-        $$var = !empty($_POST[$param]) ? (int)$_POST[$param] : (int)$_GET[$param];
-    } else {
-        $$var = '';
-    }
+if (!empty($_POST[POST_TOPIC_URL]) || !empty($_GET[POST_TOPIC_URL])) {
+    $topic_id = !empty($_POST[POST_TOPIC_URL]) ? (int)$_POST[POST_TOPIC_URL] : (int)$_GET[POST_TOPIC_URL];
+} else {
+    $topic_id= '';
+}
+
+if (!empty($_POST[POST_POST_URL]) || !empty($_GET[POST_POST_URL])) {
+    $post_id = !empty($_POST[POST_POST_URL]) ? (int)$_POST[POST_POST_URL] : (int)$_GET[POST_POST_URL];
+} else {
+    $post_id = '';
 }
 
 $refresh = $preview || $poll_add || $poll_edit || $poll_delete;
