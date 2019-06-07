@@ -895,7 +895,7 @@ $lang['Lookup_IP'] = 'Look up IP address';
 //
 // Timezones ... for display on each page
 //
-$lang['All_times'] = 'All times are %s'; // eg. All times are GMT - 12 Hours (times from next block)
+$lang['All_times'] = 'All times respects timezone %s'; // eg. All times are GMT - 12 Hours (times from next block)
 
 $lang['-12'] = 'GMT - 12 Hours';
 $lang['-11'] = 'GMT - 11 Hours';
