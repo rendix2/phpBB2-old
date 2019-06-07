@@ -20,7 +20,7 @@
  *
  ***************************************************************************/
 
-if (!empty($setmodules) ) {
+if (!empty($setmodules)) {
 	$file = basename(__FILE__);
 	$module['General']['Word_Censor'] = $file;
 	return;
@@ -61,10 +61,8 @@ if (isset($_GET['mode']) || isset($_POST['mode'])) {
 // Restrict mode input to valid options
 $mode = in_array($mode, ['add', 'edit', 'save', 'delete'], true) ? $mode : '';
 
-if ($mode !== '')
-{
-	if ($mode === 'edit' || $mode === 'add')
-	{
+if ($mode !== '') {
+    if ($mode === 'edit' || $mode === 'add') {
 		$word_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
         $template->setFileNames(['body' => 'admin/words_edit_body.tpl']);
@@ -73,7 +71,7 @@ if ($mode !== '')
         $s_hidden_fields = '';
 
 		if ($mode === 'edit') {
-			if ($word_id ) {
+			if ($word_id) {
                 $word_info = dibi::select('*')
                     ->from(WORDS_TABLE)
                     ->where('word_id = %i', $word_id)
@@ -110,11 +108,11 @@ if ($mode !== '')
 		$word = isset($_POST['word']) ? trim($_POST['word']) : '';
 		$replacement = isset($_POST['replacement']) ? trim($_POST['replacement']) : '';
 
-		if ($word === '' || $replacement === '') {
-			message_die(GENERAL_MESSAGE, $lang['Must_enter_word']);
-		}
+        if ($word === '' || $replacement === '') {
+            message_die(GENERAL_MESSAGE, $lang['Must_enter_word']);
+        }
 
-		if ($word_id ) {
+		if ($word_id) {
 		    $update_data = [
 		        'word' => $word,
                 'replacement' => $replacement
@@ -149,7 +147,7 @@ if ($mode !== '')
 
 		$confirm = isset($_POST['confirm']);
 
-		if ($word_id && $confirm ) {
+		if ($word_id && $confirm) {
 		    dibi::delete(WORDS_TABLE)
                 ->where('word_id = %i', $word_id)
                 ->execute();

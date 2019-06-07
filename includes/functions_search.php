@@ -58,7 +58,7 @@ function clean_words($mode, &$entry, array &$stopwords, array &$synonyms)
 
 	$entry = ' ' . strip_tags(strtolower($entry)) . ' ';
 
-	if ( $mode === 'post' ) {
+	if ( $mode === 'post') {
 		// Replace line endings by a space
 		$entry = preg_replace('/[\n\r]/is', ' ', $entry);
 		// HTML entities like &nbsp;
@@ -69,7 +69,7 @@ function clean_words($mode, &$entry, array &$stopwords, array &$synonyms)
 		$entry = preg_replace('/\[img:[a-z0-9]{10,}\].*?\[\/img:[a-z0-9]{10,}\]/', ' ', $entry);
 		$entry = preg_replace('/\[\/?url(=.*?)?\]/', ' ', $entry);
 		$entry = preg_replace('/\[\/?[a-z\*=\+\-]+(\:?[0-9a-z]+)?:[a-z0-9]{10,}(\:[a-z0-9]+)?=?.*?\]/', ' ', $entry);
-	} elseif ( $mode === 'search' ) {
+	} elseif ( $mode === 'search') {
 		$entry = str_replace(' +', ' and ', $entry);
 		$entry = str_replace(' -', ' not ', $entry);
 	}
@@ -92,7 +92,7 @@ function clean_words($mode, &$entry, array &$stopwords, array &$synonyms)
 		foreach ($stopwords as &$stopword) {
 			$stopword = trim($stopword);
 
-			if ( $mode === 'post' || ( $stopword !== 'not' && $stopword !== 'and' && $stopword !== 'or' ) ) {
+			if ( $mode === 'post' || ( $stopword !== 'not' && $stopword !== 'and' && $stopword !== 'or' )) {
 				$entry = str_replace(' ' . trim($stopword) . ' ', ' ', $entry);
 			}
 		}
@@ -103,7 +103,7 @@ function clean_words($mode, &$entry, array &$stopwords, array &$synonyms)
 			list($replace_synonym, $match_synonym) = explode(' ', strtolower(trim($synonym)));
 
 			if ( $mode === 'post' || ( $match_synonym !== 'not' && $match_synonym !== 'and' && $match_synonym !== 'or' )
-            ) {
+           ) {
 				$entry =  str_replace(' ' . trim($match_synonym) . ' ', ' ' . trim($replace_synonym) . ' ', $entry);
 			}
 		}
@@ -148,7 +148,7 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
             foreach ($search_matches as $search_match) {
                 $search_match = trim($search_match);
 
-				if ($search_match !== '' ) {
+				if ($search_match !== '') {
 					$words[] = $search_match;
 
                     if (!in_array($search_match, $word_insert_sql[$word_in], true)) {
@@ -179,7 +179,7 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
         }
 
 		foreach ($words as $word) {
-            if ( !isset($check_words[$word]) ) {
+            if ( !isset($check_words[$word])) {
                 switch ($dbms) {
                     case 'mysql':
                         $insert_data = [
@@ -341,7 +341,7 @@ function username_search($search_match)
 	global $board_config, $template, $lang, $images, $theme, $phpbb_root_path;
 	global $gen_simple_header;
 
-	$gen_simple_header = TRUE;
+	$gen_simple_header = true;
 
 	$username_list = '';
 

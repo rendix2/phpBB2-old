@@ -171,7 +171,7 @@ class Auth
             }
         }
 
-        $is_admin = ( $userdata['user_level'] === ADMIN && $userdata['session_logged_in'] ) ? TRUE : 0;
+        $is_admin = ( $userdata['user_level'] === ADMIN && $userdata['session_logged_in'] ) ? true : 0;
 
         $auth_user = [];
 
@@ -189,17 +189,17 @@ class Auth
             // and admin automatically have access to an ACL forum, similarly we assume admins meet an
             // auth requirement of MOD
             //
-            if ( $forum_id !== AUTH_LIST_ALL ) {
+            if ( $forum_id !== AUTH_LIST_ALL) {
                 $value = $f_access[$key];
 
-                switch( $value ) {
+                switch( $value) {
                     case AUTH_ALL:
-                        $auth_user[$key] = TRUE;
+                        $auth_user[$key] = true;
                         $auth_user[$key . '_type'] = $lang['Auth_Anonymous_Users'];
                         break;
 
                     case AUTH_REG:
-                        $auth_user[$key] = $userdata['session_logged_in'] ? TRUE : 0;
+                        $auth_user[$key] = $userdata['session_logged_in'] ? true : 0;
                         $auth_user[$key . '_type'] = $lang['Auth_Registered_Users'];
                         break;
 
@@ -266,7 +266,7 @@ class Auth
         //
         // Is user a moderator?
         //
-        if ( $forum_id !== AUTH_LIST_ALL ) {
+        if ( $forum_id !== AUTH_LIST_ALL) {
             $auth_user['auth_mod'] = $userdata['session_logged_in'] ? self::auth_check_user(AUTH_MOD, 'auth_mod', $u_access, $is_admin) : 0;
         } else {
             foreach ($f_access as $f_access_value) {

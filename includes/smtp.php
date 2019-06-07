@@ -198,7 +198,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 	fwrite($socket, "QUIT\r\n");
 	fclose($socket);
 
-	return TRUE;
+	return true;
 }
 
 ?>

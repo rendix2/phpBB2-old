@@ -21,7 +21,7 @@
 
 define('IN_PHPBB', 1);
 
-if (!empty($setmodules) ) {
+if (!empty($setmodules)) {
 	$file = basename(__FILE__);
 	$module['Forums']['Manage'] = $file;
 	return;
@@ -194,7 +194,7 @@ function renumber_order($mode, $cat = 0)
 //
 // Begin program proper
 //
-if (isset($_POST['addforum']) || isset($_POST['addcategory']) ) {
+if (isset($_POST['addforum']) || isset($_POST['addcategory'])) {
 	$mode = isset($_POST['addforum']) ? 'addforum' : 'addcat';
 
 	if ($mode === 'addforum') {
@@ -207,8 +207,8 @@ if (isset($_POST['addforum']) || isset($_POST['addcategory']) ) {
 	}
 }
 
-if (!empty($mode) ) {
-	switch($mode) {
+if (!empty($mode)) {
+    switch ($mode) {
 		case 'addforum':
 		case 'editforum':
 			//
@@ -233,7 +233,7 @@ if (!empty($mode) ) {
 				//
 				// start forum prune stuff.
 				//
-				if ($row['prune_enable'] ) {
+                if ($row['prune_enable']) {
 					$prune_enabled = 'checked="checked"';
 
 					$pr_row = dibi::select('*')
@@ -258,7 +258,7 @@ if (!empty($mode) ) {
 				$prune_enabled = '';
 			}
 
-			$catlist = get_list('category', $cat_id, TRUE);
+			$catlist = get_list('category', $cat_id, true);
 
 			$forumstatus === FORUM_LOCKED ? $forumlocked = 'selected="selected"' : $forumunlocked = 'selected="selected"';
 
@@ -338,7 +338,7 @@ if (!empty($mode) ) {
 			// There is no problem having duplicate forum names so we won't check for it.
             $forums_id = dibi::insert(FORUMS_TABLE, $forum_auth_ary)->execute(dibi::IDENTIFIER);
 
-			if ($_POST['prune_enable'] ) {
+            if ($_POST['prune_enable']) {
 
 				if ($_POST['prune_days'] === '' || $_POST['prune_freq'] === '') {
 					message_die(GENERAL_MESSAGE, $lang['Set_prune_data']);
@@ -361,11 +361,11 @@ if (!empty($mode) ) {
 
 		case 'modforum':
 			// Modify a forum in the DB
-			if (isset($_POST['prune_enable'])) {
-				if ($_POST['prune_enable'] !== 1 ) {
-					$_POST['prune_enable'] = 0;
-				}
-			}
+            if (isset($_POST['prune_enable'])) {
+                if ($_POST['prune_enable'] !== 1) {
+                    $_POST['prune_enable'] = 0;
+                }
+            }
 
 			$update_data = [
 			    'forum_name'   => $_POST['forumname'],
@@ -379,7 +379,7 @@ if (!empty($mode) ) {
                 ->where('forum_id = %i', (int)$_POST[POST_FORUM_URL])
                 ->execute();
 
-			if ($_POST['prune_enable'] === 1 ) {
+            if ($_POST['prune_enable'] === 1) {
 				if ($_POST['prune_days'] === '' || $_POST['prune_freq'] === '') {
 					message_die(GENERAL_MESSAGE, $lang['Set_prune_data']);
 				}
@@ -395,7 +395,7 @@ if (!empty($mode) ) {
 					message_die(GENERAL_ERROR, "Couldn't get forum Prune Information");
 				}
 
-				if ($prune_count > 0 ) {
+                if ($prune_count > 0) {
 				    $update_data = [
 				        'prune_days' => (int)$_POST['prune_days'],
                         'prune_freq' => (int)$_POST['prune_freq']
@@ -740,7 +740,7 @@ if (!empty($mode) ) {
 
 			$cat_id = $forum_info['cat_id'];
 
-            if ($move > 0 ) {
+            if ($move > 0) {
                 dibi::update(FORUMS_TABLE, ['forum_order%sql' => 'forum_order + ' . $move])
                     ->where('forum_id = %i', $forum_id)
                     ->execute();
@@ -751,7 +751,7 @@ if (!empty($mode) ) {
             }
 
 			renumber_order('forum', $forum_info['cat_id']);
-			$show_index = TRUE;
+			$show_index = true;
 
 			break;
 
@@ -762,7 +762,7 @@ if (!empty($mode) ) {
 			$move = (int)$_GET['move'];
 			$cat_id = (int)$_GET[POST_CAT_URL];
 
-            if ($move > 0 ) {
+            if ($move > 0) {
                 dibi::update(CATEGORIES_TABLE, ['cat_order%sql' => 'cat_order + ' . $move])
                     ->where('cat_id = %i', $cat_id)
                     ->execute();
@@ -773,13 +773,13 @@ if (!empty($mode) ) {
             }
 
 			renumber_order('category');
-			$show_index = TRUE;
+			$show_index = true;
 
 			break;
 
 		case 'forum_sync':
 			sync('forum', (int)$_GET[POST_FORUM_URL]);
-			$show_index = TRUE;
+			$show_index = true;
 
 			break;
 

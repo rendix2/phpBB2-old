@@ -21,7 +21,7 @@
  *
  ***************************************************************************/
 
-if ( !defined('IN_PHPBB') ) {
+if ( !defined('IN_PHPBB')) {
 	die('Hacking attempt');
 }
 
@@ -36,7 +36,7 @@ if (!empty($_GET[POST_USERS_URL]) || !empty($_POST[POST_USERS_URL]))  {
 	message_die(GENERAL_MESSAGE, $lang['No_user_specified']);
 }
 
-if ( !$userdata['session_logged_in'] ) {
+if ( !$userdata['session_logged_in']) {
 	redirect(Session::appendSid('login.php?redirect=profile.php&mode=email&' . POST_USERS_URL . "=$user_id", true));
 }
 

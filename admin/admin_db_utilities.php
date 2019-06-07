@@ -32,7 +32,7 @@ use Ifsnop\Mysqldump\Mysqldump;
 
 define('IN_PHPBB', 1);
 
-if (!empty($setmodules) ) {
+if (!empty($setmodules)) {
 	$filename = basename(__FILE__);
 	$module['Database']['Backup_DB'] = $filename . '?perform=backup';
 
@@ -48,7 +48,7 @@ if (!empty($setmodules) ) {
 //
 // Load default header
 //
-$no_page_header = TRUE;
+$no_page_header = true;
 $phpbb_root_path = './../';
 
 require './pagestart.php';
@@ -68,7 +68,7 @@ define('VERBOSE', 0);
 //
 // Begin program proper
 //
-if (isset($_GET['perform']) || isset($_POST['perform']) ) {
+if (isset($_GET['perform']) || isset($_POST['perform'])) {
 	$perform = isset($_POST['perform']) ? $_POST['perform'] : $_GET['perform'];
 
 	switch($perform) {
@@ -92,32 +92,7 @@ if (isset($_GET['perform']) || isset($_POST['perform']) ) {
 			exit;
 
 		case 'restore':
-			if (!isset($_POST['restore_start'])) {
-				//
-				// Define Template files...
-				//
-				include './page_header_admin.php';
-
-				$template->setFileNames(['body' => 'admin/db_utils_restore_body.tpl']);
-
-				$s_hidden_fields = "<input type=\"hidden\" name=\"perform\" value=\"restore\" /><input type=\"hidden\" name=\"perform\" value=\"$perform\" />";
-
-				$template->assignVars(
-					[
-                        'L_DATABASE_RESTORE' => $lang['Database_Utilities'] . ' : ' . $lang['Restore'],
-                        'L_RESTORE_EXPLAIN'  => $lang['Restore_explain'],
-                        'L_SELECT_FILE'      => $lang['Select_file'],
-                        'L_START_RESTORE'    => $lang['Start_Restore'],
-
-                        'S_DBUTILS_ACTION' => Session::appendSid('admin_db_utilities.php'),
-                        'S_HIDDEN_FIELDS'  => $s_hidden_fields
-					]
-				);
-				$template->pparse('body');
-
-				break;
-
-			} else {
+			if (isset($_POST['restore_start'])) {
 				//
 				// Handle the file upload ....
 				// If no file was uploaded report an error...
@@ -135,7 +110,7 @@ if (isset($_GET['perform']) || isset($_POST['perform']) ) {
 				// a hackers attempt at getting us to process a local system
 				// file.
 				//
-				if (file_exists(phpbb_realpath($backup_file_tmpname)) ) {
+				if (file_exists(phpbb_realpath($backup_file_tmpname))) {
 					dibi::loadFile($backup_file_tmpname);
 				} else {
 					message_die(GENERAL_ERROR, $lang['Restore_Error_uploading']);
@@ -149,13 +124,34 @@ if (isset($_GET['perform']) || isset($_POST['perform']) ) {
 
 				$template->assignVars(
 					[
-                        'MESSAGE_TITLE' => $lang['Database_Utilities'] . ' : ' . $lang['Restore'],
-                        'MESSAGE_TEXT'  => $message
+						'MESSAGE_TITLE' => $lang['Database_Utilities'] . ' : ' . $lang['Restore'],
+						'MESSAGE_TEXT'  => $message
 					]
 				);
 
 				$template->pparse('body');
-				break;
+			} else {
+				//
+				// Define Template files...
+				//
+				include './page_header_admin.php';
+
+				$template->setFileNames(['body' => 'admin/db_utils_restore_body.tpl']);
+
+				$s_hidden_fields = "<input type=\"hidden\" name=\"perform\" value=\"restore\" /><input type=\"hidden\" name=\"perform\" value=\"$perform\" />";
+
+				$template->assignVars(
+					[
+						'L_DATABASE_RESTORE' => $lang['Database_Utilities'] . ' : ' . $lang['Restore'],
+						'L_RESTORE_EXPLAIN'  => $lang['Restore_explain'],
+						'L_SELECT_FILE'      => $lang['Select_file'],
+						'L_START_RESTORE'    => $lang['Start_Restore'],
+
+						'S_DBUTILS_ACTION' => Session::appendSid('admin_db_utilities.php'),
+						'S_HIDDEN_FIELDS'  => $s_hidden_fields
+					]
+				);
+				$template->pparse('body');
 			}
 			break;
 	}

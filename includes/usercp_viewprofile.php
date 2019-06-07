@@ -21,11 +21,11 @@
  *
  ***************************************************************************/
 
-if ( !defined('IN_PHPBB') ) {
+if ( !defined('IN_PHPBB')) {
 	die('Hacking attempt');
 }
 
-if ( empty($_GET[POST_USERS_URL]) || $_GET[POST_USERS_URL] === ANONYMOUS ) {
+if ( empty($_GET[POST_USERS_URL]) || $_GET[POST_USERS_URL] === ANONYMOUS) {
 	message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
 }
 
@@ -65,7 +65,7 @@ $memberdays = $memberdays->diff($regdate)->d;
 $posts_per_day = $profile_data['user_posts'] / $memberdays;
 
 // Get the users percentage of total posts
-if ($profile_data['user_posts'] !== 0  ) {
+if ($profile_data['user_posts'] !== 0 ) {
 	$total_posts = get_db_stat('postcount');
 	$percentage = $total_posts ? min(100, ($profile_data['user_posts'] / $total_posts) * 100) : 0;
 } else {
@@ -73,8 +73,8 @@ if ($profile_data['user_posts'] !== 0  ) {
 }
 
 $avatar_img = '';
-if ($profile_data['user_avatar_type'] && $profile_data['user_allowavatar'] ) {
-	switch($profile_data['user_avatar_type'] ) {
+if ($profile_data['user_avatar_type'] && $profile_data['user_allowavatar']) {
+	switch($profile_data['user_avatar_type']) {
 		case USER_AVATAR_UPLOAD:
 			$avatar_img = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $profile_data['user_avatar'] . '" alt="" border="0" />' : '';
 			break;
@@ -90,16 +90,16 @@ if ($profile_data['user_avatar_type'] && $profile_data['user_allowavatar'] ) {
 $poster_rank = '';
 $rank_image = '';
 
-if ($profile_data['user_rank'] ) {
+if ($profile_data['user_rank']) {
     foreach ($ranks as $rank) {
-        if ($profile_data['user_rank'] === $rank->rank_id && $rank->rank_special ) {
+        if ($profile_data['user_rank'] === $rank->rank_id && $rank->rank_special) {
             $poster_rank = $rank->rank_title;
             $rank_image = $rank->rank_image ? '<img src="' . $rank->rank_image . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
         }
     }
 } else {
     foreach ($ranks as $rank) {
-        if ($profile_data['user_posts'] >= $rank->rank_min && !$rank->rank_special ) {
+        if ($profile_data['user_posts'] >= $rank->rank_min && !$rank->rank_special) {
             $poster_rank = $rank->rank_title;
             $rank_image = $rank->rank_image ? '<img src="' . $rank->rank_image . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
         }
@@ -110,7 +110,7 @@ $temp_url = Session::appendSid('privmsg.php?mode=post&amp;' . POST_USERS_URL . '
 $pm_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
 $pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
 
-if ( !empty($profile_data['user_viewemail']) || $userdata['user_level'] === ADMIN ) {
+if ( !empty($profile_data['user_viewemail']) || $userdata['user_level'] === ADMIN) {
 	$email_uri = $board_config['board_email_form'] ? Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL .'=' . $profile_data['user_id']) : 'mailto:' . $profile_data['user_email'];
 
 	$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
@@ -123,7 +123,7 @@ if ( !empty($profile_data['user_viewemail']) || $userdata['user_level'] === ADMI
 $www_img = $profile_data['user_website'] ? '<a href="' . $profile_data['user_website'] . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '&nbsp;';
 $www = $profile_data['user_website'] ? '<a href="' . $profile_data['user_website'] . '" target="_userwww">' . $profile_data['user_website'] . '</a>' : '&nbsp;';
 
-if ( !empty($profile_data['user_icq']) ) {
+if ( !empty($profile_data['user_icq'])) {
 	$icq_status_img = '<a href="http://wwp.icq.com/' . $profile_data['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $profile_data['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
 	$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $profile_data['user_icq'] . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
 	$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $profile_data['user_icq'] . '">' . $lang['ICQ'] . '</a>';

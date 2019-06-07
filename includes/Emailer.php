@@ -289,8 +289,8 @@ class Emailer
                 '') ? "From: $this->from\n" : 'From: ' . $board_config['board_email'] . "\n") . 'Return-Path: ' . $board_config['board_email'] . "\nMessage-ID: <" . md5(uniqid(time())) . '@' . $board_config['server_name'] . ">\nMIME-Version: 1.0\nContent-type: text/plain; charset=" . $this->encoding . "\nContent-transfer-encoding: 8bit\nDate: " . date('r') . "\nX-Priority: 3\nX-MSMail-Priority: Normal\nX-Mailer: PHP\nX-MimeOLE: Produced By phpBB2\n" . $this->extra_headers . (($cc !== '') ? "Cc: $cc\n" : '')  . (($bcc !== '') ? "Bcc: $bcc\n" : '');
 
 		// Send message ... removed $this->encode() from subject for time being
-		if ( $this->use_smtp ) {
-			if ( !defined('SMTP_INCLUDED') ) {
+		if ( $this->use_smtp) {
+			if ( !defined('SMTP_INCLUDED')) {
 				include $phpbb_root_path . 'includes/smtp.php';
 			}
 

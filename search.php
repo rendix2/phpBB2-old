@@ -118,7 +118,7 @@ if ($mode === 'searchuser') {
     }
 
     exit;
-} elseif ( $search_keywords !== '' || $search_author !== '' || $search_id ) {
+} elseif ( $search_keywords !== '' || $search_author !== '' || $search_id) {
     $split_search = [];
     $search_results = '';
 
@@ -184,7 +184,7 @@ if ($mode === 'searchuser') {
 			} else {
 				$search_author = str_replace('*', '%', trim($search_author));
 
-				if (( strpos($search_author, '%') !== false ) && ( strlen(str_replace('%', '', $search_author)) < $board_config['search_min_chars'] ) ) {
+				if (( strpos($search_author, '%') !== false ) && ( strlen(str_replace('%', '', $search_author)) < $board_config['search_min_chars'] )) {
 					$search_author = '';
 				}
 
@@ -231,7 +231,7 @@ if ($mode === 'searchuser') {
 					continue;
 				}
 
-				switch ( $split_search_value ) {
+				switch ( $split_search_value) {
 					case 'and':
 						$current_match_type = 'and';
 						break;
@@ -364,7 +364,7 @@ if ($mode === 'searchuser') {
         if ($search_author !== '') {
 			$search_author = str_replace('*', '%', trim($search_author));
 
-			if (( strpos($search_author, '%') !== false ) && ( strlen(str_replace('%', '', $search_author)) < $board_config['search_min_chars'] ) ) {
+			if (( strpos($search_author, '%') !== false ) && ( strlen(str_replace('%', '', $search_author)) < $board_config['search_min_chars'] )) {
 				$search_author = '';
 			}
 		}
@@ -444,7 +444,7 @@ if ($mode === 'searchuser') {
 
 				$total_match_count = count($search_ids);
 
-			} elseif ( $search_author !== '' || $search_time || $auth_sql !== '' ) {
+			} elseif ( $search_author !== '' || $search_time || $auth_sql !== '') {
 				$search_id_chunks = [];
 				$count = 0;
 				$chunk = 0;
@@ -466,7 +466,7 @@ if ($mode === 'searchuser') {
 				$search_ids = [];
 
 				foreach ($search_id_chunks as $search_id_chunk) {
-                    if ( $search_author === '' && $auth_sql === '' ) {
+                    if ( $search_author === '' && $auth_sql === '') {
                         $search_ids = dibi::select('post_id')
                             ->from(POSTS_TABLE)
                             ->where('post_id IN %in', $search_id_chunk);
@@ -507,8 +507,8 @@ if ($mode === 'searchuser') {
 
 				$total_match_count = count($search_ids);
 			}
-		} elseif ( $search_id === 'unanswered' ) {
-			if ( $auth_sql !== '' ) {
+		} elseif ( $search_id === 'unanswered') {
+			if ( $auth_sql !== '') {
 			    // TODO i guess we dont need f.forum
                 $search_ids = dibi::select(['t.topic_id', 'f.forum_id'])
                     ->from(TOPICS_TABLE)
@@ -611,7 +611,7 @@ if ($mode === 'searchuser') {
 	} else {
 		$search_id = (int)$search_id;
 
-		if ( $search_id ) {
+		if ( $search_id) {
             $row = dibi::select('search_array')
                 ->from(SEARCH_TABLE)
                 ->where('search_id = %i', $search_id)
@@ -710,7 +710,7 @@ if ($mode === 'searchuser') {
 
 		$per_page = ( $show_results === 'posts' ) ? $board_config['posts_per_page'] : $board_config['topics_per_page'];
 
-		switch ( $sort_by ) {
+		switch ( $sort_by) {
 			case 1:
                 $order_by = ($show_results === 'posts') ? 'pt.post_subject' : 't.topic_title';
                 $search_sets->orderBy($order_by, $sort_dir);
@@ -768,14 +768,14 @@ if ($mode === 'searchuser') {
 		$highlight_match = [];
 
         foreach ($split_search as $split_word) {
-			if ( $split_word !== 'and' && $split_word !== 'or' && $split_word !== 'not' ) {
+			if ( $split_word !== 'and' && $split_word !== 'or' && $split_word !== 'not') {
 				$highlight_match[] = '#\b(' . str_replace('*', "([\w]+)?", $split_word) . ')\b#is';
 				$highlight_active .= ' ' . $split_word;
 
 				foreach ($synonym_array as $synonym) {
 					list($replace_synonym, $match_synonym) = explode(' ', strtolower(trim($synonym)));
 
-					if ( $replace_synonym === $split_word ) {
+					if ( $replace_synonym === $split_word) {
 						$highlight_match[] = '#\b(' . str_replace('*', "([\w]+)?", $replace_synonym) . ')\b#is';
 						$highlight_active .= ' ' . $match_synonym;
 					}
@@ -830,8 +830,8 @@ if ($mode === 'searchuser') {
 
 						$message = make_clickable($message);
 
-						if ( $highlight_active ) {
-							if ( preg_match('/<.*>/', $message) ) {
+						if ( $highlight_active) {
+							if ( preg_match('/<.*>/', $message)) {
 								$message = preg_replace($highlight_match, '<!-- #sh -->\1<!-- #eh -->', $message);
 
 								$end_html = 0;
@@ -843,11 +843,11 @@ if ($mode === 'searchuser') {
 									$grab_length = $start_html - $end_html - 1;
 									$temp_message .= substr($message, $end_html + 1, $grab_length);
 
-									if ( $end_html = strpos($message, '>', $start_html) ) {
+									if ( $end_html = strpos($message, '>', $start_html)) {
 										$length = $end_html - $start_html + 1;
 										$hold_string = substr($message, $start_html, $length);
 
-										if ( strrpos(' ' . $hold_string, '<') !== 1 ) {
+										if ( strrpos(' ' . $hold_string, '<') !== 1) {
 											$end_html = $start_html + 1;
 											$end_counter = 1;
 
@@ -865,7 +865,7 @@ if ($mode === 'searchuser') {
 											$hold_string = substr($message, $start_html, $length);
 											$hold_string = str_replace('<!-- #sh -->', '', $hold_string);
 											$hold_string = str_replace('<!-- #eh -->', '', $hold_string);
-										} elseif ( $hold_string === '<!-- #sh -->' ) {
+										} elseif ( $hold_string === '<!-- #sh -->') {
 											$hold_string = str_replace('<!-- #sh -->', '<span style="color:#' . $theme['fontcolor3'] . '"><b>', $hold_string);
                                         } elseif ($hold_string === '<!-- #eh -->') {
                                             $hold_string = str_replace('<!-- #eh -->', '</b></span>', $hold_string);
@@ -909,7 +909,7 @@ if ($mode === 'searchuser') {
 
 				$poster = ( $search_set->user_id !== ANONYMOUS ) ? '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $search_set->user_id) . '">' : '';
 
-                if ( $search_set->user_id !== ANONYMOUS ) {
+                if ( $search_set->user_id !== ANONYMOUS) {
                     $poster .= $search_set->username;
                 } else {
                     if ($search_set->post_username !== '') {
@@ -1025,7 +1025,7 @@ if ($mode === 'searchuser') {
 						$folder = $images['folder_sticky'];
 						$folder_new = $images['folder_sticky_new'];
 					} else {
-						if ( $replies >= $board_config['hot_threshold'] ) {
+						if ( $replies >= $board_config['hot_threshold']) {
 							$folder = $images['folder_hot'];
 							$folder_new = $images['folder_hot_new'];
 						} else {

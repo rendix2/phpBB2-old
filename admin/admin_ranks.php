@@ -19,7 +19,7 @@
  *
  ***************************************************************************/
 
-if (!empty($setmodules) ) {
+if (!empty($setmodules)) {
 	$file = basename(__FILE__);
 	$module['Users']['Ranks'] = $file;
 	return;
@@ -41,7 +41,7 @@ if ($cancel) {
 	redirect('admin/' . Session::appendSid('admin_ranks.php', true));
 }
 
-if (isset($_GET['mode']) || isset($_POST['mode']) ) {
+if (isset($_GET['mode']) || isset($_POST['mode'])) {
 	$mode = isset($_GET['mode']) ? $_GET['mode'] : $_POST['mode'];
 	$mode = htmlspecialchars($mode);
 } else {
@@ -70,7 +70,7 @@ if ($mode !== '') {
 		$s_hidden_fields = '';
 		
 		if ($mode === 'edit') {
-			if (empty($rank_id) ) {
+			if (empty($rank_id)) {
 				message_die(GENERAL_MESSAGE, $lang['Must_select_rank']);
 			}
 
@@ -127,7 +127,7 @@ if ($mode !== '') {
 		
 		$rank_id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
 		$rank_title = isset($_POST['title']) ? trim($_POST['title']) : '';
-		$special_rank = ( $_POST['special_rank'] === 1 ) ? TRUE : 0;
+		$special_rank = ( $_POST['special_rank'] === 1 ) ? true : 0;
 		$min_posts = isset($_POST['min_posts']) ? (int)$_POST['min_posts'] : -1;
 		$rank_image = isset($_POST['rank_image']) ? trim($_POST['rank_image']) : '';
 
@@ -135,7 +135,7 @@ if ($mode !== '') {
 			message_die(GENERAL_MESSAGE, $lang['Must_select_rank']);
 		}
 
-		if ($special_rank === 1 ) {
+		if ($special_rank === 1) {
 			$max_posts = -1;
 			$min_posts = -1;
 		}
@@ -190,7 +190,7 @@ if ($mode !== '') {
 		// Ok, they want to delete their rank
 		//
 		
-		if (isset($_POST['id']) || isset($_GET['id']) ) {
+		if (isset($_POST['id']) || isset($_GET['id'])) {
 			$rank_id = isset($_POST['id']) ? (int)$_POST['id'] : (int)$_GET['id'];
 		} else {
 			$rank_id = 0;
@@ -198,7 +198,7 @@ if ($mode !== '') {
 
 		$confirm = isset($_POST['confirm']);
 		
-		if ($rank_id && $confirm ) {
+		if ($rank_id && $confirm) {
 			dibi::delete(RANKS_TABLE)
 				->where('rank_id = %i', $rank_id)
 				->execute();
@@ -277,7 +277,7 @@ foreach ($ranks as $i => $rank) {
 	$rank_id = $rank->rank_id;
 	$rank_min = $rank->rank_min;
 	
-	if ($special_rank === 1 ) {
+	if ($special_rank === 1) {
 		$rank_min = $rank_max = '-';
 	}
 

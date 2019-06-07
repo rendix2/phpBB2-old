@@ -20,7 +20,7 @@
  *
  ***************************************************************************/
 
-if ( !defined('IN_PHPBB') ) {
+if ( !defined('IN_PHPBB')) {
    die('Hacking attempt');
 }
 
@@ -66,7 +66,7 @@ function prune($forum_id, $prune_date, $prune_all = false)
             ->where('topic_id IN %in', $topic_data)
             ->fetchPairs(null, 'post_id');
 
-		if ( count($post_ids) ) {
+		if ( count($post_ids)) {
 		    $user_ids = dibi::select('poster_id')
                 ->from(POSTS_TABLE)
                 ->where('post_id IN %in', $post_ids)

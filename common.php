@@ -65,7 +65,7 @@ $gen_simple_header = false;
 
 include $phpbb_root_path . 'config.php';
 
-if (!defined('PHPBB_INSTALLED') ) {
+if (!defined('PHPBB_INSTALLED')) {
 	header('Location: ' . $phpbb_root_path . 'install/install.php');
 	exit;
 }
@@ -140,7 +140,7 @@ if (file_exists('install') || file_exists('contrib')) {
 //
 // Show 'Board is disabled' message if needed.
 //
-if ($board_config['board_disable'] && !defined('IN_ADMIN') && !defined('IN_LOGIN') ) {
+if ($board_config['board_disable'] && !defined('IN_ADMIN') && !defined('IN_LOGIN')) {
 	message_die(GENERAL_MESSAGE, 'Board_disable', 'Information');
 }
 

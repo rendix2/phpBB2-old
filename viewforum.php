@@ -242,7 +242,7 @@ $previous_days = [
     364 => $lang['1_Year']
 ];
 
-if (!empty($_POST['topicdays']) || !empty($_GET['topicdays']) ) {
+if (!empty($_POST['topicdays']) || !empty($_GET['topicdays'])) {
 	$topic_days = !empty($_POST['topicdays']) ? (int)$_POST['topicdays'] : (int)$_GET['topicdays'];
     $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
 
@@ -517,30 +517,30 @@ if ($total_topics) {
 			}
 
 			$newest_post_img = '';
-			if ($userdata['session_logged_in'] ) {
+			if ($userdata['session_logged_in']) {
 				if ($topic->post_time > $userdata['user_lastvisit'] )  {
-					if (!empty($tracking_topics) || !empty($tracking_forums) || isset($_COOKIE[$forum_all_cookie_name]) ) {
+					if (!empty($tracking_topics) || !empty($tracking_forums) || isset($_COOKIE[$forum_all_cookie_name])) {
 						$unread_topics = true;
 
-						if (!empty($tracking_topics[$topic_id]) ) {
-							if ($tracking_topics[$topic_id] >= $topic->post_time ) {
+						if (!empty($tracking_topics[$topic_id])) {
+							if ($tracking_topics[$topic_id] >= $topic->post_time) {
 								$unread_topics = false;
 							}
 						}
 
-						if (!empty($tracking_forums[$forum_id]) ) {
-							if ($tracking_forums[$forum_id] >= $topic->post_time ) {
+						if (!empty($tracking_forums[$forum_id])) {
+							if ($tracking_forums[$forum_id] >= $topic->post_time) {
 								$unread_topics = false;
 							}
 						}
 
-						if (isset($_COOKIE[$forum_all_cookie_name]) ) {
-							if ($_COOKIE[$forum_all_cookie_name] >= $topic->post_time ) {
+						if (isset($_COOKIE[$forum_all_cookie_name])) {
+							if ($_COOKIE[$forum_all_cookie_name] >= $topic->post_time) {
 								$unread_topics = false;
 							}
 						}
 
-						if ($unread_topics ) {
+						if ($unread_topics) {
 							$folder_image = $folder_new;
 							$folder_alt = $lang['New_posts'];
 
@@ -580,11 +580,11 @@ if ($total_topics) {
 			for ($j = 0; $j < $replies + 1; $j += $board_config['posts_per_page']) {
 				$goto_page .= '<a href="' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . '=' . $topic_id . "&amp;start=$j") . '">' . $times . '</a>';
 				
-				if ($times === 1 && $total_pages > 4 ) {
+				if ($times === 1 && $total_pages > 4) {
 					$goto_page .= ' ... ';
 					$times = $total_pages - 3;
 					$j += ( $total_pages - 4 ) * $board_config['posts_per_page'];
-				} elseif ( $times < $total_pages ) {
+				} elseif ( $times < $total_pages) {
 					$goto_page .= ', ';
 				}
 				
@@ -603,7 +603,7 @@ if ($total_topics) {
 		if ($topic->user_id !== ANONYMOUS) {
             $topic_author .=  $topic->username;
         } else {
-		    if ( $topic->post_username !== '' ) {
+		    if ( $topic->post_username !== '') {
                 $topic_author .= $topic->post_username;
             } else {
                 $topic_author .= $lang['Guest'];

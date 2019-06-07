@@ -28,7 +28,7 @@ define('IN_PHPBB', 1);
 //
 // First we do the setmodules stuff for the admin cp.
 //
-if (!empty($setmodules) ) {
+if (!empty($setmodules)) {
 	$filename = basename(__FILE__);
 	$module['General']['Smilies'] = $filename;
 
@@ -56,7 +56,7 @@ if ($cancel) {
 //
 // Check to see what mode we should operate in.
 //
-if (isset($_POST['mode']) || isset($_GET['mode']) ) {
+if (isset($_POST['mode']) || isset($_GET['mode'])) {
 	$mode = isset($_POST['mode']) ? $_POST['mode'] : $_GET['mode'];
 	$mode = htmlspecialchars($mode);
 } else {
@@ -71,12 +71,12 @@ $delimeter  = '=+:';
 $dir = @opendir($phpbb_root_path . $board_config['smilies_path']);
 
 while ($file = @readdir($dir)) {
-	if (!@is_dir(phpbb_realpath($phpbb_root_path . $board_config['smilies_path'] . '/' . $file)) ) {
+	if (!@is_dir(phpbb_realpath($phpbb_root_path . $board_config['smilies_path'] . '/' . $file))) {
 		$img_size = @getimagesize($phpbb_root_path . $board_config['smilies_path'] . '/' . $file);
 
-		if ($img_size[0] && $img_size[1] ) {
+		if ($img_size[0] && $img_size[1]) {
 			$smiley_images[] = $file;
-		} elseif (eregi('.pak$', $file) ) {
+		} elseif (eregi('.pak$', $file)) {
 			$smiley_paks[] = $file;
 		}
 	}
@@ -87,7 +87,7 @@ while ($file = @readdir($dir)) {
 //
 // Select main mode
 //
-if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
+if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
 	//
 	// Import a list a "Smiley Pack"
 	//
@@ -95,12 +95,11 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 	$clear_current = isset($_POST['clear_current']) ? $_POST['clear_current'] : $_GET['clear_current'];
 	$replace_existing = isset($_POST['replace']) ? $_POST['replace'] : $_GET['replace'];
 
-	if ( !empty($smile_pak) ) {
+    if (!empty($smile_pak)) {
 		//
 		// The user has already selected a smile_pak file.. Import it.
 		//
-		if (!empty($clear_current)  ) {
-
+		if (!empty($clear_current) ) {
 		    // TODO really without where???!
 		    dibi::delete(SMILIES_TABLE)
                 ->execute();
@@ -118,7 +117,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 
 		$fcontents = @file($phpbb_root_path . $board_config['smilies_path'] . '/'. $smile_pak);
 
-		if (empty($fcontents) ) {
+		if (empty($fcontents)) {
 			message_die(GENERAL_ERROR, "Couldn't read smiley pak file", '', __LINE__, __FILE__);
 		}
 
@@ -134,8 +133,8 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 				$smile_data[$j] = str_replace('>', '&gt;', $smile_data[$j]);
 				$k = $smile_data[$j];
 
-				if ($smiles[$k] === 1 ) {
-					if (!empty($replace_existing) ) {
+				if ($smiles[$k] === 1) {
+					if (!empty($replace_existing)) {
 					    $update_data = [
                             'smile_url' => $smile_data[0],
                             'emoticon' => $smile_data[1],
@@ -161,7 +160,6 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 		$message = $lang['smiley_import_success'] . '<br /><br />' . sprintf($lang['Click_return_smileadmin'], '<a href="' . Session::appendSid('admin_smilies.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 		message_die(GENERAL_MESSAGE, $message);
-		
 	} else {
 		//
 		// Display the script to get the smile_pak cfg file...
@@ -169,7 +167,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 		$smile_paks_select = "<select name='smile_pak'><option value=''>" . $lang['Select_pak'] . '</option>';
 
 		foreach ($smiley_paks as $key => $value) {
-			if ( !empty($value) ) {
+			if ( !empty($value)) {
 				$smile_paks_select .= '<option>' . $value . '</option>';
 			}
 		}
@@ -200,7 +198,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 
         $template->pparse('body');
 	}
-} elseif (isset($_POST['export_pack']) || isset($_GET['export_pack']) ) {
+} elseif (isset($_POST['export_pack']) || isset($_GET['export_pack'])) {
 	//
 	// Export our smiley config as a smiley pak...
 	//
@@ -229,7 +227,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 
 	message_die(GENERAL_MESSAGE, $message);
 
-} elseif (isset($_POST['add']) || isset($_GET['add']) ) {
+} elseif (isset($_POST['add']) || isset($_GET['add'])) {
 	//
 	// Admin has selected to add a smiley.
 	//
@@ -265,8 +263,8 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
     );
 
     $template->pparse('body');
-} elseif ( $mode !== '') {
-	switch( $mode ) {
+} elseif ($mode !== '') {
+	switch( $mode) {
 		case 'delete':
 			//
 			// Admin has selected to delete a smiley.
@@ -277,7 +275,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 
 			$confirm = isset($_POST['confirm']);
 
-			if ($confirm ) {
+			if ($confirm) {
 			    dibi::delete(SMILIES_TABLE)
                     ->where('smilies_id = %i', $smiley_id)
                     ->execute();
@@ -327,7 +325,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 			$filename_list = '';
 
 			foreach ($smiley_images as $smiley_mage) {
-				if ($smiley_mage === $smile_data->smile_url ) {
+				if ($smiley_mage === $smile_data->smile_url) {
 					$smiley_selected = 'selected="selected"';
 					$smiley_edit_img = $smiley_mage;
 				} else {
@@ -502,7 +500,8 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
         $row_color = (!($i % 2)) ? $theme['td_color1'] : $theme['td_color2'];
         $row_class = (!($i % 2)) ? $theme['td_class1'] : $theme['td_class2'];
 
-        $template->assignBlockVars('smiles', [
+        $template->assignBlockVars('smiles',
+            [
             'ROW_COLOR' => '#' . $row_color,
             'ROW_CLASS' => $row_class,
 
@@ -512,7 +511,8 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 
             'U_SMILEY_EDIT'   => Session::appendSid('admin_smilies.php?mode=edit&amp;id=' . $smiley->smilies_id),
             'U_SMILEY_DELETE' => Session::appendSid('admin_smilies.php?mode=delete&amp;id=' . $smiley->smilies_id)
-            ]);
+            ]
+        );
     }
 
     //

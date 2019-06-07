@@ -21,7 +21,7 @@
 
 define('IN_PHPBB', 1);
 
-if (!empty($setmodules) ) {
+if (!empty($setmodules)) {
 	$filename = basename(__FILE__);
 	$module['General']['Mass_Email'] = $filename;
 	
@@ -31,7 +31,7 @@ if (!empty($setmodules) ) {
 //
 // Load default header
 //
-$no_page_header = TRUE;
+$no_page_header = true;
 $phpbb_root_path = './../';
 
 require './pagestart.php';
@@ -48,19 +48,19 @@ $subject = '';
 //
 // Do the job ...
 //
-if ( isset($_POST['submit']) ) {
+if (isset($_POST['submit'])) {
 	$subject = stripslashes(trim($_POST['subject']));
 	$message = stripslashes(trim($_POST['message']));
-	
-	$error = FALSE;
+
+    $error = false;
 	$error_msg = '';
 
-	if ( empty($subject) ) {
+    if (empty($subject)) {
 		$error = true;
 		$error_msg .= !empty($error_msg) ? '<br />' . $lang['Empty_subject'] : $lang['Empty_subject'];
 	}
 
-	if ( empty($message) ) {
+    if (empty($message)) {
 		$error = true;
 		$error_msg .= !empty($error_msg) ? '<br />' . $lang['Empty_message'] : $lang['Empty_message'];
 	}
@@ -90,7 +90,7 @@ if ( isset($_POST['submit']) ) {
         $error_msg .= !empty($error_msg) ? '<br />' . $message : $message;
     }
 
-	if ( !$error ) {
+    if (!$error) {
 		include $phpbb_root_path . 'includes/Emailer.php';
 
 		//

@@ -49,7 +49,7 @@ if (isset($_POST['mode']) || isset($_GET['mode'])) {
     $mode = '';
 }
 
-if ( isset($_POST['edit']) || isset($_POST['new']) ) {
+if (isset($_POST['edit']) || isset($_POST['new'])) {
 	//
 	// Ok they are editing a group or creating a new group
 	//
@@ -106,9 +106,9 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 		$group_moderator = '';
 	}
 
-	$group_open = ( $group_info['group_type'] === GROUP_OPEN ) ? ' checked="checked"' : '';
-	$group_closed = ( $group_info['group_type'] === GROUP_CLOSED ) ? ' checked="checked"' : '';
-	$group_hidden = ( $group_info['group_type'] === GROUP_HIDDEN ) ? ' checked="checked"' : '';
+	$group_open   = $group_info['group_type'] === GROUP_OPEN   ? ' checked="checked"' : '';
+	$group_closed = $group_info['group_type'] === GROUP_CLOSED ? ' checked="checked"' : '';
+	$group_hidden = $group_info['group_type'] === GROUP_HIDDEN ? ' checked="checked"' : '';
 
 	$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
 
@@ -236,7 +236,7 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 		$this_userdata = get_userdata($group_moderator, true);
 		$group_moderator = $this_userdata['user_id'];
 
-		if ( !$group_moderator ) {
+		if (!$group_moderator) {
 			message_die(GENERAL_MESSAGE, $lang['No_group_moderator']);
 		}
 
@@ -290,7 +290,7 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 			$message = $lang['Updated_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . Session::appendSid('admin_groups.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
-		} elseif ($mode === 'newgroup' ) {
+		} elseif ($mode === 'newgroup') {
 			$group_insert_data = [
 				'group_type'        => $group_type,
 				'group_name'        => $group_name,
@@ -354,7 +354,7 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
     );
 
     // TODO!!!!
-    // it was if ( $select_list != '' ) {
+    // it was if ( $select_list != '') {
     if ($group_count) {
         $template->assignBlockVars('select_box', []);
     }

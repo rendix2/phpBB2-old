@@ -687,7 +687,7 @@ function generate_smilies($mode, $page_id)
 		$userdata = Session::pageStart($user_ip, $page_id);
 		init_userprefs($userdata);
 
-		$gen_simple_header = TRUE;
+		$gen_simple_header = true;
 
 		$page_title = $lang['Emoticons'];
 		include $phpbb_root_path . 'includes/page_header.php';

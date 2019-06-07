@@ -22,7 +22,7 @@
 
 define('IN_PHPBB', 1);
 
-if (!empty($setmodules) ) {
+if (!empty($setmodules)) {
 	$filename = basename(__FILE__);
 	$module['Forums']['Permissions']   = $filename;
 
@@ -110,8 +110,7 @@ if (isset($_GET['adv'])) {
 //
 if (isset($_POST['submit'])) {
     if (!empty($forum_id)) {
-		if (isset($_POST['simpleauth']))
-		{
+		if (isset($_POST['simpleauth'])) {
 			$simple_ary = $simple_auth_ary[(int)$_POST['simpleauth']];
 
 			if (count($forum_auth_fields) === count($simple_ary)) {
@@ -127,10 +126,8 @@ if (isset($_POST['submit'])) {
 		    foreach ($forum_auth_fields as $forum_auth_field) {
                 $value = (int)$_POST[$forum_auth_field];
 
-                if ($forum_auth_field === 'auth_value') {
-                    if ($_POST['auth_vote'] === AUTH_ALL) {
-                        $value = AUTH_REG;
-                    }
+                if ($forum_auth_field === 'auth_value' && $_POST['auth_vote'] === AUTH_ALL) {
+                    $value = AUTH_REG;
                 }
 
                 $update_data[$forum_auth_field] = $value;
@@ -175,7 +172,7 @@ $forum_rows = $forum_rows->orderBy('c.cat_order', dibi::ASC)
     ->orderBy('f.forum_order', dibi::ASC)
     ->fetchAll();
 
-if (empty($forum_id) ) {
+if (empty($forum_id)) {
 	//
 	// Output the selection table if no forum id was
 	// specified
@@ -214,17 +211,18 @@ if (empty($forum_id) ) {
 
 	foreach ($simple_auth_ary as $key => $auth_levels) {
 		$matched = 1;
+
 		foreach ($auth_levels as $k => $auth_level) {
 			$matched_type = $key;
 
-			if ( $forum_rows[0]->{$forum_auth_fields[$k]} !== $auth_level ) {
+			if ( $forum_rows[0]->{$forum_auth_fields[$k]} !== $auth_level) {
 				$matched = 0;
 			}
 		}
 
-		if ( $matched ) {
-			break;
-		}
+        if ($matched) {
+            break;
+        }
 	}
 
 	//
@@ -282,7 +280,8 @@ if (empty($forum_id) ) {
 
 	$s_hidden_fields = '<input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '">';
 
-	$template->assignVars([
+	$template->assignVars(
+	    [
             'FORUM_NAME' => $forum_name,
 
             'L_FORUM' => $lang['Forum'],
@@ -295,9 +294,9 @@ if (empty($forum_id) ) {
 
             'S_FORUMAUTH_ACTION' => Session::appendSid('admin_forumauth.php'),
             'S_COLUMN_SPAN' => $s_column_span,
-            'S_HIDDEN_FIELDS' => $s_hidden_fields]
+            'S_HIDDEN_FIELDS' => $s_hidden_fields
+        ]
 	);
-
 }
 
 include './page_header_admin.php';

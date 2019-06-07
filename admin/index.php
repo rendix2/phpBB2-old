@@ -25,7 +25,7 @@ define('IN_PHPBB', 1);
 //
 // Load default header
 //
-$no_page_header = TRUE;
+$no_page_header = true;
 $phpbb_root_path = './../';
 
 require './pagestart.php';
@@ -95,7 +95,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
 	$template->pparse('body');
 
 	include './page_footer_admin.php';
-} elseif (isset($_GET['pane']) && $_GET['pane'] === 'right' ) {
+} elseif (isset($_GET['pane']) && $_GET['pane'] === 'right') {
 
 	include './page_header_admin.php';
 
@@ -190,13 +190,13 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
 	// This code is heavily influenced by a similar routine
 	// in phpMyAdmin 2.2.0
 	//
-	if (preg_match('/^mysql/', $dbms) ) {
+	if (preg_match('/^mysql/', $dbms)) {
         $row = dibi::query('SELECT VERSION() AS mysql_version')->fetch();
 
 		if ($row) {
 			$version = $row->mysql_version;
 
-			if (preg_match("/^(3\.23|4\.|5\.)/", $version) ) {
+			if (preg_match("/^(3\.23|4\.|5\.)/", $version)) {
 				$db_name = preg_match("/^(3\.23\.[6-9])|(3\.23\.[1-9][1-9])|(4\.)|(5\.)/", $version) ? "`$dbname`" : $dbname;
 
 				$tables = dibi::query('SHOW TABLE STATUS FROM %SQL', $db_name)->fetchAll();
@@ -222,7 +222,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
         } else {
             $dbsize = $lang['Not_available'];
         }
-	} elseif (preg_match('/^mssql/', $dbms) ) {
+	} elseif (preg_match('/^mssql/', $dbms)) {
         $dbsize = dibi::select('((SUM(size) * 8.0) * 1024.0)')
             ->as('dbsize')
             ->from('sysfiles')
@@ -314,7 +314,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
                     $hidden = true;
                 }
 
-				if ($online_user->user_session_page < 1 ) {
+				if ($online_user->user_session_page < 1) {
 					switch($online_user->user_session_page) {
 						case PAGE_INDEX:
 							$location = $lang['Forum_index'];
@@ -391,15 +391,15 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
     //
 	// Guest users
 	//
-	if (count($onlinerow_guest) ) {
+	if (count($onlinerow_guest)) {
 		$guest_users = 0;
 
         foreach ($onlinerow_guest as $guest) {
 			$guest_userip_ary[] = $guest->session_ip;
 			$guest_users++;
 
-			if ($guest->session_page < 1 ) {
-				switch( $guest->session_page ) {
+			if ($guest->session_page < 1) {
+				switch( $guest->session_page) {
 					case PAGE_INDEX:
 						$location = $lang['Forum_index'];
 						$location_url = 'index.php?pane=right';

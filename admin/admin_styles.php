@@ -22,7 +22,7 @@
 
 define('IN_PHPBB', 1);
 
-if (!empty($setmodules) ) {
+if (!empty($setmodules)) {
 	$file = basename(__FILE__);
 	$module['Styles']['Add_new'] = "$file?mode=addnew";
 	$module['Styles']['Create_new'] = "$file?mode=create";
@@ -57,13 +57,12 @@ if (isset($_GET['mode']) || isset($_POST['mode'])) {
     $mode = '';
 }
 
-switch( $mode )
-{
+switch( $mode) {
 	case 'addnew':
 		$install_to = isset($_GET['install_to']) ? urldecode($_GET['install_to']) : $_POST['install_to'];
 		$style_name = isset($_GET['style']) ? urldecode($_GET['style']) : $_POST['style'];
 	
-		if (isset($install_to) ) {
+		if (isset($install_to)) {
 			include $phpbb_root_path. 'templates/' . basename($install_to) . '/theme_info.cfg';
 
 			$template_names = $$install_to;
@@ -71,7 +70,7 @@ switch( $mode )
 			$insert_data = [];
 			
 			foreach ($template_names as $template_name) {
-				if ($template_name['style_name'] === $style_name ) {
+				if ($template_name['style_name'] === $style_name) {
 					foreach ($template_name as $key => $value) {
                         $insert_data[$key] = $value;
 					}
@@ -86,11 +85,11 @@ switch( $mode )
 		} else {
 			$installable_themes = [];
 			
-			if ($dir = @opendir($phpbb_root_path. 'templates/') ) {
-				while ($sub_dir = @readdir($dir) ) {
+			if ($dir = @opendir($phpbb_root_path. 'templates/')) {
+				while ($sub_dir = @readdir($dir)) {
 					if (!is_file(phpbb_realpath($phpbb_root_path . 'templates/' .$sub_dir)) && !is_link
                         (phpbb_realpath($phpbb_root_path . 'templates/' .$sub_dir)) && $sub_dir !== '.' && $sub_dir !== '..' && $sub_dir !== 'CVS') {
-						if (@file_exists(@phpbb_realpath($phpbb_root_path. 'templates/' . $sub_dir . '/theme_info.cfg')) ) {
+						if (@file_exists(@phpbb_realpath($phpbb_root_path. 'templates/' . $sub_dir . '/theme_info.cfg'))) {
 							include $phpbb_root_path. 'templates/' . $sub_dir . '/theme_info.cfg';
 							
 							for ($i = 0; $i < count($$sub_dir); $i++) {
@@ -149,10 +148,9 @@ switch( $mode )
 	
 	case 'create':
 	case 'edit':
-		$submit = isset($_POST['submit']) ? TRUE : 0;
+		$submit = isset($_POST['submit']) ? true : 0;
 		
-		if ($submit )
-		{
+		if ($submit) {
 			//	
 			// DAMN! Thats alot of data to validate...
 			//
@@ -498,7 +496,7 @@ switch( $mode )
 
 			$fp = @fopen($phpbb_root_path . 'templates/' . basename($template_name) . '/theme_info.cfg', 'wb');
 
-			if (!$fp ) {
+            if (!$fp) {
 				//
 				// Unable to open the file writeable do something here as an attempt
 				// to get around that...
@@ -527,8 +525,7 @@ switch( $mode )
 			$message = $lang['Theme_info_saved'] . '<br /><br />' . sprintf($lang['Click_return_styleadmin'], '<a href="' . Session::appendSid('admin_styles.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
-
-		} elseif ($_POST['send_file']) {
+        } elseif ($_POST['send_file']) {
 			
 			header('Content-Type: text/x-delimtext; name="theme_info.cfg"');
 			header('Content-disposition: attachment; filename=theme_info.cfg');
@@ -537,9 +534,9 @@ switch( $mode )
 		} else {
             $template->setFileNames(['body' => 'admin/styles_exporter.tpl']);
 
-            if ($dir = @opendir($phpbb_root_path . 'templates/') ) {
+            if ($dir = @opendir($phpbb_root_path . 'templates/')) {
 				$s_template_select = '<select name="export_template">';
-				while ($file = @readdir($dir) ) {
+				while ($file = @readdir($dir)) {
 					if (!is_file(phpbb_realpath($phpbb_root_path . 'templates/' . $file)) && !is_link(phpbb_realpath($phpbb_root_path . 'templates/' .$file)) && $file !== '.' && $file !== '..' && $file !== 'CVS') {
 						$s_template_select .= '<option value="' . $file . '">' . $file . "</option>\n";
 					}
@@ -571,7 +568,7 @@ switch( $mode )
 	case 'delete':
 		$style_id = isset($_GET['style_id']) ? (int)$_GET['style_id'] : (int)$_POST['style_id'];
 		
-		if (!$confirm ) {
+		if (!$confirm) {
 			if ($style_id === $board_config['default_style']) {
 				message_die(GENERAL_MESSAGE, $lang['Cannot_remove_style']);
 			}
@@ -598,9 +595,7 @@ switch( $mode )
 
             $template->pparse('confirm');
 
-		}
-		else
-		{
+		} else {
 			//
 			// The user has confirmed the delete. Remove the style, the style element
 			// names and update any users who might be using this style

@@ -42,15 +42,15 @@ function remove_comments(&$output)
 
 	$in_comment = false;
 	foreach ($lines as $line) {
-		if (preg_match("/^\/\*/", preg_quote($line)) ) {
+		if (preg_match("/^\/\*/", preg_quote($line))) {
 			$in_comment = true;
 		}
 
-		if (!$in_comment ) {
+		if (!$in_comment) {
 			$output .= $line . "\n";
 		}
 
-		if (preg_match("/\*\/$/", preg_quote($line)) ) {
+		if (preg_match("/\*\/$/", preg_quote($line))) {
 			$in_comment = false;
 		}
 	}

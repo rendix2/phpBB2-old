@@ -138,7 +138,7 @@ class Template
             ->fetchAll();
 
         foreach ($rows as $row) {
-            if ($row->template_cached === filemtime($row->template_name) ) {
+            if ($row->template_cached === filemtime($row->template_name)) {
                 $this->compiled_code[$row->template_handle] = $row->template_compile;
                 $this->echo_compiled[$row->template_handle] = $row->template_echo;
             }

@@ -40,8 +40,8 @@ $faq = [];
 //
 // Load the appropriate faq file
 //
-if (isset($_GET['mode']) ) {
-	switch( $_GET['mode'] ) {
+if (isset($_GET['mode'])) {
+	switch( $_GET['mode']) {
 		case 'bbcode':
 			$lang_file = 'lang_bbcode';
 			$l_title = $lang['BBCode_guide'];
@@ -69,7 +69,7 @@ $faq_block_titles = [];
 $faq_count = count($faq);
 
 for ($i = 0; $i < $faq_count; $i++) {
-	if ($faq[$i][0] !== '--' ) {
+	if ($faq[$i][0] !== '--') {
 		$faq_block[$j][$counter]['id'] = $counter_2;
 		$faq_block[$j][$counter]['question'] = $faq[$i][0];
 		$faq_block[$j][$counter]['answer'] = $faq[$i][1];
@@ -106,7 +106,7 @@ $faq_block_count = count($faq_block);
 for ($i = 0; $i < $faq_block_count; $i++) {
     $faq_block_i_count = count($faq_block[$i]);
 
-	if ($faq_block_i_count ) {
+	if ($faq_block_i_count) {
         $template->assignBlockVars('faq_block', ['BLOCK_TITLE' => $faq_block_titles[$i]]);
         $template->assignBlockVars('faq_block_link', ['BLOCK_TITLE' => $faq_block_titles[$i]]);
 

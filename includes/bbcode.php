@@ -130,7 +130,7 @@ function bbencode_second_pass($text, $uid)
 	$text = ' ' . $text;
 
 	// First: If there isn't a "[" and a "]" in the message, don't bother.
-	if (! (strpos($text, '[') && strpos($text, ']')) ) {
+	if (! (strpos($text, '[') && strpos($text, ']'))) {
 		// Remove padding, return.
 		$text = substr($text, 1);
 		return $text;
@@ -380,7 +380,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 				//
 				// We're going to try and catch usernames with "[' characters.
 				//
-				if (preg_match('#\[quote=\\\&quot;#si', $possible_start, $match) && !preg_match('#\[quote=\\\&quot;(.*?)\\\&quot;\]#si', $possible_start) ) {
+				if (preg_match('#\[quote=\\\&quot;#si', $possible_start, $match) && !preg_match('#\[quote=\\\&quot;(.*?)\\\&quot;\]#si', $possible_start)) {
 					// OK we are in a quote tag that probably contains a ] bracket.
 					// Grab a bit more of the string to hopefully get all of it..
 					if ($close_pos = strpos($text, '&quot;]', $curr_pos + 14)) {
@@ -664,7 +664,7 @@ function smilies_pass($message)
 
 function smiley_sort($a, $b)
 {
-	if ( strlen($a->code) === strlen($b->code) ) {
+	if ( strlen($a->code) === strlen($b->code)) {
 		return 0;
 	}
 

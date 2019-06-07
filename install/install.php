@@ -766,7 +766,7 @@ else
 			$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
 
 			@umask(0111);
-			$no_open = FALSE;
+            $no_open = false;
 
 			// Unable to open the file writeable do something here as an attempt
 			// to get around that...

@@ -31,7 +31,7 @@ global $do_gzip_compress;
 //
 $template->setFileNames(['page_footer' => 'admin/page_footer.tpl']);
 
-if (isset($lang['TRANSLATION_INFO']) ) {
+if (isset($lang['TRANSLATION_INFO'])) {
     $translation_info = $lang['TRANSLATION_INFO'];
 } else {
     $translation_info = isset($lang['TRANSLATION']) ? $lang['TRANSLATION'] : '';
@@ -55,7 +55,7 @@ dibi::disconnect();
 // Compress buffered output if required
 // and send to browser
 //
-if ($do_gzip_compress ) {
+if ($do_gzip_compress) {
 	//
 	// Borrowed from php.net!
 	//
