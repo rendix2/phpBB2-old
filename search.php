@@ -249,7 +249,7 @@ if ($mode === 'searchuser') {
                             $current_match_type = 'and';
                         }
 
-						if ( !strstr($multibyte_charset, $lang['ENCODING']) ) {
+						if (false === strpos($multibyte_charset, $lang['ENCODING'])) {
 
 							$match_word = str_replace('*', '%', $split_search_value);
 

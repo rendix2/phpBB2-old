@@ -122,7 +122,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 				$redirect = !empty($_POST['redirect']) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : '';
 				$redirect = str_replace('?', '&', $redirect);
 
-				if (strstr(urldecode($redirect), "\n") || strstr(urldecode($redirect), "\r") || strstr(urldecode($redirect), ';url')) {
+				if (false !== strpos(urldecode($redirect), "\n") || false !== strpos(urldecode($redirect), "\r") || false !== strpos(urldecode($redirect), ';url')) {
 					message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
 				}
 
@@ -140,7 +140,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 			$redirect = !empty($_POST['redirect']) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : '';
 			$redirect = str_replace('?', '&', $redirect);
 
-			if (strstr(urldecode($redirect), "\n") || strstr(urldecode($redirect), "\r") || strstr(urldecode($redirect), ';url')) {
+			if (false !== strpos(urldecode($redirect), "\n") || false !== strpos(urldecode($redirect), "\r") || false !== strpos(urldecode($redirect), ';url')) {
 				message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
 			}
 

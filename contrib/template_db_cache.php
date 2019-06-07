@@ -244,7 +244,7 @@ class Template
 	 */
 	public function assignBlockVars($blockname, $vararray)
 	{
-		if (strstr($blockname, '.'))
+		if (false !== strpos($blockname, '.'))
 		{
 			// Nested block.
 			$blocks = explode('.', $blockname);

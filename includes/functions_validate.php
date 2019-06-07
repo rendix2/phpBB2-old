@@ -78,7 +78,7 @@ function validate_username($username)
     }
 
 	// Don't allow " and ALT-255 in username.
-	if (strstr($username, '"') || strstr($username, '&quot;') || strstr($username, chr(160)) || strstr($username, chr(173))) {
+	if (false !== strpos($username, '"') || false !== strpos($username, '&quot;') || false !== strpos($username, chr(160)) || false !== strpos($username, chr(173))) {
         return ['error' => true, 'error_msg' => $lang['Username_invalid']];
 	}
 

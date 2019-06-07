@@ -207,7 +207,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
                     foreach ($tables as $table) {
                         if ($table->Type !== 'MRG_MyISAM') {
                             if ($table_prefix !== '') {
-                                if (strstr($table->Name, $table_prefix)) {
+                                if (false !== strpos($table->Name, $table_prefix)) {
                                     $dbsize += $table->Data_length + $table->Index_length;
                                 }
                             } else {

@@ -661,13 +661,17 @@ function phpbb_realpath($path)
 	return (!@function_exists('realpath') || !@realpath($phpbb_root_path . 'includes/functions.php')) ? $path : @realpath($path);
 }
 
+/**
+ * @param string $url
+ */
 function redirect($url)
 {
 	global $board_config;
 
 	dibi::disconnect();
 
-	if (strstr(urldecode($url), "\n") || strstr(urldecode($url), "\r") || strstr(urldecode($url), ';url')) {
+	if (false !== strpos(urldecode($url), "\n") || false !== strpos(urldecode($url), "\r") || false !== strpos(urldecode($url),
+            ';url')) {
 		message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
 	}
 
