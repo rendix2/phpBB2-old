@@ -25,7 +25,7 @@ use Tracy\Debugger;
 
 if ( !defined('IN_PHPBB') )
 {
-	die("Hacking attempt");
+	die('Hacking attempt');
 }
 
 /**
@@ -41,12 +41,12 @@ error_reporting  (E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninit
 
 // Protect against GLOBALS tricks
 if (isset($_POST['GLOBALS']) || isset($_FILES['GLOBALS']) || isset($_GET['GLOBALS']) || isset($_COOKIE['GLOBALS'])) {
-	die("Hacking attempt");
+	die('Hacking attempt');
 }
 
 // Protect against HTTP_SESSION_VARS tricks
 if (isset($_SESSION) && !is_array($_SESSION)) {
-	die("Hacking attempt");
+	die('Hacking attempt');
 }
 
 //
@@ -65,15 +65,15 @@ $gen_simple_header = false;
 
 include $phpbb_root_path . 'config.php';
 
-if (!defined("PHPBB_INSTALLED") ) {
+if (!defined('PHPBB_INSTALLED')) {
 	header('Location: ' . $phpbb_root_path . 'install/install.php');
 	exit;
 }
 
 include $phpbb_root_path . 'includes/constants.php';
-include $phpbb_root_path . 'includes/template.php';
-include $phpbb_root_path . 'includes/sessions.php';
-include $phpbb_root_path . 'includes/auth.php';
+include $phpbb_root_path . 'includes/Template.php';
+include $phpbb_root_path . 'includes/Session.php';
+include $phpbb_root_path . 'includes/Auth.php';
 include $phpbb_root_path . 'includes/functions.php';
 include $phpbb_root_path .'vendor/autoload.php';
 
@@ -130,7 +130,7 @@ $board_config = dibi::select('*')
     ->fetchPairs('config_name', 'config_value');
 
 if (!$board_config) {
-    message_die(CRITICAL_ERROR, "Could not query config information");
+    message_die(CRITICAL_ERROR, 'Could not query config information');
 }
 
 if (file_exists('install') || file_exists('contrib')) {
@@ -140,7 +140,7 @@ if (file_exists('install') || file_exists('contrib')) {
 //
 // Show 'Board is disabled' message if needed.
 //
-if ($board_config['board_disable'] && !defined("IN_ADMIN") && !defined("IN_LOGIN") ) {
+if ($board_config['board_disable'] && !defined('IN_ADMIN') && !defined('IN_LOGIN')) {
 	message_die(GENERAL_MESSAGE, 'Board_disable', 'Information');
 }
 

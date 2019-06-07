@@ -24,7 +24,7 @@
 // Allow people to reach login page if
 // board is shut down
 //
-define("IN_LOGIN", true);
+define('IN_LOGIN', true);
 
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
@@ -34,7 +34,7 @@ include $phpbb_root_path . 'common.php';
 //
 // Set page ID for session management
 //
-$userdata = session_pagestart($user_ip, PAGE_LOGIN);
+$userdata = Session::pageStart($user_ip, PAGE_LOGIN);
 init_userprefs($userdata);
 //
 // End session management
@@ -47,8 +47,8 @@ if (!empty($_POST['sid']) || !empty($_GET['sid'])) {
 	$sid = '';
 }
 
-if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) || isset($_GET['logout']) ) {
-	if (( isset($_POST['login']) || isset($_GET['login']) ) && (!$userdata['session_logged_in'] || isset($_POST['admin'])) ) {
+if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) || isset($_GET['logout'])) {
+	if (( isset($_POST['login']) || isset($_GET['login']) ) && (!$userdata['session_logged_in'] || isset($_POST['admin']))) {
 		$username = isset($_POST['username']) ? phpbb_clean_username($_POST['username']) : '';
 		$password = isset($_POST['password']) ? $_POST['password'] : '';
 
@@ -68,8 +68,8 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
             ->fetch();
 
 		if ($row) {
-            if ($row->user_level !== ADMIN && $board_config['board_disable'] ) {
-				redirect(append_sid("index.php", true));
+            if ($row->user_level !== ADMIN && $board_config['board_disable']) {
+				redirect(Session::appendSid('index.php', true));
 			} else {
 				// If the last login is more than x minutes ago, then reset the login tries/time
 				if ($row->user_last_login_try && $board_config['login_reset_time'] && $row->user_last_login_try < (time() - ($board_config['login_reset_time'] * 60))) {
@@ -88,11 +88,11 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 					message_die(GENERAL_MESSAGE, sprintf($lang['Login_attempts_exceeded'], $board_config['max_login_attempts'], $board_config['login_reset_time']));
 				}
 
-				if (password_verify($password, $row->user_password) && $row->user_active ) {
-					$autologin = isset($_POST['autologin']) ? TRUE : 0;
+				if (password_verify($password, $row->user_password) && $row->user_active) {
+					$autologin = isset($_POST['autologin']) ? true : 0;
 
 					$admin = isset($_POST['admin']) ? 1 : 0;
-					$session_id = session_begin($row->user_id, $user_ip, PAGE_INDEX, FALSE, $autologin, $admin);
+                    $session_id = Session::begin($row->user_id, $user_ip, PAGE_INDEX, false, $autologin, $admin);
 
 					// Reset login tries
 
@@ -101,14 +101,14 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
                         ->execute();
 
                     if ($session_id) {
-						$url = !empty($_POST['redirect']) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : "index.php";
-						redirect(append_sid($url, true));
+						$url = !empty($_POST['redirect']) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : 'index.php';
+						redirect(Session::appendSid($url, true));
 					} else {
-						message_die(CRITICAL_ERROR, "Couldn't start session : login", "", __LINE__, __FILE__);
+						message_die(CRITICAL_ERROR, "Couldn't start session : login", '', __LINE__, __FILE__);
 					}
 				}
 				// Only store a failed login attempt for an active user - inactive users can't login even with a correct password
-				elseif ($row->user_active ) {
+				elseif ($row->user_active) {
 					// Save login tries and last login
 					if ($row->user_id !== ANONYMOUS) {
                         $update_data = ['user_login_tries%sql' => 'user_login_tries + 1', 'user_last_login_try' => time()];
@@ -122,58 +122,58 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 				$redirect = !empty($_POST['redirect']) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : '';
 				$redirect = str_replace('?', '&', $redirect);
 
-				if (strstr(urldecode($redirect), "\n") || strstr(urldecode($redirect), "\r") || strstr(urldecode($redirect), ';url')) {
+				if (false !== strpos(urldecode($redirect), "\n") || false !== strpos(urldecode($redirect), "\r") || false !== strpos(urldecode($redirect), ';url')) {
 					message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
 				}
 
-                $template->assign_vars(
+                $template->assignVars(
                     [
                         'META' => "<meta http-equiv=\"refresh\" content=\"3;url=login.php?redirect=$redirect\">"
                     ]
                 );
 
-                $message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], "<a href=\"login.php?redirect=$redirect\">", '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
+                $message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], "<a href=\"login.php?redirect=$redirect\">", '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
 				message_die(GENERAL_MESSAGE, $message);
 			}
 		} else {
-			$redirect = !empty($_POST['redirect']) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : "";
-			$redirect = str_replace("?", "&", $redirect);
+			$redirect = !empty($_POST['redirect']) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : '';
+			$redirect = str_replace('?', '&', $redirect);
 
-			if (strstr(urldecode($redirect), "\n") || strstr(urldecode($redirect), "\r") || strstr(urldecode($redirect), ';url')) {
+			if (false !== strpos(urldecode($redirect), "\n") || false !== strpos(urldecode($redirect), "\r") || false !== strpos(urldecode($redirect), ';url')) {
 				message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
 			}
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
                     'META' => "<meta http-equiv=\"refresh\" content=\"3;url=login.php?redirect=$redirect\">"
                 ]
             );
 
-            $message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], "<a href=\"login.php?redirect=$redirect\">", '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
+            $message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], "<a href=\"login.php?redirect=$redirect\">", '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		}
-	} elseif (( isset($_GET['logout']) || isset($_POST['logout']) ) && $userdata['session_logged_in'] ) {
+	} elseif (( isset($_GET['logout']) || isset($_POST['logout']) ) && $userdata['session_logged_in']) {
 		// session id check
 		if ($sid === '' || $sid !== $userdata['session_id']) {
 			message_die(GENERAL_ERROR, 'Invalid_session');
 		}
 
-		if ($userdata['session_logged_in'] ) {
-			session_end($userdata['session_id'], $userdata['user_id']);
+		if ($userdata['session_logged_in']) {
+            Session::end($userdata['session_id'], $userdata['user_id']);
 		}
 
 		if (!empty($_POST['redirect']) || !empty($_GET['redirect'])) {
 		    $url = !empty($_POST['redirect']) ? htmlspecialchars($_POST['redirect']) : htmlspecialchars($_GET['redirect']);
 			$url = str_replace('&amp;', '&', $url);
-			redirect(append_sid($url, true));
+			redirect(Session::appendSid($url, true));
 		} else {
-			redirect(append_sid("index.php", true));
+			redirect(Session::appendSid('index.php', true));
 		}
 	} else {
-		$url = !empty($_POST['redirect']) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : "index.php";
-		redirect(append_sid($url, true));
+		$url = !empty($_POST['redirect']) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : 'index.php';
+		redirect(Session::appendSid($url, true));
 	}
 } else {
 	//
@@ -184,21 +184,22 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 		$page_title = $lang['Login'];
 		include $phpbb_root_path . 'includes/page_header.php';
 
-        $template->set_filenames(['body' => 'login_body.tpl']);
+        $template->setFileNames(['body' => 'login_body.tpl']);
 
         $forward_page = '';
 
-		if (isset($_POST['redirect']) || isset($_GET['redirect']) ) {
+		if (isset($_POST['redirect']) || isset($_GET['redirect'])) {
 			$forward_to = $_SERVER['QUERY_STRING'];
 
-			if (preg_match("/^redirect=([a-z0-9\.#\/\?&=\+\-_]+)/si", $forward_to, $forward_matches) ) {
+			if (preg_match("/^redirect=([a-z0-9\.#\/\?&=\+\-_]+)/si", $forward_to, $forward_matches)) {
 				$forward_to = !empty($forward_matches[3]) ? $forward_matches[3] : $forward_matches[1];
 				$forward_match = explode('&', $forward_to);
+				$count_forward_match = count($forward_match);
 
-				if (count($forward_match) > 1) {
-					for ($i = 1; $i < count($forward_match); $i++) {
-						if (!preg_match("/sid=/", $forward_match[$i]) ) {
-							if ($forward_page !== '' ) {
+				if ($count_forward_match > 1) {
+					for ($i = 1; $i < $count_forward_match; $i++) {
+						if (!preg_match('/sid=/', $forward_match[$i])) {
+							if ($forward_page !== '') {
 								$forward_page .= '&';
 							}
 							
@@ -219,14 +220,14 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 		$s_hidden_fields .= isset($_GET['admin']) ? '<input type="hidden" name="admin" value="1" />' : '';
 
 		make_jumpbox('viewforum.php');
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'USERNAME' => $username,
 
                 'L_ENTER_PASSWORD' => isset($_GET['admin']) ? $lang['Admin_reauthenticate'] : $lang['Enter_password'],
                 'L_SEND_PASSWORD'  => $lang['Forgotten_password'],
 
-                'U_SEND_PASSWORD' => append_sid("profile.php?mode=sendpassword"),
+                'U_SEND_PASSWORD' => Session::appendSid('profile.php?mode=sendpassword'),
 
                 'S_HIDDEN_FIELDS' => $s_hidden_fields
             ]
@@ -236,7 +237,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 
 		include $phpbb_root_path . 'includes/page_tail.php';
 	} else {
-		redirect(append_sid("index.php", true));
+		redirect(Session::appendSid('index.php', true));
 	}
 }
 

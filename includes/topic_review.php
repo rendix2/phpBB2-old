@@ -71,15 +71,14 @@ function topic_review($topic_id, $is_inline_review)
 		//
 		// Start session management
 		//
-		$userdata = session_pagestart($user_ip, $forum_id);
+		$userdata = Session::pageStart($user_ip, $forum_id);
 		init_userprefs($userdata);
 		//
 		// End session management
 		//
 
-		$is_auth = [];
 		// TODO for now to arrary
-		$is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_row->toArray());
+		$is_auth = Auth::authorize(AUTH_ALL, $forum_id, $userdata, $forum_row->toArray());
 
         if (!$is_auth['auth_read']) {
             message_die(GENERAL_MESSAGE, sprintf($lang['Sorry_auth_read'], $is_auth['auth_read_type']));
@@ -105,7 +104,7 @@ function topic_review($topic_id, $is_inline_review)
 		$page_title = $lang['Topic_review'] . ' - ' . $topic_title;
 		include $phpbb_root_path . 'includes/page_header.php';
 
-        $template->set_filenames(['reviewbody' => 'posting_topic_review.tpl']);
+        $template->setFileNames(['reviewbody' => 'posting_topic_review.tpl']);
     }
 
     //
@@ -166,7 +165,7 @@ function topic_review($topic_id, $is_inline_review)
                 $message = preg_replace('#(<)([\/]?.*?)(>)#is', '&lt;\2&gt;', $message);
             }
 
-            if ($bbcode_uid !== "") {
+            if ($bbcode_uid !== '') {
                 $message = $board_config['allow_bbcode'] ? bbencode_second_pass($message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
             }
 
@@ -190,7 +189,7 @@ function topic_review($topic_id, $is_inline_review)
 			$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-            $template->assign_block_vars('postrow',
+            $template->assignBlockVars('postrow',
                 [
                     'ROW_COLOR' => '#' . $row_color,
                     'ROW_CLASS' => $row_class,
@@ -211,7 +210,7 @@ function topic_review($topic_id, $is_inline_review)
 		message_die(GENERAL_MESSAGE, 'Topic_post_not_exist', '', __LINE__, __FILE__);
 	}
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'L_AUTHOR'       => $lang['Author'],
             'L_MESSAGE'      => $lang['Message'],

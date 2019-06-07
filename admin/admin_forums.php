@@ -21,7 +21,7 @@
 
 define('IN_PHPBB', 1);
 
-if (!empty($setmodules) ) {
+if (!empty($setmodules)) {
 	$file = basename(__FILE__);
 	$module['Forums']['Manage'] = $file;
 	return;
@@ -30,22 +30,22 @@ if (!empty($setmodules) ) {
 //
 // Load default header
 //
-$phpbb_root_path = "./../";
+$phpbb_root_path = './../';
 
 require './pagestart.php';
 include $phpbb_root_path . 'includes/functions_admin.php';
 
 $forum_auth_ary = [
-    "auth_view"       => AUTH_ALL,
-    "auth_read"       => AUTH_ALL,
-    "auth_post"       => AUTH_REG,
-    "auth_reply"      => AUTH_REG,
-    "auth_edit"       => AUTH_REG,
-    "auth_delete"     => AUTH_REG,
-    "auth_sticky"     => AUTH_MOD,
-    "auth_announce"   => AUTH_MOD,
-    "auth_vote"       => AUTH_REG,
-    "auth_pollcreate" => AUTH_REG
+    'auth_view'       => AUTH_ALL,
+    'auth_read'       => AUTH_ALL,
+    'auth_post'       => AUTH_REG,
+    'auth_reply'      => AUTH_REG,
+    'auth_edit'       => AUTH_REG,
+    'auth_delete'     => AUTH_REG,
+    'auth_sticky'     => AUTH_MOD,
+    'auth_announce'   => AUTH_MOD,
+    'auth_vote'       => AUTH_REG,
+    'auth_pollcreate' => AUTH_REG
 ];
 
 //
@@ -55,7 +55,7 @@ if (isset($_POST['mode']) || isset($_GET['mode'])) {
     $mode = isset($_POST['mode']) ? $_POST['mode'] : $_GET['mode'];
     $mode = htmlspecialchars($mode);
 } else {
-    $mode = "";
+    $mode = '';
 }
 
 // ------------------
@@ -78,7 +78,7 @@ function get_info($mode, $id)
 			break;
 
 		default:
-			message_die(GENERAL_ERROR, "Wrong mode for generating select list", "", __LINE__, __FILE__);
+			message_die(GENERAL_ERROR, 'Wrong mode for generating select list', '', __LINE__, __FILE__);
 			break;
 	}
 
@@ -113,7 +113,7 @@ function get_list($mode, $id, $select)
 			break;
 
 		default:
-			message_die(GENERAL_ERROR, "Wrong mode for generating select list", "", __LINE__, __FILE__);
+			message_die(GENERAL_ERROR, 'Wrong mode for generating select list', '', __LINE__, __FILE__);
 			break;
 	}
 
@@ -161,7 +161,7 @@ function renumber_order($mode, $cat = 0)
 			break;
 
 		default:
-			message_die(GENERAL_ERROR, "Wrong mode for generating select list", "", __LINE__, __FILE__);
+			message_die(GENERAL_ERROR, 'Wrong mode for generating select list', '', __LINE__, __FILE__);
 			break;
 	}
 
@@ -194,10 +194,10 @@ function renumber_order($mode, $cat = 0)
 //
 // Begin program proper
 //
-if (isset($_POST['addforum']) || isset($_POST['addcategory']) ) {
-	$mode = isset($_POST['addforum']) ? "addforum" : "addcat";
+if (isset($_POST['addforum']) || isset($_POST['addcategory'])) {
+	$mode = isset($_POST['addforum']) ? 'addforum' : 'addcat';
 
-	if ($mode === "addforum" ) {
+	if ($mode === 'addforum') {
 		list($cat_id) = each($_POST['addforum']);
 		$cat_id = (int)$cat_id;
 		//
@@ -207,8 +207,8 @@ if (isset($_POST['addforum']) || isset($_POST['addcategory']) ) {
 	}
 }
 
-if (!empty($mode) ) {
-	switch($mode) {
+if (!empty($mode)) {
+    switch ($mode) {
 		case 'addforum':
 		case 'editforum':
 			//
@@ -233,8 +233,8 @@ if (!empty($mode) ) {
 				//
 				// start forum prune stuff.
 				//
-				if ($row['prune_enable'] ) {
-					$prune_enabled = "checked=\"checked\"";
+                if ($row['prune_enable']) {
+					$prune_enabled = 'checked="checked"';
 
 					$pr_row = dibi::select('*')
                         ->from(PRUNE_TABLE)
@@ -258,25 +258,25 @@ if (!empty($mode) ) {
 				$prune_enabled = '';
 			}
 
-			$catlist = get_list('category', $cat_id, TRUE);
+			$catlist = get_list('category', $cat_id, true);
 
-			$forumstatus === FORUM_LOCKED ? $forumlocked = "selected=\"selected\"" : $forumunlocked = "selected=\"selected\"";
+			$forumstatus === FORUM_LOCKED ? $forumlocked = 'selected="selected"' : $forumunlocked = 'selected="selected"';
 
 			// These two options ($lang['Status_unlocked'] and $lang['Status_locked']) seem to be missing from
 			// the language files.
 			$lang['Status_unlocked'] = isset($lang['Status_unlocked']) ? $lang['Status_unlocked'] : 'Unlocked';
 			$lang['Status_locked'] = isset($lang['Status_locked']) ? $lang['Status_locked'] : 'Locked';
 
-			$statuslist = "<option value=\"" . FORUM_UNLOCKED . "\" $forumunlocked>" . $lang['Status_unlocked'] . "</option>\n";
-			$statuslist .= "<option value=\"" . FORUM_LOCKED . "\" $forumlocked>" . $lang['Status_locked'] . "</option>\n";
+			$statuslist = '<option value="' . FORUM_UNLOCKED . "\" $forumunlocked>" . $lang['Status_unlocked'] . "</option>\n";
+			$statuslist .= '<option value="' . FORUM_LOCKED . "\" $forumlocked>" . $lang['Status_locked'] . "</option>\n";
 
-        $template->set_filenames(["body" => "admin/forum_edit_body.tpl"]);
+        $template->setFileNames(['body' => 'admin/forum_edit_body.tpl']);
 
         $s_hidden_fields = '<input type="hidden" name="mode" value="' . $newmode .'" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
 
-        $template->assign_vars(
+        $template->assignVars(
             [
-                'S_FORUM_ACTION'  => append_sid("admin_forums.php"),
+                'S_FORUM_ACTION'  => Session::appendSid('admin_forums.php'),
                 'S_HIDDEN_FIELDS' => $s_hidden_fields,
                 'S_SUBMIT_VALUE'  => $buttonvalue,
                 'S_CAT_LIST'      => $catlist,
@@ -302,14 +302,14 @@ if (!empty($mode) ) {
                 'DESCRIPTION' => $forumdesc
             ]
         );
-        $template->pparse("body");
+        $template->pparse('body');
 			break;
 
 		case 'createforum':
 			//
 			// Create a forum in the DB
 			//
-			if (trim($_POST['forumname']) === "" ) {
+			if (trim($_POST['forumname']) === '') {
 				message_die(GENERAL_ERROR, "Can't create a forum without a name");
 			}
 
@@ -338,9 +338,9 @@ if (!empty($mode) ) {
 			// There is no problem having duplicate forum names so we won't check for it.
             $forums_id = dibi::insert(FORUMS_TABLE, $forum_auth_ary)->execute(dibi::IDENTIFIER);
 
-			if ($_POST['prune_enable'] ) {
+            if ($_POST['prune_enable']) {
 
-				if ($_POST['prune_days'] === "" || $_POST['prune_freq'] === "") {
+				if ($_POST['prune_days'] === '' || $_POST['prune_freq'] === '') {
 					message_die(GENERAL_MESSAGE, $lang['Set_prune_data']);
 				}
 
@@ -353,7 +353,7 @@ if (!empty($mode) ) {
 				dibi::insert(PRUNE_TABLE, $insert_data)->execute();
 			}
 
-			$message = $lang['Forums_updated'] . "<br /><br />" . sprintf($lang['Click_return_forumadmin'], "<a href=\"" . append_sid("admin_forums.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
+			$message = $lang['Forums_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 
@@ -361,11 +361,11 @@ if (!empty($mode) ) {
 
 		case 'modforum':
 			// Modify a forum in the DB
-			if (isset($_POST['prune_enable'])) {
-				if ($_POST['prune_enable'] !== 1 ) {
-					$_POST['prune_enable'] = 0;
-				}
-			}
+            if (isset($_POST['prune_enable'])) {
+                if ($_POST['prune_enable'] !== 1) {
+                    $_POST['prune_enable'] = 0;
+                }
+            }
 
 			$update_data = [
 			    'forum_name'   => $_POST['forumname'],
@@ -379,8 +379,8 @@ if (!empty($mode) ) {
                 ->where('forum_id = %i', (int)$_POST[POST_FORUM_URL])
                 ->execute();
 
-			if ($_POST['prune_enable'] === 1 ) {
-				if ($_POST['prune_days'] === "" || $_POST['prune_freq'] === "" ) {
+            if ($_POST['prune_enable'] === 1) {
+				if ($_POST['prune_days'] === '' || $_POST['prune_freq'] === '') {
 					message_die(GENERAL_MESSAGE, $lang['Set_prune_data']);
 				}
 
@@ -395,7 +395,7 @@ if (!empty($mode) ) {
 					message_die(GENERAL_ERROR, "Couldn't get forum Prune Information");
 				}
 
-				if ($prune_count > 0 ) {
+                if ($prune_count > 0) {
 				    $update_data = [
 				        'prune_days' => (int)$_POST['prune_days'],
                         'prune_freq' => (int)$_POST['prune_freq']
@@ -415,7 +415,7 @@ if (!empty($mode) ) {
 				}
 			}
 
-			$message = $lang['Forums_updated'] . "<br /><br />" . sprintf($lang['Click_return_forumadmin'], "<a href=\"" . append_sid("admin_forums.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
+			$message = $lang['Forums_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 
@@ -445,7 +445,7 @@ if (!empty($mode) ) {
 
             dibi::insert(CATEGORIES_TABLE, $insert_data)->execute();
 
-			$message = $lang['Forums_updated'] . "<br /><br />" . sprintf($lang['Click_return_forumadmin'], "<a href=\"" . append_sid("admin_forums.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
+			$message = $lang['Forums_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 
@@ -463,11 +463,11 @@ if (!empty($mode) ) {
 			$row = get_info('category', $cat_id);
 			$cat_title = $row['cat_title'];
 
-            $template->set_filenames(["body" => "admin/category_edit_body.tpl"]);
+            $template->setFileNames(['body' => 'admin/category_edit_body.tpl']);
 
             $s_hidden_fields = '<input type="hidden" name="mode" value="' . $newmode . '" /><input type="hidden" name="' . POST_CAT_URL . '" value="' . $cat_id . '" />';
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
                     'CAT_TITLE' => $cat_title,
 
@@ -477,11 +477,11 @@ if (!empty($mode) ) {
 
                     'S_HIDDEN_FIELDS' => $s_hidden_fields,
                     'S_SUBMIT_VALUE'  => $buttonvalue,
-                    'S_FORUM_ACTION'  => append_sid("admin_forums.php")
+                    'S_FORUM_ACTION'  => Session::appendSid('admin_forums.php')
                 ]
             );
 
-            $template->pparse("body");
+            $template->pparse('body');
 			break;
 
 		case 'modcat':
@@ -490,7 +490,7 @@ if (!empty($mode) ) {
                 ->where('cat_id = %i', (int)$_POST[POST_CAT_URL])
                 ->execute();
 
-			$message = $lang['Forums_updated'] . "<br /><br />" . sprintf($lang['Click_return_forumadmin'], "<a href=\"" . append_sid("admin_forums.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
+			$message = $lang['Forums_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 
@@ -512,11 +512,11 @@ if (!empty($mode) ) {
 			$foruminfo = get_info('forum', $forum_id);
 			$name = $foruminfo['forum_name'];
 
-            $template->set_filenames(["body" => "admin/forum_delete_body.tpl"]);
+            $template->setFileNames(['body' => 'admin/forum_delete_body.tpl']);
 
             $s_hidden_fields = '<input type="hidden" name="mode" value="' . $newmode . '" /><input type="hidden" name="from_id" value="' . $forum_id . '" />';
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
                     'NAME' => $name,
 
@@ -525,14 +525,14 @@ if (!empty($mode) ) {
                     'L_MOVE_CONTENTS'        => $lang['Move_contents'],
                     'L_FORUM_NAME'           => $lang['Forum_name'],
 
-                    "S_HIDDEN_FIELDS" => $s_hidden_fields,
-                    'S_FORUM_ACTION'  => append_sid("admin_forums.php"),
+                    'S_HIDDEN_FIELDS' => $s_hidden_fields,
+                    'S_FORUM_ACTION'  => Session::appendSid('admin_forums.php'),
                     'S_SELECT_TO'     => $select_to,
                     'S_SUBMIT_VALUE'  => $buttonvalue
                 ]
             );
 
-            $template->pparse("body");
+            $template->pparse('body');
 			break;
 
 		case 'movedelforum':
@@ -570,7 +570,7 @@ if (!empty($mode) ) {
                         ->execute();
                 }
 
-				include $phpbb_root_path . "includes/prune.php";
+				include $phpbb_root_path . 'includes/prune.php';
 				prune($from_id, 0, true); // Delete everything from forum
 			} else {
 			    $forums_exists = dibi::select('*')
@@ -579,7 +579,7 @@ if (!empty($mode) ) {
                     ->fetchAll();
 
 				if (count($forums_exists) !== 2) {
-					message_die(GENERAL_ERROR, "Ambiguous forum ID's", "", __LINE__, __FILE__);
+					message_die(GENERAL_ERROR, "Ambiguous forum ID's", '', __LINE__, __FILE__);
 				}
 
 				dibi::update(TOPICS_TABLE, ['forum_id' => $to_id])
@@ -636,7 +636,7 @@ if (!empty($mode) ) {
                 ->where('forum_id = %i', $from_id)
                 ->execute();
 
-			$message = $lang['Forums_updated'] . "<br /><br />" . sprintf($lang['Click_return_forumadmin'], "<a href=\"" . append_sid("admin_forums.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
+			$message = $lang['Forums_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 
@@ -674,11 +674,11 @@ if (!empty($mode) ) {
 				$select_to .= '</select>';
 			}
 
-            $template->set_filenames(["body" => "admin/forum_delete_body.tpl"]);
+            $template->setFileNames(['body' => 'admin/forum_delete_body.tpl']);
 
             $s_hidden_fields = '<input type="hidden" name="mode" value="' . $newmode . '" /><input type="hidden" name="from_id" value="' . $cat_id . '" />';
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
                     'NAME' => $name,
 
@@ -688,13 +688,13 @@ if (!empty($mode) ) {
                     'L_FORUM_NAME'           => $lang['Forum_name'],
 
                     'S_HIDDEN_FIELDS' => $s_hidden_fields,
-                    'S_FORUM_ACTION'  => append_sid("admin_forums.php"),
+                    'S_FORUM_ACTION'  => Session::appendSid('admin_forums.php'),
                     'S_SELECT_TO'     => $select_to,
                     'S_SUBMIT_VALUE'  => $buttonvalue
                 ]
             );
 
-            $template->pparse("body");
+            $template->pparse('body');
 			break;
 
 		case 'movedelcat':
@@ -711,7 +711,7 @@ if (!empty($mode) ) {
                     ->fetchAll();
 
 				if (count($cat_exists) !== 2) {
-					message_die(GENERAL_ERROR, "Ambiguous category ID's", "", __LINE__, __FILE__);
+					message_die(GENERAL_ERROR, "Ambiguous category ID's", '', __LINE__, __FILE__);
 				}
 
 				dibi::update(FORUMS_TABLE, ['cat_id' => $to_id])
@@ -723,7 +723,7 @@ if (!empty($mode) ) {
                 ->where('cat_id = %i', $from_id)
                 ->execute();
 
-			$message = $lang['Forums_updated'] . "<br /><br />" . sprintf($lang['Click_return_forumadmin'], "<a href=\"" . append_sid("admin_forums.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
+			$message = $lang['Forums_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 
@@ -740,7 +740,7 @@ if (!empty($mode) ) {
 
 			$cat_id = $forum_info['cat_id'];
 
-            if ($move > 0 ) {
+            if ($move > 0) {
                 dibi::update(FORUMS_TABLE, ['forum_order%sql' => 'forum_order + ' . $move])
                     ->where('forum_id = %i', $forum_id)
                     ->execute();
@@ -751,7 +751,7 @@ if (!empty($mode) ) {
             }
 
 			renumber_order('forum', $forum_info['cat_id']);
-			$show_index = TRUE;
+			$show_index = true;
 
 			break;
 
@@ -762,7 +762,7 @@ if (!empty($mode) ) {
 			$move = (int)$_GET['move'];
 			$cat_id = (int)$_GET[POST_CAT_URL];
 
-            if ($move > 0 ) {
+            if ($move > 0) {
                 dibi::update(CATEGORIES_TABLE, ['cat_order%sql' => 'cat_order + ' . $move])
                     ->where('cat_id = %i', $cat_id)
                     ->execute();
@@ -773,13 +773,13 @@ if (!empty($mode) ) {
             }
 
 			renumber_order('category');
-			$show_index = TRUE;
+			$show_index = true;
 
 			break;
 
 		case 'forum_sync':
 			sync('forum', (int)$_GET[POST_FORUM_URL]);
-			$show_index = TRUE;
+			$show_index = true;
 
 			break;
 
@@ -797,11 +797,11 @@ if (!empty($mode) ) {
 //
 // Start page proper
 //
-$template->set_filenames(["body" => "admin/forum_admin_body.tpl"]);
+$template->setFileNames(['body' => 'admin/forum_admin_body.tpl']);
 
-$template->assign_vars(
+$template->assignVars(
     [
-        'S_FORUM_ACTION'    => append_sid("admin_forums.php"),
+        'S_FORUM_ACTION'    => Session::appendSid('admin_forums.php'),
         'L_FORUM_TITLE'     => $lang['Forum_admin'],
         'L_FORUM_EXPLAIN'   => $lang['Forum_admin_explain'],
         'L_CREATE_FORUM'    => $lang['Create_forum'],
@@ -852,7 +852,7 @@ if ($category_count) {
 		$cat_id = $category->cat_id;
 		$cat_i++;
 
-        $template->assign_block_vars("catrow",
+        $template->assignBlockVars('catrow',
             [
                 'S_ADD_FORUM_SUBMIT' => "addforum[$cat_id]",
                 'S_ADD_FORUM_NAME'   => "forumname[$cat_id]",
@@ -863,20 +863,20 @@ if ($category_count) {
                 'L_POSTS'  => $lang['Number_posts'],
                 'L_TOPICS' => $lang['Number_topics'],
 
-                'U_CAT_EDIT'      => append_sid("admin_forums.php?mode=editcat&amp;" . POST_CAT_URL . "=$cat_id"),
-                'U_CAT_DELETE'    => append_sid("admin_forums.php?mode=deletecat&amp;" . POST_CAT_URL . "=$cat_id"),
-                'U_CAT_MOVE_UP'   => append_sid("admin_forums.php?mode=cat_order&amp;move=-15&amp;" . POST_CAT_URL . "=$cat_id"),
-                'U_CAT_MOVE_DOWN' => append_sid("admin_forums.php?mode=cat_order&amp;move=15&amp;" . POST_CAT_URL . "=$cat_id"),
-                'U_VIEWCAT'       => append_sid($phpbb_root_path . "index.php?" . POST_CAT_URL . "=$cat_id")
+                'U_CAT_EDIT'      => Session::appendSid('admin_forums.php?mode=editcat&amp;' . POST_CAT_URL . "=$cat_id"),
+                'U_CAT_DELETE'    => Session::appendSid('admin_forums.php?mode=deletecat&amp;' . POST_CAT_URL . "=$cat_id"),
+                'U_CAT_MOVE_UP'   => Session::appendSid('admin_forums.php?mode=cat_order&amp;move=-15&amp;' . POST_CAT_URL . "=$cat_id"),
+                'U_CAT_MOVE_DOWN' => Session::appendSid('admin_forums.php?mode=cat_order&amp;move=15&amp;' . POST_CAT_URL . "=$cat_id"),
+                'U_VIEWCAT'       => Session::appendSid($phpbb_root_path . 'index.php?' . POST_CAT_URL . "=$cat_id")
             ]
         );
 
         if ($category->cat_order - 15 > 0) {
-            $template->assign_block_vars('catrow.up', []);
+            $template->assignBlockVars('catrow.up', []);
         }
 
         if ($cat_i !== $category_count) {
-            $template->assign_block_vars('catrow.down', []);
+            $template->assignBlockVars('catrow.down', []);
         }
 
         $forum_i = 0;
@@ -889,7 +889,7 @@ if ($category_count) {
                 $row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
                 $row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-                $template->assign_block_vars("catrow.forumrow",
+                $template->assignBlockVars('catrow.forumrow',
                     [
                         'FORUM_NAME' => $forum->forum_name,
                         'FORUM_DESC' => $forum->forum_desc,
@@ -899,21 +899,21 @@ if ($category_count) {
                         'NUM_TOPICS' => $forum->forum_topics,
                         'NUM_POSTS'  => $forum->forum_posts,
 
-                        'U_VIEWFORUM'       => append_sid($phpbb_root_path . "viewforum.php?" . POST_FORUM_URL . "=$forum_id"),
-                        'U_FORUM_EDIT'      => append_sid("admin_forums.php?mode=editforum&amp;" . POST_FORUM_URL . "=$forum_id"),
-                        'U_FORUM_DELETE'    => append_sid("admin_forums.php?mode=deleteforum&amp;" . POST_FORUM_URL . "=$forum_id"),
-                        'U_FORUM_MOVE_UP'   => append_sid("admin_forums.php?mode=forum_order&amp;move=-15&amp;" . POST_FORUM_URL . "=$forum_id"),
-                        'U_FORUM_MOVE_DOWN' => append_sid("admin_forums.php?mode=forum_order&amp;move=15&amp;" . POST_FORUM_URL . "=$forum_id"),
-                        'U_FORUM_RESYNC'    => append_sid("admin_forums.php?mode=forum_sync&amp;" . POST_FORUM_URL . "=$forum_id")
+                        'U_VIEWFORUM'       => Session::appendSid($phpbb_root_path . 'viewforum.php?' . POST_FORUM_URL . "=$forum_id"),
+                        'U_FORUM_EDIT'      => Session::appendSid('admin_forums.php?mode=editforum&amp;' . POST_FORUM_URL . "=$forum_id"),
+                        'U_FORUM_DELETE'    => Session::appendSid('admin_forums.php?mode=deleteforum&amp;' . POST_FORUM_URL . "=$forum_id"),
+                        'U_FORUM_MOVE_UP'   => Session::appendSid('admin_forums.php?mode=forum_order&amp;move=-15&amp;' . POST_FORUM_URL . "=$forum_id"),
+                        'U_FORUM_MOVE_DOWN' => Session::appendSid('admin_forums.php?mode=forum_order&amp;move=15&amp;' . POST_FORUM_URL . "=$forum_id"),
+                        'U_FORUM_RESYNC'    => Session::appendSid('admin_forums.php?mode=forum_sync&amp;' . POST_FORUM_URL . "=$forum_id")
                     ]
                 );
 
                 if ($forum->forum_order - 15 > 0) {
-                    $template->assign_block_vars('catrow.forumrow.up', []);
+                    $template->assignBlockVars('catrow.forumrow.up', []);
                 }
 
                 if ($tmp[$forum->cat_id] !== $forum_i) {
-                    $template->assign_block_vars('catrow.forumrow.down', []);
+                    $template->assignBlockVars('catrow.forumrow.down', []);
                 }
 
             } else {
@@ -926,7 +926,7 @@ if ($category_count) {
 
 }// if ... total_categories
 
-$template->pparse("body");
+$template->pparse('body');
 
 include './page_footer_admin.php';
 

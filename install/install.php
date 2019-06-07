@@ -233,7 +233,7 @@ $error = false;
 // Include some required functions
 include $phpbb_root_path.'includes/constants.php';
 include $phpbb_root_path.'includes/functions.php';
-include $phpbb_root_path.'includes/sessions.php';
+include $phpbb_root_path.'includes/Session.php.php';
 include $phpbb_root_path .'vendor/autoload.php';
 
 // Define schema info
@@ -355,7 +355,7 @@ if (@file_exists(@phpbb_realpath('config.php'))) {
 }
 
 // Is phpBB already installed? Yes? Redirect to the index
-if (defined("PHPBB_INSTALLED")) {
+if (defined('PHPBB_INSTALLED')) {
     redirect('../index.php');
 }
 
@@ -456,7 +456,7 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['up
 
 		@unlink($tmpfname); // unlink for safety on php4.0.3+
 
-		$fp = @fopen($tmpfname, 'w');
+		$fp = @fopen($tmpfname, 'wb');
 
 		@fwrite($fp, stripslashes($_POST['config_data']));
 
@@ -587,7 +587,7 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['up
 					</tr>
 					<tr>
 						<td class="row1" align="right"><span class="gen"><?php echo $lang['Table_Prefix']; ?>: </span></td>
-						<td class="row2"><input type="text" name="prefix" value="<?php echo !empty($table_prefix) ? $table_prefix : "phpbb_"; ?>" /></td>
+						<td class="row2"><input type="text" name="prefix" value="<?php echo !empty($table_prefix) ? $table_prefix : 'phpbb_'; ?>" /></td>
 					</tr>
 					<tr>
 						<th colspan="2"><?php echo $lang['Admin_config']; ?></th>
@@ -672,7 +672,7 @@ else
 				// and work on building the table.. probably ought to provide some
 				// kind of feedback to the user as we are working here in order
 				// to let them know we are actually doing something.
-				$sql_queries = @fread(@fopen($dbms_schema, 'r'), @filesize($dbms_schema));
+				$sql_queries = @fread(@fopen($dbms_schema, 'rb'), @filesize($dbms_schema));
                 $sql_queries = preg_replace('/phpbb_/', $table_prefix, $sql_queries);
 
                 $sql_queries = $remove_remarks($sql_queries);
@@ -736,11 +736,11 @@ else
                 'user_email'    => $board_email,
             ];
 
-            dibi::update($table_prefix . "users", $update_data)
+            dibi::update($table_prefix . 'users', $update_data)
                 ->where('username = %s', 'Admin')
                 ->execute();
 
-            dibi::update($table_prefix . "users", ['user_regdate' => time()])
+            dibi::update($table_prefix . 'users', ['user_regdate' => time()])
             ->execute();
 
 			if ($error !== '') {
@@ -766,11 +766,11 @@ else
 			$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
 
 			@umask(0111);
-			$no_open = FALSE;
+            $no_open = false;
 
 			// Unable to open the file writeable do something here as an attempt
 			// to get around that...
-			if (!($fp = @fopen($phpbb_root_path . 'config.php', 'w'))) {
+			if (!($fp = @fopen($phpbb_root_path . 'config.php', 'wb'))) {
 				$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars($config_data) . '" />';
 
 				if (@extension_loaded('ftp') && !defined('NO_FTP')) {

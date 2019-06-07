@@ -21,12 +21,11 @@
  *
  ***************************************************************************/
 
-if ( !defined('IN_PHPBB') ) {
-	die("Hacking attempt");
-	exit;
+if ( !defined('IN_PHPBB')) {
+	die('Hacking attempt');
 }
 
-if ( empty($_GET[POST_USERS_URL]) || $_GET[POST_USERS_URL] === ANONYMOUS ) {
+if ( empty($_GET[POST_USERS_URL]) || $_GET[POST_USERS_URL] === ANONYMOUS) {
 	message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
 }
 
@@ -45,19 +44,28 @@ $ranks = dibi::select('*')
 //
 // Output page header and profile_view template
 //
-$template->set_filenames(['body' => 'profile_view_body.tpl']);
+$template->setFileNames(['body' => 'profile_view_body.tpl']);
 make_jumpbox('viewforum.php');
 
 //
 // Calculate the number of days this user has been a member ($memberdays)
 // Then calculate their posts per day
 //
-$regdate = $profile_data['user_regdate'];
-$memberdays = max(1, round( ( time() - $regdate ) / 86400 ));
+$user_timezone = isset($profile_data['user_timezone']) ? $profile_data['user_timezone'] : $board_config['board_timezone'];
+
+$zone = new DateTimeZone($user_timezone);
+
+$regdate = new DateTime();
+$regdate->setTimezone($zone);
+$regdate->setTimestamp($profile_data['user_regdate']);
+
+$memberdays = new DateTime('now', $zone);
+$memberdays = $memberdays->diff($regdate)->d;
+
 $posts_per_day = $profile_data['user_posts'] / $memberdays;
 
 // Get the users percentage of total posts
-if ($profile_data['user_posts'] !== 0  ) {
+if ($profile_data['user_posts'] !== 0 ) {
 	$total_posts = get_db_stat('postcount');
 	$percentage = $total_posts ? min(100, ($profile_data['user_posts'] / $total_posts) * 100) : 0;
 } else {
@@ -65,8 +73,8 @@ if ($profile_data['user_posts'] !== 0  ) {
 }
 
 $avatar_img = '';
-if ($profile_data['user_avatar_type'] && $profile_data['user_allowavatar'] ) {
-	switch($profile_data['user_avatar_type'] ) {
+if ($profile_data['user_avatar_type'] && $profile_data['user_allowavatar']) {
+	switch($profile_data['user_avatar_type']) {
 		case USER_AVATAR_UPLOAD:
 			$avatar_img = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $profile_data['user_avatar'] . '" alt="" border="0" />' : '';
 			break;
@@ -82,28 +90,28 @@ if ($profile_data['user_avatar_type'] && $profile_data['user_allowavatar'] ) {
 $poster_rank = '';
 $rank_image = '';
 
-if ($profile_data['user_rank'] ) {
+if ($profile_data['user_rank']) {
     foreach ($ranks as $rank) {
-        if ($profile_data['user_rank'] === $rank->rank_id && $rank->rank_special ) {
+        if ($profile_data['user_rank'] === $rank->rank_id && $rank->rank_special) {
             $poster_rank = $rank->rank_title;
             $rank_image = $rank->rank_image ? '<img src="' . $rank->rank_image . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
         }
     }
 } else {
     foreach ($ranks as $rank) {
-        if ($profile_data['user_posts'] >= $rank->rank_min && !$rank->rank_special ) {
+        if ($profile_data['user_posts'] >= $rank->rank_min && !$rank->rank_special) {
             $poster_rank = $rank->rank_title;
             $rank_image = $rank->rank_image ? '<img src="' . $rank->rank_image . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
         }
     }
 }
 
-$temp_url = append_sid("privmsg.php?mode=post&amp;" . POST_USERS_URL . "=" . $profile_data['user_id']);
+$temp_url = Session::appendSid('privmsg.php?mode=post&amp;' . POST_USERS_URL . '=' . $profile_data['user_id']);
 $pm_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
 $pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
 
-if ( !empty($profile_data['user_viewemail']) || $userdata['user_level'] === ADMIN ) {
-	$email_uri = $board_config['board_email_form'] ? append_sid("profile.php?mode=email&amp;" . POST_USERS_URL .'=' . $profile_data['user_id']) : 'mailto:' . $profile_data['user_email'];
+if ( !empty($profile_data['user_viewemail']) || $userdata['user_level'] === ADMIN) {
+	$email_uri = $board_config['board_email_form'] ? Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL .'=' . $profile_data['user_id']) : 'mailto:' . $profile_data['user_email'];
 
 	$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
 	$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
@@ -115,7 +123,7 @@ if ( !empty($profile_data['user_viewemail']) || $userdata['user_level'] === ADMI
 $www_img = $profile_data['user_website'] ? '<a href="' . $profile_data['user_website'] . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '&nbsp;';
 $www = $profile_data['user_website'] ? '<a href="' . $profile_data['user_website'] . '" target="_userwww">' . $profile_data['user_website'] . '</a>' : '&nbsp;';
 
-if ( !empty($profile_data['user_icq']) ) {
+if ( !empty($profile_data['user_icq'])) {
 	$icq_status_img = '<a href="http://wwp.icq.com/' . $profile_data['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $profile_data['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
 	$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $profile_data['user_icq'] . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
 	$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $profile_data['user_icq'] . '">' . $lang['ICQ'] . '</a>';
@@ -134,7 +142,7 @@ $msn = $msn_img;
 $yim_img = $profile_data['user_yim'] ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $profile_data['user_yim'] . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
 $yim = $profile_data['user_yim'] ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $profile_data['user_yim'] . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
 
-$temp_url = append_sid("search.php?search_author=" . urlencode($profile_data['username']) . "&amp;showresults=posts");
+$temp_url = Session::appendSid('search.php?search_author=' . urlencode($profile_data['username']) . '&amp;showresults=posts');
 $search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $profile_data['username']) . '" title="' . sprintf($lang['Search_user_posts'], $profile_data['username']) . '" border="0" /></a>';
 $search = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $profile_data['username']) . '</a>';
 
@@ -150,7 +158,7 @@ if (function_exists('get_html_translation_table')) {
     $u_search_author = urlencode(str_replace(['&amp;', '&#039;', '&quot;', '&lt;', '&gt;'], ['&', "'", '"', '<', '>'], $profile_data['username']));
 }
 
-$template->assign_vars(array(
+$template->assignVars(array(
         'USERNAME' => $profile_data['username'],
         'JOINED' => create_date($lang['DATE_FORMAT'], $profile_data['user_regdate'], $board_config['board_timezone']),
         'POSTER_RANK' => $poster_rank,
@@ -204,9 +212,9 @@ $template->assign_vars(array(
         'L_OCCUPATION' => $lang['Occupation'],
         'L_INTERESTS' => $lang['Interests'],
 
-        'U_SEARCH_USER' => append_sid("search.php?search_author=" . $u_search_author),
+        'U_SEARCH_USER' => Session::appendSid('search.php?search_author=' . $u_search_author),
 
-        'S_PROFILE_ACTION' => append_sid("profile.php"))
+        'S_PROFILE_ACTION' => Session::appendSid('profile.php'))
 );
 
 $template->pparse('body');

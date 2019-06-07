@@ -28,7 +28,7 @@ function make_forum_select($box_name, $ignore_forum = false, $select_forum = '')
 {
 	global $userdata, $lang;
 
-	$is_auth_ary = auth(AUTH_READ, AUTH_LIST_ALL, $userdata);
+	$is_auth_ary = Auth::authorize(AUTH_READ, AUTH_LIST_ALL, $userdata);
 
 	$forums = dibi::select(['f.forum_id', 'f.forum_name'])
         ->from(CATEGORIES_TABLE)
@@ -43,7 +43,7 @@ function make_forum_select($box_name, $ignore_forum = false, $select_forum = '')
 	$forum_list = '';
 
 	foreach ($forums as $forum) {
-        if ( $is_auth_ary[$forum->forum_id]['auth_read'] && $ignore_forum !== $forum->forum_id ) {
+        if ( $is_auth_ary[$forum->forum_id]['auth_read'] && $ignore_forum !== $forum->forum_id) {
             $selected = ( $select_forum === $forum->forum_id ) ? ' selected="selected"' : '';
             $forum_list .= '<option value="' . $forum->forum_id . '"' . $selected .'>' . $forum->forum_name . '</option>';
         }

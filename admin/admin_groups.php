@@ -49,11 +49,11 @@ if (isset($_POST['mode']) || isset($_GET['mode'])) {
     $mode = '';
 }
 
-if ( isset($_POST['edit']) || isset($_POST['new']) ) {
+if (isset($_POST['edit']) || isset($_POST['new'])) {
 	//
 	// Ok they are editing a group or creating a new group
 	//
-	$template->set_filenames(['body' => 'admin/group_edit_body.tpl']);
+	$template->setFileNames(['body' => 'admin/group_edit_body.tpl']);
 
 	if (isset($_POST['edit'])) {
 		//
@@ -70,7 +70,7 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 		}
 
 		$mode = 'editgroup';
-		$template->assign_block_vars('group_edit', []);
+		$template->assignBlockVars('group_edit', []);
     } elseif (isset($_POST['new'])) {
 		$group_info = [
 			'group_name'        => '',
@@ -106,13 +106,13 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 		$group_moderator = '';
 	}
 
-	$group_open = ( $group_info['group_type'] === GROUP_OPEN ) ? ' checked="checked"' : '';
-	$group_closed = ( $group_info['group_type'] === GROUP_CLOSED ) ? ' checked="checked"' : '';
-	$group_hidden = ( $group_info['group_type'] === GROUP_HIDDEN ) ? ' checked="checked"' : '';
+	$group_open   = $group_info['group_type'] === GROUP_OPEN   ? ' checked="checked"' : '';
+	$group_closed = $group_info['group_type'] === GROUP_CLOSED ? ' checked="checked"' : '';
+	$group_hidden = $group_info['group_type'] === GROUP_HIDDEN ? ' checked="checked"' : '';
 
 	$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
 
-	$template->assign_vars(
+	$template->assignVars(
 		[
             'GROUP_NAME'        => $group_info['group_name'],
             'GROUP_DESCRIPTION' => $group_info['group_description'],
@@ -139,16 +139,16 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 
             'L_YES' => $lang['Yes'],
 
-			'U_SEARCH_USER' => append_sid("../search.php?mode=searchuser"),
+            'U_SEARCH_USER' => Session::appendSid('../search.php?mode=searchuser'),
 
-			'S_GROUP_OPEN_TYPE'      => GROUP_OPEN,
-			'S_GROUP_CLOSED_TYPE'    => GROUP_CLOSED,
-			'S_GROUP_HIDDEN_TYPE'    => GROUP_HIDDEN,
-			'S_GROUP_OPEN_CHECKED'   => $group_open,
-			'S_GROUP_CLOSED_CHECKED' => $group_closed,
-			'S_GROUP_HIDDEN_CHECKED' => $group_hidden,
-			'S_GROUP_ACTION'         => append_sid("admin_groups.php"),
-			'S_HIDDEN_FIELDS'        => $s_hidden_fields
+            'S_GROUP_OPEN_TYPE'      => GROUP_OPEN,
+            'S_GROUP_CLOSED_TYPE'    => GROUP_CLOSED,
+            'S_GROUP_HIDDEN_TYPE'    => GROUP_HIDDEN,
+            'S_GROUP_OPEN_CHECKED'   => $group_open,
+            'S_GROUP_CLOSED_CHECKED' => $group_closed,
+            'S_GROUP_HIDDEN_CHECKED' => $group_hidden,
+            'S_GROUP_ACTION'         => Session::appendSid('admin_groups.php'),
+            'S_HIDDEN_FIELDS'        => $s_hidden_fields
 		]
 	);
 
@@ -217,7 +217,7 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
             ->where('group_id = %i', $group_id)
             ->execute();
 
-		$message = $lang['Deleted_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . append_sid("admin_groups.php") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');
+		$message = $lang['Deleted_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . Session::appendSid('admin_groups.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 		message_die(GENERAL_MESSAGE, $message);
 	} else {
@@ -236,11 +236,11 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 		$this_userdata = get_userdata($group_moderator, true);
 		$group_moderator = $this_userdata['user_id'];
 
-		if ( !$group_moderator ) {
+		if (!$group_moderator) {
 			message_die(GENERAL_MESSAGE, $lang['No_group_moderator']);
 		}
 
-		if ($mode === "editgroup" ) {
+		if ($mode === 'editgroup') {
 			$group_info = dibi::select('*')
 				->from(GROUPS_TABLE)
 				->where('group_single_user <> %i', 1)
@@ -287,10 +287,10 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 				->where('group_id = %i', $group_id)
 				->execute();
 
-			$message = $lang['Updated_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . append_sid("admin_groups.php") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');
+			$message = $lang['Updated_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . Session::appendSid('admin_groups.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
-		} elseif ($mode === 'newgroup' ) {
+		} elseif ($mode === 'newgroup') {
 			$group_insert_data = [
 				'group_type'        => $group_type,
 				'group_name'        => $group_name,
@@ -309,7 +309,7 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 
 			dibi::insert(USER_GROUP_TABLE, $user_group_insert_data)->execute();
 
-			$message = $lang['Added_new_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . append_sid("admin_groups.php") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');
+			$message = $lang['Added_new_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . Session::appendSid('admin_groups.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		} else {
@@ -336,9 +336,9 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 		$select_list .= '</select>';
 	}
 
-	$template->set_filenames(['body' => 'admin/group_select_body.tpl']);
+	$template->setFileNames(['body' => 'admin/group_select_body.tpl']);
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'L_GROUP_TITLE'   => $lang['Group_administration'],
             'L_GROUP_EXPLAIN' => $lang['Group_admin_explain'],
@@ -348,15 +348,15 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 
             'L_CREATE_NEW_GROUP' => $lang['New_group'],
 
-            'S_GROUP_ACTION' => append_sid("admin_groups.php"),
+            'S_GROUP_ACTION' => Session::appendSid('admin_groups.php'),
             'S_GROUP_SELECT' => $select_list
         ]
     );
 
     // TODO!!!!
-    // it was if ( $select_list != '' ) {
+    // it was if ( $select_list != '') {
     if ($group_count) {
-        $template->assign_block_vars('select_box', []);
+        $template->assignBlockVars('select_box', []);
     }
 
     $template->pparse('body');

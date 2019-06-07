@@ -61,17 +61,17 @@ if (isset($_POST['submit'])) {
         ->where('user_id = %i', $row->user_id)
         ->execute();
 
-    include $phpbb_root_path . 'includes/emailer.php';
-    $emailer = new emailer($board_config['smtp_delivery']);
+    include $phpbb_root_path . 'includes/Emailer.php';
+    $emailer = new Emailer($board_config['smtp_delivery']);
 
-    $emailer->from($board_config['board_email']);
-    $emailer->replyto($board_config['board_email']);
+    $emailer->setFrom($board_config['board_email']);
+    $emailer->setReplyTo($board_config['board_email']);
 
     $emailer->use_template('user_activate_passwd', $row->user_lang);
-    $emailer->email_address($row->user_email);
-    $emailer->set_subject($lang['New_password_activation']);
+    $emailer->setEmailAddress($row->user_email);
+    $emailer->setSubject($lang['New_password_activation']);
 
-    $emailer->assign_vars(
+    $emailer->assignVars(
         [
             'SITENAME'  => $board_config['sitename'],
             'USERNAME'  => $username,
@@ -84,13 +84,13 @@ if (isset($_POST['submit'])) {
     $emailer->send();
     $emailer->reset();
 
-    $template->assign_vars(
+    $template->assignVars(
         [
-            'META' => '<meta http-equiv="refresh" content="15;url=' . append_sid("index.php") . '">'
+            'META' => '<meta http-equiv="refresh" content="15;url=' . Session::appendSid('index.php') . '">'
         ]
     );
 
-    $message = $lang['Password_updated'] . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
+    $message = $lang['Password_updated'] . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
     message_die(GENERAL_MESSAGE, $message);
 }
@@ -100,10 +100,10 @@ if (isset($_POST['submit'])) {
 //
 include $phpbb_root_path . 'includes/page_header.php';
 
-$template->set_filenames(['body' => 'profile_send_pass.tpl']);
+$template->setFileNames(['body' => 'profile_send_pass.tpl']);
 make_jumpbox('viewforum.php');
 
-$template->assign_vars(
+$template->assignVars(
     [
         'USERNAME' => $username,
         'EMAIL'    => $email,
@@ -115,7 +115,7 @@ $template->assign_vars(
         'L_RESET'          => $lang['Reset'],
 
         'S_HIDDEN_FIELDS'  => '',
-        'S_PROFILE_ACTION' => append_sid("profile.php?mode=sendpassword")
+        'S_PROFILE_ACTION' => Session::appendSid('profile.php?mode=sendpassword')
     ]
 );
 

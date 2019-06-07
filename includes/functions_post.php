@@ -196,7 +196,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	if ($mode === 'newtopic' || ($mode === 'editpost' && $post_data['first_post'])) {
 		$topic_vote = (!empty($poll_title) && count($poll_options) >= 2) ? 1 : 0;
 
-		if ($mode !== "editpost") {
+		if ($mode !== 'editpost') {
             $insert_data = [
                 'topic_title' => $post_subject,
                 'topic_poster' => $userdata['user_id'],
@@ -224,7 +224,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
         }
 	}
 
-	if ($mode !== "editpost") {
+	if ($mode !== 'editpost') {
         $insert_data = [
             'topic_id'       => $topic_id,
             'forum_id'       => $forum_id,
@@ -281,8 +281,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	//
 	// Add poll
 	// 
-	if (($mode === 'newtopic' || ($mode === 'editpost' && $post_data['edit_poll'])) && !empty($poll_title) && count
-        ($poll_options) >= 2) {
+	if (($mode === 'newtopic' || ($mode === 'editpost' && $post_data['edit_poll'])) && !empty($poll_title) && count($poll_options) >= 2) {
 	    if (!$post_data['has_poll']) {
 	        $insert_data = [
 	            'topic_id' => $topic_id,
@@ -328,10 +327,10 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
         foreach ($poll_options as $option_id => $option_text) {
             if (!empty($option_text)) {
                 $option_text = str_replace("\'", "''", htmlspecialchars($option_text));
-                $poll_result = ($mode === "editpost" && isset($old_poll_result[$option_id])) ?
+                $poll_result = ($mode === 'editpost' && isset($old_poll_result[$option_id])) ?
                     $old_poll_result[$option_id] : 0;
 
-                if ($mode !== "editpost" || !isset($old_poll_result[$option_id])) {
+                if ($mode !== 'editpost' || !isset($old_poll_result[$option_id])) {
                     $insert_data = [
                         'vote_id' => $poll_id,
                         'vote_option_id' => $poll_option_id,
@@ -365,8 +364,8 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 		}
 	}
 
-	$meta = '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.php?" . POST_POST_URL . "=" . $post_id) . '#' . $post_id . '">';
-	$message = $lang['Stored'] . '<br /><br />' . sprintf($lang['Click_view_message'], '<a href="' . append_sid("viewtopic.php?" . POST_POST_URL . "=" . $post_id) . '#' . $post_id . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_forum'], '<a href="' . append_sid("viewforum.php?" . POST_FORUM_URL . "=$forum_id") . '">', '</a>');
+	$meta = '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('viewtopic.php?' . POST_POST_URL . '=' . $post_id) . '#' . $post_id . '">';
+	$message = $lang['Stored'] . '<br /><br />' . sprintf($lang['Click_view_message'], '<a href="' . Session::appendSid('viewtopic.php?' . POST_POST_URL . '=' . $post_id) . '#' . $post_id . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_forum'], '<a href="' . Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forum_id") . '">', '</a>');
 
 	return false;
 }
@@ -518,14 +517,14 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	}
 
 	if ($mode === 'delete' && $post_data['first_post'] && $post_data['last_post']) {
-		$meta = '<meta http-equiv="refresh" content="3;url=' . append_sid("viewforum.php?" . POST_FORUM_URL . '=' . $forum_id) . '">';
+		$meta = '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('viewforum.php?' . POST_FORUM_URL . '=' . $forum_id) . '">';
 		$message = $lang['Deleted'];
 	} else {
-		$meta = '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.php?" . POST_TOPIC_URL . '=' . $topic_id) . '">';
-		$message = (($mode === 'poll_delete') ? $lang['Poll_delete'] : $lang['Deleted']) . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id") . '">', '</a>');
+		$meta = '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . '=' . $topic_id) . '">';
+		$message = (($mode === 'poll_delete') ? $lang['Poll_delete'] : $lang['Deleted']) . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id") . '">', '</a>');
 	}
 
-	$message .=  '<br /><br />' . sprintf($lang['Click_return_forum'], '<a href="' . append_sid("viewforum.php?" . POST_FORUM_URL . "=$forum_id") . '">', '</a>');
+	$message .=  '<br /><br />' . sprintf($lang['Click_return_forum'], '<a href="' . Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forum_id") . '">', '</a>');
 }
 
 //
@@ -585,21 +584,22 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
             }
 
             if (count($bcc_list_ary)) {
-                include $phpbb_root_path . 'includes/emailer.php';
-                $emailer = new emailer($board_config['smtp_delivery']);
+                include $phpbb_root_path . 'includes/Emailer.php';
+                $emailer = new Emailer($board_config['smtp_delivery']);
 
                 $script_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['script_path']));
                 $script_name = ($script_name !== '') ? $script_name . '/viewtopic.php' : 'viewtopic.php';
                 $server_name = trim($board_config['server_name']);
                 $server_protocol = $board_config['cookie_secure'] ? 'https://' : 'http://';
-                $server_port = ($board_config['server_port'] <> 80) ? ':' . trim($board_config['server_port']) . '/' : '/';
+                $server_port = ($board_config['server_port'] !== 80) ? ':' . trim($board_config['server_port']) . '/' :
+                '/';
 
                 $orig_word = [];
                 $replacement_word = [];
                 obtain_word_list($orig_word, $replacement_word);
 
-                $emailer->from($board_config['board_email']);
-                $emailer->replyto($board_config['board_email']);
+                $emailer->setFrom($board_config['board_email']);
+                $emailer->setReplyTo($board_config['board_email']);
 
                 $topic_title = count($orig_word) ? preg_replace($orig_word, $replacement_word, unprepare_message($topic_title)) : unprepare_message($topic_title);
 
@@ -607,26 +607,30 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
                     $emailer->use_template('topic_notify', $user_lang);
 
                     foreach ($bcc_list as $bcc_value) {
-                        $emailer->bcc($bcc_value);
+                        $emailer->addBcc($bcc_value);
                     }
 
                     // The Topic_reply_notification lang string below will be used
                     // if for some reason the mail template subject cannot be read
                     // ... note it will not necessarily be in the posters own language!
-                    $emailer->set_subject($lang['Topic_reply_notification']);
+                    $emailer->setSubject($lang['Topic_reply_notification']);
 
                     // This is a nasty kludge to remove the username var ... till (if?)
                     // translators update their templates
-                    $emailer->msg = preg_replace('#[ ]?{USERNAME}#', '', $emailer->msg);
+                    $msg = preg_replace('#[ ]?{USERNAME}#', '', $emailer->getMsg());
 
-                    $emailer->assign_vars([
+                    $emailer->setMsg($msg);
+
+                    $emailer->assignVars(
+                        [
                             'EMAIL_SIG'   => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
                             'SITENAME'    => $board_config['sitename'],
                             'TOPIC_TITLE' => $topic_title,
 
                             'U_TOPIC'               => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_POST_URL . "=$post_id#$post_id",
                             'U_STOP_WATCHING_TOPIC' => $server_protocol . $server_name . $server_port . $script_name . '?' . POST_TOPIC_URL . "=$topic_id&unwatch=topic"
-                        ]);
+                        ]
+                    );
 
                     $emailer->send();
                     $emailer->reset();
@@ -680,15 +684,15 @@ function generate_smilies($mode, $page_id)
 	$window_columns = 8;
 
 	if ($mode === 'window') {
-		$userdata = session_pagestart($user_ip, $page_id);
+		$userdata = Session::pageStart($user_ip, $page_id);
 		init_userprefs($userdata);
 
-		$gen_simple_header = TRUE;
+		$gen_simple_header = true;
 
 		$page_title = $lang['Emoticons'];
 		include $phpbb_root_path . 'includes/page_header.php';
 
-        $template->set_filenames(['smiliesbody' => 'posting_smilies.tpl']);
+        $template->setFileNames(['smiliesbody' => 'posting_smilies.tpl']);
     }
 
 	$smilies = dibi::select(['emoticon', 'code', 'smile_url'])
@@ -718,10 +722,10 @@ function generate_smilies($mode, $page_id)
 
 			foreach ($rowset as $smile_url => $data) {
 				if (!$col) {
-					$template->assign_block_vars('smilies_row', []);
+					$template->assignBlockVars('smilies_row', []);
 				}
 
-                $template->assign_block_vars('smilies_row.smilies_col',
+                $template->assignBlockVars('smilies_row.smilies_col',
                     [
                         'SMILEY_CODE' => $data['code'],
                         'SMILEY_IMG'  => $board_config['smilies_path'] . '/' . $smile_url,
@@ -744,17 +748,17 @@ function generate_smilies($mode, $page_id)
 			}
 
 			if ($mode === 'inline' && $num_smilies > $inline_rows * $inline_columns) {
-				$template->assign_block_vars('switch_smilies_extra', []);
+				$template->assignBlockVars('switch_smilies_extra', []);
 
-                $template->assign_vars(
+                $template->assignVars(
                     [
                         'L_MORE_SMILIES' => $lang['More_emoticons'],
-                        'U_MORE_SMILIES' => append_sid("posting.php?mode=smilies")
+                        'U_MORE_SMILIES' => Session::appendSid('posting.php?mode=smilies')
                     ]
                 );
             }
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
                     'L_EMOTICONS'       => $lang['Emoticons'],
                     'L_CLOSE_WINDOW'    => $lang['Close_window'],
@@ -803,8 +807,10 @@ function clean_html($tag)
 
 		if (!empty($tag[2])) {
 			preg_match_all('/[\W]*?(\w+)[\W]*?=[\W]*?(["\'])((?:(?!\2).)*)\2/', $tag[2], $test);
+			$count_test_zero = count($test[0]);
 
-			for ($i = 0; $i < count($test[0]); $i++) {
+
+			for ($i = 0; $i < $count_test_zero; $i++) {
 				if (preg_match($disallowed_attributes, $test[1][$i])) {
 					continue;
 				}

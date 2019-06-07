@@ -21,7 +21,7 @@
  ***************************************************************************/
 
 if (!defined('IN_PHPBB')) {
-    die("Hacking attempt");
+    die('Hacking attempt');
 }
 
 global $do_gzip_compress;
@@ -29,15 +29,15 @@ global $do_gzip_compress;
 //
 // Show the overall footer.
 //
-$template->set_filenames(['page_footer' => 'admin/page_footer.tpl']);
+$template->setFileNames(['page_footer' => 'admin/page_footer.tpl']);
 
-if (isset($lang['TRANSLATION_INFO']) ) {
+if (isset($lang['TRANSLATION_INFO'])) {
     $translation_info = $lang['TRANSLATION_INFO'];
 } else {
     $translation_info = isset($lang['TRANSLATION']) ? $lang['TRANSLATION'] : '';
 }
 
-$template->assign_vars(
+$template->assignVars(
     [
         'PHPBB_VERSION'    => ($userdata['user_level'] === ADMIN && $userdata['user_id'] !== ANONYMOUS) ? '2' . $board_config['version'] : '',
         'TRANSLATION_INFO' => $translation_info
@@ -55,7 +55,7 @@ dibi::disconnect();
 // Compress buffered output if required
 // and send to browser
 //
-if ($do_gzip_compress ) {
+if ($do_gzip_compress) {
 	//
 	// Borrowed from php.net!
 	//
@@ -66,7 +66,7 @@ if ($do_gzip_compress ) {
 	$gzip_crc = crc32($gzip_contents);
 
 	$gzip_contents = gzcompress($gzip_contents, 9);
-	$gzip_contents = substr($gzip_contents, 0, strlen($gzip_contents) - 4);
+	$gzip_contents = substr($gzip_contents, 0, -4);
 
 	echo "\x1f\x8b\x08\x00\x00\x00\x00\x00";
 	echo $gzip_contents;

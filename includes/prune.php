@@ -20,8 +20,8 @@
  *
  ***************************************************************************/
 
-if ( !defined('IN_PHPBB') ) {
-   die("Hacking attempt");
+if ( !defined('IN_PHPBB')) {
+   die('Hacking attempt');
 }
 
 require $phpbb_root_path . 'includes/functions_search.php';
@@ -66,7 +66,28 @@ function prune($forum_id, $prune_date, $prune_all = false)
             ->where('topic_id IN %in', $topic_data)
             ->fetchPairs(null, 'post_id');
 
-		if ( count($post_ids) ) {
+		if ( count($post_ids)) {
+		    $user_ids = dibi::select('poster_id')
+                ->from(POSTS_TABLE)
+                ->where('post_id IN %in', $post_ids)
+                ->fetchPairs(null, 'user_id');
+
+		    $user_counts = [];
+
+		    foreach ($user_ids as $user_id) {
+		        if (isset($user_counts[$user_id])) {
+                    $user_counts[$user_id]++;
+                } else {
+		            $user_counts[$user_id] = 1;
+                }
+            }
+
+		    foreach ($user_counts as $user_id => $user_count) {
+                dibi::update(USERS_TABLE, ['user_posts%sql' => 'user_posts - ' . $user_count])
+                    ->where('user_id = %i', $user_id)
+                    ->execute();
+            }
+
 		    dibi::delete(TOPICS_WATCH_TABLE)
                 ->where('topic_id IN %in', $topic_data)
                 ->execute();
@@ -108,8 +129,19 @@ function auto_prune($forum_id = 0)
     }
 
     if ($prune->prune_freq && $prune->prune_days) {
-        $prune_date = time() - ($prune->prune_days * 86400);
-        $next_prune = time() + ($prune->prune_freq * 86400);
+        $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
+
+        $time_zone = new DateTimeZone($user_timezone);
+
+        $prune_date = new DateTime();
+        $prune_date->setTimezone($time_zone);
+        $prune_date->sub(new DateInterval('P' . $prune->prune_days . 'D'))
+            ->getTimestamp();
+
+        $next_prune = new DateTime();
+        $next_prune->setTimezone($time_zone);
+        $next_prune->add(new DateInterval('P' . $prune->prune_freq . 'D'))
+            ->getTimestamp();
 
         prune($forum_id, $prune_date);
         sync('forum', $forum_id);

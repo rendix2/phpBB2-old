@@ -21,7 +21,7 @@
 
 define('IN_PHPBB', 1);
 
-if (!empty($setmodules) ) {
+if (!empty($setmodules)) {
 	$filename = basename(__FILE__);
 	$module['General']['Mass_Email'] = $filename;
 	
@@ -31,7 +31,7 @@ if (!empty($setmodules) ) {
 //
 // Load default header
 //
-$no_page_header = TRUE;
+$no_page_header = true;
 $phpbb_root_path = './../';
 
 require './pagestart.php';
@@ -48,19 +48,19 @@ $subject = '';
 //
 // Do the job ...
 //
-if ( isset($_POST['submit']) ) {
+if (isset($_POST['submit'])) {
 	$subject = stripslashes(trim($_POST['subject']));
 	$message = stripslashes(trim($_POST['message']));
-	
-	$error = FALSE;
+
+    $error = false;
 	$error_msg = '';
 
-	if ( empty($subject) ) {
+    if (empty($subject)) {
 		$error = true;
 		$error_msg .= !empty($error_msg) ? '<br />' . $lang['Empty_subject'] : $lang['Empty_subject'];
 	}
 
-	if ( empty($message) ) {
+    if (empty($message)) {
 		$error = true;
 		$error_msg .= !empty($error_msg) ? '<br />' . $lang['Empty_message'] : $lang['Empty_message'];
 	}
@@ -90,27 +90,27 @@ if ( isset($_POST['submit']) ) {
         $error_msg .= !empty($error_msg) ? '<br />' . $message : $message;
     }
 
-	if ( !$error ) {
-		include $phpbb_root_path . 'includes/emailer.php';
+    if (!$error) {
+		include $phpbb_root_path . 'includes/Emailer.php';
 
 		//
 		// Let's do some checking to make sure that mass mail functions
 		// are working in win32 versions of php.
 		//
-		if ( preg_match('/[c-z]:\\\.*/i', getenv('PATH')) && !$board_config['smtp_delivery']) {
+		if (!$board_config['smtp_delivery'] && preg_match('/[c-z]:\\\.*/i', getenv('PATH'))) {
 			// We are running on windows, force delivery to use our smtp functions
 			// since php's are broken by default
 			$board_config['smtp_delivery'] = 1;
 			$board_config['smtp_host'] = @ini_get('SMTP');
 		}
 
-		$emailer = new emailer($board_config['smtp_delivery']);
+		$emailer = new Emailer($board_config['smtp_delivery']);
 	
-		$emailer->from($board_config['board_email']);
-		$emailer->replyto($board_config['board_email']);
+		$emailer->setFrom($board_config['board_email']);
+		$emailer->setReplyTo($board_config['board_email']);
 
 		foreach ($bbc_list as $email) {
-            $emailer->bcc($email);
+            $emailer->addBcc($email);
         }
 
 		$email_headers = 'X-AntiAbuse: Board servername - ' . $board_config['server_name'] . "\n";
@@ -119,11 +119,11 @@ if ( isset($_POST['submit']) ) {
 		$email_headers .= 'X-AntiAbuse: User IP - ' . decode_ip($user_ip) . "\n";
 
 		$emailer->use_template('admin_send_email');
-		$emailer->email_address($board_config['board_email']);
-		$emailer->set_subject($subject);
-		$emailer->extra_headers($email_headers);
+		$emailer->setEmailAddress($board_config['board_email']);
+		$emailer->setSubject($subject);
+		$emailer->addExtraHeaders($email_headers);
 
-        $emailer->assign_vars(
+        $emailer->assignVars(
             [
                 'SITENAME'    => $board_config['sitename'],
                 'BOARD_EMAIL' => $board_config['board_email'],
@@ -133,14 +133,14 @@ if ( isset($_POST['submit']) ) {
         $emailer->send();
 		$emailer->reset();
 
-		message_die(GENERAL_MESSAGE, $lang['Email_sent'] . '<br /><br />' . sprintf($lang['Click_return_admin_index'],  '<a href="' . append_sid("index.php?pane=right") . '">', '</a>'));
+		message_die(GENERAL_MESSAGE, $lang['Email_sent'] . '<br /><br />' . sprintf($lang['Click_return_admin_index'],  '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>'));
 	}
 }
 
 if ($error) {
-    $template->set_filenames(['reg_header' => 'error_body.tpl']);
-    $template->assign_vars(['ERROR_MESSAGE' => $error_msg]);
-    $template->assign_var_from_handle('ERROR_BOX', 'reg_header');
+    $template->setFileNames(['reg_header' => 'error_body.tpl']);
+    $template->assignVars(['ERROR_MESSAGE' => $error_msg]);
+    $template->assignVarFromHandle('ERROR_BOX', 'reg_header');
 }
 
 //
@@ -165,9 +165,9 @@ $select_list .= '</select>';
 //
 include './page_header_admin.php';
 
-$template->set_filenames(['body' => 'admin/user_email_body.tpl']);
+$template->setFileNames(['body' => 'admin/user_email_body.tpl']);
 
-$template->assign_vars(
+$template->assignVars(
     [
         'MESSAGE' => $message,
         'SUBJECT' => $subject,
@@ -181,7 +181,7 @@ $template->assign_vars(
         'L_EMAIL'         => $lang['Email'],
         'L_NOTICE'        => $notice,
 
-        'S_USER_ACTION'  => append_sid('admin_mass_email.php'),
+        'S_USER_ACTION'  => Session::appendSid('admin_mass_email.php'),
         'S_GROUP_SELECT' => $select_list
     ]
 );

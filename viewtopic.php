@@ -57,14 +57,14 @@ $cookie_name_forum = $board_config['cookie_name'] . '_f';
 
 if (isset($_GET['view']) && empty($_GET[POST_POST_URL])) {
     if ($_GET['view'] === 'newest') {
-		if ( isset($_COOKIE[$cookie_name_sid]) || isset($_GET['sid']) ) {
+		if ( isset($_COOKIE[$cookie_name_sid]) || isset($_GET['sid'])) {
 			$session_id = isset($_COOKIE[$cookie_name_sid]) ? $_COOKIE[$cookie_name_sid] : $_GET['sid'];
 
             if (!preg_match('/^[A-Za-z0-9]*$/', $session_id)) {
                 $session_id = '';
             }
 
-			if ( $session_id ) {
+			if ( $session_id) {
 			    $session_post_id = dibi::select('p.post_id')
                     ->from(POSTS_TABLE)
                     ->as('p')
@@ -88,13 +88,13 @@ if (isset($_GET['view']) && empty($_GET[POST_POST_URL])) {
                 if (isset($_GET['sid'])) {
                     redirect("viewtopic.php?sid=$session_id&" . POST_POST_URL . "=$post_id#$post_id");
                 } else {
-                    redirect("viewtopic.php?" . POST_POST_URL . "=$post_id#$post_id");
+                    redirect('viewtopic.php?' . POST_POST_URL . "=$post_id#$post_id");
                 }
 			}
 		}
 
-		redirect(append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id", true));
-	} elseif ( $_GET['view'] === 'next' || $_GET['view'] === 'previous' ) {
+		redirect(Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id", true));
+	} elseif ( $_GET['view'] === 'next' || $_GET['view'] === 'previous') {
 		$sql_condition = ( $_GET['view'] === 'next' ) ? '>' : '<';
 		$sql_ordering = ( $_GET['view'] === 'next' ) ? 'ASC' : 'DESC';
 
@@ -199,7 +199,7 @@ $forum_id = (int)$forum_topic_data->forum_id;
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, $forum_id);
+$userdata = Session::pageStart($user_ip, $forum_id);
 init_userprefs($userdata);
 //
 // End session management
@@ -208,14 +208,13 @@ init_userprefs($userdata);
 //
 // Start auth check
 //
-$is_auth = [];
-$is_auth = auth(AUTH_ALL, $forum_id, $userdata, $forum_topic_data);
+$is_auth = Auth::authorize(AUTH_ALL, $forum_id, $userdata, $forum_topic_data);
 
-if (!$is_auth['auth_view'] || !$is_auth['auth_read'] ) {
-	if ( !$userdata['session_logged_in'] ) {
+if (!$is_auth['auth_view'] || !$is_auth['auth_read']) {
+	if ( !$userdata['session_logged_in']) {
 		$redirect = $post_id ? POST_POST_URL . "=$post_id" : POST_TOPIC_URL . "=$topic_id";
 		$redirect .= $start ? "&start=$start" : '';
-		redirect(append_sid("login.php?redirect=viewtopic.php&$redirect", true));
+		redirect(Session::appendSid("login.php?redirect=viewtopic.php&$redirect", true));
 	}
 
 	$message = ( !$is_auth['auth_view'] ) ? $lang['Topic_post_not_exist'] : sprintf($lang['Sorry_auth_read'], $is_auth['auth_read_type']);
@@ -238,8 +237,8 @@ if ($post_id) {
 //
 // Is user watching this thread?
 //
-if ($userdata['session_logged_in'] ) {
-	$can_watch_topic = TRUE;
+if ($userdata['session_logged_in']) {
+	$can_watch_topic = true;
 
 	$row = dibi::select('notify_status')
         ->from(TOPICS_WATCH_TABLE)
@@ -261,16 +260,16 @@ if ($userdata['session_logged_in'] ) {
                     ->execute();
 			}
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
-                    'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . '">'
+                    'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . '">'
                 ]
             );
 
-            $message = $lang['No_longer_watching'] . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . '">', '</a>');
+            $message = $lang['No_longer_watching'] . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . '">', '</a>');
 			message_die(GENERAL_MESSAGE, $message);
 		} else {
-			$is_watching_topic = TRUE;
+			$is_watching_topic = true;
 
             if ($row->notify_status) {
                 $sql_priority = ($dbms === 'mysql') ? 'LOW_PRIORITY' : '';
@@ -285,7 +284,7 @@ if ($userdata['session_logged_in'] ) {
 	} else {
         if (isset($_GET['watch'])) {
             if ($_GET['watch'] === 'topic') {
-				$is_watching_topic = TRUE;
+				$is_watching_topic = true;
 
 				$sql_priority = ($dbms === 'mysql') ? 'LOW_PRIORITY' : '';
 
@@ -300,13 +299,13 @@ if ($userdata['session_logged_in'] ) {
                     ->execute();
 			}
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
-                    'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . '">'
+                    'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . '">'
                 ]
             );
 
-            $message = $lang['You_are_watching'] . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . '">', '</a>');
+            $message = $lang['You_are_watching'] . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . '">', '</a>');
 			message_die(GENERAL_MESSAGE, $message);
 		} else {
 			$is_watching_topic = 0;
@@ -315,7 +314,7 @@ if ($userdata['session_logged_in'] ) {
 } else {
     if (isset($_GET['unwatch'])) {
         if ($_GET['unwatch'] === 'topic') {
-			redirect(append_sid("login.php?redirect=viewtopic.php&" . POST_TOPIC_URL . "=$topic_id&unwatch=topic", true));
+			redirect(Session::appendSid('login.php?redirect=viewtopic.php&' . POST_TOPIC_URL . "=$topic_id&unwatch=topic", true));
 		}
 	} else {
 		$can_watch_topic = 0;
@@ -339,9 +338,16 @@ $previous_days = [
     364 => $lang['1_Year']
 ];
 
+$time = null;
+
 if (!empty($_POST['postdays']) || !empty($_GET['postdays'])) {
 	$post_days =  !empty($_POST['postdays']) ? (int)$_POST['postdays'] : (int)$_GET['postdays'];
-	$min_post_time = time() - ($post_days * 86400);
+
+    $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
+
+    $time = new DateTime();
+    $time->setTimezone(new DateTimeZone($user_timezone));
+    $time->sub(new DateInterval('P1D'));
 
     $total_replies = dibi::select('COUNT(p.post_id)')
         ->as('num_posts')
@@ -351,7 +357,7 @@ if (!empty($_POST['postdays']) || !empty($_GET['postdays'])) {
         ->as('p')
         ->on('p.topic_id = t.topic_id')
         ->where('t.topic_id = %i', $topic_id)
-        ->where('p.post_time >= %i', $min_post_time)
+        ->where('p.post_time >= %i', $time->getTimestamp())
         ->fetchSingle();
 
 	$limit_posts_time = true;
@@ -381,7 +387,7 @@ $select_post_days .= '</select>';
 //
 if (!empty($_POST['postorder']) || !empty($_GET['postorder'])) {
 	$post_order = !empty($_POST['postorder']) ? htmlspecialchars($_POST['postorder']) : htmlspecialchars($_GET['postorder']);
-	$post_time_order = ($post_order === "asc") ? "ASC" : "DESC";
+	$post_time_order = ($post_order === 'asc') ? 'ASC' : 'DESC';
 } else {
 	$post_order = 'asc';
 	$post_time_order = 'ASC';
@@ -437,8 +443,10 @@ $posts = dibi::select($columns)
     ->on('pt.post_id = p.post_id')
     ->where('p.topic_id = %i', $topic_id);
 
+
+// todo check if time is added correctly
 if ($limit_posts_time) {
-    $posts->where('p.post_time >= %i', $min_post_time);
+    $posts->where('p.post_time >= %i', $time->getTimestamp());
 }
 
 $posts = $posts
@@ -497,7 +505,7 @@ obtain_word_list($orig_word, $replacement_word);
 //
 // Censor topic title
 //
-if ( count($orig_word) ) {
+if ( count($orig_word)) {
 	$topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
 }
 
@@ -525,11 +533,11 @@ if (isset($_GET['highlight'])) {
 // Post, reply and other URL generation for
 // templating vars
 //
-$new_topic_url = append_sid("posting.php?mode=newtopic&amp;" . POST_FORUM_URL . "=$forum_id");
-$reply_topic_url = append_sid("posting.php?mode=reply&amp;" . POST_TOPIC_URL . "=$topic_id");
-$view_forum_url = append_sid("viewforum.php?" . POST_FORUM_URL . "=$forum_id");
-$view_prev_topic_url = append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;view=previous");
-$view_next_topic_url = append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;view=next");
+$new_topic_url = Session::appendSid('posting.php?mode=newtopic&amp;' . POST_FORUM_URL . "=$forum_id");
+$reply_topic_url = Session::appendSid('posting.php?mode=reply&amp;' . POST_TOPIC_URL . "=$topic_id");
+$view_forum_url = Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forum_id");
+$view_prev_topic_url = Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;view=previous");
+$view_next_topic_url = Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;view=next");
 
 //
 // Mozilla navigation bar
@@ -580,7 +588,7 @@ if ($userdata['session_logged_in']) {
 //
 // Load templates
 //
-$template->set_filenames(['body' => 'viewtopic_body.tpl']);
+$template->setFileNames(['body' => 'viewtopic_body.tpl']);
 make_jumpbox('viewforum.php', $forum_id);
 
 //
@@ -600,29 +608,29 @@ $s_auth_can .= ( $is_auth['auth_vote'] ? $lang['Rules_vote_can'] : $lang['Rules_
 
 $topic_mod = '';
 
-if ( $is_auth['auth_mod'] ) {
-	$s_auth_can .= sprintf($lang['Rules_moderate'], "<a href=\"modcp.php?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'] . '">', '</a>');
+if ( $is_auth['auth_mod']) {
+	$s_auth_can .= sprintf($lang['Rules_moderate'], '<a href="modcp.php?' . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'] . '">', '</a>');
 
-	$topic_mod .= "<a href=\"modcp.php?" . POST_TOPIC_URL . "=$topic_id&amp;mode=delete&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_delete'] . '" alt="' . $lang['Delete_topic'] . '" title="' . $lang['Delete_topic'] . '" border="0" /></a>&nbsp;';
+	$topic_mod .= '<a href="modcp.php?' . POST_TOPIC_URL . "=$topic_id&amp;mode=delete&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_delete'] . '" alt="' . $lang['Delete_topic'] . '" title="' . $lang['Delete_topic'] . '" border="0" /></a>&nbsp;';
 
-	$topic_mod .= "<a href=\"modcp.php?" . POST_TOPIC_URL . "=$topic_id&amp;mode=move&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_move'] . '" alt="' . $lang['Move_topic'] . '" title="' . $lang['Move_topic'] . '" border="0" /></a>&nbsp;';
+	$topic_mod .= '<a href="modcp.php?' . POST_TOPIC_URL . "=$topic_id&amp;mode=move&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_move'] . '" alt="' . $lang['Move_topic'] . '" title="' . $lang['Move_topic'] . '" border="0" /></a>&nbsp;';
 
-	$topic_mod .= ( $forum_topic_data->topic_status === TOPIC_UNLOCKED ) ? "<a href=\"modcp.php?" . POST_TOPIC_URL . "=$topic_id&amp;mode=lock&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_lock'] . '" alt="' . $lang['Lock_topic'] . '" title="' . $lang['Lock_topic'] . '" border="0" /></a>&nbsp;' : "<a href=\"modcp.php?" . POST_TOPIC_URL . "=$topic_id&amp;mode=unlock&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_unlock'] . '" alt="' . $lang['Unlock_topic'] . '" title="' . $lang['Unlock_topic'] . '" border="0" /></a>&nbsp;';
+	$topic_mod .= ( $forum_topic_data->topic_status === TOPIC_UNLOCKED ) ? '<a href="modcp.php?' . POST_TOPIC_URL . "=$topic_id&amp;mode=lock&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_lock'] . '" alt="' . $lang['Lock_topic'] . '" title="' . $lang['Lock_topic'] . '" border="0" /></a>&nbsp;' : '<a href="modcp.php?' . POST_TOPIC_URL . "=$topic_id&amp;mode=unlock&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_unlock'] . '" alt="' . $lang['Unlock_topic'] . '" title="' . $lang['Unlock_topic'] . '" border="0" /></a>&nbsp;';
 
-	$topic_mod .= "<a href=\"modcp.php?" . POST_TOPIC_URL . "=$topic_id&amp;mode=split&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_split'] . '" alt="' . $lang['Split_topic'] . '" title="' . $lang['Split_topic'] . '" border="0" /></a>&nbsp;';
+	$topic_mod .= '<a href="modcp.php?' . POST_TOPIC_URL . "=$topic_id&amp;mode=split&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_split'] . '" alt="' . $lang['Split_topic'] . '" title="' . $lang['Split_topic'] . '" border="0" /></a>&nbsp;';
 }
 
 //
 // Topic watch information
 //
 $s_watching_topic = '';
-if ( $can_watch_topic ) {
-	if ( $is_watching_topic ) {
-		$s_watching_topic = "<a href=\"viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic&amp;start=$start&amp;sid=" . $userdata['session_id'] . '">' . $lang['Stop_watching_topic'] . '</a>';
-		$s_watching_topic_img = isset($images['topic_un_watch']) ? "<a href=\"viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic&amp;start=$start&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_un_watch'] . '" alt="' . $lang['Stop_watching_topic'] . '" title="' . $lang['Stop_watching_topic'] . '" border="0"></a>' : '';
+if ( $can_watch_topic) {
+	if ( $is_watching_topic) {
+		$s_watching_topic = '<a href="viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic&amp;start=$start&amp;sid=" . $userdata['session_id'] . '">' . $lang['Stop_watching_topic'] . '</a>';
+		$s_watching_topic_img = isset($images['topic_un_watch']) ? '<a href="viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic&amp;start=$start&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_un_watch'] . '" alt="' . $lang['Stop_watching_topic'] . '" title="' . $lang['Stop_watching_topic'] . '" border="0"></a>' : '';
 	} else {
-		$s_watching_topic = "<a href=\"viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;watch=topic&amp;start=$start&amp;sid=" . $userdata['session_id'] . '">' . $lang['Start_watching_topic'] . '</a>';
-		$s_watching_topic_img = isset($images['Topic_watch']) ? "<a href=\"viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;watch=topic&amp;start=$start&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['Topic_watch'] . '" alt="' . $lang['Start_watching_topic'] . '" title="' . $lang['Start_watching_topic'] . '" border="0"></a>' : '';
+		$s_watching_topic = '<a href="viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;watch=topic&amp;start=$start&amp;sid=" . $userdata['session_id'] . '">' . $lang['Start_watching_topic'] . '</a>';
+		$s_watching_topic_img = isset($images['Topic_watch']) ? '<a href="viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;watch=topic&amp;start=$start&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['Topic_watch'] . '" alt="' . $lang['Start_watching_topic'] . '" title="' . $lang['Start_watching_topic'] . '" border="0"></a>' : '';
 	}
 }
 
@@ -630,12 +638,12 @@ if ( $can_watch_topic ) {
 // If we've got a hightlight set pass it on to pagination,
 // I get annoyed when I lose my highlight after the first page.
 //
-$pagination = ( $highlight !== '' ) ? generate_pagination("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=$highlight", $total_replies, $board_config['posts_per_page'], $start) : generate_pagination("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order", $total_replies, $board_config['posts_per_page'], $start);
+$pagination = ( $highlight !== '' ) ? generate_pagination('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=$highlight", $total_replies, $board_config['posts_per_page'], $start) : generate_pagination('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order", $total_replies, $board_config['posts_per_page'], $start);
 
 //
 // Send vars to template
 //
-$template->assign_vars(
+$template->assignVars(
     [
         'FORUM_ID'    => $forum_id,
         'FORUM_NAME'  => $forum_name,
@@ -667,13 +675,13 @@ $template->assign_vars(
         'S_TOPIC_LINK'        => POST_TOPIC_URL,
         'S_SELECT_POST_DAYS'  => $select_post_days,
         'S_SELECT_POST_ORDER' => $select_post_order,
-        'S_POST_DAYS_ACTION'  => append_sid("viewtopic.php?" . POST_TOPIC_URL . '=' . $topic_id . "&amp;start=$start"),
+        'S_POST_DAYS_ACTION'  => Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . '=' . $topic_id . "&amp;start=$start"),
         'S_AUTH_LIST'         => $s_auth_can,
         'S_TOPIC_ADMIN'       => $topic_mod,
         'S_WATCH_TOPIC'       => $s_watching_topic,
         'S_WATCH_TOPIC_IMG'   => $s_watching_topic_img,
 
-        'U_VIEW_TOPIC'       => append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;start=$start&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=$highlight"),
+        'U_VIEW_TOPIC'       => Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;start=$start&amp;postdays=$post_days&amp;postorder=$post_order&amp;highlight=$highlight"),
         'U_VIEW_FORUM'       => $view_forum_url,
         'U_VIEW_OLDER_TOPIC' => $view_prev_topic_url,
         'U_VIEW_NEWER_TOPIC' => $view_next_topic_url,
@@ -685,7 +693,7 @@ $template->assign_vars(
 //
 // Does this topic contain a poll?
 //
-if ( !empty($forum_topic_data->topic_vote) ) {
+if ( !empty($forum_topic_data->topic_vote)) {
 	$s_hidden_fields = '';
 
     $columns = [
@@ -736,7 +744,7 @@ if ( !empty($forum_topic_data->topic_vote) ) {
         }
 
         if ($user_voted || $view_result || $poll_expired || !$is_auth['auth_vote'] || $forum_topic_data->topic_status === TOPIC_LOCKED) {
-            $template->set_filenames(['pollbox' => 'viewtopic_poll_result.tpl']);
+            $template->setFileNames(['pollbox' => 'viewtopic_poll_result.tpl']);
 
             $vote_results_sum = 0;
 
@@ -758,11 +766,11 @@ if ( !empty($forum_topic_data->topic_vote) ) {
                     $vote_info_value->vote_option_text = preg_replace($orig_word, $replacement_word, $vote_info_value->vote_option_text);
 				}
 
-                $template->assign_block_vars("poll_option",
+                $template->assignBlockVars('poll_option',
                     [
                         'POLL_OPTION_CAPTION' => $vote_info_value->vote_option_text,
                         'POLL_OPTION_RESULT'  => $vote_info_value->vote_result,
-                        'POLL_OPTION_PERCENT' => sprintf("%.1d%%", $vote_percent * 100),
+                        'POLL_OPTION_PERCENT' => sprintf('%.1d%%', $vote_percent * 100),
 
                         'POLL_OPTION_IMG'       => $vote_graphic_img,
                         'POLL_OPTION_IMG_WIDTH' => $vote_graphic_length
@@ -770,21 +778,21 @@ if ( !empty($forum_topic_data->topic_vote) ) {
                 );
             }
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
                     'L_TOTAL_VOTES' => $lang['Total_votes'],
                     'TOTAL_VOTES'   => $vote_results_sum
                 ]
             );
         } else {
-            $template->set_filenames(['pollbox' => 'viewtopic_poll_ballot.tpl']);
+            $template->setFileNames(['pollbox' => 'viewtopic_poll_ballot.tpl']);
 
             foreach ($vote_info as $vote_info_value) {
                 if (count($orig_word)) {
                     $vote_info_value->vote_option_text = preg_replace($orig_word, $replacement_word, $vote_info_value->vote_option_text);
 				}
 
-                $template->assign_block_vars("poll_option",
+                $template->assignBlockVars('poll_option',
                     [
                         'POLL_OPTION_ID'      => $vote_info_value->vote_option_id,
                         'POLL_OPTION_CAPTION' => $vote_info_value->vote_option_text
@@ -792,12 +800,12 @@ if ( !empty($forum_topic_data->topic_vote) ) {
                 );
             }
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
                     'L_SUBMIT_VOTE'  => $lang['Submit_vote'],
                     'L_VIEW_RESULTS' => $lang['View_results'],
 
-                    'U_VIEW_RESULTS' => append_sid("viewtopic.php?" . POST_TOPIC_URL . "=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order&amp;vote=viewresult")
+                    'U_VIEW_RESULTS' => Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order&amp;vote=viewresult")
                 ]
             );
 
@@ -810,16 +818,16 @@ if ( !empty($forum_topic_data->topic_vote) ) {
 
 		$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'POLL_QUESTION' => $vote_title,
 
                 'S_HIDDEN_FIELDS' => $s_hidden_fields,
-                'S_POLL_ACTION'   => append_sid("posting.php?mode=vote&amp;" . POST_TOPIC_URL . "=$topic_id")
+                'S_POLL_ACTION'   => Session::appendSid('posting.php?mode=vote&amp;' . POST_TOPIC_URL . "=$topic_id")
             ]
         );
 
-        $template->assign_var_from_handle('POLL_DISPLAY', 'pollbox');
+        $template->assignVarFromHandle('POLL_DISPLAY', 'pollbox');
 	}
 }
 
@@ -849,7 +857,7 @@ foreach ($posts as $i => $post) {
 	$poster_avatar = '';
 
     if ($post->user_avatar_type && $poster_id !== ANONYMOUS && $post->user_allowavatar) {
-		switch( $post->user_avatar_type ) {
+		switch( $post->user_avatar_type) {
 			case USER_AVATAR_UPLOAD:
 				$poster_avatar = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $post->user_avatar . '" alt="" border="0" />' : '';
 				break;
@@ -873,7 +881,7 @@ foreach ($posts as $i => $post) {
         $mini_post_alt = $lang['Post'];
     }
 
-	$mini_post_url = append_sid("viewtopic.php?" . POST_POST_URL . '=' . $post->post_id) . '#' . # $post->post_id;
+	$mini_post_url = Session::appendSid('viewtopic.php?' . POST_POST_URL . '=' . $post->post_id) . '#' . # $post->post_id;
 
 	//
 	// Generate ranks, set them to empty string initially.
@@ -883,7 +891,7 @@ foreach ($posts as $i => $post) {
     if ($post->user_id === ANONYMOUS) {
 	    // WHAT WAS THERE???????
 	}
-	elseif ( $post->user_rank ) {
+	elseif ( $post->user_rank) {
 	    foreach ($ranks as $rank) {
 	        if ($post->user_rank === $rank->rank_id && $rank->rank_special) {
 	            $poster_rank = $rank->rank_title;
@@ -910,16 +918,16 @@ foreach ($posts as $i => $post) {
 	$temp_url = '';
 
     if ($poster_id !== ANONYMOUS) {
-		$temp_url = append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$poster_id");
+		$temp_url = Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$poster_id");
 		$profile_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_profile'] . '" alt="' . $lang['Read_profile'] . '" title="' . $lang['Read_profile'] . '" border="0" /></a>';
 		$profile = '<a href="' . $temp_url . '">' . $lang['Read_profile'] . '</a>';
 
-		$temp_url = append_sid("privmsg.php?mode=post&amp;" . POST_USERS_URL . "=$poster_id");
+		$temp_url = Session::appendSid('privmsg.php?mode=post&amp;' . POST_USERS_URL . "=$poster_id");
 		$pm_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
 		$pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
 
         if (!empty($post->user_viewemail) || $is_auth['auth_mod']) {
-			$email_uri = $board_config['board_email_form'] ? append_sid("profile.php?mode=email&amp;" . POST_USERS_URL .'=' . $poster_id) : 'mailto:' . $post->user_email;
+			$email_uri = $board_config['board_email_form'] ? Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL .'=' . $poster_id) : 'mailto:' . $post->user_email;
 
 			$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
 			$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
@@ -944,7 +952,7 @@ foreach ($posts as $i => $post) {
 		$aim_img = $post->user_aim ? '<a href="aim:goim?screenname=' . $post->user_aim . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
 		$aim = $post->user_aim ? '<a href="aim:goim?screenname=' . $post->user_aim . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
 
-		$temp_url = append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$poster_id");
+		$temp_url = Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$poster_id");
 		$msn_img = $post->user_msnm ? '<a href="' . $temp_url . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
 		$msn = $post->user_msnm ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
 
@@ -970,16 +978,16 @@ foreach ($posts as $i => $post) {
 		$yim = '';
 	}
 
-	$temp_url = append_sid("posting.php?mode=quote&amp;" . POST_POST_URL . "=" . $post->post_id);
+	$temp_url = Session::appendSid('posting.php?mode=quote&amp;' . POST_POST_URL . '=' . $post->post_id);
 	$quote_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_quote'] . '" alt="' . $lang['Reply_with_quote'] . '" title="' . $lang['Reply_with_quote'] . '" border="0" /></a>';
 	$quote = '<a href="' . $temp_url . '">' . $lang['Reply_with_quote'] . '</a>';
 
-	$temp_url = append_sid("search.php?search_author=" . urlencode($post->username) . "&amp;showresults=posts");
+	$temp_url = Session::appendSid('search.php?search_author=' . urlencode($post->username) . '&amp;showresults=posts');
 	$search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $post->username) . '" title="' . sprintf($lang['Search_user_posts'], $post->username) . '" border="0" /></a>';
 	$search = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $post->username) . '</a>';
 
     if (($userdata['user_id'] === $poster_id && $is_auth['auth_edit']) || $is_auth['auth_mod']) {
-		$temp_url = append_sid("posting.php?mode=editpost&amp;" . POST_POST_URL . "=" . $post->post_id);
+		$temp_url = Session::appendSid('posting.php?mode=editpost&amp;' . POST_POST_URL . '=' . $post->post_id);
 		$edit_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_edit'] . '" alt="' . $lang['Edit_delete_post'] . '" title="' . $lang['Edit_delete_post'] . '" border="0" /></a>';
 		$edit = '<a href="' . $temp_url . '">' . $lang['Edit_delete_post'] . '</a>';
 	} else {
@@ -988,11 +996,11 @@ foreach ($posts as $i => $post) {
 	}
 
     if ($is_auth['auth_mod']) {
-		$temp_url = "modcp.php?mode=ip&amp;" . POST_POST_URL . "=" . $post->post_id . "&amp;" . POST_TOPIC_URL . "=" . $topic_id . "&amp;sid=" . $userdata['session_id'];
+		$temp_url = 'modcp.php?mode=ip&amp;' . POST_POST_URL . '=' . $post->post_id . '&amp;' . POST_TOPIC_URL . '=' . $topic_id . '&amp;sid=' . $userdata['session_id'];
 		$ip_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_ip'] . '" alt="' . $lang['View_IP'] . '" title="' . $lang['View_IP'] . '" border="0" /></a>';
 		$ip = '<a href="' . $temp_url . '">' . $lang['View_IP'] . '</a>';
 
-		$temp_url        = "posting.php?mode=delete&amp;" . POST_POST_URL . "=" . $post->post_id . "&amp;sid=" . $userdata['session_id'];
+		$temp_url        = 'posting.php?mode=delete&amp;' . POST_POST_URL . '=' . $post->post_id . '&amp;sid=' . $userdata['session_id'];
 		$delete_post_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_delpost'] . '" alt="' . $lang['Delete_post'] . '" title="' . $lang['Delete_post'] . '" border="0" /></a>';
 		$delete_post     = '<a href="' . $temp_url . '">' . $lang['Delete_post'] . '</a>';
 	} else {
@@ -1000,7 +1008,7 @@ foreach ($posts as $i => $post) {
 		$ip = '';
 
         if ($userdata['user_id'] === $poster_id && $is_auth['auth_delete'] && $forum_topic_data->topic_last_post_id === $post->post_id) {
-			$temp_url        = "posting.php?mode=delete&amp;" . POST_POST_URL . "=" . $post->post_id . "&amp;sid=" . $userdata['session_id'];
+			$temp_url        = 'posting.php?mode=delete&amp;' . POST_POST_URL . '=' . $post->post_id . '&amp;sid=' . $userdata['session_id'];
 			$delete_post_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_delpost'] . '" alt="' . $lang['Delete_post'] . '" title="' . $lang['Delete_post'] . '" border="0" /></a>';
 			$delete_post     = '<a href="' . $temp_url . '">' . $lang['Delete_post'] . '</a>';
 		} else {
@@ -1115,7 +1123,7 @@ foreach ($posts as $i => $post) {
 	$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 	$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-    $template->assign_block_vars('postrow',
+    $template->assignBlockVars('postrow',
         [
             'ROW_COLOR'      => '#' . $row_color,
             'ROW_CLASS'      => $row_class,

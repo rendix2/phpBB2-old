@@ -31,7 +31,7 @@ include $phpbb_root_path . 'includes/functions_post.php';
 //
 // Is PM disabled?
 //
-if ( !empty($board_config['privmsg_disable']) ) {
+if ( !empty($board_config['privmsg_disable'])) {
 	message_die(GENERAL_MESSAGE, 'PM_disabled');
 }
 
@@ -41,15 +41,15 @@ $html_entities_replace = ['&amp;', '&lt;', '&gt;', '&quot;'];
 //
 // Parameters
 //
-$submit = isset($_POST['post']) ? TRUE : 0;
-$submit_search = isset($_POST['usersubmit']) ? TRUE : 0;
-$submit_msgdays = isset($_POST['submit_msgdays']) ? TRUE : 0;
-$cancel = isset($_POST['cancel']) ? TRUE : 0;
-$preview = isset($_POST['preview']) ? TRUE : 0;
-$confirm = isset($_POST['confirm']) ? TRUE : 0;
-$delete = isset($_POST['delete']) ? TRUE : 0;
-$delete_all = isset($_POST['deleteall']) ? TRUE : 0;
-$save = isset($_POST['save']) ? TRUE : 0;
+$submit = isset($_POST['post']) ? true : 0;
+$submit_search = isset($_POST['usersubmit']) ? true : 0;
+$submit_msgdays = isset($_POST['submit_msgdays']) ? true : 0;
+$cancel = isset($_POST['cancel']) ? true : 0;
+$preview = isset($_POST['preview']) ? true : 0;
+$confirm = isset($_POST['confirm']) ? true : 0;
+$delete = isset($_POST['delete']) ? true : 0;
+$delete_all = isset($_POST['deleteall']) ? true : 0;
+$save = isset($_POST['save']) ? true : 0;
 $sid = isset($_POST['sid']) ? $_POST['sid'] : 0;
 
 $refresh = $preview || $submit_search;
@@ -70,7 +70,7 @@ if (isset($_POST['folder']) || isset($_GET['folder'])) {
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, PAGE_PRIVMSGS);
+$userdata = Session::pageStart($user_ip, PAGE_PRIVMSGS);
 init_userprefs($userdata);
 //
 // End session management
@@ -80,7 +80,7 @@ init_userprefs($userdata);
 // Cancel 
 //
 if ($cancel) {
-    redirect(append_sid("privmsg.php?folder=$folder", true));
+    redirect(Session::appendSid("privmsg.php?folder=$folder", true));
 }
 
 //
@@ -102,22 +102,22 @@ if (isset($_POST[POST_POST_URL]) || isset($_GET[POST_POST_URL])) {
     $privmsg_id = '';
 }
 
-$error = FALSE;
+$error = false;
 
 //
 // Define the box image links
 //
-$inbox_img = ( $folder !== 'inbox' || $mode !== '' ) ? '<a href="' . append_sid("privmsg.php?folder=inbox") . '"><img src="' . $images['pm_inbox'] . '" border="0" alt="' . $lang['Inbox'] . '" /></a>' : '<img src="' . $images['pm_inbox'] . '" border="0" alt="' . $lang['Inbox'] . '" />';
-$inbox_url = ( $folder !== 'inbox' || $mode !== '' ) ? '<a href="' . append_sid("privmsg.php?folder=inbox") . '">' . $lang['Inbox'] . '</a>' : $lang['Inbox'];
+$inbox_img = ( $folder !== 'inbox' || $mode !== '' ) ? '<a href="' . Session::appendSid('privmsg.php?folder=inbox') . '"><img src="' . $images['pm_inbox'] . '" border="0" alt="' . $lang['Inbox'] . '" /></a>' : '<img src="' . $images['pm_inbox'] . '" border="0" alt="' . $lang['Inbox'] . '" />';
+$inbox_url = ( $folder !== 'inbox' || $mode !== '' ) ? '<a href="' . Session::appendSid('privmsg.php?folder=inbox') . '">' . $lang['Inbox'] . '</a>' : $lang['Inbox'];
 
-$outbox_img = ( $folder !== 'outbox' || $mode !== '' ) ? '<a href="' . append_sid("privmsg.php?folder=outbox") . '"><img src="' . $images['pm_outbox'] . '" border="0" alt="' . $lang['Outbox'] . '" /></a>' : '<img src="' . $images['pm_outbox'] . '" border="0" alt="' . $lang['Outbox'] . '" />';
-$outbox_url = ( $folder !== 'outbox' || $mode !== '' ) ? '<a href="' . append_sid("privmsg.php?folder=outbox") . '">' . $lang['Outbox'] . '</a>' : $lang['Outbox'];
+$outbox_img = ( $folder !== 'outbox' || $mode !== '' ) ? '<a href="' . Session::appendSid('privmsg.php?folder=outbox') . '"><img src="' . $images['pm_outbox'] . '" border="0" alt="' . $lang['Outbox'] . '" /></a>' : '<img src="' . $images['pm_outbox'] . '" border="0" alt="' . $lang['Outbox'] . '" />';
+$outbox_url = ( $folder !== 'outbox' || $mode !== '' ) ? '<a href="' . Session::appendSid('privmsg.php?folder=outbox') . '">' . $lang['Outbox'] . '</a>' : $lang['Outbox'];
 
-$sentbox_img = ( $folder !== 'sentbox' || $mode !== '' ) ? '<a href="' . append_sid("privmsg.php?folder=sentbox") . '"><img src="' . $images['pm_sentbox'] . '" border="0" alt="' . $lang['Sentbox'] . '" /></a>' : '<img src="' . $images['pm_sentbox'] . '" border="0" alt="' . $lang['Sentbox'] . '" />';
-$sentbox_url = ( $folder !== 'sentbox' || $mode !== '' ) ? '<a href="' . append_sid("privmsg.php?folder=sentbox") . '">' . $lang['Sentbox'] . '</a>' : $lang['Sentbox'];
+$sentbox_img = ( $folder !== 'sentbox' || $mode !== '' ) ? '<a href="' . Session::appendSid('privmsg.php?folder=sentbox') . '"><img src="' . $images['pm_sentbox'] . '" border="0" alt="' . $lang['Sentbox'] . '" /></a>' : '<img src="' . $images['pm_sentbox'] . '" border="0" alt="' . $lang['Sentbox'] . '" />';
+$sentbox_url = ( $folder !== 'sentbox' || $mode !== '' ) ? '<a href="' . Session::appendSid('privmsg.php?folder=sentbox') . '">' . $lang['Sentbox'] . '</a>' : $lang['Sentbox'];
 
-$savebox_img = ( $folder !== 'savebox' || $mode !== '' ) ? '<a href="' . append_sid("privmsg.php?folder=savebox") . '"><img src="' . $images['pm_savebox'] . '" border="0" alt="' . $lang['Savebox'] . '" /></a>' : '<img src="' . $images['pm_savebox'] . '" border="0" alt="' . $lang['Savebox'] . '" />';
-$savebox_url = ( $folder !== 'savebox' || $mode !== '' ) ? '<a href="' . append_sid("privmsg.php?folder=savebox") . '">' . $lang['Savebox'] . '</a>' : $lang['Savebox'];
+$savebox_img = ( $folder !== 'savebox' || $mode !== '' ) ? '<a href="' . Session::appendSid('privmsg.php?folder=savebox') . '"><img src="' . $images['pm_savebox'] . '" border="0" alt="' . $lang['Savebox'] . '" /></a>' : '<img src="' . $images['pm_savebox'] . '" border="0" alt="' . $lang['Savebox'] . '" />';
+$savebox_url = ( $folder !== 'savebox' || $mode !== '' ) ? '<a href="' . Session::appendSid('privmsg.php?folder=savebox') . '">' . $lang['Savebox'] . '</a>' : $lang['Savebox'];
 
 // ----------
 // Start main
@@ -128,7 +128,7 @@ if ($mode === 'newpm') {
 	$page_title = $lang['Private_Messaging'];
 	include $phpbb_root_path . 'includes/page_header.php';
 
-    $template->set_filenames(['body' => 'privmsgs_popup.tpl']);
+    $template->setFileNames(['body' => 'privmsgs_popup.tpl']);
 
     if ($userdata['session_logged_in']) {
         if ($userdata['user_new_privmsg']) {
@@ -137,12 +137,12 @@ if ($mode === 'newpm') {
             $l_new_message = $lang['You_no_new_pm'];
         }
 
-		$l_new_message .= '<br /><br />' . sprintf($lang['Click_view_privmsg'], '<a href="' . append_sid("privmsg.php?folder=inbox") . '" onclick="jump_to_inbox();return false;" target="_new">', '</a>');
+		$l_new_message .= '<br /><br />' . sprintf($lang['Click_view_privmsg'], '<a href="' . Session::appendSid('privmsg.php?folder=inbox') . '" onclick="jump_to_inbox();return false;" target="_new">', '</a>');
 	} else {
 		$l_new_message = $lang['Login_check_pm'];
 	}
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'L_CLOSE_WINDOW' => $lang['Close_window'],
             'L_MESSAGE'      => $l_new_message
@@ -160,8 +160,8 @@ if ($mode === 'newpm') {
         message_die(GENERAL_ERROR, $lang['No_post_id']);
     }
 
-	if ( !$userdata['session_logged_in'] ) {
-		redirect(append_sid("login.php?redirect=privmsg.php&folder=$folder&mode=$mode&" . POST_POST_URL . "=$privmsgs_id", true));
+	if ( !$userdata['session_logged_in']) {
+		redirect(Session::appendSid("login.php?redirect=privmsg.php&folder=$folder&mode=$mode&" . POST_POST_URL . "=$privmsgs_id", true));
 	}
 
     $columns = [
@@ -258,7 +258,7 @@ if ($mode === 'newpm') {
 	// Did the query return any data?
 	//
 	if (!$privmsg) {
-		redirect(append_sid("privmsg.php?folder=$folder", true));
+		redirect(Session::appendSid("privmsg.php?folder=$folder", true));
 	}
 
 	$privmsg_id = $privmsg->privmsgs_id;
@@ -352,10 +352,10 @@ if ($mode === 'newpm') {
 	// Pick a folder, any folder, so long as it's one below ...
 	//
 	$post_urls = [
-		'post'  => append_sid("privmsg.php?mode=post"),
-		'reply' => append_sid("privmsg.php?mode=reply&amp;" . POST_POST_URL . "=$privmsg_id"),
-		'quote' => append_sid("privmsg.php?mode=quote&amp;" . POST_POST_URL . "=$privmsg_id"),
-		'edit'  => append_sid("privmsg.php?mode=edit&amp;" . POST_POST_URL . "=$privmsg_id")
+        'post'  => Session::appendSid('privmsg.php?mode=post'),
+        'reply' => Session::appendSid('privmsg.php?mode=reply&amp;' . POST_POST_URL . "=$privmsg_id"),
+        'quote' => Session::appendSid('privmsg.php?mode=quote&amp;' . POST_POST_URL . "=$privmsg_id"),
+        'edit'  => Session::appendSid('privmsg.php?mode=edit&amp;' . POST_POST_URL . "=$privmsg_id")
 	];
 	
 	$post_icons = [
@@ -434,10 +434,10 @@ if ($mode === 'newpm') {
 	//
 	// Load templates
 	//
-    $template->set_filenames(['body' => 'privmsgs_read_body.tpl']);
+    $template->setFileNames(['body' => 'privmsgs_read_body.tpl']);
     make_jumpbox('viewforum.php');
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'INBOX_IMG'   => $inbox_img,
             'SENTBOX_IMG' => $sentbox_img,
@@ -474,7 +474,7 @@ if ($mode === 'newpm') {
             'L_SAVE_MSG'   => $lang['Save_message'],
             'L_DELETE_MSG' => $lang['Delete_message'],
 
-            'S_PRIVMSGS_ACTION' => append_sid("privmsg.php?folder=$folder"),
+            'S_PRIVMSGS_ACTION' => Session::appendSid("privmsg.php?folder=$folder"),
             'S_HIDDEN_FIELDS'   => $s_hidden_fields
         ]
     );
@@ -486,17 +486,17 @@ if ($mode === 'newpm') {
 
 	$post_date = create_date($board_config['default_dateformat'], $privmsg->privmsgs_date, $board_config['board_timezone']);
 
-	$temp_url = append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . '=' . $user_id_from);
+	$temp_url = Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $user_id_from);
 	$profile_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_profile'] . '" alt="' . $lang['Read_profile'] . '" title="' . $lang['Read_profile'] . '" border="0" /></a>';
 	$profile = '<a href="' . $temp_url . '">' . $lang['Read_profile'] . '</a>';
 
-	$temp_url = append_sid("privmsg.php?mode=post&amp;" . POST_USERS_URL . "=$user_id_from");
+	$temp_url = Session::appendSid('privmsg.php?mode=post&amp;' . POST_USERS_URL . "=$user_id_from");
 	$pm_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
 	$pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
 
 	if ( !empty($privmsg->user_viewemail) || $userdata['user_level'] === ADMIN )
 	{
-		$email_uri = $board_config['board_email_form'] ? append_sid("profile.php?mode=email&amp;" . POST_USERS_URL .'=' . $user_id_from) : 'mailto:' . $privmsg->user_email;
+		$email_uri = $board_config['board_email_form'] ? Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL .'=' . $user_id_from) : 'mailto:' . $privmsg->user_email;
 
 		$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
 		$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
@@ -508,7 +508,7 @@ if ($mode === 'newpm') {
 	$www_img = $privmsg->user_website ? '<a href="' . $privmsg->user_website . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
 	$www = $privmsg->user_website ? '<a href="' . $privmsg->user_website . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
 
-	if ( !empty($privmsg->user_icq) ) {
+	if ( !empty($privmsg->user_icq)) {
 		$icq_status_img = '<a href="http://wwp.icq.com/' . $privmsg->user_icq . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $privmsg->user_icq . '&img=5" width="18" height="18" border="0" /></a>';
 		$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $privmsg->user_icq . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
 		$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $privmsg->user_icq . '">' . $lang['ICQ'] . '</a>';
@@ -521,14 +521,14 @@ if ($mode === 'newpm') {
 	$aim_img = $privmsg->user_aim ? '<a href="aim:goim?screenname=' . $privmsg->user_aim . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
 	$aim = $privmsg->user_aim ? '<a href="aim:goim?screenname=' . $privmsg->user_aim . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
 
-	$temp_url = append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id_from");
+	$temp_url = Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$user_id_from");
 	$msn_img = $privmsg->user_msnm ? '<a href="' . $temp_url . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
 	$msn = $privmsg->user_msnm ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
 
 	$yim_img = $privmsg->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $privmsg->user_yim . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
 	$yim = $privmsg->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $privmsg->user_yim . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
 
-	$temp_url = append_sid("search.php?search_author=" . urlencode($username_from) . "&amp;showresults=posts");
+	$temp_url = Session::appendSid('search.php?search_author=' . urlencode($username_from) . '&amp;showresults=posts');
 	$search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $username_from) . '" title="' . sprintf($lang['Search_user_posts'], $username_from) . '" border="0" /></a>';
 	$search = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $username_from) . '</a>';
 
@@ -562,17 +562,17 @@ if ($mode === 'newpm') {
         }
     }
 
-	if ( $user_sig !== '' && $privmsg->privmsgs_attach_sig && $user_sig_bbcode_uid !== '' ) {
+	if ( $user_sig !== '' && $privmsg->privmsgs_attach_sig && $user_sig_bbcode_uid !== '') {
 		$user_sig = $board_config['allow_bbcode'] ? bbencode_second_pass($user_sig, $user_sig_bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $user_sig);
 	}
 
-	if ( $bbcode_uid !== '' ) {
+	if ( $bbcode_uid !== '') {
 		$private_message = $board_config['allow_bbcode'] ? bbencode_second_pass($private_message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $private_message);
 	}
 
 	$private_message = make_clickable($private_message);
 
-	if ( $privmsg->privmsgs_attach_sig && $user_sig !== '' ) {
+	if ( $privmsg->privmsgs_attach_sig && $user_sig !== '') {
 		$private_message .= '<br /><br />_________________<br />' . make_clickable($user_sig);
 	}
 
@@ -594,7 +594,7 @@ if ($mode === 'newpm') {
 	//
 	// Dump it to the templating engine
 	//
-    $template->assign_vars(
+    $template->assignVars(
         [
             'MESSAGE_TO'    => $username_to,
             'MESSAGE_FROM'  => $username_from,
@@ -641,7 +641,7 @@ if ($mode === 'newpm') {
 
 } elseif (($delete && $mark_list) || $delete_all) {
     if (!$userdata['session_logged_in']) {
-        redirect(append_sid("login.php?redirect=privmsg.php&folder=inbox", true));
+        redirect(Session::appendSid('login.php?redirect=privmsg.php&folder=inbox', true));
     }
 
     if (isset($mark_list) && !is_array($mark_list)) {
@@ -663,8 +663,8 @@ if ($mode === 'newpm') {
 		//
 		include $phpbb_root_path . 'includes/page_header.php';
 
-        $template->set_filenames(['confirm_body' => 'confirm_body.tpl']);
-        $template->assign_vars(
+        $template->setFileNames(['confirm_body' => 'confirm_body.tpl']);
+        $template->assignVars(
             [
                 'MESSAGE_TITLE' => $lang['Information'],
                 'MESSAGE_TEXT'  => (count($mark_list) === 1) ? $lang['Confirm_delete_pm'] : $lang['Confirm_delete_pms'],
@@ -672,7 +672,7 @@ if ($mode === 'newpm') {
                 'L_YES' => $lang['Yes'],
                 'L_NO'  => $lang['No'],
 
-                'S_CONFIRM_ACTION' => append_sid("privmsg.php?folder=$folder"),
+                'S_CONFIRM_ACTION' => Session::appendSid("privmsg.php?folder=$folder"),
                 'S_HIDDEN_FIELDS'  => $s_hidden_fields
             ]
         );
@@ -773,11 +773,11 @@ if ($mode === 'newpm') {
 						foreach ($update_list as $type => $dec_aray) {
 							switch ($type) {
 								case 'new':
-									$type = "user_new_privmsg";
+									$type = 'user_new_privmsg';
 									break;
 
 								case 'unread':
-									$type = "user_unread_privmsg";
+									$type = 'user_unread_privmsg';
 									break;
 							}
 
@@ -837,9 +837,9 @@ if ($mode === 'newpm') {
 			}
 		}
 	}
-} elseif ( $save && $mark_list && $folder !== 'savebox' && $folder !== 'outbox' ) {
+} elseif ( $save && $mark_list && $folder !== 'savebox' && $folder !== 'outbox') {
     if (!$userdata['session_logged_in']) {
-        redirect(append_sid("login.php?redirect=privmsg.php&folder=inbox", true));
+        redirect(Session::appendSid('login.php?redirect=privmsg.php&folder=inbox', true));
     }
 	
 	if (count($mark_list)) {
@@ -860,7 +860,7 @@ if ($mode === 'newpm') {
 		$sql_priority = ( $dbms === 'mysql' ) ? 'LOW_PRIORITY' : '';
 
         if ($saved_info) {
-			if ($board_config['max_savebox_privmsgs'] && $saved_info->savebox_items >= $board_config['max_savebox_privmsgs'] ) {
+			if ($board_config['max_savebox_privmsgs'] && $saved_info->savebox_items >= $board_config['max_savebox_privmsgs']) {
 			    $old_privmsgs_id = dibi::select('privmsgs_id')
                     ->from(PRIVMSGS_TABLE)
                     ->where(
@@ -933,11 +933,11 @@ if ($mode === 'newpm') {
 					foreach ($update_list as $type => $dec_ary) {
 						switch ($type) {
 							case 'new':
-								$type = "user_new_privmsg";
+								$type = 'user_new_privmsg';
 								break;
 
 							case 'unread':
-								$type = "user_unread_privmsg";
+								$type = 'user_unread_privmsg';
 								break;
 						}
 
@@ -976,12 +976,12 @@ if ($mode === 'newpm') {
 				break;
 		}
 
-		redirect(append_sid("privmsg.php?folder=savebox", true));
+		redirect(Session::appendSid('privmsg.php?folder=savebox', true));
 	}
-} elseif ( $submit || $refresh || $mode !== '' ) {
-	if ( !$userdata['session_logged_in'] ) {
+} elseif ( $submit || $refresh || $mode !== '') {
+	if ( !$userdata['session_logged_in']) {
 		$user_id = isset($_GET[POST_USERS_URL]) ? '&' . POST_USERS_URL . '=' . (int)$_GET[POST_USERS_URL] : '';
-		redirect(append_sid("login.php?redirect=privmsg.php&folder=$folder&mode=$mode" . $user_id, true));
+		redirect(Session::appendSid("login.php?redirect=privmsg.php&folder=$folder&mode=$mode" . $user_id, true));
 	}
 	
 	//
@@ -1006,7 +1006,7 @@ if ($mode === 'newpm') {
     }
 
 	$attach_sig = ( $submit || $refresh ) ? isset($_POST['attach_sig']) : $userdata['user_attachsig'];
-	$user_sig = ( $userdata['user_sig'] !== '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : "";
+	$user_sig = ( $userdata['user_sig'] !== '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : '';
 	
 	if ( $submit && $mode !== 'edit' )
 	{
@@ -1217,19 +1217,20 @@ if ($mode === 'newpm') {
 				$script_name = ( $script_name !== '' ) ? $script_name . '/privmsg.php' : 'privmsg.php';
 				$server_name = trim($board_config['server_name']);
 				$server_protocol = $board_config['cookie_secure'] ? 'https://' : 'http://';
-				$server_port = ( $board_config['server_port'] <> 80 ) ? ':' . trim($board_config['server_port']) . '/' : '/';
+				$server_port = ( $board_config['server_port'] !== 80 ) ? ':' . trim($board_config['server_port']) . '/'
+                : '/';
 
-				include $phpbb_root_path . 'includes/emailer.php';
-				$emailer = new emailer($board_config['smtp_delivery']);
+				include $phpbb_root_path . 'includes/Emailer.php';
+				$emailer = new Emailer($board_config['smtp_delivery']);
 					
-				$emailer->from($board_config['board_email']);
-				$emailer->replyto($board_config['board_email']);
+				$emailer->setFrom($board_config['board_email']);
+				$emailer->setReplyTo($board_config['board_email']);
 
 				$emailer->use_template('privmsg_notify', $to_userdata['user_lang']);
-				$emailer->email_address($to_userdata['user_email']);
-				$emailer->set_subject($lang['Notification_subject']);
+				$emailer->setEmailAddress($to_userdata['user_email']);
+				$emailer->setSubject($lang['Notification_subject']);
 
-                $emailer->assign_vars(
+                $emailer->assignVars(
                     [
                         'USERNAME'  => stripslashes($to_username),
                         'SITENAME'  => $board_config['sitename'],
@@ -1245,13 +1246,13 @@ if ($mode === 'newpm') {
 			}
 		}
 
-        $template->assign_vars(
+        $template->assignVars(
             [
-                'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("privmsg.php?folder=inbox") . '">'
+                'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('privmsg.php?folder=inbox') . '">'
             ]
         );
 
-        $msg = $lang['Message_sent'] . '<br /><br />' . sprintf($lang['Click_return_inbox'], '<a href="' . append_sid("privmsg.php?folder=inbox") . '">', '</a> ') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
+        $msg = $lang['Message_sent'] . '<br /><br />' . sprintf($lang['Click_return_inbox'], '<a href="' . Session::appendSid('privmsg.php?folder=inbox') . '">', '</a> ') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
 		message_die(GENERAL_MESSAGE, $msg);
     } elseif ($preview || $refresh || $error) {
@@ -1267,7 +1268,7 @@ if ($mode === 'newpm') {
 		$privmsg_message = isset($_POST['message']) ? trim($_POST['message']) : '';
 		// $privmsg_message = preg_replace('#<textarea>#si', '&lt;textarea&gt;', $privmsg_message);
 
-		if ( !$preview ) {
+		if ( !$preview) {
 			$privmsg_message = stripslashes($privmsg_message);
 		}
 
@@ -1320,7 +1321,7 @@ if ($mode === 'newpm') {
                 $error     = true;
                 $error_msg = $lang['No_such_user'];
             }
-		} elseif ( $mode === 'edit' ) {
+		} elseif ( $mode === 'edit') {
 		    $columns = [
 		        'pm.*',
                 'pmt.privmsgs_bbcode_uid',
@@ -1345,7 +1346,7 @@ if ($mode === 'newpm') {
                 ->fetch();
 
             if (!$privmsg) {
-                redirect(append_sid("privmsg.php?folder=$folder", true));
+                redirect(Session::appendSid("privmsg.php?folder=$folder", true));
             }
 
 			$privmsg_subject = $privmsg->privmsgs_subject;
@@ -1369,7 +1370,7 @@ if ($mode === 'newpm') {
 			$to_username = $privmsg->username;
 			$to_userid = $privmsg->user_id;
 
-		} elseif ( $mode === 'reply' || $mode === 'quote' ) {
+		} elseif ( $mode === 'reply' || $mode === 'quote') {
             $columns = [
                 'pm.privmsgs_subject',
                 'pm.privmsgs_date',
@@ -1393,7 +1394,7 @@ if ($mode === 'newpm') {
                 ->fetch();
 
             if (!$privmsg) {
-                redirect(append_sid("privmsg.php?folder=$folder", true));
+                redirect(Session::appendSid("privmsg.php?folder=$folder", true));
             }
 
 			$orig_word = $replacement_word = [];
@@ -1405,7 +1406,7 @@ if ($mode === 'newpm') {
 			$to_username = $privmsg->username;
 			$to_userid = $privmsg->user_id;
 
-			if ( $mode === 'quote' ) {
+			if ( $mode === 'quote') {
 				$privmsg_message = $privmsg->privmsgs_text;
 				$privmsg_bbcode_uid = $privmsg->privmsgs_bbcode_uid;
 
@@ -1493,9 +1494,9 @@ if ($mode === 'newpm') {
             $s_hidden_fields .= '<input type="hidden" name="' . POST_POST_URL . '" value="' . $privmsg_id . '" />';
         }
 
-        $template->set_filenames(["preview" => 'privmsgs_preview.tpl']);
+        $template->setFileNames(['preview' => 'privmsgs_preview.tpl']);
 
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'TOPIC_TITLE'  => $preview_subject,
                 'POST_SUBJECT' => $preview_subject,
@@ -1516,7 +1517,7 @@ if ($mode === 'newpm') {
             ]
         );
 
-        $template->assign_var_from_handle('POST_PREVIEW_BOX', 'preview');
+        $template->assignVarFromHandle('POST_PREVIEW_BOX', 'preview');
 	}
 
 	//
@@ -1524,28 +1525,28 @@ if ($mode === 'newpm') {
 	//
     if ($error) {
         $privmsg_message = htmlspecialchars($privmsg_message);
-        $template->set_filenames(['reg_header' => 'error_body.tpl']);
-        $template->assign_vars(['ERROR_MESSAGE' => $error_msg]);
-        $template->assign_var_from_handle('ERROR_BOX', 'reg_header');
+        $template->setFileNames(['reg_header' => 'error_body.tpl']);
+        $template->assignVars(['ERROR_MESSAGE' => $error_msg]);
+        $template->assignVarFromHandle('ERROR_BOX', 'reg_header');
     }
 
     //
     // Load templates
 	//
-    $template->set_filenames(['body' => 'posting_body.tpl']);
+    $template->setFileNames(['body' => 'posting_body.tpl']);
     make_jumpbox('viewforum.php');
 
 	//
 	// Enable extensions in posting_body
 	//
-	$template->assign_block_vars('switch_privmsg', []);
+	$template->assignBlockVars('switch_privmsg', []);
 
 	//
 	// HTML toggle selection
 	//
     if ($board_config['allow_html']) {
         $html_status = $lang['HTML_is_ON'];
-        $template->assign_block_vars('switch_html_checkbox', []);
+        $template->assignBlockVars('switch_html_checkbox', []);
     } else {
         $html_status = $lang['HTML_is_OFF'];
     }
@@ -1555,7 +1556,7 @@ if ($mode === 'newpm') {
 	//
     if ($board_config['allow_bbcode']) {
         $bbcode_status = $lang['BBCode_is_ON'];
-        $template->assign_block_vars('switch_bbcode_checkbox', []);
+        $template->assignBlockVars('switch_bbcode_checkbox', []);
     } else {
         $bbcode_status = $lang['BBCode_is_OFF'];
     }
@@ -1565,7 +1566,7 @@ if ($mode === 'newpm') {
 	//
     if ($board_config['allow_smilies']) {
         $smilies_status = $lang['Smilies_are_ON'];
-        $template->assign_block_vars('switch_smilies_checkbox', []);
+        $template->assignBlockVars('switch_smilies_checkbox', []);
     } else {
         $smilies_status = $lang['Smilies_are_OFF'];
     }
@@ -1575,7 +1576,7 @@ if ($mode === 'newpm') {
 	// the user has a signature
 	//
     if ($user_sig !== '') {
-        $template->assign_block_vars('switch_signature_checkbox', []);
+        $template->assignBlockVars('switch_signature_checkbox', []);
     }
 
     if ($mode === 'post') {
@@ -1607,14 +1608,14 @@ if ($mode === 'newpm') {
 	//
 	generate_smilies('inline', PAGE_PRIVMSGS);
 
-	$template->assign_vars(
+	$template->assignVars(
 	    [
             'SUBJECT' => $privmsg_subject,
             'USERNAME' => $to_username,
             'MESSAGE' => $privmsg_message,
             'HTML_STATUS' => $html_status,
             'SMILIES_STATUS' => $smilies_status,
-            'BBCODE_STATUS' => sprintf($bbcode_status, '<a href="' . append_sid("faq.php?mode=bbcode") . '" target="_phpbbcode">', '</a>'),
+            'BBCODE_STATUS' => sprintf($bbcode_status, '<a href="' . Session::appendSid('faq.php?mode=bbcode') . '" target="_phpbbcode">', '</a>'),
             'FORUM_NAME' => $lang['Private_Message'],
 
             'BOX_NAME' => $l_box_name,
@@ -1688,10 +1689,10 @@ if ($mode === 'newpm') {
             'S_SMILIES_CHECKED' => ( !$smilies_on ) ? ' checked="checked"' : '',
             'S_SIGNATURE_CHECKED' => $attach_sig ? ' checked="checked"' : '',
             'S_HIDDEN_FORM_FIELDS' => $s_hidden_fields,
-            'S_POST_ACTION' => append_sid("privmsg.php"),
+            'S_POST_ACTION' => Session::appendSid('privmsg.php'),
 
-            'U_SEARCH_USER' => append_sid("search.php?mode=searchuser"),
-            'U_VIEW_FORUM' => append_sid("privmsg.php")
+            'U_SEARCH_USER' => Session::appendSid('search.php?mode=searchuser'),
+            'U_VIEW_FORUM' => Session::appendSid('privmsg.php')
         ]
 	);
 
@@ -1704,7 +1705,7 @@ if ($mode === 'newpm') {
 // Default page
 //
 if (!$userdata['session_logged_in']) {
-    redirect(append_sid("login.php?redirect=privmsg.php&folder=inbox", true));
+    redirect(Session::appendSid('login.php?redirect=privmsg.php&folder=inbox', true));
 }
 
 //
@@ -1740,7 +1741,7 @@ include $phpbb_root_path . 'includes/page_header.php';
 //
 // Load templates
 //
-$template->set_filenames(['body' => 'privmsgs_body.tpl']);
+$template->setFileNames(['body' => 'privmsgs_body.tpl']);
 make_jumpbox('viewforum.php');
 
 $orig_word = [];
@@ -1750,7 +1751,7 @@ obtain_word_list($orig_word, $replacement_word);
 //
 // New message
 //
-$post_new_mesg_url = '<a href="' . append_sid("privmsg.php?mode=post") . '"><img src="' . $images['post_new'] . '" alt="' . $lang['Send_a_new_message'] . '" border="0" /></a>';
+$post_new_mesg_url = '<a href="' . Session::appendSid('privmsg.php?mode=post') . '"><img src="' . $images['post_new'] . '" alt="' . $lang['Send_a_new_message'] . '" border="0" /></a>';
 
 //
 // General SQL to obtain messages
@@ -1765,7 +1766,7 @@ $sql = dibi::select(['pm.privmsgs_type', 'pm.privmsgs_id', 'pm.privmsgs_date', '
     ->from(USERS_TABLE)
     ->as('u');
 
-switch( $folder ) {
+switch( $folder) {
 	case 'inbox':
         $sql_tot->where('privmsgs_to_userid = %i', $userdata['user_id'])
             ->where('privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_READ_MAIL, PRIVMSGS_UNREAD_MAIL]);
@@ -1828,7 +1829,7 @@ if ($submit_msgdays && (!empty($_POST['msgdays']) || !empty($_GET['msgdays']))) 
     $limit_msg_time_total = $sql_tot->where('privmsgs_date > %i', $min_msg_time);
     $limit_msg_time       = $sql->where('pm.privmsgs_date > %i', $min_msg_time);
 
-	if ( !empty($_POST['msgdays']) ) {
+	if ( !empty($_POST['msgdays'])) {
 		$start = 0;
 	}
 } else {
@@ -1875,7 +1876,7 @@ foreach ($previous_days as $previous_day_key => $previous_days_value) {
 //
 // Define correct icons
 //
-switch ( $folder ) {
+switch ( $folder) {
 	case 'inbox':
 		$l_box_name = $lang['Inbox'];
 		break;
@@ -1889,21 +1890,21 @@ switch ( $folder ) {
 		$l_box_name = $lang['Sentbox'];
 		break;
 }
-$post_pm = append_sid("privmsg.php?mode=post");
+$post_pm = Session::appendSid('privmsg.php?mode=post');
 $post_pm_img = '<a href="' . $post_pm . '"><img src="' . $images['pm_postmsg'] . '" alt="' . $lang['Post_new_pm'] . '" border="0" /></a>';
 $post_pm = '<a href="' . $post_pm . '">' . $lang['Post_new_pm'] . '</a>';
 
 //
 // Output data for inbox status
 //
-if ( $folder !== 'outbox' ) {
+if ( $folder !== 'outbox') {
 	$inbox_limit_pct = ( $board_config['max_' . $folder . '_privmsgs'] > 0 ) ? round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * 100) : 100;
 	$inbox_limit_img_length = ( $board_config['max_' . $folder . '_privmsgs'] > 0 ) ? round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * $board_config['privmsg_graphic_length']) : $board_config['privmsg_graphic_length'];
 	$inbox_limit_remain = ( $board_config['max_' . $folder . '_privmsgs'] > 0 ) ? $board_config['max_' . $folder . '_privmsgs'] - $pm_all_total : 0;
 
-	$template->assign_block_vars('switch_box_size_notice', []);
+	$template->assignBlockVars('switch_box_size_notice', []);
 
-	switch( $folder ) {
+	switch( $folder) {
 		case 'inbox':
 			$l_box_size_status = sprintf($lang['Inbox_size'], $inbox_limit_pct);
 			break;
@@ -1924,7 +1925,7 @@ if ( $folder !== 'outbox' ) {
 //
 // Dump vars to template
 //
-$template->assign_vars(
+$template->assignVars(
     [
         'BOX_NAME'    => $l_box_name,
         'INBOX_IMG'   => $inbox_img,
@@ -1960,12 +1961,12 @@ $template->assign_vars(
         'L_DELETE_ALL'       => $lang['Delete_all'],
         'L_SAVE_MARKED'      => $lang['Save_marked'],
 
-        'S_PRIVMSGS_ACTION' => append_sid("privmsg.php?folder=$folder"),
+        'S_PRIVMSGS_ACTION' => Session::appendSid("privmsg.php?folder=$folder"),
         'S_HIDDEN_FIELDS'   => '',
         'S_POST_NEW_MSG'    => $post_new_mesg_url,
         'S_SELECT_MSG_DAYS' => $select_msg_days,
 
-        'U_POST_NEW_TOPIC' => append_sid("privmsg.php?mode=post")
+        'U_POST_NEW_TOPIC' => Session::appendSid('privmsg.php?mode=post')
     ]
 );
 
@@ -1990,7 +1991,7 @@ if (count($rows)) {
 		$msg_userid = $row->user_id;
 		$msg_username = $row->username;
 
-		$u_from_user_profile = append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$msg_userid");
+		$u_from_user_profile = Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$msg_userid");
 
 		$msg_subject = $row->privmsgs_subject;
 
@@ -1998,7 +1999,7 @@ if (count($rows)) {
             $msg_subject = preg_replace($orig_word, $replacement_word, $msg_subject);
         }
 		
-		$u_subject = append_sid("privmsg.php?folder=$folder&amp;mode=read&amp;" . POST_POST_URL . "=$privmsg_id");
+		$u_subject = Session::appendSid("privmsg.php?folder=$folder&amp;mode=read&amp;" . POST_POST_URL . "=$privmsg_id");
 
 		$msg_date = create_date($board_config['default_dateformat'], $row->privmsgs_date, $board_config['board_timezone']);
 
@@ -2012,7 +2013,7 @@ if (count($rows)) {
 		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 		$i++;
 
-        $template->assign_block_vars('listrow',
+        $template->assignBlockVars('listrow',
             [
                 'ROW_COLOR'          => '#' . $row_color,
                 'ROW_CLASS'          => $row_class,
@@ -2031,7 +2032,7 @@ if (count($rows)) {
         );
     }
 
-    $template->assign_vars([
+    $template->assignVars([
             'PAGINATION'  => generate_pagination("privmsg.php?folder=$folder", $pm_total, $board_config['topics_per_page'], $start),
             'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $board_config['topics_per_page']) + 1, ceil($pm_total / $board_config['topics_per_page'])),
 
@@ -2039,13 +2040,13 @@ if (count($rows)) {
         ]);
 
 } else {
-    $template->assign_vars(
+    $template->assignVars(
         [
             'L_NO_MESSAGES' => $lang['No_messages_folder']
         ]
     );
 
-    $template->assign_block_vars("switch_no_messages", [] );
+    $template->assignBlockVars('switch_no_messages', [] );
 }
 
 $template->pparse('body');

@@ -58,7 +58,7 @@ function clean_words($mode, &$entry, array &$stopwords, array &$synonyms)
 
 	$entry = ' ' . strip_tags(strtolower($entry)) . ' ';
 
-	if ( $mode === 'post' ) {
+	if ( $mode === 'post') {
 		// Replace line endings by a space
 		$entry = preg_replace('/[\n\r]/is', ' ', $entry);
 		// HTML entities like &nbsp;
@@ -69,7 +69,7 @@ function clean_words($mode, &$entry, array &$stopwords, array &$synonyms)
 		$entry = preg_replace('/\[img:[a-z0-9]{10,}\].*?\[\/img:[a-z0-9]{10,}\]/', ' ', $entry);
 		$entry = preg_replace('/\[\/?url(=.*?)?\]/', ' ', $entry);
 		$entry = preg_replace('/\[\/?[a-z\*=\+\-]+(\:?[0-9a-z]+)?:[a-z0-9]{10,}(\:[a-z0-9]+)?=?.*?\]/', ' ', $entry);
-	} elseif ( $mode === 'search' ) {
+	} elseif ( $mode === 'search') {
 		$entry = str_replace(' +', ' and ', $entry);
 		$entry = str_replace(' -', ' not ', $entry);
 	}
@@ -92,7 +92,7 @@ function clean_words($mode, &$entry, array &$stopwords, array &$synonyms)
 		foreach ($stopwords as &$stopword) {
 			$stopword = trim($stopword);
 
-			if ( $mode === 'post' || ( $stopword !== 'not' && $stopword !== 'and' && $stopword !== 'or' ) ) {
+			if ( $mode === 'post' || ( $stopword !== 'not' && $stopword !== 'and' && $stopword !== 'or' )) {
 				$entry = str_replace(' ' . trim($stopword) . ' ', ' ', $entry);
 			}
 		}
@@ -100,10 +100,10 @@ function clean_words($mode, &$entry, array &$stopwords, array &$synonyms)
 
     if (!empty($synonyms)) {
 		foreach ($synonyms as &$synonym) {
-			list($replace_synonym, $match_synonym) = explode(' ', trim(strtolower($synonym)));
+			list($replace_synonym, $match_synonym) = explode(' ', strtolower(trim($synonym)));
 
 			if ( $mode === 'post' || ( $match_synonym !== 'not' && $match_synonym !== 'and' && $match_synonym !== 'or' )
-            ) {
+           ) {
 				$entry =  str_replace(' ' . trim($match_synonym) . ' ', ' ' . trim($replace_synonym) . ' ', $entry);
 			}
 		}
@@ -129,8 +129,8 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 {
 	global $phpbb_root_path, $board_config, $lang, $dbms;
 
-	$stopword_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . "/search_stopwords.txt");
-	$synonym_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . "/search_synonyms.txt");
+	$stopword_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/search_stopwords.txt');
+	$synonym_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/search_synonyms.txt');
 
 	$search_raw_words = [];
 	$search_raw_words['text'] = split_words(clean_words('post', $post_text, $stopword_array, $synonym_array));
@@ -148,7 +148,7 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
             foreach ($search_matches as $search_match) {
                 $search_match = trim($search_match);
 
-				if ($search_match !== '' ) {
+				if ($search_match !== '') {
 					$words[] = $search_match;
 
                     if (!in_array($search_match, $word_insert_sql[$word_in], true)) {
@@ -179,7 +179,7 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
         }
 
 		foreach ($words as $word) {
-            if ( !isset($check_words[$word]) ) {
+            if ( !isset($check_words[$word])) {
                 switch ($dbms) {
                     case 'mysql':
                         $insert_data = [
@@ -275,10 +275,10 @@ function remove_common($mode, $fraction, $word_id_list = [])
 }
 
 /**
- * @param array $post_id_sql
+ * @param array $post_ids
  * @return int
  */
-function remove_search_post(array $post_id_sql)
+function remove_search_post(array $post_ids)
 {
     global $dbms;
 
@@ -288,7 +288,7 @@ function remove_search_post(array $post_id_sql)
         case 'mysql':
             $words = dibi::select('word_id')
                 ->from(SEARCH_MATCH_TABLE)
-                ->where('post_id IN %in', $post_id_sql)
+                ->where('post_id IN %in', $post_ids)
                 ->groupBy('word_id')
                 ->fetchPairs(null, 'word_id');
 
@@ -318,7 +318,7 @@ function remove_search_post(array $post_id_sql)
 
                             dibi::select('word_id')
                                 ->from(SEARCH_MATCH_TABLE)
-                                ->where('post_id IN', $post_id_sql))
+                                ->where('post_id IN', $post_ids))
                         ->groupBy('word_id')
                         ->having('COUNT(word_id) = %i', 1))
                 ->execute(dibi::AFFECTED_ROWS);
@@ -327,7 +327,7 @@ function remove_search_post(array $post_id_sql)
 	}
 
 	dibi::delete(SEARCH_MATCH_TABLE)
-        ->where('post_id IN %in', $post_id_sql)
+        ->where('post_id IN %in', $post_ids)
         ->execute();
 
 	return $words_removed;
@@ -341,7 +341,7 @@ function username_search($search_match)
 	global $board_config, $template, $lang, $images, $theme, $phpbb_root_path;
 	global $gen_simple_header;
 
-	$gen_simple_header = TRUE;
+	$gen_simple_header = true;
 
 	$username_list = '';
 
@@ -367,9 +367,9 @@ function username_search($search_match)
 	$page_title = $lang['Search'];
 	include $phpbb_root_path . 'includes/page_header.php';
 
-    $template->set_filenames(['search_user_body' => 'search_username.tpl']);
+    $template->setFileNames(['search_user_body' => 'search_username.tpl']);
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'USERNAME' => !empty($search_match) ? phpbb_clean_username($search_match) : '',
 
@@ -381,12 +381,12 @@ function username_search($search_match)
             'L_SEARCH_EXPLAIN'  => $lang['Search_author_explain'],
 
             'S_USERNAME_OPTIONS' => $username_list,
-            'S_SEARCH_ACTION'    => append_sid("search.php?mode=searchuser")
+            'S_SEARCH_ACTION'    => Session::appendSid('search.php?mode=searchuser')
         ]
     );
 
     if ($username_list !== '') {
-		$template->assign_block_vars('switch_select_name', []);
+		$template->assignBlockVars('switch_select_name', []);
 	}
 
 	$template->pparse('search_user_body');

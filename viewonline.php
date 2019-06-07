@@ -28,7 +28,7 @@ include $phpbb_root_path . 'common.php';
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, PAGE_VIEWONLINE);
+$userdata = Session::pageStart($user_ip, PAGE_VIEWONLINE);
 init_userprefs($userdata);
 //
 // End session management
@@ -40,14 +40,14 @@ init_userprefs($userdata);
 $page_title = $lang['Who_is_Online'];
 include $phpbb_root_path . 'includes/page_header.php';
 
-$template->set_filenames(
+$template->setFileNames(
     [
 	   'body' => 'viewonline_body.tpl'        
     ]
 );
 make_jumpbox('viewforum.php');
 
-$template->assign_vars(
+$template->assignVars(
     [
         'L_WHOSONLINE'     => $lang['Who_is_Online'],
         'L_ONLINE_EXPLAIN' => $lang['Online_explain'],
@@ -67,13 +67,18 @@ $forum_data = dibi::select(['forum_id', 'forum_name'])
 //
 // Get auth data
 //
-$is_auth_ary = [];
-$is_auth_ary = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
+$is_auth_ary = Auth::authorize(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
 
 //
 // Get user list
 //
 $columns = ['u.user_id', 'u.username', 'u.user_allow_viewonline', 'u.user_level', 's.session_logged_in', 's.session_time', 's.session_page', 's.session_ip'];
+
+$user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
+
+$time = new DateTime();
+$time->setTimezone(new DateTimeZone($user_timezone));
+$time->sub(new DateInterval('PT300S'));
 
 $rows = dibi::select($columns)
     ->from(USERS_TABLE)
@@ -81,7 +86,7 @@ $rows = dibi::select($columns)
     ->innerJoin(SESSIONS_TABLE)
     ->as('s')
     ->on('u.user_id = s.session_user_id')
-    ->where('s.session_time >= %i', time() - 30)
+    ->where('s.session_time >= %i', $time->getTimestamp())
     ->orderBy('u.username', dibi::ASC)
     ->orderBy('s.session_ip', dibi::ASC)
     ->fetchAll();
@@ -144,53 +149,53 @@ foreach ($rows as $row) {
             switch ($row->session_page) {
 				case PAGE_INDEX:
 					$location = $lang['Forum_index'];
-					$location_url = "index.php";
+					$location_url = 'index.php';
 					break;
 				case PAGE_POSTING:
 					$location = $lang['Posting_message'];
-					$location_url = "index.pphp";
+					$location_url = 'index.pphp';
 					break;
 				case PAGE_LOGIN:
 					$location = $lang['Logging_on'];
-					$location_url = "index.php";
+					$location_url = 'index.php';
 					break;
 				case PAGE_SEARCH:
 					$location = $lang['Searching_forums'];
-					$location_url = "search.php";
+					$location_url = 'search.php';
 					break;
 				case PAGE_PROFILE:
 					$location = $lang['Viewing_profile'];
-					$location_url = "index.php";
+					$location_url = 'index.php';
 					break;
 				case PAGE_VIEWONLINE:
 					$location = $lang['Viewing_online'];
-					$location_url = "viewonline.php";
+					$location_url = 'viewonline.php';
 					break;
 				case PAGE_VIEWMEMBERS:
 					$location = $lang['Viewing_member_list'];
-					$location_url = "memberlist.php";
+					$location_url = 'memberlist.php';
 					break;
 				case PAGE_PRIVMSGS:
 					$location = $lang['Viewing_priv_msgs'];
-					$location_url = "privmsg.php";
+					$location_url = 'privmsg.php';
 					break;
 				case PAGE_FAQ:
 					$location = $lang['Viewing_FAQ'];
-					$location_url = "faq.php";
+					$location_url = 'faq.php';
 					break;
 				default:
 					$location = $lang['Forum_index'];
-					$location_url = "index.php";
+					$location_url = 'index.php';
 			}
 		} else {
-			$location_url = append_sid("viewforum.php?" . POST_FORUM_URL . '=' . $row->session_page);
+			$location_url = Session::appendSid('viewforum.php?' . POST_FORUM_URL . '=' . $row->session_page);
 			$location = $forum_data[$row->session_page];
 		}
 
 		$row_color = ( $$which_counter % 2 ) ? $theme['td_color1'] : $theme['td_color2'];
 		$row_class = ( $$which_counter % 2 ) ? $theme['td_class1'] : $theme['td_class2'];
 
-        $template->assign_block_vars((string)$which_row,
+        $template->assignBlockVars((string)$which_row,
             [
                 'ROW_COLOR'      => '#' . $row_color,
                 'ROW_CLASS'      => $row_class,
@@ -198,8 +203,8 @@ foreach ($rows as $row) {
                 'LASTUPDATE'     => create_date($board_config['default_dateformat'], $row->session_time, $board_config['board_timezone']),
                 'FORUM_LOCATION' => $location,
 
-                'U_USER_PROFILE'   => append_sid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . '=' . $user_id),
-                'U_FORUM_LOCATION' => append_sid($location_url)
+                'U_USER_PROFILE'   => Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $user_id),
+                'U_FORUM_LOCATION' => Session::appendSid($location_url)
             ]
         );
 
@@ -231,7 +236,7 @@ if ($guest_users === 0) {
     $l_g_user_s = $lang['Guest_users_online'];
 }
 
-$template->assign_vars(
+$template->assignVars(
     [
         'TOTAL_REGISTERED_USERS_ONLINE' => sprintf($l_r_user_s, $registered_users) . sprintf($l_h_user_s, $hidden_users),
         'TOTAL_GUEST_USERS_ONLINE'      => sprintf($l_g_user_s, $guest_users)
@@ -239,11 +244,11 @@ $template->assign_vars(
 );
 
 if ($registered_users + $hidden_users === 0) {
-    $template->assign_vars(['L_NO_REGISTERED_USERS_BROWSING' => $lang['No_users_browsing']]);
+    $template->assignVars(['L_NO_REGISTERED_USERS_BROWSING' => $lang['No_users_browsing']]);
 }
 
 if ($guest_users === 0) {
-    $template->assign_vars(['L_NO_GUESTS_BROWSING' => $lang['No_users_browsing']]);
+    $template->assignVars(['L_NO_GUESTS_BROWSING' => $lang['No_users_browsing']]);
 }
 
 $template->pparse('body');

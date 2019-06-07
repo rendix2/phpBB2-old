@@ -22,7 +22,7 @@
 
 define('IN_PHPBB', 1);
 
-if (!empty($setmodules) ) {
+if (!empty($setmodules)) {
 	$filename = basename(__FILE__);
 	$module['Users']['Disallow'] = $filename;
 
@@ -32,11 +32,11 @@ if (!empty($setmodules) ) {
 //
 // Include required files and check permissions
 //
-$phpbb_root_path = "./../";
+$phpbb_root_path = './../';
 
 require './pagestart.php';
 
-if (isset($_POST['add_name']) ) {
+if (isset($_POST['add_name'])) {
 	include $phpbb_root_path . 'includes/functions_validate.php';
 
 	$disallowed_user = isset($_POST['disallowed_user']) ? trim($_POST['disallowed_user']) : trim($_GET['disallowed_user']);
@@ -45,7 +45,7 @@ if (isset($_POST['add_name']) ) {
 		message_die(GENERAL_MESSAGE, $lang['Fields_empty']);
 	}
 
-	if (!validate_username($disallowed_user) ) {
+	if (!validate_username($disallowed_user)) {
 		$message = $lang['Disallowed_already'];
 	} else {
 		dibi::insert(DISALLOW_TABLE, ['disallow_username' => $disallowed_user])->execute();
@@ -53,17 +53,17 @@ if (isset($_POST['add_name']) ) {
 		$message = $lang['Disallow_successful'];
 	}
 
-	$message .= "<br /><br />" . sprintf($lang['Click_return_disallowadmin'], "<a href=\"" . append_sid("admin_disallow.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
+	$message .= '<br /><br />' . sprintf($lang['Click_return_disallowadmin'], '<a href="' . Session::appendSid('admin_disallow.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 	message_die(GENERAL_MESSAGE, $message);
-} elseif (isset($_POST['delete_name']) ) {
+} elseif (isset($_POST['delete_name'])) {
 	$disallowed_id = isset($_POST['disallowed_id']) ? (int)$_POST['disallowed_id'] : (int)$_GET['disallowed_id'];
 
     dibi::delete(DISALLOW_TABLE)
         ->where('disallow_id = %i', $disallowed_id)
         ->execute();
 
-	$message .= $lang['Disallowed_deleted'] . "<br /><br />" . sprintf($lang['Click_return_disallowadmin'], "<a href=\"" . append_sid("admin_disallow.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
+	$message .= $lang['Disallowed_deleted'] . '<br /><br />' . sprintf($lang['Click_return_disallowadmin'], '<a href="' . Session::appendSid('admin_disallow.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 	message_die(GENERAL_MESSAGE, $message);
 }
@@ -83,38 +83,36 @@ $disallow_select = '<select name="disallowed_id">';
 
 // TODO
 if (!count($disallowed)) {
-	$disallow_select .= '<option value="">' . $lang['no_disallowed'] . '</option>';
-} else {
-	$user = [];
-
     foreach ($disallowed as $disallow_id => $disallow_username) {
-		$disallow_select .= '<option value="' . $disallow_id . '">' . $disallow_username . '</option>';
-	}
+        $disallow_select .= '<option value="' . $disallow_id . '">' . $disallow_username . '</option>';
+    }
+} else {
+    $disallow_select .= '<option value="">' . $lang['no_disallowed'] . '</option>';
 }
 
 $disallow_select .= '</select>';
 
-$template->set_filenames(["body" => "admin/disallow_body.tpl"]);
+$template->setFileNames(['body' => 'admin/disallow_body.tpl']);
 
-$template->assign_vars(
+$template->assignVars(
     [
-        "S_DISALLOW_SELECT" => $disallow_select,
-        "S_FORM_ACTION"     => append_sid("admin_disallow.php"),
+        'S_DISALLOW_SELECT' => $disallow_select,
+        'S_FORM_ACTION'     => Session::appendSid('admin_disallow.php'),
 
-        "L_INFO"             => $output_info,
-        "L_DISALLOW_TITLE"   => $lang['Disallow_control'],
-        "L_DISALLOW_EXPLAIN" => $lang['Disallow_explain'],
-        "L_DELETE"           => $lang['Delete_disallow'],
-        "L_DELETE_DISALLOW"  => $lang['Delete_disallow_title'],
-        "L_DELETE_EXPLAIN"   => $lang['Delete_disallow_explain'],
-        "L_ADD"              => $lang['Add_disallow'],
-        "L_ADD_DISALLOW"     => $lang['Add_disallow_title'],
-        "L_ADD_EXPLAIN"      => $lang['Add_disallow_explain'],
-        "L_USERNAME"         => $lang['Username']
+        'L_INFO'             => $output_info,
+        'L_DISALLOW_TITLE'   => $lang['Disallow_control'],
+        'L_DISALLOW_EXPLAIN' => $lang['Disallow_explain'],
+        'L_DELETE'           => $lang['Delete_disallow'],
+        'L_DELETE_DISALLOW'  => $lang['Delete_disallow_title'],
+        'L_DELETE_EXPLAIN'   => $lang['Delete_disallow_explain'],
+        'L_ADD'              => $lang['Add_disallow'],
+        'L_ADD_DISALLOW'     => $lang['Add_disallow_title'],
+        'L_ADD_EXPLAIN'      => $lang['Add_disallow_explain'],
+        'L_USERNAME'         => $lang['Username']
     ]
 );
 
-$template->pparse("body");
+$template->pparse('body');
 
 include './page_footer_admin.php';
 

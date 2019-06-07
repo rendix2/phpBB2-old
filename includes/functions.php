@@ -23,7 +23,7 @@
 
 function get_db_stat($mode)
 {
-	switch( $mode ) {
+	switch( $mode) {
 		case 'usercount':
 		    return dibi::select('COUNT(user_id)')
                 ->as('total')
@@ -145,7 +145,7 @@ function make_jumpbox($action, $match_forum_id = 0)
 				$boxstring_forums = '';
 
 				foreach ($forums as $forum) {
-					if ( $forum->cat_id === $category->cat_id && $forum->auth_view <= AUTH_REG ) {
+					if ( $forum->cat_id === $category->cat_id && $forum->auth_view <= AUTH_REG) {
 
 //					if ( $forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $is_auth[$forum_rows[$j]['forum_id']]['auth_view'] )
 //					{
@@ -157,8 +157,8 @@ function make_jumpbox($action, $match_forum_id = 0)
 						// 'chapter' and 'forum' can create multiple items, therefore we are using a nested array.
 						//
 						$nav_links['chapter forum'][$forum->forum_id] = array (
-							'url' => append_sid("viewforum.php?" . POST_FORUM_URL . "=" . $forum->forum_id),
-							'title' => $forum->forum_name
+                            'url' => Session::appendSid('viewforum.php?' . POST_FORUM_URL . '=' . $forum->forum_id),
+                            'title' => $forum->forum_name
 						);
 					}
 				}
@@ -184,19 +184,19 @@ function make_jumpbox($action, $match_forum_id = 0)
 		$boxstring .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 //	}
 
-    $template->set_filenames(['jumpbox' => 'jumpbox.tpl']);
+    $template->setFileNames(['jumpbox' => 'jumpbox.tpl']);
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'L_GO'           => $lang['Go'],
             'L_JUMP_TO'      => $lang['Jump_to'],
             'L_SELECT_FORUM' => $lang['Select_forum'],
 
             'S_JUMPBOX_SELECT' => $boxstring,
-            'S_JUMPBOX_ACTION' => append_sid($action)
+            'S_JUMPBOX_ACTION' => Session::appendSid($action)
         ]
     );
-    $template->assign_var_from_handle('JUMPBOX', 'jumpbox');
+    $template->assignVarFromHandle('JUMPBOX', 'jumpbox');
 }
 
 //
@@ -225,8 +225,8 @@ function init_userprefs($userdata)
         $default_lang = ltrim(basename(rtrim($board_config['default_lang'])), "'");
     }
 
-	if ( !file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $default_lang . '/lang_main.php')) ) {
-		if ( $userdata['user_id'] !== ANONYMOUS ) {
+	if ( !file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $default_lang . '/lang_main.php'))) {
+		if ( $userdata['user_id'] !== ANONYMOUS) {
 			// For logged in users, try the board default language next
 			$default_lang = ltrim(basename(rtrim($board_config['default_lang'])), "'");
 		} else {
@@ -243,13 +243,13 @@ function init_userprefs($userdata)
 
 	// If we've had to change the value in any way then let's write it back to the database
 	// before we go any further since it means there is something wrong with it
-	if ( $userdata['user_id'] !== ANONYMOUS && $userdata['user_lang'] !== $default_lang ) {
+	if ( $userdata['user_id'] !== ANONYMOUS && $userdata['user_lang'] !== $default_lang) {
 	    dibi::update(USERS_TABLE, ['user_lang' => $default_lang])
             ->where('user_lang = %s', $userdata['user_lang'])
             ->execute();
 
 		$userdata['user_lang'] = $default_lang;
-	} elseif ( $userdata['user_id'] === ANONYMOUS && $board_config['default_lang'] !== $default_lang ) {
+	} elseif ( $userdata['user_id'] === ANONYMOUS && $board_config['default_lang'] !== $default_lang) {
         dibi::update(CONFIG_TABLE, ['config_value' => $default_lang])
             ->where('config_name = %s', 'default_lang')
             ->execute();
@@ -259,8 +259,8 @@ function init_userprefs($userdata)
 
 	include $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.php';
 
-	if ( defined('IN_ADMIN') ) {
-		if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.php')) ) {
+	if ( defined('IN_ADMIN')) {
+		if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.php'))) {
 			$board_config['default_lang'] = 'english';
 		}
 
@@ -270,9 +270,9 @@ function init_userprefs($userdata)
 	//
 	// Set up style
 	//
-	if ( !$board_config['override_user_style'] ) {
-		if ( $userdata['user_id'] !== ANONYMOUS && $userdata['user_style'] > 0 ) {
-			if ( $theme = setup_style($userdata['user_style']) ) {
+	if ( !$board_config['override_user_style']) {
+		if ( $userdata['user_id'] !== ANONYMOUS && $userdata['user_style'] > 0) {
+			if ( $theme = setup_style($userdata['user_style'])) {
 				return;
 			}
 		}
@@ -287,19 +287,19 @@ function init_userprefs($userdata)
 	// and be able to change the variables within code.
 	//
     $nav_links['top'] = [
-        'url' => append_sid($phpbb_root_path . 'index.php'),
+        'url' => Session::appendSid($phpbb_root_path . 'index.php'),
         'title' => sprintf($lang['Forum_Index'], $board_config['sitename'])
     ];
     $nav_links['search'] = [
-        'url' => append_sid($phpbb_root_path . 'search.php'),
+        'url' => Session::appendSid($phpbb_root_path . 'search.php'),
         'title' => $lang['Search']
     ];
     $nav_links['help'] = [
-        'url' => append_sid($phpbb_root_path . 'faq.php'),
+        'url' => Session::appendSid($phpbb_root_path . 'faq.php'),
         'title' => $lang['FAQ']
     ];
     $nav_links['author'] = [
-        'url' => append_sid($phpbb_root_path . 'memberlist.php'),
+        'url' => Session::appendSid($phpbb_root_path . 'memberlist.php'),
         'title' => $lang['Memberlist']
     ];
 }
@@ -313,9 +313,9 @@ function setup_style($style)
         ->where('themes_id = %i', (int) $style)
         ->fetch();
 
-	if ( !$theme ) {
+	if ( !$theme) {
         if ($board_config['default_style'] === $style) {
-            message_die(CRITICAL_ERROR, "Could not set up default theme");
+            message_die(CRITICAL_ERROR, 'Could not set up default theme');
         }
 
 	    $default_theme = dibi::select('*')
@@ -337,18 +337,18 @@ function setup_style($style)
 
 	$template = new Template($phpbb_root_path . $template_path . $template_name);
 
-	if ( $template ) {
+	if ( $template) {
 		$current_template_path = $template_path . $template_name;
 		@include $phpbb_root_path . $template_path . $template_name . '/' . $template_name . '.cfg';
 
-		if ( !defined('TEMPLATE_CONFIG') ) {
+		if ( !defined('TEMPLATE_CONFIG')) {
 			message_die(CRITICAL_ERROR, "Could not open $template_name template config file", '', __LINE__, __FILE__);
 		}
 
 		$img_lang = file_exists(@phpbb_realpath($phpbb_root_path . $current_template_path . '/images/lang_' . $board_config['default_lang'])) ? $board_config['default_lang'] : 'english';
 
 		foreach ($images as $key => $value) {
-			if ( !is_array($value) ) {
+			if ( !is_array($value)) {
 				$images[$key] = str_replace('{LANG}', 'lang_' . $img_lang, $value);
 			}
 		}
@@ -369,62 +369,62 @@ function decode_ip($int_ip)
 	return hexdec($hexipbang[0]). '.' . hexdec($hexipbang[1]) . '.' . hexdec($hexipbang[2]) . '.' . hexdec($hexipbang[3]);
 }
 
-//
-// Create date/time from format and timezone
-//
-function create_date($format, $gmepoch, $tz)
+/**
+ * Create date/time from format and timezone
+ *
+ * @param string $format
+ * @param int    $time
+ * @param string $time_zone
+ *
+ * @return string
+ * @throws Exception
+ */
+function create_date($format, $time, $time_zone)
 {
-	global $board_config, $lang;
-	static $translate;
-
-    if (empty($translate) && $board_config['default_lang'] !== 'english') {
-		foreach ($lang['datetime'] as $match => $replace) {
-			$translate[$match] = $replace;
-		}
-	}
-
-	return !empty($translate) ? strtr(@gmdate($format, $gmepoch + (3600 * $tz)), $translate) : @gmdate($format, $gmepoch + (3600 * $tz));
+    $started = new DateTime('now', new DateTimeZone($time_zone));
+    $started->setTimestamp((int)$time);
+    return $started->format($format);
 }
 
 //
 // Pagination routine, generates
 // page number sequence
 //
-function generate_pagination($base_url, $num_items, $per_page, $start_item, $add_prevnext_text = TRUE)
+function generate_pagination($base_url, $num_items, $per_page, $start_item, $add_prevnext_text = true)
 {
 	global $lang;
 
 	$total_pages = ceil($num_items/$per_page);
 
-	if ( $total_pages === 1 ) {
+	if ( $total_pages === 1) {
 		return '';
 	}
 
 	$on_page = floor($start_item / $per_page) + 1;
 
 	$page_string = '';
-	if ( $total_pages > 10 ) {
+	if ( $total_pages > 10) {
 		$init_page_max = ( $total_pages > 3 ) ? 3 : $total_pages;
 
 		for ($i = 1; $i < $init_page_max + 1; $i++) {
-			$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+			$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . Session::appendSid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
-			if ( $i <  $init_page_max ) {
-				$page_string .= ", ";
+			if ( $i <  $init_page_max) {
+				$page_string .= ', ';
 			}
 		}
 
-		if ( $total_pages > 3 ) {
-			if ( $on_page > 1  && $on_page < $total_pages ) {
+		if ( $total_pages > 3) {
+			if ( $on_page > 1  && $on_page < $total_pages) {
 				$page_string .= ( $on_page > 5 ) ? ' ... ' : ', ';
 
 				$init_page_min = ( $on_page > 4 ) ? $on_page : 5;
 				$init_page_max = ( $on_page < $total_pages - 4 ) ? $on_page : $total_pages - 4;
 
 				for ($i = $init_page_min - 1; $i < $init_page_max + 2; $i++) {
-					$page_string .= ($i === $on_page) ? '<b>' . $i . '</b>' : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+					$page_string .= ($i === $on_page) ? '<b>' . $i . '</b>' : '<a href="' . Session::appendSid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
-					if ( $i <  $init_page_max + 1 ) {
+					if ( $i <  $init_page_max + 1) {
 						$page_string .= ', ';
 					}
 				}
@@ -435,19 +435,19 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 			}
 
 			for ($i = $total_pages - 2; $i < $total_pages + 1; $i++) {
-				$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>'  : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+				$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>'  : '<a href="' . Session::appendSid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
-				if ($i <  $total_pages ) {
-					$page_string .= ", ";
+				if ($i <  $total_pages) {
+					$page_string .= ', ';
 				}
 			}
 		}
 	}
 	else {
 		for ($i = 1; $i < $total_pages + 1; $i++) {
-			$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+			$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . Session::appendSid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
-			if ( $i <  $total_pages ) {
+			if ( $i <  $total_pages) {
 				$page_string .= ', ';
 			}
 		}
@@ -455,11 +455,11 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
     if ($add_prevnext_text) {
         if ($on_page > 1) {
-            $page_string = ' <a href="' . append_sid($base_url . "&amp;start=" . (($on_page - 2) * $per_page)) . '">' . $lang['Previous'] . '</a>&nbsp;&nbsp;' . $page_string;
+            $page_string = ' <a href="' . Session::appendSid($base_url . '&amp;start=' . (($on_page - 2) * $per_page)) . '">' . $lang['Previous'] . '</a>&nbsp;&nbsp;' . $page_string;
         }
 
         if ($on_page < $total_pages) {
-            $page_string .= '&nbsp;&nbsp;<a href="' . append_sid($base_url . "&amp;start=" . ($on_page * $per_page)) . '">' . $lang['Next'] . '</a>';
+            $page_string .= '&nbsp;&nbsp;<a href="' . Session::appendSid($base_url . '&amp;start=' . ($on_page * $per_page)) . '">' . $lang['Next'] . '</a>';
         }
 
     }
@@ -527,37 +527,37 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 	// Get SQL error if we are debugging. Do this as soon as possible to prevent 
 	// subsequent queries from overwriting the status of sql_error()
 	//
-	if ( DEBUG && ( $msg_code === GENERAL_ERROR || $msg_code === CRITICAL_ERROR ) ) {
-		if ( $err_line !== '' && $err_file !== '' ) {
+	if ( DEBUG && ( $msg_code === GENERAL_ERROR || $msg_code === CRITICAL_ERROR )) {
+		if ( $err_line !== '' && $err_file !== '') {
 			$debug_text .= '<br /><br />Line : ' . $err_line . '<br />File : ' . basename($err_file);
 		}
 	}
 
-	if (empty($userdata) && ( $msg_code === GENERAL_MESSAGE || $msg_code === GENERAL_ERROR ) ) {
-		$userdata = session_pagestart($user_ip, PAGE_INDEX);
+	if (empty($userdata) && ( $msg_code === GENERAL_MESSAGE || $msg_code === GENERAL_ERROR )) {
+		$userdata = Session::pageStart($user_ip, PAGE_INDEX);
 		init_userprefs($userdata);
 	}
 
 	//
 	// If the header hasn't been output then do it
 	//
-	if ( !defined('HEADER_INC') && $msg_code !== CRITICAL_ERROR ) {
-		if ( empty($lang) ) {
-			if ( !empty($board_config['default_lang']) ) {
+	if ( !defined('HEADER_INC') && $msg_code !== CRITICAL_ERROR) {
+		if ( empty($lang)) {
+			if ( !empty($board_config['default_lang'])) {
 				include $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.php';
 			} else {
 				include $phpbb_root_path . 'language/lang_english/lang_main.php';
 			}
 		}
 
-		if ( empty($template) || empty($theme) ) {
+		if ( empty($template) || empty($theme)) {
 			$theme = setup_style($board_config['default_style']);
 		}
 
 		//
 		// Load the Page Header
 		//
-		if ( !defined('IN_ADMIN') ) {
+		if ( !defined('IN_ADMIN')) {
 			include $phpbb_root_path . 'includes/page_header.php';
 		} else {
 			include $phpbb_root_path . 'admin/page_header_admin.php';
@@ -567,23 +567,23 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 	switch($msg_code)
 	{
 		case GENERAL_MESSAGE:
-			if ( $msg_title === '' ) {
+			if ( $msg_title === '') {
 				$msg_title = $lang['Information'];
 			}
 			break;
 
 		case CRITICAL_MESSAGE:
-			if ( $msg_title === '' ) {
+			if ( $msg_title === '') {
 				$msg_title = $lang['Critical_Information'];
 			}
 			break;
 
 		case GENERAL_ERROR:
-			if ( $msg_text === '' ) {
+			if ( $msg_text === '') {
 				$msg_text = $lang['An_error_occured'];
 			}
 
-			if ( $msg_title === '' ) {
+			if ( $msg_title === '') {
 				$msg_title = $lang['General_Error'];
 			}
 			break;
@@ -595,11 +595,11 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 			//
 			include $phpbb_root_path . 'language/lang_english/lang_main.php';
 
-			if ( $msg_text === '' ) {
+			if ( $msg_text === '') {
 				$msg_text = $lang['A_critical_error'];
 			}
 
-			if ( $msg_title === '' ) {
+			if ( $msg_title === '') {
 				$msg_title = 'phpBB : <b>' . $lang['Critical_Error'] . '</b>';
 			}
 			break;
@@ -608,7 +608,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 	//
 	// Add on DEBUG info if we've enabled debug mode and this is an error. This
 	// prevents debug info being output for general messages should DEBUG be
-	// set TRUE by accident (preventing confusion for the end user!)
+	// set true by accident (preventing confusion for the end user!)
 	//
     if (DEBUG && ($msg_code === GENERAL_ERROR || $msg_code === CRITICAL_ERROR)) {
         if ($debug_text !== '') {
@@ -623,12 +623,12 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
         }
 
         if (!defined('IN_ADMIN')) {
-            $template->set_filenames(['message_body' => 'message_body.tpl']);
+            $template->setFileNames(['message_body' => 'message_body.tpl']);
         } else {
-            $template->set_filenames(['message_body' => 'admin/admin_message_body.tpl']);
+            $template->setFileNames(['message_body' => 'admin/admin_message_body.tpl']);
         }
 
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'MESSAGE_TITLE' => $msg_title,
                 'MESSAGE_TEXT'  => $msg_text
@@ -661,19 +661,23 @@ function phpbb_realpath($path)
 	return (!@function_exists('realpath') || !@realpath($phpbb_root_path . 'includes/functions.php')) ? $path : @realpath($path);
 }
 
+/**
+ * @param string $url
+ */
 function redirect($url)
 {
 	global $board_config;
 
 	dibi::disconnect();
 
-	if (strstr(urldecode($url), "\n") || strstr(urldecode($url), "\r") || strstr(urldecode($url), ';url')) {
+	if (false !== strpos(urldecode($url), "\n") || false !== strpos(urldecode($url), "\r") || false !== strpos(urldecode($url),
+            ';url')) {
 		message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
 	}
 
 	$server_protocol = $board_config['cookie_secure'] ? 'https://' : 'http://';
 	$server_name = preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['server_name']));
-	$server_port = ($board_config['server_port'] <> 80) ? ':' . trim($board_config['server_port']) : '';
+	$server_port = ($board_config['server_port'] !== 80) ? ':' . trim($board_config['server_port']) : '';
 	$script_name = preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['script_path']));
 	$script_name = ($script_name === '') ? $script_name : '/' . $script_name;
 	$url = preg_replace('#^\/?(.*?)\/?$#', '/\1', trim($url));

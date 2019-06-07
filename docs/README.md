@@ -7,3 +7,4 @@ News:
 - forums table use AI
 - users table use AI
 - instalation shows only avaible drivers
+- pruning recount users posts

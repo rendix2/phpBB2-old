@@ -22,7 +22,7 @@
 
 define('IN_PHPBB', 1);
 
-if (!empty($setmodules) ) {
+if (!empty($setmodules)) {
 	$filename = basename(__FILE__);
 	$module['Forums']['Permissions']   = $filename;
 
@@ -110,8 +110,7 @@ if (isset($_GET['adv'])) {
 //
 if (isset($_POST['submit'])) {
     if (!empty($forum_id)) {
-		if (isset($_POST['simpleauth']))
-		{
+		if (isset($_POST['simpleauth'])) {
 			$simple_ary = $simple_auth_ary[(int)$_POST['simpleauth']];
 
 			if (count($forum_auth_fields) === count($simple_ary)) {
@@ -127,10 +126,8 @@ if (isset($_POST['submit'])) {
 		    foreach ($forum_auth_fields as $forum_auth_field) {
                 $value = (int)$_POST[$forum_auth_field];
 
-                if ($forum_auth_field === 'auth_value') {
-                    if ($_POST['auth_vote'] === AUTH_ALL) {
-                        $value = AUTH_REG;
-                    }
+                if ($forum_auth_field === 'auth_value' && $_POST['auth_vote'] === AUTH_ALL) {
+                    $value = AUTH_REG;
                 }
 
                 $update_data[$forum_auth_field] = $value;
@@ -145,12 +142,12 @@ if (isset($_POST['submit'])) {
 		$adv = 0;
 	}
 
-    $template->assign_vars(
+    $template->assignVars(
         [
-            'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("admin_forumauth.php?" . POST_FORUM_URL . "=$forum_id") . '">'
+            'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('admin_forumauth.php?' . POST_FORUM_URL . "=$forum_id") . '">'
         ]
     );
-    $message = $lang['Forum_auth_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumauth'],  '<a href="' . append_sid("admin_forumauth.php") . '">', "</a>");
+    $message = $lang['Forum_auth_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumauth'],  '<a href="' . Session::appendSid('admin_forumauth.php') . '">', '</a>');
 	message_die(GENERAL_MESSAGE, $message);
 
 } // End of submit
@@ -175,12 +172,12 @@ $forum_rows = $forum_rows->orderBy('c.cat_order', dibi::ASC)
     ->orderBy('f.forum_order', dibi::ASC)
     ->fetchAll();
 
-if (empty($forum_id) ) {
+if (empty($forum_id)) {
 	//
 	// Output the selection table if no forum id was
 	// specified
 	//
-    $template->set_filenames(['body' => 'admin/auth_select_body.tpl']);
+    $template->setFileNames(['body' => 'admin/auth_select_body.tpl']);
 
     $select_list = '<select name="' . POST_FORUM_URL . '">';
 
@@ -190,14 +187,14 @@ if (empty($forum_id) ) {
 
 	$select_list .= '</select>';
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'L_AUTH_TITLE'   => $lang['Auth_Control_Forum'],
             'L_AUTH_EXPLAIN' => $lang['Forum_auth_explain'],
             'L_AUTH_SELECT'  => $lang['Select_a_Forum'],
             'L_LOOK_UP'      => $lang['Look_up_Forum'],
 
-            'S_AUTH_ACTION' => append_sid("admin_forumauth.php"),
+            'S_AUTH_ACTION' => Session::appendSid('admin_forumauth.php'),
             'S_AUTH_SELECT' => $select_list
         ]
     );
@@ -206,7 +203,7 @@ if (empty($forum_id) ) {
 	// Output the authorisation details if an id was
 	// specified
 	//
-    $template->set_filenames(['body' => 'admin/auth_forum_body.tpl']);
+    $template->setFileNames(['body' => 'admin/auth_forum_body.tpl']);
 
     $forum_name = $forum_rows[0]->forum_name;
 
@@ -214,17 +211,18 @@ if (empty($forum_id) ) {
 
 	foreach ($simple_auth_ary as $key => $auth_levels) {
 		$matched = 1;
+
 		foreach ($auth_levels as $k => $auth_level) {
 			$matched_type = $key;
 
-			if ( $forum_rows[0]->{$forum_auth_fields[$k]} !== $auth_level ) {
+			if ( $forum_rows[0]->{$forum_auth_fields[$k]} !== $auth_level) {
 				$matched = 0;
 			}
 		}
 
-		if ( $matched ) {
-			break;
-		}
+        if ($matched) {
+            break;
+        }
 	}
 
 	//
@@ -247,8 +245,8 @@ if (empty($forum_id) ) {
 
 		$simple_auth .= '</select>';
 
-        $template->assign_block_vars('forum_auth_titles', ['CELL_TITLE' => $lang['Simple_mode']]);
-        $template->assign_block_vars('forum_auth_data', ['S_AUTH_LEVELS_SELECT' => $simple_auth]);
+        $template->assignBlockVars('forum_auth_titles', ['CELL_TITLE' => $lang['Simple_mode']]);
+        $template->assignBlockVars('forum_auth_data', ['S_AUTH_LEVELS_SELECT' => $simple_auth]);
 
         $s_column_span++;
 	} else {
@@ -268,36 +266,37 @@ if (empty($forum_id) ) {
 
 			$cell_title = $field_names[$forum_auth_field];
 
-            $template->assign_block_vars('forum_auth_titles', ['CELL_TITLE' => $cell_title]);
-            $template->assign_block_vars('forum_auth_data', ['S_AUTH_LEVELS_SELECT' => $custom_auth[$key]]);
+            $template->assignBlockVars('forum_auth_titles', ['CELL_TITLE' => $cell_title]);
+            $template->assignBlockVars('forum_auth_data', ['S_AUTH_LEVELS_SELECT' => $custom_auth[$key]]);
 
             $s_column_span++;
 		}
 	}
 
 	$adv_mode = empty($adv) ? '1' : '0';
-	$switch_mode = append_sid("admin_forumauth.php?" . POST_FORUM_URL . "=" . $forum_id . "&adv=". $adv_mode);
+	$switch_mode = Session::appendSid('admin_forumauth.php?' . POST_FORUM_URL . '=' . $forum_id . '&adv=' . $adv_mode);
 	$switch_mode_text = empty($adv) ? $lang['Advanced_mode'] : $lang['Simple_mode'];
 	$u_switch_mode = '<a href="' . $switch_mode . '">' . $switch_mode_text . '</a>';
 
 	$s_hidden_fields = '<input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '">';
 
-	$template->assign_vars([
-		'FORUM_NAME' => $forum_name,
+	$template->assignVars(
+	    [
+            'FORUM_NAME' => $forum_name,
 
-		'L_FORUM' => $lang['Forum'], 
-		'L_AUTH_TITLE' => $lang['Auth_Control_Forum'],
-		'L_AUTH_EXPLAIN' => $lang['Forum_auth_explain'],
-		'L_SUBMIT' => $lang['Submit'],
-		'L_RESET' => $lang['Reset'],
+            'L_FORUM' => $lang['Forum'],
+            'L_AUTH_TITLE' => $lang['Auth_Control_Forum'],
+            'L_AUTH_EXPLAIN' => $lang['Forum_auth_explain'],
+            'L_SUBMIT' => $lang['Submit'],
+            'L_RESET' => $lang['Reset'],
 
-		'U_SWITCH_MODE' => $u_switch_mode,
+            'U_SWITCH_MODE' => $u_switch_mode,
 
-		'S_FORUMAUTH_ACTION' => append_sid("admin_forumauth.php"),
-		'S_COLUMN_SPAN' => $s_column_span,
-		'S_HIDDEN_FIELDS' => $s_hidden_fields]
+            'S_FORUMAUTH_ACTION' => Session::appendSid('admin_forumauth.php'),
+            'S_COLUMN_SPAN' => $s_column_span,
+            'S_HIDDEN_FIELDS' => $s_hidden_fields
+        ]
 	);
-
 }
 
 include './page_header_admin.php';

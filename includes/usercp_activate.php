@@ -41,8 +41,8 @@ if (trim($user->user_actkey) !== '' && trim($row['user_actkey']) !== trim($_GET[
 }
 
 if ($row['user_active'] && trim($row['user_actkey']) === '') {
-    $template->assign_vars(
-        ['META' => '<meta http-equiv="refresh" content="10;url=' . append_sid("index.php") . '">']
+    $template->assignVars(
+        ['META' => '<meta http-equiv="refresh" content="10;url=' . Session::appendSid('index.php') . '">']
     );
 
     message_die(GENERAL_MESSAGE, $lang['Already_activated']);
@@ -53,7 +53,7 @@ if ($row['user_active'] && trim($row['user_actkey']) === '') {
 
 if ((int)$board_config['require_activation'] === USER_ACTIVATION_ADMIN && $row['user_newpasswd'] === '') {
     if (!$userdata['session_logged_in']) {
-        redirect(append_sid('login.php?redirect=profile.php&mode=activate&' . POST_USERS_URL . '=' . $row['user_id'] . '&act_key=' . trim($_GET['act_key'])));
+        redirect(Session::appendSid('login.php?redirect=profile.php&mode=activate&' . POST_USERS_URL . '=' . $row['user_id'] . '&act_key=' . trim($_GET['act_key'])));
     } elseif ($userdata['user_level'] !== ADMIN) {
         message_die(GENERAL_MESSAGE, $lang['Not_Authorised']);
     }
@@ -64,7 +64,11 @@ $update_data = [
     'user_actkey' => ''
 ];
 
+$update_password = false;
+
 if ($row['user_newpasswd'] !== '') {
+    $update_password = true;
+
     $update_data['user_password'] = $row['user_newpasswd'];
     $update_data['user_newpasswd'] = '';
 }
@@ -73,18 +77,18 @@ dibi::update(USERS_TABLE, $update_data)
     ->where('user_id = %i', $row['user_id'])
     ->execute();
 
-if ((int)$board_config['require_activation'] === USER_ACTIVATION_ADMIN && $sql_update_pass === '') {
-    include $phpbb_root_path . 'includes/emailer.php';
-    $emailer = new emailer($board_config['smtp_delivery']);
+if (!$update_password && (int)$board_config['require_activation'] === USER_ACTIVATION_ADMIN) {
+    include $phpbb_root_path . 'includes/Emailer.php';
+    $emailer = new Emailer($board_config['smtp_delivery']);
 
-    $emailer->from($board_config['board_email']);
-    $emailer->replyto($board_config['board_email']);
+    $emailer->setFrom($board_config['board_email']);
+    $emailer->setReplyTo($board_config['board_email']);
 
     $emailer->use_template('admin_welcome_activated', $row['user_lang']);
-    $emailer->email_address($row['user_email']);
-    $emailer->set_subject($lang['Account_activated_subject']);
+    $emailer->setEmailAddress($row['user_email']);
+    $emailer->setSubject($lang['Account_activated_subject']);
 
-    $emailer->assign_vars([
+    $emailer->assignVars([
         'SITENAME'  => $board_config['sitename'],
         'USERNAME'  => $row['username'],
         'PASSWORD'  => $password_confirm,
@@ -94,17 +98,17 @@ if ((int)$board_config['require_activation'] === USER_ACTIVATION_ADMIN && $sql_u
     $emailer->send();
     $emailer->reset();
 
-    $template->assign_vars([
-        'META' => '<meta http-equiv="refresh" content="10;url=' . append_sid("index.php") . '">'
+    $template->assignVars([
+        'META' => '<meta http-equiv="refresh" content="10;url=' . Session::appendSid('index.php') . '">'
     ]);
 
     message_die(GENERAL_MESSAGE, $lang['Account_active_admin']);
 } else {
-    $template->assign_vars([
-        'META' => '<meta http-equiv="refresh" content="10;url=' . append_sid("index.php") . '">'
+    $template->assignVars([
+        'META' => '<meta http-equiv="refresh" content="10;url=' . Session::appendSid('index.php') . '">'
     ]);
 
-    $message = ($sql_update_pass === '') ? $lang['Account_active'] : $lang['Password_activated'];
+    $message = $update_password ? $lang['Password_activated'] : $lang['Account_active'];
     message_die(GENERAL_MESSAGE, $message);
 }
 

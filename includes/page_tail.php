@@ -20,7 +20,7 @@
  *
  ***************************************************************************/
 
-if ( !defined('IN_PHPBB') ) {
+if ( !defined('IN_PHPBB')) {
 	die('Hacking attempt');
 }
 
@@ -31,7 +31,7 @@ global $do_gzip_compress;
 //
 $admin_link = ($userdata['user_level'] === ADMIN ) ? '<a href="admin/index.php?sid=' . $userdata['session_id'] . '">' . $lang['Admin_panel'] . '</a><br /><br />' : '';
 
-$template->set_filenames(['overall_footer' => empty($gen_simple_header) ? 'overall_footer.tpl' : 'simple_footer.tpl']);
+$template->setFileNames(['overall_footer' => empty($gen_simple_header) ? 'overall_footer.tpl' : 'simple_footer.tpl']);
 
 if (isset($lang['TRANSLATION_INFO'])) {
     $translation_info = $lang['TRANSLATION_INFO'];
@@ -39,7 +39,7 @@ if (isset($lang['TRANSLATION_INFO'])) {
     $translation_info = isset($lang['TRANSLATION']) ? $lang['TRANSLATION'] : '';
 }
 
-$template->assign_vars([
+$template->assignVars([
         'TRANSLATION_INFO' => $translation_info,
         'ADMIN_LINK'       => $admin_link
     ]);
@@ -65,7 +65,7 @@ if ($do_gzip_compress) {
 	$gzip_crc = crc32($gzip_contents);
 
 	$gzip_contents = gzcompress($gzip_contents, 9);
-	$gzip_contents = substr($gzip_contents, 0, strlen($gzip_contents) - 4);
+	$gzip_contents = substr($gzip_contents, 0, -4);
 
 	echo "\x1f\x8b\x08\x00\x00\x00\x00\x00";
 	echo $gzip_contents;

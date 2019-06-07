@@ -20,7 +20,7 @@
  *
  ***************************************************************************/
 
-if (!empty($setmodules) ) {
+if (!empty($setmodules)) {
 	$file = basename(__FILE__);
 	$module['General']['Word_Censor'] = $file;
 	return;
@@ -31,7 +31,7 @@ define('IN_PHPBB', 1);
 //
 // Load default header
 //
-$phpbb_root_path = "./../";
+$phpbb_root_path = './../';
 
 $cancel = isset($_POST['cancel']);
 $no_page_header = $cancel;
@@ -39,7 +39,7 @@ $no_page_header = $cancel;
 require './pagestart.php';
 
 if ($cancel) {
-    redirect('admin/' . append_sid("admin_words.php", true));
+    redirect('admin/' . Session::appendSid('admin_words.php', true));
 }
 
 if (isset($_GET['mode']) || isset($_POST['mode'])) {
@@ -50,30 +50,28 @@ if (isset($_GET['mode']) || isset($_POST['mode'])) {
     // These could be entered via a form button
     //
     if (isset($_POST['add'])) {
-        $mode = "add";
+        $mode = 'add';
     } elseif (isset($_POST['save'])) {
-        $mode = "save";
+        $mode = 'save';
     } else {
-        $mode = "";
+        $mode = '';
     }
 }
 
 // Restrict mode input to valid options
 $mode = in_array($mode, ['add', 'edit', 'save', 'delete'], true) ? $mode : '';
 
-if ($mode !== "" )
-{
-	if ($mode === "edit" || $mode === "add" )
-	{
+if ($mode !== '') {
+    if ($mode === 'edit' || $mode === 'add') {
 		$word_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-        $template->set_filenames(["body" => "admin/words_edit_body.tpl"]);
+        $template->setFileNames(['body' => 'admin/words_edit_body.tpl']);
 
         $word_info = ['word' => '', 'replacement' => ''];
         $s_hidden_fields = '';
 
-		if ($mode === "edit" ) {
-			if ($word_id ) {
+		if ($mode === 'edit') {
+			if ($word_id) {
                 $word_info = dibi::select('*')
                     ->from(WORDS_TABLE)
                     ->where('word_id = %i', $word_id)
@@ -85,36 +83,36 @@ if ($mode !== "" )
 			}
 		}
 
-        $template->assign_vars(
+        $template->assignVars(
             [
-                "WORD"        => htmlspecialchars($word_info['word']),
-                "REPLACEMENT" => htmlspecialchars($word_info['replacement']),
+                'WORD'        => htmlspecialchars($word_info['word']),
+                'REPLACEMENT' => htmlspecialchars($word_info['replacement']),
 
-                "L_WORDS_TITLE" => $lang['Words_title'],
-                "L_WORDS_TEXT"  => $lang['Words_explain'],
-                "L_WORD_CENSOR" => $lang['Edit_word_censor'],
-                "L_WORD"        => $lang['Word'],
-                "L_REPLACEMENT" => $lang['Replacement'],
-                "L_SUBMIT"      => $lang['Submit'],
+                'L_WORDS_TITLE' => $lang['Words_title'],
+                'L_WORDS_TEXT'  => $lang['Words_explain'],
+                'L_WORD_CENSOR' => $lang['Edit_word_censor'],
+                'L_WORD'        => $lang['Word'],
+                'L_REPLACEMENT' => $lang['Replacement'],
+                'L_SUBMIT'      => $lang['Submit'],
 
-                "S_WORDS_ACTION"  => append_sid("admin_words.php"),
-                "S_HIDDEN_FIELDS" => $s_hidden_fields
+                'S_WORDS_ACTION'  => Session::appendSid('admin_words.php'),
+                'S_HIDDEN_FIELDS' => $s_hidden_fields
             ]
         );
 
-        $template->pparse("body");
+        $template->pparse('body');
 
 		include './page_footer_admin.php';
-	} elseif ($mode === "save" ) {
+	} elseif ($mode === 'save') {
 		$word_id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
-		$word = isset($_POST['word']) ? trim($_POST['word']) : "";
-		$replacement = isset($_POST['replacement']) ? trim($_POST['replacement']) : "";
+		$word = isset($_POST['word']) ? trim($_POST['word']) : '';
+		$replacement = isset($_POST['replacement']) ? trim($_POST['replacement']) : '';
 
-		if ($word === "" || $replacement === "") {
-			message_die(GENERAL_MESSAGE, $lang['Must_enter_word']);
-		}
+        if ($word === '' || $replacement === '') {
+            message_die(GENERAL_MESSAGE, $lang['Must_enter_word']);
+        }
 
-		if ($word_id ) {
+		if ($word_id) {
 		    $update_data = [
 		        'word' => $word,
                 'replacement' => $replacement
@@ -136,10 +134,10 @@ if ($mode !== "" )
 			$message = $lang['Word_added'];
 		}
 
-		$message .= "<br /><br />" . sprintf($lang['Click_return_wordadmin'], "<a href=\"" . append_sid("admin_words.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
+		$message .= '<br /><br />' . sprintf($lang['Click_return_wordadmin'], '<a href="' . Session::appendSid('admin_words.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 		message_die(GENERAL_MESSAGE, $message);
-	} elseif ($mode === "delete" ) {
+	} elseif ($mode === 'delete') {
         if (isset($_POST['id']) || isset($_GET['id'])) {
             $word_id = isset($_POST['id']) ? $_POST['id'] : $_GET['id'];
             $word_id = (int)$word_id;
@@ -149,21 +147,21 @@ if ($mode !== "" )
 
 		$confirm = isset($_POST['confirm']);
 
-		if ($word_id && $confirm ) {
+		if ($word_id && $confirm) {
 		    dibi::delete(WORDS_TABLE)
                 ->where('word_id = %i', $word_id)
                 ->execute();
 
-			$message = $lang['Word_removed'] . "<br /><br />" . sprintf($lang['Click_return_wordadmin'], "<a href=\"" . append_sid("admin_words.php") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.php?pane=right") . "\">", "</a>");
+			$message = $lang['Word_removed'] . '<br /><br />' . sprintf($lang['Click_return_wordadmin'], '<a href="' . Session::appendSid('admin_words.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		} elseif ($word_id && !$confirm) {
 			// Present the confirmation screen to the user
-            $template->set_filenames(['body' => 'admin/confirm_body.tpl']);
+            $template->setFileNames(['body' => 'admin/confirm_body.tpl']);
 
             $hidden_fields = '<input type="hidden" name="mode" value="delete" /><input type="hidden" name="id" value="' . $word_id . '" />';
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
                     'MESSAGE_TITLE' => $lang['Confirm'],
                     'MESSAGE_TEXT'  => $lang['Confirm_delete_word'],
@@ -171,7 +169,7 @@ if ($mode !== "" )
                     'L_YES' => $lang['Yes'],
                     'L_NO'  => $lang['No'],
 
-                    'S_CONFIRM_ACTION' => append_sid("admin_words.php"),
+                    'S_CONFIRM_ACTION' => Session::appendSid('admin_words.php'),
                     'S_HIDDEN_FIELDS'  => $hidden_fields
                 ]
             );
@@ -180,26 +178,26 @@ if ($mode !== "" )
 		}
 	}
 } else {
-    $template->set_filenames(["body" => "admin/words_list_body.tpl"]);
+    $template->setFileNames(['body' => 'admin/words_list_body.tpl']);
 
      $words = dibi::select('*')
          ->from(WORDS_TABLE)
          ->orderBy('word')
          ->fetchAll();
 
-    $template->assign_vars(
+    $template->assignVars(
         [
-            "L_WORDS_TITLE" => $lang['Words_title'],
-            "L_WORDS_TEXT"  => $lang['Words_explain'],
-            "L_WORD"        => $lang['Word'],
-            "L_REPLACEMENT" => $lang['Replacement'],
-            "L_EDIT"        => $lang['Edit'],
-            "L_DELETE"      => $lang['Delete'],
-            "L_ADD_WORD"    => $lang['Add_new_word'],
-            "L_ACTION"      => $lang['Action'],
+            'L_WORDS_TITLE' => $lang['Words_title'],
+            'L_WORDS_TEXT'  => $lang['Words_explain'],
+            'L_WORD'        => $lang['Word'],
+            'L_REPLACEMENT' => $lang['Replacement'],
+            'L_EDIT'        => $lang['Edit'],
+            'L_DELETE'      => $lang['Delete'],
+            'L_ADD_WORD'    => $lang['Add_new_word'],
+            'L_ACTION'      => $lang['Action'],
 
-            "S_WORDS_ACTION"  => append_sid("admin_words.php"),
-            "S_HIDDEN_FIELDS" => ''
+            'S_WORDS_ACTION'  => Session::appendSid('admin_words.php'),
+            'S_HIDDEN_FIELDS' => ''
         ]
     );
 
@@ -209,21 +207,21 @@ if ($mode !== "" )
 		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-        $template->assign_block_vars("words",
+        $template->assignBlockVars('words',
             [
-                "ROW_COLOR"   => "#" . $row_color,
-                "ROW_CLASS"   => $row_class,
-                "WORD"        => htmlspecialchars($word->word),
-                "REPLACEMENT" => htmlspecialchars($word->replacement),
+                'ROW_COLOR'   => '#' . $row_color,
+                'ROW_CLASS'   => $row_class,
+                'WORD'        => htmlspecialchars($word->word),
+                'REPLACEMENT' => htmlspecialchars($word->replacement),
 
-                "U_WORD_EDIT"   => append_sid("admin_words.php?mode=edit&amp;id=$word_id"),
-                "U_WORD_DELETE" => append_sid("admin_words.php?mode=delete&amp;id=$word_id")
+                'U_WORD_EDIT'   => Session::appendSid("admin_words.php?mode=edit&amp;id=$word_id"),
+                'U_WORD_DELETE' => Session::appendSid("admin_words.php?mode=delete&amp;id=$word_id")
             ]
         );
     }
 }
 
-$template->pparse("body");
+$template->pparse('body');
 
 include './page_footer_admin.php';
 

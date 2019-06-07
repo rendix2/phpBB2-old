@@ -22,10 +22,10 @@
 
 define('IN_PHPBB', 1);
 
-if (!empty($setmodules) ) {
+if (!empty($setmodules)) {
 	$filename = basename(__FILE__);
-	$module['Users']['Permissions'] = $filename . "?mode=user";
-	$module['Groups']['Permissions'] = $filename . "?mode=group";
+	$module['Users']['Permissions'] = $filename . '?mode=user';
+	$module['Groups']['Permissions'] = $filename . '?mode=group';
 
 	return;
 }
@@ -33,9 +33,9 @@ if (!empty($setmodules) ) {
 //
 // Load default header
 //
-$no_page_header = TRUE;
+$no_page_header = true;
 
-$phpbb_root_path = "./../";
+$phpbb_root_path = './../';
 
 require './pagestart.php';
 
@@ -45,7 +45,7 @@ foreach ($params as $var => $param) {
     if (!empty($_POST[$param]) || !empty($_GET[$param])) {
         $$var = !empty($_POST[$param]) ? $_POST[$param] : $_GET[$param];
     } else {
-        $$var = "";
+        $$var = '';
     }
 }
 
@@ -96,46 +96,10 @@ $field_names = [
     'auth_pollcreate' => $lang['Pollcreate']
 ];
 
-// ---------------
-// Start Functions
-//
-function check_auth($type, $key, $u_access, $is_admin)
-{
-	$auth_user = 0;
-
-	if (count($u_access) ) {
-		foreach ($u_access as $u_access_value) {
-			$result = 0;
-
-			switch($type) {
-				case AUTH_ACL:
-					$result = $u_access_value[$key];
-
-				case AUTH_MOD:
-					$result = $result || $u_access_value['auth_mod'];
-
-				case AUTH_ADMIN:
-					$result = $result || $is_admin;
-					break;
-			}
-
-			$auth_user = $auth_user || $result;
-		}
-	} else {
-		$auth_user = $is_admin;
-	}
-
-	return $auth_user;
-}
-//
-// End Functions
-// -------------
-
-if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode === 'group' && $group_id ) ) )
-{
+if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'group' && $group_id))) {
 	$user_level = '';
 
-	if ( $mode === 'user' ) {
+    if ($mode === 'user') {
 		//
 		// Get group_id for this user_id
 		//
@@ -143,13 +107,13 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
         $row = dibi::select(['g.group_id', 'u.user_level'])
             ->from(USER_GROUP_TABLE)
             ->as('ug')
-            ->innerJoin(USERS_TABLE)
+            ->from(USERS_TABLE)
             ->as('u')
-            ->on('ug.user_id = u.user_id')
-            ->innerJoin(GROUPS_TABLE)
+            ->from(GROUPS_TABLE)
             ->as('g')
-            ->on('g.group_id = ug.group_id ')
             ->where('u.user_id = %i', $user_id)
+            ->where('ug.user_id = u.user_id')
+            ->where('g.group_id = ug.group_id')
             ->where('g.group_single_user = %i', 1)
             ->fetch();
 
@@ -160,11 +124,11 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 	//
 	// Carry out requests
 	//
-	if ( $mode === 'user' && $_POST['userlevel'] === 'admin' && $user_level !== ADMIN ) {
+    if ($mode === 'user' && $_POST['userlevel'] === 'admin' && $user_level !== ADMIN) {
 		//
 		// Make user an admin (if already user)
 		//
-		if ($userdata['user_id'] !== $user_id ) {
+		if ($userdata['user_id'] !== $user_id) {
 		    dibi::update(USERS_TABLE, ['user_level' => ADMIN])
                 ->where('user_id = %i', $user_id)
                 ->execute();
@@ -195,15 +159,15 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
                 ->execute();
 		}
 
-		$message = $lang['Auth_updated'] . '<br /><br />' . sprintf($lang['Click_return_userauth'], '<a href="' . append_sid("admin_ug_auth.php?mode=$mode") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');
+		$message = $lang['Auth_updated'] . '<br /><br />' . sprintf($lang['Click_return_userauth'], '<a href="' . Session::appendSid("admin_ug_auth.php?mode=$mode") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 		message_die(GENERAL_MESSAGE, $message);
 	} else {
-		if ( $mode === 'user' && $_POST['userlevel'] === 'user' && $user_level === ADMIN ) {
+        if ($mode === 'user' && $_POST['userlevel'] === 'user' && $user_level === ADMIN) {
 			//
 			// Make admin a user (if already admin) ... ignore if you're trying
 			// to change yourself from an admin to user!
 			//
-			if ($userdata['user_id'] !== $user_id ) {
+			if ($userdata['user_id'] !== $user_id) {
                 $update_data = [
                     'auth_view' => 0,
                     'auth_read' => 0,
@@ -227,12 +191,11 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
                     ->execute();
 			}
 
-			$message = $lang['Auth_updated'] . '<br /><br />' . sprintf($lang['Click_return_userauth'], '<a href="' . append_sid("admin_ug_auth.php?mode=$mode") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');
+			$message = $lang['Auth_updated'] . '<br /><br />' . sprintf($lang['Click_return_userauth'], '<a href="' . Session::appendSid("admin_ug_auth.php?mode=$mode") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 		} else {
-	
 			$change_mod_list = isset($_POST['moderator']) ? $_POST['moderator'] : [];
 
-			if ( empty($adv) ) {
+			if ( empty($adv)) {
                 $forum_access = dibi::select('f.* ')
                     ->from(FORUMS_TABLE)
                     ->as('f')
@@ -323,7 +286,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 				}
 
 				foreach ($forum_auth_fields as $auth_field) {
-					if ($access->{$auth_field} === AUTH_ACL && isset($change_acl_list[$forum_id][$auth_field]) ) {
+					if ($access->{$auth_field} === AUTH_ACL && isset($change_acl_list[$forum_id][$auth_field])) {
 						if ( ( empty($auth_access[$forum_id]['auth_mod']) && 
 							( isset($auth_access[$forum_id][$auth_field]) && $change_acl_list[$forum_id][$auth_field] !== $auth_access[$forum_id][$auth_field] ) ||
 							( !isset($auth_access[$forum_id][$auth_field]) && !empty($change_acl_list[$forum_id][$auth_field]) ) ) ||
@@ -339,7 +302,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
                             }
 						} elseif ( ( empty($auth_access[$forum_id]['auth_mod']) &&
 							( isset($auth_access[$forum_id][$auth_field]) && $change_acl_list[$forum_id][$auth_field] === $auth_access[$forum_id][$auth_field] ) ) && $forum_auth_action[$forum_id] === 'delete'
-                        ) {
+                       ) {
 							$forum_auth_action[$forum_id] = 'update';
 						}
 					}
@@ -352,10 +315,10 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 			$delete_sql = [];
 
 			foreach ($forum_auth_action as $forum_id => $action) {
-				if ( $action === 'delete' ) {
+				if ( $action === 'delete') {
 					$delete_sql[] = $forum_id;
 				} else {
-					if ( $action === 'insert' ) {
+					if ( $action === 'insert') {
                         $update_acl_status[$forum_id]['auth_mod'] = isset($update_mod_status[$forum_id]) ? $update_mod_status[$forum_id] : 0;
                         $update_acl_status[$forum_id]['forum_id'] = $forum_id;
                         $update_acl_status[$forum_id]['group_id'] = $group_id;
@@ -380,7 +343,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 			}
 
 			$l_auth_return = ( $mode === 'user' ) ? $lang['Click_return_userauth'] : $lang['Click_return_groupauth'];
-			$message = $lang['Auth_updated'] . '<br /><br />' . sprintf($l_auth_return, '<a href="' . append_sid("admin_ug_auth.php?mode=$mode") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.php?pane=right") . '">', '</a>');
+			$message = $lang['Auth_updated'] . '<br /><br />' . sprintf($l_auth_return, '<a href="' . Session::appendSid("admin_ug_auth.php?mode=$mode") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 		}
 
 		//
@@ -389,12 +352,12 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
         $set_mod = dibi::select('u.user_id')
             ->from(AUTH_ACCESS_TABLE)
             ->as('aa')
-            ->innerJoin(USER_GROUP_TABLE)
+            ->from(USER_GROUP_TABLE)
             ->as('ug')
-            ->on('u.user_id = ug.user_id')
-            ->innerJoin(USERS_TABLE)
+            ->from(USERS_TABLE)
             ->as('u')
-            ->on('ug.group_id = aa.group_id')
+            ->where('ug.group_id = aa.group_id')
+            ->where('u.user_id = ug.user_id')
             ->where('ug.user_pending = %i', 0)
             ->where('u.user_level NOT IN %in', [MOD, ADMIN])
             ->groupBy('u.user_id')
@@ -408,36 +371,36 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
         // TODO
         switch ($dbms) {
 			case 'postgresql':
-				$sql = "SELECT u.user_id 
-					FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug, " . AUTH_ACCESS_TABLE . " aa
+				$sql = 'SELECT u.user_id 
+					FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug, ' . AUTH_ACCESS_TABLE . ' aa
 					WHERE ug.user_id = u.user_id 
 						AND aa.group_id = ug.group_id 
-						AND u.user_level NOT IN (" . USER . ", " . ADMIN . ")
+						AND u.user_level NOT IN (' . USER . ', ' . ADMIN . ')
 					GROUP BY u.user_id 
 					HAVING SUM(aa.auth_mod) = 0 
 					UNION (
 						SELECT u.user_id  
-						FROM " . USERS_TABLE . " u 
+						FROM ' . USERS_TABLE . ' u 
 						WHERE NOT EXISTS ( 
 							SELECT aa.auth_mod 
-							FROM " . USER_GROUP_TABLE . " ug, " . AUTH_ACCESS_TABLE . " aa 
+							FROM ' . USER_GROUP_TABLE . ' ug, ' . AUTH_ACCESS_TABLE . ' aa 
 							WHERE ug.user_id = u.user_id 
 								AND aa.group_id = ug.group_id
 						)
-						AND u.user_level NOT IN (" . USER . ", " . ADMIN . ")  
+						AND u.user_level NOT IN (' . USER . ', ' . ADMIN . ')  
 						GROUP BY u.user_id
-					)";
+					)';
 
 				dibi::query($sql)->fetchPairs(null, 'user_id');
 				break;
 			case 'oracle':
-				$sql = "SELECT u.user_id 
-					FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug, " . AUTH_ACCESS_TABLE . " aa 
+				$sql = 'SELECT u.user_id 
+					FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug, ' . AUTH_ACCESS_TABLE . ' aa 
 					WHERE ug.user_id = u.user_id(+)
 						AND aa.group_id = ug.group_id(+) 
-						AND u.user_level NOT IN (" . USER . ", " . ADMIN . ")
+						AND u.user_level NOT IN (' . USER . ', ' . ADMIN . ')
 					GROUP BY u.user_id 
-					HAVING SUM(aa.auth_mod) = 0";
+					HAVING SUM(aa.auth_mod) = 0';
 
                 dibi::query($sql)->fetchPairs(null, 'user_id');
 				break;
@@ -491,7 +454,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 
 		foreach ($rows as $row) {
             if ($row->is_auth_mod) {
-                unset($group_user[$row->user_id]);
+                unset($group_user->{$row->user_id});
             }
         }
 
@@ -504,8 +467,8 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 
 		message_die(GENERAL_MESSAGE, $message);
 	}
-} elseif ( ( $mode === 'user' && ( isset($_POST['username']) || $user_id ) ) || ( $mode === 'group' && $group_id ) ) {
-	if ( isset($_POST['username']) ) {
+} elseif (($mode === 'user' && (isset($_POST['username']) || $user_id)) || ($mode === 'group' && $group_id)) {
+    if (isset($_POST['username'])) {
 		$this_userdata = get_userdata($_POST['username'], true);
 
         if (!$this_userdata) {
@@ -528,7 +491,9 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
         ->orderBy('f.forum_order', dibi::ASC)
         ->fetchAll();
 
-	if (empty($adv) ) {
+	if (empty($adv)) {
+        $forum_auth_level = [];
+
 		foreach ($forum_access as $access) {
 			$forum_id = $access->forum_id;
 
@@ -563,7 +528,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 
     $ug_info = $ug_info->fetchAll();
 
-    if ( $mode === 'user' ) {
+    if ($mode === 'user') {
         $rows = dibi::select(['aa.*', 'g.group_single_user'])
             ->from(AUTH_ACCESS_TABLE)
             ->as('aa')
@@ -592,7 +557,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
     }
 
     if ($mode === 'user') {
-        if ( $ug_info[0]->user_level === ADMIN && $ug_info[0]->user_id !== ANONYMOUS ) {
+        if ($ug_info[0]->user_level === ADMIN && $ug_info[0]->user_id !== ANONYMOUS) {
             $is_admin = 1;
         } else {
             $is_admin = 0;
@@ -600,6 +565,9 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
     } else {
         $is_admin = 0;
     }
+
+    $auth_ug = [];
+    $auth_field_acl = [];
 
 	foreach ($forum_access as $forum_access_value) {
 		$forum_id = $forum_access_value['forum_id'];
@@ -610,14 +578,15 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 			$key = $forum_auth_field;
 			$value = $forum_access_value[$key];
 
-			switch( $value ) {
+			switch( $value) {
 				case AUTH_ALL:
 				case AUTH_REG:
 					$auth_ug[$forum_id][$key] = 1;
 					break;
 
 				case AUTH_ACL:
-					$auth_ug[$forum_id][$key] = !empty($auth_access_count[$forum_id]) ? check_auth(AUTH_ACL, $key, $auth_access[$forum_id], $is_admin) : 0;
+					$auth_ug[$forum_id][$key] = !empty($auth_access_count[$forum_id]) ? Auth::auth_check_user(AUTH_ACL, $key,
+                        $auth_access[$forum_id], $is_admin) : 0;
 					$auth_field_acl[$forum_id][$key] = $auth_ug[$forum_id][$key];
 
                     if (isset($prev_acl_setting)) {
@@ -631,7 +600,8 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 					break;
 
 				case AUTH_MOD:
-					$auth_ug[$forum_id][$key] = !empty($auth_access_count[$forum_id]) ? check_auth(AUTH_MOD, $key, $auth_access[$forum_id], $is_admin) : 0;
+					$auth_ug[$forum_id][$key] = !empty($auth_access_count[$forum_id]) ? Auth::auth_check_user(AUTH_MOD,
+                        $key, $auth_access[$forum_id], $is_admin) : 0;
 					break;
 
 				case AUTH_ADMIN:
@@ -647,7 +617,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 		//
 		// Is user a moderator?
 		//
-		$auth_ug[$forum_id]['auth_mod'] = !empty($auth_access_count[$forum_id]) ? check_auth(AUTH_MOD, 'auth_mod', $auth_access[$forum_id], 0) : 0;
+		$auth_ug[$forum_id]['auth_mod'] = !empty($auth_access_count[$forum_id]) ? Auth::auth_check_user(AUTH_MOD, 'auth_mod', $auth_access[$forum_id], 0) : 0;
 	}
 
     $optionlist_acl_adv = [];
@@ -688,10 +658,10 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
                             $optionlist_acl_adv[$forum_id][$k] = '<select name="private_' . $field_name . '[' . $forum_id . ']">';
 
                             if (isset($auth_field_acl[$forum_id][$field_name]) && !($is_admin || $user_ary['auth_mod'])) {
-                                if (!$auth_field_acl[$forum_id][$field_name]) {
-                                    $optionlist_acl_adv[$forum_id][$k] .= '<option value="1">' . $lang['ON'] . '</option><option value="0" selected="selected">' . $lang['OFF'] . '</option>';
-                                } else {
+                                if ($auth_field_acl[$forum_id][$field_name]) {
                                     $optionlist_acl_adv[$forum_id][$k] .= '<option value="1" selected="selected">' . $lang['ON'] . '</option><option value="0">' . $lang['OFF'] . '</option>';
+                                } else {
+                                    $optionlist_acl_adv[$forum_id][$k] .= '<option value="1">' . $lang['ON'] . '</option><option value="0" selected="selected">' . $lang['OFF'] . '</option>';
                                 }
                             } else {
                                 if ($is_admin || $user_ary['auth_mod']) {
@@ -715,25 +685,27 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 		$row_class = ( !( $i % 2 ) ) ? 'row2' : 'row1';
 		$row_color = ( !( $i % 2 ) ) ? $theme['td_color1'] : $theme['td_color2'];
 
-        $template->assign_block_vars('forums', [
-                'ROW_COLOR'  => '#' . $row_color,
-                'ROW_CLASS'  => $row_class,
-                'FORUM_NAME' => $forum_access[$i]['forum_name'],
+        $template->assignBlockVars('forums',
+            [
+            'ROW_COLOR'  => '#' . $row_color,
+            'ROW_CLASS'  => $row_class,
+            'FORUM_NAME' => $forum_access[$i]['forum_name'],
 
-                'U_FORUM_AUTH' => append_sid("admin_forumauth.php?f=" . $forum_access[$i]['forum_id']),
+            'U_FORUM_AUTH' => Session::appendSid('admin_forumauth.php?f=' . $forum_access[$i]['forum_id']),
 
-                'S_MOD_SELECT' => $optionlist_mod
-            ]);
+            'S_MOD_SELECT' => $optionlist_mod
+            ]
+        );
 
         if (!$adv) {
-            $template->assign_block_vars('forums.aclvalues',
+            $template->assignBlockVars('forums.aclvalues',
                 [
                     'S_ACL_SELECT' => $optionlist_acl
                 ]
             );
         } else {
             foreach ($optionlist_acl_adv[$forum_id] as $acl_select) {
-                $template->assign_block_vars('forums.aclvalues',
+                $template->assignBlockVars('forums.aclvalues',
                     [
                         'S_ACL_SELECT' => $acl_select
                     ]
@@ -774,9 +746,9 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
             $ug = ($mode === 'user') ? 'group&amp;' . POST_GROUPS_URL : 'user&amp;' . POST_USERS_URL;
 
             if (!$ug_info_value->user_pending) {
-                $t_usergroup_list .= (($t_usergroup_list !== '') ? ', ' : '') . '<a href="' . append_sid("admin_ug_auth.php?mode=$ug=" . $names[$i]['id']) . '">' . $names[$i]['name'] . '</a>';
+                $t_usergroup_list .= (($t_usergroup_list !== '') ? ', ' : '') . '<a href="' . Session::appendSid("admin_ug_auth.php?mode=$ug=" . $names[$i]['id']) . '">' . $names[$i]['name'] . '</a>';
             } else {
-                $t_pending_list .= (($t_pending_list !== '') ? ', ' : '') . '<a href="' . append_sid("admin_ug_auth.php?mode=$ug=" . $names[$i]['id']) . '">' . $names[$i]['name'] . '</a>';
+                $t_pending_list .= (($t_pending_list !== '') ? ', ' : '') . '<a href="' . Session::appendSid("admin_ug_auth.php?mode=$ug=" . $names[$i]['id']) . '">' . $names[$i]['name'] . '</a>';
             }
         }
     }
@@ -787,13 +759,13 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 	$s_column_span = 2; // Two columns always present
 
     if (!$adv) {
-        $template->assign_block_vars('acltype', ['L_UG_ACL_TYPE' => $lang['Simple_Permission']]);
+        $template->assignBlockVars('acltype', ['L_UG_ACL_TYPE' => $lang['Simple_Permission']]);
         $s_column_span++;
     } else {
         foreach ($forum_auth_fields as $forum_auth_field) {
             $cell_title = $field_names[$forum_auth_field];
 
-            $template->assign_block_vars('acltype', ['L_UG_ACL_TYPE' => $cell_title]);
+            $template->assignBlockVars('acltype', ['L_UG_ACL_TYPE' => $cell_title]);
             $s_column_span++;
         }
     }
@@ -803,31 +775,31 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 	//
 	include './page_header_admin.php';
 
-    $template->set_filenames(["body" => 'admin/auth_ug_body.tpl']);
+    $template->setFileNames(['body' => 'admin/auth_ug_body.tpl']);
 
     $adv_switch = empty($adv) ? 1 : 0;
-	$u_ug_switch = ( $mode === 'user' ) ? POST_USERS_URL . "=" . $user_id : POST_GROUPS_URL . "=" . $group_id;
-	$switch_mode = append_sid("admin_ug_auth.php?mode=$mode&amp;" . $u_ug_switch . "&amp;adv=$adv_switch");
+	$u_ug_switch = ( $mode === 'user' ) ? POST_USERS_URL . '=' . $user_id : POST_GROUPS_URL . '=' . $group_id;
+	$switch_mode = Session::appendSid("admin_ug_auth.php?mode=$mode&amp;" . $u_ug_switch . "&amp;adv=$adv_switch");
 	$switch_mode_text = empty($adv) ? $lang['Advanced_mode'] : $lang['Simple_mode'];
 	$u_switch_mode = '<a href="' . $switch_mode . '">' . $switch_mode_text . '</a>';
 
 	$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="adv" value="' . $adv . '" />';
 	$s_hidden_fields .= ( $mode === 'user' ) ? '<input type="hidden" name="' . POST_USERS_URL . '" value="' . $user_id . '" />' : '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
 
-	if ( $mode === 'user' ) {
-        $template->assign_block_vars('switch_user_auth', []);
+    if ($mode === 'user') {
+        $template->assignBlockVars('switch_user_auth', []);
 
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'USERNAME'               => $t_username,
-                'USER_LEVEL'             => $lang['User_Level'] . " : " . $s_user_type,
+                'USER_LEVEL'             => $lang['User_Level'] . ' : ' . $s_user_type,
                 'USER_GROUP_MEMBERSHIPS' => $lang['Group_memberships'] . ' : ' . $t_usergroup_list
             ]
         );
     } else {
-        $template->assign_block_vars("switch_group_auth", []);
+        $template->assignBlockVars('switch_group_auth', []);
 
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'USERNAME'         => $t_groupname,
                 'GROUP_MEMBERSHIP' => $lang['Usergroup_members'] . ' : ' . $t_usergroup_list . '<br />' . $lang['Pending_members'] . ' : ' . $t_pending_list
@@ -835,7 +807,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
         );
     }
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'L_USER_OR_GROUPNAME' => ($mode === 'user') ? $lang['Username'] : $lang['Group_name'],
 
@@ -847,11 +819,11 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
             'L_RESET'            => $lang['Reset'],
             'L_FORUM'            => $lang['Forum'],
 
-            'U_USER_OR_GROUP' => append_sid("admin_ug_auth.php"),
+            'U_USER_OR_GROUP' => Session::appendSid('admin_ug_auth.php'),
             'U_SWITCH_MODE'   => $u_switch_mode,
 
             'S_COLUMN_SPAN'   => $s_column_span,
-            'S_AUTH_ACTION'   => append_sid("admin_ug_auth.php"),
+            'S_AUTH_ACTION'   => Session::appendSid('admin_ug_auth.php'),
             'S_HIDDEN_FIELDS' => $s_hidden_fields
         ]
     );
@@ -861,14 +833,14 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 	//
 	include './page_header_admin.php';
 
-    $template->set_filenames(['body' => ($mode === 'user') ? 'admin/user_select_body.tpl' : 'admin/auth_select_body.tpl']);
+    $template->setFileNames(['body' => ($mode === 'user') ? 'admin/user_select_body.tpl' : 'admin/auth_select_body.tpl']);
 
-    if ( $mode === 'user' ) {
-        $template->assign_vars(
+    if ( $mode === 'user') {
+        $template->assignVars(
             [
                 'L_FIND_USERNAME' => $lang['Find_username'],
 
-                'U_SEARCH_USER' => append_sid("../search.php?mode=searchuser")
+                'U_SEARCH_USER' => Session::appendSid('../search.php?mode=searchuser')
             ]
         );
     } else {
@@ -885,14 +857,14 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 
 			$select_list .= '</select>';
 
-        $template->assign_vars(['S_AUTH_SELECT' => $select_list]);
+        $template->assignVars(['S_AUTH_SELECT' => $select_list]);
     }
 
     $s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" />';
 
 	$l_type = ( $mode === 'user' ) ? 'USER' : 'AUTH';
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'L_' . $l_type . '_TITLE'   => ($mode === 'user') ? $lang['Auth_Control_User'] : $lang['Auth_Control_Group'],
             'L_' . $l_type . '_EXPLAIN' => ($mode === 'user') ? $lang['User_auth_explain'] : $lang['Group_auth_explain'],
@@ -900,7 +872,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
             'L_LOOK_UP'                 => ($mode === 'user') ? $lang['Look_up_User'] : $lang['Look_up_Group'],
 
             'S_HIDDEN_FIELDS'          => $s_hidden_fields,
-            'S_' . $l_type . '_ACTION' => append_sid("admin_ug_auth.php")
+            'S_' . $l_type . '_ACTION' => Session::appendSid('admin_ug_auth.php')
         ]
     );
 }

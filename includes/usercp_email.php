@@ -21,13 +21,13 @@
  *
  ***************************************************************************/
 
-if ( !defined('IN_PHPBB') ) {
-	die("Hacking attempt");
+if ( !defined('IN_PHPBB')) {
+	die('Hacking attempt');
 }
 
 // Is send through board enabled? No, return to index
 if (!$board_config['board_email_form']) {
-	redirect(append_sid("index.php", true));
+	redirect(Session::appendSid('index.php', true));
 }
 
 if (!empty($_GET[POST_USERS_URL]) || !empty($_POST[POST_USERS_URL]))  {
@@ -36,8 +36,8 @@ if (!empty($_GET[POST_USERS_URL]) || !empty($_POST[POST_USERS_URL]))  {
 	message_die(GENERAL_MESSAGE, $lang['No_user_specified']);
 }
 
-if ( !$userdata['session_logged_in'] ) {
-	redirect(append_sid("login.php?redirect=profile.php&mode=email&" . POST_USERS_URL . "=$user_id", true));
+if ( !$userdata['session_logged_in']) {
+	redirect(Session::appendSid('login.php?redirect=profile.php&mode=email&' . POST_USERS_URL . "=$user_id", true));
 }
 
 $row = dibi::select(['username', 'user_email', 'user_viewemail', 'user_lang'])
@@ -84,11 +84,11 @@ if ($row->user_viewemail || $userdata['user_level'] === ADMIN) {
                 message_die(GENERAL_ERROR, 'Could not update last email time');
             }
 
-            include $phpbb_root_path . 'includes/emailer.php';
-            $emailer = new emailer($board_config['smtp_delivery']);
+            include $phpbb_root_path . 'includes/Emailer.php';
+            $emailer = new Emailer($board_config['smtp_delivery']);
 
-            $emailer->from($userdata['user_email']);
-            $emailer->replyto($userdata['user_email']);
+            $emailer->setFrom($userdata['user_email']);
+            $emailer->setReplyTo($userdata['user_email']);
 
             $email_headers = 'X-AntiAbuse: Board servername - ' . $server_name . "\n";
             $email_headers .= 'X-AntiAbuse: User_id - ' . $userdata['user_id'] . "\n";
@@ -96,45 +96,49 @@ if ($row->user_viewemail || $userdata['user_level'] === ADMIN) {
             $email_headers .= 'X-AntiAbuse: User IP - ' . decode_ip($user_ip) . "\n";
 
             $emailer->use_template('profile_send_email', $user_lang);
-            $emailer->email_address($user_email);
-            $emailer->set_subject($subject);
-            $emailer->extra_headers($email_headers);
+            $emailer->setEmailAddress($user_email);
+            $emailer->setSubject($subject);
+            $emailer->addExtraHeaders($email_headers);
 
-            $emailer->assign_vars([
-                'SITENAME'      => $board_config['sitename'],
-                'BOARD_EMAIL'   => $board_config['board_email'],
-                'FROM_USERNAME' => $userdata['username'],
-                'TO_USERNAME'   => $username,
-                'MESSAGE'       => $message
-            ]);
-            $emailer->send();
-            $emailer->reset();
-
-            if (!empty($_POST['cc_email'])) {
-                $emailer->from($userdata['user_email']);
-                $emailer->replyto($userdata['user_email']);
-                $emailer->use_template('profile_send_email');
-                $emailer->email_address($userdata['user_email']);
-                $emailer->set_subject($subject);
-
-                $emailer->assign_vars([
+            $emailer->assignVars(
+                [
                     'SITENAME'      => $board_config['sitename'],
                     'BOARD_EMAIL'   => $board_config['board_email'],
                     'FROM_USERNAME' => $userdata['username'],
                     'TO_USERNAME'   => $username,
                     'MESSAGE'       => $message
-                ]);
+                ]
+            );
+            $emailer->send();
+            $emailer->reset();
+
+            if (!empty($_POST['cc_email'])) {
+                $emailer->setFrom($userdata['user_email']);
+                $emailer->setReplyTo($userdata['user_email']);
+                $emailer->use_template('profile_send_email');
+                $emailer->setEmailAddress($userdata['user_email']);
+                $emailer->setSubject($subject);
+
+                $emailer->assignVars(
+                    [
+                        'SITENAME'      => $board_config['sitename'],
+                        'BOARD_EMAIL'   => $board_config['board_email'],
+                        'FROM_USERNAME' => $userdata['username'],
+                        'TO_USERNAME'   => $username,
+                        'MESSAGE'       => $message
+                    ]
+                );
                 $emailer->send();
                 $emailer->reset();
             }
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
-                    'META' => '<meta http-equiv="refresh" content="5;url=' . append_sid("index.php") . '">'
+                    'META' => '<meta http-equiv="refresh" content="5;url=' . Session::appendSid('index.php') . '">'
                 ]
             );
 
-            $message = $lang['Email_sent'] . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.php") . '">', '</a>');
+            $message = $lang['Email_sent'] . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
             message_die(GENERAL_MESSAGE, $message);
         }
@@ -142,21 +146,21 @@ if ($row->user_viewemail || $userdata['user_level'] === ADMIN) {
 
     include $phpbb_root_path . 'includes/page_header.php';
 
-    $template->set_filenames(['body' => 'profile_send_email.tpl']);
+    $template->setFileNames(['body' => 'profile_send_email.tpl']);
     make_jumpbox('viewforum.php');
 
     if ($error) {
-        $template->set_filenames(['reg_header' => 'error_body.tpl']);
-        $template->assign_vars(['ERROR_MESSAGE' => $error_msg]);
-        $template->assign_var_from_handle('ERROR_BOX', 'reg_header');
+        $template->setFileNames(['reg_header' => 'error_body.tpl']);
+        $template->assignVars(['ERROR_MESSAGE' => $error_msg]);
+        $template->assignVarFromHandle('ERROR_BOX', 'reg_header');
     }
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'USERNAME' => $username,
 
             'S_HIDDEN_FIELDS' => '',
-            'S_POST_ACTION'   => append_sid("profile.php?mode=email&amp;" . POST_USERS_URL . "=$user_id"),
+            'S_POST_ACTION'   => Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL . "=$user_id"),
 
             'L_SEND_EMAIL_MSG'      => $lang['Send_email_msg'],
             'L_RECIPIENT'           => $lang['Recipient'],
