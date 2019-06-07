@@ -407,7 +407,7 @@ foreach ($categories as $category) {
                             $last_post = $lang['No_Posts'];
                         }
 
-                        $moderators_forum_count = count($forum_moderators[$forum_id]);
+                        $moderators_forum_count = isset($forum_moderators[$forum_id]) ? count($forum_moderators[$forum_id]) : 0;
 
                         if ($moderators_forum_count > 0) {
                             $l_moderators   = $moderators_forum_count === 1 ? $lang['Moderator'] : $lang['Moderators'];
