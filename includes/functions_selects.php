@@ -84,27 +84,4 @@ function style_select($default_style, $select_name = 'style', $dirname = 'templa
 	return $style_select;
 }
 
-//
-// Pick a timezone
-//
-function tz_select($default, $select_name = 'timezone')
-{
-	global $sys_timezone, $lang;
-
-    if (!isset($default)) {
-        $default = $sys_timezone;
-    }
-
-	$tz_select = '<select name="' . $select_name . '">';
-
-	foreach ($lang['tz'] as $offset => $zone) {
-		$selected = ( $offset === $default ) ? ' selected="selected"' : '';
-		$tz_select .= '<option value="' . $offset . '"' . $selected . '>' . $zone . '</option>';
-	}
-
-	$tz_select .= '</select>';
-
-	return $tz_select;
-}
-
 ?>
