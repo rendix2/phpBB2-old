@@ -52,7 +52,7 @@ if ($board_config['gzip_compress']) {
 	}
 }
 
-$template->set_filenames(['header' => 'admin/page_header.tpl']);
+$template->setFileNames(['header' => 'admin/page_header.tpl']);
 
 // Format Timezone. We are unable to use array_pop here, because of PHP3 compatibility
 $l_timezone = explode('.', $board_config['board_timezone']);
@@ -63,7 +63,7 @@ $l_timezone = (count($l_timezone) > 1 && $l_timezone[count($l_timezone)-1] !== 0
 // in a template. Note that all URL's should be wrapped in append_sid, as
 // should all S_x_ACTIONS for forms.
 //
-$template->assign_vars([
+$template->assignVars([
 	'SITENAME'   => $board_config['sitename'],
 	'PAGE_TITLE' => $page_title,
 

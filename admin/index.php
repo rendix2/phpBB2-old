@@ -51,9 +51,9 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
 
 	include './page_header_admin.php';
 
-    $template->set_filenames(['body' => 'admin/index_navigate.tpl']);
+    $template->setFileNames(['body' => 'admin/index_navigate.tpl']);
 
-    $template->assign_vars([
+    $template->assignVars([
         'U_FORUM_INDEX' => Session::appendSid('../index.php'),
         'U_ADMIN_INDEX' => Session::appendSid('index.php?pane=right'),
 
@@ -67,7 +67,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
 	foreach ($module as $cat => $action_array) {
 		$cat = !empty($lang[$cat]) ? $lang[$cat] : preg_replace('/_/', ' ', $cat);
 
-        $template->assign_block_vars('catrow', ['ADMIN_CATEGORY' => $cat]);
+        $template->assignBlockVars('catrow', ['ADMIN_CATEGORY' => $cat]);
 
         ksort($action_array);
 
@@ -79,7 +79,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
 
 			$action = !empty($lang[$action]) ? $lang[$action] : preg_replace('/_/', ' ', $action);
 
-            $template->assign_block_vars('catrow.modulerow',
+            $template->assignBlockVars('catrow.modulerow',
                 [
                     'ROW_COLOR' => '#' . $row_color,
                     'ROW_CLASS' => $row_class,
@@ -99,9 +99,9 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
 
 	include './page_header_admin.php';
 
-    $template->set_filenames(['body' => 'admin/index_body.tpl']);
+    $template->setFileNames(['body' => 'admin/index_body.tpl']);
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'L_WELCOME'          => $lang['Welcome_phpBB'],
             'L_ADMIN_INTRO'      => $lang['Admin_intro'],
@@ -245,7 +245,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
         }
     }
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'NUMBER_OF_POSTS'  => $total_posts,
             'NUMBER_OF_TOPICS' => $total_topics,
@@ -366,7 +366,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
 
 				$reg_ip = decode_ip($online_user->session_ip);
 
-                $template->assign_block_vars('reg_user_row',
+                $template->assignBlockVars('reg_user_row',
                     [
                         'ROW_COLOR'      => '#' . $row_color,
                         'ROW_CLASS'      => $row_class,
@@ -385,7 +385,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
 		}
 
 	} else {
-        $template->assign_vars(['L_NO_REGISTERED_USERS_BROWSING' => $lang['No_users_browsing']]);
+        $template->assignVars(['L_NO_REGISTERED_USERS_BROWSING' => $lang['No_users_browsing']]);
     }
 
     //
@@ -450,7 +450,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
 
 			$guest_ip = decode_ip($guest->session_ip);
 
-            $template->assign_block_vars('guest_user_row', [
+            $template->assignBlockVars('guest_user_row', [
                     'ROW_COLOR'      => '#' . $row_color,
                     'ROW_CLASS'      => $row_class,
                     'USERNAME'       => $lang['Guest'],
@@ -465,7 +465,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
             );
         }
     } else {
-        $template->assign_vars(['L_NO_GUESTS_BROWSING' => $lang['No_users_browsing']]);
+        $template->assignVars(['L_NO_GUESTS_BROWSING' => $lang['No_users_browsing']]);
     }
 
     $template->pparse('body');
@@ -475,9 +475,9 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
 	//
 	// Generate frameset
 	//
-    $template->set_filenames(['body' => 'admin/index_frameset.tpl']);
+    $template->setFileNames(['body' => 'admin/index_frameset.tpl']);
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'S_FRAME_NAV'  => Session::appendSid('index.php?pane=left'),
             'S_FRAME_MAIN' => Session::appendSid('index.php?pane=right')

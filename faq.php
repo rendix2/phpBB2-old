@@ -91,10 +91,10 @@ for ($i = 0; $i < $faq_count; $i++) {
 $page_title = $l_title;
 include $phpbb_root_path . 'includes/page_header.php';
 
-$template->set_filenames(['body' => 'faq_body.tpl']);
+$template->setFileNames(['body' => 'faq_body.tpl']);
 make_jumpbox('viewforum.php');
 
-$template->assign_vars(
+$template->assignVars(
     [
         'L_FAQ_TITLE'   => $l_title,
         'L_BACK_TO_TOP' => $lang['Back_to_top']
@@ -107,8 +107,8 @@ for ($i = 0; $i < $faq_block_count; $i++) {
     $faq_block_i_count = count($faq_block[$i]);
 
 	if ($faq_block_i_count ) {
-        $template->assign_block_vars('faq_block', ['BLOCK_TITLE' => $faq_block_titles[$i]]);
-        $template->assign_block_vars('faq_block_link', ['BLOCK_TITLE' => $faq_block_titles[$i]]);
+        $template->assignBlockVars('faq_block', ['BLOCK_TITLE' => $faq_block_titles[$i]]);
+        $template->assignBlockVars('faq_block_link', ['BLOCK_TITLE' => $faq_block_titles[$i]]);
 
         for ($j = 0; $j < $faq_block_i_count; $j++) {
 			$row_color = ( !($j % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
@@ -123,7 +123,7 @@ for ($i = 0; $i < $faq_block_count; $i++) {
                 'U_FAQ_ID' => $faq_block[$i][$j]['id']
             ];
 
-            $template->assign_block_vars('faq_block.faq_row', $faq_block_faq_row_data);
+            $template->assignBlockVars('faq_block.faq_row', $faq_block_faq_row_data);
 
             $faq_block_link_faq_row_link_data = [
                 'ROW_COLOR' => '#' . $row_color,
@@ -133,7 +133,7 @@ for ($i = 0; $i < $faq_block_count; $i++) {
                 'U_FAQ_LINK' => '#' . $faq_block[$i][$j]['id']
             ];
 
-            $template->assign_block_vars('faq_block_link.faq_row_link', $faq_block_link_faq_row_link_data);
+            $template->assignBlockVars('faq_block_link.faq_row_link', $faq_block_link_faq_row_link_data);
         }
     }
 }

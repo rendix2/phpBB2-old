@@ -93,9 +93,9 @@ if ($mode !== '') {
 		$rank_is_special = $rank_info->rank_special ? 'checked="checked"' : '';
 		$rank_is_not_special = ( !$rank_info->rank_special ) ? 'checked="checked"' : '';
 
-		$template->set_filenames(['body' => 'admin/ranks_edit_body.tpl']);
+		$template->setFileNames(['body' => 'admin/ranks_edit_body.tpl']);
 
-		$template->assign_vars(
+		$template->assignVars(
 			[
                 'RANK'             => $rank_info->rank_title,
                 'SPECIAL_RANK'     => $rank_is_special,
@@ -217,11 +217,11 @@ if ($mode !== '') {
 
 		} elseif ($rank_id && !$confirm) {
 			// Present the confirmation screen to the user
-			$template->set_filenames(['body' => 'admin/confirm_body.tpl']);
+			$template->setFileNames(['body' => 'admin/confirm_body.tpl']);
 
 			$hidden_fields = '<input type="hidden" name="mode" value="delete" /><input type="hidden" name="id" value="' . $rank_id . '" />';
 
-			$template->assign_vars(
+			$template->assignVars(
 				[
                     'MESSAGE_TITLE' => $lang['Confirm'],
                     'MESSAGE_TEXT'  => $lang['Confirm_delete_rank'],
@@ -246,7 +246,7 @@ if ($mode !== '') {
 //
 // Show the default page
 //
-$template->set_filenames(['body' => 'admin/ranks_list_body.tpl']);
+$template->setFileNames(['body' => 'admin/ranks_list_body.tpl']);
 
 $ranks  = dibi::select('*')
     ->from(RANKS_TABLE)
@@ -256,7 +256,7 @@ $ranks  = dibi::select('*')
 
 $rank_count = count($ranks);
 
-$template->assign_vars(
+$template->assignVars(
 	[
         'L_RANKS_TITLE'  => $lang['Ranks_title'],
         'L_RANKS_TEXT'   => $lang['Ranks_explain'],
@@ -286,7 +286,7 @@ foreach ($ranks as $i => $rank) {
 
 	$rank_is_special = $special_rank ? $lang['Yes'] : $lang['No'];
 
-	$template->assign_block_vars('ranks',
+	$template->assignBlockVars('ranks',
 		[
             'ROW_COLOR'    => '#' . $row_color,
             'ROW_CLASS'    => $row_class,

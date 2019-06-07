@@ -259,9 +259,9 @@ if ( isset($_POST['submit']) ) {
 	message_die(GENERAL_MESSAGE, $message);
 
 } else {
-    $template->set_filenames(['body' => 'admin/user_ban_body.tpl']);
+    $template->setFileNames(['body' => 'admin/user_ban_body.tpl']);
 
-    $template->assign_vars([
+    $template->assignVars([
             'L_BAN_TITLE'        => $lang['Ban_control'],
             'L_BAN_EXPLAIN'      => $lang['Ban_explain'],
             'L_BAN_EXPLAIN_WARN' => $lang['Ban_explain_warn'],
@@ -273,7 +273,7 @@ if ( isset($_POST['submit']) ) {
             'S_BANLIST_ACTION' => Session::appendSid('admin_user_ban.php')
         ]);
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'L_BAN_USER'          => $lang['Ban_username'],
             'L_BAN_USER_EXPLAIN'  => $lang['Ban_username_explain'],
@@ -344,7 +344,7 @@ if ( isset($_POST['submit']) ) {
 	$select_iplist = '<select name="unban_ip[]" multiple="multiple" size="5">' . $select_iplist . '</select>';
 	$select_emaillist = '<select name="unban_email[]" multiple="multiple" size="5">' . $select_emaillist . '</select>';
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'L_UNBAN_USER'          => $lang['Unban_username'],
             'L_UNBAN_USER_EXPLAIN'  => $lang['Unban_username_explain'],

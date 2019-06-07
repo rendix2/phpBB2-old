@@ -138,9 +138,9 @@ if ( isset($_POST['submit']) ) {
 }
 
 if ($error) {
-    $template->set_filenames(['reg_header' => 'error_body.tpl']);
-    $template->assign_vars(['ERROR_MESSAGE' => $error_msg]);
-    $template->assign_var_from_handle('ERROR_BOX', 'reg_header');
+    $template->setFileNames(['reg_header' => 'error_body.tpl']);
+    $template->assignVars(['ERROR_MESSAGE' => $error_msg]);
+    $template->assignVarFromHandle('ERROR_BOX', 'reg_header');
 }
 
 //
@@ -165,9 +165,9 @@ $select_list .= '</select>';
 //
 include './page_header_admin.php';
 
-$template->set_filenames(['body' => 'admin/user_email_body.tpl']);
+$template->setFileNames(['body' => 'admin/user_email_body.tpl']);
 
-$template->assign_vars(
+$template->assignVars(
     [
         'MESSAGE' => $message,
         'SUBJECT' => $subject,

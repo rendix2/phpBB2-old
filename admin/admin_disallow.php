@@ -94,9 +94,9 @@ if (!count($disallowed)) {
 
 $disallow_select .= '</select>';
 
-$template->set_filenames(['body' => 'admin/disallow_body.tpl']);
+$template->setFileNames(['body' => 'admin/disallow_body.tpl']);
 
-$template->assign_vars(
+$template->assignVars(
     [
         'S_DISALLOW_SELECT' => $disallow_select,
         'S_FORM_ACTION'     => Session::appendSid('admin_disallow.php'),

@@ -748,16 +748,16 @@ if ($mode === 'searchuser') {
 		include $phpbb_root_path . 'includes/page_header.php';
 
         if ($show_results === 'posts') {
-            $template->set_filenames(['body' => 'search_results_posts.tpl']);
+            $template->setFileNames(['body' => 'search_results_posts.tpl']);
         } else {
-            $template->set_filenames(['body' => 'search_results_topics.tpl']);
+            $template->setFileNames(['body' => 'search_results_topics.tpl']);
         }
 
         make_jumpbox('viewforum.php');
 
 		$l_search_matches = ( $total_match_count === 1 ) ? sprintf($lang['Found_search_match'], $total_match_count) : sprintf($lang['Found_search_matches'], $total_match_count);
 
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'L_SEARCH_MATCHES' => $l_search_matches,
                 'L_TOPIC'          => $lang['Topic']
@@ -940,7 +940,7 @@ if ($mode === 'searchuser') {
                     $mini_post_alt = $lang['Post'];
                 }
 
-                $template->assign_block_vars('searchresults',
+                $template->assignBlockVars('searchresults',
                     [
                         'TOPIC_TITLE'   => $topic_title,
                         'FORUM_NAME'    => $search_set->forum_name,
@@ -1122,7 +1122,7 @@ if ($mode === 'searchuser') {
 
 				$last_post_url = '<a href="' . Session::appendSid('viewtopic.php?' . POST_POST_URL . '=' . $search_set->topic_last_post_id) . '#' . $search_set->topic_last_post_id . '"><img src="' . $images['icon_latest_reply'] . '" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" border="0" /></a>';
 
-                $template->assign_block_vars('searchresults',
+                $template->assignBlockVars('searchresults',
                     [
                         'FORUM_NAME'       => $search_set->forum_name,
                         'FORUM_ID'         => $forum_id,
@@ -1152,7 +1152,7 @@ if ($mode === 'searchuser') {
 
 		$base_url = "search.php?search_id=$search_id";
 
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'PAGINATION'  => generate_pagination($base_url, $total_match_count, $per_page, $start),
                 'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $per_page) + 1, ceil($total_match_count / $per_page)),
@@ -1281,10 +1281,10 @@ foreach ($previous_days as $previous_day_key => $previous_days_value) {
 $page_title = $lang['Search'];
 include $phpbb_root_path . 'includes/page_header.php';
 
-$template->set_filenames(['body' => 'search_body.tpl']);
+$template->setFileNames(['body' => 'search_body.tpl']);
 make_jumpbox('viewforum.php');
 
-$template->assign_vars(
+$template->assignVars(
     [
         'L_SEARCH_QUERY'            => $lang['Search_query'],
         'L_SEARCH_OPTIONS'          => $lang['Search_options'],

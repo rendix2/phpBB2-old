@@ -67,7 +67,7 @@ if ($mode !== '')
 	{
 		$word_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-        $template->set_filenames(['body' => 'admin/words_edit_body.tpl']);
+        $template->setFileNames(['body' => 'admin/words_edit_body.tpl']);
 
         $word_info = ['word' => '', 'replacement' => ''];
         $s_hidden_fields = '';
@@ -85,7 +85,7 @@ if ($mode !== '')
 			}
 		}
 
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'WORD'        => htmlspecialchars($word_info['word']),
                 'REPLACEMENT' => htmlspecialchars($word_info['replacement']),
@@ -159,11 +159,11 @@ if ($mode !== '')
 			message_die(GENERAL_MESSAGE, $message);
 		} elseif ($word_id && !$confirm) {
 			// Present the confirmation screen to the user
-            $template->set_filenames(['body' => 'admin/confirm_body.tpl']);
+            $template->setFileNames(['body' => 'admin/confirm_body.tpl']);
 
             $hidden_fields = '<input type="hidden" name="mode" value="delete" /><input type="hidden" name="id" value="' . $word_id . '" />';
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
                     'MESSAGE_TITLE' => $lang['Confirm'],
                     'MESSAGE_TEXT'  => $lang['Confirm_delete_word'],
@@ -180,14 +180,14 @@ if ($mode !== '')
 		}
 	}
 } else {
-    $template->set_filenames(['body' => 'admin/words_list_body.tpl']);
+    $template->setFileNames(['body' => 'admin/words_list_body.tpl']);
 
      $words = dibi::select('*')
          ->from(WORDS_TABLE)
          ->orderBy('word')
          ->fetchAll();
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'L_WORDS_TITLE' => $lang['Words_title'],
             'L_WORDS_TEXT'  => $lang['Words_explain'],
@@ -209,7 +209,7 @@ if ($mode !== '')
 		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-        $template->assign_block_vars('words',
+        $template->assignBlockVars('words',
             [
                 'ROW_COLOR'   => '#' . $row_color,
                 'ROW_CLASS'   => $row_class,

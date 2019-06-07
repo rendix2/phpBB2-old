@@ -40,14 +40,14 @@ init_userprefs($userdata);
 $page_title = $lang['Who_is_Online'];
 include $phpbb_root_path . 'includes/page_header.php';
 
-$template->set_filenames(
+$template->setFileNames(
     [
 	   'body' => 'viewonline_body.tpl'        
     ]
 );
 make_jumpbox('viewforum.php');
 
-$template->assign_vars(
+$template->assignVars(
     [
         'L_WHOSONLINE'     => $lang['Who_is_Online'],
         'L_ONLINE_EXPLAIN' => $lang['Online_explain'],
@@ -195,7 +195,7 @@ foreach ($rows as $row) {
 		$row_color = ( $$which_counter % 2 ) ? $theme['td_color1'] : $theme['td_color2'];
 		$row_class = ( $$which_counter % 2 ) ? $theme['td_class1'] : $theme['td_class2'];
 
-        $template->assign_block_vars((string)$which_row,
+        $template->assignBlockVars((string)$which_row,
             [
                 'ROW_COLOR'      => '#' . $row_color,
                 'ROW_CLASS'      => $row_class,
@@ -236,7 +236,7 @@ if ($guest_users === 0) {
     $l_g_user_s = $lang['Guest_users_online'];
 }
 
-$template->assign_vars(
+$template->assignVars(
     [
         'TOTAL_REGISTERED_USERS_ONLINE' => sprintf($l_r_user_s, $registered_users) . sprintf($l_h_user_s, $hidden_users),
         'TOTAL_GUEST_USERS_ONLINE'      => sprintf($l_g_user_s, $guest_users)
@@ -244,11 +244,11 @@ $template->assign_vars(
 );
 
 if ($registered_users + $hidden_users === 0) {
-    $template->assign_vars(['L_NO_REGISTERED_USERS_BROWSING' => $lang['No_users_browsing']]);
+    $template->assignVars(['L_NO_REGISTERED_USERS_BROWSING' => $lang['No_users_browsing']]);
 }
 
 if ($guest_users === 0) {
-    $template->assign_vars(['L_NO_GUESTS_BROWSING' => $lang['No_users_browsing']]);
+    $template->assignVars(['L_NO_GUESTS_BROWSING' => $lang['No_users_browsing']]);
 }
 
 $template->pparse('body');

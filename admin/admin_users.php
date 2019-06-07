@@ -593,11 +593,11 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 
 			message_die(GENERAL_MESSAGE, $message);
 		} else {
-            $template->set_filenames(['reg_header' => 'error_body.tpl']);
+            $template->setFileNames(['reg_header' => 'error_body.tpl']);
 
-            $template->assign_vars(['ERROR_MESSAGE' => $error_msg]);
+            $template->assignVars(['ERROR_MESSAGE' => $error_msg]);
 
-            $template->assign_var_from_handle('ERROR_BOX', 'reg_header');
+            $template->assignVarFromHandle('ERROR_BOX', 'reg_header');
 
 			$username = htmlspecialchars(stripslashes($username));
 			$email = stripslashes($email);
@@ -688,7 +688,7 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 		if (!$error ) {
 			$user_id = (int)$_POST['id'];
 
-            $template->set_filenames(['body' => 'admin/user_avatar_gallery.tpl']);
+            $template->setFileNames(['body' => 'admin/user_avatar_gallery.tpl']);
 
             $dir = @opendir('../' . $board_config['avatar_gallery_path']);
 
@@ -737,17 +737,17 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 
 			$s_colspan = 0;
 			foreach ($avatar_images[$category] as $avatar_image) {
-                $template->assign_block_vars('avatar_row', []);
+                $template->assignBlockVars('avatar_row', []);
 
                 $s_colspan = max($s_colspan, count($avatar_image));
 
 				foreach ($avatar_image as $avatar_image_value) {
-                    $template->assign_block_vars('avatar_row.avatar_column', [
+                    $template->assignBlockVars('avatar_row.avatar_column', [
                             'AVATAR_IMAGE' => '../' . $board_config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_image_value
                         ]
                     );
 
-                    $template->assign_block_vars('avatar_row.avatar_option_column', [
+                    $template->assignBlockVars('avatar_row.avatar_option_column', [
                             'S_OPTIONS_AVATAR' => $avatar_image_value
                         ]
                     );
@@ -789,7 +789,7 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 			$s_hidden_fields .= '<input type="hidden" name="user_allowavatar" value="' . $user_allowavatar . '" />';
 			$s_hidden_fields .= '<input type="hidden" name="user_rank" value="' . $user_rank . '" />';
 
-            $template->assign_vars([
+            $template->assignVars([
                 'L_USER_TITLE'     => $lang['User_admin'],
                 'L_USER_EXPLAIN'   => $lang['User_admin_explain'],
                 'L_AVATAR_GALLERY' => $lang['Avatar_gallery'],
@@ -842,7 +842,7 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 			$rank_select_box .= '<option value="' . $rank->rank_id . '"' . $selected . '>' . $rank->rank_title . '</option>';
 		}
 
-        $template->set_filenames(['body' => 'admin/user_edit_body.tpl']);
+        $template->setFileNames(['body' => 'admin/user_edit_body.tpl']);
 
         //
 		// Let's do an overall check for settings/versions which would prevent
@@ -850,7 +850,7 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 		//
 		$form_enctype = ( !@ini_get('file_uploads') || PHP_VERSION === '4.0.4pl1' || !$board_config['allow_avatar_upload'] || ( PHP_VERSION < '4.0.3' && @ini_get('open_basedir') !== '' ) ) ? '' : 'enctype="multipart/form-data"';
 
-		$template->assign_vars(
+		$template->assignVars(
 		    [
                 'USERNAME' => $username,
                 'EMAIL' => $email,
@@ -969,18 +969,18 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 
         if (file_exists(@phpbb_realpath('./../' . $board_config['avatar_path'])) && ($board_config['allow_avatar_upload'] === true)) {
             if ($form_enctype !== '') {
-                $template->assign_block_vars('avatar_local_upload', []);
+                $template->assignBlockVars('avatar_local_upload', []);
             }
 
-            $template->assign_block_vars('avatar_remote_upload', []);
+            $template->assignBlockVars('avatar_remote_upload', []);
         }
 
         if (file_exists(@phpbb_realpath('./../' . $board_config['avatar_gallery_path'])) && ($board_config['allow_avatar_local'] === true)) {
-            $template->assign_block_vars('avatar_local_gallery', []);
+            $template->assignBlockVars('avatar_local_gallery', []);
         }
 
         if ($board_config['allow_avatar_remote'] === true) {
-            $template->assign_block_vars('avatar_remote_link', []);
+            $template->assignBlockVars('avatar_remote_link', []);
         }
     }
 
@@ -991,9 +991,9 @@ else
 	//
 	// Default user selection box
 	//
-    $template->set_filenames(['body' => 'admin/user_select_body.tpl']);
+    $template->setFileNames(['body' => 'admin/user_select_body.tpl']);
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'L_USER_TITLE'    => $lang['User_admin'],
             'L_USER_EXPLAIN'  => $lang['User_admin_explain'],

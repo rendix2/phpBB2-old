@@ -44,7 +44,7 @@ $ranks = dibi::select('*')
 //
 // Output page header and profile_view template
 //
-$template->set_filenames(['body' => 'profile_view_body.tpl']);
+$template->setFileNames(['body' => 'profile_view_body.tpl']);
 make_jumpbox('viewforum.php');
 
 //
@@ -158,7 +158,7 @@ if (function_exists('get_html_translation_table')) {
     $u_search_author = urlencode(str_replace(['&amp;', '&#039;', '&quot;', '&lt;', '&gt;'], ['&', "'", '"', '<', '>'], $profile_data['username']));
 }
 
-$template->assign_vars(array(
+$template->assignVars(array(
         'USERNAME' => $profile_data['username'],
         'JOINED' => create_date($lang['DATE_FORMAT'], $profile_data['user_regdate'], $board_config['board_timezone']),
         'POSTER_RANK' => $poster_rank,

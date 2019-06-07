@@ -53,7 +53,7 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 	//
 	// Ok they are editing a group or creating a new group
 	//
-	$template->set_filenames(['body' => 'admin/group_edit_body.tpl']);
+	$template->setFileNames(['body' => 'admin/group_edit_body.tpl']);
 
 	if (isset($_POST['edit'])) {
 		//
@@ -70,7 +70,7 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 		}
 
 		$mode = 'editgroup';
-		$template->assign_block_vars('group_edit', []);
+		$template->assignBlockVars('group_edit', []);
     } elseif (isset($_POST['new'])) {
 		$group_info = [
 			'group_name'        => '',
@@ -112,7 +112,7 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 
 	$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
 
-	$template->assign_vars(
+	$template->assignVars(
 		[
             'GROUP_NAME'        => $group_info['group_name'],
             'GROUP_DESCRIPTION' => $group_info['group_description'],
@@ -336,9 +336,9 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
 		$select_list .= '</select>';
 	}
 
-	$template->set_filenames(['body' => 'admin/group_select_body.tpl']);
+	$template->setFileNames(['body' => 'admin/group_select_body.tpl']);
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'L_GROUP_TITLE'   => $lang['Group_administration'],
             'L_GROUP_EXPLAIN' => $lang['Group_admin_explain'],
@@ -356,7 +356,7 @@ if ( isset($_POST['edit']) || isset($_POST['new']) ) {
     // TODO!!!!
     // it was if ( $select_list != '' ) {
     if ($group_count) {
-        $template->assign_block_vars('select_box', []);
+        $template->assignBlockVars('select_box', []);
     }
 
     $template->pparse('body');

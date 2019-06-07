@@ -145,7 +145,7 @@ if (isset($_POST['submit'])) {
 		$adv = 0;
 	}
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('admin_forumauth.php?' . POST_FORUM_URL . "=$forum_id") . '">'
         ]
@@ -180,7 +180,7 @@ if (empty($forum_id) ) {
 	// Output the selection table if no forum id was
 	// specified
 	//
-    $template->set_filenames(['body' => 'admin/auth_select_body.tpl']);
+    $template->setFileNames(['body' => 'admin/auth_select_body.tpl']);
 
     $select_list = '<select name="' . POST_FORUM_URL . '">';
 
@@ -190,7 +190,7 @@ if (empty($forum_id) ) {
 
 	$select_list .= '</select>';
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'L_AUTH_TITLE'   => $lang['Auth_Control_Forum'],
             'L_AUTH_EXPLAIN' => $lang['Forum_auth_explain'],
@@ -206,7 +206,7 @@ if (empty($forum_id) ) {
 	// Output the authorisation details if an id was
 	// specified
 	//
-    $template->set_filenames(['body' => 'admin/auth_forum_body.tpl']);
+    $template->setFileNames(['body' => 'admin/auth_forum_body.tpl']);
 
     $forum_name = $forum_rows[0]->forum_name;
 
@@ -247,8 +247,8 @@ if (empty($forum_id) ) {
 
 		$simple_auth .= '</select>';
 
-        $template->assign_block_vars('forum_auth_titles', ['CELL_TITLE' => $lang['Simple_mode']]);
-        $template->assign_block_vars('forum_auth_data', ['S_AUTH_LEVELS_SELECT' => $simple_auth]);
+        $template->assignBlockVars('forum_auth_titles', ['CELL_TITLE' => $lang['Simple_mode']]);
+        $template->assignBlockVars('forum_auth_data', ['S_AUTH_LEVELS_SELECT' => $simple_auth]);
 
         $s_column_span++;
 	} else {
@@ -268,8 +268,8 @@ if (empty($forum_id) ) {
 
 			$cell_title = $field_names[$forum_auth_field];
 
-            $template->assign_block_vars('forum_auth_titles', ['CELL_TITLE' => $cell_title]);
-            $template->assign_block_vars('forum_auth_data', ['S_AUTH_LEVELS_SELECT' => $custom_auth[$key]]);
+            $template->assignBlockVars('forum_auth_titles', ['CELL_TITLE' => $cell_title]);
+            $template->assignBlockVars('forum_auth_data', ['S_AUTH_LEVELS_SELECT' => $custom_auth[$key]]);
 
             $s_column_span++;
 		}
@@ -282,7 +282,7 @@ if (empty($forum_id) ) {
 
 	$s_hidden_fields = '<input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '">';
 
-	$template->assign_vars([
+	$template->assignVars([
             'FORUM_NAME' => $forum_name,
 
             'L_FORUM' => $lang['Forum'],

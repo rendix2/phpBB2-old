@@ -156,7 +156,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
         ->fetchSingle();
 
     if ($group_moderator !== $userdata['user_id'] && $userdata['user_level'] !== ADMIN) {
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('index.php') . '">'
             ]
@@ -171,7 +171,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
         ->where('group_id = %i', $group_id)
         ->execute();
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$group_id") . '">'
         ]
@@ -209,7 +209,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
     if ($row[0]->group_type === GROUP_OPEN) {
         foreach ($rows as $row) {
             if ($userdata['user_id'] === $row->user_id) {
-                $template->assign_vars(
+                $template->assignVars(
                     [
                         'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('index.php') . '">'
                     ]
@@ -221,7 +221,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
             }
         }
     } else {
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('index.php') . '">'
             ]
@@ -271,7 +271,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 	$emailer->send();
 	$emailer->reset();
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('index.php') . '">'
         ]
@@ -318,7 +318,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
             }
         }
 
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('index.php') . '">'
             ]
@@ -336,9 +336,9 @@ if (isset($_POST['groupstatus']) && $group_id) {
 		$page_title = $lang['Group_Control_Panel'];
 		include $phpbb_root_path . 'includes/page_header.php';
 
-        $template->set_filenames(['confirm' => 'confirm_body.tpl']);
+        $template->setFileNames(['confirm' => 'confirm_body.tpl']);
 
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'MESSAGE_TITLE'    => $lang['Confirm'],
                 'MESSAGE_TEXT'     => $unsub_msg,
@@ -432,7 +432,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
             }
 
             if (!$is_moderator) {
-                $template->assign_vars(
+                $template->assignVars(
                     [
                         'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('index.php') . '">'
                     ]
@@ -452,7 +452,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
                     ->fetch();
 
                 if (!$row) {
-                    $template->assign_vars(
+                    $template->assignVars(
                         [
                             'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$group_id") . '">'
                         ]
@@ -464,7 +464,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 				}
 
                 if ($row->user_id === ANONYMOUS) {
-                    $template->assign_vars(
+                    $template->assignVars(
                         [
                             'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$group_id") . '">'
 
@@ -486,7 +486,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
                     ->fetch();
 
 				if ($member) {
-                    $template->assign_vars(
+                    $template->assignVars(
                         [
                             'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$group_id") . '">'
                         ]
@@ -793,7 +793,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 
         $s_hidden_fields = '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
     } elseif ($is_group_member || $is_group_pending_member) {
-        $template->assign_block_vars('switch_unsubscribe_group_input', []);
+        $template->assignBlockVars('switch_unsubscribe_group_input', []);
 
         $group_details = $is_group_pending_member ? $lang['Pending_this_group'] : $lang['Member_this_group'];
 
@@ -803,7 +803,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
         $s_hidden_fields = '';
     } else {
         if ($group_info->group_type === GROUP_OPEN) {
-            $template->assign_block_vars('switch_subscribe_group_input', []);
+            $template->assignBlockVars('switch_subscribe_group_input', []);
 
             $group_details   = $lang['This_open_group'];
             $s_hidden_fields = '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
@@ -822,7 +822,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 	//
 	// Load templates
 	//
-    $template->set_filenames(['info' => 'groupcp_info_body.tpl', 'pendinginfo' => 'groupcp_pending_info.tpl']);
+    $template->setFileNames(['info' => 'groupcp_info_body.tpl', 'pendinginfo' => 'groupcp_pending_info.tpl']);
     make_jumpbox('viewforum.php');
 
 	//
@@ -835,7 +835,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 
 	$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
-	$template->assign_vars([
+	$template->assignVars([
             'L_GROUP_INFORMATION' => $lang['Group_Information'],
             'L_GROUP_NAME' => $lang['Group_name'],
             'L_GROUP_DESC' => $lang['Group_description'],
@@ -931,7 +931,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 			$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-            $template->assign_block_vars('member_row',
+            $template->assignBlockVars('member_row',
                 [
                     'ROW_COLOR'      => '#' . $row_color,
                     'ROW_CLASS'      => $row_class,
@@ -966,7 +966,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
             );
 
             if ($is_moderator) {
-                $template->assign_block_vars('member_row.switch_mod_option', []);
+                $template->assignBlockVars('member_row.switch_mod_option', []);
             }
 		}
 	}
@@ -975,8 +975,8 @@ if (isset($_POST['groupstatus']) && $group_id) {
         //
         // No group members
         //
-        $template->assign_block_vars('switch_no_members', []);
-        $template->assign_vars([
+        $template->assignBlockVars('switch_no_members', []);
+        $template->assignVars([
                 'L_NO_MEMBERS' => $lang['No_group_members']
             ]
         );
@@ -984,7 +984,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 
     $current_page = (!$members_count) ? 1 : ceil($members_count / $board_config['topics_per_page']);
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'PAGINATION'  => generate_pagination('groupcp.php?' . POST_GROUPS_URL . "=$group_id", $members_count, $board_config['topics_per_page'], $start),
             'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $board_config['topics_per_page']) + 1, $current_page),
@@ -997,8 +997,8 @@ if (isset($_POST['groupstatus']) && $group_id) {
 		//
 		// No group members
 		//
-        $template->assign_block_vars('switch_hidden_group', []);
-        $template->assign_vars(
+        $template->assignBlockVars('switch_hidden_group', []);
+        $template->assignVars(
             [
                 'L_HIDDEN_MEMBERS' => $lang['Group_hidden_members']
             ]
@@ -1026,7 +1026,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 
 				$user_select = '<input type="checkbox" name="member[]" value="' . $user_id . '">';
 
-                $template->assign_block_vars('pending_members_row',
+                $template->assignBlockVars('pending_members_row',
                     [
                         'ROW_CLASS'      => $row_class,
                         'ROW_COLOR'      => '#' . $row_color,
@@ -1061,9 +1061,9 @@ if (isset($_POST['groupstatus']) && $group_id) {
                 );
             }
 
-			$template->assign_block_vars('switch_pending_members', [] );
+			$template->assignBlockVars('switch_pending_members', [] );
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
                     'L_SELECT'           => $lang['Select'],
                     'L_APPROVE_SELECTED' => $lang['Approve_selected'],
@@ -1071,14 +1071,14 @@ if (isset($_POST['groupstatus']) && $group_id) {
                 ]
             );
 
-            $template->assign_var_from_handle('PENDING_USER_BOX', 'pendinginfo');
+            $template->assignVarFromHandle('PENDING_USER_BOX', 'pendinginfo');
 		
 		}
 	}
 
     if ($is_moderator) {
-        $template->assign_block_vars('switch_mod_option', []);
-        $template->assign_block_vars('switch_add_member', []);
+        $template->assignBlockVars('switch_mod_option', []);
+        $template->assignBlockVars('switch_add_member', []);
     }
 
 	$template->pparse('info');
@@ -1153,28 +1153,28 @@ if (isset($_POST['groupstatus']) && $group_id) {
 		$page_title = $lang['Group_Control_Panel'];
 		include $phpbb_root_path . 'includes/page_header.php';
 
-        $template->set_filenames(['user' => 'groupcp_user_body.tpl']);
+        $template->setFileNames(['user' => 'groupcp_user_body.tpl']);
         make_jumpbox('viewforum.php');
 
         if ($s_pending_groups_opt !== '' || $s_member_groups_opt !== '') {
-            $template->assign_block_vars('switch_groups_joined', []);
+            $template->assignBlockVars('switch_groups_joined', []);
         }
 
         if ($s_member_groups_opt !== '') {
-            $template->assign_block_vars('switch_groups_joined.switch_groups_member', []);
+            $template->assignBlockVars('switch_groups_joined.switch_groups_member', []);
         }
 
         if ($s_pending_groups_opt !== '') {
-            $template->assign_block_vars('switch_groups_joined.switch_groups_pending', []);
+            $template->assignBlockVars('switch_groups_joined.switch_groups_pending', []);
         }
 
         if ($s_group_list_opt !== '') {
-            $template->assign_block_vars('switch_groups_remaining', []);
+            $template->assignBlockVars('switch_groups_remaining', []);
         }
 
 		$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'L_GROUP_MEMBERSHIP_DETAILS' => $lang['Group_member_details'],
                 'L_JOIN_A_GROUP'             => $lang['Group_member_join'],

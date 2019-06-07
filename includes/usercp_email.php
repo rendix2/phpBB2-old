@@ -132,7 +132,7 @@ if ($row->user_viewemail || $userdata['user_level'] === ADMIN) {
                 $emailer->reset();
             }
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
                     'META' => '<meta http-equiv="refresh" content="5;url=' . Session::appendSid('index.php') . '">'
                 ]
@@ -146,16 +146,16 @@ if ($row->user_viewemail || $userdata['user_level'] === ADMIN) {
 
     include $phpbb_root_path . 'includes/page_header.php';
 
-    $template->set_filenames(['body' => 'profile_send_email.tpl']);
+    $template->setFileNames(['body' => 'profile_send_email.tpl']);
     make_jumpbox('viewforum.php');
 
     if ($error) {
-        $template->set_filenames(['reg_header' => 'error_body.tpl']);
-        $template->assign_vars(['ERROR_MESSAGE' => $error_msg]);
-        $template->assign_var_from_handle('ERROR_BOX', 'reg_header');
+        $template->setFileNames(['reg_header' => 'error_body.tpl']);
+        $template->assignVars(['ERROR_MESSAGE' => $error_msg]);
+        $template->assignVarFromHandle('ERROR_BOX', 'reg_header');
     }
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'USERNAME' => $username,
 

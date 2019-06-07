@@ -84,7 +84,7 @@ if (isset($_POST['submit'])) {
     $emailer->send();
     $emailer->reset();
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'META' => '<meta http-equiv="refresh" content="15;url=' . Session::appendSid('index.php') . '">'
         ]
@@ -100,10 +100,10 @@ if (isset($_POST['submit'])) {
 //
 include $phpbb_root_path . 'includes/page_header.php';
 
-$template->set_filenames(['body' => 'profile_send_pass.tpl']);
+$template->setFileNames(['body' => 'profile_send_pass.tpl']);
 make_jumpbox('viewforum.php');
 
-$template->assign_vars(
+$template->assignVars(
     [
         'USERNAME' => $username,
         'EMAIL'    => $email,

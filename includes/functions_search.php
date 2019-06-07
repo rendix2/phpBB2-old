@@ -367,9 +367,9 @@ function username_search($search_match)
 	$page_title = $lang['Search'];
 	include $phpbb_root_path . 'includes/page_header.php';
 
-    $template->set_filenames(['search_user_body' => 'search_username.tpl']);
+    $template->setFileNames(['search_user_body' => 'search_username.tpl']);
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'USERNAME' => !empty($search_match) ? phpbb_clean_username($search_match) : '',
 
@@ -386,7 +386,7 @@ function username_search($search_match)
     );
 
     if ($username_list !== '') {
-		$template->assign_block_vars('switch_select_name', []);
+		$template->assignBlockVars('switch_select_name', []);
 	}
 
 	$template->pparse('search_user_body');

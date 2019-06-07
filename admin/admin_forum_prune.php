@@ -86,7 +86,7 @@ if (isset($_POST['doprune']) ) {
     $prune_date->sub(new DateInterval('P' . $prunedays . 'D'))
         ->getTimestamp();
 
-    $template->set_filenames(['body' => 'admin/forum_prune_result_body.tpl']);
+    $template->setFileNames(['body' => 'admin/forum_prune_result_body.tpl']);
 
     foreach ($forums as $forum) {
         $p_result = prune($forum->forum_id, $prune_date);
@@ -95,7 +95,7 @@ if (isset($_POST['doprune']) ) {
         $row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
         $row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-        $template->assign_block_vars('prune_results',
+        $template->assignBlockVars('prune_results',
             [
                 'ROW_COLOR' => '#' . $row_color,
                 'ROW_CLASS' => $row_class,
@@ -106,7 +106,7 @@ if (isset($_POST['doprune']) ) {
         );   
     }
 
-	$template->assign_vars([
+	$template->assignVars([
 		'L_FORUM_PRUNE' => $lang['Forum_Prune'],
 		'L_FORUM' => $lang['Forum'],
 		'L_TOPICS_PRUNED' => $lang['Topics_pruned'],
@@ -122,7 +122,7 @@ if (isset($_POST['doprune']) ) {
 		//
 		// Output a selection table if no forum id has been specified.
 		//
-        $template->set_filenames(['body' => 'admin/forum_prune_select_body.tpl']);
+        $template->setFileNames(['body' => 'admin/forum_prune_select_body.tpl']);
 
         $select_list = '<select name="' . POST_FORUM_URL . '">';
 		$select_list .= '<option value="-1">' . $lang['All_Forums'] . '</option>';
@@ -136,7 +136,7 @@ if (isset($_POST['doprune']) ) {
 		//
 		// Assign the template variables.
 		//
-		$template->assign_vars([
+		$template->assignVars([
                 'L_FORUM_PRUNE' => $lang['Forum_Prune'],
                 'L_SELECT_FORUM' => $lang['Select_a_Forum'],
                 'L_LOOK_UP' => $lang['Look_up_Forum'],
@@ -152,7 +152,7 @@ if (isset($_POST['doprune']) ) {
 		//
 		// Output the form to retrieve Prune information.
 		//
-        $template->set_filenames(['body' => 'admin/forum_prune_body.tpl']);
+        $template->setFileNames(['body' => 'admin/forum_prune_body.tpl']);
 
         $forum_name = ( $forum_id === -1 ) ? $lang['All_Forums'] : $forum_rows[0]['forum_name'];
 
@@ -164,7 +164,7 @@ if (isset($_POST['doprune']) ) {
 		//
 		// Assign the template variables.
 		//
-		$template->assign_vars([
+		$template->assignVars([
                 'FORUM_NAME' => $forum_name,
 
                 'L_FORUM' => $lang['Forum'],

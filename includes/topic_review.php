@@ -104,7 +104,7 @@ function topic_review($topic_id, $is_inline_review)
 		$page_title = $lang['Topic_review'] . ' - ' . $topic_title;
 		include $phpbb_root_path . 'includes/page_header.php';
 
-        $template->set_filenames(['reviewbody' => 'posting_topic_review.tpl']);
+        $template->setFileNames(['reviewbody' => 'posting_topic_review.tpl']);
     }
 
     //
@@ -189,7 +189,7 @@ function topic_review($topic_id, $is_inline_review)
 			$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-            $template->assign_block_vars('postrow',
+            $template->assignBlockVars('postrow',
                 [
                     'ROW_COLOR' => '#' . $row_color,
                     'ROW_CLASS' => $row_class,
@@ -210,7 +210,7 @@ function topic_review($topic_id, $is_inline_review)
 		message_die(GENERAL_MESSAGE, 'Topic_post_not_exist', '', __LINE__, __FILE__);
 	}
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'L_AUTHOR'       => $lang['Author'],
             'L_MESSAGE'      => $lang['Message'],

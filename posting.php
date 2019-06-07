@@ -510,9 +510,9 @@ if (($delete || $poll_delete || $mode === 'delete') && !$confirm) {
 	//
 	include $phpbb_root_path . 'includes/page_header.php';
 
-    $template->set_filenames(['confirm_body' => 'confirm_body.tpl']);
+    $template->setFileNames(['confirm_body' => 'confirm_body.tpl']);
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'MESSAGE_TITLE' => $lang['Information'],
             'MESSAGE_TEXT'  => $l_confirm,
@@ -578,7 +578,7 @@ if (($delete || $poll_delete || $mode === 'delete') && !$confirm) {
 
     dibi::insert(VOTE_USERS_TABLE, $insert_data)->execute();
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id") . '">'
         ]
@@ -662,7 +662,7 @@ if (($delete || $poll_delete || $mode === 'delete') && !$confirm) {
 			setcookie($topic_cookie_name, serialize($tracking_topics), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
 		}
 
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'META' => $return_meta
             ]
@@ -756,9 +756,9 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg !== '' ) {
 
 		$preview_message = str_replace("\n", '<br />', $preview_message);
 
-        $template->set_filenames(['preview' => 'posting_preview.tpl']);
+        $template->setFileNames(['preview' => 'posting_preview.tpl']);
 
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'TOPIC_TITLE'  => $preview_subject,
                 'POST_SUBJECT' => $preview_subject,
@@ -772,11 +772,11 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg !== '' ) {
                 'L_POST'         => $lang['Post']
             ]
         );
-        $template->assign_var_from_handle('POST_PREVIEW_BOX', 'preview');
+        $template->assignVarFromHandle('POST_PREVIEW_BOX', 'preview');
     } elseif ($error_msg !== '') {
-        $template->set_filenames(['reg_header' => 'error_body.tpl']);
-        $template->assign_vars(['ERROR_MESSAGE' => $error_msg]);
-        $template->assign_var_from_handle('ERROR_BOX', 'reg_header');
+        $template->setFileNames(['reg_header' => 'error_body.tpl']);
+        $template->assignVars(['ERROR_MESSAGE' => $error_msg]);
+        $template->assignVarFromHandle('ERROR_BOX', 'reg_header');
     }
 } else {
 	//
@@ -854,7 +854,7 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg !== '' ) {
 // Signature toggle selection
 //
 if ($user_sig !== '' ) {
-	$template->assign_block_vars('switch_signature_checkbox', []);
+	$template->assignBlockVars('switch_signature_checkbox', []);
 }
 
 //
@@ -862,7 +862,7 @@ if ($user_sig !== '' ) {
 //
 if ($board_config['allow_html']) {
     $html_status = $lang['HTML_is_ON'];
-    $template->assign_block_vars('switch_html_checkbox', []);
+    $template->assignBlockVars('switch_html_checkbox', []);
 } else {
     $html_status = $lang['HTML_is_OFF'];
 }
@@ -872,7 +872,7 @@ if ($board_config['allow_html']) {
 //
 if ($board_config['allow_bbcode']) {
     $bbcode_status = $lang['BBCode_is_ON'];
-    $template->assign_block_vars('switch_bbcode_checkbox', []);
+    $template->assignBlockVars('switch_bbcode_checkbox', []);
 } else {
     $bbcode_status = $lang['BBCode_is_OFF'];
 }
@@ -882,13 +882,13 @@ if ($board_config['allow_bbcode']) {
 //
 if ($board_config['allow_smilies']) {
     $smilies_status = $lang['Smilies_are_ON'];
-    $template->assign_block_vars('switch_smilies_checkbox', []);
+    $template->assignBlockVars('switch_smilies_checkbox', []);
 } else {
     $smilies_status = $lang['Smilies_are_OFF'];
 }
 
 if (!$userdata['session_logged_in'] || ($mode === 'editpost' && $post_info->poster_id === ANONYMOUS)) {
-    $template->assign_block_vars('switch_username_select', []);
+    $template->assignBlockVars('switch_username_select', []);
 }
 
 //
@@ -896,7 +896,7 @@ if (!$userdata['session_logged_in'] || ($mode === 'editpost' && $post_info->post
 //
 if ($userdata['session_logged_in'] && $is_auth['auth_read']) {
     if ($mode !== 'editpost' || ($mode === 'editpost' && $post_info->poster_id !== ANONYMOUS)) {
-        $template->assign_block_vars('switch_notify_checkbox', []);
+        $template->assignBlockVars('switch_notify_checkbox', []);
     }
 }
 
@@ -904,7 +904,7 @@ if ($userdata['session_logged_in'] && $is_auth['auth_read']) {
 // Delete selection
 //
 if ($mode === 'editpost' && (($is_auth['auth_delete'] && $post_data['last_post'] && (!$post_data['has_poll'] || $post_data['edit_poll'])) || $is_auth['auth_mod'])) {
-    $template->assign_block_vars('switch_delete_checkbox', []);
+    $template->assignBlockVars('switch_delete_checkbox', []);
 }
 
 //
@@ -912,7 +912,7 @@ if ($mode === 'editpost' && (($is_auth['auth_delete'] && $post_data['last_post']
 //
 $topic_type_toggle = '';
 if ($mode === 'newtopic' || ($mode === 'editpost' && $post_data['first_post'])) {
-	$template->assign_block_vars('switch_type_toggle', []);
+	$template->assignBlockVars('switch_type_toggle', []);
 
 	if ($is_auth['auth_sticky']) {
 		$topic_type_toggle .= '<input type="radio" name="topictype" value="' . POST_STICKY . '"';
@@ -967,7 +967,7 @@ generate_smilies('inline', PAGE_POSTING);
 //
 include $phpbb_root_path . 'includes/page_header.php';
 
-$template->set_filenames(
+$template->setFileNames(
     [
         'body'       => 'posting_body.tpl',
         'pollbody'   => 'posting_poll_body.tpl',
@@ -976,7 +976,7 @@ $template->set_filenames(
 );
 make_jumpbox('viewforum.php');
 
-$template->assign_vars(
+$template->assignVars(
     [
         'FORUM_NAME'     => $forum_name,
         'L_POST_A'       => $page_title,
@@ -990,12 +990,12 @@ $template->assign_vars(
 // This enables the forum/topic title to be output for posting
 // but not for privmsg (where it makes no sense)
 //
-$template->assign_block_vars('switch_not_privmsg', []);
+$template->assignBlockVars('switch_not_privmsg', []);
 
 //
 // Output the data to the template
 //
-$template->assign_vars([
+$template->assignVars([
     'USERNAME'       => $username,
     'SUBJECT'        => $subject,
     'MESSAGE'        => $message,
@@ -1077,7 +1077,7 @@ $template->assign_vars([
 // Poll entry switch/output
 //
 if (($mode === 'newtopic' || ($mode === 'editpost' && $post_data['edit_poll'])) && $is_auth['auth_pollcreate']) {
-    $template->assign_vars(
+    $template->assignVars(
         [
             'L_ADD_A_POLL'          => $lang['Add_poll'],
             'L_ADD_POLL_EXPLAIN'    => $lang['Add_poll_explain'],
@@ -1097,12 +1097,12 @@ if (($mode === 'newtopic' || ($mode === 'editpost' && $post_data['edit_poll'])) 
     );
 
     if ($mode === 'editpost' && $post_data['edit_poll'] && $post_data['has_poll']) {
-		$template->assign_block_vars('switch_poll_delete_toggle', []);
+		$template->assignBlockVars('switch_poll_delete_toggle', []);
 	}
 
 	if (!empty($poll_options) ) {
 	    foreach ($poll_options as $option_id => $option_text) {
-            $template->assign_block_vars('poll_option_rows',
+            $template->assignBlockVars('poll_option_rows',
                 [
                     'POLL_OPTION' => str_replace('"', '&quot;', $option_text),
 
@@ -1112,7 +1112,7 @@ if (($mode === 'newtopic' || ($mode === 'editpost' && $post_data['edit_poll'])) 
         }
     }
 
-	$template->assign_var_from_handle('POLLBOX', 'pollbody');
+	$template->assignVarFromHandle('POLLBOX', 'pollbody');
 }
 
 //
@@ -1122,8 +1122,8 @@ if ($mode === 'reply' && $is_auth['auth_read'] ) {
 	require $phpbb_root_path . 'includes/topic_review.php';
 	topic_review($topic_id, true);
 
-	$template->assign_block_vars('switch_inline_mode', []);
-	$template->assign_var_from_handle('TOPIC_REVIEW_BOX', 'reviewbody');
+	$template->assignBlockVars('switch_inline_mode', []);
+	$template->assignVarFromHandle('TOPIC_REVIEW_BOX', 'reviewbody');
 }
 
 $template->pparse('body');

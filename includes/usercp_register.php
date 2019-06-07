@@ -49,9 +49,9 @@ function show_coppa()
 {
 	global $template, $lang;
 
-    $template->set_filenames(['body' => 'agreement.tpl']);
+    $template->setFileNames(['body' => 'agreement.tpl']);
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'REGISTRATION'   => $lang['Registration'],
             'AGREEMENT'      => $lang['Reg_agreement'],
@@ -563,7 +563,7 @@ if (isset($_POST['submit'])) {
 				$message = $lang['Profile_updated'] . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 			}
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
                     'META' => '<meta http-equiv="refresh" content="5;url=' . Session::appendSid('index.php') . '">'
                 ]
@@ -823,7 +823,7 @@ if (isset($_POST['avatargallery']) && !$error ) {
 
 	$avatar_category = !empty($_POST['avatarcategory']) ? htmlspecialchars($_POST['avatarcategory']) : '';
 
-    $template->set_filenames(['body' => 'profile_avatar_gallery.tpl']);
+    $template->setFileNames(['body' => 'profile_avatar_gallery.tpl']);
 
     $allowviewonline = !$allowviewonline;
 
@@ -876,21 +876,21 @@ if (isset($_POST['avatargallery']) && !$error ) {
 	$smilies_status = ($userdata['user_allowsmile'] && $board_config['allow_smilies']  ) ? $lang['Smilies_are_ON'] : $lang['Smilies_are_OFF'];
 
     if ($error) {
-        $template->set_filenames(['reg_header' => 'error_body.tpl']);
-        $template->assign_vars(['ERROR_MESSAGE' => $error_msg]);
-        $template->assign_var_from_handle('ERROR_BOX', 'reg_header');
+        $template->setFileNames(['reg_header' => 'error_body.tpl']);
+        $template->assignVars(['ERROR_MESSAGE' => $error_msg]);
+        $template->assignVarFromHandle('ERROR_BOX', 'reg_header');
     }
 
-    $template->set_filenames(['body' => 'profile_add_body.tpl']);
+    $template->setFileNames(['body' => 'profile_add_body.tpl']);
 
     if ($mode === 'editprofile') {
-        $template->assign_block_vars('switch_edit_profile', []);
+        $template->assignBlockVars('switch_edit_profile', []);
     }
 
     if (($mode === 'register') || $board_config['allow_namechange']) {
-        $template->assign_block_vars('switch_namechange_allowed', []);
+        $template->assignBlockVars('switch_namechange_allowed', []);
     } else {
-        $template->assign_block_vars('switch_namechange_disallowed', []);
+        $template->assignBlockVars('switch_namechange_disallowed', []);
     }
 
 	// Visual Confirmation
@@ -937,7 +937,7 @@ if (isset($_POST['avatargallery']) && !$error ) {
 		$confirm_image = '<img src="' . Session::appendSid("profile.php?mode=confirm&amp;id=$confirm_id") . '" alt="" title="" />';
 		$s_hidden_fields .= '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />';
 
-		$template->assign_block_vars('switch_confirm', []);
+		$template->assignBlockVars('switch_confirm', []);
 	}
 
 
@@ -947,7 +947,7 @@ if (isset($_POST['avatargallery']) && !$error ) {
 	//
 	$form_enctype = ( @ini_get('file_uploads') === '0' || strtolower(@ini_get('file_uploads')) === 'off' || PHP_VERSION === '4.0.4pl1' || !$board_config['allow_avatar_upload'] || ( PHP_VERSION < '4.0.3' && @ini_get('open_basedir') !== '' ) ) ? '' : 'enctype="multipart/form-data"';
 
-	$template->assign_vars(array(
+	$template->assignVars(array(
             'USERNAME' => isset($username) ? $username : '',
             'CUR_PASSWORD' => isset($cur_password) ? $cur_password : '',
             'NEW_PASSWORD' => isset($new_password) ? $new_password : '',
@@ -1068,22 +1068,22 @@ if (isset($_POST['avatargallery']) && !$error ) {
 	//
     if ($mode !== 'register') {
         if ($userdata['user_allowavatar'] && ($board_config['allow_avatar_upload'] || $board_config['allow_avatar_local'] || $board_config['allow_avatar_remote'])) {
-			$template->assign_block_vars('switch_avatar_block', [] );
+			$template->assignBlockVars('switch_avatar_block', [] );
 
             if ($board_config['allow_avatar_upload'] && file_exists(@phpbb_realpath('./' . $board_config['avatar_path']))) {
                 if ($form_enctype !== '') {
-                    $template->assign_block_vars('switch_avatar_block.switch_avatar_local_upload', []);
+                    $template->assignBlockVars('switch_avatar_block.switch_avatar_local_upload', []);
                 }
 
-                $template->assign_block_vars('switch_avatar_block.switch_avatar_remote_upload', []);
+                $template->assignBlockVars('switch_avatar_block.switch_avatar_remote_upload', []);
             }
 
             if ($board_config['allow_avatar_remote']) {
-                $template->assign_block_vars('switch_avatar_block.switch_avatar_remote_link', []);
+                $template->assignBlockVars('switch_avatar_block.switch_avatar_remote_link', []);
             }
 
             if ($board_config['allow_avatar_local'] && file_exists(@phpbb_realpath('./' . $board_config['avatar_gallery_path']))) {
-                $template->assign_block_vars('switch_avatar_block.switch_avatar_local_gallery', []);
+                $template->assignBlockVars('switch_avatar_block.switch_avatar_local_gallery', []);
             }
 		}
 	}

@@ -274,7 +274,7 @@ switch ($mode) {
                 $l_redirect    = sprintf($lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
             }
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
                     'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">'
                 ]
@@ -302,9 +302,9 @@ switch ($mode) {
 			//
 			// Set template files
 			//
-            $template->set_filenames(['confirm' => 'confirm_body.tpl']);
+            $template->setFileNames(['confirm' => 'confirm_body.tpl']);
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
                     'MESSAGE_TITLE' => $lang['Confirm'],
                     'MESSAGE_TEXT'  => $lang['Confirm_delete_topic'],
@@ -406,7 +406,7 @@ switch ($mode) {
 
 			$message = $message . '<br \><br \>' . sprintf($lang['Click_return_forum'], '<a href="' . 'viewforum.php?' . POST_FORUM_URL . "=$old_forum_id&amp;sid=" . $userdata['session_id'] . '">', '</a>');
 
-            $template->assign_vars(['META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">']);
+            $template->assignVars(['META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">']);
 
             message_die(GENERAL_MESSAGE, $message);
 		} else {
@@ -429,13 +429,13 @@ switch ($mode) {
 			//
 			// Set template files
 			//
-            $template->set_filenames(
+            $template->setFileNames(
                 [
                     'movetopic' => 'modcp_move.tpl'
                 ]
             );
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
                     'MESSAGE_TITLE' => $lang['Confirm'],
                     'MESSAGE_TEXT'  => $lang['Confirm_move_topic'],
@@ -481,7 +481,7 @@ switch ($mode) {
 
 		$message = $message . '<br \><br \>' . sprintf($lang['Click_return_forum'], '<a href="' . 'viewforum.php?' . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'] . '">', '</a>');
 
-        $template->assign_vars(['META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">']);
+        $template->assignVars(['META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">']);
 
         message_die(GENERAL_MESSAGE, $lang['Topics_Locked'] . '<br /><br />' . $message);
 
@@ -512,7 +512,7 @@ switch ($mode) {
 
 		$message = $message . '<br \><br \>' . sprintf($lang['Click_return_forum'], '<a href="' . 'viewforum.php?' . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'] . '">', '</a>');
 
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">'
             ]
@@ -616,7 +616,7 @@ switch ($mode) {
 				sync('forum', $new_forum_id);
 				sync('forum', $forum_id);
 
-                $template->assign_vars(
+                $template->assignVars(
                     [
                         'META' => '<meta http-equiv="refresh" content="3;url=' . 'viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'] . '">'
                     ]
@@ -629,7 +629,7 @@ switch ($mode) {
 			//
 			// Set template files
 			//
-            $template->set_filenames(['split_body' => 'modcp_split.tpl']);
+            $template->setFileNames(['split_body' => 'modcp_split.tpl']);
 
             $posts = dibi::select(['u.username', 'p.*', 'pt.post_text', 'pt.bbcode_uid', 'pt.post_subject', 'p.post_username'])
                 ->from(POSTS_TABLE)
@@ -649,7 +649,7 @@ switch ($mode) {
 			$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" /><input type="hidden" name="' . POST_TOPIC_URL . '" value="' . $topic_id . '" /><input type="hidden" name="mode" value="split" />';
 
 			if ($total_posts) {
-                $template->assign_vars(
+                $template->assignVars(
                     [
                         'L_SPLIT_TOPIC'         => $lang['Split_Topic'],
                         'L_SPLIT_TOPIC_EXPLAIN' => $lang['Split_Topic_explain'],
@@ -727,7 +727,7 @@ switch ($mode) {
 
 					$checkbox = ( $i > 0 ) ? '<input type="checkbox" name="post_id_list[]" value="' . $post_id . '" />' : '&nbsp;';
 
-                    $template->assign_block_vars('postrow',
+                    $template->assignBlockVars('postrow',
                         [
                             'ROW_COLOR'    => '#' . $row_color,
                             'ROW_CLASS'    => $row_class,
@@ -760,7 +760,7 @@ switch ($mode) {
 		//
 		// Set template files
 		//
-        $template->set_filenames(['viewip' => 'modcp_viewip.tpl']);
+        $template->setFileNames(['viewip' => 'modcp_viewip.tpl']);
 
         $post_row = dibi::select(['poster_ip', 'poster_id'])
             ->from(POSTS_TABLE)
@@ -777,7 +777,7 @@ switch ($mode) {
 
 		$poster_id = $post_row->poster_id;
 
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'L_IP_INFO'      => $lang['IP_info'],
                 'L_THIS_POST_IP' => $lang['This_posts_IP'],
@@ -812,7 +812,7 @@ switch ($mode) {
 
         foreach ($rows as $row) {
             if ($row->poster_ip === $post_row->poster_ip) {
-                $template->assign_vars(
+                $template->assignVars(
                     [
                         'POSTS' => $row->postings . ' ' . (($row->postings === 1) ? $lang['Post'] : $lang['Posts'])
                     ]
@@ -827,7 +827,7 @@ switch ($mode) {
             $row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
             $row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-            $template->assign_block_vars('iprow',
+            $template->assignBlockVars('iprow',
                 [
                     'ROW_COLOR' => '#' . $row_color,
                     'ROW_CLASS' => $row_class,
@@ -870,7 +870,7 @@ switch ($mode) {
             $row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
             $row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-            $template->assign_block_vars('userrow', [
+            $template->assignBlockVars('userrow', [
                 'ROW_COLOR'      => '#' . $row_color,
                 'ROW_CLASS'      => $row_class,
                 'USERNAME'       => $username,
@@ -892,7 +892,7 @@ switch ($mode) {
 		$page_title = $lang['Mod_CP'];
 		include $phpbb_root_path . 'includes/page_header.php';
 
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'FORUM_NAME' => $forum_name,
 
@@ -913,7 +913,7 @@ switch ($mode) {
             ]
         );
 
-        $template->set_filenames(['body' => 'modcp_body.tpl']);
+        $template->setFileNames(['body' => 'modcp_body.tpl']);
         make_jumpbox('modcp.php');
 
 		//
@@ -987,7 +987,7 @@ switch ($mode) {
 
 			$last_post_time = create_date($board_config['default_dateformat'], $row->post_time, $board_config['board_timezone']);
 
-            $template->assign_block_vars('topicrow',
+            $template->assignBlockVars('topicrow',
                 [
                     'U_VIEW_TOPIC' => $u_view_topic,
 
@@ -1003,7 +1003,7 @@ switch ($mode) {
             );
         }
 
-        $template->assign_vars([
+        $template->assignVars([
             'PAGINATION'  => generate_pagination('modcp.php?' . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'], $forum_topics, $board_config['topics_per_page'], $start),
             'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $board_config['topics_per_page']) + 1, ceil($forum_topics / $board_config['topics_per_page'])),
 

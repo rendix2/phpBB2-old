@@ -686,7 +686,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 		$row_class = ( !( $i % 2 ) ) ? 'row2' : 'row1';
 		$row_color = ( !( $i % 2 ) ) ? $theme['td_color1'] : $theme['td_color2'];
 
-        $template->assign_block_vars('forums', [
+        $template->assignBlockVars('forums', [
             'ROW_COLOR'  => '#' . $row_color,
             'ROW_CLASS'  => $row_class,
             'FORUM_NAME' => $forum_access[$i]['forum_name'],
@@ -697,14 +697,14 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
             ]);
 
         if (!$adv) {
-            $template->assign_block_vars('forums.aclvalues',
+            $template->assignBlockVars('forums.aclvalues',
                 [
                     'S_ACL_SELECT' => $optionlist_acl
                 ]
             );
         } else {
             foreach ($optionlist_acl_adv[$forum_id] as $acl_select) {
-                $template->assign_block_vars('forums.aclvalues',
+                $template->assignBlockVars('forums.aclvalues',
                     [
                         'S_ACL_SELECT' => $acl_select
                     ]
@@ -758,13 +758,13 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 	$s_column_span = 2; // Two columns always present
 
     if (!$adv) {
-        $template->assign_block_vars('acltype', ['L_UG_ACL_TYPE' => $lang['Simple_Permission']]);
+        $template->assignBlockVars('acltype', ['L_UG_ACL_TYPE' => $lang['Simple_Permission']]);
         $s_column_span++;
     } else {
         foreach ($forum_auth_fields as $forum_auth_field) {
             $cell_title = $field_names[$forum_auth_field];
 
-            $template->assign_block_vars('acltype', ['L_UG_ACL_TYPE' => $cell_title]);
+            $template->assignBlockVars('acltype', ['L_UG_ACL_TYPE' => $cell_title]);
             $s_column_span++;
         }
     }
@@ -774,7 +774,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 	//
 	include './page_header_admin.php';
 
-    $template->set_filenames(['body' => 'admin/auth_ug_body.tpl']);
+    $template->setFileNames(['body' => 'admin/auth_ug_body.tpl']);
 
     $adv_switch = empty($adv) ? 1 : 0;
 	$u_ug_switch = ( $mode === 'user' ) ? POST_USERS_URL . '=' . $user_id : POST_GROUPS_URL . '=' . $group_id;
@@ -786,9 +786,9 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 	$s_hidden_fields .= ( $mode === 'user' ) ? '<input type="hidden" name="' . POST_USERS_URL . '" value="' . $user_id . '" />' : '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
 
 	if ( $mode === 'user' ) {
-        $template->assign_block_vars('switch_user_auth', []);
+        $template->assignBlockVars('switch_user_auth', []);
 
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'USERNAME'               => $t_username,
                 'USER_LEVEL'             => $lang['User_Level'] . ' : ' . $s_user_type,
@@ -796,9 +796,9 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
             ]
         );
     } else {
-        $template->assign_block_vars('switch_group_auth', []);
+        $template->assignBlockVars('switch_group_auth', []);
 
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'USERNAME'         => $t_groupname,
                 'GROUP_MEMBERSHIP' => $lang['Usergroup_members'] . ' : ' . $t_usergroup_list . '<br />' . $lang['Pending_members'] . ' : ' . $t_pending_list
@@ -806,7 +806,7 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
         );
     }
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'L_USER_OR_GROUPNAME' => ($mode === 'user') ? $lang['Username'] : $lang['Group_name'],
 
@@ -832,10 +832,10 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 	//
 	include './page_header_admin.php';
 
-    $template->set_filenames(['body' => ($mode === 'user') ? 'admin/user_select_body.tpl' : 'admin/auth_select_body.tpl']);
+    $template->setFileNames(['body' => ($mode === 'user') ? 'admin/user_select_body.tpl' : 'admin/auth_select_body.tpl']);
 
     if ( $mode === 'user' ) {
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'L_FIND_USERNAME' => $lang['Find_username'],
 
@@ -856,14 +856,14 @@ if ( isset($_POST['submit']) && ( ( $mode === 'user' && $user_id ) || ( $mode ==
 
 			$select_list .= '</select>';
 
-        $template->assign_vars(['S_AUTH_SELECT' => $select_list]);
+        $template->assignVars(['S_AUTH_SELECT' => $select_list]);
     }
 
     $s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" />';
 
 	$l_type = ( $mode === 'user' ) ? 'USER' : 'AUTH';
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'L_' . $l_type . '_TITLE'   => ($mode === 'user') ? $lang['Auth_Control_User'] : $lang['Auth_Control_Group'],
             'L_' . $l_type . '_EXPLAIN' => ($mode === 'user') ? $lang['User_auth_explain'] : $lang['Group_auth_explain'],

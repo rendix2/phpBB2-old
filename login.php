@@ -126,7 +126,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 					message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
 				}
 
-                $template->assign_vars(
+                $template->assignVars(
                     [
                         'META' => "<meta http-equiv=\"refresh\" content=\"3;url=login.php?redirect=$redirect\">"
                     ]
@@ -144,7 +144,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 				message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
 			}
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
                     'META' => "<meta http-equiv=\"refresh\" content=\"3;url=login.php?redirect=$redirect\">"
                 ]
@@ -184,7 +184,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 		$page_title = $lang['Login'];
 		include $phpbb_root_path . 'includes/page_header.php';
 
-        $template->set_filenames(['body' => 'login_body.tpl']);
+        $template->setFileNames(['body' => 'login_body.tpl']);
 
         $forward_page = '';
 
@@ -220,7 +220,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 		$s_hidden_fields .= isset($_GET['admin']) ? '<input type="hidden" name="admin" value="1" />' : '';
 
 		make_jumpbox('viewforum.php');
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'USERNAME' => $username,
 

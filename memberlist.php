@@ -90,11 +90,11 @@ $page_title = $lang['Memberlist'];
 
 include $phpbb_root_path . 'includes/page_header.php';
 
-$template->set_filenames(['body' => 'memberlist_body.tpl']);
+$template->setFileNames(['body' => 'memberlist_body.tpl']);
 
 make_jumpbox('viewforum.php');
 
-$template->assign_vars(
+$template->assignVars(
     [
         'L_SELECT_SORT_METHOD' => $lang['Select_sort_method'],
         'L_EMAIL'              => $lang['Email'],
@@ -257,7 +257,7 @@ foreach ($users as $user) {
     $row_color = (!($i % 2)) ? $theme['td_color1'] : $theme['td_color2'];
     $row_class = (!($i % 2)) ? $theme['td_class1'] : $theme['td_class2'];
 
-    $template->assign_block_vars('memberrow',
+    $template->assignBlockVars('memberrow',
         [
             'ROW_NUMBER' => $i + ($start + 1),
             'ROW_COLOR' => '#' . $row_color,
@@ -310,7 +310,7 @@ if ($mode !== 'topten' || $board_config['members_per_page'] < 10) {
     $total_members = 10;
 }
 
-$template->assign_vars(
+$template->assignVars(
     [
         'PAGINATION'  => $pagination,
         'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $board_config['members_per_page']) + 1, ceil($total_members / $board_config['members_per_page'])),

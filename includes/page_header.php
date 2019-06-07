@@ -55,7 +55,7 @@ if ( $board_config['gzip_compress'] ) {
 //
 // Parse and show the overall header.
 //
-$template->set_filenames(['overall_header' => empty($gen_simple_header) ? 'overall_header.tpl' : 'simple_header.tpl']);
+$template->setFileNames(['overall_header' => empty($gen_simple_header) ? 'overall_header.tpl' : 'simple_header.tpl']);
 
 //
 // Generate logged in/logged out status
@@ -275,7 +275,7 @@ $l_timezone = (count($l_timezone) > 1 && $l_timezone[count($l_timezone)-1] !== 0
 // The following assigns all _common_ variables that may be used at any point
 // in a template.
 //
-$template->assign_vars(array(
+$template->assignVars(array(
         'SITENAME' => $board_config['sitename'],
         'SITE_DESCRIPTION' => $board_config['site_desc'],
         'PAGE_TITLE' => $page_title,
@@ -380,19 +380,19 @@ $template->assign_vars(array(
 // Login box?
 //
 if (!$userdata['session_logged_in']) {
-    $template->assign_block_vars('switch_user_logged_out', []);
+    $template->assignBlockVars('switch_user_logged_out', []);
     //
     // Allow autologin?
     //
     if (!isset($board_config['allow_autologin']) || $board_config['allow_autologin']) {
-        $template->assign_block_vars('switch_allow_autologin', []);
-        $template->assign_block_vars('switch_user_logged_out.switch_allow_autologin', []);
+        $template->assignBlockVars('switch_allow_autologin', []);
+        $template->assignBlockVars('switch_user_logged_out.switch_allow_autologin', []);
     }
 } else {
-    $template->assign_block_vars('switch_user_logged_in', []);
+    $template->assignBlockVars('switch_user_logged_in', []);
 
     if (!empty($userdata['user_popup_pm'])) {
-        $template->assign_block_vars('switch_enable_pm_popup', []);
+        $template->assignBlockVars('switch_enable_pm_popup', []);
     }
 }
 

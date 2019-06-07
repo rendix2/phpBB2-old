@@ -31,7 +31,7 @@ global $do_gzip_compress;
 //
 $admin_link = ($userdata['user_level'] === ADMIN ) ? '<a href="admin/index.php?sid=' . $userdata['session_id'] . '">' . $lang['Admin_panel'] . '</a><br /><br />' : '';
 
-$template->set_filenames(['overall_footer' => empty($gen_simple_header) ? 'overall_footer.tpl' : 'simple_footer.tpl']);
+$template->setFileNames(['overall_footer' => empty($gen_simple_header) ? 'overall_footer.tpl' : 'simple_footer.tpl']);
 
 if (isset($lang['TRANSLATION_INFO'])) {
     $translation_info = $lang['TRANSLATION_INFO'];
@@ -39,7 +39,7 @@ if (isset($lang['TRANSLATION_INFO'])) {
     $translation_info = isset($lang['TRANSLATION']) ? $lang['TRANSLATION'] : '';
 }
 
-$template->assign_vars([
+$template->assignVars([
         'TRANSLATION_INFO' => $translation_info,
         'ADMIN_LINK'       => $admin_link
     ]);

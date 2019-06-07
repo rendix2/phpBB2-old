@@ -41,7 +41,7 @@ if (trim($user->user_actkey) !== '' && trim($row['user_actkey']) !== trim($_GET[
 }
 
 if ($row['user_active'] && trim($row['user_actkey']) === '') {
-    $template->assign_vars(
+    $template->assignVars(
         ['META' => '<meta http-equiv="refresh" content="10;url=' . Session::appendSid('index.php') . '">']
     );
 
@@ -98,13 +98,13 @@ if (!$update_password && (int)$board_config['require_activation'] === USER_ACTIV
     $emailer->send();
     $emailer->reset();
 
-    $template->assign_vars([
+    $template->assignVars([
         'META' => '<meta http-equiv="refresh" content="10;url=' . Session::appendSid('index.php') . '">'
     ]);
 
     message_die(GENERAL_MESSAGE, $lang['Account_active_admin']);
 } else {
-    $template->assign_vars([
+    $template->assignVars([
         'META' => '<meta http-equiv="refresh" content="10;url=' . Session::appendSid('index.php') . '">'
     ]);
 

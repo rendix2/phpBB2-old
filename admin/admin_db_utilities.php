@@ -98,11 +98,11 @@ if (isset($_GET['perform']) || isset($_POST['perform']) ) {
 				//
 				include './page_header_admin.php';
 
-				$template->set_filenames(['body' => 'admin/db_utils_restore_body.tpl']);
+				$template->setFileNames(['body' => 'admin/db_utils_restore_body.tpl']);
 
 				$s_hidden_fields = "<input type=\"hidden\" name=\"perform\" value=\"restore\" /><input type=\"hidden\" name=\"perform\" value=\"$perform\" />";
 
-				$template->assign_vars(
+				$template->assignVars(
 					[
                         'L_DATABASE_RESTORE' => $lang['Database_Utilities'] . ' : ' . $lang['Restore'],
                         'L_RESTORE_EXPLAIN'  => $lang['Restore_explain'],
@@ -143,11 +143,11 @@ if (isset($_GET['perform']) || isset($_POST['perform']) ) {
 
 				include './page_header_admin.php';
 
-				$template->set_filenames(['body' => 'admin/admin_message_body.tpl']);
+				$template->setFileNames(['body' => 'admin/admin_message_body.tpl']);
 
 				$message = $lang['Restore_success'];
 
-				$template->assign_vars(
+				$template->assignVars(
 					[
                         'MESSAGE_TITLE' => $lang['Database_Utilities'] . ' : ' . $lang['Restore'],
                         'MESSAGE_TEXT'  => $message

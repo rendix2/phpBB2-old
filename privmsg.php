@@ -128,7 +128,7 @@ if ($mode === 'newpm') {
 	$page_title = $lang['Private_Messaging'];
 	include $phpbb_root_path . 'includes/page_header.php';
 
-    $template->set_filenames(['body' => 'privmsgs_popup.tpl']);
+    $template->setFileNames(['body' => 'privmsgs_popup.tpl']);
 
     if ($userdata['session_logged_in']) {
         if ($userdata['user_new_privmsg']) {
@@ -142,7 +142,7 @@ if ($mode === 'newpm') {
 		$l_new_message = $lang['Login_check_pm'];
 	}
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'L_CLOSE_WINDOW' => $lang['Close_window'],
             'L_MESSAGE'      => $l_new_message
@@ -434,10 +434,10 @@ if ($mode === 'newpm') {
 	//
 	// Load templates
 	//
-    $template->set_filenames(['body' => 'privmsgs_read_body.tpl']);
+    $template->setFileNames(['body' => 'privmsgs_read_body.tpl']);
     make_jumpbox('viewforum.php');
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'INBOX_IMG'   => $inbox_img,
             'SENTBOX_IMG' => $sentbox_img,
@@ -594,7 +594,7 @@ if ($mode === 'newpm') {
 	//
 	// Dump it to the templating engine
 	//
-    $template->assign_vars(
+    $template->assignVars(
         [
             'MESSAGE_TO'    => $username_to,
             'MESSAGE_FROM'  => $username_from,
@@ -663,8 +663,8 @@ if ($mode === 'newpm') {
 		//
 		include $phpbb_root_path . 'includes/page_header.php';
 
-        $template->set_filenames(['confirm_body' => 'confirm_body.tpl']);
-        $template->assign_vars(
+        $template->setFileNames(['confirm_body' => 'confirm_body.tpl']);
+        $template->assignVars(
             [
                 'MESSAGE_TITLE' => $lang['Information'],
                 'MESSAGE_TEXT'  => (count($mark_list) === 1) ? $lang['Confirm_delete_pm'] : $lang['Confirm_delete_pms'],
@@ -1246,7 +1246,7 @@ if ($mode === 'newpm') {
 			}
 		}
 
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('privmsg.php?folder=inbox') . '">'
             ]
@@ -1494,9 +1494,9 @@ if ($mode === 'newpm') {
             $s_hidden_fields .= '<input type="hidden" name="' . POST_POST_URL . '" value="' . $privmsg_id . '" />';
         }
 
-        $template->set_filenames(['preview' => 'privmsgs_preview.tpl']);
+        $template->setFileNames(['preview' => 'privmsgs_preview.tpl']);
 
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'TOPIC_TITLE'  => $preview_subject,
                 'POST_SUBJECT' => $preview_subject,
@@ -1517,7 +1517,7 @@ if ($mode === 'newpm') {
             ]
         );
 
-        $template->assign_var_from_handle('POST_PREVIEW_BOX', 'preview');
+        $template->assignVarFromHandle('POST_PREVIEW_BOX', 'preview');
 	}
 
 	//
@@ -1525,28 +1525,28 @@ if ($mode === 'newpm') {
 	//
     if ($error) {
         $privmsg_message = htmlspecialchars($privmsg_message);
-        $template->set_filenames(['reg_header' => 'error_body.tpl']);
-        $template->assign_vars(['ERROR_MESSAGE' => $error_msg]);
-        $template->assign_var_from_handle('ERROR_BOX', 'reg_header');
+        $template->setFileNames(['reg_header' => 'error_body.tpl']);
+        $template->assignVars(['ERROR_MESSAGE' => $error_msg]);
+        $template->assignVarFromHandle('ERROR_BOX', 'reg_header');
     }
 
     //
     // Load templates
 	//
-    $template->set_filenames(['body' => 'posting_body.tpl']);
+    $template->setFileNames(['body' => 'posting_body.tpl']);
     make_jumpbox('viewforum.php');
 
 	//
 	// Enable extensions in posting_body
 	//
-	$template->assign_block_vars('switch_privmsg', []);
+	$template->assignBlockVars('switch_privmsg', []);
 
 	//
 	// HTML toggle selection
 	//
     if ($board_config['allow_html']) {
         $html_status = $lang['HTML_is_ON'];
-        $template->assign_block_vars('switch_html_checkbox', []);
+        $template->assignBlockVars('switch_html_checkbox', []);
     } else {
         $html_status = $lang['HTML_is_OFF'];
     }
@@ -1556,7 +1556,7 @@ if ($mode === 'newpm') {
 	//
     if ($board_config['allow_bbcode']) {
         $bbcode_status = $lang['BBCode_is_ON'];
-        $template->assign_block_vars('switch_bbcode_checkbox', []);
+        $template->assignBlockVars('switch_bbcode_checkbox', []);
     } else {
         $bbcode_status = $lang['BBCode_is_OFF'];
     }
@@ -1566,7 +1566,7 @@ if ($mode === 'newpm') {
 	//
     if ($board_config['allow_smilies']) {
         $smilies_status = $lang['Smilies_are_ON'];
-        $template->assign_block_vars('switch_smilies_checkbox', []);
+        $template->assignBlockVars('switch_smilies_checkbox', []);
     } else {
         $smilies_status = $lang['Smilies_are_OFF'];
     }
@@ -1576,7 +1576,7 @@ if ($mode === 'newpm') {
 	// the user has a signature
 	//
     if ($user_sig !== '') {
-        $template->assign_block_vars('switch_signature_checkbox', []);
+        $template->assignBlockVars('switch_signature_checkbox', []);
     }
 
     if ($mode === 'post') {
@@ -1608,7 +1608,7 @@ if ($mode === 'newpm') {
 	//
 	generate_smilies('inline', PAGE_PRIVMSGS);
 
-	$template->assign_vars(
+	$template->assignVars(
 	    [
             'SUBJECT' => $privmsg_subject,
             'USERNAME' => $to_username,
@@ -1741,7 +1741,7 @@ include $phpbb_root_path . 'includes/page_header.php';
 //
 // Load templates
 //
-$template->set_filenames(['body' => 'privmsgs_body.tpl']);
+$template->setFileNames(['body' => 'privmsgs_body.tpl']);
 make_jumpbox('viewforum.php');
 
 $orig_word = [];
@@ -1902,7 +1902,7 @@ if ( $folder !== 'outbox' ) {
 	$inbox_limit_img_length = ( $board_config['max_' . $folder . '_privmsgs'] > 0 ) ? round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * $board_config['privmsg_graphic_length']) : $board_config['privmsg_graphic_length'];
 	$inbox_limit_remain = ( $board_config['max_' . $folder . '_privmsgs'] > 0 ) ? $board_config['max_' . $folder . '_privmsgs'] - $pm_all_total : 0;
 
-	$template->assign_block_vars('switch_box_size_notice', []);
+	$template->assignBlockVars('switch_box_size_notice', []);
 
 	switch( $folder ) {
 		case 'inbox':
@@ -1925,7 +1925,7 @@ if ( $folder !== 'outbox' ) {
 //
 // Dump vars to template
 //
-$template->assign_vars(
+$template->assignVars(
     [
         'BOX_NAME'    => $l_box_name,
         'INBOX_IMG'   => $inbox_img,
@@ -2013,7 +2013,7 @@ if (count($rows)) {
 		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 		$i++;
 
-        $template->assign_block_vars('listrow',
+        $template->assignBlockVars('listrow',
             [
                 'ROW_COLOR'          => '#' . $row_color,
                 'ROW_CLASS'          => $row_class,
@@ -2032,7 +2032,7 @@ if (count($rows)) {
         );
     }
 
-    $template->assign_vars([
+    $template->assignVars([
             'PAGINATION'  => generate_pagination("privmsg.php?folder=$folder", $pm_total, $board_config['topics_per_page'], $start),
             'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $board_config['topics_per_page']) + 1, ceil($pm_total / $board_config['topics_per_page'])),
 
@@ -2040,13 +2040,13 @@ if (count($rows)) {
         ]);
 
 } else {
-    $template->assign_vars(
+    $template->assignVars(
         [
             'L_NO_MESSAGES' => $lang['No_messages_folder']
         ]
     );
 
-    $template->assign_block_vars('switch_no_messages', [] );
+    $template->assignBlockVars('switch_no_messages', [] );
 }
 
 $template->pparse('body');

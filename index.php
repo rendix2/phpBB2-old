@@ -62,7 +62,7 @@ if ($mark_read === 'forums') {
         );
     }
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('index.php') . '">'
         ]
@@ -275,9 +275,9 @@ define('SHOW_ONLINE', true);
 $page_title = $lang['Index'];
 include $phpbb_root_path . 'includes/page_header.php';
 
-$template->set_filenames(['body' => 'index_body.tpl']);
+$template->setFileNames(['body' => 'index_body.tpl']);
 
-$template->assign_vars(
+$template->assignVars(
     [
         'TOTAL_POSTS' => sprintf($l_total_post_s, $total_posts),
         'TOTAL_USERS' => sprintf($l_total_user_s, $total_users),
@@ -332,7 +332,7 @@ foreach ($categories as $category) {
     // title, then, if appropriate the forum list
     //
     if (isset($display_categories[$cat_id]) && $display_categories[$cat_id]) {
-        $template->assign_block_vars('catrow', [
+        $template->assignBlockVars('catrow', [
                 'CAT_ID'    => $cat_id,
                 'CAT_DESC'  => $category->cat_title,
                 'U_VIEWCAT' => Session::appendSid('index.php?' . POST_CAT_URL . "=$cat_id")
@@ -437,7 +437,7 @@ foreach ($categories as $category) {
                             'U_VIEWFORUM' => Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forum_id")
                         ];
 
-                        $template->assign_block_vars('catrow.forumrow', $catRowData);
+                        $template->assignBlockVars('catrow.forumrow', $catRowData);
                     }
                 }
             }

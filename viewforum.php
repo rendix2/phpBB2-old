@@ -138,7 +138,7 @@ if ($mark_read === 'topics') {
 			}
 		}
 
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forum_id") . '">'
             ]
@@ -377,7 +377,7 @@ obtain_word_list($orig_word, $replacement_word);
 //
 // Post URL generation for templating vars
 //
-$template->assign_vars([
+$template->assignVars([
     'L_DISPLAY_TOPICS' => $lang['Display_topics'],
 
     'U_POST_NEW_TOPIC' => Session::appendSid('posting.php?mode=newtopic&amp;' . POST_FORUM_URL . "=$forum_id"),
@@ -414,10 +414,10 @@ define('SHOW_ONLINE', true);
 $page_title = $lang['View_forum'] . ' - ' . $forum_row['forum_name'];
 include $phpbb_root_path . 'includes/page_header.php';
 
-$template->set_filenames(['body' => 'viewforum_body.tpl']);
+$template->setFileNames(['body' => 'viewforum_body.tpl']);
 make_jumpbox('viewforum.php');
 
-$template->assign_vars(
+$template->assignVars(
     [
         'FORUM_ID'   => $forum_id,
         'FORUM_NAME' => $forum_row['forum_name'],
@@ -633,7 +633,7 @@ if ($total_topics) {
 		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-        $template->assign_block_vars('topicrow',
+        $template->assignBlockVars('topicrow',
             [
                 'ROW_COLOR'        => $row_color,
                 'ROW_CLASS'        => $row_class,
@@ -661,7 +661,7 @@ if ($total_topics) {
 
     $topics_count -= $total_announcements;
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'PAGINATION'  => generate_pagination('viewforum.php?' . POST_FORUM_URL . "=$forum_id&amp;topicdays=$topic_days", $topics_count, $board_config['topics_per_page'], $start),
             'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $board_config['topics_per_page']) + 1, ceil($topics_count / $board_config['topics_per_page'])),
@@ -674,9 +674,9 @@ if ($total_topics) {
 	// No topics
 	//
 	$no_topics_msg = $forum_row['forum_status'] === FORUM_LOCKED ? $lang['Forum_locked'] : $lang['No_topics_post_one'];
-    $template->assign_vars(['L_NO_TOPICS' => $no_topics_msg]);
+    $template->assignVars(['L_NO_TOPICS' => $no_topics_msg]);
 
-    $template->assign_block_vars('switch_no_topics', []);
+    $template->assignBlockVars('switch_no_topics', []);
 
 }
 

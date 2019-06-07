@@ -178,9 +178,9 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 
 		$hidden_vars = "<input type='hidden' name='mode' value='import'>";
 
-        $template->set_filenames(['body' => 'admin/smile_import_body.tpl']);
+        $template->setFileNames(['body' => 'admin/smile_import_body.tpl']);
 
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'L_SMILEY_TITLE'     => $lang['smiley_title'],
                 'L_SMILEY_EXPLAIN'   => $lang['smiley_import_inst'],
@@ -234,7 +234,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 	// Admin has selected to add a smiley.
 	//
 
-    $template->set_filenames(['body' => 'admin/smile_edit_body.tpl']);
+    $template->setFileNames(['body' => 'admin/smile_edit_body.tpl']);
 
     $filename_list = '';
 
@@ -244,7 +244,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 
 	$s_hidden_fields = '<input type="hidden" name="mode" value="savenew" />';
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'L_SMILEY_TITLE'   => $lang['smiley_title'],
             'L_SMILEY_CONFIG'  => $lang['smiley_config'],
@@ -287,11 +287,11 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 				message_die(GENERAL_MESSAGE, $message);
 			} else {
 				// Present the confirmation screen to the user
-                $template->set_filenames(['body' => 'admin/confirm_body.tpl']);
+                $template->setFileNames(['body' => 'admin/confirm_body.tpl']);
 
                 $hidden_fields = '<input type="hidden" name="mode" value="delete" /><input type="hidden" name="id" value="' . $smiley_id . '" />';
 
-                $template->assign_vars(
+                $template->assignVars(
                     [
                         'MESSAGE_TITLE' => $lang['Confirm'],
                         'MESSAGE_TEXT'  => $lang['Confirm_delete_smiley'],
@@ -337,11 +337,11 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
 				$filename_list .= '<option value="' . $smiley_mage . '"' . $smiley_selected . '>' . $smiley_mage . '</option>';
 			}
 
-            $template->set_filenames(['body' => 'admin/smile_edit_body.tpl']);
+            $template->setFileNames(['body' => 'admin/smile_edit_body.tpl']);
 
             $s_hidden_fields = '<input type="hidden" name="mode" value="save" /><input type="hidden" name="smile_id" value="' . $smile_data->smilies_id . '" />';
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
                     'SMILEY_CODE'     => $smile_data->code,
                     'SMILEY_EMOTICON' => $smile_data->emoticon,
@@ -468,9 +468,9 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
         ->from(SMILIES_TABLE)
         ->fetchAll();
 
-    $template->set_filenames(['body' => 'admin/smile_list_body.tpl']);
+    $template->setFileNames(['body' => 'admin/smile_list_body.tpl']);
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'L_ACTION'       => $lang['Action'],
             'L_SMILEY_TITLE' => $lang['smiley_title'],
@@ -502,7 +502,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack']) ) {
         $row_color = (!($i % 2)) ? $theme['td_color1'] : $theme['td_color2'];
         $row_class = (!($i % 2)) ? $theme['td_class1'] : $theme['td_class2'];
 
-        $template->assign_block_vars('smiles', [
+        $template->assignBlockVars('smiles', [
             'ROW_COLOR' => '#' . $row_color,
             'ROW_CLASS' => $row_class,
 

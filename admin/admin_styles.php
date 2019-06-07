@@ -111,9 +111,9 @@ switch( $mode )
 					}
 				}
 
-                $template->set_filenames(['body' => 'admin/styles_addnew_body.tpl']);
+                $template->setFileNames(['body' => 'admin/styles_addnew_body.tpl']);
 
-                $template->assign_vars(
+                $template->assignVars(
                     [
                         'L_STYLES_TITLE'    => $lang['Styles_admin'],
                         'L_STYLES_ADD_TEXT' => $lang['Styles_addnew_explain'],
@@ -128,7 +128,7 @@ switch( $mode )
 					$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 					$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-                    $template->assign_block_vars('styles',
+                    $template->assignBlockVars('styles',
                         [
                             'ROW_CLASS'     => $row_class,
                             'ROW_COLOR'     => '#' . $row_color,
@@ -316,7 +316,7 @@ switch( $mode )
                 $themes_explain = $lang['Create_theme_explain'];
             }
 
-            $template->set_filenames(['body' => 'admin/styles_edit_body.tpl']);
+            $template->setFileNames(['body' => 'admin/styles_edit_body.tpl']);
 
             if ($dir = @opendir($phpbb_root_path . 'templates/')) {
                 $s_template_select = '<select name="template_name">';
@@ -338,7 +338,7 @@ switch( $mode )
 
 			$s_hidden_fields .= '<input type="hidden" name="mode" value="' . $mode . '" />';
 
-			$template->assign_vars(array(
+			$template->assignVars(array(
                     'L_THEMES_TITLE'       => $themes_title,
                     'L_THEMES_EXPLAIN'     => $themes_explain,
                     'L_THEME_NAME'         => $lang['Theme_name'],
@@ -508,9 +508,9 @@ switch( $mode )
 				
 				$download_form = '<form action="' . Session::appendSid('admin_styles.php') . '" method="post"><input class="mainoption" type="submit" name="submit" value="' . $lang['Download'] . '" />' . $s_hidden_fields;
 
-                $template->set_filenames(['body' => 'message_body.tpl']);
+                $template->setFileNames(['body' => 'message_body.tpl']);
 
-                $template->assign_vars(
+                $template->assignVars(
                     [
                         'MESSAGE_TITLE' => $lang['Export_themes'],
                         'MESSAGE_TEXT'  => $lang['Download_theme_cfg'] . '<br /><br />' . $download_form
@@ -535,7 +535,7 @@ switch( $mode )
 
 			echo stripslashes($_POST['theme_info']);
 		} else {
-            $template->set_filenames(['body' => 'admin/styles_exporter.tpl']);
+            $template->setFileNames(['body' => 'admin/styles_exporter.tpl']);
 
             if ($dir = @opendir($phpbb_root_path . 'templates/') ) {
 				$s_template_select = '<select name="export_template">';
@@ -551,7 +551,7 @@ switch( $mode )
                 message_die(GENERAL_MESSAGE, $lang['No_template_dir']);
             }
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
                     'L_STYLE_EXPORTER'   => $lang['Export_themes'],
                     'L_EXPORTER_EXPLAIN' => $lang['Export_explain'],
@@ -581,9 +581,9 @@ switch( $mode )
 			//
 			// Set template files
 			//
-            $template->set_filenames(['confirm' => 'admin/confirm_body.tpl']);
+            $template->setFileNames(['confirm' => 'admin/confirm_body.tpl']);
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
                     'MESSAGE_TITLE' => $lang['Confirm'],
                     'MESSAGE_TEXT'  => $lang['Confirm_delete_style'],
@@ -633,9 +633,9 @@ switch( $mode )
             ->orderBy('template_name')
             ->fetchAll();
 
-        $template->set_filenames(['body' => 'admin/styles_list_body.tpl']);
+        $template->setFileNames(['body' => 'admin/styles_list_body.tpl']);
 
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'L_STYLES_TITLE' => $lang['Styles_admin'],
                 'L_STYLES_TEXT'  => $lang['Styles_explain'],
@@ -653,7 +653,7 @@ switch( $mode )
 			$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-            $template->assign_block_vars('styles',
+            $template->assignBlockVars('styles',
                 [
                     'ROW_CLASS'     => $row_class,
                     'ROW_COLOR'     => $row_color,

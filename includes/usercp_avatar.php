@@ -327,19 +327,19 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 	$s_colspan = 0;
 
 	foreach ($avatar_images[$category] as $i => $avatar_image) {
-		$template->assign_block_vars('avatar_row', []);
+		$template->assignBlockVars('avatar_row', []);
 
 		$s_colspan = max($s_colspan, count($avatar_image));
 
 		foreach ($avatar_image as $j =>  $avatar_image_value) {
-            $template->assign_block_vars('avatar_row.avatar_column',
+            $template->assignBlockVars('avatar_row.avatar_column',
                 [
                     'AVATAR_IMAGE' => $board_config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_image_value,
                     'AVATAR_NAME'  => $avatar_name[$category][$i][$j]
                 ]
             );
 
-            $template->assign_block_vars('avatar_row.avatar_option_column',
+            $template->assignBlockVars('avatar_row.avatar_option_column',
                 [
                     'S_OPTIONS_AVATAR' => $avatar_image_value
                 ]
@@ -386,7 +386,7 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 		$s_hidden_vars .= '<input type="hidden" name="' . $param . '" value="' . str_replace('"', '&quot;', $$param) . '" />';
 	}
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'L_AVATAR_GALLERY' => $lang['Avatar_gallery'],
             'L_SELECT_AVATAR'  => $lang['Select_avatar'],

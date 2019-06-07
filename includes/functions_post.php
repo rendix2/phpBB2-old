@@ -692,7 +692,7 @@ function generate_smilies($mode, $page_id)
 		$page_title = $lang['Emoticons'];
 		include $phpbb_root_path . 'includes/page_header.php';
 
-        $template->set_filenames(['smiliesbody' => 'posting_smilies.tpl']);
+        $template->setFileNames(['smiliesbody' => 'posting_smilies.tpl']);
     }
 
 	$smilies = dibi::select(['emoticon', 'code', 'smile_url'])
@@ -722,10 +722,10 @@ function generate_smilies($mode, $page_id)
 
 			foreach ($rowset as $smile_url => $data) {
 				if (!$col) {
-					$template->assign_block_vars('smilies_row', []);
+					$template->assignBlockVars('smilies_row', []);
 				}
 
-                $template->assign_block_vars('smilies_row.smilies_col',
+                $template->assignBlockVars('smilies_row.smilies_col',
                     [
                         'SMILEY_CODE' => $data['code'],
                         'SMILEY_IMG'  => $board_config['smilies_path'] . '/' . $smile_url,
@@ -748,9 +748,9 @@ function generate_smilies($mode, $page_id)
 			}
 
 			if ($mode === 'inline' && $num_smilies > $inline_rows * $inline_columns) {
-				$template->assign_block_vars('switch_smilies_extra', []);
+				$template->assignBlockVars('switch_smilies_extra', []);
 
-                $template->assign_vars(
+                $template->assignVars(
                     [
                         'L_MORE_SMILIES' => $lang['More_emoticons'],
                         'U_MORE_SMILIES' => Session::appendSid('posting.php?mode=smilies')
@@ -758,7 +758,7 @@ function generate_smilies($mode, $page_id)
                 );
             }
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
                     'L_EMOTICONS'       => $lang['Emoticons'],
                     'L_CLOSE_WINDOW'    => $lang['Close_window'],

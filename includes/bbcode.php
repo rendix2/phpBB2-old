@@ -42,7 +42,7 @@ $bbcode_tpl = null;
 function load_bbcode_template()
 {
 	global $template;
-	$tpl_filename = $template->make_filename('bbcode.tpl');
+	$tpl_filename = $template->makeFileName('bbcode.tpl');
 	$tpl = fread(fopen($tpl_filename, 'rb'), filesize($tpl_filename));
 
 	// replace \ with \\ and then ' with \'.

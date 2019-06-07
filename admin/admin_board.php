@@ -141,7 +141,7 @@ $avatars_upload_no = ( !$new['allow_avatar_upload'] ) ? 'checked="checked"' : ''
 $smtp_yes = $new['smtp_delivery'] ? 'checked="checked"' : '';
 $smtp_no = ( !$new['smtp_delivery'] ) ? 'checked="checked"' : '';
 
-$template->set_filenames(['body' => 'admin/board_config_body.tpl']);
+$template->setFileNames(['body' => 'admin/board_config_body.tpl']);
 
 //
 // Escape any quotes in the site description for proper display in the text
@@ -149,7 +149,7 @@ $template->set_filenames(['body' => 'admin/board_config_body.tpl']);
 //
 $new['site_desc'] = str_replace('"', '&quot;', $new['site_desc']);
 $new['sitename'] = str_replace('"', '&quot;', strip_tags($new['sitename']));
-$template->assign_vars(array(
+$template->assignVars(array(
 		'S_CONFIG_ACTION' => Session::appendSid('admin_board.php'),
 
 		'L_YES'                           => $lang['Yes'],

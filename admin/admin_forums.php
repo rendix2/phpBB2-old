@@ -270,11 +270,11 @@ if (!empty($mode) ) {
 			$statuslist = '<option value="' . FORUM_UNLOCKED . "\" $forumunlocked>" . $lang['Status_unlocked'] . "</option>\n";
 			$statuslist .= '<option value="' . FORUM_LOCKED . "\" $forumlocked>" . $lang['Status_locked'] . "</option>\n";
 
-        $template->set_filenames(['body' => 'admin/forum_edit_body.tpl']);
+        $template->setFileNames(['body' => 'admin/forum_edit_body.tpl']);
 
         $s_hidden_fields = '<input type="hidden" name="mode" value="' . $newmode .'" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
 
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'S_FORUM_ACTION'  => Session::appendSid('admin_forums.php'),
                 'S_HIDDEN_FIELDS' => $s_hidden_fields,
@@ -463,11 +463,11 @@ if (!empty($mode) ) {
 			$row = get_info('category', $cat_id);
 			$cat_title = $row['cat_title'];
 
-            $template->set_filenames(['body' => 'admin/category_edit_body.tpl']);
+            $template->setFileNames(['body' => 'admin/category_edit_body.tpl']);
 
             $s_hidden_fields = '<input type="hidden" name="mode" value="' . $newmode . '" /><input type="hidden" name="' . POST_CAT_URL . '" value="' . $cat_id . '" />';
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
                     'CAT_TITLE' => $cat_title,
 
@@ -512,11 +512,11 @@ if (!empty($mode) ) {
 			$foruminfo = get_info('forum', $forum_id);
 			$name = $foruminfo['forum_name'];
 
-            $template->set_filenames(['body' => 'admin/forum_delete_body.tpl']);
+            $template->setFileNames(['body' => 'admin/forum_delete_body.tpl']);
 
             $s_hidden_fields = '<input type="hidden" name="mode" value="' . $newmode . '" /><input type="hidden" name="from_id" value="' . $forum_id . '" />';
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
                     'NAME' => $name,
 
@@ -674,11 +674,11 @@ if (!empty($mode) ) {
 				$select_to .= '</select>';
 			}
 
-            $template->set_filenames(['body' => 'admin/forum_delete_body.tpl']);
+            $template->setFileNames(['body' => 'admin/forum_delete_body.tpl']);
 
             $s_hidden_fields = '<input type="hidden" name="mode" value="' . $newmode . '" /><input type="hidden" name="from_id" value="' . $cat_id . '" />';
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
                     'NAME' => $name,
 
@@ -797,9 +797,9 @@ if (!empty($mode) ) {
 //
 // Start page proper
 //
-$template->set_filenames(['body' => 'admin/forum_admin_body.tpl']);
+$template->setFileNames(['body' => 'admin/forum_admin_body.tpl']);
 
-$template->assign_vars(
+$template->assignVars(
     [
         'S_FORUM_ACTION'    => Session::appendSid('admin_forums.php'),
         'L_FORUM_TITLE'     => $lang['Forum_admin'],
@@ -852,7 +852,7 @@ if ($category_count) {
 		$cat_id = $category->cat_id;
 		$cat_i++;
 
-        $template->assign_block_vars('catrow',
+        $template->assignBlockVars('catrow',
             [
                 'S_ADD_FORUM_SUBMIT' => "addforum[$cat_id]",
                 'S_ADD_FORUM_NAME'   => "forumname[$cat_id]",
@@ -872,11 +872,11 @@ if ($category_count) {
         );
 
         if ($category->cat_order - 15 > 0) {
-            $template->assign_block_vars('catrow.up', []);
+            $template->assignBlockVars('catrow.up', []);
         }
 
         if ($cat_i !== $category_count) {
-            $template->assign_block_vars('catrow.down', []);
+            $template->assignBlockVars('catrow.down', []);
         }
 
         $forum_i = 0;
@@ -889,7 +889,7 @@ if ($category_count) {
                 $row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
                 $row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-                $template->assign_block_vars('catrow.forumrow',
+                $template->assignBlockVars('catrow.forumrow',
                     [
                         'FORUM_NAME' => $forum->forum_name,
                         'FORUM_DESC' => $forum->forum_desc,
@@ -909,11 +909,11 @@ if ($category_count) {
                 );
 
                 if ($forum->forum_order - 15 > 0) {
-                    $template->assign_block_vars('catrow.forumrow.up', []);
+                    $template->assignBlockVars('catrow.forumrow.up', []);
                 }
 
                 if ($tmp[$forum->cat_id] !== $forum_i) {
-                    $template->assign_block_vars('catrow.forumrow.down', []);
+                    $template->assignBlockVars('catrow.forumrow.down', []);
                 }
 
             } else {

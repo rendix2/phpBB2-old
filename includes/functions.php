@@ -184,9 +184,9 @@ function make_jumpbox($action, $match_forum_id = 0)
 		$boxstring .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 //	}
 
-    $template->set_filenames(['jumpbox' => 'jumpbox.tpl']);
+    $template->setFileNames(['jumpbox' => 'jumpbox.tpl']);
 
-    $template->assign_vars(
+    $template->assignVars(
         [
             'L_GO'           => $lang['Go'],
             'L_JUMP_TO'      => $lang['Jump_to'],
@@ -196,7 +196,7 @@ function make_jumpbox($action, $match_forum_id = 0)
             'S_JUMPBOX_ACTION' => Session::appendSid($action)
         ]
     );
-    $template->assign_var_from_handle('JUMPBOX', 'jumpbox');
+    $template->assignVarFromHandle('JUMPBOX', 'jumpbox');
 }
 
 //
@@ -623,12 +623,12 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
         }
 
         if (!defined('IN_ADMIN')) {
-            $template->set_filenames(['message_body' => 'message_body.tpl']);
+            $template->setFileNames(['message_body' => 'message_body.tpl']);
         } else {
-            $template->set_filenames(['message_body' => 'admin/admin_message_body.tpl']);
+            $template->setFileNames(['message_body' => 'admin/admin_message_body.tpl']);
         }
 
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'MESSAGE_TITLE' => $msg_title,
                 'MESSAGE_TEXT'  => $msg_text

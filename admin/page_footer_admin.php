@@ -29,7 +29,7 @@ global $do_gzip_compress;
 //
 // Show the overall footer.
 //
-$template->set_filenames(['page_footer' => 'admin/page_footer.tpl']);
+$template->setFileNames(['page_footer' => 'admin/page_footer.tpl']);
 
 if (isset($lang['TRANSLATION_INFO']) ) {
     $translation_info = $lang['TRANSLATION_INFO'];
@@ -37,7 +37,7 @@ if (isset($lang['TRANSLATION_INFO']) ) {
     $translation_info = isset($lang['TRANSLATION']) ? $lang['TRANSLATION'] : '';
 }
 
-$template->assign_vars(
+$template->assignVars(
     [
         'PHPBB_VERSION'    => ($userdata['user_level'] === ADMIN && $userdata['user_id'] !== ANONYMOUS) ? '2' . $board_config['version'] : '',
         'TRANSLATION_INFO' => $translation_info

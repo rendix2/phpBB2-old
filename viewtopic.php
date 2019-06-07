@@ -260,7 +260,7 @@ if ($userdata['session_logged_in'] ) {
                     ->execute();
 			}
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
                     'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . '">'
                 ]
@@ -299,7 +299,7 @@ if ($userdata['session_logged_in'] ) {
                     ->execute();
 			}
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
                     'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;start=$start") . '">'
                 ]
@@ -588,7 +588,7 @@ if ($userdata['session_logged_in']) {
 //
 // Load templates
 //
-$template->set_filenames(['body' => 'viewtopic_body.tpl']);
+$template->setFileNames(['body' => 'viewtopic_body.tpl']);
 make_jumpbox('viewforum.php', $forum_id);
 
 //
@@ -643,7 +643,7 @@ $pagination = ( $highlight !== '' ) ? generate_pagination('viewtopic.php?' . POS
 //
 // Send vars to template
 //
-$template->assign_vars(
+$template->assignVars(
     [
         'FORUM_ID'    => $forum_id,
         'FORUM_NAME'  => $forum_name,
@@ -744,7 +744,7 @@ if ( !empty($forum_topic_data->topic_vote) ) {
         }
 
         if ($user_voted || $view_result || $poll_expired || !$is_auth['auth_vote'] || $forum_topic_data->topic_status === TOPIC_LOCKED) {
-            $template->set_filenames(['pollbox' => 'viewtopic_poll_result.tpl']);
+            $template->setFileNames(['pollbox' => 'viewtopic_poll_result.tpl']);
 
             $vote_results_sum = 0;
 
@@ -766,7 +766,7 @@ if ( !empty($forum_topic_data->topic_vote) ) {
                     $vote_info_value->vote_option_text = preg_replace($orig_word, $replacement_word, $vote_info_value->vote_option_text);
 				}
 
-                $template->assign_block_vars('poll_option',
+                $template->assignBlockVars('poll_option',
                     [
                         'POLL_OPTION_CAPTION' => $vote_info_value->vote_option_text,
                         'POLL_OPTION_RESULT'  => $vote_info_value->vote_result,
@@ -778,21 +778,21 @@ if ( !empty($forum_topic_data->topic_vote) ) {
                 );
             }
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
                     'L_TOTAL_VOTES' => $lang['Total_votes'],
                     'TOTAL_VOTES'   => $vote_results_sum
                 ]
             );
         } else {
-            $template->set_filenames(['pollbox' => 'viewtopic_poll_ballot.tpl']);
+            $template->setFileNames(['pollbox' => 'viewtopic_poll_ballot.tpl']);
 
             foreach ($vote_info as $vote_info_value) {
                 if (count($orig_word)) {
                     $vote_info_value->vote_option_text = preg_replace($orig_word, $replacement_word, $vote_info_value->vote_option_text);
 				}
 
-                $template->assign_block_vars('poll_option',
+                $template->assignBlockVars('poll_option',
                     [
                         'POLL_OPTION_ID'      => $vote_info_value->vote_option_id,
                         'POLL_OPTION_CAPTION' => $vote_info_value->vote_option_text
@@ -800,7 +800,7 @@ if ( !empty($forum_topic_data->topic_vote) ) {
                 );
             }
 
-            $template->assign_vars(
+            $template->assignVars(
                 [
                     'L_SUBMIT_VOTE'  => $lang['Submit_vote'],
                     'L_VIEW_RESULTS' => $lang['View_results'],
@@ -818,7 +818,7 @@ if ( !empty($forum_topic_data->topic_vote) ) {
 
 		$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
-        $template->assign_vars(
+        $template->assignVars(
             [
                 'POLL_QUESTION' => $vote_title,
 
@@ -827,7 +827,7 @@ if ( !empty($forum_topic_data->topic_vote) ) {
             ]
         );
 
-        $template->assign_var_from_handle('POLL_DISPLAY', 'pollbox');
+        $template->assignVarFromHandle('POLL_DISPLAY', 'pollbox');
 	}
 }
 
@@ -1123,7 +1123,7 @@ foreach ($posts as $i => $post) {
 	$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 	$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
-    $template->assign_block_vars('postrow',
+    $template->assignBlockVars('postrow',
         [
             'ROW_COLOR'      => '#' . $row_color,
             'ROW_CLASS'      => $row_class,
