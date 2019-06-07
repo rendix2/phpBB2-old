@@ -124,12 +124,13 @@ if ($mode !== '') {
 		//
 		// Ok, they sent us our info, let's update it.
 		//
-		
-		$rank_id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
-		$rank_title = isset($_POST['title']) ? trim($_POST['title']) : '';
-		$special_rank = ( $_POST['special_rank'] === 1 ) ? true : 0;
-		$min_posts = isset($_POST['min_posts']) ? (int)$_POST['min_posts'] : -1;
+
+		$rank_id    = isset($_POST['id'])         ? (int)$_POST['id']          : 0;
+		$rank_title = isset($_POST['title'])      ? trim($_POST['title'])      : '';
+		$min_posts  = isset($_POST['min_posts'])  ? (int)$_POST['min_posts']   : -1;
 		$rank_image = isset($_POST['rank_image']) ? trim($_POST['rank_image']) : '';
+
+		$special_rank = ($_POST['special_rank'] === 1) ? true : 0;
 
 		if ($rank_title === '') {
 			message_die(GENERAL_MESSAGE, $lang['Must_select_rank']);

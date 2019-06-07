@@ -41,21 +41,22 @@ $html_entities_replace = ['&amp;', '&lt;', '&gt;', '&quot;'];
 //
 // Parameters
 //
-$submit = isset($_POST['post']) ? true : 0;
-$submit_search = isset($_POST['usersubmit']) ? true : 0;
-$submit_msgdays = isset($_POST['submit_msgdays']) ? true : 0;
-$cancel = isset($_POST['cancel']) ? true : 0;
-$preview = isset($_POST['preview']) ? true : 0;
-$confirm = isset($_POST['confirm']) ? true : 0;
-$delete = isset($_POST['delete']) ? true : 0;
-$delete_all = isset($_POST['deleteall']) ? true : 0;
-$save = isset($_POST['save']) ? true : 0;
+$submit = isset($_POST['post']);
+$submit_search = isset($_POST['usersubmit']);
+$submit_msgdays = isset($_POST['submit_msgdays']);
+$cancel = isset($_POST['cancel']);
+$preview = isset($_POST['preview']);
+$confirm = isset($_POST['confirm']);
+$delete = isset($_POST['delete']);
+$delete_all = isset($_POST['deleteall']);
+$save = isset($_POST['save']);
 $sid = isset($_POST['sid']) ? $_POST['sid'] : 0;
 
 $refresh = $preview || $submit_search;
 
 $mark_list = !empty($_POST['mark']) ? $_POST['mark'] : 0;
 
+// todo
 if (isset($_POST['folder']) || isset($_GET['folder'])) {
     $folder = isset($_POST['folder']) ? $_POST['folder'] : $_GET['folder'];
     $folder = htmlspecialchars($folder);
@@ -94,7 +95,7 @@ if (!empty($_POST['mode']) || !empty($_GET['mode'])) {
 }
 
 $start = !empty($_GET['start']) ? (int)$_GET['start'] : 0;
-$start = ($start < 0) ? 0 : $start;
+$start = $start < 0 ? 0 : $start;
 
 if (isset($_POST[POST_POST_URL]) || isset($_GET[POST_POST_URL])) {
     $privmsg_id = isset($_POST[POST_POST_URL]) ? (int)$_POST[POST_POST_URL] : (int)$_GET[POST_POST_URL];
@@ -107,17 +108,17 @@ $error = false;
 //
 // Define the box image links
 //
-$inbox_img = ( $folder !== 'inbox' || $mode !== '' ) ? '<a href="' . Session::appendSid('privmsg.php?folder=inbox') . '"><img src="' . $images['pm_inbox'] . '" border="0" alt="' . $lang['Inbox'] . '" /></a>' : '<img src="' . $images['pm_inbox'] . '" border="0" alt="' . $lang['Inbox'] . '" />';
-$inbox_url = ( $folder !== 'inbox' || $mode !== '' ) ? '<a href="' . Session::appendSid('privmsg.php?folder=inbox') . '">' . $lang['Inbox'] . '</a>' : $lang['Inbox'];
+$inbox_img = $folder !== 'inbox' || $mode !== '' ? '<a href="' . Session::appendSid('privmsg.php?folder=inbox') . '"><img src="' . $images['pm_inbox'] . '" border="0" alt="' . $lang['Inbox'] . '" /></a>' : '<img src="' . $images['pm_inbox'] . '" border="0" alt="' . $lang['Inbox'] . '" />';
+$inbox_url = $folder !== 'inbox' || $mode !== '' ? '<a href="' . Session::appendSid('privmsg.php?folder=inbox') . '">' . $lang['Inbox'] . '</a>' : $lang['Inbox'];
 
-$outbox_img = ( $folder !== 'outbox' || $mode !== '' ) ? '<a href="' . Session::appendSid('privmsg.php?folder=outbox') . '"><img src="' . $images['pm_outbox'] . '" border="0" alt="' . $lang['Outbox'] . '" /></a>' : '<img src="' . $images['pm_outbox'] . '" border="0" alt="' . $lang['Outbox'] . '" />';
-$outbox_url = ( $folder !== 'outbox' || $mode !== '' ) ? '<a href="' . Session::appendSid('privmsg.php?folder=outbox') . '">' . $lang['Outbox'] . '</a>' : $lang['Outbox'];
+$outbox_img = $folder !== 'outbox' || $mode !== '' ? '<a href="' . Session::appendSid('privmsg.php?folder=outbox') . '"><img src="' . $images['pm_outbox'] . '" border="0" alt="' . $lang['Outbox'] . '" /></a>' : '<img src="' . $images['pm_outbox'] . '" border="0" alt="' . $lang['Outbox'] . '" />';
+$outbox_url = $folder !== 'outbox' || $mode !== '' ? '<a href="' . Session::appendSid('privmsg.php?folder=outbox') . '">' . $lang['Outbox'] . '</a>' : $lang['Outbox'];
 
-$sentbox_img = ( $folder !== 'sentbox' || $mode !== '' ) ? '<a href="' . Session::appendSid('privmsg.php?folder=sentbox') . '"><img src="' . $images['pm_sentbox'] . '" border="0" alt="' . $lang['Sentbox'] . '" /></a>' : '<img src="' . $images['pm_sentbox'] . '" border="0" alt="' . $lang['Sentbox'] . '" />';
-$sentbox_url = ( $folder !== 'sentbox' || $mode !== '' ) ? '<a href="' . Session::appendSid('privmsg.php?folder=sentbox') . '">' . $lang['Sentbox'] . '</a>' : $lang['Sentbox'];
+$sentbox_img = $folder !== 'sentbox' || $mode !== '' ? '<a href="' . Session::appendSid('privmsg.php?folder=sentbox') . '"><img src="' . $images['pm_sentbox'] . '" border="0" alt="' . $lang['Sentbox'] . '" /></a>' : '<img src="' . $images['pm_sentbox'] . '" border="0" alt="' . $lang['Sentbox'] . '" />';
+$sentbox_url = $folder !== 'sentbox' || $mode !== '' ? '<a href="' . Session::appendSid('privmsg.php?folder=sentbox') . '">' . $lang['Sentbox'] . '</a>' : $lang['Sentbox'];
 
-$savebox_img = ( $folder !== 'savebox' || $mode !== '' ) ? '<a href="' . Session::appendSid('privmsg.php?folder=savebox') . '"><img src="' . $images['pm_savebox'] . '" border="0" alt="' . $lang['Savebox'] . '" /></a>' : '<img src="' . $images['pm_savebox'] . '" border="0" alt="' . $lang['Savebox'] . '" />';
-$savebox_url = ( $folder !== 'savebox' || $mode !== '' ) ? '<a href="' . Session::appendSid('privmsg.php?folder=savebox') . '">' . $lang['Savebox'] . '</a>' : $lang['Savebox'];
+$savebox_img = $folder !== 'savebox' || $mode !== '' ? '<a href="' . Session::appendSid('privmsg.php?folder=savebox') . '"><img src="' . $images['pm_savebox'] . '" border="0" alt="' . $lang['Savebox'] . '" /></a>' : '<img src="' . $images['pm_savebox'] . '" border="0" alt="' . $lang['Savebox'] . '" />';
+$savebox_url = $folder !== 'savebox' || $mode !== '' ? '<a href="' . Session::appendSid('privmsg.php?folder=savebox') . '">' . $lang['Savebox'] . '</a>' : $lang['Savebox'];
 
 // ----------
 // Start main
@@ -770,7 +771,7 @@ if ($mode === 'newpm') {
 						}
 						unset($update_users);
 
-						foreach ($update_list as $type => $dec_aray) {
+						foreach ($update_list as $type => $dec_array) {
 							switch ($type) {
 								case 'new':
 									$type = 'user_new_privmsg';
@@ -781,9 +782,9 @@ if ($mode === 'newpm') {
 									break;
 							}
 
-							foreach ($dec_ary as $dec => $user_ary) {
+							foreach ($dec_array as $dec => $user_ids) {
 								dibi::update(USERS_TABLE, [$type . '%sql' => $type . ' - ' . $dec])
-                                    ->where('user_id IN %in', $user_ary)
+                                    ->where('user_id IN %in', $user_ids)
                                     ->execute();
 							}
 						}
@@ -837,7 +838,7 @@ if ($mode === 'newpm') {
 			}
 		}
 	}
-} elseif ( $save && $mark_list && $folder !== 'savebox' && $folder !== 'outbox') {
+} elseif ($save && $mark_list && $folder !== 'savebox' && $folder !== 'outbox') {
     if (!$userdata['session_logged_in']) {
         redirect(Session::appendSid('login.php?redirect=privmsg.php&folder=inbox', true));
     }
@@ -930,7 +931,7 @@ if ($mode === 'newpm') {
 					
 					unset($update_users);
 
-					foreach ($update_list as $type => $dec_ary) {
+					foreach ($update_list as $type => $dec_array) {
 						switch ($type) {
 							case 'new':
 								$type = 'user_new_privmsg';
@@ -941,9 +942,9 @@ if ($mode === 'newpm') {
 								break;
 						}
 
-						foreach ($dec_ary as $dec => $user_ary) {
+						foreach ($dec_array as $dec => $user_ids) {
                             dibi::update(USERS_TABLE, [$type . '%sql' => $type . ' - ' . $dec])
-                                ->where('user_id IN %in', $user_ary)
+                                ->where('user_id IN %in', $user_ids)
                                 ->execute();
 						}
 					}
@@ -990,26 +991,25 @@ if ($mode === 'newpm') {
     if (!$board_config['allow_html']) {
         $html_on = 0;
     } else {
-        $html_on = ($submit || $refresh) ? !isset($_POST['disable_html']) : $userdata['user_allowhtml'];
+        $html_on = $submit || $refresh ? !isset($_POST['disable_html']) : $userdata['user_allowhtml'];
     }
 
     if (!$board_config['allow_bbcode']) {
         $bbcode_on = 0;
     } else {
-        $bbcode_on = ($submit || $refresh) ? !isset($_POST['disable_bbcode']) : $userdata['user_allowbbcode'];
+        $bbcode_on = $submit || $refresh ? !isset($_POST['disable_bbcode']) : $userdata['user_allowbbcode'];
     }
 
     if (!$board_config['allow_smilies']) {
         $smilies_on = 0;
     } else {
-        $smilies_on = ($submit || $refresh) ? !isset($_POST['disable_smilies']) : $userdata['user_allowsmile'];
+        $smilies_on = $submit || $refresh ? !isset($_POST['disable_smilies']) : $userdata['user_allowsmile'];
     }
 
-	$attach_sig = ( $submit || $refresh ) ? isset($_POST['attach_sig']) : $userdata['user_attachsig'];
-	$user_sig = ( $userdata['user_sig'] !== '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : '';
-	
-	if ( $submit && $mode !== 'edit' )
-	{
+	$attach_sig = $submit || $refresh ? isset($_POST['attach_sig']) : $userdata['user_attachsig'];
+	$user_sig = $userdata['user_sig'] !== '' && $board_config['allow_sig'] ? $userdata['user_sig'] : '';
+
+    if ($submit && $mode !== 'edit') {
 		//
 		// Flood control
 		//
@@ -1020,9 +1020,7 @@ if ($mode === 'newpm') {
             ->fetchSingle();
 
         if ($last_post_time) {
-			$current_time = time();
-
-			if ( ( $current_time - $last_post_time ) < $board_config['flood_interval']) {
+            if ((time() - $last_post_time) < $board_config['flood_interval']) {
 				message_die(GENERAL_MESSAGE, $lang['Flood_Error']);
 			}
 		}
@@ -1161,8 +1159,8 @@ if ($mode === 'newpm') {
             $privmsg_sent_id = dibi::insert(PRIVMSGS_TABLE, $insert_data)
                 ->execute(dibi::IDENTIFIER);
 		} else {
-		    $update_data = [
-		        'privmsgs_type' => PRIVMSGS_NEW_MAIL,
+            $update_data = [
+                'privmsgs_type' => PRIVMSGS_NEW_MAIL,
                 'privmsgs_subject' => $privmsg_subject,
                 'privmsgs_from_userid' => $userdata['user_id'],
                 'privmsgs_to_userid' => $to_userdata['user_id'],
@@ -1217,8 +1215,7 @@ if ($mode === 'newpm') {
 				$script_name = ( $script_name !== '' ) ? $script_name . '/privmsg.php' : 'privmsg.php';
 				$server_name = trim($board_config['server_name']);
 				$server_protocol = $board_config['cookie_secure'] ? 'https://' : 'http://';
-				$server_port = ( $board_config['server_port'] !== 80 ) ? ':' . trim($board_config['server_port']) . '/'
-                : '/';
+				$server_port = $board_config['server_port'] !== 80 ? ':' . trim($board_config['server_port']) . '/' : '/';
 
 				include $phpbb_root_path . 'includes/Emailer.php';
 				$emailer = new Emailer($board_config['smtp_delivery']);
@@ -1234,8 +1231,7 @@ if ($mode === 'newpm') {
                     [
                         'USERNAME'  => stripslashes($to_username),
                         'SITENAME'  => $board_config['sitename'],
-                        'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n",
-                            "-- \n" . $board_config['board_email_sig']) : '',
+                        'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
 
                         'U_INBOX' => $server_protocol . $server_name . $server_port . $script_name . '?folder=inbox'
                     ]
@@ -1406,7 +1402,7 @@ if ($mode === 'newpm') {
 			$to_username = $privmsg->username;
 			$to_userid = $privmsg->user_id;
 
-			if ( $mode === 'quote') {
+            if ($mode === 'quote') {
 				$privmsg_message = $privmsg->privmsgs_text;
 				$privmsg_bbcode_uid = $privmsg->privmsgs_bbcode_uid;
 
@@ -1415,7 +1411,7 @@ if ($mode === 'newpm') {
 				// $privmsg_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $privmsg_message);
 				$privmsg_message = preg_replace($orig_word, $replacement_word, $privmsg_message);
 				
-				$msg_date =  create_date($board_config['default_dateformat'], $privmsg->privmsgs_date, $board_config['board_timezone']);
+				$msg_date = create_date($board_config['default_dateformat'], $privmsg->privmsgs_date, $board_config['board_timezone']);
 
 				$privmsg_message = '[quote="' . $to_username . '"]' . $privmsg_message . '[/quote]';
 
@@ -1876,20 +1872,21 @@ foreach ($previous_days as $previous_day_key => $previous_days_value) {
 //
 // Define correct icons
 //
-switch ( $folder) {
-	case 'inbox':
-		$l_box_name = $lang['Inbox'];
-		break;
-	case 'outbox':
-		$l_box_name = $lang['Outbox'];
-		break;
-	case 'savebox':
-		$l_box_name = $lang['Savebox'];
-		break;
-	case 'sentbox':
-		$l_box_name = $lang['Sentbox'];
-		break;
+switch ($folder) {
+    case 'inbox':
+        $l_box_name = $lang['Inbox'];
+        break;
+    case 'outbox':
+        $l_box_name = $lang['Outbox'];
+        break;
+    case 'savebox':
+        $l_box_name = $lang['Savebox'];
+        break;
+    case 'sentbox':
+        $l_box_name = $lang['Sentbox'];
+        break;
 }
+
 $post_pm = Session::appendSid('privmsg.php?mode=post');
 $post_pm_img = '<a href="' . $post_pm . '"><img src="' . $images['pm_postmsg'] . '" alt="' . $lang['Post_new_pm'] . '" border="0" /></a>';
 $post_pm = '<a href="' . $post_pm . '">' . $lang['Post_new_pm'] . '</a>';
@@ -1904,20 +1901,20 @@ if ( $folder !== 'outbox') {
 
 	$template->assignBlockVars('switch_box_size_notice', []);
 
-	switch( $folder) {
-		case 'inbox':
-			$l_box_size_status = sprintf($lang['Inbox_size'], $inbox_limit_pct);
-			break;
-		case 'sentbox':
-			$l_box_size_status = sprintf($lang['Sentbox_size'], $inbox_limit_pct);
-			break;
-		case 'savebox':
-			$l_box_size_status = sprintf($lang['Savebox_size'], $inbox_limit_pct);
-			break;
-		default:
-			$l_box_size_status = '';
-			break;
-	}
+    switch ($folder) {
+        case 'inbox':
+            $l_box_size_status = sprintf($lang['Inbox_size'], $inbox_limit_pct);
+            break;
+        case 'sentbox':
+            $l_box_size_status = sprintf($lang['Sentbox_size'], $inbox_limit_pct);
+            break;
+        case 'savebox':
+            $l_box_size_status = sprintf($lang['Savebox_size'], $inbox_limit_pct);
+            break;
+        default:
+            $l_box_size_status = '';
+            break;
+    }
 } else {
 	$inbox_limit_img_length = $inbox_limit_pct = $l_box_size_status = '';
 }

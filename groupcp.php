@@ -612,7 +612,6 @@ if (isset($_POST['groupstatus']) && $group_id) {
 					// Email users when they are approved
 					//
                     if (isset($_POST['approve'])) {
-
                         $bcc_list = dibi::select('user_email')
                             ->from(USERS_TABLE)
                             ->where('user_id IN %in', $members)

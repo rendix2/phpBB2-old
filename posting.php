@@ -223,7 +223,7 @@ switch ( $mode) {
 	case 'editpost':
 	case 'delete':
 	case 'poll_delete':
-		if ( empty($post_id)) {
+        if (empty($post_id)) {
 			message_die(GENERAL_MESSAGE, $lang['No_post_id']);
 		}
 
@@ -305,7 +305,7 @@ switch ( $mode) {
 }
 
 if ($post_info) {
-	$forum_id = $post_info->forum_id;
+	$forum_id   = $post_info->forum_id;
 	$forum_name = $post_info->forum_name;
 
 	$is_auth = Auth::authorize(AUTH_ALL, $forum_id, $userdata, $post_info);
@@ -316,16 +316,16 @@ if ($post_info) {
         message_die(GENERAL_MESSAGE, $lang['Topic_locked']);
     }
 
-    if ( $mode === 'editpost' || $mode === 'delete' || $mode === 'poll_delete') {
+    if ($mode === 'editpost' || $mode === 'delete' || $mode === 'poll_delete') {
 		$topic_id = $post_info->topic_id;
 
-		$post_data['poster_post'] = $post_info->poster_id === $userdata['user_id'];
-		$post_data['first_post'] = $post_info->topic_first_post_id === $post_id;
-		$post_data['last_post'] = $post_info->topic_last_post_id === $post_id;
-		$post_data['last_topic'] = $post_info->forum_last_post_id === $post_id;
-		$post_data['has_poll'] = $post_info->topic_vote ? true : false;
-		$post_data['topic_type'] = $post_info->topic_type;
-		$post_data['poster_id'] = $post_info->poster_id;
+        $post_data['poster_post'] = $post_info->poster_id === $userdata['user_id'];
+        $post_data['first_post']  = $post_info->topic_first_post_id === $post_id;
+        $post_data['last_post']   = $post_info->topic_last_post_id === $post_id;
+        $post_data['last_topic']  = $post_info->forum_last_post_id === $post_id;
+        $post_data['has_poll']    = $post_info->topic_vote;
+        $post_data['topic_type']  = $post_info->topic_type;
+        $post_data['poster_id']   = $post_info->poster_id;
 
 		if ( $post_data['first_post'] && $post_data['has_poll']) {
 		    $votes = dibi::select('*')
@@ -353,7 +353,7 @@ if ($post_info) {
                 }
             }
 
-			$post_data['edit_poll'] = ( ( !$poll_results_sum || $is_auth['auth_mod'] ) && $post_data['first_post'] );
+			$post_data['edit_poll'] = ( !$poll_results_sum || $is_auth['auth_mod'] ) && $post_data['first_post'];
 		} else {
 			$post_data['edit_poll'] = $post_data['first_post'] && $is_auth['auth_pollcreate'];
 		}
@@ -383,9 +383,9 @@ if ($post_info) {
             $post_data['topic_type'] = $post_info->topic_type;
         }
 
-		$post_data['first_post'] = ( $mode === 'newtopic' ) ? true : 0;
+		$post_data['first_post'] = $mode === 'newtopic';
 		$post_data['last_post'] = false;
-		$post_data['has_poll'] = false;
+		$post_data['has_poll']  = false;
 		$post_data['edit_poll'] = false;
     }
 
@@ -405,8 +405,7 @@ if (!$is_auth[$is_auth_type]) {
         message_die(GENERAL_MESSAGE, sprintf($lang['Sorry_' . $is_auth_type], $is_auth[$is_auth_type . '_type']));
     }
 
-	switch( $mode )
-	{
+	switch( $mode ) {
 		case 'newtopic':
 			$redirect = 'mode=newtopic&' . POST_FORUM_URL . '=' . $forum_id;
 			break;
@@ -478,13 +477,13 @@ if (($submit || $refresh) && $is_auth['auth_read']) {
             ->where('user_id = %i', $userdata['user_id'])
             ->fetchSingle();
 
-		$notify_user = (bool)$notify_user;
+        $notify_user = (bool)$notify_user;
     } else {
-        $notify_user = ( $userdata['session_logged_in'] && $is_auth['auth_read'] ) ? $userdata['user_notify'] : 0;
-	}
+        $notify_user = $userdata['session_logged_in'] && $is_auth['auth_read'] ? $userdata['user_notify'] : 0;
+    }
 }
 
-if ( $submit || $refresh) {
+if ($submit || $refresh) {
     $attach_sig = isset($_POST['attach_sig']);
 } else {
     if ($userdata['user_id'] === ANONYMOUS) {
@@ -647,7 +646,7 @@ if (($delete || $poll_delete || $mode === 'delete') && !$confirm) {
 			user_notification($mode, $post_data, $post_info->topic_title, $forum_id, $topic_id, $post_id, $notify_user);
 		}
 
-		if ( $mode === 'newtopic' || $mode === 'reply') {
+        if ($mode === 'newtopic' || $mode === 'reply') {
             $topic_cookie_name = $board_config['cookie_name'] . '_t';
             $forum_cookie_name = $board_config['cookie_name'] . '_f';
 
@@ -808,14 +807,14 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg !== '') {
         $username = $userdata['session_logged_in'] ? $userdata['username'] : '';
 
         if ($mode === 'editpost') {
-			$attach_sig = ( $post_info->enable_sig && $post_info->user_sig !== '' ) ? true : 0;
+			$attach_sig = $post_info->enable_sig && $post_info->user_sig !== '';
 			$user_sig = $post_info->user_sig;
 
-			$html_on = $post_info->enable_html ? true : false;
-			$bbcode_on = $post_info->enable_bbcode ? true : false;
-			$smilies_on = $post_info->enable_smilies ? true : false;
+            $html_on    = (bool)$post_info->enable_html;
+            $bbcode_on  = (bool)$post_info->enable_bbcode;
+            $smilies_on = (bool)$post_info->enable_smilies;
 		} else {
-			$attach_sig = $userdata['user_attachsig'] ? true : 0;
+			$attach_sig = (bool)$userdata['user_attachsig'];
 			$user_sig = $userdata['user_sig'];
 		}
 

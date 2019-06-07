@@ -345,32 +345,30 @@ switch ($mode) {
 			}
 
             if ($new_forum_id !== $old_forum_id) {
-                $topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topic_id];
+                $topics_ids = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topic_id];
 
-				$topic_rows = dibi::select('*')
+				$topics = dibi::select('*')
                     ->from(TOPICS_TABLE)
-                    ->where('topic_id IN %in', $topics)
+                    ->where('topic_id IN %in', $topics_ids)
                     ->where('forum_id = %i', $old_forum_id)
                     ->where('topic_status <> %i', TOPIC_MOVED)
                     ->fetchAll();
 
-                foreach ($topic_rows as $topic_row) {
-					$topic_id = $row[$i]['topic_id'];
-
+                foreach ($topics as $topic) {
                     if (isset($_POST['move_leave_shadow'])) {
 					    $insert_data = [
 					        'forum_id' => $old_forum_id,
-                            'topic_title' => $topic_row->topic_title,
-                            'topic_poster' => $topic_row->topic_poster,
-                            'topic_time' => $topic_row->topic_time,
+                            'topic_title' => $topic->topic_title,
+                            'topic_poster' => $topic->topic_poster,
+                            'topic_time' => $topic->topic_time,
                             'topic_status' => TOPIC_MOVED,
                             'topic_type' => POST_NORMAL,
-                            'topic_vote' => $topic_row->topic_vote,
-                            'topic_views' => $topic_row->topic_views,
-                            'topic_replies' => $topic_row->topic_replies,
-                            'topic_first_post_id' => $topic_row->topic_first_post_id,
-                            'topic_last_post_id' => $topic_row->topic_last_post_id,
-                            'topic_moved_id' => $topic_id,
+                            'topic_vote' => $topic->topic_vote,
+                            'topic_views' => $topic->topic_views,
+                            'topic_replies' => $topic->topic_replies,
+                            'topic_first_post_id' => $topic->topic_first_post_id,
+                            'topic_last_post_id' => $topic->topic_last_post_id,
+                            'topic_moved_id' => $topic->topic_id,
 
                         ];
 
@@ -378,11 +376,11 @@ switch ($mode) {
 					}
 
 					dibi::update(TOPICS_TABLE, ['forum_id' => $new_forum_id])
-                        ->where('topic_id = %i', $topic_id)
+                        ->where('topic_id = %i', $topic->topic_id)
                         ->execute();
 
 					dibi::update(POSTS_TABLE, ['forum_id' => $new_forum_id])
-                        ->where('topic_id = %i', $topic_id)
+                        ->where('topic_id = %i', $topic->topic_id)
                         ->execute();
 				}
 
@@ -492,10 +490,14 @@ switch ($mode) {
 			message_die(GENERAL_MESSAGE, $lang['None_selected']);
 		}
 
-        $topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topic_id];
+        $topics_ids = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topic_id];
 
+        $topics = dibi::select('topic_id')
+            ->from(TOPICS_TABLE)
+            ->where('topic_id IN %in', $topics_ids)
+            ->where('forum_id = %i', $forum_id)
+            ->fetchPairs(null, 'topic_id');
 
-		// TODO there is no check if ids exists
         dibi::update(TOPICS_TABLE, ['topic_status' => TOPIC_UNLOCKED])
             ->where('topic_id IN %in', $topics)
             ->where('forum_id = %i', $forum_id)
@@ -544,23 +546,23 @@ switch ($mode) {
 			}
 
 			// TODO!!!!!!!!
-			$posts_dibi = dibi::select(['post_id', 'poster_id', 'topic_id', 'post_time'])
+			$posts = dibi::select(['post_id', 'poster_id', 'topic_id', 'post_time'])
                 ->from(POSTS_TABLE)
                 ->where('post_id IN %in', $post_ids)
                 ->orderBy('post_time', dibi::ASC)
                 ->fetchAll();
 
-			if ($posts_dibi) {
-				$first_poster = $posts_dibi[0]->poster_id;
-				$topic_id = $posts_dibi[0]->topic_id;
-				$post_time = $posts_dibi[0]->post_time;
+			if ($posts) {
+				$first_poster = $posts[0]->poster_id;
+				$topic_id     = $posts[0]->topic_id;
+				$post_time    = $posts[0]->post_time;
 
 				$user_ids_sql = [];
 				$post_ids_sql = [];
 
-				foreach ($posts_dibi as $post_dibi) {
-				    $user_ids_sql[] = $post_dibi->post_id;
-                    $post_ids_sql[] = $post_dibi->post_id;
+				foreach ($posts as $post) {
+				    $user_ids_sql[] = $post->poster_id;
+                    $post_ids_sql[] = $post->post_id;
                 }
 
 				$post_subject = trim(htmlspecialchars($_POST['subject']));
@@ -685,9 +687,9 @@ switch ($mode) {
 				obtain_word_list($orig_word, $replacement_word);
 
 				foreach ($posts as $post) {
-					$post_id = $post->post_id;
+					$post_id   = $post->post_id;
 					$poster_id = $post->poster_id;
-					$poster = $post->username;
+					$poster    = $post->username;
 
 					$post_date = create_date($board_config['default_dateformat'], $post->post_time, $board_config['board_timezone']);
 
@@ -762,20 +764,20 @@ switch ($mode) {
 		//
         $template->setFileNames(['viewip' => 'modcp_viewip.tpl']);
 
-        $post_row = dibi::select(['poster_ip', 'poster_id'])
+        $post = dibi::select(['poster_ip', 'poster_id'])
             ->from(POSTS_TABLE)
             ->where('post_id = %i', $post_id)
             ->where('forum_id = %i', $forum_id)
             ->fetch();
 
-        if (!$post_row) {
+        if (!$post) {
             message_die(GENERAL_MESSAGE, $lang['No_such_post']);
         }
 
-		$ip_this_post = decode_ip($post_row->poster_ip);
+		$ip_this_post = decode_ip($post->poster_ip);
 		$ip_this_post = ( $rdns_ip_num === $ip_this_post ) ? htmlspecialchars(gethostbyaddr($ip_this_post)) : $ip_this_post;
 
-		$poster_id = $post_row->poster_id;
+		$poster_id = $post->poster_id;
 
         $template->assignVars(
             [
@@ -808,10 +810,8 @@ switch ($mode) {
             ->orderBy($order_by, dibi::DESC)
             ->fetchAll();
 
-        $i = 0;
-
-        foreach ($rows as $row) {
-            if ($row->poster_ip === $post_row->poster_ip) {
+        foreach ($rows as $i => $row) {
+            if ($row->poster_ip === $post->poster_ip) {
                 $template->assignVars(
                     [
                         'POSTS' => $row->postings . ' ' . (($row->postings === 1) ? $lang['Post'] : $lang['Posts'])
@@ -821,24 +821,21 @@ switch ($mode) {
             }
 
             $ip = decode_ip($row->poster_ip);
-            $ip = ( $rdns_ip_num === $row->poster_ip || $rdns_ip_num === 'all') ? htmlspecialchars(gethostbyaddr($ip))
-                : $ip;
+            $ip = $rdns_ip_num === $row->poster_ip || $rdns_ip_num === 'all' ? htmlspecialchars(gethostbyaddr($ip)) : $ip;
 
-            $row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-            $row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+            $row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+            $row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
             $template->assignBlockVars('iprow',
                 [
                     'ROW_COLOR' => '#' . $row_color,
                     'ROW_CLASS' => $row_class,
                     'IP'        => $ip,
-                    'POSTS'     => $row->postings . ' ' . (($row->postings === 1) ? $lang['Post'] : $lang['Posts']),
+                    'POSTS'     => $row->postings . ' ' . $row->postings === 1 ? $lang['Post'] : $lang['Posts'],
 
                     'U_LOOKUP_IP' => 'modcp.php?mode=ip&amp;' . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=" . $row->poster_ip . '&amp;sid=' . $userdata['session_id']
                 ]
             );
-
-            $i++;
         }
 
 		//
@@ -855,33 +852,31 @@ switch ($mode) {
             ->innerJoin(POSTS_TABLE)
             ->as('p')
             ->on('p.poster_id = u.user_id')
-            ->where('poster_ip = %s', $post_row->poster_ip)
+            ->where('poster_ip = %s', $post->poster_ip)
             ->groupBy('u.user_id')
             ->groupBy('u.username')
             ->orderBy($order_by, dibi::DESC)
             ->fetchAll();
 
-        $i = 0;
-
-        foreach ($rows as $row) {
+        foreach ($rows as $i => $row) {
             $id = $row->user_id;
             $username = ($id === ANONYMOUS) ? $lang['Guest'] : $row->username;
 
-            $row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-            $row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+            $row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+            $row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
-            $template->assignBlockVars('userrow', [
-                'ROW_COLOR'      => '#' . $row_color,
-                'ROW_CLASS'      => $row_class,
-                'USERNAME'       => $username,
-                'POSTS'          => $row->postings . ' ' . (($row->postings === 1) ? $lang['Post'] : $lang['Posts']),
-                'L_SEARCH_POSTS' => sprintf($lang['Search_user_posts'], $username),
+            $template->assignBlockVars('userrow',
+                [
+                    'ROW_COLOR'      => '#' . $row_color,
+                    'ROW_CLASS'      => $row_class,
+                    'USERNAME'       => $username,
+                    'POSTS'          => $row->postings . ' ' . (($row->postings === 1) ? $lang['Post'] : $lang['Posts']),
+                    'L_SEARCH_POSTS' => sprintf($lang['Search_user_posts'], $username),
 
-                'U_PROFILE'     => ($id === ANONYMOUS) ? 'modcp.php?mode=ip&amp;' . POST_POST_URL . '=' . $post_id . '&amp;' . POST_TOPIC_URL . '=' . $topic_id . '&amp;sid=' . $userdata['session_id'] : Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$id"),
-                'U_SEARCHPOSTS' => Session::appendSid('search.php?search_author=' . (($id === ANONYMOUS) ? 'Anonymous' : urlencode($username)) . '&amp;showresults=topics')
-            ]);
-
-            $i++;
+                    'U_PROFILE'     => ($id === ANONYMOUS) ? 'modcp.php?mode=ip&amp;' . POST_POST_URL . '=' . $post_id . '&amp;' . POST_TOPIC_URL . '=' . $topic_id . '&amp;sid=' . $userdata['session_id'] : Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$id"),
+                    'U_SEARCHPOSTS' => Session::appendSid('search.php?search_author=' . (($id === ANONYMOUS) ? 'Anonymous' : urlencode($username)) . '&amp;showresults=topics')
+                ]
+            );
         }
 
 		$template->pparse('viewip');
@@ -923,6 +918,8 @@ switch ($mode) {
 		$replacement_word = [];
 		obtain_word_list($orig_word, $replacement_word);
 
+		$count_orig_word = count($orig_word);
+
 		$rows = dibi::select(['t.*', 'u.username', 'u.user_id', 'p.post_time'])
             ->from(TOPICS_TABLE)
             ->as('t')
@@ -958,8 +955,8 @@ switch ($mode) {
                 }
             }
 
-			$topic_id = $row->topic_id;
-			$topic_type = $row->topic_type;
+			$topic_id     = $row->topic_id;
+			$topic_type   = $row->topic_type;
 			$topic_status = $row->topic_status;
 
             if ($topic_type === POST_ANNOUNCE) {
@@ -978,7 +975,7 @@ switch ($mode) {
 
             $topic_title = $row->topic_title;
 
-            if (count($orig_word)) {
+            if ($count_orig_word) {
                 $topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
             }
 

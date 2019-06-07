@@ -79,8 +79,8 @@ init_userprefs($userdata);
 //
 
 // define cookie names
-$topic_cookie_name = $board_config['cookie_name'] . '_t';
-$forum_cookie_name = $board_config['cookie_name'] . '_f';
+$topic_cookie_name     = $board_config['cookie_name'] . '_t';
+$forum_cookie_name     = $board_config['cookie_name'] . '_f';
 $forum_all_cookie_name = $board_config['cookie_name'] . '_f_all';
 
 //
@@ -96,7 +96,7 @@ if (!$is_auth['auth_read'] || !$is_auth['auth_view']) {
 	//
 	// The user is not authed to read this forum ...
 	//
-	$message = ( !$is_auth['auth_view'] ) ? $lang['Forum_not_exist'] : sprintf($lang['Sorry_auth_read'], $is_auth['auth_read_type']);
+	$message = !$is_auth['auth_view'] ? $lang['Forum_not_exist'] : sprintf($lang['Sorry_auth_read'], $is_auth['auth_read_type']);
 
 	message_die(GENERAL_MESSAGE, $message);
 }
@@ -274,7 +274,7 @@ if (!empty($_POST['topicdays']) || !empty($_GET['topicdays'])) {
 	$limit_topics_time = false;
 	$topic_days = 0;
 }
-
+// todo add to select
 $select_topic_days = '<select name="topicdays">';
 
 foreach ($previous_days as $previous_day_key => $previous_day_value) {
@@ -571,6 +571,7 @@ if ($total_topics) {
 			}
 		}
 
+        // use pagination !!
         if (($replies + 1) > $board_config['posts_per_page']) {
 			$total_pages = ceil( ( $replies + 1 ) / $board_config['posts_per_page'] );
 			$goto_page = ' [ <img src="' . $images['icon_gotopost'] . '" alt="' . $lang['Goto_page'] . '" title="' . $lang['Goto_page'] . '" />' . $lang['Goto_page'] . ': ';
@@ -613,8 +614,7 @@ if ($total_topics) {
 		$topic_author .= ( $topic->user_id !== ANONYMOUS ) ? '</a>' : '';
 
 		$first_post_time = create_date($board_config['default_dateformat'], $topic->topic_time, $board_config['board_timezone']);
-
-		$last_post_time = create_date($board_config['default_dateformat'], $topic->post_time, $board_config['board_timezone']);
+		$last_post_time  = create_date($board_config['default_dateformat'], $topic->post_time, $board_config['board_timezone']);
 
         if ($topic->id2 === ANONYMOUS) {
             if ($topic->post_username2 !== '') {
@@ -630,8 +630,8 @@ if ($total_topics) {
 
 		$views = $topic->topic_views;
 		
-		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+		$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+		$row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
         $template->assignBlockVars('topicrow',
             [

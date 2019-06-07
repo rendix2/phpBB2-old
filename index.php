@@ -321,11 +321,9 @@ foreach ($forum_data as $forum) {
 //
 // Okay, let's build the index
 //
-$i = 0;
 
-foreach ($categories as $category) {
+foreach ($categories as $i => $category) {
     $cat_id = $category->cat_id;
-    $i++;
 
     //
     // Yes, we should, so first dump out the category

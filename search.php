@@ -59,7 +59,6 @@ if (isset($_POST['search_author']) || isset($_GET['search_author'])) {
 }
 
 $search_id = isset($_GET['search_id']) ? $_GET['search_id'] : '';
-
 $show_results = isset($_POST['show_results']) ? $_POST['show_results'] : 'posts';
 $show_results = $show_results === 'topics' ? 'topics' : 'posts';
 
@@ -76,11 +75,9 @@ if (isset($_POST['search_fields'])) {
 }
 
 $return_chars = isset($_POST['return_chars']) ? (int)$_POST['return_chars'] : 200;
-
-$search_cat = isset($_POST['search_cat']) ? (int)$_POST['search_cat'] : -1;
+$search_cat   = isset($_POST['search_cat'])   ? (int)$_POST['search_cat']   : -1;
 $search_forum = isset($_POST['search_forum']) ? (int)$_POST['search_forum'] : -1;
-
-$sort_by = isset($_POST['sort_by']) ? (int)$_POST['sort_by'] : 0;
+$sort_by      = isset($_POST['sort_by'])      ? (int)$_POST['sort_by']      : 0;
 
 if (isset($_POST['sort_dir'])) {
     $sort_dir = ($_POST['sort_dir'] === 'DESC') ? 'DESC' : 'ASC';
@@ -97,7 +94,7 @@ if ( !empty($_POST['search_time']) || !empty($_GET['search_time'])) {
 }
 
 $start = isset($_GET['start']) ? (int)$_GET['start'] : 0;
-$start = ($start < 0) ? 0 : $start;
+$start = $start < 0 ? 0 : $start;
 
 //
 // encoding match for workaround
@@ -250,7 +247,6 @@ if ($mode === 'searchuser') {
                         }
 
 						if (false === strpos($multibyte_charset, $lang['ENCODING'])) {
-
 							$match_word = str_replace('*', '%', $split_search_value);
 
 							// TODO THERE WAS LIKE 'awwdawd' WITHOUT LIKE '%%'
@@ -449,6 +445,8 @@ if ($mode === 'searchuser') {
 				$count = 0;
 				$chunk = 0;
 
+
+				// todo array_chunk???-+)
                 if (count($search_ids) > $limiter) {
                     foreach ($search_ids as $search_id) {
                         if ($count === $limiter) {
@@ -620,13 +618,13 @@ if ($mode === 'searchuser') {
 
             $search_data = unserialize($row->search_array);
 
-            $search_results = $search_data['search_results'];
+            $search_results    = $search_data['search_results'];
             $total_match_count = $search_data['total_match_count'];
-            $split_search = $search_data['split_search'];
-            $sort_by = $search_data['sort_by'];
-            $sort_dir = $search_data['sort_dir'];
-            $show_results = $search_data['show_results'];
-            $return_chars = $search_data['return_chars'];
+            $split_search      = $search_data['split_search'];
+            $sort_by           = $search_data['sort_by'];
+            $sort_dir          = $search_data['sort_dir'];
+            $show_results      = $search_data['show_results'];
+            $return_chars      = $search_data['return_chars'];
 		}
 	}
 
@@ -740,6 +738,7 @@ if ($mode === 'searchuser') {
 		$orig_word = [];
 		$replacement_word = [];
 		obtain_word_list($orig_word, $replacement_word);
+        $count_orig_word = count($orig_word);
 
 		//
 		// Output header
@@ -793,7 +792,7 @@ if ($mode === 'searchuser') {
 		foreach ($search_sets as $search_set) {
 			$forum_url = Session::appendSid('viewforum.php?' . POST_FORUM_URL . '=' . $search_set->forum_id);
 			$topic_url = Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . '=' . $search_set->topic_id . "&amp;highlight=$highlight_active");
-			$post_url = Session::appendSid('viewtopic.php?' . POST_POST_URL . '=' . $search_set->post_id . "&amp;highlight=$highlight_active") . '#' . $search_set->post_id;
+			$post_url  = Session::appendSid('viewtopic.php?' . POST_POST_URL . '=' . $search_set->post_id . "&amp;highlight=$highlight_active") . '#' . $search_set->post_id;
 
 			$post_date = create_date($board_config['default_dateformat'], $search_set->post_time,
 			$board_config['board_timezone']);
@@ -830,8 +829,8 @@ if ($mode === 'searchuser') {
 
 						$message = make_clickable($message);
 
-						if ( $highlight_active) {
-							if ( preg_match('/<.*>/', $message)) {
+                        if ($highlight_active) {
+                            if (preg_match('/<.*>/', $message)) {
 								$message = preg_replace($highlight_match, '<!-- #sh -->\1<!-- #eh -->', $message);
 
 								$end_html = 0;
@@ -843,11 +842,11 @@ if ($mode === 'searchuser') {
 									$grab_length = $start_html - $end_html - 1;
 									$temp_message .= substr($message, $end_html + 1, $grab_length);
 
-									if ( $end_html = strpos($message, '>', $start_html)) {
+                                    if ($end_html = strpos($message, '>', $start_html)) {
 										$length = $end_html - $start_html + 1;
 										$hold_string = substr($message, $start_html, $length);
 
-										if ( strrpos(' ' . $hold_string, '<') !== 1) {
+                                        if (strrpos(' ' . $hold_string, '<') !== 1) {
 											$end_html = $start_html + 1;
 											$end_counter = 1;
 
@@ -889,7 +888,7 @@ if ($mode === 'searchuser') {
 						}
 					}
 
-                    if (count($orig_word)) {
+                    if ($count_orig_word) {
 						$topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
 						$post_subject = ( $search_set->post_subject !== '') ? preg_replace($orig_word,
                             $replacement_word, $search_set->post_subject) : $topic_title;
@@ -962,7 +961,7 @@ if ($mode === 'searchuser') {
             } else {
 				$message = '';
 
-                if (count($orig_word)) {
+                if ($count_orig_word) {
                     $topic_title = preg_replace($orig_word, $replacement_word, $search_set->topic_title);
                 }
 
@@ -983,6 +982,7 @@ if ($mode === 'searchuser') {
 				$views = $search_set->topic_views;
 				$replies = $search_set->topic_replies;
 
+				// todo pagination!
                 if (($replies + 1) > $board_config['posts_per_page']) {
 					$total_pages = ceil( ( $replies + 1 ) / $board_config['posts_per_page'] );
 					$goto_page = ' [ <img src="' . $images['icon_gotopost'] . '" alt="' . $lang['Goto_page'] . '" title="' . $lang['Goto_page'] . '" />' . $lang['Goto_page'] . ': ';
@@ -1107,8 +1107,7 @@ if ($mode === 'searchuser') {
 				$topic_author .= ( $search_set->user_id !== ANONYMOUS ) ? '</a>' : '';
 
 				$first_post_time = create_date($board_config['default_dateformat'], $search_set->topic_time, $board_config['board_timezone']);
-
-				$last_post_time = create_date($board_config['default_dateformat'], $search_set->post_time, $board_config['board_timezone']);
+				$last_post_time  = create_date($board_config['default_dateformat'], $search_set->post_time, $board_config['board_timezone']);
 
                 if ($search_set->id2 === ANONYMOUS) {
                     if ($search_set->post_username2 !== '') {
@@ -1198,6 +1197,9 @@ $is_auth_ary = Auth::authorize(AUTH_READ, AUTH_LIST_ALL, $userdata);
 $s_forums = '';
 $list_cat = [];
 
+
+// TODO use Select.php class
+// this is in some functions file now
 foreach ($result as $row) {
     if ($is_auth_ary[$row->forum_id]['auth_read']) {
         $s_forums .= '<option value="' . $row->forum_id . '">' . $row->forum_name . '</option>';
@@ -1269,6 +1271,7 @@ $previous_days = [
 
 $s_time = '';
 
+// todo use Select
 foreach ($previous_days as $previous_day_key => $previous_days_value) {
 	$selected = ( $topic_days === $previous_day_key ) ? ' selected="selected"' : '';
 

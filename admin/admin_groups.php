@@ -144,6 +144,7 @@ if (isset($_POST['edit']) || isset($_POST['new'])) {
             'S_GROUP_OPEN_TYPE'      => GROUP_OPEN,
             'S_GROUP_CLOSED_TYPE'    => GROUP_CLOSED,
             'S_GROUP_HIDDEN_TYPE'    => GROUP_HIDDEN,
+
             'S_GROUP_OPEN_CHECKED'   => $group_open,
             'S_GROUP_CLOSED_CHECKED' => $group_closed,
             'S_GROUP_HIDDEN_CHECKED' => $group_hidden,

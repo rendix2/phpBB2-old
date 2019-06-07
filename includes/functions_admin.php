@@ -43,7 +43,7 @@ function make_forum_select($box_name, $ignore_forum = false, $select_forum = '')
 	$forum_list = '';
 
 	foreach ($forums as $forum) {
-        if ( $is_auth_ary[$forum->forum_id]['auth_read'] && $ignore_forum !== $forum->forum_id) {
+        if ($is_auth_ary[$forum->forum_id]['auth_read'] && $ignore_forum !== $forum->forum_id) {
             $selected = ( $select_forum === $forum->forum_id ) ? ' selected="selected"' : '';
             $forum_list .= '<option value="' . $forum->forum_id . '"' . $selected .'>' . $forum->forum_name . '</option>';
         }
@@ -59,28 +59,28 @@ function make_forum_select($box_name, $ignore_forum = false, $select_forum = '')
 //
 function sync($type, $id = false)
 {
-	switch($type) {
-		case 'all forums':
-		    $forums = dibi::select('forum_id')
+    switch ($type) {
+        case 'all forums':
+            $forums = dibi::select('forum_id')
                 ->from(FORUMS_TABLE)
                 ->fetchAll();
 
-		    foreach ($forums as $forum) {
-		        sync('forum', $forum->forum_id);
+            foreach ($forums as $forum) {
+                sync('forum', $forum->forum_id);
             }
-		   	break;
+            break;
 
-		case 'all topics':
-		    $topics = dibi::select('topic_id')
+        case 'all topics':
+            $topics = dibi::select('topic_id')
                 ->from(TOPICS_TABLE)
                 ->fetchAll();
 
-		    foreach ($topics as $topic) {
-		        sync('topic', $topic->topic_id);
+            foreach ($topics as $topic) {
+                sync('topic', $topic->topic_id);
             }
-			break;
+            break;
 
-	  	case 'forum':
+        case 'forum':
             $row = dibi::select('MAX(post_id)')
                 ->as('last_post')
                 ->select('COUNT(post_id)')
@@ -112,9 +112,9 @@ function sync($type, $id = false)
                 'forum_topics'       => $total_topics
             ];
 
-			dibi::update(FORUMS_TABLE, $forums_update_data)->where('forum_id = %i', $id)->execute();
+            dibi::update(FORUMS_TABLE, $forums_update_data)->where('forum_id = %i', $id)->execute();
 
-			break;
+            break;
 
         case 'topic':
             $row = dibi::select('MAX(post_id)')
@@ -157,9 +157,9 @@ function sync($type, $id = false)
                 }
             }
             break;
-	}
-	
-	return true;
+    }
+
+    return true;
 }
 
 ?>

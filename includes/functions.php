@@ -515,9 +515,9 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 	global $db, $template, $board_config, $theme, $lang, $phpbb_root_path, $nav_links, $gen_simple_header, $images;
 	global $userdata, $user_ip, $session_length;
 
-	if (defined('HAS_DIED')) {
-		die("message_die() was called multiple times. This isn't supposed to happen. Was message_die() used in page_tail.php?");
-	}
+    if (defined('HAS_DIED')) {
+        die("message_die() was called multiple times. This isn't supposed to happen. Was message_die() used in page_tail.php?");
+    }
 	
 	define('HAS_DIED', 1);
 
@@ -527,97 +527,95 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 	// Get SQL error if we are debugging. Do this as soon as possible to prevent 
 	// subsequent queries from overwriting the status of sql_error()
 	//
-	if ( DEBUG && ( $msg_code === GENERAL_ERROR || $msg_code === CRITICAL_ERROR )) {
-		if ( $err_line !== '' && $err_file !== '') {
-			$debug_text .= '<br /><br />Line : ' . $err_line . '<br />File : ' . basename($err_file);
-		}
-	}
+    if (DEBUG && ($msg_code === GENERAL_ERROR || $msg_code === CRITICAL_ERROR)) {
+        if ($err_line !== '' && $err_file !== '') {
+            $debug_text .= '<br /><br />Line : ' . $err_line . '<br />File : ' . basename($err_file);
+        }
+    }
 
-	if (empty($userdata) && ( $msg_code === GENERAL_MESSAGE || $msg_code === GENERAL_ERROR )) {
-		$userdata = Session::pageStart($user_ip, PAGE_INDEX);
-		init_userprefs($userdata);
-	}
+    if (empty($userdata) && ($msg_code === GENERAL_MESSAGE || $msg_code === GENERAL_ERROR)) {
+        $userdata = Session::pageStart($user_ip, PAGE_INDEX);
+        init_userprefs($userdata);
+    }
 
 	//
 	// If the header hasn't been output then do it
 	//
-	if ( !defined('HEADER_INC') && $msg_code !== CRITICAL_ERROR) {
-		if ( empty($lang)) {
-			if ( !empty($board_config['default_lang'])) {
-				include $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.php';
-			} else {
-				include $phpbb_root_path . 'language/lang_english/lang_main.php';
-			}
-		}
+    if (!defined('HEADER_INC') && $msg_code !== CRITICAL_ERROR) {
+        if (empty($lang)) {
+            if (!empty($board_config['default_lang'])) {
+                include $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.php';
+            } else {
+                include $phpbb_root_path . 'language/lang_english/lang_main.php';
+            }
+        }
 
-		if ( empty($template) || empty($theme)) {
-			$theme = setup_style($board_config['default_style']);
-		}
+        if (empty($template) || empty($theme)) {
+            $theme = setup_style($board_config['default_style']);
+        }
 
-		//
-		// Load the Page Header
-		//
-		if ( !defined('IN_ADMIN')) {
-			include $phpbb_root_path . 'includes/page_header.php';
-		} else {
-			include $phpbb_root_path . 'admin/page_header_admin.php';
-		}
+        //
+        // Load the Page Header
+        //
+        if (!defined('IN_ADMIN')) {
+            include $phpbb_root_path . 'includes/page_header.php';
+        } else {
+            include $phpbb_root_path . 'admin/page_header_admin.php';
+        }
 	}
 
-	switch($msg_code)
-	{
-		case GENERAL_MESSAGE:
-			if ( $msg_title === '') {
-				$msg_title = $lang['Information'];
-			}
-			break;
+    switch ($msg_code) {
+        case GENERAL_MESSAGE:
+            if ($msg_title === '') {
+                $msg_title = $lang['Information'];
+            }
+            break;
 
-		case CRITICAL_MESSAGE:
-			if ( $msg_title === '') {
-				$msg_title = $lang['Critical_Information'];
-			}
-			break;
+        case CRITICAL_MESSAGE:
+            if ($msg_title === '') {
+                $msg_title = $lang['Critical_Information'];
+            }
+            break;
 
-		case GENERAL_ERROR:
-			if ( $msg_text === '') {
-				$msg_text = $lang['An_error_occured'];
-			}
+        case GENERAL_ERROR:
+            if ($msg_text === '') {
+                $msg_text = $lang['An_error_occured'];
+            }
 
-			if ( $msg_title === '') {
-				$msg_title = $lang['General_Error'];
-			}
-			break;
+            if ($msg_title === '') {
+                $msg_title = $lang['General_Error'];
+            }
+            break;
 
-		case CRITICAL_ERROR:
-			//
-			// Critical errors mean we cannot rely on _ANY_ DB information being
-			// available so we're going to dump out a simple echo'd statement
-			//
-			include $phpbb_root_path . 'language/lang_english/lang_main.php';
+        case CRITICAL_ERROR:
+            //
+            // Critical errors mean we cannot rely on _ANY_ DB information being
+            // available so we're going to dump out a simple echo'd statement
+            //
+            include $phpbb_root_path . 'language/lang_english/lang_main.php';
 
-			if ( $msg_text === '') {
-				$msg_text = $lang['A_critical_error'];
-			}
+            if ($msg_text === '') {
+                $msg_text = $lang['A_critical_error'];
+            }
 
-			if ( $msg_title === '') {
-				$msg_title = 'phpBB : <b>' . $lang['Critical_Error'] . '</b>';
-			}
-			break;
+            if ($msg_title === '') {
+                $msg_title = 'phpBB : <b>' . $lang['Critical_Error'] . '</b>';
+            }
+            break;
 	}
 
 	//
 	// Add on DEBUG info if we've enabled debug mode and this is an error. This
 	// prevents debug info being output for general messages should DEBUG be
 	// set true by accident (preventing confusion for the end user!)
-	//
+    //
     if (DEBUG && ($msg_code === GENERAL_ERROR || $msg_code === CRITICAL_ERROR)) {
         if ($debug_text !== '') {
             $msg_text = $msg_text . '<br /><br /><b><u>DEBUG MODE</u></b>' . $debug_text;
         }
     }
 
-	if ( $msg_code !== CRITICAL_ERROR )
-	{
+    if ($msg_code !== CRITICAL_ERROR) {
         if (!empty($lang[$msg_text])) {
             $msg_text = $lang[$msg_text];
         }
@@ -641,11 +639,11 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
         } else {
             include $phpbb_root_path . 'admin/page_footer_admin.php';
         }
-	} else {
-		echo "<html>\n<body>\n" . $msg_title . "\n<br /><br />\n" . $msg_text . "</body>\n</html>";
-	}
+    } else {
+        echo "<html>\n<body>\n" . $msg_title . "\n<br /><br />\n" . $msg_text . "</body>\n</html>";
+    }
 
-	exit;
+    exit;
 }
 
 //

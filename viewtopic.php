@@ -211,11 +211,11 @@ init_userprefs($userdata);
 $is_auth = Auth::authorize(AUTH_ALL, $forum_id, $userdata, $forum_topic_data);
 
 if (!$is_auth['auth_view'] || !$is_auth['auth_read']) {
-	if ( !$userdata['session_logged_in']) {
-		$redirect = $post_id ? POST_POST_URL . "=$post_id" : POST_TOPIC_URL . "=$topic_id";
-		$redirect .= $start ? "&start=$start" : '';
-		redirect(Session::appendSid("login.php?redirect=viewtopic.php&$redirect", true));
-	}
+    if (!$userdata['session_logged_in']) {
+        $redirect = $post_id ? POST_POST_URL . "=$post_id" : POST_TOPIC_URL . "=$topic_id";
+        $redirect .= $start ? "&start=$start" : '';
+        redirect(Session::appendSid("login.php?redirect=viewtopic.php&$redirect", true));
+    }
 
 	$message = ( !$is_auth['auth_view'] ) ? $lang['Topic_post_not_exist'] : sprintf($lang['Sorry_auth_read'], $is_auth['auth_read_type']);
 
@@ -272,7 +272,7 @@ if ($userdata['session_logged_in']) {
 			$is_watching_topic = true;
 
             if ($row->notify_status) {
-                $sql_priority = ($dbms === 'mysql') ? 'LOW_PRIORITY' : '';
+                $sql_priority = $dbms === 'mysql' ? 'LOW_PRIORITY' : '';
 
 				dibi::update(TOPICS_WATCH_TABLE, ['notify_status' => 0])
                     ->setFlag($sql_priority)
@@ -286,7 +286,7 @@ if ($userdata['session_logged_in']) {
             if ($_GET['watch'] === 'topic') {
 				$is_watching_topic = true;
 
-				$sql_priority = ($dbms === 'mysql') ? 'LOW_PRIORITY' : '';
+				$sql_priority = $dbms === 'mysql' ? 'LOW_PRIORITY' : '';
 
                 $insert_data = [
                     'user_id' => $userdata['user_id'],
@@ -372,6 +372,7 @@ if (!empty($_POST['postdays']) || !empty($_GET['postdays'])) {
 	$post_days = 0;
 }
 
+// todo use Select
 $select_post_days = '<select name="postdays">';
 
 foreach ($previous_days as $previous_day_key => $previous_days_value) {
@@ -505,8 +506,8 @@ obtain_word_list($orig_word, $replacement_word);
 //
 // Censor topic title
 //
-if ( count($orig_word)) {
-	$topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
+if (count($orig_word)) {
+    $topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
 }
 
 //
@@ -533,9 +534,9 @@ if (isset($_GET['highlight'])) {
 // Post, reply and other URL generation for
 // templating vars
 //
-$new_topic_url = Session::appendSid('posting.php?mode=newtopic&amp;' . POST_FORUM_URL . "=$forum_id");
-$reply_topic_url = Session::appendSid('posting.php?mode=reply&amp;' . POST_TOPIC_URL . "=$topic_id");
-$view_forum_url = Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forum_id");
+$new_topic_url       = Session::appendSid('posting.php?mode=newtopic&amp;' . POST_FORUM_URL . "=$forum_id");
+$reply_topic_url     = Session::appendSid('posting.php?mode=reply&amp;' . POST_TOPIC_URL . "=$topic_id");
+$view_forum_url      = Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forum_id");
 $view_prev_topic_url = Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;view=previous");
 $view_next_topic_url = Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;view=next");
 
@@ -737,11 +738,8 @@ if ( !empty($forum_topic_data->topic_vote)) {
 			$view_result = 0;
 		}
 
-        if ($vote_info[0]->vote_length && ($vote_info[0]->vote_start + $vote_info[0]->vote_length < time())) {
-            $poll_expired = true;
-        } else {
-            $poll_expired = false;
-        }
+
+        $poll_expired = $vote_info[0]->vote_length && ($vote_info[0]->vote_start + $vote_info[0]->vote_length < time());
 
         if ($user_voted || $view_result || $poll_expired || !$is_auth['auth_vote'] || $forum_topic_data->topic_status === TOPIC_LOCKED) {
             $template->setFileNames(['pollbox' => 'viewtopic_poll_result.tpl']);
