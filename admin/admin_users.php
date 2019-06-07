@@ -35,6 +35,7 @@ require './pagestart.php';
 require $phpbb_root_path . 'includes/bbcode.php';
 require $phpbb_root_path . 'includes/functions_post.php';
 require $phpbb_root_path . 'includes/functions_selects.php';
+require $phpbb_root_path . 'includes/Select.php.php';
 require $phpbb_root_path . 'includes/functions_validate.php';
 
 $html_entities_match   = ['#<#', '#>#'];
@@ -181,7 +182,7 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
 
 		$user_style = isset( $_POST['style'] ) ? (int)$_POST['style'] : $board_config['default_style'];
 		$user_lang = $_POST['language'] ? $_POST['language'] : $board_config['default_lang'];
-		$user_timezone = isset( $_POST['timezone']) ? (float)$_POST['timezone'] : $board_config['board_timezone'];
+		$user_timezone = isset( $_POST['timezone']) ? $_POST['timezone'] : $board_config['board_timezone'];
 		$user_dateformat = $_POST['dateformat'] ? trim($_POST['dateformat'] ) : $board_config['default_dateformat'];
 
 		if ( isset( $_POST['avatarselect'] ) && !empty($_POST['submitavatar'] ) && $board_config['allow_avatar_local'] ) {
@@ -882,7 +883,7 @@ if ( $mode === 'edit' || $mode === 'save' && ( isset($_POST['username']) || isse
                 'ALWAYS_ALLOW_SMILIES_NO' => (!$allowsmilies) ? 'checked="checked"' : '',
                 'AVATAR' => $avatar,
                 'LANGUAGE_SELECT' => language_select($user_lang),
-                'TIMEZONE_SELECT' => tz_select($user_timezone),
+                'TIMEZONE_SELECT' => Select::timezone($user_timezone),
                 'STYLE_SELECT' => style_select($user_style),
                 'DATE_FORMAT' => $user_dateformat,
                 'ALLOW_PM_YES' => $user_allowpm ? 'checked="checked"' : '',

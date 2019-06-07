@@ -369,21 +369,21 @@ function decode_ip($int_ip)
 	return hexdec($hexipbang[0]). '.' . hexdec($hexipbang[1]) . '.' . hexdec($hexipbang[2]) . '.' . hexdec($hexipbang[3]);
 }
 
-//
-// Create date/time from format and timezone
-//
-function create_date($format, $gmepoch, $tz)
+/**
+ * Create date/time from format and timezone
+ *
+ * @param string $format
+ * @param int    $time
+ * @param string $time_zone
+ *
+ * @return string
+ * @throws Exception
+ */
+function create_date($format, $time, $time_zone)
 {
-	global $board_config, $lang;
-	static $translate;
-
-    if (empty($translate) && $board_config['default_lang'] !== 'english') {
-		foreach ($lang['datetime'] as $match => $replace) {
-			$translate[$match] = $replace;
-		}
-	}
-
-	return !empty($translate) ? strtr(@gmdate($format, $gmepoch + (3600 * $tz)), $translate) : @gmdate($format, $gmepoch + (3600 * $tz));
+    $started = new DateTime('now', new DateTimeZone($time_zone));
+    $started->setTimestamp((int)$time);
+    return $started->format($format);
 }
 
 //

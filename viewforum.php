@@ -244,7 +244,12 @@ $previous_days = [
 
 if (!empty($_POST['topicdays']) || !empty($_GET['topicdays']) ) {
 	$topic_days = !empty($_POST['topicdays']) ? (int)$_POST['topicdays'] : (int)$_GET['topicdays'];
-	$min_topic_time = time() - ($topic_days * 86400);
+    $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
+
+    $min_topic_time = new DateTime();
+    $min_topic_time->setTimezone(new DateTimeZone($user_timezone));
+    $min_topic_time->sub(new DateInterval('P'.$topic_days.'D'));
+    $min_topic_time = $min_topic_time->getTimestamp();
 
 	$forum_topics = dibi::select('COUNT(t.topic_id)')
         ->as('forum_topics')

@@ -266,6 +266,12 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
 	//
 	// Get users online information.
 	//
+    $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
+
+    $time = new DateTime();
+    $time->setTimezone(new DateTimeZone($user_timezone));
+    $time->sub(new DateInterval('PT300S'));
+
     $onlinerow_reg = dibi::select(['u.user_id', 'u.username', 'u.user_session_time', 'u.user_session_page', 'u.user_allow_viewonline', 's.session_logged_in', 's.session_ip', 's.session_start'])
         ->from(USERS_TABLE)
         ->as('u')
@@ -274,14 +280,14 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
         ->on('u.user_id = s.session_user_id')
         ->where('s.session_logged_in = %i', 1)
         ->where('u.user_id <> %i', ANONYMOUS)
-        ->where('s.session_time >= %i', time() - 300)
+        ->where('s.session_time >= %i', $time->getTimestamp())
         ->orderBy('u.user_session_time', dibi::DESC)
         ->fetchAll();
 
     $onlinerow_guest = dibi::select(['session_page', 'session_logged_in', 'session_time', 'session_ip', 'session_start'])
         ->from(SESSIONS_TABLE)
         ->where('session_logged_in = %i', 0)
-        ->where('session_time >= %i', time() - 300)
+        ->where('session_time >= %i', $time->getTimestamp())
         ->orderBy('session_time', 'DESC')
         ->fetchAll();
 

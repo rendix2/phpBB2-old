@@ -180,7 +180,7 @@ if (
         $user_lang = $board_config['default_lang'];
     }
 
-	$user_timezone = isset($_POST['timezone']) ? (float)$_POST['timezone'] : $board_config['board_timezone'];
+	$user_timezone = isset($_POST['timezone']) ? $_POST['timezone'] : $board_config['board_timezone'];
 
 	// TODO i think i have this value already in $board_config, why i get it again???
 	$board_default_dateformat = dibi::select('config_value')
@@ -830,6 +830,7 @@ if (isset($_POST['avatargallery']) && !$error ) {
 	display_avatar_gallery($mode, $avatar_category, $user_id, $email, $current_email, $coppa, $username, $email, $new_password, $cur_password, $password_confirm, $icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature, $viewemail, $notifypm, $popup_pm, $notifyreply, $attachsig, $allowhtml, $allowbbcode, $allowsmilies, $allowviewonline, $user_style, $user_lang, $user_timezone, $user_dateformat, $userdata['session_id']);
 } else {
 	include $phpbb_root_path . 'includes/functions_selects.php';
+	include $phpbb_root_path . 'includes/Select.php';
 
     if (!isset($coppa)) {
         $coppa = false;
@@ -985,7 +986,7 @@ if (isset($_POST['avatargallery']) && !$error ) {
             'AVATAR_SIZE' => $board_config['avatar_filesize'],
             'LANGUAGE_SELECT' => language_select($user_lang),
             'STYLE_SELECT' => style_select($user_style),
-            'TIMEZONE_SELECT' => tz_select($user_timezone),
+            'TIMEZONE_SELECT' => Select::timezone($user_timezone),
             'DATE_FORMAT' => $user_dateformat,
             'HTML_STATUS' => $html_status,
             'BBCODE_STATUS' => sprintf($bbcode_status, '<a href="' . Session::appendSid('faq.php?mode=bbcode') . '" target="_phpbbcode">', '</a>'),

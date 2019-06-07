@@ -79,12 +79,17 @@ if (isset($_POST['doprune']) ) {
 	$prunedays = isset($_POST['prunedays']) ? (int)$_POST['prunedays'] : 0;
 
 	// Convert days to seconds for timestamp functions...
-	$prunedate = time() - ( $prunedays * 86400 );
+    $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
+
+    $prune_date = new DateTime();
+    $prune_date->setTimezone(new DateTimeZone($user_timezone));
+    $prune_date->sub(new DateInterval('P' . $prunedays . 'D'))
+        ->getTimestamp();
 
     $template->set_filenames(['body' => 'admin/forum_prune_result_body.tpl']);
 
     foreach ($forums as $forum) {
-        $p_result = prune($forum->forum_id, $prunedate);
+        $p_result = prune($forum->forum_id, $prune_date);
         sync('forum', $forum->forum_id);
 
         $row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];

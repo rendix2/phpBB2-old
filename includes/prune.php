@@ -129,8 +129,19 @@ function auto_prune($forum_id = 0)
     }
 
     if ($prune->prune_freq && $prune->prune_days) {
-        $prune_date = time() - ($prune->prune_days * 86400);
-        $next_prune = time() + ($prune->prune_freq * 86400);
+        $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
+
+        $time_zone = new DateTimeZone($user_timezone);
+
+        $prune_date = new DateTime();
+        $prune_date->setTimezone($time_zone);
+        $prune_date->sub(new DateInterval('P' . $prune->prune_days . 'D'))
+            ->getTimestamp();
+
+        $next_prune = new DateTime();
+        $next_prune->setTimezone($time_zone);
+        $next_prune->add(new DateInterval('P' . $prune->prune_freq . 'D'))
+            ->getTimestamp();
 
         prune($forum_id, $prune_date);
         sync('forum', $forum_id);

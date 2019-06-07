@@ -74,13 +74,19 @@ $is_auth_ary = Auth::authorize(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
 //
 $columns = ['u.user_id', 'u.username', 'u.user_allow_viewonline', 'u.user_level', 's.session_logged_in', 's.session_time', 's.session_page', 's.session_ip'];
 
+$user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
+
+$time = new DateTime();
+$time->setTimezone(new DateTimeZone($user_timezone));
+$time->sub(new DateInterval('PT300S'));
+
 $rows = dibi::select($columns)
     ->from(USERS_TABLE)
     ->as('u')
     ->innerJoin(SESSIONS_TABLE)
     ->as('s')
     ->on('u.user_id = s.session_user_id')
-    ->where('s.session_time >= %i', time() - 30)
+    ->where('s.session_time >= %i', $time->getTimestamp())
     ->orderBy('u.username', dibi::ASC)
     ->orderBy('s.session_ip', dibi::ASC)
     ->fetchAll();

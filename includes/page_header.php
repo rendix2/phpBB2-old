@@ -81,6 +81,11 @@ $online_userlist = '';
 $l_online_users = '';
 
 if (defined('SHOW_ONLINE')) {
+    $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
+
+    $time = new DateTime();
+    $time->setTimezone(new DateTimeZone($user_timezone));
+    $time->sub(new DateInterval('PT300S'));
 
 	$rows = dibi::select(['u.username', 'u.user_id', 'u.user_allow_viewonline', 'u.user_level', 's.session_logged_in', 's.session_ip'])
         ->from(USERS_TABLE)
@@ -88,7 +93,7 @@ if (defined('SHOW_ONLINE')) {
         ->innerJoin(SESSIONS_TABLE)
         ->as('s')
         ->on('u.user_id = s.session_user_id')
-        ->where('s.session_time >= %i', time() - 300);
+        ->where('s.session_time >= %i', $time->getTimestamp());
 
 	if (!empty($forum_id)) {
 	    $rows->where('s.session_page = %i', $forum_id);

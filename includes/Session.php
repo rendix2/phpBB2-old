@@ -267,7 +267,14 @@ class Session
         $userdata['session_admin'] = $admin;
         $userdata['session_key'] = $sessiondata['autologinid'];
 
-        setcookie($data_cookie_name, serialize($sessiondata), $current_time + 31536000, $cookiepath, $cookiedomain, $cookiesecure);
+        $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
+
+        $expire_date = new DateTime();
+        $expire_date->setTimestamp($current_time);
+        $expire_date->setTimezone(new DateTimeZone($user_timezone));
+        $expire_date->add(new DateInterval('P1Y'));
+
+        setcookie($data_cookie_name, serialize($sessiondata), $expire_date->getTimestamp(), $cookiepath, $cookiedomain, $cookiesecure);
         setcookie($sid_cookie_name, $session_id, 0, $cookiepath, $cookiedomain, $cookiesecure);
 
         $SID = 'sid=' . $session_id;
@@ -376,7 +383,14 @@ class Session
 
                         self::clean($userdata['session_id']);
 
-                        setcookie($data_cookie_name, serialize($sessiondata), $current_time + 31536000, $cookiepath, $cookiedomain, $cookiesecure);
+                        $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
+
+                        $expire_date = new DateTime();
+                        $expire_date->setTimestamp($current_time);
+                        $expire_date->setTimezone(new DateTimeZone($user_timezone));
+                        $expire_date->add(new DateInterval('P1Y'));
+
+                        setcookie($data_cookie_name, serialize($sessiondata), $expire_date->getTimestamp(), $cookiepath, $cookiedomain, $cookiesecure);
                         setcookie($sid_cookie_name, $session_id, 0, $cookiepath, $cookiedomain, $cookiesecure);
                     }
 
@@ -467,8 +481,15 @@ class Session
             message_die(CRITICAL_ERROR, 'Error obtaining user details');
         }
 
-        setcookie($data_cookie_name, '', $current_time - 31536000, $cookiepath, $cookiedomain, $cookiesecure);
-        setcookie($sid_cookie_name, '', $current_time - 31536000, $cookiepath, $cookiedomain, $cookiesecure);
+        $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
+
+        $expire_date = new DateTime();
+        $expire_date->setTimestamp($current_time);
+        $expire_date->setTimezone(new DateTimeZone($user_timezone));
+        $expire_date->sub(new DateInterval('P1Y'));
+
+        setcookie($data_cookie_name, '', $expire_date->getTimestamp(), $cookiepath, $cookiedomain, $cookiesecure);
+        setcookie($sid_cookie_name, '', $expire_date->getTimestamp(), $cookiepath, $cookiedomain, $cookiesecure);
 
         return true;
     }
@@ -483,12 +504,19 @@ class Session
     public static function clean($session_id)
     {
         global $board_config;
+        global $userdata;
 
         //
         // Delete expired sessions
         //
+        $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
+
+        $time = new DateTime();
+        $time->setTimezone(new DateTimeZone($user_timezone));
+        $time->sub(new DateInterval('PT' . $board_config['session_length'] . 'S'));
+
         dibi::delete(SESSIONS_TABLE)
-            ->where('session_time < %i', time() - (int) $board_config['session_length'])
+            ->where('session_time < %i', $time->getTimestamp())
             ->where('session_id <> %s', $session_id)
             ->execute();
 
@@ -498,8 +526,14 @@ class Session
         // (same behaviour as old 2.0.x session code)
         //
         if (!empty($board_config['max_autologin_time']) && $board_config['max_autologin_time'] > 0) {
+            $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
+
+            $time = new DateTime();
+            $time->setTimezone(new DateTimeZone($user_timezone));
+            $time->sub(new DateInterval('P' . (int)$board_config['max_autologin_time'] . 'D'));
+
             dibi::delete(SESSIONS_KEYS_TABLE)
-                ->where('last_login < %i', time() - (86400 * (int)$board_config['max_autologin_time']))
+                ->where('last_login < %i', $time->getTimestamp())
                 ->execute();
         }
 
@@ -561,7 +595,14 @@ class Session
             $cookiedomain = $board_config['cookie_domain'];
             $cookiesecure = $board_config['cookie_secure'];
 
-            setcookie($cookiename . '_data', serialize($sessiondata), $current_time + 31536000, $cookiepath, $cookiedomain, $cookiesecure);
+            $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
+
+            $expire_date = new DateTime();
+            $expire_date->setTimestamp($current_time);
+            $expire_date->setTimezone(new DateTimeZone($user_timezone));
+            $expire_date->add(new DateInterval('P1Y'));
+
+            setcookie($cookiename . '_data', serialize($sessiondata), $expire_date->getTimestamp(), $cookiepath, $cookiedomain, $cookiesecure);
 
             $userdata['session_key'] = $auto_login_key;
             unset($sessiondata);

@@ -51,8 +51,17 @@ make_jumpbox('viewforum.php');
 // Calculate the number of days this user has been a member ($memberdays)
 // Then calculate their posts per day
 //
-$regdate = $profile_data['user_regdate'];
-$memberdays = max(1, round( ( time() - $regdate ) / 86400 ));
+$user_timezone = isset($profile_data['user_timezone']) ? $profile_data['user_timezone'] : $board_config['board_timezone'];
+
+$zone = new DateTimeZone($user_timezone);
+
+$regdate = new DateTime();
+$regdate->setTimezone($zone);
+$regdate->setTimestamp($profile_data['user_regdate']);
+
+$memberdays = new DateTime('now', $zone);
+$memberdays = $memberdays->diff($regdate)->d;
+
 $posts_per_day = $profile_data['user_posts'] / $memberdays;
 
 // Get the users percentage of total posts

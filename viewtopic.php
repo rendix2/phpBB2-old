@@ -338,9 +338,16 @@ $previous_days = [
     364 => $lang['1_Year']
 ];
 
+$time = null;
+
 if (!empty($_POST['postdays']) || !empty($_GET['postdays'])) {
 	$post_days =  !empty($_POST['postdays']) ? (int)$_POST['postdays'] : (int)$_GET['postdays'];
-	$min_post_time = time() - ($post_days * 86400);
+
+    $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
+
+    $time = new DateTime();
+    $time->setTimezone(new DateTimeZone($user_timezone));
+    $time->sub(new DateInterval('P1D'));
 
     $total_replies = dibi::select('COUNT(p.post_id)')
         ->as('num_posts')
@@ -350,7 +357,7 @@ if (!empty($_POST['postdays']) || !empty($_GET['postdays'])) {
         ->as('p')
         ->on('p.topic_id = t.topic_id')
         ->where('t.topic_id = %i', $topic_id)
-        ->where('p.post_time >= %i', $min_post_time)
+        ->where('p.post_time >= %i', $time->getTimestamp())
         ->fetchSingle();
 
 	$limit_posts_time = true;
@@ -436,8 +443,10 @@ $posts = dibi::select($columns)
     ->on('pt.post_id = p.post_id')
     ->where('p.topic_id = %i', $topic_id);
 
+
+// todo check if time is added correctly
 if ($limit_posts_time) {
-    $posts->where('p.post_time >= %i', $min_post_time);
+    $posts->where('p.post_time >= %i', $time->getTimestamp());
 }
 
 $posts = $posts
