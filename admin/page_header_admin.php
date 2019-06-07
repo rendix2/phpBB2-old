@@ -66,7 +66,6 @@ $l_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $
 $template->assignVars(
 	[
 		'SITENAME'   => $board_config['sitename'],
-		'PAGE_TITLE' => $page_title,
 
 		'L_ADMIN' => $lang['Admin'],
 		'L_INDEX' => sprintf($lang['Forum_Index'], $board_config['sitename']),
