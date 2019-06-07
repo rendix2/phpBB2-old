@@ -119,16 +119,6 @@ if ($mode === 'searchuser') {
 
     exit;
 } elseif ( $search_keywords !== '' || $search_author !== '' || $search_id ) {
-    $store_vars = [
-        'search_results',
-        'total_match_count',
-        'split_search',
-        'sort_by',
-        'sort_dir',
-        'show_results',
-        'return_chars'
-    ];
-
     $split_search = [];
     $search_results = '';
 
@@ -583,9 +573,13 @@ if ($mode === 'searchuser') {
 		}
 		*/
 
-        foreach ($store_vars as $store_var) {
-            $store_search_data[$store_var] = $$store_var;
-        }
+        $store_search_data['search_results'] = $search_results;
+        $store_search_data['total_match_count'] = $total_match_count;
+        $store_search_data['split_search'] = $split_search;
+        $store_search_data['sort_by'] = $sort_by;
+        $store_search_data['sort_dir'] = $sort_dir;
+        $store_search_data['show_results'] = $show_results;
+        $store_search_data['return_chars'] = $return_chars;
 
 		$result_array = serialize($store_search_data);
 		unset($store_search_data);
@@ -626,9 +620,13 @@ if ($mode === 'searchuser') {
 
             $search_data = unserialize($row->search_array);
 
-            foreach ($store_vars as $store_var) {
-                $$store_var = $search_data[$store_var];
-            }
+            $search_results = $search_data['search_results'];
+            $total_match_count = $search_data['total_match_count'];
+            $split_search = $search_data['split_search'];
+            $sort_by = $search_data['sort_by'];
+            $sort_dir = $search_data['sort_dir'];
+            $show_results = $search_data['show_results'];
+            $return_chars = $search_data['return_chars'];
 		}
 	}
 
