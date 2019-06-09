@@ -106,4 +106,20 @@ class Select
         return $select_list;
     }
 
+    public static function postOrder(array $lang, $post_time_order)
+    {
+        $select_post_order = '<select name="postorder">';
+
+        if ($post_time_order === 'ASC') {
+            $select_post_order .= '<option value="asc" selected="selected">' . $lang['Oldest_First'] . '</option><option value="desc">' . $lang['Newest_First'] . '</option>';
+        } else {
+            $select_post_order .= '<option value="asc">' . $lang['Oldest_First'] . '</option><option value="desc" selected="selected">' . $lang['Newest_First'] . '</option>';
+        }
+
+        $select_post_order .= '</select>';
+
+        return $select_post_order;
+    }
+
+
 }

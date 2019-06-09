@@ -378,15 +378,7 @@ if (!empty($_POST['postorder']) || !empty($_GET['postorder'])) {
 	$post_time_order = 'ASC';
 }
 
-$select_post_order = '<select name="postorder">';
-
-if ($post_time_order === 'ASC') {
-	$select_post_order .= '<option value="asc" selected="selected">' . $lang['Oldest_First'] . '</option><option value="desc">' . $lang['Newest_First'] . '</option>';
-} else {
-	$select_post_order .= '<option value="asc">' . $lang['Oldest_First'] . '</option><option value="desc" selected="selected">' . $lang['Newest_First'] . '</option>';
-}
-
-$select_post_order .= '</select>';
+$select_post_order = Select::postOrder($lang, $post_time_order);
 
 //
 // Go ahead and pull all data for this topic
