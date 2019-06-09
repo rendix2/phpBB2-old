@@ -221,9 +221,11 @@ $group_moderator_data = dibi::select('g.group_id, g.group_name')
 foreach ($group_moderator_data as $row) {
     $moderators[] = '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . '=' . $row->group_id) . '">' . $row->group_name . '</a>';
 }
+
+$moderators_count = count($moderators);
 	
-$l_moderators = ( count($moderators) === 1 ) ? $lang['Moderator'] : $lang['Moderators'];
-$forum_moderators = count($moderators) ? implode(', ', $moderators) : $lang['None'];
+$l_moderators = ( $moderators_count === 1 ) ? $lang['Moderator'] : $lang['Moderators'];
+$forum_moderators = $moderators_count ? implode(', ', $moderators) : $lang['None'];
 unset($moderators);
 
 //
@@ -355,6 +357,7 @@ $total_topics += $total_announcements;
 $orig_word = [];
 $replacement_word = [];
 obtain_word_list($orig_word, $replacement_word);
+$count_orig_word = count($orig_word);
 
 //
 // Post URL generation for templating vars
@@ -455,7 +458,7 @@ if ($total_topics) {
     foreach ($topic_rowset as $i => $topic) {
 		$topic_id = $topic->topic_id;
 
-		$topic_title = count($orig_word) ? preg_replace($orig_word, $replacement_word, $topic->topic_title) : $topic->topic_title;
+		$topic_title = $count_orig_word ? preg_replace($orig_word, $replacement_word, $topic->topic_title) : $topic->topic_title;
 		$replies = $topic->topic_replies;
 		$topic_type = $topic->topic_type;
 

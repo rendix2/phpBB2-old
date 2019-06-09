@@ -85,6 +85,8 @@ function topic_review($topic_id, $is_inline_review)
         }
 	}
 
+    $count_orig_word = 0;
+
 	//
 	// Define censored word matches
 	//
@@ -93,6 +95,8 @@ function topic_review($topic_id, $is_inline_review)
 		$replacement_word = [];
 
 		obtain_word_list($orig_word, $replacement_word);
+
+        $count_orig_word = count($orig_word);
 	}
 
 	//
@@ -171,7 +175,7 @@ function topic_review($topic_id, $is_inline_review)
 
 			$message = make_clickable($message);
 
-            if (count($orig_word)) {
+            if ($count_orig_word) {
                 $post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
                 $message      = preg_replace($orig_word, $replacement_word, $message);
             }
