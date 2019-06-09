@@ -405,19 +405,19 @@ if (!$is_auth[$is_auth_type]) {
         message_die(GENERAL_MESSAGE, sprintf($lang['Sorry_' . $is_auth_type], $is_auth[$is_auth_type . '_type']));
     }
 
-	switch( $mode ) {
-		case 'newtopic':
-			$redirect = 'mode=newtopic&' . POST_FORUM_URL . '=' . $forum_id;
-			break;
-		case 'reply':
-		case 'topicreview':
-			$redirect = 'mode=reply&' . POST_TOPIC_URL . '=' . $topic_id;
-			break;
-		case 'quote':
-		case 'editpost':
-			$redirect = 'mode=quote&' . POST_POST_URL . '=' . $post_id;
-			break;
-	}
+    switch ($mode) {
+        case 'newtopic':
+            $redirect = 'mode=newtopic&' . POST_FORUM_URL . '=' . $forum_id;
+            break;
+        case 'reply':
+        case 'topicreview':
+            $redirect = 'mode=reply&' . POST_TOPIC_URL . '=' . $topic_id;
+            break;
+        case 'quote':
+        case 'editpost':
+            $redirect = 'mode=quote&' . POST_POST_URL . '=' . $post_id;
+            break;
+    }
 
 	redirect(Session::appendSid('login.php?redirect=posting.php&' . $redirect, true));
 }

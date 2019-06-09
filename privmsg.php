@@ -509,7 +509,7 @@ if ($mode === 'newpm') {
 	$www_img = $privmsg->user_website ? '<a href="' . $privmsg->user_website . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
 	$www = $privmsg->user_website ? '<a href="' . $privmsg->user_website . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
 
-	if ( !empty($privmsg->user_icq)) {
+    if (!empty($privmsg->user_icq)) {
 		$icq_status_img = '<a href="http://wwp.icq.com/' . $privmsg->user_icq . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $privmsg->user_icq . '&img=5" width="18" height="18" border="0" /></a>';
 		$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $privmsg->user_icq . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
 		$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $privmsg->user_icq . '">' . $lang['ICQ'] . '</a>';
@@ -979,7 +979,7 @@ if ($mode === 'newpm') {
 
 		redirect(Session::appendSid('privmsg.php?folder=savebox', true));
 	}
-} elseif ( $submit || $refresh || $mode !== '') {
+} elseif ($submit || $refresh || $mode !== '') {
 	if ( !$userdata['session_logged_in']) {
 		$user_id = isset($_GET[POST_USERS_URL]) ? '&' . POST_USERS_URL . '=' . (int)$_GET[POST_USERS_URL] : '';
 		redirect(Session::appendSid("login.php?redirect=privmsg.php&folder=$folder&mode=$mode" . $user_id, true));
@@ -1091,8 +1091,7 @@ if ($mode === 'newpm') {
         }
 	}
 
-	if ( $submit && !$error )
-	{
+    if ($submit && !$error) {
 		//
 		// Has admin prevented user from sending PM's?
 		//
@@ -1317,7 +1316,7 @@ if ($mode === 'newpm') {
                 $error     = true;
                 $error_msg = $lang['No_such_user'];
             }
-		} elseif ( $mode === 'edit') {
+        } elseif ($mode === 'edit') {
 		    $columns = [
 		        'pm.*',
                 'pmt.privmsgs_bbcode_uid',
@@ -1366,7 +1365,7 @@ if ($mode === 'newpm') {
 			$to_username = $privmsg->username;
 			$to_userid = $privmsg->user_id;
 
-		} elseif ( $mode === 'reply' || $mode === 'quote') {
+        } elseif ($mode === 'reply' || $mode === 'quote') {
             $columns = [
                 'pm.privmsgs_subject',
                 'pm.privmsgs_date',

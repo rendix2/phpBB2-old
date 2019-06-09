@@ -115,7 +115,7 @@ if ($mode === 'searchuser') {
     }
 
     exit;
-} elseif ( $search_keywords !== '' || $search_author !== '' || $search_id) {
+} elseif ($search_keywords !== '' || $search_author !== '' || $search_id) {
     $split_search = [];
     $search_results = '';
 
@@ -390,7 +390,7 @@ if ($mode === 'searchuser') {
 
 				$search_ids = [];
 
-				foreach ($search_id_chunks as $search_id_chunk) {
+                foreach ($search_id_chunks as $search_id_chunk) {
                     if ($search_author === '' && $auth_sql === '') {
                         $search_ids = dibi::select('topic_id')
                             ->from(POSTS_TABLE)
@@ -650,15 +650,15 @@ if ($mode === 'searchuser') {
             $search_sets = dibi::select($columns)
                 ->from(FORUMS_TABLE)
                 ->as('f')
+                ->innerJoin(POSTS_TABLE)
+                ->as('p')
+                ->on('f.forum_id = p.forum_id')
                 ->innerJoin(TOPICS_TABLE)
                 ->as('t')
                 ->on('p.topic_id = t.topic_id')
                 ->innerJoin(USERS_TABLE)
                 ->as('u')
                 ->on('p.poster_id = u.user_id')
-                ->innerJoin(POSTS_TABLE)
-                ->as('p')
-                ->on('f.forum_id = p.forum_id')
                 ->innerJoin(POSTS_TEXT_TABLE)
                 ->as('pt')
                 ->on('pt.post_id = p.post_id')
