@@ -370,24 +370,9 @@ if ($mode === 'searchuser') {
 				//
 				// This one is a beast, try to seperate it a bit (workaround for connection timeouts)
 				//
-				$search_id_chunks = [];
-				$count = 0;
-				$chunk = 0;
 
-                if (count($search_ids) > $limiter) {
-                    foreach ($search_ids as $search_id) {
-                        if ($count === $limiter) {
-                            $chunk++;
-                            $count = 0;
-                        }
-
-                        $search_id_chunks[$chunk][$count] = $search_id;
-                        $count++;
-                    }
-                } else {
-                    $search_id_chunks[0] = $search_ids;
-                }
-
+                // todo maybe preserve keys?
+				$search_id_chunks = array_chunk($search_ids, $limiter);
 				$search_ids = [];
 
                 foreach ($search_id_chunks as $search_id_chunk) {
@@ -441,26 +426,8 @@ if ($mode === 'searchuser') {
 				$total_match_count = count($search_ids);
 
 			} elseif ( $search_author !== '' || $search_time || $auth_sql !== '') {
-				$search_id_chunks = [];
-				$count = 0;
-				$chunk = 0;
-
-
-				// todo array_chunk???-+)
-                if (count($search_ids) > $limiter) {
-                    foreach ($search_ids as $search_id) {
-                        if ($count === $limiter) {
-                            $chunk++;
-                            $count = 0;
-                        }
-
-                        $search_id_chunks[$chunk][$count] = $search_id;
-                        $count++;
-                    }
-                } else {
-                    $search_id_chunks[0] = $search_ids;
-                }
-
+				// TODO maybe use preserve keys?
+                $search_id_chunks = array_chunk($search_ids, $limiter);
 				$search_ids = [];
 
 				foreach ($search_id_chunks as $search_id_chunk) {
