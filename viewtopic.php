@@ -30,6 +30,8 @@ include $phpbb_root_path . 'includes/bbcode.php';
 // Start initial var setup
 //
 $topic_id = $post_id = 0;
+
+// TODO no we will use just POST_TOPIC_URL - no 'topic'
 if (isset($_GET[POST_TOPIC_URL])) {
     $topic_id = (int)$_GET[POST_TOPIC_URL];
 } elseif (isset($_GET['topic'])) {
@@ -51,7 +53,7 @@ if (!$topic_id && !$post_id) {
 // Find topic id if user requested a newer
 // or older topic
 //
-$cookie_name_sid = $board_config['cookie_name'] . '_sid';
+$cookie_name_sid   = $board_config['cookie_name'] . '_sid';
 $cookie_name_topic = $board_config['cookie_name'] . '_t';
 $cookie_name_forum = $board_config['cookie_name'] . '_f';
 
@@ -64,7 +66,7 @@ if (isset($_GET['view']) && empty($_GET[POST_POST_URL])) {
                 $session_id = '';
             }
 
-			if ( $session_id) {
+            if ($session_id) {
 			    $session_post_id = dibi::select('p.post_id')
                     ->from(POSTS_TABLE)
                     ->as('p')
@@ -95,8 +97,8 @@ if (isset($_GET['view']) && empty($_GET[POST_POST_URL])) {
 
 		redirect(Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id", true));
 	} elseif ( $_GET['view'] === 'next' || $_GET['view'] === 'previous') {
-		$sql_condition = ( $_GET['view'] === 'next' ) ? '>' : '<';
-		$sql_ordering = ( $_GET['view'] === 'next' ) ? 'ASC' : 'DESC';
+		$sql_condition = $_GET['view'] === 'next' ? '>'   : '<';
+		$sql_ordering  = $_GET['view'] === 'next' ? 'ASC' : 'DESC';
 
 		$row = dibi::select('t.topic_id')
             ->from(TOPICS_TABLE)
@@ -372,16 +374,7 @@ if (!empty($_POST['postdays']) || !empty($_GET['postdays'])) {
 	$post_days = 0;
 }
 
-// todo use Select
-$select_post_days = '<select name="postdays">';
-
-foreach ($previous_days as $previous_day_key => $previous_days_value) {
-	$selected = ($post_days === $previous_day_key) ? ' selected="selected"' : '';
-
-	$select_post_days .= '<option value="' . $previous_day_key . '"' . $selected . '>' . $previous_days_value . '</option>';
-}
-
-$select_post_days .= '</select>';
+$select_post_days = Select::postDays($previous_days, $post_days);
 
 //
 // Decide how to order the post display
