@@ -519,7 +519,7 @@ switch( $mode) {
 				exit();
 			}
 
-			$result = @fwrite($fp, $theme_data, strlen($theme_data));
+			$result = @fwrite($fp, $theme_data, mb_strlen($theme_data));
 			fclose($fp);
 			
 			$message = $lang['Theme_info_saved'] . '<br /><br />' . sprintf($lang['Click_return_styleadmin'], '<a href="' . Session::appendSid('admin_styles.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');

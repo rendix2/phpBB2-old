@@ -318,7 +318,7 @@ if (isset($_POST['submit'])) {
         if ($new_password !== $password_confirm) {
             $error = true;
             $error_msg .= (isset($error_msg) ? '<br />' : '') . $lang['Password_mismatch'];
-        } elseif (strlen($new_password) > 32) {
+        } elseif (mb_strlen($new_password) > 32) {
             $error = true;
             $error_msg .= (isset($error_msg) ? '<br />' : '') . $lang['Password_long'];
 		} else {
@@ -402,7 +402,7 @@ if (isset($_POST['submit'])) {
 	}
 
     if ($signature !== '') {
-        if (strlen($signature) > $board_config['max_sig_chars']) {
+        if (mb_strlen($signature) > $board_config['max_sig_chars']) {
             $error = true;
 			$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Signature_too_long'];
 		}
@@ -452,7 +452,7 @@ if (isset($_POST['submit'])) {
 				$user_active = 0;
 
 				$user_actkey = gen_rand_string(true);
-				$key_len = 54 - strlen($server_url);
+				$key_len = 54 - mb_strlen($server_url);
 				$key_len = ( $key_len > 6 ) ? $key_len : 6;
 				$user_actkey = substr($user_actkey, 0, $key_len);
 
@@ -614,7 +614,7 @@ if (isset($_POST['submit'])) {
 
             if ($board_config['require_activation'] === USER_ACTIVATION_SELF || $board_config['require_activation'] === USER_ACTIVATION_ADMIN || $coppa) {
 				$user_actkey = gen_rand_string(true);
-				$key_len = 54 - strlen($server_url);
+				$key_len = 54 - mb_strlen($server_url);
 				$key_len = ( $key_len > 6 ) ? $key_len : 6;
 				$user_actkey = substr($user_actkey, 0, $key_len);
 

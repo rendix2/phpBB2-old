@@ -322,9 +322,9 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 		$close_tag_new = $close_tag;
 	}
 
-	$close_tag_length = strlen($close_tag);
-	$close_tag_new_length = strlen($close_tag_new);
-	$uid_length = strlen($uid);
+	$close_tag_length = mb_strlen($close_tag);
+	$close_tag_new_length = mb_strlen($close_tag_new);
+	$uid_length = mb_strlen($uid);
 
 	$use_function_pointer = ($func && ($func !== ''));
 
@@ -362,7 +362,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 
 	// Start at the 2nd char of the string, looking for opening tags.
 	$curr_pos = 1;
-	while ($curr_pos && ($curr_pos < strlen($text))) {
+	while ($curr_pos && ($curr_pos < mb_strlen($text))) {
 		$curr_pos = strpos($text, '[', $curr_pos);
 
 		// If not found, $curr_pos will be 0, and the loop will end.
@@ -421,7 +421,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 				// Keeps error in nested tag from breaking out
 				// of table structure..
 				//
-				$curr_pos += strlen($possible_start);
+				$curr_pos += mb_strlen($possible_start);
 			} else {
 				// check for a closing tag..
 				$possible_end = substr($text, $curr_pos, $close_tag_length);
@@ -435,7 +435,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 						$match = array_pop($stack);
 						$start_index = $match['pos'];
 						$start_tag = $match['tag'];
-						$start_length = strlen($start_tag);
+						$start_length = mb_strlen($start_tag);
 						$start_tag_index = $match['index'];
 
 						if ($open_is_regexp) {
@@ -664,11 +664,14 @@ function smilies_pass($message)
 
 function smiley_sort($a, $b)
 {
-	if ( strlen($a->code) === strlen($b->code)) {
-		return 0;
-	}
+    $strlen_a = mb_strlen($a->code);
+    $strlen_b = mb_strlen($b->code);
 
-	return ( strlen($a->code) > strlen($b->code) ) ? -1 : 1;
+    if (strlen($strlen_a) === $strlen_b) {
+        return 0;
+    }
+
+    return $strlen_a > $strlen_b ? -1 : 1;
 }
 
 ?>

@@ -26,8 +26,8 @@ if (!defined('IN_PHPBB')) {
 }
 
 if (isset($_POST['submit'])) {
-	$username = !empty($_POST['username']) ? phpbb_clean_username($_POST['username']) : '';
-	$email    = !empty($_POST['email']) ? trim(strip_tags(htmlspecialchars($_POST['email']))) : '';
+	$username = !empty($_POST['username']) ? phpbb_clean_username($_POST['username'])            : '';
+	$email    = !empty($_POST['email'])    ? trim(strip_tags(htmlspecialchars($_POST['email']))) : '';
 
 	$row = dibi::select(['user_id', 'username', 'user_email', 'user_active', 'user_lang'])
         ->from(USERS_TABLE)
@@ -47,7 +47,7 @@ if (isset($_POST['submit'])) {
     $user_id  = $row->user_id;
 
     $user_actkey   = gen_rand_string(true);
-    $key_len       = 54 - strlen($server_url);
+    $key_len       = 54 - mb_strlen($server_url);
     $key_len       = $key_len > 6 ? $key_len : 6;
     $user_actkey   = substr($user_actkey, 0, $key_len);
     $user_password = gen_rand_string(false);

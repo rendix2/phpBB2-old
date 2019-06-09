@@ -842,7 +842,7 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg !== '') {
                 $message = !empty($message) ? preg_replace($orig_word, $replace_word, $message) : '';
             }
 
-            if (!preg_match('/^Re:/', $subject) && strlen($subject) > 0) {
+            if (!preg_match('/^Re:/', $subject) && $subject !== '') {
                 $subject = 'Re: ' . $subject;
             }
 

@@ -61,7 +61,7 @@ if ($do_gzip_compress) {
 	$gzip_contents = ob_get_contents();
 	ob_end_clean();
 
-	$gzip_size = strlen($gzip_contents);
+	$gzip_size = mb_strlen($gzip_contents);
 	$gzip_crc = crc32($gzip_contents);
 
 	$gzip_contents = gzcompress($gzip_contents, 9);

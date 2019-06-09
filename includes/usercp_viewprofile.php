@@ -25,8 +25,8 @@ if ( !defined('IN_PHPBB')) {
 	die('Hacking attempt');
 }
 
-if ( empty($_GET[POST_USERS_URL]) || $_GET[POST_USERS_URL] === ANONYMOUS) {
-	message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
+if (empty($_GET[POST_USERS_URL]) || $_GET[POST_USERS_URL] === ANONYMOUS) {
+    message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
 }
 
 $profile_data = get_userdata($_GET[POST_USERS_URL]);
@@ -65,11 +65,11 @@ $memberdays = $memberdays->diff($regdate)->d;
 $posts_per_day = $profile_data['user_posts'] / $memberdays;
 
 // Get the users percentage of total posts
-if ($profile_data['user_posts'] !== 0 ) {
-	$total_posts = get_db_stat('postcount');
-	$percentage = $total_posts ? min(100, ($profile_data['user_posts'] / $total_posts) * 100) : 0;
+if ($profile_data['user_posts'] !== 0) {
+    $total_posts = get_db_stat('postcount');
+    $percentage = $total_posts ? min(100, ($profile_data['user_posts'] / $total_posts) * 100) : 0;
 } else {
-	$percentage = 0;
+    $percentage = 0;
 }
 
 $avatar_img = '';
@@ -123,7 +123,7 @@ if ( !empty($profile_data['user_viewemail']) || $userdata['user_level'] === ADMI
 $www_img = $profile_data['user_website'] ? '<a href="' . $profile_data['user_website'] . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '&nbsp;';
 $www = $profile_data['user_website'] ? '<a href="' . $profile_data['user_website'] . '" target="_userwww">' . $profile_data['user_website'] . '</a>' : '&nbsp;';
 
-if ( !empty($profile_data['user_icq'])) {
+if (!empty($profile_data['user_icq'])) {
 	$icq_status_img = '<a href="http://wwp.icq.com/' . $profile_data['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $profile_data['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
 	$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $profile_data['user_icq'] . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
 	$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $profile_data['user_icq'] . '">' . $lang['ICQ'] . '</a>';
@@ -158,7 +158,8 @@ if (function_exists('get_html_translation_table')) {
     $u_search_author = urlencode(str_replace(['&amp;', '&#039;', '&quot;', '&lt;', '&gt;'], ['&', "'", '"', '<', '>'], $profile_data['username']));
 }
 
-$template->assignVars(array(
+$template->assignVars(
+    [
         'USERNAME' => $profile_data['username'],
         'JOINED' => create_date($lang['DATE_FORMAT'], $profile_data['user_regdate'], $board_config['board_timezone']),
         'POSTER_RANK' => $poster_rank,
@@ -214,7 +215,8 @@ $template->assignVars(array(
 
         'U_SEARCH_USER' => Session::appendSid('search.php?search_author=' . $u_search_author),
 
-        'S_PROFILE_ACTION' => Session::appendSid('profile.php'))
+        'S_PROFILE_ACTION' => Session::appendSid('profile.php')
+    ]
 );
 
 $template->pparse('body');

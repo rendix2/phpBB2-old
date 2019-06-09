@@ -148,9 +148,7 @@ if (isset($_POST['doprune'])) {
                 'S_FORUMS_SELECT'     => $select_list
             ]
         );
-	}
-	else
-	{
+	} else {
 		$forum_id = (int)$_POST[POST_FORUM_URL];
 		
 		//

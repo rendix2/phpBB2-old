@@ -155,7 +155,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 		$avatar_filetype = $file_data2[1];
 
 		if ( !$error && $avatar_filesize > 0 && $avatar_filesize < $board_config['avatar_filesize']) {
-			$avatar_data = substr($avatar_data, strlen($avatar_data) - $avatar_filesize, $avatar_filesize);
+			$avatar_data = substr($avatar_data, mb_strlen($avatar_data) - $avatar_filesize, $avatar_filesize);
 
 			$tmp_path = './' . $board_config['avatar_path'] . '/tmp';
 			$tmp_filename = tempnam($tmp_path, uniqid(rand()) . '-');

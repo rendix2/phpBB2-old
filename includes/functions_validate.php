@@ -134,7 +134,7 @@ function validate_optional_fields(&$icq, &$aim, &$msnm, &$yim, &$website, &$loca
     $check_var_length = ['aim', 'msnm', 'yim', 'location', 'occupation', 'interests', 'sig'];
 
     foreach ($check_var_length as $value) {
-		if (strlen($$value) < 2) {
+		if (mb_strlen($$value) < 2) {
 			$$value = '';
 		}
 	}

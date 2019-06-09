@@ -344,7 +344,7 @@ class Emailer
 		$spacer = "$end\r\n $start";
 
 		// determine length of encoded text within chunks and ensure length is even
-		$length = 75 - strlen($start) - strlen($end);
+		$length = 75 - mb_strlen($start) - mb_strlen($end);
 		$length = floor($length / 2) * 2;
 
 		// encode the string and split it into chunks with spacers after each chunk
@@ -435,7 +435,7 @@ class Emailer
 	private function myChunkSplit($str)
 	{
 		$stmp = $str;
-		$len = strlen($stmp);
+		$len = mb_strlen($stmp);
 		$out = '';
 
 		while ($len > 0) {

@@ -297,7 +297,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 
 			$signature = prepare_message($signature, $allowhtml, $allowbbcode, $allowsmilies, $signature_bbcode_uid);
 
-            if (strlen($sig_length_check) > $board_config['max_sig_chars']) {
+            if (mb_strlen($sig_length_check) > $board_config['max_sig_chars']) {
                 $error = true;
 				$error_msg .=  ( isset($error_msg) ? '<br />' : '' ) . $lang['Signature_too_long'];
 			}
@@ -446,7 +446,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 							}
 
 							if (!$error && $file_size > 0 && $file_size < $board_config['avatar_filesize']) {
-								$avatar_data = substr($avatar_data, strlen($avatar_data) - $file_size, $file_size);
+								$avatar_data = substr($avatar_data, mb_strlen($avatar_data) - $file_size, $file_size);
 
 								$tmp_filename = tempnam ('/tmp', $this_userdata['user_id'] . '-');
 								$fptr = @fopen($tmp_filename, 'wb');
