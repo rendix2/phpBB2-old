@@ -849,15 +849,9 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
             ->where('group_single_user <> %i', 1)
             ->fetchPairs('group_id', 'group_name');
 
-			$select_list = '<select name="' . POST_GROUPS_URL . '">';
+        include $phpbb_root_path .'includes/Select.php';
 
-			foreach ($groups as $group_id => $group_name) {
-                $select_list .= '<option value="' . $group_id . '">' . $group_name . '</option>';
-            }
-
-			$select_list .= '</select>';
-
-        $template->assignVars(['S_AUTH_SELECT' => $select_list]);
+        $template->assignVars(['S_AUTH_SELECT' => Select::groups($groups)]);
     }
 
     $s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" />';

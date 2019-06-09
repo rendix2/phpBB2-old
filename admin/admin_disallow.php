@@ -79,18 +79,8 @@ $disallowed = dibi::select('*')
 // Ok now generate the info for the template, which will be put out no matter
 // what mode we are in.
 //
-$disallow_select = '<select name="disallowed_id">';
-
-// TODO
-if (!count($disallowed)) {
-    foreach ($disallowed as $disallow_id => $disallow_username) {
-        $disallow_select .= '<option value="' . $disallow_id . '">' . $disallow_username . '</option>';
-    }
-} else {
-    $disallow_select .= '<option value="">' . $lang['no_disallowed'] . '</option>';
-}
-
-$disallow_select .= '</select>';
+include $phpbb_root_path .'includes/Select.php';
+$disallow_select = Select::dissalow($lang, $disallowed);
 
 $template->setFileNames(['body' => 'admin/disallow_body.tpl']);
 

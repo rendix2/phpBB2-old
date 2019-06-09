@@ -24,12 +24,23 @@ class Select
         return $tz_select;
     }
 
-    public static function postDays($previous_days, $post_days)
+    public static function postDays(array $lang, $post_days)
     {
+        $previous_days = [
+            0   => $lang['All_Posts'],
+            1   => $lang['1_Day'],
+            7   => $lang['7_Days'],
+            14  => $lang['2_Weeks'],
+            30  => $lang['1_Month'],
+            90  => $lang['3_Months'],
+            180 => $lang['6_Months'],
+            364 => $lang['1_Year']
+        ];
+
         $select_post_days = '<select name="postdays">';
 
         foreach ($previous_days as $previous_day_key => $previous_days_value) {
-            $selected = ($post_days === $previous_day_key) ? ' selected="selected"' : '';
+            $selected = $post_days === $previous_day_key ? ' selected="selected"' : '';
 
             $select_post_days .= '<option value="' . $previous_day_key . '"' . $selected . '>' . $previous_days_value . '</option>';
         }
@@ -37,6 +48,62 @@ class Select
         $select_post_days .= '</select>';
 
         return $select_post_days;
+    }
+
+    public static function topicDays(array $lang, $topic_days)
+    {
+        $previous_days = [
+            0   => $lang['All_Posts'],
+            1   => $lang['1_Day'],
+            7   => $lang['7_Days'],
+            14  => $lang['2_Weeks'],
+            30  => $lang['1_Month'],
+            90  => $lang['3_Months'],
+            180 => $lang['6_Months'],
+            364 => $lang['1_Year']
+        ];
+
+        $select_topic_days = '<select name="topicdays">';
+
+        foreach ($previous_days as $previous_day_key => $previous_day_value) {
+            $selected = $topic_days === $previous_day_key ? ' selected="selected"' : '';
+
+            $select_topic_days .= '<option value="' . $previous_day_key . '"' . $selected . '>' . $previous_day_value . '</option>';
+        }
+
+        $select_topic_days .= '</select>';
+
+        return $select_topic_days;
+    }
+
+    public static function dissalow(array $lang, $disallowed)
+    {
+        $disallow_select = '<select name="disallowed_id">';
+
+        if (count($disallowed)) {
+            foreach ($disallowed as $disallow_id => $disallow_username) {
+                $disallow_select .= '<option value="' . $disallow_id . '">' . $disallow_username . '</option>';
+            }
+        } else {
+            $disallow_select .= '<option value="">' . $lang['no_disallowed'] . '</option>';
+        }
+
+        $disallow_select .= '</select>';
+
+        return $disallow_select;
+    }
+
+    public static function groups(array $groups)
+    {
+        $select_list = '<select name="' . POST_GROUPS_URL . '">';
+
+        foreach ($groups as $group_id => $group_name) {
+            $select_list .= '<option value="' . $group_id . '">' . $group_name . '</option>';
+        }
+
+        $select_list .= '</select>';
+
+        return $select_list;
     }
 
 }

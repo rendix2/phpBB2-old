@@ -231,16 +231,6 @@ unset($moderators);
 // then get it's value, find the number of topics with dates newer than it (to properly
 // handle pagination) and alter the main query
 //
-$previous_days = [
-    0 => $lang['All_Topics'],
-    1 => $lang['1_Day'],
-    7 => $lang['7_Days'],
-    14 => $lang['2_Weeks'],
-    30 => $lang['1_Month'],
-    90 => $lang['3_Months'],
-    180 => $lang['6_Months'],
-    364 => $lang['1_Year']
-];
 
 if (!empty($_POST['topicdays']) || !empty($_GET['topicdays'])) {
 	$topic_days = !empty($_POST['topicdays']) ? (int)$_POST['topicdays'] : (int)$_GET['topicdays'];
@@ -274,17 +264,9 @@ if (!empty($_POST['topicdays']) || !empty($_GET['topicdays'])) {
 	$limit_topics_time = false;
 	$topic_days = 0;
 }
-// todo add to select
-$select_topic_days = '<select name="topicdays">';
+include $phpbb_root_path .'includes/Select.php';
 
-foreach ($previous_days as $previous_day_key => $previous_day_value) {
-	$selected = ($topic_days === $previous_day_key) ? ' selected="selected"' : '';
-
-	$select_topic_days .= '<option value="' . $previous_day_key . '"' . $selected . '>' . $previous_day_value . '</option>';
-}
-
-$select_topic_days .= '</select>';
-
+$select_topic_days = Select::topicDays($lang, $topic_days);
 
 //
 // All announcement data, this keeps announcements

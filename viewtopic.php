@@ -329,16 +329,6 @@ if ($userdata['session_logged_in']) {
 // then get it's value, find the number of topics with dates newer than it (to properly
 // handle pagination) and alter the main query
 //
-$previous_days = [
-    0   => $lang['All_Posts'],
-    1   => $lang['1_Day'],
-    7   => $lang['7_Days'],
-    14  => $lang['2_Weeks'],
-    30  => $lang['1_Month'],
-    90  => $lang['3_Months'],
-    180 => $lang['6_Months'],
-    364 => $lang['1_Year']
-];
 
 $time = null;
 
@@ -373,8 +363,9 @@ if (!empty($_POST['postdays']) || !empty($_GET['postdays'])) {
     $limit_posts_time = false;
 	$post_days = 0;
 }
+include $phpbb_root_path .'includes/Select.php';
 
-$select_post_days = Select::postDays($previous_days, $post_days);
+$select_post_days = Select::postDays($lang, $post_days);
 
 //
 // Decide how to order the post display
