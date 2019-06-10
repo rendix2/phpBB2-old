@@ -494,7 +494,7 @@ if (isset($_GET['highlight'])) {
 	// Split words and phrases
 	$words = explode(' ', trim(htmlspecialchars($_GET['highlight'])));
 
-	foreach ($words as $word){
+	foreach ($words as $word) {
 		if (trim($word) !== '') {
 			$highlight_match .= (($highlight_match !== '') ? '|' : '') . str_replace('*', '\w*', preg_quote($word, '#'));
 		}

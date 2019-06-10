@@ -73,7 +73,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
 
 		$row_count = 0;
 
-		foreach ($action_array as $action => $file){
+		foreach ($action_array as $action => $file) {
 			$row_color = ( !($row_count%2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($row_count%2) ) ? $theme['td_class1'] : $theme['td_class2'];
 
