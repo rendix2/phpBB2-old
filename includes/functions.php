@@ -163,12 +163,8 @@ function make_jumpbox($action, $match_forum_id = 0)
 					}
 				}
 
-				if ( $boxstring_forums !== '' )
-				{
-					$boxstring .= '<option value="-1">&nbsp;</option>';
-					$boxstring .= '<option value="-1">' . $category->cat_title . '</option>';
-					$boxstring .= '<option value="-1">----------------</option>';
-					$boxstring .= $boxstring_forums;
+                if ($boxstring_forums !== '') {
+                    $boxstring .= '<optgroup label="'.$category->cat_title .'">' . $boxstring_forums . '</optgroup>';
 				}
 			}
 		}
