@@ -566,7 +566,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 
                     } elseif (isset($_POST['deny']) || isset($_POST['remove'])) {
                         if ($group_info->auth_mod) {
-                            $group_check = dibi::select(['ug.user_id', 'ug.group_id '])
+                            $user_ids = dibi::select(['ug.user_id'])
                                 ->from(AUTH_ACCESS_TABLE)
                                 ->as('aa')
                                 ->innerJoin(USER_GROUP_TABLE)
@@ -578,28 +578,14 @@ if (isset($_POST['groupstatus']) && $group_id) {
                                 ->groupBy('ug.group_id')
                                 ->orderBy('ug.user_id')
                                 ->orderBy('ug.group_id')
-                                ->fetchPairs('user_id', 'group_id');
+                                ->fetchPairs(null, 'user_id');
 
-                            /**
-                             * TODO check whats this query returns
-                             * i think we dont need to foreach over $group_check and check count($group_id) == 1
-                             * i think it does not make any sense....
-                             */
-                            if (count($group_check)) {
-								$remove_mod_sql = [];
-								foreach ($group_check as $user_id => $group_id) {
-                                    if (count($group_id) === 1) {
-                                        $remove_mod_sql[] = $user_id;
-                                    }
-                                }
-
-								if (count($remove_mod_sql)) {
-								    dibi::update(USERS_TABLE, ['user_level' => USER])
-                                        ->where('user_id IN %in', $remove_mod_sql)
-                                        ->where('user_level <> %i', ADMIN)
-                                        ->execute();
-								}
-							}
+                            if (count($user_ids)) {
+                                dibi::update(USERS_TABLE, ['user_level' => USER])
+                                    ->where('user_id IN %in', $user_ids)
+                                    ->where('user_level <> %i', ADMIN)
+                                    ->execute();
+                            }
 						}
 
 						dibi::delete(USER_GROUP_TABLE)
@@ -620,16 +606,14 @@ if (isset($_POST['groupstatus']) && $group_id) {
 						//
 						// Get the group name
 						//
-						$group_name_row = dibi::select('group_name')
+						$group_name = dibi::select('group_name')
                             ->from(GROUPS_TABLE)
                             ->where('group_id = %i', $group_id)
                             ->fetchSingle();
 
-						if ($group_name_row === false) {
+						if ($group_name === false) {
 							message_die(GENERAL_ERROR, 'Could not get group information');
 						}
-
-						$group_name = $group_name_row;
 
 						include $phpbb_root_path . 'includes/Emailer.php';
 						$emailer = new Emailer($board_config['smtp_delivery']);
@@ -872,6 +856,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
             'GROUP_NAME' => $group_info->group_name,
             'GROUP_DESC' => $group_info->group_description,
             'GROUP_DETAILS' => $group_details,
+
             'MOD_ROW_COLOR' => '#' . $theme['td_color1'],
             'MOD_ROW_CLASS' => $theme['td_class1'],
             'MOD_USERNAME' => $username,
@@ -975,7 +960,8 @@ if (isset($_POST['groupstatus']) && $group_id) {
         // No group members
         //
         $template->assignBlockVars('switch_no_members', []);
-        $template->assignVars([
+        $template->assignVars(
+            [
                 'L_NO_MEMBERS' => $lang['No_group_members']
             ]
         );

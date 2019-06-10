@@ -114,9 +114,7 @@ $categories = dibi::select(['cat_id', 'cat_title', 'cat_order'])
     ->orderBy('cat_order')
     ->fetchAll();
 
-$category_count = count($categories);
-
-if (!$category_count) {
+if (!count($categories)) {
     message_die(GENERAL_MESSAGE, $lang['No_forums']);
 }
 
