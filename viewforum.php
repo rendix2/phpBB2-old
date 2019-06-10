@@ -509,13 +509,13 @@ if ($total_topics) {
 					if (!empty($tracking_topics) || !empty($tracking_forums) || isset($_COOKIE[$forum_all_cookie_name])) {
 						$unread_topics = true;
 
-						if (!empty($tracking_topics[$topic_id])) {
+						if (isset($tracking_topics[$topic_id])) {
 							if ($tracking_topics[$topic_id] >= $topic->post_time) {
 								$unread_topics = false;
 							}
 						}
 
-						if (!empty($tracking_forums[$forum_id])) {
+						if (isset($tracking_forums[$forum_id])) {
 							if ($tracking_forums[$forum_id] >= $topic->post_time) {
 								$unread_topics = false;
 							}
