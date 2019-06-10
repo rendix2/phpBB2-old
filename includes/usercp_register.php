@@ -73,8 +73,7 @@ $error = false;
 $error_msg = '';
 $page_title = ( $mode === 'editprofile' ) ? $lang['Edit_profile'] : $lang['Register'];
 
-if ($mode === 'register' && !isset($_POST['agreed']) && !isset($_GET['agreed']) )
-{
+if ($mode === 'register' && !isset($_POST['agreed']) && !isset($_GET['agreed']) ) {
 	include $phpbb_root_path . 'includes/page_header.php';
 
 	show_coppa();
@@ -103,42 +102,24 @@ if (
 		$current_email = trim(htmlspecialchars($_POST['current_email']));
 	}
 
-    $strip_var_list = [
-        'email'        => 'email',
-        'icq'          => 'icq',
-        'aim'          => 'aim',
-        'msn'          => 'msn',
-        'yim'          => 'yim',
-        'website'      => 'website',
-        'location'     => 'location',
-        'occupation'   => 'occupation',
-        'interests'    => 'interests',
-        'confirm_code' => 'confirm_code'
-    ];
-
     // Strip all tags from data ... may p**s some people off, bah, strip_tags is
-	// doing the job but can still break HTML output ... have no choice, have
-	// to use htmlspecialchars ... be prepared to be moaned at.
-	foreach ($strip_var_list as $var => $param) {
-		if (!empty($_POST[$param])) {
-			$$var = trim(htmlspecialchars($_POST[$param]));
-		}
-	}
+    // doing the job but can still break HTML output ... have no choice, have
+    // to use htmlspecialchars ... be prepared to be moaned at.
+    $email        = !empty($_POST['email'])        ? trim(htmlspecialchars($_POST['email']))        : '';
+    $icq          = !empty($_POST['icq'])          ? trim(htmlspecialchars($_POST['icq']))          : '';
+    $aim          = !empty($_POST['aim'])          ? trim(htmlspecialchars($_POST['aim']))          : '';
+    $msn          = !empty($_POST['msn'])          ? trim(htmlspecialchars($_POST['msn']))          : '';
+    $yim          = !empty($_POST['yim'])          ? trim(htmlspecialchars($_POST['yim']))          : '';
+    $website      = !empty($_POST['website'])      ? trim(htmlspecialchars($_POST['website']))      : '';
+    $location     = !empty($_POST['location'])     ? trim(htmlspecialchars($_POST['location']))     : '';
+    $interests    = !empty($_POST['interests'])    ? trim(htmlspecialchars($_POST['interests']))    : '';
+    $confirm_code = !empty($_POST['confirm_code']) ? trim(htmlspecialchars($_POST['confirm_code'])) : '';
 
-	$username = !empty($_POST['username']) ? phpbb_clean_username($_POST['username']) : '';
-
-    $trim_var_list = [
-        'cur_password'     => 'cur_password',
-        'new_password'     => 'new_password',
-        'password_confirm' => 'password_confirm',
-        'signature'        => 'signature'
-    ];
-
-    foreach ($trim_var_list as $var => $param) {
-        if (!empty($_POST[$param])) {
-            $$var = trim($_POST[$param]);
-        }
-    }
+    $username         = !empty($_POST['username'])         ? phpbb_clean_username($_POST['username']) : '';
+    $cur_password     = !empty($_POST['cur_password'])     ? trim($_POST['cur_password'])             : '';
+    $new_password     = !empty($_POST['new_password'])     ? trim($_POST['new_password'])             : '';
+    $password_confirm = !empty($_POST['password_confirm']) ? trim($_POST['password_confirm'])         : '';
+    $signature        = !empty($_POST['signature'])        ? trim($_POST['signature'])                : '';
 
 	$signature = isset($signature) ? str_replace('<br />', "\n", $signature) : '';
 	$signature_bbcode_uid = '';
@@ -152,8 +133,8 @@ if (
     $notifyreply     = isset($_POST['notifyreply']) ? (bool)$_POST['notifyreply'] : 0;
     $notifypm        = isset($_POST['notifypm'])    ? (bool)$_POST['notifypm']    : true;
     $popup_pm        = isset($_POST['popup_pm'])    ? (bool)$_POST['popup_pm']    : true;
-
-    $sid = isset($_POST['sid']) ? $_POST['sid'] : 0;
+    $sid             = isset($_POST['sid'])         ? $_POST['sid']               : 0;
+    $user_style      = isset($_POST['style'])       ? (int)$_POST['style']        : $board_config['default_style'];
 
 	if ($mode === 'register') {
         $attachsig    = isset($_POST['attachsig'])    ? (bool)$_POST['attachsig']    : $board_config['allow_sig'];
@@ -167,7 +148,7 @@ if (
 		$allowsmilies = isset($_POST['allowsmilies']) ? (bool)$_POST['allowsmilies'] : $userdata['user_allowsmile'];
 	}
 
-	$user_style = isset($_POST['style']) ? (int)$_POST['style'] : $board_config['default_style'];
+
 
     if (!empty($_POST['language'])) {
         if (preg_match('/^[a-z_]+$/i', $_POST['language'])) {
@@ -294,9 +275,7 @@ if (isset($_POST['submit'])) {
                 ->fetch();
 
 			if ($row) {
-                // IT WAS LOOKE
-                //if ($row->code != $confirm_code) {
-				if ($row->code !== $_POST['confirm_code']) {
+                if ($row->code !== $confirm_code) {
                     $error = true;
 					$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Confirm_code_wrong'];
 				} else {
