@@ -346,33 +346,27 @@ foreach ($categories as $i => $category) {
                         } else {
                             $unread_topics = false;
 
-                            if ($userdata['session_logged_in']) {
-                                if (!empty($new_topic_data[$forum_id])) {
-                                    $forum_last_post_time = 0;
+                            if ($userdata['session_logged_in'] && !empty($new_topic_data[$forum_id])) {
+                                $forum_last_post_time = 0;
 
-                                    foreach ($new_topic_data[$forum_id] as $check_topic_id => $check_post_time) {
-                                        if (empty($tracking_topics[$check_topic_id])) {
+                                foreach ($new_topic_data[$forum_id] as $check_topic_id => $check_post_time) {
+                                    if (empty($tracking_topics[$check_topic_id])) {
+                                        $unread_topics        = true;
+                                        $forum_last_post_time = max($check_post_time, $forum_last_post_time);
+                                    } else {
+                                        if ($tracking_topics[$check_topic_id] < $check_post_time) {
                                             $unread_topics        = true;
                                             $forum_last_post_time = max($check_post_time, $forum_last_post_time);
-                                        } else {
-                                            if ($tracking_topics[$check_topic_id] < $check_post_time) {
-                                                $unread_topics        = true;
-                                                $forum_last_post_time = max($check_post_time, $forum_last_post_time);
-                                            }
                                         }
                                     }
+                                }
 
-                                    if (!empty($tracking_forums[$forum_id])) {
-                                        if ($tracking_forums[$forum_id] > $forum_last_post_time) {
-                                            $unread_topics = false;
-                                        }
-                                    }
+                                if (!empty($tracking_forums[$forum_id]) && $tracking_forums[$forum_id] > $forum_last_post_time) {
+                                    $unread_topics = false;
+                                }
 
-                                    if (isset($_COOKIE[$forum_all_cookie_name])) {
-                                        if ($_COOKIE[$forum_all_cookie_name] > $forum_last_post_time) {
-                                            $unread_topics = false;
-                                        }
-                                    }
+                                if (isset($_COOKIE[$forum_all_cookie_name]) && $_COOKIE[$forum_all_cookie_name] > $forum_last_post_time) {
+                                    $unread_topics = false;
                                 }
                             }
 
