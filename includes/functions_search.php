@@ -178,8 +178,8 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
                 break;
         }
 
-		foreach ($words as $word) {
-            if ( !isset($check_words[$word])) {
+        foreach ($words as $word) {
+            if (!isset($check_words[$word])) {
                 switch ($dbms) {
                     case 'mysql':
                         $insert_data = [

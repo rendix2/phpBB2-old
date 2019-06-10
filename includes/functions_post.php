@@ -505,8 +505,7 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 		remove_search_post([$post_id]);
 	}
 
-	if ($mode === 'poll_delete' || ($mode === 'delete' && $post_data['first_post'] && $post_data['last_post']) &&
-        $post_data['has_poll'] && $post_data['edit_poll']) {
+	if ($mode === 'poll_delete' || ($mode === 'delete' && $post_data['first_post'] && $post_data['last_post']) && $post_data['has_poll'] && $post_data['edit_poll']) {
 		dibi::delete(VOTE_DESC_TABLE)
             ->where('topic_id = %i', $topic_id)
             ->execute();
