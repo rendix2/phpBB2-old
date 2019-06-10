@@ -504,53 +504,41 @@ if ($total_topics) {
 			}
 
 			$newest_post_img = '';
-			if ($userdata['session_logged_in']) {
-				if ($topic->post_time > $userdata['user_lastvisit'] )  {
-					if (!empty($tracking_topics) || !empty($tracking_forums) || isset($_COOKIE[$forum_all_cookie_name])) {
-						$unread_topics = true;
 
-						if (isset($tracking_topics[$topic_id])) {
-							if ($tracking_topics[$topic_id] >= $topic->post_time) {
-								$unread_topics = false;
-							}
-						}
+			if ($userdata['session_logged_in'] && $topic->post_time > $userdata['user_lastvisit']) {
+                if (!empty($tracking_topics) || !empty($tracking_forums) || isset($_COOKIE[$forum_all_cookie_name])) {
+                    $unread_topics = true;
 
-						if (isset($tracking_forums[$forum_id])) {
-							if ($tracking_forums[$forum_id] >= $topic->post_time) {
-								$unread_topics = false;
-							}
-						}
+                    if (isset($tracking_topics[$topic_id]) && $tracking_topics[$topic_id] >= $topic->post_time) {
+                        $unread_topics = false;
+                    }
 
-						if (isset($_COOKIE[$forum_all_cookie_name])) {
-							if ($_COOKIE[$forum_all_cookie_name] >= $topic->post_time) {
-								$unread_topics = false;
-							}
-						}
+                    if (isset($tracking_forums[$forum_id]) && $tracking_forums[$forum_id] >= $topic->post_time) {
+                        $unread_topics = false;
+                    }
 
-						if ($unread_topics) {
-							$folder_image = $folder_new;
-							$folder_alt = $lang['New_posts'];
+                    if (isset($_COOKIE[$forum_all_cookie_name]) && $_COOKIE[$forum_all_cookie_name] >= $topic->post_time) {
+                        $unread_topics = false;
+                    }
 
-							$newest_post_img = '<a href="' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
-						} else {
-							$folder_image = $folder;
-							$folder_alt = $topic->topic_status === TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['No_new_posts'];
+                    if ($unread_topics) {
+                        $folder_image = $folder_new;
+                        $folder_alt = $lang['New_posts'];
 
-							$newest_post_img = '';
-						}
-					} else {
-						$folder_image = $folder_new;
-						$folder_alt = $topic->topic_status === TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['New_posts'];
+                        $newest_post_img = '<a href="' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
+                    } else {
+                        $folder_image = $folder;
+                        $folder_alt = $topic->topic_status === TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['No_new_posts'];
 
-						$newest_post_img = '<a href="' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
-					}
-				} else {
-					$folder_image = $folder;
-					$folder_alt = $topic->topic_status === TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['No_new_posts'];
+                        $newest_post_img = '';
+                    }
+                } else {
+                    $folder_image = $folder_new;
+                    $folder_alt = $topic->topic_status === TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['New_posts'];
 
-					$newest_post_img = '';
-				}
-			} else {
+                    $newest_post_img = '<a href="' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
+                }
+            } else {
 				$folder_image = $folder;
 				$folder_alt = $topic->topic_status === TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['No_new_posts'];
 
