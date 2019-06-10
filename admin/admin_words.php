@@ -104,8 +104,8 @@ if ($mode !== '') {
 
 		include './page_footer_admin.php';
 	} elseif ($mode === 'save') {
-		$word_id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
-		$word = isset($_POST['word']) ? trim($_POST['word']) : '';
+		$word_id     = isset($_POST['id'])          ? (int)$_POST['id'] : 0;
+		$word        = isset($_POST['word'])        ? trim($_POST['word']) : '';
 		$replacement = isset($_POST['replacement']) ? trim($_POST['replacement']) : '';
 
         if ($word === '' || $replacement === '') {

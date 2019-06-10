@@ -156,7 +156,7 @@ if (isset($_POST['doprune'])) {
 		//
         $template->setFileNames(['body' => 'admin/forum_prune_body.tpl']);
 
-        $forum_name = ( $forum_id === -1 ) ? $lang['All_Forums'] : $forum_rows[0]['forum_name'];
+        $forum_name = $forum_id === -1 ? $lang['All_Forums'] : $forums[0]->forum_name;
 
 		$prune_data = $lang['Prune_topics_not_posted'] . ' ';
 		$prune_data .= '<input class="post" type="text" name="prunedays" size="4"> ' . $lang['Days'];

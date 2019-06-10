@@ -809,10 +809,10 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 
     $template->assignVars(
         [
-            'L_USER_OR_GROUPNAME' => ($mode === 'user') ? $lang['Username'] : $lang['Group_name'],
+            'L_USER_OR_GROUPNAME' => $mode === 'user' ? $lang['Username'] : $lang['Group_name'],
+            'L_AUTH_TITLE'        => $mode === 'user' ? $lang['Auth_Control_User'] : $lang['Auth_Control_Group'],
+            'L_AUTH_EXPLAIN'      => $mode === 'user' ? $lang['User_auth_explain'] : $lang['Group_auth_explain'],
 
-            'L_AUTH_TITLE'       => ($mode === 'user') ? $lang['Auth_Control_User'] : $lang['Auth_Control_Group'],
-            'L_AUTH_EXPLAIN'     => ($mode === 'user') ? $lang['User_auth_explain'] : $lang['Group_auth_explain'],
             'L_MODERATOR_STATUS' => $lang['Moderator_status'],
             'L_PERMISSIONS'      => $lang['Permissions'],
             'L_SUBMIT'           => $lang['Submit'],
@@ -856,14 +856,14 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 
     $s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" />';
 
-	$l_type = ( $mode === 'user' ) ? 'USER' : 'AUTH';
+	$l_type = $mode === 'user' ? 'USER' : 'AUTH';
 
     $template->assignVars(
         [
-            'L_' . $l_type . '_TITLE'   => ($mode === 'user') ? $lang['Auth_Control_User'] : $lang['Auth_Control_Group'],
-            'L_' . $l_type . '_EXPLAIN' => ($mode === 'user') ? $lang['User_auth_explain'] : $lang['Group_auth_explain'],
-            'L_' . $l_type . '_SELECT'  => ($mode === 'user') ? $lang['Select_a_User'] : $lang['Select_a_Group'],
-            'L_LOOK_UP'                 => ($mode === 'user') ? $lang['Look_up_User'] : $lang['Look_up_Group'],
+            'L_' . $l_type . '_TITLE'   => $mode === 'user' ? $lang['Auth_Control_User'] : $lang['Auth_Control_Group'],
+            'L_' . $l_type . '_EXPLAIN' => $mode === 'user' ? $lang['User_auth_explain'] : $lang['Group_auth_explain'],
+            'L_' . $l_type . '_SELECT'  => $mode === 'user' ? $lang['Select_a_User']     : $lang['Select_a_Group'],
+            'L_LOOK_UP'                 => $mode === 'user' ? $lang['Look_up_User']      : $lang['Look_up_Group'],
 
             'S_HIDDEN_FIELDS'          => $s_hidden_fields,
             'S_' . $l_type . '_ACTION' => Session::appendSid('admin_ug_auth.php')

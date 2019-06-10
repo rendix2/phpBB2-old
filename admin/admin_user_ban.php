@@ -286,7 +286,6 @@ if (isset($_POST['submit'])) {
         ]
     );
 
-	$userban_count = 0;
 	$ipban_count = 0;
 	$emailban_count = 0;
 
@@ -301,7 +300,6 @@ if (isset($_POST['submit'])) {
         ->orderBy('u.user_id', dibi::ASC)
         ->fetchAll();
 
-    $userban_count = count($user_list);
 	$select_userlist = '';
 
 	foreach ($user_list as $user_item) {
@@ -335,13 +333,13 @@ if (isset($_POST['submit'])) {
 		}
 	}
 
-	if ( $select_iplist === '') {
-		$select_iplist = '<option value="-1">' . $lang['No_banned_ip'] . '</option>';
-	}
+    if ($select_iplist === '') {
+        $select_iplist = '<option value="-1">' . $lang['No_banned_ip'] . '</option>';
+    }
 
-	if ( $select_emaillist === '') {
-		$select_emaillist = '<option value="-1">' . $lang['No_banned_email'] . '</option>';
-	}
+    if ($select_emaillist === '') {
+        $select_emaillist = '<option value="-1">' . $lang['No_banned_email'] . '</option>';
+    }
 
 	$select_iplist = '<select name="unban_ip[]" multiple="multiple" size="5">' . $select_iplist . '</select>';
 	$select_emaillist = '<select name="unban_email[]" multiple="multiple" size="5">' . $select_emaillist . '</select>';

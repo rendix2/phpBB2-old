@@ -260,6 +260,7 @@ if (!empty($mode)) {
 
 			$catlist = get_list('category', $cat_id, true);
 
+			// todo! $forumlocked or $forumunlocked might be undefined
 			$forumstatus === FORUM_LOCKED ? $forumlocked = 'selected="selected"' : $forumunlocked = 'selected="selected"';
 
 			// These two options ($lang['Status_unlocked'] and $lang['Status_locked']) seem to be missing from
@@ -345,7 +346,7 @@ if (!empty($mode)) {
 				}
 
 				$insert_data = [
-				    'forum_id' => $forums_id,
+				    'forum_id'   => $forums_id,
                     'prune_days' => (int)$_POST['prune_days'],
                     'prune_freq' => (int)$_POST['prune_freq']
                 ];
@@ -361,10 +362,8 @@ if (!empty($mode)) {
 
 		case 'modforum':
 			// Modify a forum in the DB
-            if (isset($_POST['prune_enable'])) {
-                if ($_POST['prune_enable'] !== 1) {
-                    $_POST['prune_enable'] = 0;
-                }
+            if (isset($_POST['prune_enable']) && $_POST['prune_enable'] !== 1) {
+                $_POST['prune_enable'] = 0;
             }
 
 			$update_data = [
@@ -406,7 +405,7 @@ if (!empty($mode)) {
                         ->execute();
 				} else {
 				    $insert_data = [
-				        'forum_id' => (int)$_POST[POST_FORUM_URL],
+				        'forum_id'   => (int)$_POST[POST_FORUM_URL],
                         'prune_days' => (int)$_POST['prune_days'],
                         'prune_freq' => (int)$_POST['prune_freq']
                     ];
@@ -539,8 +538,8 @@ if (!empty($mode)) {
 			//
 			// Move or delete a forum in the DB
 			//
-			$from_id = (int)$_POST['from_id'];
-			$to_id = (int)$_POST['to_id'];
+			$from_id    = (int)$_POST['from_id'];
+			$to_id      = (int)$_POST['to_id'];
 			$delete_old = (int)$_POST['delete_old'];
 
 			// Either delete or move all posts in a forum
@@ -702,7 +701,7 @@ if (!empty($mode)) {
 			// Move or delete a category in the DB
 			//
 			$from_id = (int)$_POST['from_id'];
-			$to_id = (int)$_POST['to_id'];
+			$to_id   = (int)$_POST['to_id'];
 
 			if (!empty($to_id)) {
 			    $cat_exists = dibi::select('*')
@@ -733,7 +732,7 @@ if (!empty($mode)) {
 			//
 			// Change order of forums in the DB
 			//
-			$move = (int)$_GET['move'];
+			$move     = (int)$_GET['move'];
 			$forum_id = (int)$_GET[POST_FORUM_URL];
 
 			$forum_info = get_info('forum', $forum_id);
@@ -759,7 +758,7 @@ if (!empty($mode)) {
 			//
 			// Change order of categories in the DB
 			//
-			$move = (int)$_GET['move'];
+			$move   = (int)$_GET['move'];
 			$cat_id = (int)$_GET[POST_CAT_URL];
 
             if ($move > 0) {
