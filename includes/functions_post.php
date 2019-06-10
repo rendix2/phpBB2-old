@@ -182,10 +182,8 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 
         $max_post_time = $max_post_time->fetchSingle();
 
-		if ($max_post_time) {
-            if ((int)$max_post_time > 0 && ($current_time - $max_post_time) < (int)$board_config['flood_interval']) {
-                message_die(GENERAL_MESSAGE, $lang['Flood_Error']);
-            }
+		if ($max_post_time && (int)$max_post_time > 0 && ($current_time - $max_post_time) < (int)$board_config['flood_interval']) {
+            message_die(GENERAL_MESSAGE, $lang['Flood_Error']);
         }
 	}
 
@@ -282,20 +280,26 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	// Add poll
 	// 
 	if (($mode === 'newtopic' || ($mode === 'editpost' && $post_data['edit_poll'])) && !empty($poll_title) && count($poll_options) >= 2) {
+        $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
+
+        $new_poll_length = new DateTime();
+        $new_poll_length->setTimezone(new DateTimeZone($user_timezone));
+        $new_poll_length->setTimestamp($poll_length);
+        $new_poll_length->add(new DateInterval('P1D'));
+
 	    if (!$post_data['has_poll']) {
-	        $insert_data = [
-	            'topic_id' => $topic_id,
-                'vote_text' => $poll_title,
-                'vote_start' => $current_time,
-                'vote_length' => $poll_length * 86400
+            $insert_data = [
+                'topic_id'    => $topic_id,
+                'vote_text'   => $poll_title,
+                'vote_start'  => $current_time,
+                'vote_length' => $new_poll_length->getTimestamp()
             ];
 
             $poll_id = dibi::insert(VOTE_DESC_TABLE, $insert_data)->execute(dibi::IDENTIFIER);
         } else {
             $update_data = [
-                'vote_text' => $poll_title,
-                'vote_length' => $poll_length * 86400,
-                ''
+                'vote_text'   => $poll_title,
+                'vote_length' => $new_poll_length->getTimestamp(),
             ];
 
 	        dibi::update(VOTE_DESC_TABLE, $update_data)
