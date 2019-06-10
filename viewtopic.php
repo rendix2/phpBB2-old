@@ -475,14 +475,15 @@ $ranks = dibi::select('*')
 //
 // Define censored word matches
 //
-$orig_word = [];
+    $orig_word = [];
 $replacement_word = [];
 obtain_word_list($orig_word, $replacement_word);
+$count_orig_word = count($orig_word);
 
 //
 // Censor topic title
 //
-if (count($orig_word)) {
+if ($count_orig_word) {
     $topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
 }
 
@@ -693,9 +694,9 @@ if (!empty($forum_topic_data->topic_vote)) {
         ->orderBy('vr.vote_option_id', dibi::ASC)
         ->fetchAll();
 
-    if (count($vote_info)) {
-		$vote_options = count($vote_info);
+    $vote_options = count($vote_info);
 
+    if ($vote_options) {
 		$vote_id = $vote_info[0]->vote_id;
 		$vote_title = $vote_info[0]->vote_text;
 
@@ -736,7 +737,7 @@ if (!empty($forum_topic_data->topic_vote)) {
 				$vote_graphic_img = $images['voting_graphic'][$vote_graphic];
 				$vote_graphic = ($vote_graphic < $vote_graphic_max - 1) ? $vote_graphic + 1 : 0;
 
-				if (count($orig_word)) {
+				if ($count_orig_word) {
                     $vote_info_value->vote_option_text = preg_replace($orig_word, $replacement_word, $vote_info_value->vote_option_text);
 				}
 
@@ -762,7 +763,7 @@ if (!empty($forum_topic_data->topic_vote)) {
             $template->setFileNames(['pollbox' => 'viewtopic_poll_ballot.tpl']);
 
             foreach ($vote_info as $vote_info_value) {
-                if (count($orig_word)) {
+                if ($count_orig_word) {
                     $vote_info_value->vote_option_text = preg_replace($orig_word, $replacement_word, $vote_info_value->vote_option_text);
 				}
 
@@ -786,7 +787,7 @@ if (!empty($forum_topic_data->topic_vote)) {
             $s_hidden_fields = '<input type="hidden" name="topic_id" value="' . $topic_id . '" /><input type="hidden" name="mode" value="vote" />';
 		}
 
-        if (count($orig_word)) {
+        if ($count_orig_word) {
 			$vote_title = preg_replace($orig_word, $replacement_word, $vote_title);
 		}
 
@@ -1059,7 +1060,7 @@ foreach ($posts as $i => $post) {
 	//
 	// Replace naughty words
 	//
-	if (count($orig_word)) {
+	if ($count_orig_word) {
 		$post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
 
 		if ($user_sig !== '') {
