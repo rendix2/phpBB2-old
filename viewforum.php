@@ -174,7 +174,7 @@ if ($is_auth['auth_mod'] && $board_config['prune_enable']) {
 // First users, then groups ... broken into two queries
 //
 
-$users_moderator_data = dibi::select('u.user_id, u.username ')
+$users_moderator_data = dibi::select('u.user_id, u.username')
     ->from(AUTH_ACCESS_TABLE)
     ->as('aa')
     ->innerJoin(USER_GROUP_TABLE)
@@ -224,7 +224,7 @@ foreach ($group_moderator_data as $row) {
 
 $moderators_count = count($moderators);
 	
-$l_moderators = ( $moderators_count === 1 ) ? $lang['Moderator'] : $lang['Moderators'];
+$l_moderators = $moderators_count === 1 ? $lang['Moderator'] : $lang['Moderators'];
 $forum_moderators = $moderators_count ? implode(', ', $moderators) : $lang['None'];
 unset($moderators);
 
@@ -235,7 +235,7 @@ unset($moderators);
 //
 
 if (!empty($_POST['topicdays']) || !empty($_GET['topicdays'])) {
-	$topic_days = !empty($_POST['topicdays']) ? (int)$_POST['topicdays'] : (int)$_GET['topicdays'];
+	$topic_days    = !empty($_POST['topicdays'])       ? (int)$_POST['topicdays']   : (int)$_GET['topicdays'];
     $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
 
     $min_topic_time = new DateTime();
@@ -362,23 +362,25 @@ $count_orig_word = count($orig_word);
 //
 // Post URL generation for templating vars
 //
-$template->assignVars([
-    'L_DISPLAY_TOPICS' => $lang['Display_topics'],
+$template->assignVars(
+    [
+        'L_DISPLAY_TOPICS' => $lang['Display_topics'],
 
-    'U_POST_NEW_TOPIC' => Session::appendSid('posting.php?mode=newtopic&amp;' . POST_FORUM_URL . "=$forum_id"),
+        'U_POST_NEW_TOPIC' => Session::appendSid('posting.php?mode=newtopic&amp;' . POST_FORUM_URL . "=$forum_id"),
 
-    'S_SELECT_TOPIC_DAYS' => $select_topic_days,
-    'S_POST_DAYS_ACTION'  => Session::appendSid('viewforum.php?' . POST_FORUM_URL . '=' . $forum_id . "&amp;start=$start")
-    ]);
+        'S_SELECT_TOPIC_DAYS' => $select_topic_days,
+        'S_POST_DAYS_ACTION'  => Session::appendSid('viewforum.php?' . POST_FORUM_URL . '=' . $forum_id . "&amp;start=$start")
+    ]
+);
 
 //
 // User authorisation levels output
 //
-$s_auth_can = ( $is_auth['auth_post'] ? $lang['Rules_post_can'] : $lang['Rules_post_cannot'] ) . '<br />';
-$s_auth_can .= ( $is_auth['auth_reply'] ? $lang['Rules_reply_can'] : $lang['Rules_reply_cannot'] ) . '<br />';
-$s_auth_can .= ( $is_auth['auth_edit'] ? $lang['Rules_edit_can'] : $lang['Rules_edit_cannot'] ) . '<br />';
+$s_auth_can  = ( $is_auth['auth_post']   ? $lang['Rules_post_can']   : $lang['Rules_post_cannot'] )   . '<br />';
+$s_auth_can .= ( $is_auth['auth_reply']  ? $lang['Rules_reply_can']  : $lang['Rules_reply_cannot'] )  . '<br />';
+$s_auth_can .= ( $is_auth['auth_edit']   ? $lang['Rules_edit_can']   : $lang['Rules_edit_cannot'] )   . '<br />';
 $s_auth_can .= ( $is_auth['auth_delete'] ? $lang['Rules_delete_can'] : $lang['Rules_delete_cannot'] ) . '<br />';
-$s_auth_can .= ( $is_auth['auth_vote'] ? $lang['Rules_vote_can'] : $lang['Rules_vote_cannot'] ) . '<br />';
+$s_auth_can .= ( $is_auth['auth_vote']   ? $lang['Rules_vote_can']   : $lang['Rules_vote_cannot'] )   . '<br />';
 
 if ($is_auth['auth_mod']) {
 	$s_auth_can .= sprintf($lang['Rules_moderate'], '<a href="modcp.php?' . POST_FORUM_URL . "=$forum_id&amp;start=" . $start . '&amp;sid=' . $userdata['session_id'] . '">', '</a>');
@@ -407,7 +409,7 @@ $template->assignVars(
         'FORUM_ID'   => $forum_id,
         'FORUM_NAME' => $forum_row['forum_name'],
         'MODERATORS' => $forum_moderators,
-        'POST_IMG'   => ($forum_row['forum_status'] === FORUM_LOCKED) ? $images['post_locked'] : $images['post_new'],
+        'POST_IMG'   => $forum_row['forum_status'] === FORUM_LOCKED ? $images['post_locked'] : $images['post_new'],
 
         'FOLDER_IMG'              => $images['folder'],
         'FOLDER_NEW_IMG'          => $images['folder_new'],
