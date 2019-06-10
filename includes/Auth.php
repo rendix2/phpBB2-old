@@ -189,7 +189,7 @@ class Auth
             // and admin automatically have access to an ACL forum, similarly we assume admins meet an
             // auth requirement of MOD
             //
-            if ( $forum_id !== AUTH_LIST_ALL) {
+            if ($forum_id !== AUTH_LIST_ALL) {
                 $value = $f_access[$key];
 
                 switch( $value) {
@@ -266,7 +266,7 @@ class Auth
         //
         // Is user a moderator?
         //
-        if ( $forum_id !== AUTH_LIST_ALL) {
+        if ($forum_id !== AUTH_LIST_ALL) {
             $auth_user['auth_mod'] = $userdata['session_logged_in'] ? self::auth_check_user(AUTH_MOD, 'auth_mod', $u_access, $is_admin) : 0;
         } else {
             foreach ($f_access as $f_access_value) {

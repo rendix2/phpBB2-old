@@ -34,7 +34,7 @@
 
 */
 
-if ( !defined('IN_PHPBB')) {
+if (!defined('IN_PHPBB')) {
 	die('Hacking attempt');
 }
 
@@ -73,7 +73,7 @@ $error = false;
 $error_msg = '';
 $page_title = ( $mode === 'editprofile' ) ? $lang['Edit_profile'] : $lang['Register'];
 
-if ( $mode === 'register' && !isset($_POST['agreed']) && !isset($_GET['agreed']) )
+if ($mode === 'register' && !isset($_POST['agreed']) && !isset($_GET['agreed']) )
 {
 	include $phpbb_root_path . 'includes/page_header.php';
 
@@ -120,7 +120,7 @@ if (
 	// doing the job but can still break HTML output ... have no choice, have
 	// to use htmlspecialchars ... be prepared to be moaned at.
 	foreach ($strip_var_list as $var => $param) {
-		if ( !empty($_POST[$param])) {
+		if (!empty($_POST[$param])) {
 			$$var = trim(htmlspecialchars($_POST[$param]));
 		}
 	}
@@ -155,7 +155,7 @@ if (
 
     $sid = isset($_POST['sid']) ? $_POST['sid'] : 0;
 
-	if ( $mode === 'register') {
+	if ($mode === 'register') {
         $attachsig    = isset($_POST['attachsig'])    ? (bool)$_POST['attachsig']    : $board_config['allow_sig'];
         $allowhtml    = isset($_POST['allowhtml'])    ? (bool)$_POST['allowhtml']    : $board_config['allow_html'];
         $allowbbcode  = isset($_POST['allowbbcode'])  ? (bool)$_POST['allowbbcode']  : $board_config['allow_bbcode'];
@@ -371,7 +371,7 @@ if (isset($_POST['submit'])) {
                 message_die(GENERAL_ERROR, 'Could not obtain user_password information');
             }
 
-			if ( !password_verify($cur_password, $db_password)) {
+			if (!password_verify($cur_password, $db_password)) {
 				$email = $userdata['user_email'];
 
                 $error = true;
@@ -381,7 +381,7 @@ if (isset($_POST['submit'])) {
 	}
 
 	$username_data = [];
-	if ( $board_config['allow_namechange'] || $mode === 'register') {
+	if ($board_config['allow_namechange'] || $mode === 'register') {
         if (empty($username)) {
 			// Error is already triggered, since one field is empty.
             $error = true;
@@ -419,30 +419,30 @@ if (isset($_POST['submit'])) {
 
 	$avatar_data = [];
 
-	if ( isset($_POST['avatardel']) && $mode === 'editprofile') {
+	if (isset($_POST['avatardel']) && $mode === 'editprofile') {
 		$avatar_data = user_avatar_delete($userdata['user_avatar_type'], $userdata['user_avatar']);
-	} elseif ( ( !empty($user_avatar_upload) || !empty($user_avatar_name) ) && $board_config['allow_avatar_upload']) {
-		if ( !empty($user_avatar_upload)) {
+	} elseif (( !empty($user_avatar_upload) || !empty($user_avatar_name) ) && $board_config['allow_avatar_upload']) {
+		if (!empty($user_avatar_upload)) {
 			$avatar_mode = empty($user_avatar_name) ? 'remote' : 'local';
 			$avatar_data = user_avatar_upload($mode, $avatar_mode, $userdata['user_avatar'], $userdata['user_avatar_type'], $error, $error_msg, $user_avatar_upload, $user_avatar_name, $user_avatar_size, $user_avatar_filetype);
-		} elseif ( !empty($user_avatar_name)) {
+		} elseif (!empty($user_avatar_name)) {
 			$l_avatar_size = sprintf($lang['Avatar_filesize'], round($board_config['avatar_filesize'] / 1024));
 
 			$error = true;
 			$error_msg .= ( !empty($error_msg) ? '<br />' : '' ) . $l_avatar_size;
 		}
-	} elseif ( $user_avatar_remoteurl !== '' && $board_config['allow_avatar_remote']) {
+	} elseif ($user_avatar_remoteurl !== '' && $board_config['allow_avatar_remote']) {
 		user_avatar_delete($userdata['user_avatar_type'], $userdata['user_avatar']);
 		$avatar_data = user_avatar_url($mode, $error, $error_msg, $user_avatar_remoteurl);
-	} elseif ( $user_avatar_local !== '' && $board_config['allow_avatar_local']) {
+	} elseif ($user_avatar_local !== '' && $board_config['allow_avatar_local']) {
 		user_avatar_delete($userdata['user_avatar_type'], $userdata['user_avatar']);
 		$avatar_data = user_avatar_gallery($mode, $error, $error_msg, $user_avatar_local, $user_avatar_category);
 	}
 
-	if ( !$error) {
+	if (!$error) {
 	    /*
 	     * TODO
-		if ( $avatar_sql == '') {
+		if ($avatar_sql == '') {
 			$avatar_sql = ( $mode == 'editprofile' ) ? '' : "'', " . USER_AVATAR_NONE;
 		}
 	    */
@@ -811,8 +811,8 @@ include $phpbb_root_path . 'includes/page_header.php';
 
 make_jumpbox('viewforum.php');
 
-if ( $mode === 'editprofile') {
-	if ( $user_id !== $userdata['user_id']) {
+if ($mode === 'editprofile') {
+	if ($user_id !== $userdata['user_id']) {
 		$error = true;
 		$error_msg = $lang['Wrong_Profile'];
 	}

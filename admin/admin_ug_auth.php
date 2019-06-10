@@ -195,7 +195,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 		} else {
 			$change_mod_list = isset($_POST['moderator']) ? $_POST['moderator'] : [];
 
-			if ( empty($adv)) {
+			if (empty($adv)) {
                 $forum_access = dibi::select('f.* ')
                     ->from(FORUMS_TABLE)
                     ->as('f')
@@ -270,7 +270,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 			foreach ($forum_access as $access) {
 				$forum_id = $access->forum_id;
 
-				if ( 
+				if (
 					( isset($auth_access[$forum_id]['auth_mod']) && $change_mod_list[$forum_id] !== $auth_access[$forum_id]['auth_mod'] ) ||
 					( !isset($auth_access[$forum_id]['auth_mod']) && !empty($change_mod_list[$forum_id]) ) 
 				) {
@@ -287,7 +287,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 
 				foreach ($forum_auth_fields as $auth_field) {
 					if ($access->{$auth_field} === AUTH_ACL && isset($change_acl_list[$forum_id][$auth_field])) {
-						if ( ( empty($auth_access[$forum_id]['auth_mod']) && 
+						if (( empty($auth_access[$forum_id]['auth_mod']) &&
 							( isset($auth_access[$forum_id][$auth_field]) && $change_acl_list[$forum_id][$auth_field] !== $auth_access[$forum_id][$auth_field] ) ||
 							( !isset($auth_access[$forum_id][$auth_field]) && !empty($change_acl_list[$forum_id][$auth_field]) ) ) ||
 							!empty($update_mod_status[$forum_id])
@@ -300,7 +300,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
                             } elseif (isset($auth_access[$forum_id][$auth_field]) && !empty($update_acl_status[$forum_id][$auth_field])) {
                                 $forum_auth_action[$forum_id] = 'update';
                             }
-						} elseif ( ( empty($auth_access[$forum_id]['auth_mod']) &&
+						} elseif (( empty($auth_access[$forum_id]['auth_mod']) &&
 							( isset($auth_access[$forum_id][$auth_field]) && $change_acl_list[$forum_id][$auth_field] === $auth_access[$forum_id][$auth_field] ) ) && $forum_auth_action[$forum_id] === 'delete'
                        ) {
 							$forum_auth_action[$forum_id] = 'update';
@@ -315,10 +315,10 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 			$delete_sql = [];
 
 			foreach ($forum_auth_action as $forum_id => $action) {
-				if ( $action === 'delete') {
+				if ($action === 'delete') {
 					$delete_sql[] = $forum_id;
 				} else {
-					if ( $action === 'insert') {
+					if ($action === 'insert') {
                         $update_acl_status[$forum_id]['auth_mod'] = isset($update_mod_status[$forum_id]) ? $update_mod_status[$forum_id] : 0;
                         $update_acl_status[$forum_id]['forum_id'] = $forum_id;
                         $update_acl_status[$forum_id]['group_id'] = $group_id;
@@ -835,7 +835,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 
     $template->setFileNames(['body' => ($mode === 'user') ? 'admin/user_select_body.tpl' : 'admin/auth_select_body.tpl']);
 
-    if ( $mode === 'user') {
+    if ($mode === 'user') {
         $template->assignVars(
             [
                 'L_FIND_USERNAME' => $lang['Find_username'],

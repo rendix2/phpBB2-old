@@ -355,7 +355,7 @@ class Template
 				$n[1] = $m[1];
 
 				// Added: dougk_ff7-Keeps templates from bombing if begin is on the same line as end.. I think. :)
-				if ( preg_match('#<!-- END (.*?) -->#', $code_lines[$i], $n) )
+				if (preg_match('#<!-- END (.*?) -->#', $code_lines[$i], $n) )
 				{
 					$block_nesting_level++;
 					$block_names[$block_nesting_level] = $m[1];

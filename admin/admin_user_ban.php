@@ -22,7 +22,7 @@
 
 define('IN_PHPBB', 1);
 
-if ( !empty($setmodules)) {
+if (!empty($setmodules)) {
 	$filename = basename(__FILE__);
 	$module['Users']['Ban_Management'] = $filename;
 
@@ -62,7 +62,7 @@ if (isset($_POST['submit'])) {
 		$ip_list_temp = explode(',', $_POST['ban_ip']);
 
 		foreach ($ip_list_temp as $i => $ip_value_tmp) {
-			if ( preg_match('/^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})[ ]*\-[ ]*([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/', trim($ip_value_tmp), $ip_range_explode)) {
+			if (preg_match('/^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})[ ]*\-[ ]*([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/', trim($ip_value_tmp), $ip_range_explode)) {
 				//
 				// Don't ask about all this, just don't ask ... !
 				//
@@ -115,7 +115,7 @@ if (isset($_POST['submit'])) {
 
 					$ip_1_counter++;
 				}
-			} elseif ( preg_match('/^([\w\-_]\.?){2,}$/is', trim($ip_value_tmp))) {
+			} elseif (preg_match('/^([\w\-_]\.?){2,}$/is', trim($ip_value_tmp))) {
 				$ips = gethostbynamel(trim($ip_value_tmp));
 
                 foreach ($ips as $ip) {
@@ -123,14 +123,14 @@ if (isset($_POST['submit'])) {
                         $ip_list[] = encode_ip($ip);
                     }
                 }
-			} elseif ( preg_match('/^([0-9]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})$/', trim($ip_value_tmp))) {
+			} elseif (preg_match('/^([0-9]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})$/', trim($ip_value_tmp))) {
 				$ip_list[] = encode_ip(str_replace('*', '255', trim($ip_value_tmp)));
 			}
 		}
 	}
 
 	$email_list = [];
-	if ( isset($_POST['ban_email'])) {
+	if (isset($_POST['ban_email'])) {
 		$email_list_temp = explode(',', $_POST['ban_email']);
 
 		foreach ($email_list_temp as $email_value_tmp) {
@@ -322,11 +322,11 @@ if (isset($_POST['submit'])) {
 	foreach ($banlist as $ban) {
 		$ban_id = $ban->ban_id;
 
-		if ( !empty($ban->ban_ip)) {
+		if (!empty($ban->ban_ip)) {
 			$ban_ip = str_replace('255', '*', decode_ip($ban->ban_ip));
 			$select_iplist .= '<option value="' . $ban_id . '">' . $ban_ip . '</option>';
 			$ipban_count++;
-		} elseif ( !empty($ban->ban_email)) {
+		} elseif (!empty($ban->ban_email)) {
 			$ban_email = $ban->ban_email;
 			$select_emaillist .= '<option value="' . $ban_id . '">' . $ban_email . '</option>';
 			$emailban_count++;

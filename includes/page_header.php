@@ -20,7 +20,7 @@
  *
  ***************************************************************************/
 
-if ( !defined('IN_PHPBB')) {
+if (!defined('IN_PHPBB')) {
 	die('Hacking attempt');
 }
 
@@ -31,18 +31,18 @@ define('HEADER_INC', true);
 //
 $do_gzip_compress = false;
 
-if ( $board_config['gzip_compress']) {
+if ($board_config['gzip_compress']) {
 	$phpver = PHP_VERSION;
 
 	$useragent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : getenv('HTTP_USER_AGENT');
 
-	if ( $phpver >= '4.0.4pl1' && ( false !== strpos($useragent, 'compatible') || false !== strpos($useragent, 'Gecko'))) {
-		if ( extension_loaded('zlib')) {
+	if ($phpver >= '4.0.4pl1' && ( false !== strpos($useragent, 'compatible') || false !== strpos($useragent, 'Gecko'))) {
+		if (extension_loaded('zlib')) {
 			ob_start('ob_gzhandler');
 		}
-	} elseif ( $phpver > '4.0') {
+	} elseif ($phpver > '4.0') {
 		if (false !== strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip')) {
-			if ( extension_loaded('zlib')) {
+			if (extension_loaded('zlib')) {
 				$do_gzip_compress = true;
 				ob_start();
 				ob_implicit_flush(0);
@@ -112,20 +112,20 @@ if (defined('SHOW_ONLINE')) {
 
 	foreach ($rows as $row) {
 		// User is logged in and therefor not a guest
-		if ( $row->session_logged_in) {
+		if ($row->session_logged_in) {
 			// Skip multiple sessions for one user
-			if ( $row->user_id !== $prev_user_id) {
+			if ($row->user_id !== $prev_user_id) {
 				$style_color = '';
 				
-				if ( $row->user_level === ADMIN) {
+				if ($row->user_level === ADMIN) {
 					$row->username = '<b>' . $row->username . '</b>';
 					$style_color = 'style="color:#' . $theme['fontcolor3'] . '"';
-				} elseif ( $row->user_level === MOD) {
+				} elseif ($row->user_level === MOD) {
 					$row->username = '<b>' . $row->username . '</b>';
 					$style_color = 'style="color:#' . $theme['fontcolor2'] . '"';
 				}
 
-				if ( $row->user_allow_viewonline) {
+				if ($row->user_allow_viewonline) {
 					$user_online_link = '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $row->user_id) . '"' . $style_color .'>' . $row->username . '</a>';
 					$logged_visible_online++;
 				} else {
@@ -133,17 +133,17 @@ if (defined('SHOW_ONLINE')) {
 					$logged_hidden_online++;
 				}
 
-				if ( $row->user_allow_viewonline || $userdata['user_level'] === ADMIN) {
-					$online_userlist .= ( $online_userlist !== '' ) ? ', ' . $user_online_link : $user_online_link;
-				}
+                if ($row->user_allow_viewonline || $userdata['user_level'] === ADMIN) {
+                    $online_userlist .= ($online_userlist !== '') ? ', ' . $user_online_link : $user_online_link;
+                }
 			}
 
 			$prev_user_id = $row->user_id;
 		} else {
 			// Skip multiple sessions for one user
-			if ( $row->session_ip !== $prev_session_ip) {
-				$guests_online++;
-			}
+            if ($row->session_ip !== $prev_session_ip) {
+                $guests_online++;
+            }
 		}
 
 		$prev_session_ip = $row->session_ip;
@@ -259,7 +259,7 @@ $nav_links_html = '';
 $nav_link_proto = '<link rel="%s" href="%s" title="%s" />' . "\n";
 
 foreach ($nav_links as $nav_item => $nav_array) {
-	if ( !empty($nav_array['url'])) {
+	if (!empty($nav_array['url'])) {
 		$nav_links_html .= sprintf($nav_link_proto, $nav_item, Session::appendSid($nav_array['url']), $nav_array['title']);
 	} else {
 		// We have a nested array, used for items like <link rel='chapter'> that can occur more than once.

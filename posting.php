@@ -327,7 +327,7 @@ if ($post_info) {
         $post_data['topic_type']  = $post_info->topic_type;
         $post_data['poster_id']   = $post_info->poster_id;
 
-		if ( $post_data['first_post'] && $post_data['has_poll']) {
+		if ($post_data['first_post'] && $post_data['has_poll']) {
 		    $votes = dibi::select('*')
                 ->from(VOTE_DESC_TABLE)
                 ->as('vd')
@@ -616,7 +616,7 @@ if (($delete || $poll_delete || $mode === 'delete') && !$confirm) {
 
 			prepare_post($mode, $post_data, $bbcode_on, $html_on, $smilies_on, $error_msg, $username, $bbcode_uid, $subject, $message, $poll_title, $poll_options, $poll_length);
 
-			if ( $error_msg === '' )
+			if ($error_msg === '' )
 			{
 				$topic_type = ( $topic_type !== $post_data['topic_type'] && !$is_auth['auth_sticky'] && !$is_auth['auth_announce'] ) ? $post_data['topic_type'] : $topic_type;
 
@@ -697,9 +697,9 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg !== '') {
         $poll_options[] = htmlspecialchars(trim(stripslashes($_POST['add_poll_option_text'])));
     }
 
-	if ( $mode === 'newtopic' || $mode === 'reply') {
+	if ($mode === 'newtopic' || $mode === 'reply') {
 		$user_sig = ( $userdata['user_sig'] !== '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : '';
-	} elseif ( $mode === 'editpost') {
+	} elseif ($mode === 'editpost') {
 		$user_sig = ( $post_info->user_sig !== '' && $board_config['allow_sig'] ) ? $post_info->user_sig : '';
 		$userdata['user_sig_bbcode_uid'] = $post_info->user_sig_bbcode_uid;
 	}

@@ -35,7 +35,7 @@ class Session
         $data_cookie_name = $cookiename . '_data';
         $sid_cookie_name  = $cookiename . '_sid';
 
-        if ( isset($_COOKIE[$sid_cookie_name]) || isset($_COOKIE[$data_cookie_name])) {
+        if (isset($_COOKIE[$sid_cookie_name]) || isset($_COOKIE[$data_cookie_name])) {
             $session_id  = isset($_COOKIE[$sid_cookie_name])  ? $_COOKIE[$sid_cookie_name] : '';
             $sessiondata = isset($_COOKIE[$data_cookie_name]) ? unserialize(stripslashes($_COOKIE[$data_cookie_name])) : [];
             $sessionmethod = SESSION_METHOD_COOKIE;
@@ -142,7 +142,7 @@ class Session
         ];
 
         // check if banned :)
-        if ( $user_id !== ANONYMOUS) {
+        if ($user_id !== ANONYMOUS) {
             $ban_email = $userdata['user_email'];
             $ban_email2 = substr( $userdata['user_email'], strpos($userdata['user_email'], '@'));
 
@@ -203,7 +203,7 @@ class Session
             dibi::insert(SESSIONS_TABLE, $insert_data)->execute();
         }
 
-        if ( $user_id !== ANONYMOUS) {
+        if ($user_id !== ANONYMOUS) {
             $last_visit = ( $userdata['user_session_time'] > 0 ) ? $userdata['user_session_time'] : $current_time;
 
             if (!$admin) {
@@ -307,7 +307,7 @@ class Session
         $current_time = time();
         unset($userdata);
 
-        if ( isset($_COOKIE[$sid_cookie_name]) || isset($_COOKIE[$data_cookie_name])) {
+        if (isset($_COOKIE[$sid_cookie_name]) || isset($_COOKIE[$data_cookie_name])) {
             $sessiondata = isset( $_COOKIE[$data_cookie_name] ) ? unserialize(stripslashes($_COOKIE[$data_cookie_name])) : [];
             $session_id = isset( $_COOKIE[$sid_cookie_name] ) ? $_COOKIE[$sid_cookie_name] : '';
             $sessionmethod = SESSION_METHOD_COOKIE;
@@ -327,7 +327,7 @@ class Session
         //
         // Does a session exist?
         //
-        if ( !empty($session_id)) {
+        if (!empty($session_id)) {
             //
             // session_id exists so go ahead and attempt to grab all
             // data in preparation
@@ -344,7 +344,7 @@ class Session
             //
             // Did the session exist in the DB?
             //
-            if ( isset($userdata['user_id'])) {
+            if (isset($userdata['user_id'])) {
                 //
                 // Do not check IP assuming equivalence, if IPv4 we'll check only first 24
                 // bits ... I've been told (by vHiker) this should alleviate problems with
@@ -359,7 +359,7 @@ class Session
                     //
                     // Only update session DB a minute or so after last update
                     //
-                    if ( $current_time - $userdata['session_time'] > 60) {
+                    if ($current_time - $userdata['session_time'] > 60) {
                         // A little trick to reset session_admin on session re-usage
 
                         $update_data = [
@@ -375,7 +375,7 @@ class Session
                             ->where('session_id = %s', $userdata['session_id'])
                             ->execute();
 
-                        if ( $userdata['user_id'] !== ANONYMOUS) {
+                        if ($userdata['user_id'] !== ANONYMOUS) {
                             dibi::update(USERS_TABLE, ['user_session_time' => $current_time, 'user_session_page' => $thispage_id])
                                 ->where('user_id = %i', $userdata['user_id'])
                                 ->execute();
@@ -395,7 +395,7 @@ class Session
                     }
 
                     // Add the session_key to the userdata array if it is set
-                    if ( isset($sessiondata['autologinid']) && $sessiondata['autologinid'] !== '') {
+                    if (isset($sessiondata['autologinid']) && $sessiondata['autologinid'] !== '') {
                         $userdata['session_key'] = $sessiondata['autologinid'];
                     }
 
@@ -410,7 +410,7 @@ class Session
         //
         $user_id = isset($sessiondata['userid']) ? (int)$sessiondata['userid'] : ANONYMOUS;
 
-        if ( !($userdata = self::begin($user_id, $user_ip, $thispage_id, true))) {
+        if (!($userdata = self::begin($user_id, $user_ip, $thispage_id, true))) {
             message_die(CRITICAL_ERROR, 'Error creating user session');
         }
 
@@ -459,7 +459,7 @@ class Session
         //
         // Remove this auto-login entry (if applicable)
         //
-        if ( isset($userdata['session_key']) && $userdata['session_key'] !== '') {
+        if (isset($userdata['session_key']) && $userdata['session_key'] !== '') {
             $autologin_key = md5($userdata['session_key']);
 
             dibi::delete(SESSIONS_KEYS_TABLE)
@@ -625,7 +625,7 @@ class Session
     {
         global $SID;
 
-        if ( !empty($SID) && !preg_match('#sid=#', $url)) {
+        if (!empty($SID) && !preg_match('#sid=#', $url)) {
             $url .= ( ( strpos($url, '?') !== false ) ?  ( $non_html_amp ? '&' : '&amp;' ) : '?' ) . $SID;
         }
 

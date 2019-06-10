@@ -40,7 +40,7 @@ function generate_user_info(&$row, $date_format, $group_mod, &$from, &$posts, &$
      * TODO this never be true
      * add this columns into selects
      */
-	if ( $row->user_avatar_type && $row->user_id !== ANONYMOUS && $row->user_allowavatar) {
+	if ($row->user_avatar_type && $row->user_id !== ANONYMOUS && $row->user_allowavatar) {
 		switch( $row->user_avatar_type) {
 			case USER_AVATAR_UPLOAD:
 				$poster_avatar = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $row->user_avatar . '" alt="" border="0" />' : '';
@@ -54,7 +54,7 @@ function generate_user_info(&$row, $date_format, $group_mod, &$from, &$posts, &$
 		}
 	}
 
-	if ( !empty($row->user_viewemail) || $group_mod )
+	if (!empty($row->user_viewemail) || $group_mod )
 	{
 		$email_uri = $board_config['board_email_form'] ? Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL .'=' . $row->user_id) : 'mailto:' . $row->user_email;
 
@@ -77,7 +77,7 @@ function generate_user_info(&$row, $date_format, $group_mod, &$from, &$posts, &$
 	$www = $row->user_website ? '<a href="' . $row->user_website . '" target="_userwww">' . $lang['Visit_website']
 	 . '</a>' : '';
 
-	if ( !empty($row->user_icq)) {
+	if (!empty($row->user_icq)) {
 		$icq_status_img = '<a href="http://wwp.icq.com/' . $row->user_icq . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $row->user_icq . '&img=5" width="18" height="18" border="0" /></a>';
 		$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row->user_icq . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
 		$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row->user_icq . '">' . $lang['ICQ'] . '</a>';
@@ -181,7 +181,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 
 	message_die(GENERAL_MESSAGE, $message);
 
-} elseif ( isset($_POST['joingroup']) && $group_id) {
+} elseif (isset($_POST['joingroup']) && $group_id) {
 	//
 	// First, joining a group
 	// If the user isn't logged in redirect them to login
@@ -293,7 +293,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
         message_die(GENERAL_ERROR, $lang['Session_invalid']);
     }
 
-	if ( $confirm) {
+	if ($confirm) {
 	    dibi::delete(USER_GROUP_TABLE)
             ->where('user_id = %i', $userdata['user_id'])
             ->where('group_id = %i', $group_id)
@@ -354,7 +354,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 		include $phpbb_root_path . 'includes/page_tail.php';
 	}
 
-} elseif ( $group_id) {
+} elseif ($group_id) {
 	//
 	// Did the group moderator get here through an email?
 	// If so, check to see if they are logged in.
@@ -548,7 +548,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 					$emailer->reset();
 				}
 			} else {
-				if ( ( ( isset($_POST['approve']) || isset($_POST['deny']) ) && isset($_POST['pending_members']) ) || ( isset($_POST['remove']) && isset($_POST['members']) )) {
+				if (( ( isset($_POST['approve']) || isset($_POST['deny']) ) && isset($_POST['pending_members']) ) || ( isset($_POST['remove']) && isset($_POST['members']) )) {
 					$members = ( isset($_POST['approve']) || isset($_POST['deny']) ) ? $_POST['pending_members'] : $_POST['members'];
 
                     if (isset($_POST['approve'])) {
@@ -926,7 +926,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 
 		generate_user_info($group_members[$i], $board_config['default_dateformat'], $is_moderator, $from, $posts, $joined, $poster_avatar, $profile_img, $profile, $search_img, $search, $pm_img, $pm, $email_img, $email, $www_img, $www, $icq_status_img, $icq_img, $icq, $aim_img, $aim, $msn_img, $msn, $yim_img, $yim);
 
-		if ( $group_info->group_type !== GROUP_HIDDEN || $is_group_member || $is_moderator) {
+		if ($group_info->group_type !== GROUP_HIDDEN || $is_group_member || $is_moderator) {
 			$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
 

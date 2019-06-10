@@ -355,7 +355,7 @@ if (isset($_POST['edit']) || isset($_POST['new'])) {
     );
 
     // TODO!!!!
-    // it was if ( $select_list != '') {
+    // it was if ($select_list != '') {
     if ($group_count) {
         $template->assignBlockVars('select_box', []);
     }

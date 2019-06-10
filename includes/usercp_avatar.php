@@ -52,8 +52,8 @@ function user_avatar_delete($avatar_type, $avatar_file)
 
 	$avatar_file = basename($avatar_file);
 
-	if ( $avatar_type === USER_AVATAR_UPLOAD && $avatar_file !== '') {
-		if ( @file_exists(@phpbb_realpath('./' . $board_config['avatar_path'] . '/' . $avatar_file))) {
+	if ($avatar_type === USER_AVATAR_UPLOAD && $avatar_file !== '') {
+		if (@file_exists(@phpbb_realpath('./' . $board_config['avatar_path'] . '/' . $avatar_file))) {
 			@unlink('./' . $board_config['avatar_path'] . '/' . $avatar_file);
 		}
 	}
@@ -117,7 +117,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 	$width = $height = 0;
 	$type = '';
 
-	if ( $avatar_mode === 'remote' && preg_match('/^(http:\/\/)?([\w\-\.]+)\:?([0-9]*)\/([^ \?&=\#\"\n\r\t<]*?(\.(jpg|jpeg|gif|png)))$/', $avatar_filename, $url_ary)) {
+	if ($avatar_mode === 'remote' && preg_match('/^(http:\/\/)?([\w\-\.]+)\:?([0-9]*)\/([^ \?&=\#\"\n\r\t<]*?(\.(jpg|jpeg|gif|png)))$/', $avatar_filename, $url_ary)) {
         if (empty($url_ary[4])) {
 			$error = true;
 			$error_msg = !empty($error_msg) ? $error_msg . '<br />' . $lang['Incomplete_URL'] : $lang['Incomplete_URL'];
@@ -154,7 +154,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 		$avatar_filesize = $file_data1[1];
 		$avatar_filetype = $file_data2[1];
 
-		if ( !$error && $avatar_filesize > 0 && $avatar_filesize < $board_config['avatar_filesize']) {
+		if (!$error && $avatar_filesize > 0 && $avatar_filesize < $board_config['avatar_filesize']) {
 			$avatar_data = substr($avatar_data, mb_strlen($avatar_data) - $avatar_filesize, $avatar_filesize);
 
 			$tmp_path = './' . $board_config['avatar_path'] . '/tmp';
@@ -164,7 +164,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 			$bytes_written = @fwrite($fptr, $avatar_data, $avatar_filesize);
 			@fclose($fptr);
 
-			if ( $bytes_written !== $avatar_filesize) {
+			if ($bytes_written !== $avatar_filesize) {
 				@unlink($tmp_filename);
 				message_die(GENERAL_ERROR, 'Could not write avatar file to local storage. Please contact the board administrator with this message', '', __LINE__, __FILE__);
 			}
@@ -229,10 +229,10 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 			message_die(GENERAL_ERROR, 'Unable to upload file', '', __LINE__, __FILE__);
 	}
 
-	if ( $width > 0 && $height > 0 && $width <= $board_config['avatar_max_width'] && $height <= $board_config['avatar_max_height']) {
+	if ($width > 0 && $height > 0 && $width <= $board_config['avatar_max_width'] && $height <= $board_config['avatar_max_height']) {
 		$new_filename = uniqid(rand()) . $imgtype;
 
-		if ( $mode === 'editprofile' && $current_type === USER_AVATAR_UPLOAD && $current_avatar !== '') {
+		if ($mode === 'editprofile' && $current_type === USER_AVATAR_UPLOAD && $current_avatar !== '') {
 			user_avatar_delete($current_type, $current_avatar);
 		}
 

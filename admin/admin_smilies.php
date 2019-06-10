@@ -167,7 +167,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
 		$smile_paks_select = "<select name='smile_pak'><option value=''>" . $lang['Select_pak'] . '</option>';
 
 		foreach ($smiley_paks as $key => $value) {
-			if ( !empty($value)) {
+			if (!empty($value)) {
 				$smile_paks_select .= '<option>' . $value . '</option>';
 			}
 		}
@@ -202,7 +202,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
 	//
 	// Export our smiley config as a smiley pak...
 	//
-	if ( $_GET['export_pack'] === 'send') {
+	if ($_GET['export_pack'] === 'send') {
         $resultset = dibi::select('*')
             ->from(SMILIES_TABLE)
             ->fetchAll();

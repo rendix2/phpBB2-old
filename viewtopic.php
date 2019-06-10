@@ -59,7 +59,7 @@ $cookie_name_forum = $board_config['cookie_name'] . '_f';
 
 if (isset($_GET['view']) && empty($_GET[POST_POST_URL])) {
     if ($_GET['view'] === 'newest') {
-		if ( isset($_COOKIE[$cookie_name_sid]) || isset($_GET['sid'])) {
+		if (isset($_COOKIE[$cookie_name_sid]) || isset($_GET['sid'])) {
 			$session_id = isset($_COOKIE[$cookie_name_sid]) ? $_COOKIE[$cookie_name_sid] : $_GET['sid'];
 
             if (!preg_match('/^[A-Za-z0-9]*$/', $session_id)) {
@@ -96,7 +96,7 @@ if (isset($_GET['view']) && empty($_GET[POST_POST_URL])) {
 		}
 
 		redirect(Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id", true));
-	} elseif ( $_GET['view'] === 'next' || $_GET['view'] === 'previous') {
+	} elseif ($_GET['view'] === 'next' || $_GET['view'] === 'previous') {
 		$sql_condition = $_GET['view'] === 'next' ? '>'   : '<';
 		$sql_ordering  = $_GET['view'] === 'next' ? 'ASC' : 'DESC';
 
@@ -585,7 +585,7 @@ $s_auth_can .= ( $is_auth['auth_vote'] ? $lang['Rules_vote_can'] : $lang['Rules_
 
 $topic_mod = '';
 
-if ( $is_auth['auth_mod']) {
+if ($is_auth['auth_mod']) {
 	$s_auth_can .= sprintf($lang['Rules_moderate'], '<a href="modcp.php?' . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'] . '">', '</a>');
 
 	$topic_mod .= '<a href="modcp.php?' . POST_TOPIC_URL . "=$topic_id&amp;mode=delete&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_delete'] . '" alt="' . $lang['Delete_topic'] . '" title="' . $lang['Delete_topic'] . '" border="0" /></a>&nbsp;';
@@ -601,8 +601,8 @@ if ( $is_auth['auth_mod']) {
 // Topic watch information
 //
 $s_watching_topic = '';
-if ( $can_watch_topic) {
-	if ( $is_watching_topic) {
+if ($can_watch_topic) {
+	if ($is_watching_topic) {
 		$s_watching_topic = '<a href="viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic&amp;start=$start&amp;sid=" . $userdata['session_id'] . '">' . $lang['Stop_watching_topic'] . '</a>';
 		$s_watching_topic_img = isset($images['topic_un_watch']) ? '<a href="viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic&amp;start=$start&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_un_watch'] . '" alt="' . $lang['Stop_watching_topic'] . '" title="' . $lang['Stop_watching_topic'] . '" border="0"></a>' : '';
 	} else {
@@ -670,7 +670,7 @@ $template->assignVars(
 //
 // Does this topic contain a poll?
 //
-if ( !empty($forum_topic_data->topic_vote)) {
+if (!empty($forum_topic_data->topic_vote)) {
 	$s_hidden_fields = '';
 
     $columns = [
@@ -865,7 +865,7 @@ foreach ($posts as $i => $post) {
     if ($post->user_id === ANONYMOUS) {
 	    // WHAT WAS THERE???????
 	}
-	elseif ( $post->user_rank) {
+	elseif ($post->user_rank) {
 	    foreach ($ranks as $rank) {
 	        if ($post->user_rank === $rank->rank_id && $rank->rank_special) {
 	            $poster_rank = $rank->rank_title;
@@ -874,7 +874,7 @@ foreach ($posts as $i => $post) {
         }
 	} else {
 		foreach ($ranks as $rank) {
-		    if ( $post->user_posts >= $rank->rank_min && !$rank->rank_special) {
+		    if ($post->user_posts >= $rank->rank_min && !$rank->rank_special) {
 		        $poster_rank = $rank->rank_title;
 		        $rank_image = $rank->rank_image ? '<img src="' . $rank->rank_image . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
             }

@@ -85,7 +85,7 @@ if (isset($_POST['sort_dir'])) {
     $sort_dir = 'DESC';
 }
 
-if ( !empty($_POST['search_time']) || !empty($_GET['search_time'])) {
+if (!empty($_POST['search_time']) || !empty($_GET['search_time'])) {
 	$search_time = time() - ( ( !empty($_POST['search_time']) ? (int)$_POST['search_time'] : (int)$_GET['search_time']) * 86400 );
 	$topic_days = !empty($_POST['search_time']) ? (int)$_POST['search_time'] : (int)$_GET['search_time'];
 } else {
@@ -425,13 +425,13 @@ if ($mode === 'searchuser') {
 
 				$total_match_count = count($search_ids);
 
-			} elseif ( $search_author !== '' || $search_time || $auth_sql !== '') {
+			} elseif ($search_author !== '' || $search_time || $auth_sql !== '') {
 				// TODO maybe use preserve keys?
                 $search_id_chunks = array_chunk($search_ids, $limiter);
 				$search_ids = [];
 
 				foreach ($search_id_chunks as $search_id_chunk) {
-                    if ( $search_author === '' && $auth_sql === '') {
+                    if ($search_author === '' && $auth_sql === '') {
                         $search_ids = dibi::select('post_id')
                             ->from(POSTS_TABLE)
                             ->where('post_id IN %in', $search_id_chunk);
@@ -472,8 +472,8 @@ if ($mode === 'searchuser') {
 
 				$total_match_count = count($search_ids);
 			}
-		} elseif ( $search_id === 'unanswered') {
-			if ( $auth_sql !== '') {
+		} elseif ($search_id === 'unanswered') {
+			if ($auth_sql !== '') {
 			    // TODO i guess we dont need f.forum
                 $search_ids = dibi::select(['t.topic_id', 'f.forum_id'])
                     ->from(TOPICS_TABLE)
@@ -576,7 +576,7 @@ if ($mode === 'searchuser') {
 	} else {
 		$search_id = (int)$search_id;
 
-		if ( $search_id) {
+		if ($search_id) {
             $row = dibi::select('search_array')
                 ->from(SEARCH_TABLE)
                 ->where('search_id = %i', $search_id)
@@ -734,14 +734,14 @@ if ($mode === 'searchuser') {
 		$highlight_match = [];
 
         foreach ($split_search as $split_word) {
-			if ( $split_word !== 'and' && $split_word !== 'or' && $split_word !== 'not') {
+			if ($split_word !== 'and' && $split_word !== 'or' && $split_word !== 'not') {
 				$highlight_match[] = '#\b(' . str_replace('*', "([\w]+)?", $split_word) . ')\b#is';
 				$highlight_active .= ' ' . $split_word;
 
 				foreach ($synonym_array as $synonym) {
 					list($replace_synonym, $match_synonym) = explode(' ', strtolower(trim($synonym)));
 
-					if ( $replace_synonym === $split_word) {
+					if ($replace_synonym === $split_word) {
 						$highlight_match[] = '#\b(' . str_replace('*', "([\w]+)?", $replace_synonym) . ')\b#is';
 						$highlight_active .= ' ' . $match_synonym;
 					}
@@ -831,7 +831,7 @@ if ($mode === 'searchuser') {
 											$hold_string = substr($message, $start_html, $length);
 											$hold_string = str_replace('<!-- #sh -->', '', $hold_string);
 											$hold_string = str_replace('<!-- #eh -->', '', $hold_string);
-										} elseif ( $hold_string === '<!-- #sh -->') {
+										} elseif ($hold_string === '<!-- #sh -->') {
 											$hold_string = str_replace('<!-- #sh -->', '<span style="color:#' . $theme['fontcolor3'] . '"><b>', $hold_string);
                                         } elseif ($hold_string === '<!-- #eh -->') {
                                             $hold_string = str_replace('<!-- #eh -->', '</b></span>', $hold_string);
@@ -875,7 +875,7 @@ if ($mode === 'searchuser') {
 
 				$poster = ( $search_set->user_id !== ANONYMOUS ) ? '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $search_set->user_id) . '">' : '';
 
-                if ( $search_set->user_id !== ANONYMOUS) {
+                if ($search_set->user_id !== ANONYMOUS) {
                     $poster .= $search_set->username;
                 } else {
                     if ($search_set->post_username !== '') {
@@ -992,7 +992,7 @@ if ($mode === 'searchuser') {
 						$folder = $images['folder_sticky'];
 						$folder_new = $images['folder_sticky_new'];
 					} else {
-						if ( $replies >= $board_config['hot_threshold']) {
+						if ($replies >= $board_config['hot_threshold']) {
 							$folder = $images['folder_hot'];
 							$folder_new = $images['folder_hot_new'];
 						} else {

@@ -96,7 +96,7 @@ if (!empty($_POST['sid']) || !empty($_GET['sid'])) {
 //
 // Obtain relevant data
 //
-if ( !empty($topic_id)) {
+if (!empty($topic_id)) {
     $topic_row = dibi::select(['f.forum_id','f.forum_name', 'f.forum_topics'])
         ->from(TOPICS_TABLE)
         ->as('t')
@@ -113,7 +113,7 @@ if ( !empty($topic_id)) {
 	$forum_topics = ( $topic_row->forum_topics === 0 ) ? 1 : $topic_row->forum_topics;
 	$forum_id = $topic_row->forum_id;
 	$forum_name = $topic_row->forum_name;
-} elseif ( !empty($forum_id)) {
+} elseif (!empty($forum_id)) {
     $topic_row = dibi::select(['forum_name', 'forum_topics'])
         ->from(FORUMS_TABLE)
         ->where('forum_id = %i', $forum_id)
@@ -164,7 +164,7 @@ if (isset($_POST['cancel'])) {
 //
 $is_auth = Auth::authorize(AUTH_ALL, $forum_id, $userdata);
 
-if ( !$is_auth['auth_mod']) {
+if (!$is_auth['auth_mod']) {
 	message_die(GENERAL_MESSAGE, $lang['Not_Moderator'], $lang['Not_Authorised']);
 }
 //
@@ -718,7 +718,7 @@ switch ($mode) {
 
 					$message = make_clickable($message);
 
-					if ( $board_config['allow_smilies'] && $post->enable_smilies) {
+					if ($board_config['allow_smilies'] && $post->enable_smilies) {
 						$message = smilies_pass($message);
 					}
 

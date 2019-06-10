@@ -570,7 +570,7 @@ if ($total_topics) {
 					$goto_page .= ' ... ';
 					$times = $total_pages - 3;
 					$j += ( $total_pages - 4 ) * $board_config['posts_per_page'];
-				} elseif ( $times < $total_pages) {
+				} elseif ($times < $total_pages) {
 					$goto_page .= ', ';
 				}
 				
@@ -589,7 +589,7 @@ if ($total_topics) {
 		if ($topic->user_id !== ANONYMOUS) {
             $topic_author .=  $topic->username;
         } else {
-		    if ( $topic->post_username !== '') {
+		    if ($topic->post_username !== '') {
                 $topic_author .= $topic->post_username;
             } else {
                 $topic_author .= $lang['Guest'];

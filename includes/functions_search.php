@@ -58,7 +58,7 @@ function clean_words($mode, &$entry, array &$stopwords, array &$synonyms)
 
 	$entry = ' ' . strip_tags(strtolower($entry)) . ' ';
 
-	if ( $mode === 'post') {
+	if ($mode === 'post') {
 		// Replace line endings by a space
 		$entry = preg_replace('/[\n\r]/is', ' ', $entry);
 		// HTML entities like &nbsp;
@@ -69,7 +69,7 @@ function clean_words($mode, &$entry, array &$stopwords, array &$synonyms)
 		$entry = preg_replace('/\[img:[a-z0-9]{10,}\].*?\[\/img:[a-z0-9]{10,}\]/', ' ', $entry);
 		$entry = preg_replace('/\[\/?url(=.*?)?\]/', ' ', $entry);
 		$entry = preg_replace('/\[\/?[a-z\*=\+\-]+(\:?[0-9a-z]+)?:[a-z0-9]{10,}(\:[a-z0-9]+)?=?.*?\]/', ' ', $entry);
-	} elseif ( $mode === 'search') {
+	} elseif ($mode === 'search') {
 		$entry = str_replace(' +', ' and ', $entry);
 		$entry = str_replace(' -', ' not ', $entry);
 	}
@@ -92,7 +92,7 @@ function clean_words($mode, &$entry, array &$stopwords, array &$synonyms)
 		foreach ($stopwords as &$stopword) {
 			$stopword = trim($stopword);
 
-			if ( $mode === 'post' || ( $stopword !== 'not' && $stopword !== 'and' && $stopword !== 'or' )) {
+			if ($mode === 'post' || ( $stopword !== 'not' && $stopword !== 'and' && $stopword !== 'or' )) {
 				$entry = str_replace(' ' . trim($stopword) . ' ', ' ', $entry);
 			}
 		}
@@ -102,7 +102,7 @@ function clean_words($mode, &$entry, array &$stopwords, array &$synonyms)
 		foreach ($synonyms as &$synonym) {
 			list($replace_synonym, $match_synonym) = explode(' ', strtolower(trim($synonym)));
 
-			if ( $mode === 'post' || ( $match_synonym !== 'not' && $match_synonym !== 'and' && $match_synonym !== 'or' )
+			if ($mode === 'post' || ( $match_synonym !== 'not' && $match_synonym !== 'and' && $match_synonym !== 'or' )
            ) {
 				$entry =  str_replace(' ' . trim($match_synonym) . ' ', ' ' . trim($replace_synonym) . ' ', $entry);
 			}

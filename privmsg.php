@@ -31,7 +31,7 @@ include $phpbb_root_path . 'includes/functions_post.php';
 //
 // Is PM disabled?
 //
-if ( !empty($board_config['privmsg_disable'])) {
+if (!empty($board_config['privmsg_disable'])) {
 	message_die(GENERAL_MESSAGE, 'PM_disabled');
 }
 
@@ -161,7 +161,7 @@ if ($mode === 'newpm') {
         message_die(GENERAL_ERROR, $lang['No_post_id']);
     }
 
-	if ( !$userdata['session_logged_in']) {
+	if (!$userdata['session_logged_in']) {
 		redirect(Session::appendSid("login.php?redirect=privmsg.php&folder=$folder&mode=$mode&" . POST_POST_URL . "=$privmsgs_id", true));
 	}
 
@@ -495,7 +495,7 @@ if ($mode === 'newpm') {
 	$pm_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
 	$pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
 
-	if ( !empty($privmsg->user_viewemail) || $userdata['user_level'] === ADMIN )
+	if (!empty($privmsg->user_viewemail) || $userdata['user_level'] === ADMIN )
 	{
 		$email_uri = $board_config['board_email_form'] ? Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL .'=' . $user_id_from) : 'mailto:' . $privmsg->user_email;
 
@@ -563,17 +563,17 @@ if ($mode === 'newpm') {
         }
     }
 
-	if ( $user_sig !== '' && $privmsg->privmsgs_attach_sig && $user_sig_bbcode_uid !== '') {
+	if ($user_sig !== '' && $privmsg->privmsgs_attach_sig && $user_sig_bbcode_uid !== '') {
 		$user_sig = $board_config['allow_bbcode'] ? bbencode_second_pass($user_sig, $user_sig_bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $user_sig);
 	}
 
-	if ( $bbcode_uid !== '') {
+	if ($bbcode_uid !== '') {
 		$private_message = $board_config['allow_bbcode'] ? bbencode_second_pass($private_message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $private_message);
 	}
 
 	$private_message = make_clickable($private_message);
 
-	if ( $privmsg->privmsgs_attach_sig && $user_sig !== '') {
+	if ($privmsg->privmsgs_attach_sig && $user_sig !== '') {
 		$private_message .= '<br /><br />_________________<br />' . make_clickable($user_sig);
 	}
 
@@ -980,7 +980,7 @@ if ($mode === 'newpm') {
 		redirect(Session::appendSid('privmsg.php?folder=savebox', true));
 	}
 } elseif ($submit || $refresh || $mode !== '') {
-	if ( !$userdata['session_logged_in']) {
+	if (!$userdata['session_logged_in']) {
 		$user_id = isset($_GET[POST_USERS_URL]) ? '&' . POST_USERS_URL . '=' . (int)$_GET[POST_USERS_URL] : '';
 		redirect(Session::appendSid("login.php?redirect=privmsg.php&folder=$folder&mode=$mode" . $user_id, true));
 	}
@@ -1095,7 +1095,7 @@ if ($mode === 'newpm') {
 		//
 		// Has admin prevented user from sending PM's?
 		//
-		if ( !$userdata['user_allow_pm'] )
+		if (!$userdata['user_allow_pm'] )
 		{
 			$message = $lang['Cannot_send_privmsg'];
 			message_die(GENERAL_MESSAGE, $message);
@@ -1263,7 +1263,7 @@ if ($mode === 'newpm') {
 		$privmsg_message = isset($_POST['message']) ? trim($_POST['message']) : '';
 		// $privmsg_message = preg_replace('#<textarea>#si', '&lt;textarea&gt;', $privmsg_message);
 
-		if ( !$preview) {
+		if (!$preview) {
 			$privmsg_message = stripslashes($privmsg_message);
 		}
 
@@ -1824,7 +1824,7 @@ if ($submit_msgdays && (!empty($_POST['msgdays']) || !empty($_GET['msgdays']))) 
     $limit_msg_time_total = $sql_tot->where('privmsgs_date > %i', $min_msg_time);
     $limit_msg_time       = $sql->where('pm.privmsgs_date > %i', $min_msg_time);
 
-	if ( !empty($_POST['msgdays'])) {
+	if (!empty($_POST['msgdays'])) {
 		$start = 0;
 	}
 } else {
@@ -1893,7 +1893,7 @@ $post_pm = '<a href="' . $post_pm . '">' . $lang['Post_new_pm'] . '</a>';
 //
 // Output data for inbox status
 //
-if ( $folder !== 'outbox') {
+if ($folder !== 'outbox') {
 	$inbox_limit_pct = ( $board_config['max_' . $folder . '_privmsgs'] > 0 ) ? round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * 100) : 100;
 	$inbox_limit_img_length = ( $board_config['max_' . $folder . '_privmsgs'] > 0 ) ? round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * $board_config['privmsg_graphic_length']) : $board_config['privmsg_graphic_length'];
 	$inbox_limit_remain = ( $board_config['max_' . $folder . '_privmsgs'] > 0 ) ? $board_config['max_' . $folder . '_privmsgs'] - $pm_all_total : 0;

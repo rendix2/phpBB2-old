@@ -23,7 +23,7 @@ use Tracy\Debugger;
  *
  ***************************************************************************/
 
-if ( !defined('IN_PHPBB') )
+if (!defined('IN_PHPBB') )
 {
 	die('Hacking attempt');
 }

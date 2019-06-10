@@ -147,9 +147,9 @@ function make_jumpbox($action, $match_forum_id = 0)
 				$boxstring_forums = '';
 
 				foreach ($forums as $forum) {
-					if ( $forum->cat_id === $category->cat_id && $forum->auth_view <= AUTH_REG) {
+					if ($forum->cat_id === $category->cat_id && $forum->auth_view <= AUTH_REG) {
 
-//					if ( $forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $is_auth[$forum_rows[$j]['forum_id']]['auth_view'] )
+//					if ($forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $is_auth[$forum_rows[$j]['forum_id']]['auth_view'] )
 //					{
 						$selected = ( $forum->forum_id === $match_forum_id ) ? 'selected="selected"' : '';
 						$boxstring_forums .=  '<option value="' . $forum->forum_id . '"' . $selected . '>' . $forum->forum_name . '</option>';
@@ -177,7 +177,7 @@ function make_jumpbox($action, $match_forum_id = 0)
 	}
 
 	// Let the jumpbox work again in sites having additional session id checks.
-//	if ( !empty($SID) )
+//	if (!empty($SID) )
 //	{
 		$boxstring .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 //	}
@@ -223,8 +223,8 @@ function init_userprefs($userdata)
         $default_lang = ltrim(basename(rtrim($board_config['default_lang'])), "'");
     }
 
-	if ( !file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $default_lang . '/lang_main.php'))) {
-		if ( $userdata['user_id'] !== ANONYMOUS) {
+	if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $default_lang . '/lang_main.php'))) {
+		if ($userdata['user_id'] !== ANONYMOUS) {
 			// For logged in users, try the board default language next
 			$default_lang = ltrim(basename(rtrim($board_config['default_lang'])), "'");
 		} else {
@@ -241,13 +241,13 @@ function init_userprefs($userdata)
 
 	// If we've had to change the value in any way then let's write it back to the database
 	// before we go any further since it means there is something wrong with it
-	if ( $userdata['user_id'] !== ANONYMOUS && $userdata['user_lang'] !== $default_lang) {
+	if ($userdata['user_id'] !== ANONYMOUS && $userdata['user_lang'] !== $default_lang) {
 	    dibi::update(USERS_TABLE, ['user_lang' => $default_lang])
             ->where('user_lang = %s', $userdata['user_lang'])
             ->execute();
 
 		$userdata['user_lang'] = $default_lang;
-	} elseif ( $userdata['user_id'] === ANONYMOUS && $board_config['default_lang'] !== $default_lang) {
+	} elseif ($userdata['user_id'] === ANONYMOUS && $board_config['default_lang'] !== $default_lang) {
         dibi::update(CONFIG_TABLE, ['config_value' => $default_lang])
             ->where('config_name = %s', 'default_lang')
             ->execute();
@@ -257,7 +257,7 @@ function init_userprefs($userdata)
 
 	include $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.php';
 
-	if ( defined('IN_ADMIN')) {
+	if (defined('IN_ADMIN')) {
 		if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.php'))) {
 			$board_config['default_lang'] = 'english';
 		}
@@ -268,9 +268,9 @@ function init_userprefs($userdata)
 	//
 	// Set up style
 	//
-	if ( !$board_config['override_user_style']) {
-		if ( $userdata['user_id'] !== ANONYMOUS && $userdata['user_style'] > 0) {
-			if ( $theme = setup_style($userdata['user_style'])) {
+	if (!$board_config['override_user_style']) {
+		if ($userdata['user_id'] !== ANONYMOUS && $userdata['user_style'] > 0) {
+			if ($theme = setup_style($userdata['user_style'])) {
 				return;
 			}
 		}
@@ -311,7 +311,7 @@ function setup_style($style)
         ->where('themes_id = %i', (int) $style)
         ->fetch();
 
-	if ( !$theme) {
+	if (!$theme) {
         if ($board_config['default_style'] === $style) {
             message_die(CRITICAL_ERROR, 'Could not set up default theme');
         }
@@ -335,18 +335,18 @@ function setup_style($style)
 
 	$template = new Template($phpbb_root_path . $template_path . $template_name);
 
-	if ( $template) {
+	if ($template) {
 		$current_template_path = $template_path . $template_name;
 		@include $phpbb_root_path . $template_path . $template_name . '/' . $template_name . '.cfg';
 
-		if ( !defined('TEMPLATE_CONFIG')) {
+		if (!defined('TEMPLATE_CONFIG')) {
 			message_die(CRITICAL_ERROR, "Could not open $template_name template config file", '', __LINE__, __FILE__);
 		}
 
 		$img_lang = file_exists(@phpbb_realpath($phpbb_root_path . $current_template_path . '/images/lang_' . $board_config['default_lang'])) ? $board_config['default_lang'] : 'english';
 
 		foreach ($images as $key => $value) {
-			if ( !is_array($value)) {
+			if (!is_array($value)) {
 				$images[$key] = str_replace('{LANG}', 'lang_' . $img_lang, $value);
 			}
 		}
@@ -394,26 +394,26 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 	$total_pages = ceil($num_items/$per_page);
 
-	if ( $total_pages === 1) {
+	if ($total_pages === 1) {
 		return '';
 	}
 
 	$on_page = floor($start_item / $per_page) + 1;
 
 	$page_string = '';
-	if ( $total_pages > 10) {
+	if ($total_pages > 10) {
 		$init_page_max = ( $total_pages > 3 ) ? 3 : $total_pages;
 
 		for ($i = 1; $i < $init_page_max + 1; $i++) {
 			$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . Session::appendSid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
-			if ( $i <  $init_page_max) {
+			if ($i <  $init_page_max) {
 				$page_string .= ', ';
 			}
 		}
 
-		if ( $total_pages > 3) {
-			if ( $on_page > 1  && $on_page < $total_pages) {
+		if ($total_pages > 3) {
+			if ($on_page > 1  && $on_page < $total_pages) {
 				$page_string .= ( $on_page > 5 ) ? ' ... ' : ', ';
 
 				$init_page_min = ( $on_page > 4 ) ? $on_page : 5;
@@ -422,7 +422,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 				for ($i = $init_page_min - 1; $i < $init_page_max + 2; $i++) {
 					$page_string .= ($i === $on_page) ? '<b>' . $i . '</b>' : '<a href="' . Session::appendSid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
-					if ( $i <  $init_page_max + 1) {
+					if ($i <  $init_page_max + 1) {
 						$page_string .= ', ';
 					}
 				}
@@ -445,7 +445,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 		for ($i = 1; $i < $total_pages + 1; $i++) {
 			$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . Session::appendSid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
-			if ( $i <  $total_pages) {
+			if ($i <  $total_pages) {
 				$page_string .= ', ';
 			}
 		}
