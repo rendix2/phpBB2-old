@@ -23,31 +23,33 @@
 
 function get_db_stat($mode)
 {
-	switch( $mode) {
-		case 'usercount':
-		    return dibi::select('COUNT(user_id)')
+    switch ($mode) {
+        case 'usercount':
+            return dibi::select('COUNT(user_id)')
                 ->as('total')
                 ->from(USERS_TABLE)
                 ->where('user_id <> %i', ANONYMOUS)
                 ->fetchSingle();
 
-		case 'newestuser':
-		    return dibi::select(['user_id', 'username'])
+        case 'newestuser':
+            return dibi::select(['user_id', 'username'])
                 ->from(USERS_TABLE)
                 ->where('user_id <> %i', ANONYMOUS)
                 ->orderBy('user_id', dibi::DESC)
                 ->fetch();
 
-		case 'postcount':
-            return dibi::select('SUM(forum_topics)')->as('topic_total')
+        case 'postcount':
+            return dibi::select('SUM(forum_topics)')
+                ->as('topic_total')
                 ->from(FORUMS_TABLE)
                 ->fetchSingle();
 
-		case 'topiccount':
-		   return dibi::select('SUM(forum_topics)')->as('topic_total')
+        case 'topiccount':
+            return dibi::select('SUM(forum_topics)')
+                ->as('topic_total')
                 ->from(FORUMS_TABLE)
                 ->fetchSingle();
-	}
+    }
 }
 
 // added at phpBB 2.0.11 to properly format the username
