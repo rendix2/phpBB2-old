@@ -148,8 +148,6 @@ if (
 		$allowsmilies = isset($_POST['allowsmilies']) ? (bool)$_POST['allowsmilies'] : $userdata['user_allowsmile'];
 	}
 
-
-
     if (!empty($_POST['language'])) {
         if (preg_match('/^[a-z_]+$/i', $_POST['language'])) {
             $user_lang = htmlspecialchars($_POST['language']);
@@ -178,7 +176,7 @@ if (
         $user_avatar_local = isset($_POST['avatarlocal']) ? htmlspecialchars($_POST['avatarlocal']) : '';
     }
 
-	$user_avatar_category = ( isset($_POST['avatarcatname']) && $board_config['allow_avatar_local'] ) ? htmlspecialchars($_POST['avatarcatname']) : '' ;
+	$user_avatar_category = isset($_POST['avatarcatname']) && $board_config['allow_avatar_local'] ? htmlspecialchars($_POST['avatarcatname']) : '' ;
 
 	$user_avatar_remoteurl = !empty($_POST['avatarremoteurl']) ? trim(htmlspecialchars($_POST['avatarremoteurl'])) : '';
 

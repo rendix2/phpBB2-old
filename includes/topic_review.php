@@ -21,6 +21,12 @@
  *
  ***************************************************************************/
 
+/**
+ * @param int  $topic_id
+ * @param bool $is_inline_review
+ *
+ * @throws Exception
+ */
 function topic_review($topic_id, $is_inline_review)
 {
 	global $board_config, $template, $lang, $images, $theme, $phpbb_root_path;
@@ -51,7 +57,7 @@ function topic_review($topic_id, $is_inline_review)
         //
         // Get topic info ...
         //
-        $forum_row = dibi::select($columns)
+        $forum = dibi::select($columns)
             ->from(TOPICS_TABLE)
             ->as('t')
             ->innerJoin(FORUMS_TABLE)
@@ -60,25 +66,21 @@ function topic_review($topic_id, $is_inline_review)
             ->where('t.topic_id = %i', $topic_id)
             ->fetch();
 
-        if (!$forum_row) {
+        if (!$forum) {
             message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
         }
-
-
-		$forum_id = $forum_row->forum_id;
-		$topic_title = $forum_row->topic_title;
 		
 		//
 		// Start session management
 		//
-		$userdata = Session::pageStart($user_ip, $forum_id);
+		$userdata = Session::pageStart($user_ip, $forum->forum_id);
 		init_userprefs($userdata);
 		//
 		// End session management
 		//
 
 		// TODO for now to arrary
-		$is_auth = Auth::authorize(AUTH_ALL, $forum_id, $userdata, $forum_row->toArray());
+		$is_auth = Auth::authorize(AUTH_ALL, $forum->forum_id, $userdata, $forum->toArray());
 
         if (!$is_auth['auth_read']) {
             message_die(GENERAL_MESSAGE, sprintf($lang['Sorry_auth_read'], $is_auth['auth_read_type']));
@@ -105,7 +107,7 @@ function topic_review($topic_id, $is_inline_review)
     if (!$is_inline_review) {
 		$gen_simple_header = true;
 
-		$page_title = $lang['Topic_review'] . ' - ' . $topic_title;
+		$page_title = $lang['Topic_review'] . ' - ' . $forum->topic_title;
 		include $phpbb_root_path . 'includes/page_header.php';
 
         $template->setFileNames(['reviewbody' => 'posting_topic_review.tpl']);
@@ -133,76 +135,67 @@ function topic_review($topic_id, $is_inline_review)
 	// and it goes like this ...
 	//
     if (count($posts)) {
-		$mini_post_img = $images['icon_minipost'];
-		$mini_post_alt = $lang['Post'];
-		
 		foreach ($posts as $i => $post) {
-			$poster_id = $post->user_id;
-			$poster    = $post->username;
+			$poster = $post->username;
 
-			$post_date = create_date($board_config['default_dateformat'], $post->post_time,
-			$board_config['board_timezone']);
+			$post_date = create_date($board_config['default_dateformat'], $post->post_time, $board_config['board_timezone']);
 
 			//
 			// Handle anon users posting with usernames
 			//
-            if ($poster_id === ANONYMOUS && $post->post_username !== '') {
-				$poster = $post->post_username;
-				$poster_rank = $lang['Guest'];
-            } elseif ($poster_id === ANONYMOUS) {
-				$poster = $lang['Guest'];
-				$poster_rank = '';
-			}
 
-			$post_subject = $post->post_subject;
+            if ($post->user_id === ANONYMOUS) {
+                $poster = $lang['Guest'];
 
-			$message = $post->post_text;
-			$bbcode_uid = $post->bbcode_uid;
+                if ($post->post_username !== '') {
+                    $poster = $post->post_username;
+                }
+            }
 
 			//
 			// If the board has HTML off but the post has HTML
 			// on then we process it, else leave it alone
 			//
             if (!$board_config['allow_html'] && $post->enable_html) {
-                $message = preg_replace('#(<)([\/]?.*?)(>)#is', '&lt;\2&gt;', $message);
+                $post->post_text = preg_replace('#(<)([\/]?.*?)(>)#is', '&lt;\2&gt;', $post->post_text);
             }
 
-            if ($bbcode_uid !== '') {
-                $message = $board_config['allow_bbcode'] ? bbencode_second_pass($message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
+            if ($post->bbcode_uid !== '') {
+                $post->post_text = $board_config['allow_bbcode'] ? bbencode_second_pass($post->post_text, $post->bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $post->post_text);
             }
 
-			$message = make_clickable($message);
+            $post->post_text = make_clickable($post->post_text);
 
             if ($count_orig_word) {
-                $post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
-                $message      = preg_replace($orig_word, $replacement_word, $message);
+                $post->post_subject = preg_replace($orig_word, $replacement_word, $post->post_subject);
+                $post->post_text    = preg_replace($orig_word, $replacement_word, $post->post_text);
             }
 
             if ($board_config['allow_smilies'] && $post->enable_smilies) {
-                $message = smilies_pass($message);
+                $post->post_text = smilies_pass($post->post_text);
             }
 
-			$message = str_replace("\n", '<br />', $message);
+            $post->post_text = str_replace("\n", '<br />', $post->post_text);
 
 			//
 			// Again this will be handled by the templating
 			// code at some point
 			//
-			$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-			$row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+			$rowColor = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+			$rowClass = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
             $template->assignBlockVars('postrow',
                 [
-                    'ROW_COLOR' => '#' . $row_color,
-                    'ROW_CLASS' => $row_class,
+                    'ROW_COLOR' => '#' . $rowColor,
+                    'ROW_CLASS' => $rowClass,
 
-                    'MINI_POST_IMG' => $mini_post_img,
+                    'MINI_POST_IMG' => $images['icon_minipost'],
                     'POSTER_NAME'   => $poster,
                     'POST_DATE'     => $post_date,
-                    'POST_SUBJECT'  => $post_subject,
-                    'MESSAGE'       => $message,
+                    'POST_SUBJECT'  => $post->post_subject,
+                    'MESSAGE'       => $post->post_text,
 
-                    'L_MINI_POST_ALT' => $mini_post_alt
+                    'L_MINI_POST_ALT' => $lang['Post']
                 ]
             );
 		}

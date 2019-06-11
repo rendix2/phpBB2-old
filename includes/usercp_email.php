@@ -40,20 +40,20 @@ if (!$userdata['session_logged_in']) {
 	redirect(Session::appendSid('login.php?redirect=profile.php&mode=email&' . POST_USERS_URL . "=$user_id", true));
 }
 
-$row = dibi::select(['username', 'user_email', 'user_viewemail', 'user_lang'])
+$user = dibi::select(['username', 'user_email', 'user_viewemail', 'user_lang'])
     ->from(USERS_TABLE)
     ->where('user_id = %i', $user_id)
     ->fetch();
 
-if (!$row) {
+if (!$user) {
     message_die(GENERAL_MESSAGE, $lang['User_not_exist']);
 }
 
-$username   = $row->username;
-$user_email = $row->user_email;
-$user_lang  = $row->user_lang;
+$username   = $user->username;
+$user_email = $user->user_email;
+$user_lang  = $user->user_lang;
 
-if ($row->user_viewemail || $userdata['user_level'] === ADMIN) {
+if ($user->user_viewemail || $userdata['user_level'] === ADMIN) {
     if (time() - $userdata['user_emailtime'] < $board_config['flood_interval']) {
         message_die(GENERAL_MESSAGE, $lang['Flood_email_limit']);
     }

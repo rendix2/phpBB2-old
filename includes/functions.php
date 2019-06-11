@@ -91,26 +91,26 @@ function dss_rand()
 // Get Userdata, $user can be username or user_id. If force_str is true, the username will be forced.
 //
 // TODO try to force use by user_id, NOT username
-function get_userdata($user, $force_str = false)
+function get_userdata($user_id, $force_str = false)
 {
-    if (!is_numeric($user) || $force_str) {
-        $user = phpbb_clean_username($user);
+    if (!is_numeric($user_id) || $force_str) {
+        $user_id = phpbb_clean_username($user_id);
     } else {
-        $user = (int)$user;
+        $user_id = (int)$user_id;
     }
 
-    $user_row = dibi::select('*')
+    $user = dibi::select('*')
         ->from(USERS_TABLE);
 
-    if (is_int($user)) {
-        $user_row->where('user_id = %i', $user);
+    if (is_int($user_id)) {
+        $user->where('user_id = %i', $user_id);
     } else {
-        $user_row->where('username = %s', $user);
+        $user->where('username = %s', $user_id);
     }
 
-    $user_row = $user_row->where('user_id <> %i', ANONYMOUS)->fetch();
+    $user = $user->where('user_id <> %i', ANONYMOUS)->fetch();
 
-	return $user_row;
+	return $user;
 }
 
 function make_jumpbox($action, $match_forum_id = 0)

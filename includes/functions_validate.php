@@ -33,15 +33,15 @@ function validate_username($username)
 	$username = preg_replace('#\s+#', ' ', trim($username)); 
 	$username = phpbb_clean_username($username);
 
-	$lower_user_name = mb_strtolower($username);
+	$lowerUserName = mb_strtolower($username);
 
-	$db_user_name = dibi::select('username')
+	$dbUserNme = dibi::select('username')
         ->from(USERS_TABLE)
-        ->where('LOWER(username) = %s', $lower_user_name)
+        ->where('LOWER(username) = %s', $lowerUserName)
         ->fetch();
 
-	if ($db_user_name) {
-        if (($userdata['session_logged_in'] && $db_user_name->username !== $userdata['username']) || !$userdata['session_logged_in']) {
+	if ($dbUserNme) {
+        if (($userdata['session_logged_in'] && $dbUserNme->username !== $userdata['username']) || !$userdata['session_logged_in']) {
 
             return ['error' => true, 'error_msg' => $lang['Username_taken']];
         }
@@ -49,7 +49,7 @@ function validate_username($username)
 
 	$db_group_name = dibi::select('group_name')
         ->from(GROUPS_TABLE)
-        ->where('LOWER(group_name) = %s', $lower_user_name)
+        ->where('LOWER(group_name) = %s', $lowerUserName)
         ->fetch();
 
 	if ($db_group_name) {
@@ -104,17 +104,16 @@ function validate_email($email)
                 $match_email = str_replace('*', '.*?', $ban->ban_email);
 
                 if (preg_match('/^' . $match_email . '$/is', $email)) {
-
                     return ['error' => true, 'error_msg' => $lang['Email_banned']];
                 }
             }
 
-			$db_email = dibi::select('user_email')
+			$dbEmail = dibi::select('user_email')
                 ->from(USERS_TABLE)
                 ->where('user_email = %s', $email)
                 ->fetch();
 		
-			if ($db_email) {
+			if ($dbEmail) {
                 return ['error' => true, 'error_msg' => $lang['Email_taken']];
             }
 

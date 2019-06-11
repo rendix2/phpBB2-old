@@ -75,10 +75,11 @@ $s_last_visit = $userdata['session_logged_in'] ? create_date($board_config['defa
 // Get basic (usernames + totals) online
 // situation
 //
-$logged_visible_online = 0;
-$logged_hidden_online = 0;
-$guests_online = 0;
-$online_userlist = '';
+$loggedVisibleOnline = 0;
+$loggedHiddenOnline  = 0;
+$guestsOnline        = 0;
+
+$onlineUserList = '';
 $l_online_users = '';
 
 if (defined('SHOW_ONLINE')) {
@@ -104,9 +105,6 @@ if (defined('SHOW_ONLINE')) {
         ->orderBy('s.session_ip', dibi::ASC)
         ->fetchAll();
 
-	$userlist_ary = [];
-	$userlist_visible = [];
-
 	$prev_user_id = 0;
 	$prev_user_ip = $prev_session_ip = '';
 
@@ -126,15 +124,15 @@ if (defined('SHOW_ONLINE')) {
 				}
 
 				if ($row->user_allow_viewonline) {
-					$user_online_link = '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $row->user_id) . '"' . $style_color .'>' . $row->username . '</a>';
-					$logged_visible_online++;
+					$userOnlineLink = '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $row->user_id) . '"' . $style_color .'>' . $row->username . '</a>';
+					$loggedVisibleOnline++;
 				} else {
-					$user_online_link = '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $row->user_id) . '"' . $style_color .'><i>' . $row->username . '</i></a>';
-					$logged_hidden_online++;
+					$userOnlineLink = '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $row->user_id) . '"' . $style_color .'><i>' . $row->username . '</i></a>';
+					$loggedHiddenOnline++;
 				}
 
                 if ($row->user_allow_viewonline || $userdata['user_level'] === ADMIN) {
-                    $online_userlist .= ($online_userlist !== '') ? ', ' . $user_online_link : $user_online_link;
+                    $onlineUserList[] = $userOnlineLink;
                 }
 			}
 
@@ -142,26 +140,29 @@ if (defined('SHOW_ONLINE')) {
 		} else {
 			// Skip multiple sessions for one user
             if ($row->session_ip !== $prev_session_ip) {
-                $guests_online++;
+                $guestsOnline++;
             }
 		}
 
 		$prev_session_ip = $row->session_ip;
 	}
 
-    if (empty($online_userlist)) {
-        $online_userlist = $lang['None'];
+	$onlineUserListString = isset($forum_id) ? $lang['Browsing_forum'] : $lang['Registered_users'];
+    $onlineUserListString .= ' ';
+
+    if (empty($onlineUserList)) {
+        $onlineUserListString .= $lang['None'];
+    } else {
+        $onlineUserListString .= explode(', ', $onlineUserList);
     }
-	
-	$online_userlist = ( isset($forum_id) ? $lang['Browsing_forum'] : $lang['Registered_users'] ) . ' ' . $online_userlist;
 
-	$total_online_users = $logged_visible_online + $logged_hidden_online + $guests_online;
+	$totalOnlineUsers = $loggedVisibleOnline + $loggedHiddenOnline + $guestsOnline;
 
-    if ($total_online_users > $board_config['record_online_users']) {
-		$board_config['record_online_users'] = $total_online_users;
+    if ($totalOnlineUsers > $board_config['record_online_users']) {
+		$board_config['record_online_users'] = $totalOnlineUsers;
 		$board_config['record_online_date'] = time();
 
-		dibi::update(CONFIG_TABLE, ['config_value' => $total_online_users])
+		dibi::update(CONFIG_TABLE, ['config_value' => $totalOnlineUsers])
             ->where('config_name = %s', 'record_online_users')
             ->execute();
 
@@ -170,42 +171,42 @@ if (defined('SHOW_ONLINE')) {
             ->execute();
 	}
 
-    if ($total_online_users === 0) {
+    if ($totalOnlineUsers === 0) {
         $l_t_user_s = $lang['Online_users_zero_total'];
-    } elseif ($total_online_users === 1) {
+    } elseif ($totalOnlineUsers === 1) {
         $l_t_user_s = $lang['Online_user_total'];
     } else {
         $l_t_user_s = $lang['Online_users_total'];
     }
 
-    if ($logged_visible_online === 0) {
+    if ($loggedVisibleOnline === 0) {
         $l_r_user_s = $lang['Reg_users_zero_total'];
-    } elseif ($logged_visible_online === 1) {
+    } elseif ($loggedVisibleOnline === 1) {
         $l_r_user_s = $lang['Reg_user_total'];
     } else {
         $l_r_user_s = $lang['Reg_users_total'];
     }
 
-    if ($logged_hidden_online === 0) {
+    if ($loggedHiddenOnline === 0) {
         $l_h_user_s = $lang['Hidden_users_zero_total'];
-    } elseif ($logged_hidden_online === 1) {
+    } elseif ($loggedHiddenOnline === 1) {
         $l_h_user_s = $lang['Hidden_user_total'];
     } else {
         $l_h_user_s = $lang['Hidden_users_total'];
     }
 
-    if ($guests_online === 0) {
+    if ($guestsOnline === 0) {
         $l_g_user_s = $lang['Guest_users_zero_total'];
-    } elseif ($guests_online === 1) {
+    } elseif ($guestsOnline === 1) {
         $l_g_user_s = $lang['Guest_user_total'];
     } else {
         $l_g_user_s = $lang['Guest_users_total'];
     }
 
-	$l_online_users = sprintf($l_t_user_s, $total_online_users);
-	$l_online_users .= sprintf($l_r_user_s, $logged_visible_online);
-	$l_online_users .= sprintf($l_h_user_s, $logged_hidden_online);
-	$l_online_users .= sprintf($l_g_user_s, $guests_online);
+	$l_online_users = sprintf($l_t_user_s, $totalOnlineUsers);
+	$l_online_users .= sprintf($l_r_user_s, $loggedVisibleOnline);
+	$l_online_users .= sprintf($l_h_user_s, $loggedHiddenOnline);
+	$l_online_users .= sprintf($l_g_user_s, $guestsOnline);
 }
 
 //
@@ -282,7 +283,7 @@ $template->assignVars(array(
         'LAST_VISIT_DATE' => sprintf($lang['You_last_visit'], $s_last_visit),
         'CURRENT_TIME' => sprintf($lang['Current_time'], create_date($board_config['default_dateformat'], time(), $board_config['board_timezone'])),
         'TOTAL_USERS_ONLINE' => $l_online_users,
-        'LOGGED_IN_USER_LIST' => $online_userlist,
+        'LOGGED_IN_USER_LIST' => $onlineUserListString,
         'RECORD_USERS' => sprintf($lang['Record_online_users'], $board_config['record_online_users'], create_date($board_config['default_dateformat'], $board_config['record_online_date'], $board_config['board_timezone'])),
         'PRIVATE_MESSAGE_INFO' => $l_privmsgs_text,
         'PRIVATE_MESSAGE_INFO_UNREAD' => $l_privmsgs_text_unread,

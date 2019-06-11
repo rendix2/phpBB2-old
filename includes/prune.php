@@ -119,6 +119,9 @@ function prune($forum_id, $prune_date, $prune_all = false)
 //
 function auto_prune($forum_id = 0)
 {
+    global $userdata;
+    global $board_config;
+
 	$prune = dibi::select('*')
         ->from(PRUNE_TABLE)
         ->where('forum_id = %i', $forum_id)

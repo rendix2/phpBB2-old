@@ -137,7 +137,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
 
 	$start_date = create_date($board_config['default_dateformat'], $board_config['board_startdate'], $board_config['board_timezone']);
 
-    $user_timezone = isset($profile_data['user_timezone']) ? $profile_data['user_timezone'] : $board_config['board_timezone'];
+    $user_timezone = isset($profileData['user_timezone']) ? $profileData['user_timezone'] : $board_config['board_timezone'];
 
     $zone = new DateTimeZone($user_timezone);
 

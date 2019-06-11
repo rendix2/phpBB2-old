@@ -21,14 +21,20 @@
  *
  ***************************************************************************/
 
-//
-// Simple version of jumpbox, just lists authed forums
-//
-function make_forum_select($box_name, $ignore_forum = false, $select_forum = '')
+/**
+ * Simple version of jumpbox, just lists authed forums
+ *
+ * @param string $boxName
+ * @param bool   $ignoreForum
+ * @param string $selectForum
+ *
+ * @return string
+ */
+function make_forum_select($boxName, $ignoreForum = false, $selectForum = '')
 {
 	global $userdata, $lang;
 
-	$is_auth_ary = Auth::authorize(AUTH_READ, AUTH_LIST_ALL, $userdata);
+	$isAuth = Auth::authorize(AUTH_READ, AUTH_LIST_ALL, $userdata);
 
 	$forums = dibi::select(['f.forum_id', 'f.forum_name'])
         ->from(CATEGORIES_TABLE)
@@ -40,18 +46,19 @@ function make_forum_select($box_name, $ignore_forum = false, $select_forum = '')
         ->orderBy(' f.forum_order')
         ->fetchAll();
 
-	$forum_list = '';
+	$forumList = '';
 
-	foreach ($forums as $forum) {
-        if ($is_auth_ary[$forum->forum_id]['auth_read'] && $ignore_forum !== $forum->forum_id) {
-            $selected = $select_forum === $forum->forum_id ? ' selected="selected"' : '';
-            $forum_list .= '<option value="' . $forum->forum_id . '"' . $selected .'>' . $forum->forum_name . '</option>';
+    foreach ($forums as $forum) {
+        if ($isAuth[$forum->forum_id]['auth_read'] && $ignoreForum !== $forum->forum_id) {
+            $selected = $selectForum === $forum->forum_id ? ' selected="selected"' : '';
+
+            $forumList .= '<option value="' . $forum->forum_id . '"' . $selected . '>' . $forum->forum_name . '</option>';
         }
     }
 
-	$forum_list = $forum_list === '' ? $lang['No_forums'] : '<select name="' . $box_name . '">' . $forum_list . '</select>';
+	$forumList = $forumList === '' ? $lang['No_forums'] : '<select name="' . $boxName . '">' . $forumList . '</select>';
 
-	return $forum_list;
+	return $forumList;
 }
 
 //

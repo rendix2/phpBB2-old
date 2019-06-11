@@ -29,22 +29,22 @@ if (isset($_POST['submit'])) {
 	$username = !empty($_POST['username']) ? phpbb_clean_username($_POST['username'])            : '';
 	$email    = !empty($_POST['email'])    ? trim(strip_tags(htmlspecialchars($_POST['email']))) : '';
 
-	$row = dibi::select(['user_id', 'username', 'user_email', 'user_active', 'user_lang'])
+	$user = dibi::select(['user_id', 'username', 'user_email', 'user_active', 'user_lang'])
         ->from(USERS_TABLE)
         ->where('user_email = %s', $email)
         ->where('username = %s', $username)
         ->fetch();
 
-	if (!$row) {
+	if (!$user) {
         message_die(GENERAL_MESSAGE, $lang['No_email_match']);
     }
 
-    if (!$row->user_active) {
+    if (!$user->user_active) {
         message_die(GENERAL_MESSAGE, $lang['No_send_account_inactive']);
     }
 
-    $username = $row->username;
-    $user_id  = $row->user_id;
+    $username = $user->username;
+    $user_id  = $user->user_id;
 
     $user_actkey   = gen_rand_string(true);
     $key_len       = 54 - mb_strlen($server_url);
@@ -58,7 +58,7 @@ if (isset($_POST['submit'])) {
     ];
 
     dibi::update(USERS_TABLE, $update_data)
-        ->where('user_id = %i', $row->user_id)
+        ->where('user_id = %i', $user->user_id)
         ->execute();
 
     include $phpbb_root_path . 'includes/Emailer.php';
@@ -67,8 +67,8 @@ if (isset($_POST['submit'])) {
     $emailer->setFrom($board_config['board_email']);
     $emailer->setReplyTo($board_config['board_email']);
 
-    $emailer->use_template('user_activate_passwd', $row->user_lang);
-    $emailer->setEmailAddress($row->user_email);
+    $emailer->use_template('user_activate_passwd', $user->user_lang);
+    $emailer->setEmailAddress($user->user_email);
     $emailer->setSubject($lang['New_password_activation']);
 
     $emailer->assignVars(

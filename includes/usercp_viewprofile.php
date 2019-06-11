@@ -51,9 +51,9 @@ make_jumpbox('viewforum.php');
 // Calculate the number of days this user has been a member ($memberdays)
 // Then calculate their posts per day
 //
-$user_timezone = isset($profileData->user_timezone) ? $profileData->user_timezone : $board_config['board_timezone'];
+$userTimezone = isset($profileData->user_timezone) ? $profileData->user_timezone : $board_config['board_timezone'];
 
-$zone = new DateTimeZone($user_timezone);
+$zone = new DateTimeZone($userTimezone);
 
 $regdate = new DateTime();
 $regdate->setTimezone($zone);
@@ -172,19 +172,26 @@ $template->assignVars(
 
         'SEARCH_IMG' => $search_img,
         'SEARCH' => $search,
+
         'PM_IMG' => $pm_img,
         'PM' => $pm,
+
         'EMAIL_IMG' => $email_img,
         'EMAIL' => $email,
+
         'WWW_IMG' => $www_img,
         'WWW' => $www,
+
         'ICQ_STATUS_IMG' => $icq_status_img,
         'ICQ_IMG' => $icq_img,
         'ICQ' => $icq,
+
         'AIM_IMG' => $aim_img,
         'AIM' => $aim,
+
         'MSN_IMG' => $msn_img,
         'MSN' => $msn,
+
         'YIM_IMG' => $yim_img,
         'YIM' => $yim,
 

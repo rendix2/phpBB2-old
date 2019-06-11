@@ -39,10 +39,12 @@ if (isset($lang['TRANSLATION_INFO'])) {
     $translation_info = isset($lang['TRANSLATION']) ? $lang['TRANSLATION'] : '';
 }
 
-$template->assignVars([
+$template->assignVars(
+    [
         'TRANSLATION_INFO' => $translation_info,
         'ADMIN_LINK'       => $admin_link
-    ]);
+    ]
+);
 
 $template->pparse('overall_footer');
 

@@ -343,24 +343,24 @@ function username_search($search_match)
 
 	$gen_simple_header = true;
 
-	$username_list = '';
+	$userNamesList = '';
 
     if (!empty($search_match)) {
 		$username_search = preg_replace('/\*/', '%', phpbb_clean_username($search_match));
 
-		$usernames = dibi::select('username')
+		$userNames = dibi::select('username')
             ->from(USERS_TABLE)
             ->where('username LIKE %~like~', $username_search)
             ->where('user_id <> %i', ANONYMOUS)
             ->orderBy('username')
             ->fetchPairs(null, 'username');
 
-		if (count($usernames)) {
-		    foreach ($usernames as $username) {
-                $username_list .= '<option value="' . $username . '">' . $username . '</option>';
+		if (count($userNames)) {
+		    foreach ($userNames as $userName) {
+                $userNamesList .= '<option value="' . $userName . '">' . $userName . '</option>';
             }
         } else {
-            $username_list .= '<option value="-1">' . $lang['No_match']. '</option>';
+            $userNamesList .= '<option value="-1">' . $lang['No_match']. '</option>';
         }
 	}
 
@@ -380,12 +380,12 @@ function username_search($search_match)
             'L_SEARCH'          => $lang['Search'],
             'L_SEARCH_EXPLAIN'  => $lang['Search_author_explain'],
 
-            'S_USERNAME_OPTIONS' => $username_list,
+            'S_USERNAME_OPTIONS' => $userNamesList,
             'S_SEARCH_ACTION'    => Session::appendSid('search.php?mode=searchuser')
         ]
     );
 
-    if ($username_list !== '') {
+    if ($userNamesList !== '') {
 		$template->assignBlockVars('switch_select_name', []);
 	}
 

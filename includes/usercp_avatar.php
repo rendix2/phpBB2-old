@@ -65,27 +65,27 @@ function user_avatar_delete($avatar_type, $avatar_file)
  * @param string $mode
  * @param $error
  * @param string $error_msg
- * @param string $avatar_filename
- * @param $avatar_category
+ * @param string $avatarFileName
+ * @param $avatarCategory
  * @return array
  */
-function user_avatar_gallery($mode, &$error, &$error_msg, $avatar_filename, $avatar_category)
+function user_avatar_gallery($mode, &$error, &$error_msg, $avatarFileName, $avatarCategory)
 {
 	global $board_config;
 
-	$avatar_filename = ltrim(basename($avatar_filename), "'");
-	$avatar_category = ltrim(basename($avatar_category), "'");
+	$avatarFileName = ltrim(basename($avatarFileName), "'");
+	$avatarCategory = ltrim(basename($avatarCategory), "'");
 
-    if (!preg_match('/(\.gif$|\.png$|\.jpg|\.jpeg)$/is', $avatar_filename)) {
+    if (!preg_match('/(\.gif$|\.png$|\.jpg|\.jpeg)$/is', $avatarFileName)) {
         return [];
     }
 
-    if ($avatar_filename === '' || $avatar_category === '') {
+    if ($avatarFileName === '' || $avatarCategory === '') {
         return [];
     }
 
-    if (file_exists(@phpbb_realpath($board_config['avatar_gallery_path'] . '/' . $avatar_category . '/' . $avatar_filename)) && ($mode === 'editprofile')) {
-        return ['user_avatar' => $avatar_category . '/' . $avatar_filename, 'user_avatar_type' => USER_AVATAR_GALLERY];
+    if (file_exists(@phpbb_realpath($board_config['avatar_gallery_path'] . '/' . $avatarCategory . '/' . $avatarFileName)) && ($mode === 'editprofile')) {
+        return ['user_avatar' => $avatarCategory . '/' . $avatarFileName, 'user_avatar_type' => USER_AVATAR_GALLERY];
     } else {
         return [];
     }
@@ -191,14 +191,16 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 		list($width, $height, $type) = @getimagesize($avatar_filename);
 	}
 
-    if (!($imgtype = check_image_type($avatar_filetype, $error, $error_msg))) {
+    $imgType = check_image_type($avatar_filetype, $error, $error_msg);
+
+    if (!$imgType) {
 		return [];
 	}
 
 	switch ($type) {
 		// GIF
 		case 1:
-			if ($imgtype !== '.gif') {
+			if ($imgType !== '.gif') {
 				@unlink($tmp_filename);
 				message_die(GENERAL_ERROR, 'Unable to upload file', '', __LINE__, __FILE__);
 			}
@@ -210,7 +212,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 		case 10:
 		case 11:
 		case 12:
-			if ($imgtype !== '.jpg' && $imgtype !== '.jpeg') {
+			if ($imgType !== '.jpg' && $imgType !== '.jpeg') {
 				@unlink($tmp_filename);
 				message_die(GENERAL_ERROR, 'Unable to upload file', '', __LINE__, __FILE__);
 			}
@@ -218,7 +220,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 
 		// PNG
 		case 3:
-			if ($imgtype !== '.png') {
+			if ($imgType !== '.png') {
 				@unlink($tmp_filename);
 				message_die(GENERAL_ERROR, 'Unable to upload file', '', __LINE__, __FILE__);
 			}
@@ -230,7 +232,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 	}
 
 	if ($width > 0 && $height > 0 && $width <= $board_config['avatar_max_width'] && $height <= $board_config['avatar_max_height']) {
-		$new_filename = uniqid(rand()) . $imgtype;
+		$new_filename = uniqid(rand()) . $imgType;
 
 		if ($mode === 'editprofile' && $current_type === USER_AVATAR_UPLOAD && $current_avatar !== '') {
 			user_avatar_delete($current_type, $current_avatar);

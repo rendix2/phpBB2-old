@@ -34,9 +34,9 @@ function language_select($default, $select_name = 'language', $dirname= 'languag
     while ($file = readdir($dir)) {
 		if (preg_match('#^lang_#i', $file) && !is_file(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file)) && !is_link(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file))) {
 			$filename = trim(str_replace('lang_', '', $file));
-			$displayname = preg_replace('/^(.*?)_(.*)$/', "\\1 [ \\2 ]", $filename);
-			$displayname = preg_replace("/\[(.*?)_(.*)\]/", "[ \\1 - \\2 ]", $displayname);
-			$langs[$displayname] = $filename;
+			$displayName = preg_replace('/^(.*?)_(.*)$/', "\\1 [ \\2 ]", $filename);
+			$displayName = preg_replace("/\[(.*?)_(.*)\]/", "[ \\1 - \\2 ]", $displayName);
+			$langs[$displayName] = $filename;
 		}
 	}
 
@@ -48,9 +48,9 @@ function language_select($default, $select_name = 'language', $dirname= 'languag
 
 	$lang_select = '<select name="' . $select_name . '">';
 
-	foreach ($langs as $displayname => $filename) {
+	foreach ($langs as $displayName => $filename) {
 		$selected = $default === strtolower($filename) ? ' selected="selected"' : '';
-		$lang_select .= '<option value="' . $filename . '"' . $selected . '>' . ucwords($displayname) . '</option>';
+		$lang_select .= '<option value="' . $filename . '"' . $selected . '>' . ucwords($displayName) . '</option>';
 	}
 
 	$lang_select .= '</select>';

@@ -334,18 +334,17 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 
                 if ($mode !== 'editpost' || !isset($old_poll_result[$option_id])) {
                     $insert_data = [
-                        'vote_id' => $poll_id,
-                        'vote_option_id' => $poll_option_id,
+                        'vote_id'          => $poll_id,
+                        'vote_option_id'   => $poll_option_id,
                         'vote_option_text' => $option_text,
-                        'vote_result' => $poll_result
-
+                        'vote_result'      => $poll_result
                     ];
 
                     dibi::insert(VOTE_RESULTS_TABLE, $insert_data)->execute();
                 } else {
                     $update_data = [
                         'vote_option_text' => $option_text,
-                        'vote_result' => $poll_result
+                        'vote_result'      => $poll_result
                     ];
 
                     dibi::update(VOTE_RESULTS_TABLE, $update_data)
@@ -696,20 +695,22 @@ function generate_smilies($mode, $page_id)
         ->fetchAll();
 
 	if (count($smilies)) {
-		$num_smilies = 0;
+		$numSmilies = 0;
 		$rowset = [];
 
 		foreach ($smilies as $smiley) {
             if (empty($rowset[$smiley->smile_url])) {
                 $rowset[$smiley->smile_url]['code'] = str_replace("'", "\\'", str_replace('\\', '\\\\', $smiley->code));
                 $rowset[$smiley->smile_url]['emoticon'] = $smiley->emoticon;
-                $num_smilies++;
+                $numSmilies++;
             }
         }
 
-		if ($num_smilies) {
-			$smilies_count = ($mode === 'inline') ? min(19, $num_smilies) : $num_smilies;
-			$smilies_split_row = ($mode === 'inline') ? $inline_columns - 1 : $window_columns - 1;
+		if ($numSmilies) {
+		    $isModInline = $mode === 'inline';
+
+			$smilies_count = $isModInline ? min(19, $numSmilies) : $numSmilies;
+			$smilies_split_row = $isModInline ? $inline_columns - 1 : $window_columns - 1;
 
 			$s_colspan = 0;
 			$row = 0;
@@ -731,7 +732,7 @@ function generate_smilies($mode, $page_id)
                 $s_colspan = max($s_colspan, $col + 1);
 
                 if ($col === $smilies_split_row) {
-                    if ($mode === 'inline' && $row === $inline_rows - 1) {
+                    if ($isModInline && $row === $inline_rows - 1) {
                         break;
                     }
 
@@ -742,7 +743,7 @@ function generate_smilies($mode, $page_id)
                 }
 			}
 
-			if ($mode === 'inline' && $num_smilies > $inline_rows * $inline_columns) {
+			if ($isModInline && $numSmilies > $inline_rows * $inline_columns) {
 				$template->assignBlockVars('switch_smilies_extra', []);
 
                 $template->assignVars(
