@@ -171,7 +171,7 @@ class Auth
             }
         }
 
-        $is_admin = ( $userdata['user_level'] === ADMIN && $userdata['session_logged_in'] ) ? true : 0;
+        $is_admin = $userdata['user_level'] === ADMIN && $userdata['session_logged_in'] ? true : 0;
 
         $auth_user = [];
 

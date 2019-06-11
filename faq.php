@@ -77,7 +77,7 @@ for ($i = 0; $i < $faq_count; $i++) {
 		$counter++;
 		$counter_2++;
 	} else {
-		$j = ( $counter !== 0 ) ? $j + 1 : 0;
+		$j = $counter !== 0 ? $j + 1 : 0;
 
 		$faq_block_titles[$j] = $faq[$i][1];
 
@@ -111,8 +111,8 @@ for ($i = 0; $i < $faq_block_count; $i++) {
         $template->assignBlockVars('faq_block_link', ['BLOCK_TITLE' => $faq_block_titles[$i]]);
 
         for ($j = 0; $j < $faq_block_i_count; $j++) {
-			$row_color = ( !($j % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-			$row_class = ( !($j % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+			$row_color = !($j % 2) ? $theme['td_color1'] : $theme['td_color2'];
+			$row_class = !($j % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
 			$faq_block_faq_row_data = [
                 'ROW_COLOR'    => '#' . $row_color,

@@ -885,8 +885,8 @@ if ($category_count) {
 			$forum_id = $forum->forum_id;
 
 			if ($forum->cat_id === $cat_id) {
-                $row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-                $row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+                $row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+                $row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
                 $template->assignBlockVars('catrow.forumrow',
                     [

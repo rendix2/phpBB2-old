@@ -727,8 +727,9 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 			$s_categories = '';
 
 			foreach ($avatar_images as $key => $value) {
-				$selected = ( $key === $category ) ? 'selected="selected"' : '';
+				$selected = $key === $category ? 'selected="selected"' : '';
 
+				// TODO
 				if (count($avatar_images[$key])) {
 					$s_categories .= '<option value="' . $key . '"' . $selected . '>' . ucfirst($key) . '</option>';
 				}
@@ -788,20 +789,22 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 			$s_hidden_fields .= '<input type="hidden" name="user_allowavatar" value="' . $user_allowavatar . '" />';
 			$s_hidden_fields .= '<input type="hidden" name="user_rank" value="' . $user_rank . '" />';
 
-            $template->assignVars([
-                'L_USER_TITLE'     => $lang['User_admin'],
-                'L_USER_EXPLAIN'   => $lang['User_admin_explain'],
-                'L_AVATAR_GALLERY' => $lang['Avatar_gallery'],
-                'L_SELECT_AVATAR'  => $lang['Select_avatar'],
-                'L_RETURN_PROFILE' => $lang['Return_profile'],
-                'L_CATEGORY'       => $lang['Select_category'],
-                'L_GO'             => $lang['Go'],
+            $template->assignVars(
+                [
+                    'L_USER_TITLE'     => $lang['User_admin'],
+                    'L_USER_EXPLAIN'   => $lang['User_admin_explain'],
+                    'L_AVATAR_GALLERY' => $lang['Avatar_gallery'],
+                    'L_SELECT_AVATAR'  => $lang['Select_avatar'],
+                    'L_RETURN_PROFILE' => $lang['Return_profile'],
+                    'L_CATEGORY'       => $lang['Select_category'],
+                    'L_GO'             => $lang['Go'],
 
-                'S_OPTIONS_CATEGORIES' => $s_categories,
-                'S_COLSPAN'            => $s_colspan,
-                'S_PROFILE_ACTION'     => Session::appendSid("admin_users.php?mode=$mode"),
-                'S_HIDDEN_FIELDS'      => $s_hidden_fields
-                ]);
+                    'S_OPTIONS_CATEGORIES' => $s_categories,
+                    'S_COLSPAN'            => $s_colspan,
+                    'S_PROFILE_ACTION'     => Session::appendSid("admin_users.php?mode=$mode"),
+                    'S_HIDDEN_FIELDS'      => $s_hidden_fields
+                ]
+            );
         }
     } else {
 		$s_hidden_fields = '<input type="hidden" name="mode" value="save" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';
@@ -812,8 +815,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 		}
 
 		if ($user_avatar_type) {
-			switch( $user_avatar_type )
-			{
+			switch( $user_avatar_type ) {
 				case USER_AVATAR_UPLOAD:
 					$avatar = '<img src="../' . $board_config['avatar_path'] . '/' . $user_avatar . '" alt="" />';
 					break;
@@ -837,7 +839,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 		$rank_select_box = '<option value="0">' . $lang['No_assigned_rank'] . '</option>';
 
 		foreach ($ranks as $rank) {
-			$selected = ( $this_userdata['user_rank'] === $rank->rank_id ) ? ' selected="selected"' : '';
+			$selected = $this_userdata['user_rank'] === $rank->rank_id ? ' selected="selected"' : '';
 			$rank_select_box .= '<option value="' . $rank->rank_id . '"' . $selected . '>' . $rank->rank_title . '</option>';
 		}
 
@@ -863,34 +865,34 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
                 'WEBSITE' => $website,
                 'SIGNATURE' => str_replace('<br />', "\n", $signature),
                 'VIEW_EMAIL_YES' => $viewemail ? 'checked="checked"' : '',
-                'VIEW_EMAIL_NO' => (!$viewemail) ? 'checked="checked"' : '',
-                'HIDE_USER_YES' => (!$allowviewonline) ? 'checked="checked"' : '',
+                'VIEW_EMAIL_NO' => !$viewemail ? 'checked="checked"' : '',
+                'HIDE_USER_YES' => !$allowviewonline ? 'checked="checked"' : '',
                 'HIDE_USER_NO' => $allowviewonline ? 'checked="checked"' : '',
                 'NOTIFY_PM_YES' => $notifypm ? 'checked="checked"' : '',
-                'NOTIFY_PM_NO' => (!$notifypm) ? 'checked="checked"' : '',
+                'NOTIFY_PM_NO' => !$notifypm ? 'checked="checked"' : '',
                 'POPUP_PM_YES' => $popuppm ? 'checked="checked"' : '',
-                'POPUP_PM_NO' => (!$popuppm) ? 'checked="checked"' : '',
+                'POPUP_PM_NO' => !$popuppm ? 'checked="checked"' : '',
                 'ALWAYS_ADD_SIGNATURE_YES' => $attachsig ? 'checked="checked"' : '',
-                'ALWAYS_ADD_SIGNATURE_NO' => (!$attachsig) ? 'checked="checked"' : '',
+                'ALWAYS_ADD_SIGNATURE_NO' => !$attachsig ? 'checked="checked"' : '',
                 'NOTIFY_REPLY_YES' => $notifyreply ? 'checked="checked"' : '',
-                'NOTIFY_REPLY_NO' => ( !$notifyreply ) ? 'checked="checked"' : '',
+                'NOTIFY_REPLY_NO' => !$notifyreply ? 'checked="checked"' : '',
                 'ALWAYS_ALLOW_BBCODE_YES' => $allowbbcode ? 'checked="checked"' : '',
-                'ALWAYS_ALLOW_BBCODE_NO' => (!$allowbbcode) ? 'checked="checked"' : '',
+                'ALWAYS_ALLOW_BBCODE_NO' => !$allowbbcode ? 'checked="checked"' : '',
                 'ALWAYS_ALLOW_HTML_YES' => $allowhtml ? 'checked="checked"' : '',
-                'ALWAYS_ALLOW_HTML_NO' => (!$allowhtml) ? 'checked="checked"' : '',
+                'ALWAYS_ALLOW_HTML_NO' => !$allowhtml ? 'checked="checked"' : '',
                 'ALWAYS_ALLOW_SMILIES_YES' => $allowsmilies ? 'checked="checked"' : '',
-                'ALWAYS_ALLOW_SMILIES_NO' => (!$allowsmilies) ? 'checked="checked"' : '',
+                'ALWAYS_ALLOW_SMILIES_NO' => !$allowsmilies ? 'checked="checked"' : '',
                 'AVATAR' => $avatar,
                 'LANGUAGE_SELECT' => language_select($user_lang),
                 'TIMEZONE_SELECT' => Select::timezone($user_timezone),
                 'STYLE_SELECT' => style_select($user_style),
                 'DATE_FORMAT' => $user_dateformat,
                 'ALLOW_PM_YES' => $user_allowpm ? 'checked="checked"' : '',
-                'ALLOW_PM_NO' => (!$user_allowpm) ? 'checked="checked"' : '',
+                'ALLOW_PM_NO' => !$user_allowpm ? 'checked="checked"' : '',
                 'ALLOW_AVATAR_YES' => $user_allowavatar ? 'checked="checked"' : '',
-                'ALLOW_AVATAR_NO' => (!$user_allowavatar) ? 'checked="checked"' : '',
+                'ALLOW_AVATAR_NO' => !$user_allowavatar ? 'checked="checked"' : '',
                 'USER_ACTIVE_YES' => $user_status ? 'checked="checked"' : '',
-                'USER_ACTIVE_NO' => (!$user_status) ? 'checked="checked"' : '',
+                'USER_ACTIVE_NO' => !$user_status ? 'checked="checked"' : '',
                 'RANK_SELECT_BOX' => $rank_select_box,
 
                 'L_USERNAME' => $lang['Username'],

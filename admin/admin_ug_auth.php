@@ -682,8 +682,8 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 		$optionlist_mod .= $user_ary['auth_mod'] ? '<option value="1" selected="selected">' . $lang['Is_Moderator'] . '</option><option value="0">' . $lang['Not_Moderator'] . '</option>' : '<option value="1">' . $lang['Is_Moderator'] . '</option><option value="0" selected="selected">' . $lang['Not_Moderator'] . '</option>';
 		$optionlist_mod .= '</select>';
 
-		$row_class = ( !( $i % 2 ) ) ? 'row2' : 'row1';
-		$row_color = ( !( $i % 2 ) ) ? $theme['td_color1'] : $theme['td_color2'];
+        $row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+        $row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
 
         $template->assignBlockVars('forums',
             [
@@ -753,8 +753,8 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
         }
     }
 
-	$t_usergroup_list = ($t_usergroup_list === '') ? $lang['None'] : $t_usergroup_list;
-	$t_pending_list = ($t_pending_list === '') ? $lang['None'] : $t_pending_list;
+	$t_usergroup_list = $t_usergroup_list === '' ? $lang['None'] : $t_usergroup_list;
+	$t_pending_list   = $t_pending_list === ''   ? $lang['None'] : $t_pending_list;
 
 	$s_column_span = 2; // Two columns always present
 
@@ -778,7 +778,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
     $template->setFileNames(['body' => 'admin/auth_ug_body.tpl']);
 
     $adv_switch = empty($adv) ? 1 : 0;
-	$u_ug_switch = ( $mode === 'user' ) ? POST_USERS_URL . '=' . $user_id : POST_GROUPS_URL . '=' . $group_id;
+	$u_ug_switch = $mode === 'user' ? POST_USERS_URL . '=' . $user_id : POST_GROUPS_URL . '=' . $group_id;
 	$switch_mode = Session::appendSid("admin_ug_auth.php?mode=$mode&amp;" . $u_ug_switch . "&amp;adv=$adv_switch");
 	$switch_mode_text = empty($adv) ? $lang['Advanced_mode'] : $lang['Simple_mode'];
 	$u_switch_mode = '<a href="' . $switch_mode . '">' . $switch_mode_text . '</a>';

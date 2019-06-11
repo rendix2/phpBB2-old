@@ -214,7 +214,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 			}
 		}
 
-		$username = ( $userdata['user_id'] !== ANONYMOUS ) ? $userdata['username'] : '';
+		$username = $userdata['user_id'] !== ANONYMOUS ? $userdata['username'] : '';
 
 		$s_hidden_fields = '<input type="hidden" name="redirect" value="' . $forward_page . '" />';
 		$s_hidden_fields .= isset($_GET['admin']) ? '<input type="hidden" name="admin" value="1" />' : '';

@@ -205,7 +205,7 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 	}
 
 	foreach ($word_insert_sql as $word_in => $match_sql) {
-		$title_match = ( $word_in === 'title' ) ? 1 : 0;
+		$title_match = $word_in === 'title' ? 1 : 0;
 
         if (count($match_sql)) {
 		    dibi::query('INSERT INTO %n (post_id, word_id, title_match) 

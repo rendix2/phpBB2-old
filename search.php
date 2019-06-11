@@ -58,18 +58,19 @@ if (isset($_POST['search_author']) || isset($_GET['search_author'])) {
     $search_author = '';
 }
 
-$search_id = isset($_GET['search_id']) ? $_GET['search_id'] : '';
+$search_id    = isset($_GET['search_id'])     ? $_GET['search_id']     : '';
 $show_results = isset($_POST['show_results']) ? $_POST['show_results'] : 'posts';
+
 $show_results = $show_results === 'topics' ? 'topics' : 'posts';
 
 if (isset($_POST['search_terms'])) {
-    $search_terms = ($_POST['search_terms'] === 'all') ? 1 : 0;
+    $search_terms = $_POST['search_terms'] === 'all' ? 1 : 0;
 } else {
     $search_terms = 0;
 }
 
 if (isset($_POST['search_fields'])) {
-    $search_fields = ($_POST['search_fields'] === 'all') ? 1 : 0;
+    $search_fields = $_POST['search_fields'] === 'all' ? 1 : 0;
 } else {
     $search_fields = 0;
 }
@@ -80,7 +81,7 @@ $search_forum = isset($_POST['search_forum']) ? (int)$_POST['search_forum'] : -1
 $sort_by      = isset($_POST['sort_by'])      ? (int)$_POST['sort_by']      : 0;
 
 if (isset($_POST['sort_dir'])) {
-    $sort_dir = ($_POST['sort_dir'] === 'DESC') ? 'DESC' : 'ASC';
+    $sort_dir = $_POST['sort_dir'] === 'DESC' ? 'DESC' : 'ASC';
 } else {
     $sort_dir = 'DESC';
 }
@@ -361,7 +362,7 @@ if ($mode === 'searchuser') {
             }
 
             if ($ignore_forum_sql !== '') {
-                $auth_sql .= ($auth_sql !== '') ? " AND f.forum_id NOT IN ($ignore_forum_sql) " : "f.forum_id NOT IN ($ignore_forum_sql) ";
+                $auth_sql .= $auth_sql !== '' ? " AND f.forum_id NOT IN ($ignore_forum_sql) " : "f.forum_id NOT IN ($ignore_forum_sql) ";
             }
         }
 
@@ -733,7 +734,7 @@ if ($mode === 'searchuser') {
 
         make_jumpbox('viewforum.php');
 
-		$l_search_matches = ( $total_match_count === 1 ) ? sprintf($lang['Found_search_match'], $total_match_count) : sprintf($lang['Found_search_matches'], $total_match_count);
+		$l_search_matches = $total_match_count === 1 ? sprintf($lang['Found_search_match'], $total_match_count) : sprintf($lang['Found_search_matches'], $total_match_count);
 
         $template->assignVars(
             [
@@ -867,12 +868,11 @@ if ($mode === 'searchuser') {
 
                     if ($count_orig_word) {
 						$topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
-						$post_subject = ( $search_set->post_subject !== '') ? preg_replace($orig_word,
-                            $replacement_word, $search_set->post_subject) : $topic_title;
+						$post_subject = $search_set->post_subject !== '' ? preg_replace($orig_word, $replacement_word, $search_set->post_subject) : $topic_title;
 
 						$message = preg_replace($orig_word, $replacement_word, $message);
 					} else {
-						$post_subject = ( $search_set->post_subject !== '' ) ? $search_set->post_subject : $topic_title;
+						$post_subject = $search_set->post_subject !== '' ? $search_set->post_subject : $topic_title;
 					}
 
 					if ($board_config['allow_smilies'] && $search_set->enable_smilies) {
@@ -883,7 +883,7 @@ if ($mode === 'searchuser') {
 
 				}
 
-				$poster = ( $search_set->user_id !== ANONYMOUS ) ? '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $search_set->user_id) . '">' : '';
+				$poster = $search_set->user_id !== ANONYMOUS ? '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $search_set->user_id) . '">' : '';
 
                 if ($search_set->user_id !== ANONYMOUS) {
                     $poster .= $search_set->username;
@@ -895,11 +895,11 @@ if ($mode === 'searchuser') {
                     }
                 }
 
-				$poster .= ( $search_set->user_id !== ANONYMOUS ) ? '</a>' : '';
+				$poster .= $search_set->user_id !== ANONYMOUS ? '</a>' : '';
 
                 if ($userdata['session_logged_in'] && $search_set->post_time > $userdata['user_lastvisit']) {
                     if (!empty($tracking_topics[$topic_id]) && !empty($tracking_forums[$forum_id])) {
-                        $topic_last_read = ($tracking_topics[$topic_id] > $tracking_forums[$forum_id]) ? $tracking_topics[$topic_id] : $tracking_forums[$forum_id];
+                        $topic_last_read = $tracking_topics[$topic_id] > $tracking_forums[$forum_id] ? $tracking_topics[$topic_id] : $tracking_forums[$forum_id];
                     } elseif (!empty($tracking_topics[$topic_id]) || !empty($tracking_forums[$forum_id])) {
                         $topic_last_read = !empty($tracking_topics[$topic_id]) ? $tracking_topics[$topic_id] : $tracking_forums[$forum_id];
                     }
@@ -1057,7 +1057,7 @@ if ($mode === 'searchuser') {
 					}
 				}
 
-				$topic_author = ( $search_set->user_id !== ANONYMOUS ) ? '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $search_set->user_id) . '">' : '';
+				$topic_author = $search_set->user_id !== ANONYMOUS ? '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $search_set->user_id) . '">' : '';
 
                 if ($search_set->user_id !== ANONYMOUS) {
                     $topic_author .= $search_set->username;
@@ -1238,7 +1238,7 @@ $s_time = '';
 
 // todo use Select
 foreach ($previous_days as $previous_day_key => $previous_days_value) {
-	$selected = ( $topic_days === $previous_day_key ) ? ' selected="selected"' : '';
+	$selected = $topic_days === $previous_day_key ? ' selected="selected"' : '';
 
 	$s_time .= '<option value="' . $previous_day_key . '"' . $selected . '>' . $previous_days_value . '</option>';
 }

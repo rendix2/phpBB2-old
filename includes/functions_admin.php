@@ -44,12 +44,12 @@ function make_forum_select($box_name, $ignore_forum = false, $select_forum = '')
 
 	foreach ($forums as $forum) {
         if ($is_auth_ary[$forum->forum_id]['auth_read'] && $ignore_forum !== $forum->forum_id) {
-            $selected = ( $select_forum === $forum->forum_id ) ? ' selected="selected"' : '';
+            $selected = $select_forum === $forum->forum_id ? ' selected="selected"' : '';
             $forum_list .= '<option value="' . $forum->forum_id . '"' . $selected .'>' . $forum->forum_name . '</option>';
         }
     }
 
-	$forum_list = ( $forum_list === '' ) ? $lang['No_forums'] : '<select name="' . $box_name . '">' . $forum_list . '</select>';
+	$forum_list = $forum_list === '' ? $lang['No_forums'] : '<select name="' . $box_name . '">' . $forum_list . '</select>';
 
 	return $forum_list;
 }

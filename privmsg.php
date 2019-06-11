@@ -545,7 +545,11 @@ if ($mode === 'newpm') {
         $user_sig = '';
     }
 
-	$user_sig_bbcode_uid = ( $privmsg->privmsgs_from_userid === $userdata['user_id'] ) ? $userdata['user_sig_bbcode_uid'] : $privmsg->user_sig_bbcode_uid;
+    if ($privmsg->privmsgs_from_userid === $userdata['user_id']) {
+        $user_sig_bbcode_uid = $userdata['user_sig_bbcode_uid'];
+    } else {
+        $user_sig_bbcode_uid = $privmsg->user_sig_bbcode_uid;
+    }
 
 	//
 	// If the board has HTML off but the post has HTML
@@ -666,7 +670,7 @@ if ($mode === 'newpm') {
         $template->assignVars(
             [
                 'MESSAGE_TITLE' => $lang['Information'],
-                'MESSAGE_TEXT'  => (count($mark_list) === 1) ? $lang['Confirm_delete_pm'] : $lang['Confirm_delete_pms'],
+                'MESSAGE_TEXT'  => count($mark_list) === 1 ? $lang['Confirm_delete_pm'] : $lang['Confirm_delete_pms'],
 
                 'L_YES' => $lang['Yes'],
                 'L_NO'  => $lang['No'],
@@ -856,7 +860,7 @@ if ($mode === 'newpm') {
                 PRIVMSGS_SAVED_OUT_MAIL
             )->fetch();
 
-		$sql_priority = ( $dbms === 'mysql' ) ? 'LOW_PRIORITY' : '';
+		$sql_priority = $dbms === 'mysql' ? 'LOW_PRIORITY' : '';
 
         if ($saved_info) {
 			if ($board_config['max_savebox_privmsgs'] && $saved_info->savebox_items >= $board_config['max_savebox_privmsgs']) {
@@ -1047,7 +1051,8 @@ if ($mode === 'newpm') {
         // session id check
         if ($sid === '' || $sid !== $userdata['session_id']) {
             $error = true;
-            $error_msg .= (!empty($error_msg) ? '<br />' : '') . $lang['Session_invalid'];
+            $error_msg .= !empty($error_msg) ? '<br />' : '';
+            $error_msg .= $lang['Session_invalid'];
         }
 
         if (!empty($_POST['username'])) {
@@ -1119,7 +1124,7 @@ if ($mode === 'newpm') {
                 message_die(GENERAL_MESSAGE, $lang['No_such_user']);
             }
 
-            $sql_priority = ($dbms === 'mysql') ? 'LOW_PRIORITY' : '';
+            $sql_priority = $dbms === 'mysql' ? 'LOW_PRIORITY' : '';
 
             if ($board_config['max_inbox_privmsgs'] && $inbox_info->inbox_items >= $board_config['max_inbox_privmsgs']) {
                 $old_privmsgs_id = dibi::select('privmsgs_id')
@@ -1209,7 +1214,7 @@ if ($mode === 'newpm') {
 
             if ($to_userdata['user_notify_pm'] && !empty($to_userdata['user_email']) && $to_userdata['user_active']) {
 				$script_name = preg_replace('/^\/?(.*?)\/?$/', "\\1", trim($board_config['script_path']));
-				$script_name = ( $script_name !== '' ) ? $script_name . '/privmsg.php' : 'privmsg.php';
+				$script_name = $script_name !== '' ? $script_name . '/privmsg.php' : 'privmsg.php';
 				$server_name = trim($board_config['server_name']);
 				$server_protocol = $board_config['cookie_secure'] ? 'https://' : 'http://';
 				$server_port = $board_config['server_port'] !== 80 ? ':' . trim($board_config['server_port']) . '/' : '/';
@@ -1271,11 +1276,11 @@ if ($mode === 'newpm') {
         if ($mode === 'post') {
             $page_title = $lang['Post_new_pm'];
 
-            $user_sig = ($userdata['user_sig'] !== '' && $board_config['allow_sig']) ? $userdata['user_sig'] : '';
+            $user_sig = $userdata['user_sig'] !== '' && $board_config['allow_sig'] ? $userdata['user_sig'] : '';
         } elseif ($mode === 'reply') {
             $page_title = $lang['Post_reply_pm'];
 
-            $user_sig = ($userdata['user_sig'] !== '' && $board_config['allow_sig']) ? $userdata['user_sig'] : '';
+            $user_sig = $userdata['user_sig'] !== '' && $board_config['allow_sig'] ? $userdata['user_sig'] : '';
         } elseif ($mode === 'edit') {
             $page_title = $lang['Edit_pm'];
 
@@ -1292,7 +1297,7 @@ if ($mode === 'newpm') {
                 message_die(GENERAL_MESSAGE, $lang['Edit_own_posts']);
             }
 
-            $user_sig = ($postrow->user_sig !== '' && $board_config['allow_sig']) ? $postrow->user_sig : '';
+            $user_sig = $postrow->user_sig !== '' && $board_config['allow_sig'] ? $postrow->user_sig : '';
         }
 	} else {
         if (!$privmsg_id && ($mode === 'reply' || $mode === 'edit' || $mode === 'quote')) {
@@ -1677,9 +1682,9 @@ if ($mode === 'newpm') {
             'L_BBCODE_CLOSE_TAGS' => $lang['Close_Tags'],
             'L_STYLES_TIP' => $lang['Styles_tip'],
 
-            'S_HTML_CHECKED' => ( !$html_on ) ? ' checked="checked"' : '',
-            'S_BBCODE_CHECKED' => ( !$bbcode_on ) ? ' checked="checked"' : '',
-            'S_SMILIES_CHECKED' => ( !$smilies_on ) ? ' checked="checked"' : '',
+            'S_HTML_CHECKED' => !$html_on ? ' checked="checked"' : '',
+            'S_BBCODE_CHECKED' => !$bbcode_on ? ' checked="checked"' : '',
+            'S_SMILIES_CHECKED' => !$smilies_on ? ' checked="checked"' : '',
             'S_SIGNATURE_CHECKED' => $attach_sig ? ' checked="checked"' : '',
             'S_HIDDEN_FORM_FIELDS' => $s_hidden_fields,
             'S_POST_ACTION' => Session::appendSid('privmsg.php'),
@@ -1867,7 +1872,7 @@ $previous_days = [
 $select_msg_days = '';
 
 foreach ($previous_days as $previous_day_key => $previous_days_value) {
-    $selected = ( $msg_days === $previous_day_key ) ? ' selected="selected"' : '';
+    $selected = $msg_days === $previous_day_key ? ' selected="selected"' : '';
 
     $select_msg_days .= '<option value="' . $previous_day_key . '"' . $selected . '>' . $previous_days_value . '</option>';
 }
@@ -1954,7 +1959,7 @@ $template->assignVars(
         'L_SUBJECT'          => $lang['Subject'],
         'L_DATE'             => $lang['Date'],
         'L_DISPLAY_MESSAGES' => $lang['Display_messages'],
-        'L_FROM_OR_TO'       => ($folder === 'inbox' || $folder === 'savebox') ? $lang['From'] : $lang['To'],
+        'L_FROM_OR_TO'       => $folder === 'inbox' || $folder === 'savebox' ? $lang['From'] : $lang['To'],
         'L_MARK_ALL'         => $lang['Mark_all'],
         'L_UNMARK_ALL'       => $lang['Unmark_all'],
         'L_DELETE_MARKED'    => $lang['Delete_marked'],
@@ -1985,8 +1990,8 @@ if (count($rows)) {
 
 		$flag = $row->privmsgs_type;
 
-		$icon_flag = ( $flag === PRIVMSGS_NEW_MAIL || $flag === PRIVMSGS_UNREAD_MAIL ) ? $images['pm_unreadmsg'] : $images['pm_readmsg'];
-		$icon_flag_alt = ( $flag === PRIVMSGS_NEW_MAIL || $flag === PRIVMSGS_UNREAD_MAIL ) ? $lang['Unread_message'] : $lang['Read_message'];
+		$icon_flag = $flag === PRIVMSGS_NEW_MAIL || $flag === PRIVMSGS_UNREAD_MAIL ? $images['pm_unreadmsg'] : $images['pm_readmsg'];
+		$icon_flag_alt = $flag === PRIVMSGS_NEW_MAIL || $flag === PRIVMSGS_UNREAD_MAIL ? $lang['Unread_message'] : $lang['Read_message'];
 
 		$msg_userid = $row->user_id;
 		$msg_username = $row->username;

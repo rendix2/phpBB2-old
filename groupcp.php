@@ -113,10 +113,10 @@ init_userprefs($userdata);
 //
 
 $script_name = preg_replace('/^\/?(.*?)\/?$/', "\\1", trim($board_config['script_path']));
-$script_name = ( $script_name !== '' ) ? $script_name . '/groupcp.php' : 'groupcp.php';
+$script_name = $script_name !== '' ? $script_name . '/groupcp.php' : 'groupcp.php';
 $server_name = trim($board_config['server_name']);
 $server_protocol = $board_config['cookie_secure'] ? 'https://' : 'http://';
-$server_port = ( $board_config['server_port'] !== 80 ) ? ':' . trim($board_config['server_port']) . '/' : '/';
+$server_port = $board_config['server_port'] !== 80 ? ':' . trim($board_config['server_port']) . '/' : '/';
 
 $server_url = $server_protocol . $server_name . $server_port . $script_name;
 
@@ -137,7 +137,7 @@ $confirm = isset($_POST['confirm']) ? true : 0;
 $cancel = isset($_POST['cancel']) ? true : 0;
 $sid = isset($_POST['sid']) ? $_POST['sid'] : '';
 $start = isset($_GET['start']) ? (int)$_GET['start'] : 0;
-$start = ($start < 0) ? 0 : $start;
+$start = $start < 0 ? 0 : $start;
 
 //
 // Default var values
@@ -547,7 +547,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 				}
 			} else {
 				if (( ( isset($_POST['approve']) || isset($_POST['deny']) ) && isset($_POST['pending_members']) ) || ( isset($_POST['remove']) && isset($_POST['members']) )) {
-					$members = ( isset($_POST['approve']) || isset($_POST['deny']) ) ? $_POST['pending_members'] : $_POST['members'];
+					$members = isset($_POST['approve']) || isset($_POST['deny']) ? $_POST['pending_members'] : $_POST['members'];
 
                     if (isset($_POST['approve'])) {
                         if ($group_info->auth_mod) {
@@ -888,9 +888,9 @@ if (isset($_POST['groupstatus']) && $group_id) {
             'S_GROUP_OPEN_TYPE' => GROUP_OPEN,
             'S_GROUP_CLOSED_TYPE' => GROUP_CLOSED,
             'S_GROUP_HIDDEN_TYPE' => GROUP_HIDDEN,
-            'S_GROUP_OPEN_CHECKED' => ( $group_info->group_type === GROUP_OPEN ) ? ' checked="checked"' : '',
-            'S_GROUP_CLOSED_CHECKED' => ( $group_info->group_type === GROUP_CLOSED ) ? ' checked="checked"' : '',
-            'S_GROUP_HIDDEN_CHECKED' => ( $group_info->group_type === GROUP_HIDDEN ) ? ' checked="checked"' : '',
+            'S_GROUP_OPEN_CHECKED' => $group_info->group_type === GROUP_OPEN ? ' checked="checked"' : '',
+            'S_GROUP_CLOSED_CHECKED' => $group_info->group_type === GROUP_CLOSED ? ' checked="checked"' : '',
+            'S_GROUP_HIDDEN_CHECKED' => $group_info->group_type === GROUP_HIDDEN ? ' checked="checked"' : '',
             'S_HIDDEN_FIELDS' => $s_hidden_fields,
             'S_MODE_SELECT' => $select_sort_mode,
             'S_ORDER_SELECT' => $select_sort_order,
@@ -910,8 +910,8 @@ if (isset($_POST['groupstatus']) && $group_id) {
 		generate_user_info($group_members[$i], $board_config['default_dateformat'], $is_moderator, $from, $posts, $joined, $poster_avatar, $profile_img, $profile, $search_img, $search, $pm_img, $pm, $email_img, $email, $www_img, $www, $icq_status_img, $icq_img, $icq, $aim_img, $aim, $msn_img, $msn, $yim_img, $yim);
 
 		if ($group_info->group_type !== GROUP_HIDDEN || $is_group_member || $is_moderator) {
-			$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+			$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+			$row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
             $template->assignBlockVars('member_row',
                 [
@@ -965,7 +965,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
         );
     }
 
-    $current_page = (!$members_count) ? 1 : ceil($members_count / $board_config['topics_per_page']);
+    $current_page = $members_count ? ceil($members_count / $board_config['topics_per_page']) : 1;
 
     $template->assignVars(
         [
@@ -1004,8 +1004,8 @@ if (isset($_POST['groupstatus']) && $group_id) {
 				generate_user_info($modgroup_pending_value, $board_config['default_dateformat'], $is_moderator,
                     $from, $posts, $joined, $poster_avatar, $profile_img, $profile, $search_img, $search, $pm_img, $pm, $email_img, $email, $www_img, $www, $icq_status_img, $icq_img, $icq, $aim_img, $aim, $msn_img, $msn, $yim_img, $yim);
 
-				$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-				$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+				$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+				$row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
 				$user_select = '<input type="checkbox" name="member[]" value="' . $user_id . '">';
 

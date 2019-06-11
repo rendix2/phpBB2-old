@@ -497,8 +497,8 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
         $smiley->code = str_replace('&lt;', '<', $smiley->code);
         $smiley->code = str_replace('&gt;', '>', $smiley->code);
 
-        $row_color = (!($i % 2)) ? $theme['td_color1'] : $theme['td_color2'];
-        $row_class = (!($i % 2)) ? $theme['td_class1'] : $theme['td_class2'];
+        $row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+        $row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
         $template->assignBlockVars('smiles',
             [

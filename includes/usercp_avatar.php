@@ -107,7 +107,7 @@ function user_avatar_url($mode, &$error, &$error_msg, $avatar_filename)
 		return [];
 	}
 
-	return ( $mode === 'editprofile' ) ? ['user_avatar' => $avatar_filename, 'user_avatar_type' => USER_AVATAR_REMOTE] : [];
+	return $mode === 'editprofile' ? ['user_avatar' => $avatar_filename, 'user_avatar_type' => USER_AVATAR_REMOTE] : [];
 }
 
 function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_type, &$error, &$error_msg, $avatar_filename, $avatar_realname, $avatar_filesize, $avatar_filetype)
@@ -315,7 +315,7 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 	$s_categories = '<select name="avatarcategory">';
 
 	foreach ($avatar_images as $key => $value) {
-		$selected = ( $key === $category ) ? ' selected="selected"' : '';
+		$selected = $key === $category ? ' selected="selected"' : '';
 
 		if (count($avatar_images[$key])) {
 			$s_categories .= '<option value="' . $key . '"' . $selected . '>' . ucfirst($key) . '</option>';

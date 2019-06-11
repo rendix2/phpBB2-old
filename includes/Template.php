@@ -109,8 +109,7 @@ class Template
 	 */
 	public function setRootDir($dir)
 	{
-		if (!is_dir($dir))
-		{
+		if (!is_dir($dir)) {
 			return false;
 		}
 
@@ -143,14 +142,12 @@ class Template
 	 */
 	public function pparse($handle)
 	{
-		if (!$this->loadFile($handle))
-		{
+		if (!$this->loadFile($handle)) {
 			die("Template->pparse(): Couldn't load template file for handle $handle");
 		}
 
 		// actually compile the template now.
-		if (!isset($this->compiled_code[$handle]) || empty($this->compiled_code[$handle]))
-		{
+		if (!isset($this->compiled_code[$handle]) || empty($this->compiled_code[$handle])) {
 			// Actually compile the code now.
 			$this->compiled_code[$handle] = $this->compile($this->uncompiled_code[$handle]);
 		}
@@ -170,8 +167,7 @@ class Template
 	 */
 	public function assignVarFromHandle($varname, $handle)
 	{
-		if (!$this->loadFile($handle))
-		{
+		if (!$this->loadFile($handle)) {
 			die("Template->assignVarFromHandle(): Couldn't load template file for handle $handle");
 		}
 
@@ -194,8 +190,7 @@ class Template
 	 */
 	public function assignBlockVars($blockname, $vararray)
 	{
-		if (false !== strpos($blockname, '.'))
-		{
+		if (false !== strpos($blockname, '.')) {
 			// Nested block.
 			$blocks = explode('.', $blockname);
 			$blockcount = count($blocks) - 1;
@@ -259,13 +254,11 @@ class Template
 	public function makeFileName($filename)
 	{
 		// Check if it's an absolute or relative path.
-		if (substr($filename, 0, 1) !== '/')
-		{
+		if (substr($filename, 0, 1) !== '/') {
        		$filename = ($rp_filename = phpbb_realpath($this->root . '/' . $filename)) ? $rp_filename : $filename;
 		}
 
-		if (!file_exists($filename))
-		{
+		if (!file_exists($filename)) {
 			die("Template->makeFileName(): Error - file $filename does not exist");
 		}
 
@@ -280,22 +273,19 @@ class Template
 	private function loadFile($handle)
 	{
 		// If the file for this handle is already loaded and compiled, do nothing.
-		if (isset($this->uncompiled_code[$handle]) && !empty($this->uncompiled_code[$handle]))
-		{
+		if (isset($this->uncompiled_code[$handle]) && !empty($this->uncompiled_code[$handle])) {
 			return true;
 		}
 
 		// If we don't have a file assigned to this handle, die.
-		if (!isset($this->files[$handle]))
-		{
+		if (!isset($this->files[$handle])) {
 			die("Template->loadFile(): No file specified for handle $handle");
 		}
 
 		$filename = $this->files[$handle];
 
 		$str = implode('', @file($filename));
-		if (empty($str))
-		{
+		if (empty($str)) {
 			die("Template->loadFile(): File $filename for handle $handle is empty");
 		}
 

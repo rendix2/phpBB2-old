@@ -572,7 +572,7 @@ if ($totalBaseTopics) {
 		
 		$view_topic_url = Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id");
 
-		$topic_author = ( $topic->user_id !== ANONYMOUS ) ? '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $topic->user_id) . '">' : '';
+		$topic_author = $topic->user_id !== ANONYMOUS ? '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $topic->user_id) . '">' : '';
 
 		if ($topic->user_id !== ANONYMOUS) {
             $topic_author .=  $topic->username;
@@ -590,11 +590,7 @@ if ($totalBaseTopics) {
 		$last_post_time  = create_date($board_config['default_dateformat'], $topic->post_time, $board_config['board_timezone']);
 
         if ($topic->id2 === ANONYMOUS) {
-            if ($topic->post_username2 !== '') {
-                $last_post_author = $topic->post_username2 . ' ';
-            } else {
-                $last_post_author = $lang['Guest'];
-            }
+            $last_post_author = $topic->post_username2 !== '' ? $topic->post_username2 . ' ' : $lang['Guest'];
         } else {
             $last_post_author = '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '='  . $topic->id2) . '">' . $topic->user2 . '</a>';
         }

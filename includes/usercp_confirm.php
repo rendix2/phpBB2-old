@@ -200,7 +200,7 @@ function create_png($raw_image, $width, $height)
 			// We can defer the modulo operation:
 			// s1 maximally grows from 65521 to 65521 + 255 * 3800
 			// s2 maximally grows by 3800 * median(s1) = 2090079800 < 2^31
-			$substract_value = ($temp_length < 3800) ? $temp_length : 3800;
+			$substract_value = $temp_length < 3800 ? $temp_length : 3800;
 			$temp_length -= $substract_value;
 
 			while (--$substract_value >= 0) {

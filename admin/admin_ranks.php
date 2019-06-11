@@ -282,8 +282,8 @@ foreach ($ranks as $i => $rank) {
 		$rank_min = $rank_max = '-';
 	}
 
-	$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-	$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+	$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+	$row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
 	$rank_is_special = $special_rank ? $lang['Yes'] : $lang['No'];
 

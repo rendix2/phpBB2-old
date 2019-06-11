@@ -44,10 +44,12 @@ function language_select($default, $select_name = 'language', $dirname= 'languag
 
 	@asort($langs);
 
+	$default = strtolower($default);
+
 	$lang_select = '<select name="' . $select_name . '">';
 
 	foreach ($langs as $displayname => $filename) {
-		$selected = ( strtolower($default) === strtolower($filename) ) ? ' selected="selected"' : '';
+		$selected = $default === strtolower($filename) ? ' selected="selected"' : '';
 		$lang_select .= '<option value="' . $filename . '"' . $selected . '>' . ucwords($displayname) . '</option>';
 	}
 

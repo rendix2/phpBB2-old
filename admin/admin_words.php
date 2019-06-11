@@ -204,8 +204,8 @@ if ($mode !== '') {
     foreach ($words as $word) {
 		$word_id = $word->word_id;
 
-		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+		$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+		$row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
         $template->assignBlockVars('words',
             [

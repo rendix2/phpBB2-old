@@ -70,8 +70,8 @@ if (isset($_POST['submit'])) {
 				$ip_1_end = $ip_range_explode[5];
 
                 while ($ip_1_counter <= $ip_1_end) {
-                    $ip_2_counter = ($ip_1_counter === $ip_range_explode[1]) ? $ip_range_explode[2] : 0;
-                    $ip_2_end = ($ip_1_counter < $ip_1_end) ? 254 : $ip_range_explode[6];
+                    $ip_2_counter = $ip_1_counter === $ip_range_explode[1] ? $ip_range_explode[2] : 0;
+                    $ip_2_end = $ip_1_counter < $ip_1_end ? 254 : $ip_range_explode[6];
 
                     if ($ip_2_counter === 0 && $ip_2_end === 254) {
                         $ip_2_counter = 255;
@@ -81,8 +81,8 @@ if (isset($_POST['submit'])) {
                     }
 
                     while ($ip_2_counter <= $ip_2_end) {
-                        $ip_3_counter = ($ip_2_counter === $ip_range_explode[2] && $ip_1_counter === $ip_range_explode[1]) ? $ip_range_explode[3] : 0;
-                        $ip_3_end = ($ip_2_counter < $ip_2_end || $ip_1_counter < $ip_1_end) ? 254 : $ip_range_explode[7];
+                        $ip_3_counter = $ip_2_counter === $ip_range_explode[2] && $ip_1_counter === $ip_range_explode[1] ? $ip_range_explode[3] : 0;
+                        $ip_3_end = $ip_2_counter < $ip_2_end || $ip_1_counter < $ip_1_end ? 254 : $ip_range_explode[7];
 
                         if ($ip_3_counter === 0 && $ip_3_end === 254) {
                             $ip_3_counter = 255;
@@ -92,8 +92,8 @@ if (isset($_POST['submit'])) {
                         }
 
                         while ($ip_3_counter <= $ip_3_end) {
-                            $ip_4_counter = ($ip_3_counter === $ip_range_explode[3] && $ip_2_counter === $ip_range_explode[2] && $ip_1_counter === $ip_range_explode[1]) ? $ip_range_explode[4] : 0;
-                            $ip_4_end = ($ip_3_counter < $ip_3_end || $ip_2_counter < $ip_2_end) ? 254 : $ip_range_explode[8];
+                            $ip_4_counter = $ip_3_counter === $ip_range_explode[3] && $ip_2_counter === $ip_range_explode[2] && $ip_1_counter === $ip_range_explode[1] ? $ip_range_explode[4] : 0;
+                            $ip_4_end = $ip_3_counter < $ip_3_end || $ip_2_counter < $ip_2_end ? 254 : $ip_range_explode[8];
 
                             if ($ip_4_counter === 0 && $ip_4_end === 254) {
                                 $ip_4_counter = 255;

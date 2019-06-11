@@ -115,7 +115,7 @@ if (isset($_GET['view']) && empty($_GET[POST_POST_URL])) {
         if ($row) {
 			$topic_id = (int)$row->topic_id;
 		} else {
-			$message = ( $_GET['view'] === 'next' ) ? 'No_newer_topics' : 'No_older_topics';
+			$message = $_GET['view'] === 'next' ? 'No_newer_topics' : 'No_older_topics';
 			message_die(GENERAL_MESSAGE, $message);
 		}
 	}
@@ -219,7 +219,7 @@ if (!$is_auth['auth_view'] || !$is_auth['auth_read']) {
         redirect(Session::appendSid("login.php?redirect=viewtopic.php&$redirect", true));
     }
 
-	$message = ( !$is_auth['auth_view'] ) ? $lang['Topic_post_not_exist'] : sprintf($lang['Sorry_auth_read'], $is_auth['auth_read_type']);
+	$message = $is_auth['auth_view'] ? sprintf($lang['Sorry_auth_read'], $is_auth['auth_read_type']) : $lang['Topic_post_not_exist'];
 
 	message_die(GENERAL_MESSAGE, $message);
 }
@@ -253,7 +253,7 @@ if ($userdata['session_logged_in']) {
             if ($_GET['unwatch'] === 'topic') {
 				$is_watching_topic = 0;
 
-				$sql_priority = ($dbms === 'mysql') ? 'LOW_PRIORITY' : '';
+				$sql_priority = $dbms === 'mysql' ? 'LOW_PRIORITY' : '';
 
 				dibi::delete(TOPICS_WATCH_TABLE)
                     ->setFlag($sql_priority)
@@ -372,7 +372,7 @@ $select_post_days = Select::postDays($lang, $post_days);
 //
 if (!empty($_POST['postorder']) || !empty($_GET['postorder'])) {
 	$post_order = !empty($_POST['postorder']) ? htmlspecialchars($_POST['postorder']) : htmlspecialchars($_GET['postorder']);
-	$post_time_order = ($post_order === 'asc') ? 'ASC' : 'DESC';
+	$post_time_order = $post_order === 'asc' ? 'ASC' : 'DESC';
 } else {
 	$post_order = 'asc';
 	$post_time_order = 'ASC';
@@ -547,7 +547,7 @@ if ($userdata['session_logged_in']) {
 	$tracking_forums = isset($_COOKIE[$cookie_name_forum]) ? unserialize($_COOKIE[$cookie_name_forum]) : [];
 
     if (!empty($tracking_topics[$topic_id]) && !empty($tracking_forums[$forum_id])) {
-        $topic_last_read = ($tracking_topics[$topic_id] > $tracking_forums[$forum_id]) ? $tracking_topics[$topic_id] : $tracking_forums[$forum_id];
+        $topic_last_read = $tracking_topics[$topic_id] > $tracking_forums[$forum_id] ? $tracking_topics[$topic_id] : $tracking_forums[$forum_id];
     } elseif (!empty($tracking_topics[$topic_id]) || !empty($tracking_forums[$forum_id])) {
         $topic_last_read = !empty($tracking_topics[$topic_id]) ? $tracking_topics[$topic_id] : $tracking_forums[$forum_id];
     } else {
@@ -711,7 +711,8 @@ if (!empty($forum_topic_data->topic_vote)) {
             ->fetch();
 
         if (isset($_GET['vote']) || isset($_POST['vote'])) {
-			$view_result = ( ( isset($_GET['vote']) ? $_GET['vote'] : $_POST['vote'] ) === 'viewresult' ) ? true : 0;
+            $view_result = isset($_GET['vote']) ? $_GET['vote'] : $_POST['vote'];
+            $view_result = $view_result === 'viewresult';
 		} else {
 			$view_result = 0;
 		}
@@ -732,7 +733,7 @@ if (!empty($forum_topic_data->topic_vote)) {
 			$vote_graphic_max = count($images['voting_graphic']);
 
             foreach ($vote_info as $vote_info_value) {
-				$vote_percent = ( $vote_results_sum > 0 ) ? $vote_info_value->vote_result / $vote_results_sum : 0;
+				$vote_percent = $vote_results_sum > 0 ? $vote_info_value->vote_result / $vote_results_sum : 0;
 				$vote_graphic_length = round($vote_percent * $board_config['vote_graphic_length']);
 
 				$vote_graphic_img = $images['voting_graphic'][$vote_graphic];
@@ -820,7 +821,7 @@ dibi::update(TOPICS_TABLE, ['topic_views%sql' => 'topic_views + 1'])
 //
 foreach ($posts as $i => $post) {
 	$poster_id = $post->user_id;
-	$poster = ( $poster_id === ANONYMOUS ) ? $lang['Guest'] : $post->username;
+	$poster    = $poster_id === ANONYMOUS ? $lang['Guest'] : $post->username;
 
 	$post_date = create_date($board_config['default_dateformat'], $post->post_time, $board_config['board_timezone']);
 
@@ -998,7 +999,7 @@ foreach ($posts as $i => $post) {
 	$message = $post->post_text;
 	$bbcode_uid = $post->bbcode_uid;
 
-	$user_sig = ( $post->enable_sig && $post->user_sig !== '' && $board_config['allow_sig'] ) ? $post->user_sig : '';
+	$user_sig = $post->enable_sig && $post->user_sig !== '' && $board_config['allow_sig'] ? $post->user_sig : '';
 	$user_sig_bbcode_uid = $post->user_sig_bbcode_uid;
 
 	//
@@ -1085,7 +1086,7 @@ foreach ($posts as $i => $post) {
 	// Editing information
 	//
     if ($post->post_edit_count) {
-		$l_edit_time_total = ( $post->post_edit_count === 1 ) ? $lang['Edited_time_total'] : $lang['Edited_times_total'];
+		$l_edit_time_total = $post->post_edit_count === 1 ? $lang['Edited_time_total'] : $lang['Edited_times_total'];
 
 		$l_edited_by = '<br /><br />' . sprintf($l_edit_time_total, $poster, create_date($board_config['default_dateformat'], $post->post_edit_time, $board_config['board_timezone']), $post->post_edit_count);
 	} else {
@@ -1096,8 +1097,8 @@ foreach ($posts as $i => $post) {
 	// Again this will be handled by the templating
 	// code at some point
 	//
-	$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-	$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+	$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+	$row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
     $template->assignBlockVars('postrow',
         [

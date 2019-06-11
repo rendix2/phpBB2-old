@@ -71,11 +71,11 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
 
         ksort($action_array);
 
-		$row_count = 0;
+		$rowCount = 0;
 
 		foreach ($action_array as $action => $file) {
-			$row_color = ( !($row_count%2) ) ? $theme['td_color1'] : $theme['td_color2'];
-			$row_class = ( !($row_count%2) ) ? $theme['td_class1'] : $theme['td_class2'];
+			$row_color = !($rowCount%2) ? $theme['td_color1'] : $theme['td_color2'];
+			$row_class = !($rowCount%2) ? $theme['td_class1'] : $theme['td_class2'];
 
 			$action = !empty($lang[$action]) ? $lang[$action] : preg_replace('/_/', ' ', $action);
 
@@ -88,7 +88,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
                     'U_ADMIN_MODULE' => Session::appendSid($file)
                 ]
             );
-            $row_count++;
+            $rowCount++;
 		}
 	}
 
@@ -371,8 +371,8 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
 					$location = $forum_data[$online_user->user_session_page];
 				}
 
-				$row_color = ( $registered_users % 2 ) ? $theme['td_color1'] : $theme['td_color2'];
-				$row_class = ( $registered_users % 2 ) ? $theme['td_class1'] : $theme['td_class2'];
+                $row_color = ($registered_users % 2) ? $theme['td_color1'] : $theme['td_color2'];
+                $row_class = ($registered_users % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
 				$reg_ip = decode_ip($online_user->session_ip);
 

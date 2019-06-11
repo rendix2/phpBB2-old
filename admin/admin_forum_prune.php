@@ -91,8 +91,8 @@ if (isset($_POST['doprune'])) {
         $prune_result = prune($forum->forum_id, $prune_date);
         sync('forum', $forum->forum_id);
 
-        $row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-        $row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+        $row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+        $row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
         $template->assignBlockVars('prune_results',
             [

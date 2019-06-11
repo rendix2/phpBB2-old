@@ -196,7 +196,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	}
 
 	if ($mode === 'newtopic' || ($mode === 'editpost' && $post_data['first_post'])) {
-		$topic_vote = (!empty($poll_title) && $pollOptionsCount >= 2) ? 1 : 0;
+		$topic_vote = !empty($poll_title) && $pollOptionsCount >= 2 ? 1 : 0;
 
 		if ($mode !== 'editpost') {
             $insert_data = [

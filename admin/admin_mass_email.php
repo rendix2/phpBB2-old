@@ -84,7 +84,7 @@ if (isset($_POST['submit'])) {
     }
 
     if (!count($bcc_list)) {
-        $message = ( $group_id !== -1 ) ? $lang['Group_not_exist'] : $lang['No_such_user'];
+        $message = $group_id !== -1 ? $lang['Group_not_exist'] : $lang['No_such_user'];
 
         $error = true;
         $error_msg .= !empty($error_msg) ? '<br />' . $message : $message;

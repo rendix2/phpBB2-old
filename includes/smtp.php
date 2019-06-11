@@ -76,16 +76,13 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 
 		$headers = '';
 		foreach ($header_array as $header) {
-			if (preg_match('#^cc:#si', $header))
-			{
+			if (preg_match('#^cc:#si', $header)) {
 				$cc = preg_replace('#^cc:(.*)#si', '\1', $header);
-			}
-			elseif (preg_match('#^bcc:#si', $header))
-			{
+			} elseif (preg_match('#^bcc:#si', $header)) {
 				$bcc = preg_replace('#^bcc:(.*)#si', '\1', $header);
 				$header = '';
 			}
-			$headers .= ($header !== '') ? $header . "\r\n" : '';
+			$headers .= $header !== '' ? $header . "\r\n" : '';
 		}
 
 		$headers = rtrim($headers);
@@ -144,7 +141,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 	$to_header = '';
 
 	// Add an additional bit of error checking to the To field.
-	$mail_to = (trim($mail_to) === '') ? 'Undisclosed-recipients:;' : trim($mail_to);
+	$mail_to = trim($mail_to) === '' ? 'Undisclosed-recipients:;' : trim($mail_to);
 	if (preg_match('#[^ ]+\@[^ ]+#', $mail_to))
 	{
 		fwrite($socket, "RCPT TO: <$mail_to>\r\n");

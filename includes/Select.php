@@ -15,7 +15,7 @@ class Select
         $tz_select = '<select name="' . $select_name . '">';
 
         foreach ($timeZones as $timeZone) {
-            $selected = ( $timeZone === $default ) ? ' selected="selected"' : '';
+            $selected = $timeZone === $default ? ' selected="selected"' : '';
             $tz_select .= '<option value="' . $timeZone . '"' . $selected . '>' . $timeZone . '</option>';
         }
 

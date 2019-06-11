@@ -71,7 +71,7 @@ function show_coppa()
 
 $error = false;
 $error_msg = '';
-$page_title = ( $mode === 'editprofile' ) ? $lang['Edit_profile'] : $lang['Register'];
+$page_title = $mode === 'editprofile' ? $lang['Edit_profile'] : $lang['Register'];
 
 if ($mode === 'register' && !isset($_POST['agreed']) && !isset($_GET['agreed']) ) {
 	include $phpbb_root_path . 'includes/page_header.php';
@@ -81,7 +81,7 @@ if ($mode === 'register' && !isset($_POST['agreed']) && !isset($_GET['agreed']) 
 	include $phpbb_root_path . 'includes/page_tail.php';
 }
 
-$coppa = ( empty($_POST['coppa']) && empty($_GET['coppa']) ) ? 0 : true;
+$coppa = empty($_POST['coppa']) && empty($_GET['coppa']) ? 0 : true;
 
 //
 // Check and initialize some variables if needed
@@ -432,7 +432,7 @@ if (isset($_POST['submit'])) {
 
 				$user_actkey = gen_rand_string(true);
 				$key_len = 54 - mb_strlen($server_url);
-				$key_len = ( $key_len > 6 ) ? $key_len : 6;
+				$key_len = $key_len > 6 ? $key_len : 6;
 				$user_actkey = substr($user_actkey, 0, $key_len);
 
                 if ($userdata['session_logged_in']) {
@@ -594,7 +594,7 @@ if (isset($_POST['submit'])) {
             if ($board_config['require_activation'] === USER_ACTIVATION_SELF || $board_config['require_activation'] === USER_ACTIVATION_ADMIN || $coppa) {
 				$user_actkey = gen_rand_string(true);
 				$key_len = 54 - mb_strlen($server_url);
-				$key_len = ( $key_len > 6 ) ? $key_len : 6;
+				$key_len = $key_len > 6 ? $key_len : 6;
 				$user_actkey = substr($user_actkey, 0, $key_len);
 
                 $insert_data['user_active'] = 0;
@@ -740,7 +740,7 @@ if ($error) {
 	$occupation = stripslashes($occupation);
 	$interests = stripslashes($interests);
 	$signature = stripslashes($signature);
-	$signature = ($signature_bbcode_uid !== '') ? preg_replace("/:(([a-z0-9]+:)?)$signature_bbcode_uid(=|\])/si", '\\3', $signature) : $signature;
+	$signature = $signature_bbcode_uid !== '' ? preg_replace("/:(([a-z0-9]+:)?)$signature_bbcode_uid(=|\])/si", '\\3', $signature) : $signature;
 
 	$user_lang = stripslashes($user_lang);
 	$user_dateformat = stripslashes($user_dateformat);
@@ -850,9 +850,9 @@ if (isset($_POST['avatargallery']) && !$error) {
 		$s_hidden_fields .= '<input type="hidden" name="avatarlocal" value="' . $user_avatar_local . '" /><input type="hidden" name="avatarcatname" value="' . $user_avatar_category . '" />';
 	}
 
-	$html_status =  ($userdata['user_allowhtml'] && $board_config['allow_html'] ) ? $lang['HTML_is_ON'] : $lang['HTML_is_OFF'];
-	$bbcode_status = ($userdata['user_allowbbcode'] && $board_config['allow_bbcode']  ) ? $lang['BBCode_is_ON'] : $lang['BBCode_is_OFF'];
-	$smilies_status = ($userdata['user_allowsmile'] && $board_config['allow_smilies']  ) ? $lang['Smilies_are_ON'] : $lang['Smilies_are_OFF'];
+	$html_status    = $userdata['user_allowhtml'] && $board_config['allow_html']     ? $lang['HTML_is_ON']     : $lang['HTML_is_OFF'];
+	$bbcode_status  = $userdata['user_allowbbcode'] && $board_config['allow_bbcode'] ? $lang['BBCode_is_ON']   : $lang['BBCode_is_OFF'];
+	$smilies_status = $userdata['user_allowsmile'] && $board_config['allow_smilies'] ? $lang['Smilies_are_ON'] : $lang['Smilies_are_OFF'];
 
     if ($error) {
         $template->setFileNames(['reg_header' => 'error_body.tpl']);
@@ -866,7 +866,7 @@ if (isset($_POST['avatargallery']) && !$error) {
         $template->assignBlockVars('switch_edit_profile', []);
     }
 
-    if (($mode === 'register') || $board_config['allow_namechange']) {
+    if ($mode === 'register' || $board_config['allow_namechange']) {
         $template->assignBlockVars('switch_namechange_allowed', []);
     } else {
         $template->assignBlockVars('switch_namechange_disallowed', []);
@@ -942,24 +942,34 @@ if (isset($_POST['avatargallery']) && !$error) {
             'LOCATION' => $location,
             'WEBSITE' => $website,
             'SIGNATURE' => str_replace('<br />', "\n", $signature),
+
             'VIEW_EMAIL_YES' => $viewemail ? 'checked="checked"' : '',
-            'VIEW_EMAIL_NO' => ( !$viewemail ) ? 'checked="checked"' : '',
-            'HIDE_USER_YES' => ( !$allowviewonline ) ? 'checked="checked"' : '',
+            'VIEW_EMAIL_NO' => !$viewemail ? 'checked="checked"' : '',
+
+            'HIDE_USER_YES' => !$allowviewonline ? 'checked="checked"' : '',
             'HIDE_USER_NO' => $allowviewonline ? 'checked="checked"' : '',
+
             'NOTIFY_PM_YES' => $notifypm ? 'checked="checked"' : '',
-            'NOTIFY_PM_NO' => ( !$notifypm ) ? 'checked="checked"' : '',
+            'NOTIFY_PM_NO' => !$notifypm ? 'checked="checked"' : '',
+
             'POPUP_PM_YES' => $popup_pm ? 'checked="checked"' : '',
-            'POPUP_PM_NO' => ( !$popup_pm ) ? 'checked="checked"' : '',
+            'POPUP_PM_NO' => !$popup_pm ? 'checked="checked"' : '',
+
             'ALWAYS_ADD_SIGNATURE_YES' => $attachsig ? 'checked="checked"' : '',
-            'ALWAYS_ADD_SIGNATURE_NO' => ( !$attachsig ) ? 'checked="checked"' : '',
+            'ALWAYS_ADD_SIGNATURE_NO' => !$attachsig ? 'checked="checked"' : '',
+
             'NOTIFY_REPLY_YES' => $notifyreply ? 'checked="checked"' : '',
-            'NOTIFY_REPLY_NO' => ( !$notifyreply ) ? 'checked="checked"' : '',
+            'NOTIFY_REPLY_NO' => !$notifyreply ? 'checked="checked"' : '',
+
             'ALWAYS_ALLOW_BBCODE_YES' => $allowbbcode ? 'checked="checked"' : '',
-            'ALWAYS_ALLOW_BBCODE_NO' => ( !$allowbbcode ) ? 'checked="checked"' : '',
+            'ALWAYS_ALLOW_BBCODE_NO' => !$allowbbcode ? 'checked="checked"' : '',
+
             'ALWAYS_ALLOW_HTML_YES' => $allowhtml ? 'checked="checked"' : '',
-            'ALWAYS_ALLOW_HTML_NO' => ( !$allowhtml ) ? 'checked="checked"' : '',
+            'ALWAYS_ALLOW_HTML_NO' => !$allowhtml ? 'checked="checked"' : '',
+
             'ALWAYS_ALLOW_SMILIES_YES' => $allowsmilies ? 'checked="checked"' : '',
-            'ALWAYS_ALLOW_SMILIES_NO' => ( !$allowsmilies ) ? 'checked="checked"' : '',
+            'ALWAYS_ALLOW_SMILIES_NO' => !$allowsmilies ? 'checked="checked"' : '',
+
             'ALLOW_AVATAR' => $board_config['allow_avatar_upload'],
             'AVATAR' => $avatar_img,
             'AVATAR_SIZE' => $board_config['avatar_filesize'],
@@ -972,11 +982,11 @@ if (isset($_POST['avatargallery']) && !$error) {
             'SMILIES_STATUS' => $smilies_status,
 
             'L_CURRENT_PASSWORD' => $lang['Current_password'],
-            'L_NEW_PASSWORD' => ( $mode === 'register' ) ? $lang['Password'] : $lang['New_password'],
+            'L_NEW_PASSWORD' => $mode === 'register' ? $lang['Password'] : $lang['New_password'],
             'L_CONFIRM_PASSWORD' => $lang['Confirm_password'],
-            'L_CONFIRM_PASSWORD_EXPLAIN' => ( $mode === 'editprofile' ) ? $lang['Confirm_password_explain'] : '',
-            'L_PASSWORD_IF_CHANGED' => ( $mode === 'editprofile' ) ? $lang['password_if_changed'] : '',
-            'L_PASSWORD_CONFIRM_IF_CHANGED' => ( $mode === 'editprofile' ) ? $lang['password_confirm_if_changed'] : '',
+            'L_CONFIRM_PASSWORD_EXPLAIN' => $mode === 'editprofile' ? $lang['Confirm_password_explain'] : '',
+            'L_PASSWORD_IF_CHANGED' => $mode === 'editprofile' ? $lang['password_if_changed'] : '',
+            'L_PASSWORD_CONFIRM_IF_CHANGED' => $mode === 'editprofile' ? $lang['password_confirm_if_changed'] : '',
             'L_SUBMIT' => $lang['Submit'],
             'L_RESET' => $lang['Reset'],
             'L_ICQ_NUMBER' => $lang['ICQ'],
@@ -1001,8 +1011,7 @@ if (isset($_POST['avatargallery']) && !$error) {
             'L_ALWAYS_ADD_SIGNATURE' => $lang['Always_add_sig'],
 
             'L_AVATAR_PANEL' => $lang['Avatar_panel'],
-            'L_AVATAR_EXPLAIN' => sprintf($lang['Avatar_explain'], $board_config['avatar_max_width'], $board_config['avatar_max_height'],
-                round($board_config['avatar_filesize'] / 1024)),
+            'L_AVATAR_EXPLAIN' => sprintf($lang['Avatar_explain'], $board_config['avatar_max_width'], $board_config['avatar_max_height'], round($board_config['avatar_filesize'] / 1024)),
             'L_UPLOAD_AVATAR_FILE' => $lang['Upload_Avatar_file'],
             'L_UPLOAD_AVATAR_URL' => $lang['Upload_Avatar_URL'],
             'L_UPLOAD_AVATAR_URL_EXPLAIN' => $lang['Upload_Avatar_URL_explain'],

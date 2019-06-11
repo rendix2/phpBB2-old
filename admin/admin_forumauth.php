@@ -239,7 +239,7 @@ if (empty($forum_id)) {
 		$simple_auth = '<select name="simpleauth">';
 
         foreach ($simple_auth_types as $key => $simple_auth_type) {
-			$selected = ( $matched_type === $key ) ? ' selected="selected"' : '';
+			$selected = $matched_type === $key ? ' selected="selected"' : '';
 			$simple_auth .= '<option value="' . $key . '"' . $selected . '>' . $simple_auth_type . '</option>';
 		}
 
@@ -258,7 +258,7 @@ if (empty($forum_id)) {
 			$custom_auth[$key] = '&nbsp;<select name="' . $forum_auth_field . '">';
 
             foreach ($forum_auth_levels as $key2 => $forum_auth_level) {
-                $selected = ($forums[0]->{$forum_auth_field} === $forum_auth_const[$key2] ) ? ' selected="selected"' : '';
+                $selected = $forums[0]->{$forum_auth_field} === $forum_auth_const[$key2] ? ' selected="selected"' : '';
                 $custom_auth[$key] .= '<option value="' . $forum_auth_const[$key2] . '"' . $selected . '>' . $lang['Forum_' . $forum_auth_level] . '</option>';
             }
 

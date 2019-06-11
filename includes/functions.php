@@ -151,7 +151,7 @@ function make_jumpbox($action, $match_forum_id = 0)
 
 //					if ($forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $is_auth[$forum_rows[$j]['forum_id']]['auth_view'] )
 //					{
-						$selected = ( $forum->forum_id === $match_forum_id ) ? 'selected="selected"' : '';
+						$selected = $forum->forum_id === $match_forum_id ? 'selected="selected"' : '';
 						$boxstring_forums .=  '<option value="' . $forum->forum_id . '"' . $selected . '>' . $forum->forum_name . '</option>';
 
 						//
@@ -402,7 +402,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 	$page_string = '';
 	if ($total_pages > 10) {
-		$init_page_max = ( $total_pages > 3 ) ? 3 : $total_pages;
+		$init_page_max = $total_pages > 3 ? 3 : $total_pages;
 
 		for ($i = 1; $i < $init_page_max + 1; $i++) {
 			$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . Session::appendSid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
@@ -414,26 +414,26 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 		if ($total_pages > 3) {
 			if ($on_page > 1  && $on_page < $total_pages) {
-				$page_string .= ( $on_page > 5 ) ? ' ... ' : ', ';
+				$page_string .= $on_page > 5 ? ' ... ' : ', ';
 
-				$init_page_min = ( $on_page > 4 ) ? $on_page : 5;
-				$init_page_max = ( $on_page < $total_pages - 4 ) ? $on_page : $total_pages - 4;
+				$init_page_min = $on_page > 4 ? $on_page : 5;
+				$init_page_max = $on_page < $total_pages - 4 ? $on_page : $total_pages - 4;
 
 				for ($i = $init_page_min - 1; $i < $init_page_max + 2; $i++) {
-					$page_string .= ($i === $on_page) ? '<b>' . $i . '</b>' : '<a href="' . Session::appendSid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+					$page_string .= $i === $on_page ? '<b>' . $i . '</b>' : '<a href="' . Session::appendSid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
 					if ($i <  $init_page_max + 1) {
 						$page_string .= ', ';
 					}
 				}
 
-				$page_string .= ( $on_page < $total_pages - 4 ) ? ' ... ' : ', ';
+				$page_string .= $on_page < $total_pages - 4 ? ' ... ' : ', ';
 			} else {
 				$page_string .= ' ... ';
 			}
 
 			for ($i = $total_pages - 2; $i < $total_pages + 1; $i++) {
-				$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>'  : '<a href="' . Session::appendSid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+				$page_string .= $i === $on_page ? '<b>' . $i . '</b>'  : '<a href="' . Session::appendSid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
 				if ($i <  $total_pages) {
 					$page_string .= ', ';
@@ -443,7 +443,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 	}
 	else {
 		for ($i = 1; $i < $total_pages + 1; $i++) {
-			$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . Session::appendSid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+			$page_string .= $i === $on_page ? '<b>' . $i . '</b>' : '<a href="' . Session::appendSid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
 			if ($i <  $total_pages) {
 				$page_string .= ', ';

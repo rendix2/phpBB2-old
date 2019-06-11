@@ -408,8 +408,8 @@ foreach ($categories as $i => $category) {
                             $moderator_list = '&nbsp;';
                         }
 
-                        $row_color = (!($i % 2)) ? $theme['td_color1'] : $theme['td_color2'];
-                        $row_class = (!($i % 2)) ? $theme['td_class1'] : $theme['td_class2'];
+                        $row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+                        $row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
                         $catRowData = [
                             'ROW_COLOR'        => '#' . $row_color,

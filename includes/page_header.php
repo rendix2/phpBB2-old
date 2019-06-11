@@ -214,7 +214,7 @@ if (defined('SHOW_ONLINE')) {
 //
 if ($userdata['session_logged_in'] && empty($gen_simple_header)) {
     if ($userdata['user_new_privmsg']) {
-		$l_message_new = ($userdata['user_new_privmsg'] === 1 ) ? $lang['New_pm'] : $lang['New_pms'];
+		$l_message_new = $userdata['user_new_privmsg'] === 1 ? $lang['New_pm'] : $lang['New_pms'];
 		$l_privmsgs_text = sprintf($l_message_new, $userdata['user_new_privmsg']);
 
 		if ($userdata['user_last_privmsg'] > $userdata['user_lastvisit']) {
@@ -236,7 +236,7 @@ if ($userdata['session_logged_in'] && empty($gen_simple_header)) {
 	}
 
 	if ($userdata['user_unread_privmsg']) {
-		$l_message_unread = ($userdata['user_unread_privmsg'] === 1 ) ? $lang['Unread_pm'] : $lang['Unread_pms'];
+		$l_message_unread = $userdata['user_unread_privmsg'] === 1 ? $lang['Unread_pm'] : $lang['Unread_pms'];
 		$l_privmsgs_text_unread = sprintf($l_message_unread, $userdata['user_unread_privmsg']);
 	} else {
 		$l_privmsgs_text_unread = $lang['No_unread_pm'];

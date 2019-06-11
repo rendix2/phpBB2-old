@@ -364,7 +364,7 @@ if ($post_info) {
 		// Can this user edit/delete the post/poll?
 		//
         if ($post_info->poster_id !== $userdata['user_id'] && !$is_auth['auth_mod']) {
-			$message = ( $delete || $mode === 'delete' ) ? $lang['Delete_own_posts'] : $lang['Edit_own_posts'];
+			$message = $delete || $mode === 'delete' ? $lang['Delete_own_posts'] : $lang['Edit_own_posts'];
 			$message .= '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id") . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
@@ -837,7 +837,7 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg !== '') {
 			$msg_date =  create_date($board_config['default_dateformat'], $post_info->post_time, $board_config['board_timezone']);
 
 			// Use trim to get rid of spaces placed there by MS-SQL 2000
-			$quote_username = ( trim($post_info->post_username) !== '' ) ? $post_info->post_username : $post_info->username;
+			$quote_username = trim($post_info->post_username) !== '' ? $post_info->post_username : $post_info->username;
 			$message = '[quote="' . $quote_username . '"]' . $message . '[/quote]';
 
             if (!empty($orig_word)) {
@@ -851,7 +851,7 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg !== '') {
 
 			$mode = 'reply';
 		} else {
-			$username = ( $post_info->user_id === ANONYMOUS && !empty($post_info->post_username) ) ? $post_info->post_username : '';
+			$username = $post_info->user_id === ANONYMOUS && !empty($post_info->post_username) ? $post_info->post_username : '';
 		}
 	}
 }

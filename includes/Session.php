@@ -354,7 +354,7 @@ class Session
                 $ip_check_u = substr($user_ip, 0, 6);
 
                 if ($ip_check_s === $ip_check_u) {
-                    $SID = ($sessionmethod === SESSION_METHOD_GET || defined('IN_ADMIN')) ? 'sid=' . $session_id : '';
+                    $SID = $sessionmethod === SESSION_METHOD_GET || defined('IN_ADMIN') ? 'sid=' . $session_id : '';
 
                     //
                     // Only update session DB a minute or so after last update
