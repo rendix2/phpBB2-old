@@ -90,6 +90,8 @@ function prepare_post(&$mode, &$post_data, &$bbcode_on, &$html_on, &$smilies_on,
 {
 	global $board_config, $userdata, $lang, $phpbb_root_path;
 
+    $pollOptionsCount = count($poll_options);
+
 	// Check username
 	if (!empty($username)) {
 		$username = phpbb_clean_username($username);
@@ -143,9 +145,9 @@ function prepare_post(&$mode, &$post_data, &$bbcode_on, &$html_on, &$smilies_on,
 			}
 			$option_text = $temp_option_text;
 
-            if (count($poll_options) < 1) {
+            if ($pollOptionsCount < 1) {
                 $error_msg .= !empty($error_msg) ? '<br />' . $lang['To_few_poll_options'] : $lang['To_few_poll_options'];
-            } elseif (count($poll_options) > $board_config['max_poll_options']) {
+            } elseif ($pollOptionsCount > $board_config['max_poll_options']) {
                 $error_msg .= !empty($error_msg) ? '<br />' . $lang['To_many_poll_options'] : $lang['To_many_poll_options'];
             } elseif ($poll_title === '') {
                 $error_msg .= !empty($error_msg) ? '<br />' . $lang['Empty_poll_title'] : $lang['Empty_poll_title'];
@@ -161,6 +163,8 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 {
 	global $board_config, $lang, $phpbb_root_path;
 	global $userdata, $user_ip;
+
+	$pollOptionsCount = count($poll_options);
 
 	include $phpbb_root_path . 'includes/functions_search.php';
 
@@ -182,7 +186,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 
         $max_post_time = $max_post_time->fetchSingle();
 
-		if ($max_post_time && (int)$max_post_time > 0 && ($current_time - $max_post_time) < (int)$board_config['flood_interval']) {
+        if ($max_post_time && (int)$max_post_time > 0 && ($current_time - $max_post_time) < (int)$board_config['flood_interval']) {
             message_die(GENERAL_MESSAGE, $lang['Flood_Error']);
         }
 	}
@@ -192,7 +196,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	}
 
 	if ($mode === 'newtopic' || ($mode === 'editpost' && $post_data['first_post'])) {
-		$topic_vote = (!empty($poll_title) && count($poll_options) >= 2) ? 1 : 0;
+		$topic_vote = (!empty($poll_title) && $pollOptionsCount >= 2) ? 1 : 0;
 
 		if ($mode !== 'editpost') {
             $insert_data = [
@@ -280,7 +284,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	//
 	// Add poll
 	// 
-	if (($mode === 'newtopic' || ($mode === 'editpost' && $post_data['edit_poll'])) && !empty($poll_title) && count($poll_options) >= 2) {
+	if (($mode === 'newtopic' || ($mode === 'editpost' && $post_data['edit_poll'])) && !empty($poll_title) && $pollOptionsCount >= 2) {
 	    if (!$post_data['has_poll']) {
 	        $insert_data = [
 	            'topic_id' => $topic_id,
@@ -580,11 +584,10 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
                 $emailer = new Emailer($board_config['smtp_delivery']);
 
                 $script_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['script_path']));
-                $script_name = ($script_name !== '') ? $script_name . '/viewtopic.php' : 'viewtopic.php';
+                $script_name = $script_name !== '' ? $script_name . '/viewtopic.php' : 'viewtopic.php';
                 $server_name = trim($board_config['server_name']);
                 $server_protocol = $board_config['cookie_secure'] ? 'https://' : 'http://';
-                $server_port = ($board_config['server_port'] !== 80) ? ':' . trim($board_config['server_port']) . '/' :
-                '/';
+                $server_port = $board_config['server_port'] !== 80 ? ':' . trim($board_config['server_port']) . '/' : '/';
 
                 $orig_word = [];
                 $replacement_word = [];
@@ -799,10 +802,10 @@ function clean_html($tag)
 
 		if (!empty($tag[2])) {
 			preg_match_all('/[\W]*?(\w+)[\W]*?=[\W]*?(["\'])((?:(?!\2).)*)\2/', $tag[2], $test);
-			$count_test_zero = count($test[0]);
+			$countTestZero = count($test[0]);
 
 
-			for ($i = 0; $i < $count_test_zero; $i++) {
+			for ($i = 0; $i < $countTestZero; $i++) {
 				if (preg_match($disallowed_attributes, $test[1][$i])) {
 					continue;
 				}
