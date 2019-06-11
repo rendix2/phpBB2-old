@@ -34,7 +34,7 @@ init_userprefs($userdata);
 // End session management
 //
 
-$view_category = !empty($_GET[POST_CAT_URL]) ? $_GET[POST_CAT_URL] : -1;
+$view_category = isset($_GET[POST_CAT_URL]) ? $_GET[POST_CAT_URL] : -1;
 
 if (isset($_GET['mark']) || isset($_POST['mark'])) {
     $mark_read = isset($_POST['mark']) ? $_POST['mark'] : $_GET['mark'];
@@ -346,7 +346,7 @@ foreach ($categories as $i => $category) {
                         } else {
                             $unread_topics = false;
 
-                            if ($userdata['session_logged_in'] && !empty($new_topic_data[$forum_id])) {
+                            if ($userdata['session_logged_in'] && isset($new_topic_data[$forum_id])) {
                                 $forum_last_post_time = 0;
 
                                 foreach ($new_topic_data[$forum_id] as $check_topic_id => $check_post_time) {
@@ -361,7 +361,8 @@ foreach ($categories as $i => $category) {
                                     }
                                 }
 
-                                if (!empty($tracking_forums[$forum_id]) && $tracking_forums[$forum_id] > $forum_last_post_time) {
+                                if (isset($tracking_forums[$forum_id]) && $tracking_forums[$forum_id] >
+                                    $forum_last_post_time) {
                                     $unread_topics = false;
                                 }
 

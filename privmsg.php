@@ -228,7 +228,7 @@ if ($mode === 'newpm') {
 
             $privmsg->where('pm.privmsgs_from_userid = %i', $userdata['user_id'])
                 ->where('pm.privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL]);
-			break;
+            break;
 			
 		case 'sentbox':
 			$l_box_name = $lang['Sentbox'];
@@ -495,8 +495,7 @@ if ($mode === 'newpm') {
 	$pm_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
 	$pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
 
-	if (!empty($privmsg->user_viewemail) || $userdata['user_level'] === ADMIN )
-	{
+	if (!empty($privmsg->user_viewemail) || $userdata['user_level'] === ADMIN ) {
 		$email_uri = $board_config['board_email_form'] ? Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL .'=' . $user_id_from) : 'mailto:' . $privmsg->user_email;
 
 		$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
@@ -520,26 +519,25 @@ if ($mode === 'newpm') {
 	}
 
 	$aim_img = $privmsg->user_aim ? '<a href="aim:goim?screenname=' . $privmsg->user_aim . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
-	$aim = $privmsg->user_aim ? '<a href="aim:goim?screenname=' . $privmsg->user_aim . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
+	$aim     = $privmsg->user_aim ? '<a href="aim:goim?screenname=' . $privmsg->user_aim . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
 
 	$temp_url = Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$user_id_from");
-	$msn_img = $privmsg->user_msnm ? '<a href="' . $temp_url . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
-	$msn = $privmsg->user_msnm ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
+	$msn_img  = $privmsg->user_msnm ? '<a href="' . $temp_url . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
+	$msn      = $privmsg->user_msnm ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
 
 	$yim_img = $privmsg->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $privmsg->user_yim . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
-	$yim = $privmsg->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $privmsg->user_yim . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
+	$yim     = $privmsg->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $privmsg->user_yim . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
 
-	$temp_url = Session::appendSid('search.php?search_author=' . urlencode($username_from) . '&amp;showresults=posts');
+	$temp_url   = Session::appendSid('search.php?search_author=' . urlencode($username_from) . '&amp;showresults=posts');
 	$search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $username_from) . '" title="' . sprintf($lang['Search_user_posts'], $username_from) . '" border="0" /></a>';
-	$search = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $username_from) . '</a>';
+	$search     = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $username_from) . '</a>';
 
 	//
 	// Processing of post
 	//
-	$post_subject = $privmsg->privmsgs_subject;
-
+	$post_subject    = $privmsg->privmsgs_subject;
 	$private_message = $privmsg->privmsgs_text;
-	$bbcode_uid = $privmsg->privmsgs_bbcode_uid;
+	$bbcode_uid      = $privmsg->privmsgs_bbcode_uid;
 
     if ($board_config['allow_sig']) {
         $user_sig = ($privmsg->privmsgs_from_userid === $userdata['user_id']) ? $userdata['user_sig'] : $privmsg->user_sig;
@@ -1143,14 +1141,14 @@ if ($mode === 'newpm') {
             }
 
             $insert_data = [
-                'privmsgs_type' => PRIVMSGS_NEW_MAIL,
-                'privmsgs_subject' => $privmsg_subject,
-                'privmsgs_from_userid' => $userdata['user_id'],
-                'privmsgs_to_userid' => $to_userdata['user_id'],
-                'privmsgs_date' => $msg_time,
-                'privmsgs_ip' => $user_ip,
-                'privmsgs_enable_html' => $html_on,
-                'privmsgs_enable_bbcode' => $bbcode_on,
+                'privmsgs_type'           => PRIVMSGS_NEW_MAIL,
+                'privmsgs_subject'        => $privmsg_subject,
+                'privmsgs_from_userid'    => $userdata['user_id'],
+                'privmsgs_to_userid'      => $to_userdata['user_id'],
+                'privmsgs_date'           => $msg_time,
+                'privmsgs_ip'             => $user_ip,
+                'privmsgs_enable_html'    => $html_on,
+                'privmsgs_enable_bbcode'  => $bbcode_on,
                 'privmsgs_enable_smilies' => $smilies_on,
                 'privmsgs_attach_sig'     => $attach_sig
             ];
@@ -1159,16 +1157,16 @@ if ($mode === 'newpm') {
                 ->execute(dibi::IDENTIFIER);
 		} else {
             $update_data = [
-                'privmsgs_type' => PRIVMSGS_NEW_MAIL,
-                'privmsgs_subject' => $privmsg_subject,
-                'privmsgs_from_userid' => $userdata['user_id'],
-                'privmsgs_to_userid' => $to_userdata['user_id'],
-                'privmsgs_date' => $msg_time,
-                'privmsgs_ip' => $user_ip,
-                'privmsgs_enable_html' => $html_on,
-                'privmsgs_enable_bbcode' => $bbcode_on,
+                'privmsgs_type'           => PRIVMSGS_NEW_MAIL,
+                'privmsgs_subject'        => $privmsg_subject,
+                'privmsgs_from_userid'    => $userdata['user_id'],
+                'privmsgs_to_userid'      => $to_userdata['user_id'],
+                'privmsgs_date'           => $msg_time,
+                'privmsgs_ip'             => $user_ip,
+                'privmsgs_enable_html'    => $html_on,
+                'privmsgs_enable_bbcode'  => $bbcode_on,
                 'privmsgs_enable_smilies' => $smilies_on,
-                'privmsgs_attach_sig' => $attach_sig
+                'privmsgs_attach_sig'     => $attach_sig
             ];
 
 		    dibi::update(PRIVMSGS_TABLE, $update_data)
@@ -1177,16 +1175,16 @@ if ($mode === 'newpm') {
 		}
 
         if ($mode !== 'edit') {
-			$insert_data = [
-			    'privmsgs_text_id' => $privmsg_sent_id,
+            $insert_data = [
+                'privmsgs_text_id'    => $privmsg_sent_id,
                 'privmsgs_bbcode_uid' => $bbcode_uid,
-                'privmsgs_text' => $privmsg_message
+                'privmsgs_text'       => $privmsg_message
             ];
 
 			dibi::insert(PRIVMSGS_TEXT_TABLE, $insert_data)->execute();
 		} else {
-		    $update_data = [
-		        'privmsgs_text' =>   $privmsg_message,
+            $update_data = [
+                'privmsgs_text'       => $privmsg_message,
                 'privmsgs_bbcode_uid' => $bbcode_uid
             ];
 
@@ -1257,9 +1255,9 @@ if ($mode === 'newpm') {
 		// passed to the script, process it a little, do some checks
 		// where neccessary, etc.
 		//
-		$to_username = isset($_POST['username']) ? trim(htmlspecialchars(stripslashes($_POST['username']))) : '';
+		$to_username     = isset($_POST['username']) ? trim(htmlspecialchars(stripslashes($_POST['username']))) : '';
+		$privmsg_subject = isset($_POST['subject']) ? trim(htmlspecialchars(stripslashes($_POST['subject'])))   : '';
 
-		$privmsg_subject = isset($_POST['subject']) ? trim(htmlspecialchars(stripslashes($_POST['subject']))) : '';
 		$privmsg_message = isset($_POST['message']) ? trim($_POST['message']) : '';
 		// $privmsg_message = preg_replace('#<textarea>#si', '&lt;textarea&gt;', $privmsg_message);
 
@@ -1399,7 +1397,7 @@ if ($mode === 'newpm') {
 			$privmsg_subject = preg_replace($orig_word, $replacement_word, $privmsg_subject);
 
 			$to_username = $privmsg->username;
-			$to_userid = $privmsg->user_id;
+			$to_userid   = $privmsg->user_id;
 
             if ($mode === 'quote') {
 				$privmsg_message = $privmsg->privmsgs_text;
@@ -2005,8 +2003,8 @@ if (count($rows)) {
             $msg_username = '<b>' . $msg_username . '</b>';
         }
 
-		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+		$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+		$row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 		$i++;
 
         $template->assignBlockVars('listrow',
@@ -2028,12 +2026,14 @@ if (count($rows)) {
         );
     }
 
-    $template->assignVars([
+    $template->assignVars(
+        [
             'PAGINATION'  => generate_pagination("privmsg.php?folder=$folder", $pm_total, $board_config['topics_per_page'], $start),
             'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $board_config['topics_per_page']) + 1, ceil($pm_total / $board_config['topics_per_page'])),
 
             'L_GOTO_PAGE' => $lang['Goto_page']
-        ]);
+        ]
+    );
 
 } else {
     $template->assignVars(

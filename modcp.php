@@ -110,9 +110,10 @@ if (!empty($topic_id)) {
         message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
     }
 
-	$forum_topics = ( $topic_row->forum_topics === 0 ) ? 1 : $topic_row->forum_topics;
-	$forum_id = $topic_row->forum_id;
-	$forum_name = $topic_row->forum_name;
+    // todo oh why? :O if 0 than 1? :D
+	$forum_topics = $topic_row->forum_topics === 0 ? 1 : $topic_row->forum_topics;
+	$forum_id     = $topic_row->forum_id;
+	$forum_name   = $topic_row->forum_name;
 } elseif (!empty($forum_id)) {
     $topic_row = dibi::select(['forum_name', 'forum_topics'])
         ->from(FORUMS_TABLE)
@@ -123,8 +124,8 @@ if (!empty($topic_id)) {
         message_die(GENERAL_MESSAGE, 'Forum_not_exist');
     }
 
-	$forum_topics = ( $topic_row->forum_topics === 0 ) ? 1 : $topic_row->forum_topics;
-	$forum_name = $topic_row->forum_name;
+	$forum_topics = $topic_row->forum_topics === 0 ? 1 : $topic_row->forum_topics;
+	$forum_name   = $topic_row->forum_name;
 } else {
 	message_die(GENERAL_MESSAGE, 'Forum_not_exist');
 }
@@ -290,9 +291,7 @@ switch ($mode) {
 			$hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
 
             if (isset($_POST['topic_id_list'])) {
-                $topics = $_POST['topic_id_list'];
-
-				foreach ($topics as $topic) {
+				foreach ($_POST['topic_id_list'] as $topic) {
 					$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . (int)$topic . '" />';
 				}
 			} else {
@@ -415,9 +414,7 @@ switch ($mode) {
 			$hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
 
             if (isset($_POST['topic_id_list'])) {
-                $topics = $_POST['topic_id_list'];
-
-				foreach ($topics as $topic) {
+				foreach ($_POST['topic_id_list'] as $topic) {
 					$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . (int)$topic . '" />';
 				}
 			} else {
@@ -685,6 +682,7 @@ switch ($mode) {
 				$orig_word = [];
 				$replacement_word = [];
 				obtain_word_list($orig_word, $replacement_word);
+				$count_orig_word = count($orig_word);
 
 				foreach ($posts as $post) {
 					$post_id   = $post->post_id;
@@ -693,27 +691,25 @@ switch ($mode) {
 
 					$post_date = create_date($board_config['default_dateformat'], $post->post_time, $board_config['board_timezone']);
 
-					$bbcode_uid = $post->bbcode_uid;
-					$message = $post->post_text;
-					$post_subject = ( $post->post_subject !== '' ) ? $post->post_subject : $topic_title;
+					$bbcode_uid   = $post->bbcode_uid;
+					$message      = $post->post_text;
+					$post_subject = $post->post_subject !== '' ? $post->post_subject : $topic_title;
 
 					//
 					// If the board has HTML off but the post has HTML
 					// on then we process it, else leave it alone
 					//
-                    if (!$board_config['allow_html']) {
-                        if ($post->enable_html) {
-                            $message = preg_replace('#(<)([\/]?.*?)(>)#is', '&lt;\\2&gt;', $message);
-                        }
+                    if (!$board_config['allow_html'] && $post->enable_html) {
+                        $message = preg_replace('#(<)([\/]?.*?)(>)#is', '&lt;\\2&gt;', $message);
                     }
 
                     if ($bbcode_uid !== '') {
 						$message = $board_config['allow_bbcode'] ? bbencode_second_pass($message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
 					}
 
-                    if (count($orig_word)) {
+                    if ($count_orig_word) {
 						$post_subject = preg_replace($orig_word, $replacement_word, $post_subject);
-						$message = preg_replace($orig_word, $replacement_word, $message);
+						$message      = preg_replace($orig_word, $replacement_word, $message);
 					}
 
 					$message = make_clickable($message);
@@ -724,10 +720,10 @@ switch ($mode) {
 
 					$message = str_replace("\n", '<br />', $message);
 					
-					$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-					$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+					$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+					$row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
-					$checkbox = ( $i > 0 ) ? '<input type="checkbox" name="post_id_list[]" value="' . $post_id . '" />' : '&nbsp;';
+					$checkbox = $i > 0 ? '<input type="checkbox" name="post_id_list[]" value="' . $post_id . '" />' : '&nbsp;';
 
                     $template->assignBlockVars('postrow',
                         [
@@ -859,8 +855,8 @@ switch ($mode) {
             ->fetchAll();
 
         foreach ($rows as $i => $row) {
-            $id = $row->user_id;
-            $username = ($id === ANONYMOUS) ? $lang['Guest'] : $row->username;
+            $id       = $row->user_id;
+            $username = $id === ANONYMOUS ? $lang['Guest'] : $row->username;
 
             $row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
             $row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
@@ -873,7 +869,7 @@ switch ($mode) {
                     'POSTS'          => $row->postings . ' ' . (($row->postings === 1) ? $lang['Post'] : $lang['Posts']),
                     'L_SEARCH_POSTS' => sprintf($lang['Search_user_posts'], $username),
 
-                    'U_PROFILE'     => ($id === ANONYMOUS) ? 'modcp.php?mode=ip&amp;' . POST_POST_URL . '=' . $post_id . '&amp;' . POST_TOPIC_URL . '=' . $topic_id . '&amp;sid=' . $userdata['session_id'] : Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$id"),
+                    'U_PROFILE'     => $id === ANONYMOUS ? 'modcp.php?mode=ip&amp;' . POST_POST_URL . '=' . $post_id . '&amp;' . POST_TOPIC_URL . '=' . $topic_id . '&amp;sid=' . $userdata['session_id'] : Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$id"),
                     'U_SEARCHPOSTS' => Session::appendSid('search.php?search_author=' . (($id === ANONYMOUS) ? 'Anonymous' : urlencode($username)) . '&amp;showresults=topics')
                 ]
             );
@@ -979,7 +975,7 @@ switch ($mode) {
                 $topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
             }
 
-			$u_view_topic = 'modcp.php?mode=split&amp;' . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'];
+			$u_view_topic  = 'modcp.php?mode=split&amp;' . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'];
 			$topic_replies = $row->topic_replies;
 
 			$last_post_time = create_date($board_config['default_dateformat'], $row->post_time, $board_config['board_timezone']);

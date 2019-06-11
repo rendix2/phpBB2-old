@@ -54,8 +54,7 @@ function generate_user_info(&$row, $date_format, $group_mod, &$from, &$posts, &$
 		}
 	}
 
-	if (!empty($row->user_viewemail) || $group_mod )
-	{
+	if (!empty($row->user_viewemail) || $group_mod ) {
 		$email_uri = $board_config['board_email_form'] ? Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL .'=' . $row->user_id) : 'mailto:' . $row->user_email;
 
 		$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
@@ -538,8 +537,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
                         [
                             'SITENAME'   => $board_config['sitename'],
                             'GROUP_NAME' => $group_name,
-                            'EMAIL_SIG'  => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n",
-                                "-- \n" . $board_config['board_email_sig']) : '',
+                            'EMAIL_SIG'  => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
 
                             'U_GROUPCP' => $server_url . '?' . POST_GROUPS_URL . "=$group_id"
                         ]
@@ -1124,11 +1122,11 @@ if (isset($_POST['groupstatus']) && $group_id) {
 
 	$s_group_list_opt = '';
 
-	foreach ($group_rows as $group_row) {
-		if  ( $group_row->group_type !== GROUP_HIDDEN || $userdata['user_level'] === ADMIN) {
-			$s_group_list_opt .='<option value="' . $group_row->group_id . '">' . $group_row->group_name . '</option>';
-		}
-	}
+    foreach ($group_rows as $group_row) {
+        if ($group_row->group_type !== GROUP_HIDDEN || $userdata['user_level'] === ADMIN) {
+            $s_group_list_opt .= '<option value="' . $group_row->group_id . '">' . $group_row->group_name . '</option>';
+        }
+    }
 	$s_group_list = '<select name="' . POST_GROUPS_URL . '">' . $s_group_list_opt . '</select>';
 
     if ($s_group_list_opt !== '' || $s_pending_groups_opt !== '' || $s_member_groups_opt !== '') {

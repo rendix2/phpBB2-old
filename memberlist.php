@@ -43,9 +43,9 @@ if (isset($_GET[POST_MODE]) || isset($_POST[POST_MODE])) {
 }
 
 if (isset($_POST['order'])) {
-    $sort_order = ($_POST['order'] === 'ASC') ? 'ASC' : 'DESC';
+    $sort_order = $_POST['order'] === 'ASC' ? 'ASC' : 'DESC';
 } elseif (isset($_GET['order'])) {
-    $sort_order = ($_GET['order'] === 'ASC') ? 'ASC' : 'DESC';
+    $sort_order = $_GET['order'] === 'ASC' ? 'ASC' : 'DESC';
 } else {
     $sort_order = 'ASC';
 }
@@ -66,7 +66,7 @@ $mode_types = [
 $select_sort_mode = '<select name="mode">';
 
 foreach ($mode_types as $mode_type_key => $mode_types_value) {
-	$selected = ( $mode === $mode_type_key ) ? ' selected="selected"' : '';
+	$selected = $mode === $mode_type_key ? ' selected="selected"' : '';
 	$select_sort_mode .= '<option value="' . $mode_type_key . '"' . $selected . '>' . $mode_types_value . '</option>';
 }
 
@@ -239,18 +239,18 @@ foreach ($users as $user) {
     }
 
     $aim_img = $user->user_aim ? '<a href="aim:goim?screenname=' . $user->user_aim . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
-    $aim = $user->user_aim ? '<a href="aim:goim?screenname=' . $user->user_aim . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
+    $aim     = $user->user_aim ? '<a href="aim:goim?screenname=' . $user->user_aim . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
 
     $temp_url = Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$user_id");
-    $msn_img = $user->user_msnm ? '<a href="' . $temp_url . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
-    $msn = $user->user_msnm ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
+    $msn_img  = $user->user_msnm ? '<a href="' . $temp_url . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
+    $msn      = $user->user_msnm ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
 
     $yim_img = $user->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $user->user_yim . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
-    $yim = $user->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $user->user_yim . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
+    $yim     = $user->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $user->user_yim . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
 
-    $temp_url = Session::appendSid('search.php?search_author=' . urlencode($username) . '&amp;showresults=posts');
+    $temp_url   = Session::appendSid('search.php?search_author=' . urlencode($username) . '&amp;showresults=posts');
     $search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $username) . '" title="' . sprintf($lang['Search_user_posts'], $username) . '" border="0" /></a>';
-    $search = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $username) . '</a>';
+    $search     = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $username) . '</a>';
 
     $row_color = (!($i % 2)) ? $theme['td_color1'] : $theme['td_color2'];
     $row_class = (!($i % 2)) ? $theme['td_class1'] : $theme['td_class2'];
