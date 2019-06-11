@@ -56,7 +56,7 @@ if (!is_numeric($forum_id)) {
     message_die(GENERAL_MESSAGE, 'Forum_not_exist');
 }
 
-$forum_row = dibi::select('*')
+$forum = dibi::select('*')
     ->from(FORUMS_TABLE)
     ->where('forum_id = %i', $forum_id)
     ->fetch();
@@ -65,7 +65,7 @@ $forum_row = dibi::select('*')
 // If the query doesn't return any rows this isn't a valid forum. Inform
 // the user.
 //
-if (!$forum_row) {
+if (!$forum) {
     message_die(GENERAL_MESSAGE, 'Forum_not_exist');
 }
 
@@ -86,7 +86,7 @@ $forum_all_cookie_name = $board_config['cookie_name'] . '_f_all';
 //
 // Start auth check
 //
-$is_auth = Auth::authorize(AUTH_ALL, $forum_id, $userdata, $forum_row);
+$is_auth = Auth::authorize(AUTH_ALL, $forum_id, $userdata, $forum);
 
 if (!$is_auth['auth_read'] || !$is_auth['auth_view']) {
     if (!$userdata['session_logged_in']) {
@@ -159,7 +159,7 @@ $tracking_forums = isset($_COOKIE[$forum_cookie_name]) ? unserialize($_COOKIE[$f
 // Do the forum Prune
 //
 if ($is_auth['auth_mod'] && $board_config['prune_enable']) {
-    if ($forum_row['prune_next'] < time() && $forum_row['prune_enable']) {
+    if ($forum->prune_next < time() && $forum->prune_enable) {
         include $phpbb_root_path . 'includes/prune.php';
         require $phpbb_root_path . 'includes/functions_admin.php';
         auto_prune($forum_id);
@@ -261,7 +261,7 @@ if (!empty($_POST['topicdays']) || !empty($_GET['topicdays'])) {
 		$start = 0;
 	}
 } else {
-	$topics_count = $forum_row['forum_topics'] ? $forum_row['forum_topics'] : 1;
+	$topics_count = $forum->forum_topics ? $forum->forum_topics : 1;
 
 	$limit_topics_time = false;
 	$topic_days = 0;
@@ -398,7 +398,7 @@ $nav_links['up'] = [
 // Dump out the page header and load viewforum template
 //
 define('SHOW_ONLINE', true);
-$page_title = $lang['View_forum'] . ' - ' . $forum_row['forum_name'];
+$page_title = $lang['View_forum'] . ' - ' . $forum->forum_name;
 include $phpbb_root_path . 'includes/page_header.php';
 
 $template->setFileNames(['body' => 'viewforum_body.tpl']);
@@ -407,9 +407,9 @@ make_jumpbox('viewforum.php');
 $template->assignVars(
     [
         'FORUM_ID'   => $forum_id,
-        'FORUM_NAME' => $forum_row['forum_name'],
+        'FORUM_NAME' => $forum->forum_name,
         'MODERATORS' => $forum_moderators,
-        'POST_IMG'   => $forum_row['forum_status'] === FORUM_LOCKED ? $images['post_locked'] : $images['post_new'],
+        'POST_IMG'   => $forum->forum_status === FORUM_LOCKED ? $images['post_locked'] : $images['post_new'],
 
         'FOLDER_IMG'              => $images['folder'],
         'FOLDER_NEW_IMG'          => $images['folder_new'],
@@ -429,7 +429,7 @@ $template->assignVars(
         'L_LASTPOST'            => $lang['Last_Post'],
         'L_MODERATOR'           => $l_moderators,
         'L_MARK_TOPICS_READ'    => $lang['Mark_all_topics'],
-        'L_POST_NEW_TOPIC'      => ($forum_row['forum_status'] === FORUM_LOCKED) ? $lang['Forum_locked'] : $lang['Post_new_topic'],
+        'L_POST_NEW_TOPIC'      => $forum->forum_status === FORUM_LOCKED ? $lang['Forum_locked'] : $lang['Post_new_topic'],
         'L_NO_NEW_POSTS'        => $lang['No_new_posts'],
         'L_NEW_POSTS'           => $lang['New_posts'],
         'L_NO_NEW_POSTS_LOCKED' => $lang['No_new_posts_locked'],
@@ -648,7 +648,7 @@ if ($total_topics) {
 	//
 	// No topics
 	//
-	$no_topics_msg = $forum_row['forum_status'] === FORUM_LOCKED ? $lang['Forum_locked'] : $lang['No_topics_post_one'];
+	$no_topics_msg = $forum->forum_status === FORUM_LOCKED ? $lang['Forum_locked'] : $lang['No_topics_post_one'];
     $template->assignVars(['L_NO_TOPICS' => $no_topics_msg]);
 
     $template->assignBlockVars('switch_no_topics', []);
