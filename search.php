@@ -650,6 +650,7 @@ if ($mode === 'searchuser') {
                 ->select('p2.post_time')
                 ->select('p.post_id')
                 ->select('pt.post_text')
+                ->select('u.enable_html')
                 ->from(TOPICS_TABLE)
                 ->as('t')
                 ->innerJoin(FORUMS_TABLE)
@@ -782,13 +783,11 @@ if ($mode === 'searchuser') {
 						$message = strip_tags($message);
 						$message = preg_replace("/\[.*?:$bbcode_uid:?.*?\]/si", '', $message);
 						$message = preg_replace('/\[url\]|\[\/url\]/si', '', $message);
-						$message = ( strlen($message) > $return_chars ) ? substr($message, 0, $return_chars) . ' ...' : $message;
+						$message = mb_strlen($message) > $return_chars ? substr($message, 0, $return_chars) . ' ...' : $message;
 					} else {
-                        if (!$board_config['allow_html']) {
-                            if ($postrow[$i]['enable_html']) {
-								$message = preg_replace('#(<)([\/]?.*?)(>)#is', '&lt;\\2&gt;', $message);
-							}
-						}
+                        if (!$board_config['allow_html'] && $search_set->enable_html) {
+                            $message = preg_replace('#(<)([\/]?.*?)(>)#is', '&lt;\\2&gt;', $message);
+                        }
 
                         if ($bbcode_uid !== '') {
 							$message = $board_config['allow_bbcode'] ? bbencode_second_pass($message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
@@ -1059,7 +1058,7 @@ if ($mode === 'searchuser') {
                     }
                 }
 
-				$topic_author .= ( $search_set->user_id !== ANONYMOUS ) ? '</a>' : '';
+				$topic_author .= $search_set->user_id !== ANONYMOUS ? '</a>' : '';
 
 				$first_post_time = create_date($board_config['default_dateformat'], $search_set->topic_time, $board_config['board_timezone']);
 				$last_post_time  = create_date($board_config['default_dateformat'], $search_set->post_time, $board_config['board_timezone']);
@@ -1189,7 +1188,7 @@ $s_characters .= '<option value="25">25</option>';
 $s_characters .= '<option value="50">50</option>';
 
 for ($i = 100; $i < 1100; $i += 100) {
-	$selected = ( $i === 200 ) ? ' selected="selected"' : '';
+	$selected = $i === 200 ? ' selected="selected"' : '';
 	$s_characters .= '<option value="' . $i . '"' . $selected . '>' . $i . '</option>';
 }
 
