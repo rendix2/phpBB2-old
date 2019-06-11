@@ -1007,22 +1007,16 @@ if ($mode === 'searchuser') {
 
 								$unread_topics = true;
 
-                                if (!empty($tracking_topics[$topic_id])) {
-                                    if ($tracking_topics[$topic_id] > $search_set->post_time) {
-                                        $unread_topics = false;
-                                    }
+                                if (!empty($tracking_topics[$topic_id]) && $tracking_topics[$topic_id] > $search_set->post_time) {
+                                    $unread_topics = false;
                                 }
 
-                                if (!empty($tracking_forums[$forum_id])) {
-                                    if ($tracking_forums[$forum_id] > $search_set->post_time) {
-                                        $unread_topics = false;
-                                    }
+                                if (!empty($tracking_forums[$forum_id]) && $tracking_forums[$forum_id] > $search_set->post_time) {
+                                    $unread_topics = false;
                                 }
 
-                                if (isset($_COOKIE[$forum_all_cookie_name])) {
-                                    if ($_COOKIE[$forum_all_cookie_name] > $search_set->post_time) {
-                                        $unread_topics = false;
-                                    }
+                                if (isset($_COOKIE[$forum_all_cookie_name]) && $_COOKIE[$forum_all_cookie_name] > $search_set->post_time) {
+                                    $unread_topics = false;
                                 }
 
                                 if ($unread_topics) {
