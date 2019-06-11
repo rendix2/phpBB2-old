@@ -1817,7 +1817,13 @@ switch( $folder) {
 //
 if ($submit_msgdays && (!empty($_POST['msgdays']) || !empty($_GET['msgdays']))) {
 	$msg_days = !empty($_POST['msgdays']) ? (int)$_POST['msgdays'] : (int)$_GET['msgdays'];
-	$min_msg_time = time() - ($msg_days * 86400);
+    $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
+
+    $min_msg_time = new DateTime();
+    $min_msg_time->setTimezone(new DateTimeZone($user_timezone));
+    $min_msg_time->sub(new DateInterval('P'. $msg_days. 'D'));
+
+    $min_msg_time = $min_msg_time->getTimestamp();
 
     $limit_msg_time_total = $sql_tot->where('privmsgs_date > %i', $min_msg_time);
     $limit_msg_time       = $sql->where('pm.privmsgs_date > %i', $min_msg_time);
