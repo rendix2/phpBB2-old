@@ -41,8 +41,8 @@ if ($cancel) {
 	redirect('admin/' . Session::appendSid('admin_ranks.php', true));
 }
 
-if (isset($_GET['mode']) || isset($_POST['mode'])) {
-	$mode = isset($_GET['mode']) ? $_GET['mode'] : $_POST['mode'];
+if (isset($_GET[POST_MODE]) || isset($_POST[POST_MODE])) {
+	$mode = isset($_GET[POST_MODE]) ? $_GET[POST_MODE] : $_POST[POST_MODE];
 	$mode = htmlspecialchars($mode);
 } else {
 	//

@@ -56,8 +56,8 @@ if ($cancel) {
 //
 // Check to see what mode we should operate in.
 //
-if (isset($_POST['mode']) || isset($_GET['mode'])) {
-	$mode = isset($_POST['mode']) ? $_POST['mode'] : $_GET['mode'];
+if (isset($_POST[POST_MODE]) || isset($_GET[POST_MODE])) {
+	$mode = isset($_POST[POST_MODE]) ? $_POST[POST_MODE] : $_GET[POST_MODE];
 	$mode = htmlspecialchars($mode);
 } else {
 	$mode = '';

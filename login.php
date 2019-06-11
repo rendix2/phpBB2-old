@@ -41,8 +41,8 @@ init_userprefs($userdata);
 //
 
 // session id check
-if (!empty($_POST['sid']) || !empty($_GET['sid'])) {
-	$sid = !empty($_POST['sid']) ? $_POST['sid'] : $_GET['sid'];
+if (isset($_POST['sid']) || isset($_GET['sid'])) {
+	$sid = isset($_POST['sid']) ? $_POST['sid'] : $_GET['sid'];
 } else {
 	$sid = '';
 }

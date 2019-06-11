@@ -40,8 +40,8 @@ $faq = [];
 //
 // Load the appropriate faq file
 //
-if (isset($_GET['mode'])) {
-	switch( $_GET['mode']) {
+if (isset($_GET[POST_MODE])) {
+	switch( $_GET[POST_MODE]) {
 		case 'bbcode':
 			$lang_file = 'lang_bbcode';
 			$l_title = $lang['BBCode_guide'];

@@ -67,8 +67,8 @@ if (!empty($_POST['edit_poll_option']) || !empty($_GET['edit_poll_option'])) {
     $poll_edit = '';
 }
 
-if (!empty($_POST['mode']) || !empty($_GET['mode'])) {
-    $mode = !empty($_POST['mode']) ? htmlspecialchars($_POST['mode']) : htmlspecialchars($_GET['mode']);
+if (!empty($_POST[POST_MODE]) || !empty($_GET[POST_MODE])) {
+    $mode = !empty($_POST[POST_MODE]) ? htmlspecialchars($_POST[POST_MODE]) : htmlspecialchars($_GET[POST_MODE]);
 } else {
     $mode = '';
 }

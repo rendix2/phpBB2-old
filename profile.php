@@ -68,9 +68,8 @@ function gen_rand_string($hash)
 //
 // Start of program proper
 //
-if (isset($_GET['mode']) || isset($_POST['mode'])) {
-    $mode = isset($_GET['mode']) ? $_GET['mode'] : $_POST['mode'];
-    $mode = htmlspecialchars($mode);
+if (isset($_GET[POST_MODE]) || isset($_POST[POST_MODE])) {
+    $mode = isset($_GET[POST_MODE]) ? $_GET[POST_MODE] : $_POST[POST_MODE];
 
     if ($mode === 'viewprofile') {
         include $phpbb_root_path . 'includes/usercp_viewprofile.php';

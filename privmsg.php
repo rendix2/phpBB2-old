@@ -87,8 +87,8 @@ if ($cancel) {
 //
 // Var definitions
 //
-if (!empty($_POST['mode']) || !empty($_GET['mode'])) {
-    $mode = !empty($_POST['mode']) ? $_POST['mode'] : $_GET['mode'];
+if (!empty($_POST[POST_MODE]) || !empty($_GET[POST_MODE])) {
+    $mode = !empty($_POST[POST_MODE]) ? $_POST[POST_MODE] : $_GET[POST_MODE];
     $mode = htmlspecialchars($mode);
 } else {
     $mode = '';
@@ -1152,7 +1152,7 @@ if ($mode === 'newpm') {
                 'privmsgs_enable_html' => $html_on,
                 'privmsgs_enable_bbcode' => $bbcode_on,
                 'privmsgs_enable_smilies' => $smilies_on,
-                'privmsgs_attach_sig' => $attach_sig
+                'privmsgs_attach_sig'     => $attach_sig
             ];
 
             $privmsg_sent_id = dibi::insert(PRIVMSGS_TABLE, $insert_data)

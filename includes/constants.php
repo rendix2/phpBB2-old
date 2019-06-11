@@ -103,6 +103,7 @@ define('POST_FORUM_URL', 'f');
 define('POST_USERS_URL', 'u');
 define('POST_POST_URL', 'p');
 define('POST_GROUPS_URL', 'g');
+define('POST_MODE', 'mode');
 
 // Session parameters
 define('SESSION_METHOD_COOKIE', 100);

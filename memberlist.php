@@ -36,8 +36,8 @@ init_userprefs($userdata);
 $start = isset($_GET['start']) ? (int)$_GET['start'] : 0;
 $start = $start < 0 ? 0 : $start;
 
-if (isset($_GET['mode']) || isset($_POST['mode'])) {
-    $mode = isset($_POST['mode']) ? htmlspecialchars($_POST['mode']) : htmlspecialchars($_GET['mode']);
+if (isset($_GET[POST_MODE]) || isset($_POST[POST_MODE])) {
+    $mode = isset($_POST[POST_MODE]) ? htmlspecialchars($_POST[POST_MODE]) : htmlspecialchars($_GET[POST_MODE]);
 } else {
     $mode = 'joined';
 }
