@@ -533,10 +533,11 @@ $nav_links['up']   = [
     'title' => $forum_name
 ];
 
-$reply_img = ( $forum_topic_data->forum_status === FORUM_LOCKED || $forum_topic_data->topic_status === TOPIC_LOCKED ) ? $images['reply_locked'] : $images['reply_new'];
-$reply_alt = ( $forum_topic_data->forum_status === FORUM_LOCKED || $forum_topic_data->topic_status === TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['Reply_to_topic'];
-$post_img = ( $forum_topic_data->forum_status === FORUM_LOCKED ) ? $images['post_locked'] : $images['post_new'];
-$post_alt = ( $forum_topic_data->forum_status === FORUM_LOCKED ) ? $lang['Forum_locked'] : $lang['Post_new_topic'];
+$reply_img = $forum_topic_data->forum_status === FORUM_LOCKED || $forum_topic_data->topic_status === TOPIC_LOCKED ? $images['reply_locked'] : $images['reply_new'];
+$reply_alt = $forum_topic_data->forum_status === FORUM_LOCKED || $forum_topic_data->topic_status === TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['Reply_to_topic'];
+
+$post_img  = $forum_topic_data->forum_status === FORUM_LOCKED ? $images['post_locked'] : $images['post_new'];
+$post_alt  = $forum_topic_data->forum_status === FORUM_LOCKED ? $lang['Forum_locked'] : $lang['Post_new_topic'];
 
 //
 // Set a cookie for this topic
@@ -823,11 +824,11 @@ foreach ($posts as $i => $post) {
 
 	$post_date = create_date($board_config['default_dateformat'], $post->post_time, $board_config['board_timezone']);
 
-	$poster_posts = ( $post->user_id !== ANONYMOUS ) ? $lang['Posts'] . ': ' . $post->user_posts : '';
+	$poster_posts = $post->user_id !== ANONYMOUS ? $lang['Posts'] . ': ' . $post->user_posts : '';
 
-	$poster_from = ( $post->user_from && $post->user_id !== ANONYMOUS ) ? $lang['Location'] . ': ' . $post->user_from : '';
+	$poster_from = $post->user_from && $post->user_id !== ANONYMOUS ? $lang['Location'] . ': ' . $post->user_from : '';
 
-	$poster_joined = ( $post->user_id !== ANONYMOUS ) ? $lang['Joined'] . ': ' . create_date($lang['DATE_FORMAT'], $post->user_regdate, $board_config['board_timezone']) : '';
+	$poster_joined = $post->user_id !== ANONYMOUS ? $lang['Joined'] . ': ' . create_date($lang['DATE_FORMAT'], $post->user_regdate, $board_config['board_timezone']) : '';
 
 	$poster_avatar = '';
 
@@ -912,12 +913,12 @@ foreach ($posts as $i => $post) {
 		}
 
 		$www_img = $post->user_website ? '<a href="' . $post->user_website . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
-		$www = $post->user_website ? '<a href="' . $post->user_website . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
+		$www     = $post->user_website ? '<a href="' . $post->user_website . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
 
         if (!empty($post->user_icq)) {
 			$icq_status_img = '<a href="http://wwp.icq.com/' . $post->user_icq . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $post->user_icq . '&img=5" width="18" height="18" border="0" /></a>';
-			$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $post->user_icq . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
-			$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $post->user_icq . '">' . $lang['ICQ'] . '</a>';
+			$icq_img        = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $post->user_icq . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
+			$icq            =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $post->user_icq . '">' . $lang['ICQ'] . '</a>';
 		} else {
 			$icq_status_img = '';
 			$icq_img = '';

@@ -185,18 +185,18 @@ if ($mode === 'searchuser') {
 					$search_author = '';
 				}
 
-                $matching_userids = dibi::select('user_id')
+                $user_ids = dibi::select('user_id')
                     ->from(USERS_TABLE)
                     ->where('username LIKE %~like~', $search_author)
                     ->fetchPairs(null, 'user_id');
 
-                if (!count($matching_userids)) {
+                if (!count($user_ids)) {
                     message_die(GENERAL_MESSAGE, $lang['No_search_match']);
                 }
 
                 $search_ids = dibi::select('post_id')
                     ->from(POSTS_TABLE)
-                    ->where('poster_id IN %in', $matching_userids);
+                    ->where('poster_id IN %in', $user_ids);
 
                 if ($search_time) {
                     $search_ids->where('post_time >= %i', $search_time);
@@ -516,7 +516,7 @@ if ($mode === 'searchuser') {
 		// Store new result data
 		//
 		$search_results = implode(', ', $search_ids);
-		$per_page = ( $show_results === 'posts' ) ? $board_config['posts_per_page'] : $board_config['topics_per_page'];
+		$per_page = $show_results === 'posts' ? $board_config['posts_per_page'] : $board_config['topics_per_page'];
 
 		//
 		// Combine both results and search data (apart from original query)
@@ -673,11 +673,11 @@ if ($mode === 'searchuser') {
                 ->where('t.topic_id IN %in', $search_ids);
 		}
 
-		$per_page = ( $show_results === 'posts' ) ? $board_config['posts_per_page'] : $board_config['topics_per_page'];
+		$per_page = $show_results === 'posts' ? $board_config['posts_per_page'] : $board_config['topics_per_page'];
 
 		switch ( $sort_by) {
 			case 1:
-                $order_by = ($show_results === 'posts') ? 'pt.post_subject' : 't.topic_title';
+                $order_by = $show_results === 'posts' ? 'pt.post_subject' : 't.topic_title';
                 $search_sets->orderBy($order_by, $sort_dir);
 				break;
 			case 2:
@@ -690,7 +690,7 @@ if ($mode === 'searchuser') {
                 $search_sets->orderBy('f.forum_id', $sort_dir);
 				break;
 			default:
-                $order_by = ( $show_results === 'posts' ) ? 'p.post_time' : 'p2.post_time';
+                $order_by = $show_results === 'posts' ? 'p.post_time' : 'p2.post_time';
                 $search_sets->orderBy($order_by, $sort_dir);
 				break;
 		}

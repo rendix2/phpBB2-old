@@ -37,7 +37,7 @@ if (isset($_GET[POST_FORUM_URL]) || isset($_POST[POST_FORUM_URL])) {
 }
 
 $start = isset($_GET['start']) ? (int)$_GET['start'] : 0;
-$start = ($start < 0) ? 0 : $start;
+$start = $start < 0 ? 0 : $start;
 
 if (isset($_GET['mark']) || isset($_POST['mark'])) {
     $mark_read = isset($_POST['mark']) ? $_POST['mark'] : $_GET['mark'];
@@ -172,7 +172,7 @@ if ($is_auth['auth_mod'] && $board_config['prune_enable'] && $forum->prune_next 
 // First users, then groups ... broken into two queries
 //
 
-$users_moderator_data = dibi::select('u.user_id, u.username')
+$userModerators = dibi::select('u.user_id, u.username')
     ->from(AUTH_ACCESS_TABLE)
     ->as('aa')
     ->innerJoin(USER_GROUP_TABLE)
@@ -194,11 +194,11 @@ $users_moderator_data = dibi::select('u.user_id, u.username')
 
 $moderators = [];
 
-foreach ($users_moderator_data as $row) {
-    $moderators[] = '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $row->user_id) . '">' . $row->username . '</a>';
+foreach ($userModerators as $moderator) {
+    $moderators[] = '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $moderator->user_id) . '">' . $moderator->username . '</a>';
 }
 
-$group_moderator_data = dibi::select('g.group_id, g.group_name')
+$groupModerators = dibi::select('g.group_id, g.group_name')
     ->from(AUTH_ACCESS_TABLE)
     ->as('aa')
     ->innerJoin(USER_GROUP_TABLE)
@@ -216,8 +216,8 @@ $group_moderator_data = dibi::select('g.group_id, g.group_name')
     ->orderBy('g.group_id')
     ->fetchAll();
 
-foreach ($group_moderator_data as $row) {
-    $moderators[] = '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . '=' . $row->group_id) . '">' . $row->group_name . '</a>';
+foreach ($groupModerators as $moderator) {
+    $moderators[] = '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . '=' . $moderator->group_id) . '">' . $moderator->group_name . '</a>';
 }
 
 $moderators_count = count($moderators);
@@ -241,7 +241,7 @@ if (!empty($_POST['topicdays']) || !empty($_GET['topicdays'])) {
     $min_topic_time->sub(new DateInterval('P'.$topic_days.'D'));
     $min_topic_time = $min_topic_time->getTimestamp();
 
-	$forum_topics = dibi::select('COUNT(t.topic_id)')
+	$forumTopics = dibi::select('COUNT(t.topic_id)')
         ->as('forum_topics')
         ->from(TOPICS_TABLE)
         ->as('t')
@@ -252,14 +252,14 @@ if (!empty($_POST['topicdays']) || !empty($_GET['topicdays'])) {
         ->where('p.post_time >= %i', $min_topic_time)
         ->fetchSingle();
 
-	$topics_count = $forum_topics ? $forum_topics : 1;
+	$topicsCount       = $forumTopics ? $forumTopics : 1;
 	$limit_topics_time = true;
 
     if (!empty($_POST['topicdays'])) {
 		$start = 0;
 	}
 } else {
-	$topics_count = $forum->forum_topics ? $forum->forum_topics : 1;
+	$topicsCount = $forum->forum_topics ? $forum->forum_topics : 1;
 
 	$limit_topics_time = false;
 	$topic_days = 0;
@@ -272,7 +272,7 @@ $select_topic_days = Select::topicDays($lang, $topic_days);
 // All announcement data, this keeps announcements
 // on each viewforum page ...
 //
-$topic_rowset = dibi::select(['t.*', 'u.username', 'u.user_id'])
+$announcementTopics = dibi::select(['t.*', 'u.username', 'u.user_id'])
     ->select('u2.username')
     ->as('user2')
     ->select('u2.user_id')
@@ -294,13 +294,13 @@ $topic_rowset = dibi::select(['t.*', 'u.username', 'u.user_id'])
     ->orderBy('t.topic_last_post_id', dibi::DESC)
     ->fetchAll();
 
-$total_announcements = count($topic_rowset);
+$totalAnnouncements = count($announcementTopics);
 
 //
 // Grab all the basic data (all topics except announcements)
 // for this forum
 //
-$temp_topics = dibi::select(['t.*', 'u.username', 'u.user_id'])
+$basicTopics = dibi::select(['t.*', 'u.username', 'u.user_id'])
     ->select('u2.username')
     ->as('user2')
     ->select('u2.user_id')
@@ -331,23 +331,23 @@ $temp_topics = dibi::select(['t.*', 'u.username', 'u.user_id'])
     ->where('t.topic_type <> %i', POST_ANNOUNCE);
 
     if ($limit_topics_time) {
-        $temp_topics->where('p.post_time >= %i', $min_topic_time);
+        $basicTopics->where('p.post_time >= %i', $min_topic_time);
     }
 
-    $temp_topics = $temp_topics->orderBy('t.topic_type', dibi::DESC)
+    $basicTopics = $basicTopics->orderBy('t.topic_type', dibi::DESC)
         ->orderBy('t.topic_last_post_id', dibi::DESC)
         ->limit($board_config['topics_per_page'])
         ->offset($start)
         ->fetchAll();
 
-$total_topics = count($temp_topics);
+$totalBaseTopics = count($basicTopics);
 
-$topic_rowset = array_merge($topic_rowset, $temp_topics);
+$topics = array_merge($announcementTopics, $basicTopics);
 
 //
 // Total topics ...
 //
-$total_topics += $total_announcements;
+$totalTopics = $totalBaseTopics + $totalAnnouncements;
 
 //
 // Define censored word matches
@@ -454,13 +454,13 @@ $template->assignVars(
 //
 // Okay, lets dump out the page ...
 //
-if ($total_topics) {
-    foreach ($topic_rowset as $i => $topic) {
-		$topic_id = $topic->topic_id;
-
-		$topic_title = $count_orig_word ? preg_replace($orig_word, $replacement_word, $topic->topic_title) : $topic->topic_title;
-		$replies = $topic->topic_replies;
+if ($totalBaseTopics) {
+    foreach ($topics as $i => $topic) {
+		$topic_id   = $topic->topic_id;
+		$replies    = $topic->topic_replies;
 		$topic_type = $topic->topic_type;
+
+        $topic_title = $count_orig_word ? preg_replace($orig_word, $replacement_word, $topic->topic_title) : $topic->topic_title;
 
         if ($topic_type === POST_ANNOUNCE) {
             $topic_type = $lang['Topic_Announcement'] . ' ';
@@ -584,7 +584,7 @@ if ($total_topics) {
             }
         }
 
-		$topic_author .= ( $topic->user_id !== ANONYMOUS ) ? '</a>' : '';
+		$topic_author .= $topic->user_id !== ANONYMOUS ? '</a>' : '';
 
 		$first_post_time = create_date($board_config['default_dateformat'], $topic->topic_time, $board_config['board_timezone']);
 		$last_post_time  = create_date($board_config['default_dateformat'], $topic->post_time, $board_config['board_timezone']);
@@ -632,12 +632,12 @@ if ($total_topics) {
         );
     }
 
-    $topics_count -= $total_announcements;
+    $topicsCount -= $totalAnnouncements;
 
     $template->assignVars(
         [
-            'PAGINATION'  => generate_pagination('viewforum.php?' . POST_FORUM_URL . "=$forum_id&amp;topicdays=$topic_days", $topics_count, $board_config['topics_per_page'], $start),
-            'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $board_config['topics_per_page']) + 1, ceil($topics_count / $board_config['topics_per_page'])),
+            'PAGINATION'  => generate_pagination('viewforum.php?' . POST_FORUM_URL . "=$forum_id&amp;topicdays=$topic_days", $topicsCount, $board_config['topics_per_page'], $start),
+            'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $board_config['topics_per_page']) + 1, ceil($topicsCount / $board_config['topics_per_page'])),
 
             'L_GOTO_PAGE' => $lang['Goto_page']
         ]

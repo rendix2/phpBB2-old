@@ -159,7 +159,7 @@ function make_jumpbox($action, $match_forum_id = 0)
 						// 'chapter' and 'forum' can create multiple items, therefore we are using a nested array.
 						//
 						$nav_links['chapter forum'][$forum->forum_id] = array (
-                            'url' => Session::appendSid('viewforum.php?' . POST_FORUM_URL . '=' . $forum->forum_id),
+                            'url'   => Session::appendSid('viewforum.php?' . POST_FORUM_URL . '=' . $forum->forum_id),
                             'title' => $forum->forum_name
 						);
 					}
