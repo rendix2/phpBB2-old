@@ -79,7 +79,9 @@ $loggedVisibleOnline = 0;
 $loggedHiddenOnline  = 0;
 $guestsOnline        = 0;
 
-$onlineUserList = '';
+$onlineUserListString = '';
+
+$onlineUserList = [];
 $l_online_users = '';
 
 if (defined('SHOW_ONLINE')) {
@@ -153,7 +155,7 @@ if (defined('SHOW_ONLINE')) {
     if (empty($onlineUserList)) {
         $onlineUserListString .= $lang['None'];
     } else {
-        $onlineUserListString .= explode(', ', $onlineUserList);
+        $onlineUserListString .= implode(', ', $onlineUserList);
     }
 
 	$totalOnlineUsers = $loggedVisibleOnline + $loggedHiddenOnline + $guestsOnline;
