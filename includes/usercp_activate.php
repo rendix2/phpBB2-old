@@ -91,8 +91,7 @@ if (!$update_password && (int)$board_config['require_activation'] === USER_ACTIV
     $emailer->assignVars([
         'SITENAME'  => $board_config['sitename'],
         'USERNAME'  => $row['username'],
-        'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n",
-            "-- \n" . $board_config['board_email_sig']) : ''
+        'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : ''
     ]);
     $emailer->send();
     $emailer->reset();
