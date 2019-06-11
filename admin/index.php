@@ -137,11 +137,21 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
 
 	$start_date = create_date($board_config['default_dateformat'], $board_config['board_startdate'], $board_config['board_timezone']);
 
-	$boarddays = ( time() - $board_config['board_startdate'] ) / 86400;
+    $user_timezone = isset($profile_data['user_timezone']) ? $profile_data['user_timezone'] : $board_config['board_timezone'];
 
-	$posts_per_day = sprintf('%.2f', $total_posts / $boarddays);
-	$topics_per_day = sprintf('%.2f', $total_topics / $boarddays);
-	$users_per_day = sprintf('%.2f', $total_users / $boarddays);
+    $zone = new DateTimeZone($user_timezone);
+
+    $boardStartDay = new DateTime();
+    $boardStartDay->setTimezone($zone);
+    $boardStartDay->setTimestamp($board_config['board_startdate']);
+
+    $boardRunningDays = new DateTime();
+    $boardRunningDays->setTimezone($zone);
+    $boardRunningDays = $boardRunningDays->diff($boardStartDay)->d;
+
+	$posts_per_day = sprintf('%.2f', $total_posts / $boardRunningDays);
+	$topics_per_day = sprintf('%.2f', $total_topics / $boardRunningDays);
+	$users_per_day = sprintf('%.2f', $total_users / $boardRunningDays);
 
 	$avatar_dir_size = 0;
 
