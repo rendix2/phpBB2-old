@@ -71,34 +71,51 @@ function gen_rand_string($hash)
 if (isset($_GET[POST_MODE]) || isset($_POST[POST_MODE])) {
     $mode = isset($_GET[POST_MODE]) ? $_GET[POST_MODE] : $_POST[POST_MODE];
 
-    if ($mode === 'viewprofile') {
-        include $phpbb_root_path . 'includes/usercp_viewprofile.php';
-        exit;
-    } elseif ($mode === 'editprofile' || $mode === 'register') {
-        if (!$userdata['session_logged_in'] && $mode === 'editprofile') {
-            redirect(Session::appendSid('login.php?redirect=profile.php&mode=editprofile', true));
-        }
+    switch ($mode) {
+        case 'viewprofile':
+            include $phpbb_root_path . 'includes/usercp_viewprofile.php';
+            break;
 
-        include $phpbb_root_path . 'includes/usercp_register.php';
-        exit;
-    } elseif ($mode === 'confirm') {
-        // Visual Confirmation
-        if ($userdata['session_logged_in']) {
-            exit;
-        }
+            // yes both!
+        case 'editprofile':
+        case 'register':
 
-        include $phpbb_root_path . 'includes/usercp_confirm.php';
-        exit;
-    } elseif ($mode === 'sendpassword') {
-        include $phpbb_root_path . 'includes/usercp_sendpasswd.php';
-        exit;
-    } elseif ($mode === 'activate') {
-        include $phpbb_root_path . 'includes/usercp_activate.php';
-        exit;
-    } elseif ($mode === 'email') {
-        include $phpbb_root_path . 'includes/usercp_email.php';
-        exit;
+            if (!$userdata['session_logged_in'] && $mode === 'editprofile') {
+                redirect(Session::appendSid('login.php?redirect=profile.php&mode=editprofile', true));
+            }
+
+            include $phpbb_root_path . 'includes/usercp_register.php';
+
+            break;
+
+        case 'confirm':
+            // Visual Confirmation
+            if ($userdata['session_logged_in']) {
+                exit;
+            }
+
+            include $phpbb_root_path . 'includes/usercp_confirm.php';
+
+            break;
+
+        case 'sendpassword':
+            include $phpbb_root_path . 'includes/usercp_sendpasswd.php';
+
+            break;
+
+        case 'activate':
+            include $phpbb_root_path . 'includes/usercp_activate.php';
+
+            break;
+
+        case 'email':
+            include $phpbb_root_path . 'includes/usercp_email.php';
+            break;
+        default:
+            message_die(GENERAL_MESSAGE, 'Unknown mode.');
     }
+
+    exit;
 }
 
 redirect(Session::appendSid('index.php', true));
