@@ -1025,7 +1025,7 @@ if ($mode === 'searchuser') {
 
                                     $newest_post_img = '<a href="' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
                                 } else {
-                                    $folder_alt = ($search_set->topic_status === TOPIC_LOCKED) ? $lang['Topic_locked'] : $lang['No_new_posts'];
+                                    $folder_alt = $search_set->topic_status === TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['No_new_posts'];
 
                                     $folder_image = $folder;
                                     $newest_post_img = '';
@@ -1038,17 +1038,17 @@ if ($mode === 'searchuser') {
 								$newest_post_img = '<a href="' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;view=newest") . '"><img src="' . $images['icon_newest_reply'] . '" alt="' . $lang['View_newest_post'] . '" title="' . $lang['View_newest_post'] . '" border="0" /></a> ';
 							} else {
 								$folder_image = $folder;
-								$folder_alt = ( $search_set->topic_status === TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
+								$folder_alt = $search_set->topic_status === TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['No_new_posts'];
 								$newest_post_img = '';
 							}
 						} else {
 							$folder_image = $folder;
-							$folder_alt = ( $search_set->topic_status === TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
+							$folder_alt = $search_set->topic_status === TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['No_new_posts'];
 							$newest_post_img = '';
 						}
 					} else {
 						$folder_image = $folder;
-						$folder_alt = ( $search_set->topic_status === TOPIC_LOCKED ) ? $lang['Topic_locked'] : $lang['No_new_posts'];
+						$folder_alt = $search_set->topic_status === TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['No_new_posts'];
 						$newest_post_img = '';
 					}
 				}
