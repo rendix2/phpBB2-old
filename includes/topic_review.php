@@ -114,7 +114,7 @@ function topic_review($topic_id, $is_inline_review)
     //
 	// Go ahead and pull all data for this topic
 	//
-    $rows = dibi::select(['u.username', 'u.user_id', 'p.*', 'pt.post_text', 'pt.post_subject', 'pt.bbcode_uid'])
+    $posts = dibi::select(['u.username', 'u.user_id', 'p.*', 'pt.post_text', 'pt.post_subject', 'pt.bbcode_uid'])
         ->from(POSTS_TABLE)
         ->as('p')
         ->innerJoin(USERS_TABLE)
@@ -132,40 +132,38 @@ function topic_review($topic_id, $is_inline_review)
 	// Okay, let's do the loop, yeah come on baby let's do the loop
 	// and it goes like this ...
 	//
-    if (count($rows)) {
+    if (count($posts)) {
 		$mini_post_img = $images['icon_minipost'];
 		$mini_post_alt = $lang['Post'];
-
-		$i = 0;
 		
-		foreach ($rows as $row) {
-			$poster_id = $row->user_id;
-			$poster = $row->username;
+		foreach ($posts as $i => $post) {
+			$poster_id = $post->user_id;
+			$poster    = $post->username;
 
-			$post_date = create_date($board_config['default_dateformat'], $row->post_time,
+			$post_date = create_date($board_config['default_dateformat'], $post->post_time,
 			$board_config['board_timezone']);
 
 			//
 			// Handle anon users posting with usernames
 			//
-            if ($poster_id === ANONYMOUS && $row->post_username !== '') {
-				$poster = $row->post_username;
+            if ($poster_id === ANONYMOUS && $post->post_username !== '') {
+				$poster = $post->post_username;
 				$poster_rank = $lang['Guest'];
             } elseif ($poster_id === ANONYMOUS) {
 				$poster = $lang['Guest'];
 				$poster_rank = '';
 			}
 
-			$post_subject = $row->post_subject;
+			$post_subject = $post->post_subject;
 
-			$message = $row->post_text;
-			$bbcode_uid = $row->bbcode_uid;
+			$message = $post->post_text;
+			$bbcode_uid = $post->bbcode_uid;
 
 			//
 			// If the board has HTML off but the post has HTML
 			// on then we process it, else leave it alone
 			//
-            if (!$board_config['allow_html'] && $row->enable_html) {
+            if (!$board_config['allow_html'] && $post->enable_html) {
                 $message = preg_replace('#(<)([\/]?.*?)(>)#is', '&lt;\2&gt;', $message);
             }
 
@@ -180,7 +178,7 @@ function topic_review($topic_id, $is_inline_review)
                 $message      = preg_replace($orig_word, $replacement_word, $message);
             }
 
-            if ($board_config['allow_smilies'] && $row->enable_smilies) {
+            if ($board_config['allow_smilies'] && $post->enable_smilies) {
                 $message = smilies_pass($message);
             }
 
@@ -190,8 +188,8 @@ function topic_review($topic_id, $is_inline_review)
 			// Again this will be handled by the templating
 			// code at some point
 			//
-			$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+			$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+			$row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
             $template->assignBlockVars('postrow',
                 [
@@ -207,8 +205,6 @@ function topic_review($topic_id, $is_inline_review)
                     'L_MINI_POST_ALT' => $mini_post_alt
                 ]
             );
-
-            $i++;
 		}
 	} else {
 		message_die(GENERAL_MESSAGE, 'Topic_post_not_exist', '', __LINE__, __FILE__);
