@@ -112,7 +112,9 @@ if ($mode === 'topicreview') {
 
     topic_review($topic_id, false);
     exit;
-} elseif ($mode === 'smilies') {
+}
+
+if ($mode === 'smilies') {
     generate_smilies('window', PAGE_POSTING);
     exit;
 }
@@ -375,6 +377,7 @@ if ($post_info) {
         if ($mode === 'quote') {
             $topic_id = $post_info->topic_id;
         }
+
         if ($mode === 'newtopic') {
             $post_data['topic_type'] = POST_NORMAL;
         }
@@ -572,7 +575,7 @@ if (($delete || $poll_delete || $mode === 'delete') && !$confirm) {
         ->execute();
 
     $insert_data = [
-        'vote_id' => $vote_id,
+        'vote_id'      => $vote_id,
         'vote_user_id' => $userdata['user_id'],
         'vote_user_ip' => $user_ip
     ];
@@ -606,12 +609,14 @@ if (($delete || $poll_delete || $mode === 'delete') && !$confirm) {
 		case 'editpost':
 		case 'newtopic':
 		case 'reply':
-			$username = !empty($_POST['username']) ? $_POST['username'] : '';
-			$subject = !empty($_POST['subject']) ? trim($_POST['subject']) : '';
-			$message = !empty($_POST['message']) ? $_POST['message'] : '';
-			$poll_title = ( isset($_POST['poll_title']) && $is_auth['auth_pollcreate'] ) ? $_POST['poll_title'] : '';
-			$poll_options = ( isset($_POST['poll_option_text']) && $is_auth['auth_pollcreate'] ) ? $_POST['poll_option_text'] : '';
-			$poll_length = ( isset($_POST['poll_length']) && $is_auth['auth_pollcreate'] ) ? $_POST['poll_length'] : '';
+			$username = !empty($_POST['username']) ? $_POST['username']      : '';
+			$subject  = !empty($_POST['subject'])  ? trim($_POST['subject']) : '';
+			$message  = !empty($_POST['message'])  ? $_POST['message']       : '';
+
+			$poll_title   = isset($_POST['poll_title']) && $is_auth['auth_pollcreate']       ? $_POST['poll_title'] : '';
+			$poll_options = isset($_POST['poll_option_text']) && $is_auth['auth_pollcreate'] ? $_POST['poll_option_text'] : '';
+			$poll_length  = isset($_POST['poll_length']) && $is_auth['auth_pollcreate']      ? $_POST['poll_length'] : '';
+
 			$bbcode_uid = '';
 
 			prepare_post($mode, $post_data, $bbcode_on, $html_on, $smilies_on, $error_msg, $username, $bbcode_uid, $subject, $message, $poll_title, $poll_options, $poll_length);

@@ -222,30 +222,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
         }
 	}
 
-	if ($mode !== 'editpost') {
-        $insert_data = [
-            'topic_id'       => $topic_id,
-            'forum_id'       => $forum_id,
-            'poster_id'      => $userdata['user_id'],
-            'post_username'  => $post_username,
-            'post_time'      => $current_time,
-            'poster_ip'      => $user_ip, 'enable_bbcode'  => $bbcode_on,
-            'enable_html'    => $html_on,
-            'enable_smilies' => $smilies_on,
-            'enable_sig'     => $attach_sig
-        ];
-
-        $post_id = dibi::insert(POSTS_TABLE, $insert_data)->execute(dibi::IDENTIFIER);
-
-        $insert_data = [
-            'post_id'      => $post_id,
-            'post_subject' => $post_subject,
-            'bbcode_uid'   => $bbcode_uid,
-            'post_text'    => $post_message
-        ];
-
-        dibi::insert(POSTS_TEXT_TABLE, $insert_data)->execute();
-    } else {
+	if ($mode === 'editpost') {
         $update_data = [
             'post_username'  => $post_username,
             'enable_bbcode'  => $bbcode_on,
@@ -264,14 +241,38 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
             ->execute();
 
         $update_data = [
-            'post_text'  => $post_message,
-            'bbcode_uid' => $bbcode_uid,
+            'post_text'    => $post_message,
+            'bbcode_uid'   => $bbcode_uid,
             'post_subject' => $post_subject
         ];
 
         dibi::update(POSTS_TEXT_TABLE, $update_data)
             ->where('post_id = %i', $post_id)
             ->execute();
+    } else {
+        $insert_data = [
+            'topic_id'       => $topic_id,
+            'forum_id'       => $forum_id,
+            'poster_id'      => $userdata['user_id'],
+            'post_username'  => $post_username,
+            'post_time'      => $current_time,
+            'poster_ip'      => $user_ip,
+            'enable_bbcode'  => $bbcode_on,
+            'enable_html'    => $html_on,
+            'enable_smilies' => $smilies_on,
+            'enable_sig'     => $attach_sig
+        ];
+
+        $post_id = dibi::insert(POSTS_TABLE, $insert_data)->execute(dibi::IDENTIFIER);
+
+        $insert_data = [
+            'post_id'      => $post_id,
+            'post_subject' => $post_subject,
+            'bbcode_uid'   => $bbcode_uid,
+            'post_text'    => $post_message
+        ];
+
+        dibi::insert(POSTS_TEXT_TABLE, $insert_data)->execute();
     }
 
 	add_search_words('single', $post_id, stripslashes($post_message), stripslashes($post_subject));
@@ -331,8 +332,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
         foreach ($poll_options as $option_id => $option_text) {
             if (!empty($option_text)) {
                 $option_text = str_replace("\'", "''", htmlspecialchars($option_text));
-                $poll_result = ($mode === 'editpost' && isset($old_poll_result[$option_id])) ?
-                    $old_poll_result[$option_id] : 0;
+                $poll_result = $mode === 'editpost' && isset($old_poll_result[$option_id]) ? $old_poll_result[$option_id] : 0;
 
                 if ($mode !== 'editpost' || !isset($old_poll_result[$option_id])) {
                     $insert_data = [
@@ -379,7 +379,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 //
 function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_id, &$user_id)
 {
-	$sign = ($mode === 'delete') ? '- 1' : '+ 1';
+	$sign = $mode === 'delete' ? '- 1' : '+ 1';
 
 	$forum_update_sql = ['forum_posts%sql' => 'forum_posts ' . $sign];
 	$topic_update_sql = [];
@@ -397,11 +397,11 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
                     ->where('topic_id = %i', $topic_id)
                     ->fetchSingle();
 
-                if ($last_post_id === false) {
+				if ($last_post_id === false) {
                     message_die(GENERAL_ERROR, 'Error in deleting post');
-                } else {
-                    $topic_update_sql['topic_last_post_id'] = $last_post_id;
                 }
+
+				$topic_update_sql['topic_last_post_id'] = $last_post_id;
 			}
 
 			if ($post_data['last_topic']) {
@@ -487,20 +487,15 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
             ->where('post_id = %i', $post_id)
             ->execute();
 
-		if ($post_data['last_post']) {
-			if ($post_data['first_post']) {
-			    // TODO
-				$forum_update_sql .= ', forum_topics = forum_topics - 1';
+        if ($post_data['last_post'] && $post_data['first_post']) {
+            dibi::delete(TOPICS_TABLE)
+                ->where('topic_id = %i OR topic_moved_id = %i', $topic_id, $topic_id)
+                ->execute();
 
-				dibi::delete(TOPICS_TABLE)
-                    ->where('topic_id = %i OR topic_moved_id = %i', $topic_id, $topic_id)
-                    ->execute();
-
-				dibi::delete(TOPICS_WATCH_TABLE)
-                    ->where('topic_id = %i', $topic_id)
-                    ->execute();
-			}
-		}
+            dibi::delete(TOPICS_WATCH_TABLE)
+                ->where('topic_id = %i', $topic_id)
+                ->execute();
+        }
 
 		remove_search_post([$post_id]);
 	}
