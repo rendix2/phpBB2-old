@@ -158,12 +158,10 @@ $tracking_forums = isset($_COOKIE[$forum_cookie_name]) ? unserialize($_COOKIE[$f
 //
 // Do the forum Prune
 //
-if ($is_auth['auth_mod'] && $board_config['prune_enable']) {
-    if ($forum->prune_next < time() && $forum->prune_enable) {
-        include $phpbb_root_path . 'includes/prune.php';
-        require $phpbb_root_path . 'includes/functions_admin.php';
-        auto_prune($forum_id);
-    }
+if ($is_auth['auth_mod'] && $board_config['prune_enable'] && $forum->prune_next < time() && $forum->prune_enable) {
+    include $phpbb_root_path . 'includes/prune.php';
+    require $phpbb_root_path . 'includes/functions_admin.php';
+    auto_prune($forum_id);
 }
 //
 // End of forum prune
