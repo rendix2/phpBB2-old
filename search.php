@@ -86,7 +86,18 @@ if (isset($_POST['sort_dir'])) {
 }
 
 if (!empty($_POST['search_time']) || !empty($_GET['search_time'])) {
-	$search_time = time() - ( ( !empty($_POST['search_time']) ? (int)$_POST['search_time'] : (int)$_GET['search_time']) * 86400 );
+    $user_timezone = isset($_POST['timezone']) ? $_POST['timezone'] : $board_config['board_timezone'];
+
+    $search_time = new DateTime();
+    $search_time->setTimezone(new DateTimeZone($user_timezone));
+
+    if (!empty($_POST['search_time'])) {
+        $search_time->sub(new DateInterval('PT' . $_POST['search_time'] . 'D'));
+    } else {
+        $search_time->sub(new DateInterval('PT' . $_GET['search_time'] . 'D'));
+    }
+
+    $search_time = $search_time->getTimestamp();
 	$topic_days = !empty($_POST['search_time']) ? (int)$_POST['search_time'] : (int)$_GET['search_time'];
 } else {
 	$search_time = 0;
