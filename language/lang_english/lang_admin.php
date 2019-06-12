@@ -54,6 +54,7 @@ $lang['Create_new'] = 'Create';
 $lang['Add_new'] = 'Add';
 $lang['Backup_DB'] = 'Backup Database';
 $lang['Restore_DB'] = 'Restore Database';
+$lang['DB_Maintenance'] = 'Database Maintenance';
 
 
 //

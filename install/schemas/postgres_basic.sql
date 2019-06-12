@@ -190,3 +190,16 @@ INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 10, 
 INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 11, 1, 0 );
 INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 12, 1, 1 );
 INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES ( 3, 1, 1 );
+
+-- db Maintenance
+INSERT IGNORE INTO phpbb_config (config_name, config_value) VALUES ('dbmtnc_rebuild_end', '0');
+INSERT IGNORE INTO phpbb_config (config_name, config_value) VALUES ('dbmtnc_rebuild_pos', '-1');
+INSERT IGNORE INTO phpbb_config (config_name, config_value) VALUES ('dbmtnc_rebuildcfg_maxmemory', '500');
+INSERT IGNORE INTO phpbb_config (config_name, config_value) VALUES ('dbmtnc_rebuildcfg_minposts', '3');
+INSERT IGNORE INTO phpbb_config (config_name, config_value) VALUES ('dbmtnc_rebuildcfg_php3only', '0');
+INSERT IGNORE INTO phpbb_config (config_name, config_value) VALUES ('dbmtnc_rebuildcfg_php3pps', '1');
+INSERT IGNORE INTO phpbb_config (config_name, config_value) VALUES ('dbmtnc_rebuildcfg_php4pps', '8');
+INSERT IGNORE INTO phpbb_config (config_name, config_value) VALUES ('dbmtnc_rebuildcfg_timelimit', '240');
+INSERT IGNORE INTO phpbb_config (config_name, config_value) VALUES ('dbmtnc_rebuildcfg_timeoverwrite', '0');
+INSERT IGNORE INTO phpbb_config (config_name, config_value) VALUES ('dbmtnc_disallow_postcounter', '0');
+INSERT IGNORE INTO phpbb_config (config_name, config_value) VALUES ('dbmtnc_disallow_rebuild', '0');
