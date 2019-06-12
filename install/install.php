@@ -10,6 +10,8 @@
  *
  ***************************************************************************/
 
+use Nette\Loaders\RobotLoader;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -230,11 +232,20 @@ $userdata = [];
 $lang = [];
 $error = false;
 
+require_once $phpbb_root_path . 'vendor/autoload.php';
+
+$loader = new Nette\Loaders\RobotLoader;
+
+// Add directories for RobotLoader to index
+$loader->addDirectory(__DIR__ . '/includes');
+
+// And set caching to the 'temp' directory
+$loader->setTempDirectory(__DIR__ . '/temp');
+$loader->register(); // Run the RobotLoader
+
 // Include some required functions
 include $phpbb_root_path.'includes/constants.php';
 include $phpbb_root_path.'includes/functions.php';
-include $phpbb_root_path.'includes/Session.php.php';
-include $phpbb_root_path .'vendor/autoload.php';
 
 // Define schema info
 $available_dbms_temp = [

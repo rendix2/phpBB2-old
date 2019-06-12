@@ -73,8 +73,7 @@ function generate_user_info(&$row, $date_format, $group_mod, &$from, &$posts, &$
 	$pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
 
 	$www_img = $row->user_website ? '<a href="' . $row->user_website . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
-	$www = $row->user_website ? '<a href="' . $row->user_website . '" target="_userwww">' . $lang['Visit_website']
-	 . '</a>' : '';
+	$www = $row->user_website ? '<a href="' . $row->user_website . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
 
 	if (!empty($row->user_icq)) {
 		$icq_status_img = '<a href="http://wwp.icq.com/' . $row->user_icq . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $row->user_icq . '&img=5" width="18" height="18" border="0" /></a>';
@@ -248,7 +247,6 @@ if (isset($_POST['groupstatus']) && $group_id) {
         ->where('g.group_id = %i', $group_id)
         ->fetch();
 
-	include $phpbb_root_path . 'includes/Emailer.php';
 	$emailer = new Emailer($board_config['smtp_delivery']);
 
 	$emailer->setFrom($board_config['board_email']);
@@ -523,7 +521,6 @@ if (isset($_POST['groupstatus']) && $group_id) {
                         message_die(GENERAL_ERROR, 'Could not get group information');
                     }
 
-					include $phpbb_root_path . 'includes/Emailer.php';
 					$emailer = new Emailer($board_config['smtp_delivery']);
 
 					$emailer->setFrom($board_config['board_email']);
@@ -613,7 +610,6 @@ if (isset($_POST['groupstatus']) && $group_id) {
 							message_die(GENERAL_ERROR, 'Could not get group information');
 						}
 
-						include $phpbb_root_path . 'includes/Emailer.php';
 						$emailer = new Emailer($board_config['smtp_delivery']);
 
 						$emailer->setFrom($board_config['board_email']);

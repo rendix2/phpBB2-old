@@ -84,7 +84,6 @@ if ($user->user_viewemail || $userdata['user_level'] === ADMIN) {
                 message_die(GENERAL_ERROR, 'Could not update last email time');
             }
 
-            include $phpbb_root_path . 'includes/Emailer.php';
             $emailer = new Emailer($board_config['smtp_delivery']);
 
             $emailer->setFrom($userdata['user_email']);

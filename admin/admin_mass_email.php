@@ -91,8 +91,6 @@ if (isset($_POST['submit'])) {
     }
 
     if (!$error) {
-		include $phpbb_root_path . 'includes/Emailer.php';
-
 		//
 		// Let's do some checking to make sure that mass mail functions
 		// are working in win32 versions of php.

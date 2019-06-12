@@ -264,7 +264,6 @@ if (!empty($_POST['topicdays']) || !empty($_GET['topicdays'])) {
 	$limit_topics_time = false;
 	$topic_days = 0;
 }
-include $phpbb_root_path .'includes/Select.php';
 
 $select_topic_days = Select::topicDays($lang, $topic_days);
 

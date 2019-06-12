@@ -849,8 +849,6 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
             ->where('group_single_user <> %i', 1)
             ->fetchPairs('group_id', 'group_name');
 
-        include $phpbb_root_path .'includes/Select.php';
-
         $template->assignVars(['S_AUTH_SELECT' => Select::groups($groups)]);
     }
 

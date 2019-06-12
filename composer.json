@@ -6,5 +6,6 @@
         "tracy/tracy": "^2.5",
         "dibi/dibi": "^3.2",
         "ifsnop/mysqldump-php": "^2.7",
+        "nette/robot-loader": "^3.1"
     }
 }

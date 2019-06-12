@@ -35,7 +35,6 @@ require './pagestart.php';
 require $phpbb_root_path . 'includes/bbcode.php';
 require $phpbb_root_path . 'includes/functions_post.php';
 require $phpbb_root_path . 'includes/functions_selects.php';
-require $phpbb_root_path . 'includes/Select.php';
 require $phpbb_root_path . 'includes/functions_validate.php';
 
 $html_entities_match   = ['#<#', '#>#'];

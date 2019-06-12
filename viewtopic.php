@@ -363,7 +363,6 @@ if (!empty($_POST['postdays']) || !empty($_GET['postdays'])) {
     $limit_posts_time = false;
 	$post_days = 0;
 }
-include $phpbb_root_path .'includes/Select.php';
 
 $select_post_days = Select::postDays($lang, $post_days);
 

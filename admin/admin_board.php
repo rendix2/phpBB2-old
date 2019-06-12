@@ -26,7 +26,6 @@ $phpbb_root_path = './../';
 
 require './pagestart.php';
 include $phpbb_root_path . 'includes/functions_selects.php';
-include $phpbb_root_path .'includes/Select.php';
 
 //
 // Pull all config data

@@ -49,6 +49,17 @@ if (isset($_SESSION) && !is_array($_SESSION)) {
 	die('Hacking attempt');
 }
 
+require_once $phpbb_root_path . 'vendor/autoload.php';
+
+$loader = new Nette\Loaders\RobotLoader;
+
+// Add directories for RobotLoader to index
+$loader->addDirectory(__DIR__ . '/includes');
+
+// And set caching to the 'temp' directory
+$loader->setTempDirectory(__DIR__ . '/temp');
+$loader->register(); // Run the RobotLoader
+
 //
 // Define some basic configuration arrays this also prevents
 // malicious rewriting of language and otherarray values via
@@ -71,11 +82,7 @@ if (!defined('PHPBB_INSTALLED')) {
 }
 
 include $phpbb_root_path . 'includes/constants.php';
-include $phpbb_root_path . 'includes/Template.php';
-include $phpbb_root_path . 'includes/Session.php';
-include $phpbb_root_path . 'includes/Auth.php';
 include $phpbb_root_path . 'includes/functions.php';
-include $phpbb_root_path . 'vendor/autoload.php';
 
 // now we connect to database via dibi!
 $connection = dibi::connect([

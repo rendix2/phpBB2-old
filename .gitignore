@@ -5,3 +5,5 @@
 /.settings
 config.php
 ./config.php
+/temp
+/cache

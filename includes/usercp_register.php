@@ -486,7 +486,6 @@ if (isset($_POST['submit'])) {
 				//
 				// The users account has been deactivated, send them an email with a new activation key
 				//
-				include $phpbb_root_path . 'includes/Emailer.php';
 				$emailer = new Emailer($board_config['smtp_delivery']);
 
                 if ($board_config['require_activation'] !== USER_ACTIVATION_ADMIN) {
@@ -635,7 +634,6 @@ if (isset($_POST['submit'])) {
 				$email_template = 'user_welcome';
 			}
 
-			include $phpbb_root_path . 'includes/Emailer.php';
 			$emailer = new Emailer($board_config['smtp_delivery']);
 
 			$emailer->setFrom($board_config['board_email']);
@@ -807,7 +805,6 @@ if (isset($_POST['avatargallery']) && !$error) {
 	display_avatar_gallery($mode, $avatar_category, $user_id, $email, $current_email, $coppa, $username, $email, $new_password, $cur_password, $password_confirm, $icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature, $viewemail, $notifypm, $popup_pm, $notifyreply, $attachsig, $allowhtml, $allowbbcode, $allowsmilies, $allowviewonline, $user_style, $user_lang, $user_timezone, $user_dateformat, $userdata['session_id']);
 } else {
 	include $phpbb_root_path . 'includes/functions_selects.php';
-	include $phpbb_root_path . 'includes/Select.php';
 
     if (!isset($coppa)) {
         $coppa = false;

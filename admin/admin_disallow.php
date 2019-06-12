@@ -79,7 +79,6 @@ $disallowed = dibi::select('*')
 // Ok now generate the info for the template, which will be put out no matter
 // what mode we are in.
 //
-include $phpbb_root_path .'includes/Select.php';
 $disallow_select = Select::dissalow($lang, $disallowed);
 
 $template->setFileNames(['body' => 'admin/disallow_body.tpl']);
