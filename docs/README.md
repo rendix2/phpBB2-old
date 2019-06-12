@@ -8,3 +8,5 @@ News:
 - users table use AI
 - instalation shows only avaible drivers
 - pruning recount users posts
+- returned search button
+- we count users topics
