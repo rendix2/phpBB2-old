@@ -91,8 +91,9 @@ switch( $mode) {
                         (phpbb_realpath($phpbb_root_path . 'templates/' .$sub_dir)) && $sub_dir !== '.' && $sub_dir !== '..' && $sub_dir !== 'CVS') {
 						if (@file_exists(@phpbb_realpath($phpbb_root_path. 'templates/' . $sub_dir . '/theme_info.cfg'))) {
 							include $phpbb_root_path. 'templates/' . $sub_dir . '/theme_info.cfg';
+							$countSubDirs = count($$sub_dir);
 							
-							for ($i = 0; $i < count($$sub_dir); $i++) {
+							for ($i = 0; $i < $countSubDirs; $i++) {
 								$working_data = $$sub_dir;
 								
 								$style_name = $working_data[$i]['style_name'];
