@@ -361,8 +361,7 @@ foreach ($categories as $i => $category) {
                                     }
                                 }
 
-                                if (isset($tracking_forums[$forum_id]) && $tracking_forums[$forum_id] >
-                                    $forum_last_post_time) {
+                                if (isset($tracking_forums[$forum_id]) && $tracking_forums[$forum_id] > $forum_last_post_time) {
                                     $unread_topics = false;
                                 }
 
@@ -372,7 +371,7 @@ foreach ($categories as $i => $category) {
                             }
 
                             $folder_image = $unread_topics ? $images['forum_new'] : $images['forum'];
-                            $folder_alt   = $unread_topics ? $lang['New_posts'] : $lang['No_new_posts'];
+                            $folder_alt   = $unread_topics ? $lang['New_posts']   : $lang['No_new_posts'];
                         }
 
                         $posts  = $forum->forum_posts;
