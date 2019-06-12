@@ -45,7 +45,14 @@
 				<!-- END down -->
 			</span>
 		</td>
-		<td class="row2" align="center" valign="middle"><span class="gen"><a href="{catrow.forumrow.U_FORUM_RESYNC}">{L_RESYNC}</a></span></td>
+		<td class="row2" align="center" valign="middle">
+			<span class="gen">
+				<a href="{catrow.forumrow.U_FORUM_RESYNC}">{L_RESYNC}</a>
+			</span>
+			<span class="gen">
+				<a href="{catrow.forumrow.U_FORUM_PERMISSIONS}">{L_PERMISSIONS}</a>
+			</span>
+		</td>
 	</tr>
 	<!-- END forumrow -->
 	<tr>

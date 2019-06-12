@@ -809,7 +809,8 @@ $template->assignVars(
         'L_DELETE'          => $lang['Delete'],
         'L_MOVE_UP'         => $lang['Move_up'],
         'L_MOVE_DOWN'       => $lang['Move_down'],
-        'L_RESYNC'          => $lang['Resync']
+        'L_RESYNC'          => $lang['Resync'],
+        'L_PERMISSIONS'     => $lang['Permissions']
     ]
 );
 
@@ -898,12 +899,13 @@ if ($category_count) {
                         'NUM_TOPICS' => $forum->forum_topics,
                         'NUM_POSTS'  => $forum->forum_posts,
 
-                        'U_VIEWFORUM'       => Session::appendSid($phpbb_root_path . 'viewforum.php?' . POST_FORUM_URL . "=$forum_id"),
-                        'U_FORUM_EDIT'      => Session::appendSid('admin_forums.php?mode=editforum&amp;' . POST_FORUM_URL . "=$forum_id"),
-                        'U_FORUM_DELETE'    => Session::appendSid('admin_forums.php?mode=deleteforum&amp;' . POST_FORUM_URL . "=$forum_id"),
-                        'U_FORUM_MOVE_UP'   => Session::appendSid('admin_forums.php?mode=forum_order&amp;move=-15&amp;' . POST_FORUM_URL . "=$forum_id"),
-                        'U_FORUM_MOVE_DOWN' => Session::appendSid('admin_forums.php?mode=forum_order&amp;move=15&amp;' . POST_FORUM_URL . "=$forum_id"),
-                        'U_FORUM_RESYNC'    => Session::appendSid('admin_forums.php?mode=forum_sync&amp;' . POST_FORUM_URL . "=$forum_id")
+                        'U_VIEWFORUM'         => Session::appendSid($phpbb_root_path . 'viewforum.php?' . POST_FORUM_URL . "=$forum_id"),
+                        'U_FORUM_EDIT'        => Session::appendSid('admin_forums.php?mode=editforum&amp;' . POST_FORUM_URL . "=$forum_id"),
+                        'U_FORUM_DELETE'      => Session::appendSid('admin_forums.php?mode=deleteforum&amp;' . POST_FORUM_URL . "=$forum_id"),
+                        'U_FORUM_MOVE_UP'     => Session::appendSid('admin_forums.php?mode=forum_order&amp;move=-15&amp;' . POST_FORUM_URL . "=$forum_id"),
+                        'U_FORUM_MOVE_DOWN'   => Session::appendSid('admin_forums.php?mode=forum_order&amp;move=15&amp;' . POST_FORUM_URL . "=$forum_id"),
+                        'U_FORUM_RESYNC'      => Session::appendSid('admin_forums.php?mode=forum_sync&amp;' . POST_FORUM_URL . "=$forum_id"),
+                        'U_FORUM_PERMISSIONS' => Session::appendSid('admin_forumauth.php?' . POST_FORUM_URL . "=$forum_id")
                     ]
                 );
 
