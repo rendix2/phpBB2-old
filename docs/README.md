@@ -10,3 +10,4 @@ News:
 - pruning recount users posts
 - returned search button
 - we count users topics
+- optimized for(....) loops
