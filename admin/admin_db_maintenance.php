@@ -30,7 +30,7 @@ define('HEAP_SIZE', 500); // Limit of Heap-Table for session data
 if ( !empty($setmodules) )
 {
 	$filename = basename(__FILE__);
-	$module['General']['DB_Maintenance'] = $filename;
+	$module['Database']['DB_Maintenance'] = $filename;
 	return;
 }
 
@@ -39,9 +39,9 @@ if ( !empty($setmodules) )
 //
 $phpbb_root_path = "./../";
 $no_page_header = TRUE; // We do not send the page header right here to prevent problems with GZIP-compression
-require($phpbb_root_path . 'extension.inc');
-require('./pagestart.' . $phpEx);
-require($phpbb_root_path . 'includes/functions_dbmtnc.'.$phpEx);
+
+require('./pagestart.php');
+require($phpbb_root_path . 'includes/functions_dbmtnc.php');
 
 //
 // Set up timer
@@ -51,17 +51,17 @@ $timer = getmicrotime();
 //
 // Get language file for this mod
 //
-if ( !file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_dbmtnc.'.$phpEx)) )
+if ( !file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_dbmtnc.php')) )
 {
 	$board_config['default_lang'] = 'english';
 }
-include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_dbmtnc.' . $phpEx);
+include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_dbmtnc.php');
 
 //
 // Set up variables and constants
 //
-$function = ( isset($HTTP_GET_VARS['function']) ) ? htmlspecialchars(trim( $HTTP_GET_VARS['function'] )) : '';
-$mode_id = ( isset($HTTP_GET_VARS['mode']) ) ? htmlspecialchars(trim( $HTTP_GET_VARS['mode'] )) : '';
+$function = ( isset($_GET['function']) ) ? htmlspecialchars(trim( $_GET['function'] )) : '';
+$mode_id = ( isset($_GET['mode']) ) ? htmlspecialchars(trim( $_GET['mode'] )) : '';
 // Check for parameters
 reset ($config_data);
 while (list(, $value) = each ($config_data))
@@ -75,12 +75,12 @@ while (list(, $value) = each ($config_data))
 //
 // Get form-data if specified and override old settings
 //
-if ( isset($HTTP_POST_VARS['mode']) && $HTTP_POST_VARS['mode'] == 'perform' )
+if ( isset($_POST['mode']) && $_POST['mode'] == 'perform' )
 {
-	if ( isset($HTTP_POST_VARS['confirm']) )
+	if ( isset($_POST['confirm']) )
 	{
 		$mode_id = 'perform';
-		$function = ( isset($HTTP_POST_VARS['function']) ) ? htmlspecialchars(trim( $HTTP_POST_VARS['function'] )) : '';
+		$function = ( isset($_POST['function']) ) ? htmlspecialchars(trim( $_POST['function'] )) : '';
 	}
 }
 
@@ -93,14 +93,13 @@ if ($mode_id == 'start' || $mode_id == 'perform')
 }
 if ($function != 'perform_rebuild') // Don't send header when rebuilding the search index
 {
-	include('./page_header_admin.'.$phpEx);
+	include('./page_header_admin.php');
 }
 
 //
 // Check the db-type
 //
-if (SQL_LAYER != 'mysql' && SQL_LAYER != 'mysql4')
-{
+if ($dbms !== 'mysql') {
 	message_die(GENERAL_MESSAGE, $lang['dbtype_not_supported']);
 }
 
@@ -131,18 +130,18 @@ switch($mode_id)
 			$s_hidden_fields = '<input type="hidden" name="mode" value="perform" />';
 			$s_hidden_fields .= '<input type="hidden" name="function" value="' . $function . '" />';
 
-			$template->set_filenames(array(
+			$template->setFileNames(array(
 				'body' => 'admin/dbmtnc_confirm_body.tpl')
 			);
 
-			$template->assign_vars(array(
+			$template->assignVars(array(
 				'MESSAGE_TITLE' => $warning_message[1],
 				'MESSAGE_TEXT' => $warning_message[3],
 
 				'L_YES' => $lang['Yes'],
 				'L_NO' => $lang['No'],
 
-				'S_CONFIRM_ACTION' => append_sid("admin_db_maintenance.$phpEx"),
+				'S_CONFIRM_ACTION' => Session::appendSid("admin_db_maintenance.php"),
 				'S_HIDDEN_FIELDS' => $s_hidden_fields)
 			);
 
@@ -171,7 +170,7 @@ switch($mode_id)
 		switch($function)
 		{
 			case 'statistic': // Statistics
-				$template->set_filenames(array(
+				$template->setFileNames(array(
 					'body' => 'admin/dbmtnc_statistic_body.tpl')
 				);
 
@@ -179,88 +178,60 @@ switch($mode_id)
 				$total_topics = get_db_stat('topiccount');
 				$total_posts = get_db_stat('postcount');
 				$total_users = get_db_stat('usercount');
-				$sql = "SELECT COUNT(user_id) AS total
-					FROM " . USERS_TABLE . "
-					WHERE user_active = 0
-						AND user_id <> " . ANONYMOUS;
-				if ( !($result = $db->sql_query($sql)) )
-				{
+
+				$total_deactivated_users = dibi::select('COUNT(user_id)')
+					->from(USERS_TABLE)
+					->where('user_active = %i', 0)
+					->where('user_id <> %i', ANONYMOUS)
+					->fetchSingle();
+
+				if ($total_deactivated_users === false) {
 					throw_error("Couldn't get statistic data!", __LINE__, __FILE__, $sql);
 				}
-				if ( $row = $db->sql_fetchrow($result) )
-				{
-					$total_deactivated_users = $row['total'];
-				}
-				else
-				{
-					throw_error("Couldn't update pending information!", __LINE__, __FILE__, $sql);
-				}
-				$db->sql_freeresult($result);
-				$sql = "SELECT COUNT(user_id) AS total
-					FROM " . USERS_TABLE . "
-					WHERE user_level = " . MOD . "
-						AND user_id <> " . ANONYMOUS;
-				if ( !($result = $db->sql_query($sql)) )
-				{
+
+				$total_moderators = dibi::select('COUNT(user_id)')
+					->from(USERS_TABLE)
+					->where('user_level = %i', MOD)
+					->where('user_id <> %i', ANONYMOUS)
+					->fetchSingle();
+
+				if ($total_moderators === false) {
 					throw_error("Couldn't get statistic data!", __LINE__, __FILE__, $sql);
 				}
-				if ( $row = $db->sql_fetchrow($result) )
-				{
-					$total_moderators = $row['total'];
-				}
-				else
-				{
-					throw_error("Couldn't update pending information!", __LINE__, __FILE__, $sql);
-				}
-				$db->sql_freeresult($result);
-				$sql = "SELECT COUNT(user_id) AS total
-					FROM " . USERS_TABLE . "
-					WHERE user_level = " . ADMIN . "
-						AND user_id <> " . ANONYMOUS;
-				if ( !($result = $db->sql_query($sql)) )
-				{
+
+				$total_administrators = dibi::select('COUNT(user_id)')
+					->from(USERS_TABLE)
+					->where('user_level = %i', ADMIN)
+					->where('user_id <> %i', ANONYMOUS)
+					->fetchSingle();
+
+				if ( $total_administrators === false) {
 					throw_error("Couldn't get statistic data!", __LINE__, __FILE__, $sql);
 				}
-				if ( $row = $db->sql_fetchrow($result) )
-				{
-					$total_administrators = $row['total'];
-				}
-				else
-				{
-					throw_error("Couldn't update pending information!", __LINE__, __FILE__, $sql);
-				}
-				$db->sql_freeresult($result);
-				$administrator_names = '';
-				$sql = "SELECT username
-					FROM " . USERS_TABLE . "
-					WHERE user_level = " . ADMIN . "
-						AND user_id <> " . ANONYMOUS . "
-					ORDER BY username";
-				if ( !($result = $db->sql_query($sql)) )
-				{
-					throw_error("Couldn't get statistic data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$administrator_names .= (($administrator_names == '') ? '' : ', ') . $row['username'];
-				}
-				$db->sql_freeresult($result);
-				$template->assign_vars(array(
+
+				$administrator_names = dibi::select('username')
+					->from(USERS_TABLE)
+					->where('user_level = %i', ADMIN)
+					->where('user_id <> %i', ANONYMOUS)
+					->orderBy('username')
+					->fetchPairs(null, 'username');
+
+				$template->assignVars(array(
 					'NUMBER_OF_TOPICS' => $total_topics,
 					'NUMBER_OF_POSTS' => $total_posts,
 					'NUMBER_OF_USERS' => $total_users,
 					'NUMBER_OF_DEACTIVATED_USERS' => $total_deactivated_users,
 					'NUMBER_OF_MODERATORS' => $total_moderators,
 					'NUMBER_OF_ADMINISTRATORS' => $total_administrators,
-					'NAMES_OF_ADMINISTRATORS' => htmlspecialchars($administrator_names))
+					'NAMES_OF_ADMINISTRATORS' => htmlspecialchars(implode(', ', $administrator_names)))
 				);
 				
 				// Database statistic
 				if (check_mysql_version())
 				{
 					$stat = get_table_statistic();
-					$template->assign_block_vars('db_statistics', array());
-					$template->assign_vars(array(
+					$template->assignBlockVars('db_statistics', array());
+					$template->assignVars(array(
 						'NUMBER_OF_DB_TABLES' => $stat['all']['count'],
 						'NUMBER_OF_CORE_DB_TABLES' => $stat['core']['count'],
 						'NUMBER_OF_ADVANCED_DB_TABLES' => $stat['advanced']['count'],
@@ -274,17 +245,9 @@ switch($mode_id)
 				}				
 
 				// Version information
-				$sql = "SELECT VERSION() AS mysql_version";
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't obtain MySQL Version", __LINE__, __FILE__, $sql);
-				}
-				$row = $db->sql_fetchrow($result);
-				$mysql_version = $row['mysql_version'];
-				$db->sql_freeresult($result);
+				$mysql_version = dibi::query('SELECT VERSION() AS mysql_version')->fetchSingle();
 
-				$template->assign_vars(array(
+				$template->assignVars(array(
 					'PHPBB_VERSION' => '2' . $board_config['version'],
 					'MOD_VERSION' => DBMTNC_VERSION,
 					'PHP_VERSION' => phpversion(),
@@ -317,19 +280,19 @@ switch($mode_id)
 				$template->pparse("body");
 				break;
 			case 'config': // Configuration
-				if( isset($HTTP_POST_VARS['submit']) )
+				if( isset($_POST['submit']) )
 				{
-					$disallow_postcounter = (isset($HTTP_POST_VARS['disallow_postcounter'])) ? intval($HTTP_POST_VARS['disallow_postcounter']) : 0;
-					$disallow_rebuild = (isset($HTTP_POST_VARS['disallow_rebuild'])) ? intval($HTTP_POST_VARS['disallow_rebuild']) : 0;
-					$rebuildcfg_timelimit = (isset($HTTP_POST_VARS['rebuildcfg_timelimit']) && is_numeric($HTTP_POST_VARS['rebuildcfg_timelimit'])) ? intval($HTTP_POST_VARS['rebuildcfg_timelimit']) : 240;
-					$rebuildcfg_timeoverwrite = (isset($HTTP_POST_VARS['rebuildcfg_timeoverwrite']) && is_numeric($HTTP_POST_VARS['rebuildcfg_timeoverwrite'])) ? intval($HTTP_POST_VARS['rebuildcfg_timeoverwrite']) : 0;
-					$rebuildcfg_maxmemory = (isset($HTTP_POST_VARS['rebuildcfg_maxmemory']) && is_numeric($HTTP_POST_VARS['rebuildcfg_maxmemory'])) ? intval($HTTP_POST_VARS['rebuildcfg_maxmemory']) : 500;
-					$rebuildcfg_minposts = (isset($HTTP_POST_VARS['rebuildcfg_minposts']) && is_numeric($HTTP_POST_VARS['rebuildcfg_minposts'])) ? intval($HTTP_POST_VARS['rebuildcfg_minposts']) : 3;
-					$rebuildcfg_php3only = (isset($HTTP_POST_VARS['rebuildcfg_php3only'])) ? intval($HTTP_POST_VARS['rebuildcfg_php3only']) : 0;
-					$rebuildcfg_php4pps = (isset($HTTP_POST_VARS['rebuildcfg_php4pps']) && is_numeric($HTTP_POST_VARS['rebuildcfg_php4pps'])) ? intval($HTTP_POST_VARS['rebuildcfg_php4pps']) : 8;
-					$rebuildcfg_php3pps = (isset($HTTP_POST_VARS['rebuildcfg_php3pps']) && is_numeric($HTTP_POST_VARS['rebuildcfg_php3pps'])) ? intval($HTTP_POST_VARS['rebuildcfg_php3pps']) : 1;
-					$rebuild_pos = (isset($HTTP_POST_VARS['rebuild_pos']) && is_numeric($HTTP_POST_VARS['rebuild_pos'])) ? intval($HTTP_POST_VARS['rebuild_pos']) : -1;
-					$rebuild_end = (isset($HTTP_POST_VARS['rebuild_end']) && is_numeric($HTTP_POST_VARS['rebuild_end'])) ? intval($HTTP_POST_VARS['rebuild_end']) : 0;
+					$disallow_postcounter = (isset($_POST['disallow_postcounter'])) ? intval($_POST['disallow_postcounter']) : 0;
+					$disallow_rebuild = (isset($_POST['disallow_rebuild'])) ? intval($_POST['disallow_rebuild']) : 0;
+					$rebuildcfg_timelimit = (isset($_POST['rebuildcfg_timelimit']) && is_numeric($_POST['rebuildcfg_timelimit'])) ? intval($_POST['rebuildcfg_timelimit']) : 240;
+					$rebuildcfg_timeoverwrite = (isset($_POST['rebuildcfg_timeoverwrite']) && is_numeric($_POST['rebuildcfg_timeoverwrite'])) ? intval($_POST['rebuildcfg_timeoverwrite']) : 0;
+					$rebuildcfg_maxmemory = (isset($_POST['rebuildcfg_maxmemory']) && is_numeric($_POST['rebuildcfg_maxmemory'])) ? intval($_POST['rebuildcfg_maxmemory']) : 500;
+					$rebuildcfg_minposts = (isset($_POST['rebuildcfg_minposts']) && is_numeric($_POST['rebuildcfg_minposts'])) ? intval($_POST['rebuildcfg_minposts']) : 3;
+					$rebuildcfg_php3only = (isset($_POST['rebuildcfg_php3only'])) ? intval($_POST['rebuildcfg_php3only']) : 0;
+					$rebuildcfg_php4pps = (isset($_POST['rebuildcfg_php4pps']) && is_numeric($_POST['rebuildcfg_php4pps'])) ? intval($_POST['rebuildcfg_php4pps']) : 8;
+					$rebuildcfg_php3pps = (isset($_POST['rebuildcfg_php3pps']) && is_numeric($_POST['rebuildcfg_php3pps'])) ? intval($_POST['rebuildcfg_php3pps']) : 1;
+					$rebuild_pos = (isset($_POST['rebuild_pos']) && is_numeric($_POST['rebuild_pos'])) ? intval($_POST['rebuild_pos']) : -1;
+					$rebuild_end = (isset($_POST['rebuild_end']) && is_numeric($_POST['rebuild_end'])) ? intval($_POST['rebuild_end']) : 0;
 
 					switch(CONFIG_LEVEL)
 					{
@@ -381,16 +344,16 @@ switch($mode_id)
 								update_config('dbmtnc_disallow_postcounter', $disallow_postcounter);
 							}
 					}
-					$message = $lang['Dbmtnc_config_updated'] . "<br /><br />" . sprintf($lang['Click_return_dbmtnc_config'], "<a href=\"" . append_sid("admin_db_maintenance.$phpEx?mode=start&function=config") . "\">", "</a>");
+					$message = $lang['Dbmtnc_config_updated'] . "<br /><br />" . sprintf($lang['Click_return_dbmtnc_config'], "<a href=\"" . Session::appendSid("admin_db_maintenance.php?mode=start&function=config") . "\">", "</a>");
 					message_die(GENERAL_MESSAGE, $message);
 				}
 
-				$template->set_filenames(array(
+				$template->setFileNames(array(
 					'body' => 'admin/dbmtnc_config_body.tpl')
 				);
 
-				$template->assign_vars(array(
-					'S_CONFIG_ACTION' => append_sid("admin_db_maintenance.$phpEx?mode=start&function=config"),
+				$template->assignVars(array(
+					'S_CONFIG_ACTION' => Session::appendSid("admin_db_maintenance.php?mode=start&function=config"),
 
 					'L_DBMTNC_TITLE' => $lang['DB_Maintenance'],
 					'L_DBMTNC_SUB_TITLE' => $lang['Config_title'],
@@ -447,11 +410,11 @@ switch($mode_id)
 				// Display of vonfiguration dependend on settings
 				if ( CONFIG_LEVEL >= 2 )
 				{
-					$template->assign_block_vars('rebuild_settings', array());
+					$template->assignBlockVars('rebuild_settings', array());
 				}
 				if ( CONFIG_LEVEL >= 3 )
 				{
-					$template->assign_block_vars('currentrebuild_settings', array());
+					$template->assignBlockVars('currentrebuild_settings', array());
 				}
 
 				$template->pparse("body");
@@ -462,15 +425,13 @@ switch($mode_id)
 
 				// Check for missing anonymous user
 				echo("<p class=\"gen\"><b>" . $lang['Checking_missing_anonymous'] . "</b></p>\n");
-				$sql = "SELECT user_id FROM " . USERS_TABLE . "
-					WHERE user_id = " . ANONYMOUS;
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get user information!", __LINE__, __FILE__, $sql);
-				}
-				if ( $row = $db->sql_fetchrow($result) ) // anonymous user exists
-				{
+
+				$checkAnonymous = dibi::select('user_id')
+					->from(USERS_TABLE)
+					->where('user_id = %i', ANONYMOUS)
+					->fetchSingle();
+
+				if ($checkAnonymous === ANONYMOUS) {
 					echo($lang['Nothing_to_do']);
 				}
 				else // anonymous user does not exist
@@ -489,16 +450,12 @@ switch($mode_id)
 				// Update incorrect pending information: either a single user group with pending state or a group with pending state NULL
 				echo("<p class=\"gen\"><b>" . $lang['Checking_incorrect_pending_information'] . "</b></p>\n");
 				$db_updated = FALSE;
+
 				// Update the cases where user_pending is null (there were some cases reported, so we just do it)
-				$sql = "UPDATE " . USER_GROUP_TABLE . "
-					SET user_pending = 1
-					WHERE user_pending IS NULL";
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't update pending information!", __LINE__, __FILE__, $sql);
-				}
-				$affected_rows = $db->sql_affectedrows();
+				$affected_rows = dibi::update(USER_GROUP_TABLE, ['user_pending' => 1])
+					->where('user_pending IS NULL')
+					->execute(dibi::AFFECTED_ROWS);
+
 				if ( $affected_rows == 1 )
 				{
 					$db_updated = TRUE;
@@ -542,14 +499,11 @@ switch($mode_id)
 					$db_updated = TRUE;
 					$record_list = implode(',', $result_array);
 					echo("<p class=\"gen\">" . $lang['Updating_pending_information'] . ": $record_list</p>\n");
-					$sql = "UPDATE " . USER_GROUP_TABLE . "
-						SET user_pending = 0
-						WHERE group_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update pending information!", __LINE__, __FILE__, $sql);
-					}
+
+					dibi::update(USER_GROUP_TABLE, ['user_pending' => 0])
+						->where('user_pending = %i', 0)
+						->where('group_id IN %in', $result_array)
+						->execute();
 				}
 				if (!$db_updated)
 				{
@@ -622,21 +576,16 @@ switch($mode_id)
 					$db->sql_freeresult($result);
 					$record_list = implode(',', $result_array);
 					echo("<li>" . $lang['Removing_groups'] . ": $record_list</li>\n");
-					$sql = "DELETE FROM " . GROUPS_TABLE . "
-						WHERE group_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't delete groups!", __LINE__, __FILE__, $sql);
-					}
+
+					dibi::delete(GROUPS_TABLE)
+						->where('group_id IN %in', $result_array)
+						->execute();
+
 					echo("<li>" . $lang['Removing_user_groups'] . ": $record_list</li>\n");
-					$sql = "DELETE FROM " . USER_GROUP_TABLE . "
-						WHERE group_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't delete groups!", __LINE__, __FILE__, $sql);
-					}
+					dibi::delete(USER_GROUP_TABLE)
+						->where('group_id IN %in', $result_array)
+						->execute();
+
 					echo("</ul></font>\n");
 					$list_open = FALSE;
 				}
@@ -692,14 +641,10 @@ switch($mode_id)
 						$list_open = TRUE;
 					}
 					echo("<li>" . htmlspecialchars($row['group_name']) . " (" . $row['group_id'] . ")</li>\n");
-					$sql2 = "UPDATE " . GROUPS_TABLE . "
-						SET group_moderator = " . $userdata['user_id'] . "
-						WHERE group_id = " . $row['group_id'];
-					$result2 = $db->sql_query($sql2);
-					if ( !$result2 )
-					{
-						throw_error("Couldn't update group data!", __LINE__, __FILE__, $sql2);
-					}
+
+					dibi::update(GROUPS_TABLE, ['group_moderator' => $userdata['user_id']])
+						->where('group_id = %i', $row['group_id'])
+						->execute();
 				}
 				$db->sql_freeresult($result);
 				if ($list_open)
@@ -759,15 +704,10 @@ switch($mode_id)
 							$list_open = TRUE;
 						}
 						echo("<li>" . htmlspecialchars($row['group_name']) . " (" . $row['group_id'] . ") - " . $lang['Moderator_changed_pending'] . "</li>\n");
-						$sql3 = "UPDATE " . USER_GROUP_TABLE . "
-							SET user_pending = 0
-							WHERE group_id = " . $row['group_id'] . "
-								AND user_id = " . $row['group_moderator'];
-						$result3 = $db->sql_query($sql3);
-						if ( !$result3 )
-						{
-							throw_error("Couldn't update data in user-group-table!", __LINE__, __FILE__, $sql3);
-						}
+						dibi::update(USER_GROUP_TABLE, ['user_pending' => 0])
+							->where('group_id = %i', $row['group_id'])
+							->where('user_id = %i', $row['group_moderator'])
+							->execute();
 					}
 					$db->sql_freeresult($result2);
 				}
@@ -803,14 +743,10 @@ switch($mode_id)
 				if ( count($result_array) )
 				{
 					$record_list = implode(',', $result_array);
-					$sql = "DELETE FROM " . USER_GROUP_TABLE . "
-						WHERE user_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update user-group data!", __LINE__, __FILE__, $sql);
-					}
-					$affected_rows = $db->sql_affectedrows();
+					$affected_rows = dibi::delete(USER_GROUP_TABLE)
+						->where('user_id IN %in', $result_array)
+						->execute(dibi::AFFECTED_ROWS);
+
 					if ( $affected_rows == 1 )
 					{
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
@@ -846,14 +782,11 @@ switch($mode_id)
 				if ( count($result_array) )
 				{
 					$record_list = implode(',', $result_array);
-					$sql = "DELETE FROM " . GROUPS_TABLE . "
-						WHERE group_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update group data!", __LINE__, __FILE__, $sql);
-					}
-					$affected_rows = $db->sql_affectedrows();
+
+					$affected_rows = dibi::delete(GROUPS_TABLE)
+						->where('group_id IN %in', $result_array)
+						->execute(dibi::AFFECTED_ROWS);
+
 					if ( $affected_rows == 1 )
 					{
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
@@ -888,15 +821,10 @@ switch($mode_id)
 				$db->sql_freeresult($result);
 				if ( count($result_array) )
 				{
-					$record_list = implode(',', $result_array);
-					$sql = "DELETE FROM " . USER_GROUP_TABLE . "
-						WHERE group_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update user-group data!", __LINE__, __FILE__, $sql);
-					}
-					$affected_rows = $db->sql_affectedrows();
+					$affected_rows = dibi::delete(USER_GROUP_TABLE)
+						->where('group_id IN %in', $result_array)
+						->execute(dibi::AFFECTED_ROWS);
+
 					if ( $affected_rows == 1 )
 					{
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
@@ -944,14 +872,10 @@ switch($mode_id)
 				{
 					echo("<p class=\"gen\">" . $lang['Removing_invalid_ranks'] . "</p>\n");
 					$record_list = implode(',', $result_array);
-					$sql = "UPDATE " . USERS_TABLE . "
-						SET user_rank = 0
-						WHERE user_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update user data!", __LINE__, __FILE__, $sql);
-					}
+
+					dibi::update(USERS_TABLE, ['user_rank' => 0])
+						->where('user_id IN %in', $result_array)
+						->execute();
 				}
 				else
 				{
@@ -977,14 +901,12 @@ switch($mode_id)
 					{
 						// At least one style is NULL, so change these records
 						echo("<p class=\"gen\">" . $lang['Updating_users_without_style'] . "</p>\n");
-						$sql2 = "UPDATE " . USERS_TABLE . "
-							SET user_style = 0
-							WHERE user_style IS NULL AND user_id <> " . ANONYMOUS;
-						$result2 = $db->sql_query($sql2);
-						if ( !$result2 )
-						{
-							throw_error("Couldn't update themes data!", __LINE__, __FILE__, $sql2);
-						}
+
+						dibi::update(USERS_TABLE, ['user_style' => 0])
+							->where('user_style IS NULL')
+							->where('user_id <> %i', ANONYMOUS)
+							->execute();
+
 						$result_array[] = 0;
 					}
 					else
@@ -1033,14 +955,10 @@ switch($mode_id)
 					}
 					$db->sql_freeresult($result);
 					echo("<p class=\"gen\">" . sprintf($lang['Updating_themes'], $new_style) . "...</p>\n");
-					$sql = "UPDATE " . USERS_TABLE . "
-						SET user_style = $new_style
-						WHERE user_style IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update themes data!", __LINE__, __FILE__, $sql);
-					}
+
+					dibi::update(USERS_TABLE, ['user_style' => $new_style])
+						->where('user_style IN %in', $result_array)
+						->execute();
 				}
 				else
 				{
@@ -1068,14 +986,11 @@ switch($mode_id)
 				{
 					echo("<p class=\"gen\">" . $lang['Removing_invalid_theme_names'] . "</p>\n");
 					$record_list = implode(',', $result_array);
-					$sql = "DELETE FROM " . THEMES_NAME_TABLE . "
-						WHERE themes_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update user data!", __LINE__, __FILE__, $sql);
-					}
-					$affected_rows = $db->sql_affectedrows();
+
+					$affected_rows = dibi::delete(THEMES_NAME_TABLE)
+						->where('themes_id IN %in', $result_array)
+						->execute(dibi::AFFECTED_ROWS);
+
 					if ( $affected_rows == 1 )
 					{
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
@@ -1104,7 +1019,7 @@ switch($mode_id)
 				}
 				while ( $row = $db->sql_fetchrow($result) )
 				{
-					if ( !file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $row['user_lang'] . '/lang_main.'.$phpEx)) )
+					if ( !file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $row['user_lang'] . '/lang_main.php')) )
 					{
 						$result_array[] = $row['user_lang'];
 					}
@@ -1132,16 +1047,16 @@ switch($mode_id)
 					$db->sql_freeresult($result);
 
 					// Getting default language
-					if ( file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $boad_language . '/lang_main.'.$phpEx)) )
+					if ( file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $boad_language . '/lang_main.php')) )
 					{
 						$default_lang = $boad_language;
 					}
-					elseif ( file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $userdata['user_lang'] . '/lang_main.'.$phpEx)) )
+					elseif ( file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $userdata['user_lang'] . '/lang_main.php')) )
 					{
 						echo("<p class=\"gen\">" . $lang['Default_language_invalid'] . "</p>\n");
 						$default_lang = $userdata['user_lang'];
 					}
-					elseif ( file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_english/lang_main.'.$phpEx)) )
+					elseif ( file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_english/lang_main.php')) )
 					{
 						echo("<p class=\"gen\">" . $lang['Default_language_invalid'] . "</p>\n");
 						$default_lang = 'english';
@@ -1159,15 +1074,11 @@ switch($mode_id)
 					for($i = 0; $i < count($result_array); $i++)
 					{
 						echo("<li>" . sprintf($lang['Changing_language'], $result_array[$i], $default_lang) . "</li>\n");
-						$sql = "UPDATE " . USERS_TABLE . "
-							SET user_lang = '$default_lang'
-							WHERE user_lang = '" . $result_array[$i] . "'
-								AND user_id <> " . ANONYMOUS;
-						$result = $db->sql_query($sql);
-						if ( !$result )
-						{
-							throw_error("Couldn't update language language data!", __LINE__, __FILE__, $sql);
-						}
+
+						dibi::update(USERS_TABLE, ['user_lang' => $default_lang])
+							->where('user_lang = %s', $result_array[$i])
+							->where('user_id <> %i', ANONYMOUS)
+							->execute();
 					}
 
 					echo("</ul></font>\n");
@@ -1200,14 +1111,11 @@ switch($mode_id)
 				if ( count($result_array) )
 				{
 					$record_list = implode(',', $result_array);
-					$sql = "DELETE FROM " . BANLIST_TABLE . "
-						WHERE ban_userid IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update ban data!", __LINE__, __FILE__, $sql);
-					}
-					$affected_rows = $db->sql_affectedrows();
+
+					$affected_rows = dibi::delete(BANLIST_TABLE)
+						->where('ban_userid IN %in', $result_array)
+						->execute(dibi::AFFECTED_ROWS);
+
 					if ( $affected_rows == 1 )
 					{
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
@@ -1246,14 +1154,11 @@ switch($mode_id)
 					if ( count($result_array) )
 					{
 						$record_list = '\'' . implode('\',\'', $result_array) . '\'';
-						$sql = "DELETE FROM " . SESSIONS_KEYS_TABLE . "
-							WHERE key_id IN ($record_list)";
-						$result = $db->sql_query($sql);
-						if ( !$result )
-						{
-							throw_error("Couldn't update session key data!", __LINE__, __FILE__, $sql);
-						}
-						$affected_rows = $db->sql_affectedrows();
+
+						$affected_rows = dibi::delete(SESSIONS_KEYS_TABLE)
+							->where('key_id IN %in', $result_array)
+							->execute(dibi::AFFECTED_ROWS);
+
 						if ( $affected_rows == 1 )
 						{
 							echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
@@ -1300,15 +1205,10 @@ switch($mode_id)
 					$record_list = implode(',', $result_array);
 					echo("<p class=\"gen\">" . $lang['Invalid_poster_found'] . ": $record_list</p>\n");
 					echo("<p class=\"gen\">" . $lang['Updating_posts'] . "</p>\n");
-					$sql = "UPDATE " . POSTS_TABLE . "
-						SET poster_id = " . DELETED . ",
-							post_username = ''
-						WHERE post_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update post information!", __LINE__, __FILE__, $sql);
-					}
+
+					dibi::update(POSTS_TABLE, ['poster_id' => DELETED, 'post_username' => ''])
+						->where('post_id IN %in', $result_array)
+						->execute();
 				}
 				else
 				{
@@ -1337,14 +1237,10 @@ switch($mode_id)
 					}
 					$poster_id = get_poster($row['topic_id']);
 					echo("<li>" . sprintf($lang['Updating_topic'], $row['topic_id'], $row['topic_poster'], $poster_id) . "</li>\n");
-					$sql2 = "UPDATE " . TOPICS_TABLE . "
-						SET topic_poster = $poster_id
-						WHERE topic_id = " . $row['topic_id'];
-					$result2 = $db->sql_query($sql2);
-					if ( !$result2 )
-					{
-						throw_error("Couldn't update topic information!", __LINE__, __FILE__, $sql2);
-					}
+
+					dibi::update(TOPICS_TABLE, ['topic_poster' => $poster_id])
+						->where('topic_id = %i', $row['topic_id'])
+						->execute();
 				}
 				$db->sql_freeresult($result);
 				if ($list_open)
@@ -1391,14 +1287,10 @@ switch($mode_id)
 					$record_list = implode(',', $result_array);
 					$new_cat = create_cat();
 					echo("<p class=\"gen\">" . sprintf($lang['Setting_category'], $lang['New_cat_name']) . " </p>\n");
-					$sql = "UPDATE " . FORUMS_TABLE . "
-						SET cat_id = $new_cat
-						WHERE forum_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update forum information!", __LINE__, __FILE__, $sql);
-					}
+
+					dibi::update(FORUMS_TABLE, ['cat_id' => $new_cat])
+						->where('forum_id IN %in', $result_array)
+						->execute();
 				}
 				else
 				{
@@ -1440,13 +1332,11 @@ switch($mode_id)
 				{
 					$record_list = implode(',', $result_array);
 					echo("<p class=\"gen\">" . $lang['Deleting_Posts'] . " </p>\n");
-					$sql = "DELETE FROM " . POSTS_TABLE . "
-						WHERE post_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't delete post data!", __LINE__, __FILE__, $sql);
-					}
+
+					dibi::delete(POSTS_TABLE)
+						->where('post_id IN %in', $result_array)
+						->execute();
+
 					$update_post_data = TRUE;
 				}
 				else
@@ -1488,13 +1378,11 @@ switch($mode_id)
 				{
 					$record_list = implode(',', $result_array);
 					echo("<p class=\"gen\">" . $lang['Deleting_topics'] . " </p>\n");
-					$sql = "DELETE FROM " . TOPICS_TABLE . "
-						WHERE topic_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't delete topic data!", __LINE__, __FILE__, $sql);
-					}
+
+					dibi::delete(TOPICS_TABLE)
+						->where('topic_id IN %in', $result_array)
+						->execute();
+
 					$update_post_data = TRUE;
 				}
 				else
@@ -1536,22 +1424,14 @@ switch($mode_id)
 					$record_list = implode(',', $result_array);
 					$new_forum = create_forum();
 					echo("<p class=\"gen\">" . sprintf($lang['Setting_forum'], $lang['New_forum_name']) . " </p>\n");
-					$sql = "UPDATE " . TOPICS_TABLE . "
-						SET forum_id = $new_forum
-						WHERE topic_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update topic information!", __LINE__, __FILE__, $sql);
-					}
-					$sql = "UPDATE " . POSTS_TABLE . "
-						SET forum_id = $new_forum
-						WHERE topic_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update topic information!", __LINE__, __FILE__, $sql);
-					}
+
+					dibi::update(TOPICS_TABLE, ['forum_id' => $new_forum])
+						->where('topic_id IN %in', $result_array)
+						->execute();
+
+					dibi::update(POSTS_TABLE, ['forum_id' => $new_forum])
+						->where('topic_id IN %in', $result_array)
+						->execute();
 					$update_post_data = TRUE;
 				}
 				else
@@ -1633,15 +1513,10 @@ switch($mode_id)
 							}
 							$new_topic = $db->sql_nextid();
 							echo("<li>" . sprintf($lang['Setting_topic'], $record_list, htmlspecialchars($topic_title), $new_topic, $lang['New_forum_name']) . " </li>\n");
-							$sql2 = "UPDATE " . POSTS_TABLE . "
-								SET forum_id = $new_forum,
-									topic_id = $new_topic
-								WHERE post_id IN ($record_list)";
-							$result2 = $db->sql_query($sql2);
-							if ( !$result2 )
-							{
-								throw_error("Couldn't update post information!", __LINE__, __FILE__, $sql2);
-							}
+
+							dibi::update(POSTS_TABLE, ['forum_id' => $new_forum, 'topic_id' => $new_topic])
+								->where('post_id IN ', $result_array)
+								->execute();
 						}
 						// Reset data
 						$result_array = array();
@@ -1692,14 +1567,10 @@ switch($mode_id)
 						$list_open = TRUE;
 					}
 					echo("<li>" . sprintf($lang['Setting_post_forum'], $row['post_id'], htmlspecialchars($row['p_forum_name']), $row['p_forum_id'], htmlspecialchars($row['t_forum_name']), $row['t_forum_id']) . "</li>\n");
-					$sql2 = "UPDATE " . POSTS_TABLE . "
-						SET forum_id = " . $row['t_forum_id'] . "
-						WHERE post_id = " . $row['post_id'];
-					$result2 = $db->sql_query($sql2);
-					if ( !$result2 )
-					{
-						throw_error("Couldn't update post information!", __LINE__, __FILE__, $sql2);
-					}
+
+					dibi::update(POSTS_TABLE, ['forum_id' => $row['t_forum_id']])
+						->where('post_id = %i', $row['post_id'])
+						->execute();
 				}
 				$db->sql_freeresult($result);
 				if ($list_open)
@@ -1781,15 +1652,12 @@ switch($mode_id)
 				{
 					$record_list = implode(',', $result_array);
 					echo("<p class=\"gen\">" . $lang['Deleting_invalid_moved_topics'] . "</p>\n");
-					$sql = "DELETE FROM " . TOPICS_TABLE . "
-						WHERE topic_id IN ($record_list)
-							AND topic_status = " . TOPIC_MOVED;
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update topic information!", __LINE__, __FILE__, $sql);
-					}
-					$affected_rows = $db->sql_affectedrows();
+
+					$affected_rows = dibi::delete(TOPICS_TABLE)
+						->where('topic_id IN %in', $result_array)
+						->where('topic_status = %i', TOPIC_MOVED)
+						->execute(dibi::AFFECTED_ROWS);
+
 					if ( $affected_rows == 1 )
 					{
 						$db_updated = TRUE;
@@ -1802,16 +1670,11 @@ switch($mode_id)
 					}
 				}
 				// Check for normal topics with move information
-				$sql = "UPDATE " . TOPICS_TABLE . "
-					SET topic_moved_id = 0
-					WHERE topic_moved_id <> 0
-						AND topic_status <> " . TOPIC_MOVED;
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't update topic information!", __LINE__, __FILE__, $sql);
-				}
-				$affected_rows = $db->sql_affectedrows();
+				$affected_rows = dibi::update(TOPICS_TABLE, ['topic_moved_id' => 0])
+					->where('topic_moved_id <> %i', 0)
+					->where('topic_status <> %i', TOPIC_MOVED)
+					->execute(dibi::AFFECTED_ROWS);
+
 				if ( $affected_rows == 1 )
 				{
 					echo("<p class=\"gen\">" . sprintf($lang['Updating_invalid_moved_topic'], $affected_rows) . "</p>\n");
@@ -1865,14 +1728,11 @@ switch($mode_id)
 					echo("<p class=\"gen\">" . $lang['Removing_invalid_prune_settings'] . "</p>\n");
 					$record_list = implode(',', $result_array);
 					$db_updated = TRUE;
-					$sql = "DELETE FROM " . PRUNE_TABLE . "
-						WHERE forum_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update user data!", __LINE__, __FILE__, $sql);
-					}
-					$affected_rows = $db->sql_affectedrows();
+
+					$affected_rows= dibi::delete(PRUNE_TABLE)
+						->where('forum_id IN %in', $result_array)
+						->execute(dibi::AFFECTED_ROWS);
+
 					if ( $affected_rows == 1 )
 					{
 						echo("<p class=\"gen\">" . sprintf($lang['Updating_invalid_moved_topic'], $affected_rows) . "</p>\n");
@@ -1902,15 +1762,11 @@ switch($mode_id)
 				if ( count($result_array) )
 				{
 					$record_list = implode(',', $result_array);
-					$sql = "UPDATE " . FORUMS_TABLE . "
-						SET prune_enable = 0
-						WHERE forum_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update user data!", __LINE__, __FILE__, $sql);
-					}
-					$affected_rows = $db->sql_affectedrows();
+
+					$affected_rows = dibi::update(FORUMS_TABLE, ['prune_enable' => 0])
+						->where('forum_id IN %in', $result_array)
+						->execute(dibi::AFFECTED_ROWS);
+
 					if ( $affected_rows == 1 )
 					{
 						echo("<p class=\"gen\">" . sprintf($lang['Updating_invalid_prune_setting'], $affected_rows) . "</p>\n");
@@ -2062,10 +1918,10 @@ switch($mode_id)
 				// If post or topic data has been updated, we interrupt here and add a link to resync the data
 				if ($update_post_data)
 				{
-					echo("<p class=\"gen\"><a href=\"" . append_sid("admin_db_maintenance.$phpEx?mode=perform&amp;function=synchronize_post_direct&amp;db_state=" . (($db_state) ? '1' : '0')) . "\">" . $lang['Must_synchronize'] . "</a></p>\n");
+					echo("<p class=\"gen\"><a href=\"" . Session::appendSid("admin_db_maintenance.php?mode=perform&amp;function=synchronize_post_direct&amp;db_state=" . (($db_state) ? '1' : '0')) . "\">" . $lang['Must_synchronize'] . "</a></p>\n");
 					// Send Information about processing time
 					echo('<p class="gensmall">' . sprintf($lang['Processing_time'], getmicrotime() - $timer) . '</p>');
-					include('./page_footer_admin.'.$phpEx);
+					include('./page_footer_admin.php');
 					exit;
 				}
 				else
@@ -2112,27 +1968,18 @@ switch($mode_id)
 				{
 					$record_list = implode(',', $result_array);
 					echo("<p class=\"gen\">" . $lang['Deleting_Votes'] . " </p>\n");
-					$sql = "DELETE FROM " . VOTE_DESC_TABLE . "
-						WHERE vote_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't delete vote data!", __LINE__, __FILE__, $sql);
-					}
-					$sql = "DELETE FROM " . VOTE_RESULTS_TABLE . "
-						WHERE vote_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't delete vote data!", __LINE__, __FILE__, $sql);
-					}
-					$sql = "DELETE FROM " . VOTE_USERS_TABLE . "
-						WHERE vote_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't delete vote data!", __LINE__, __FILE__, $sql);
-					}
+
+					dibi::delete(VOTE_DESC_TABLE)
+						->where('vote_id IN %in', $result_array)
+						->execute();
+
+					dibi::delete(VOTE_RESULTS_TABLE)
+						->where('vote_id IN %in', $result_array)
+						->execute();
+
+					dibi::delete(VOTE_USERS_TABLE)
+						->where('vote_id IN %in', $result_array)
+						->execute();
 				}
 				else
 				{
@@ -2173,28 +2020,20 @@ switch($mode_id)
 				if ( count($result_array) )
 				{
 					$record_list = implode(',', $result_array);
+
+					dibi::delete(VOTE_DESC_TABLE)
+						->where('vote_id IN %in', $result_array)
+						->execute();
+
+					dibi::delete(VOTE_RESULTS_TABLE)
+						->where('vote_id IN %in', $result_array)
+						->execute();
+
+					dibi::delete(VOTE_USERS_TABLE)
+						->where('vote_id IN %in', $result_array)
+						->execute();
+
 					echo("<p class=\"gen\">" . $lang['Deleting_Votes'] . " </p>\n");
-					$sql = "DELETE FROM " . VOTE_DESC_TABLE . "
-						WHERE vote_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't delete vote data!", __LINE__, __FILE__, $sql);
-					}
-					$sql = "DELETE FROM " . VOTE_RESULTS_TABLE . "
-						WHERE vote_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't delete vote data!", __LINE__, __FILE__, $sql);
-					}
-					$sql = "DELETE FROM " . VOTE_USERS_TABLE . "
-						WHERE vote_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't delete vote data!", __LINE__, __FILE__, $sql);
-					}
 				}
 				else
 				{
@@ -2224,15 +2063,11 @@ switch($mode_id)
 				{
 					$record_list = implode(',', $result_array);
 					echo("<p class=\"gen\">" . $lang['Updating_topics_wo_vote'] . "</p>\n");
-					$sql = "UPDATE " . TOPICS_TABLE . "
-						SET topic_vote = 0
-						WHERE topic_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update topic information!", __LINE__, __FILE__, $sql);
-					}
-					$affected_rows = $db->sql_affectedrows();
+
+					$affected_rows = dibi::update(TOPICS_TABLE, ['topic_vote' => 0])
+						->where('topic_id IN %in', $result_array)
+						->execute(dibi::AFFECTED_ROWS);
+
 					if ( $affected_rows == 1 )
 					{
 						$db_updated = TRUE;
@@ -2275,15 +2110,11 @@ switch($mode_id)
 				{
 					$record_list = implode(',', $result_array);
 					echo("<p class=\"gen\">" . $lang['Updating_topics_w_vote'] . "</p>\n");
-					$sql = "UPDATE " . TOPICS_TABLE . "
-						SET topic_vote = 1
-						WHERE topic_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update topic information!", __LINE__, __FILE__, $sql);
-					}
-					$affected_rows = $db->sql_affectedrows();
+
+					$affected_rows = dibi::update(TOPICS_TABLE, ['topic_vote' => 1])
+						->where('topic_id IN %in', $result_array)
+						->execute(dibi::AFFECTED_ROWS);
+
 					if ( $affected_rows == 1 )
 					{
 						$db_updated = TRUE;
@@ -2320,14 +2151,11 @@ switch($mode_id)
 						$list_open = TRUE;
 					}
 					echo("<li>" . sprintf($lang['Invalid_result'], htmlspecialchars($row['vote_option_text']), $row['vote_result']) . "</li>\n");
-					$sql2 = "DELETE FROM " . VOTE_RESULTS_TABLE . "
-						WHERE vote_id = " . $row['vote_id'] . "
-							AND vote_option_id = " . $row['vote_option_id'];
-					$result2 = $db->sql_query($sql2);
-					if ( !$result2 )
-					{
-						throw_error("Couldn't delete vote result data!", __LINE__, __FILE__, $sql2);
-					}
+
+					dibi::delete(VOTE_RESULTS_TABLE)
+						->where('vote_id = %i', $row['vote_id'])
+						->where('vote_option_id = %i', $row['vote_option_id'])
+						->execute();
 				}
 				$db->sql_freeresult($result);
 				if ($list_open)
@@ -2448,13 +2276,10 @@ switch($mode_id)
 				{
 					$record_list = implode(',', $result_array);
 					echo("<p class=\"gen\">" . $lang['Deleting_Pms'] . " </p>\n");
-					$sql = "DELETE FROM " . PRIVMSGS_TABLE . "
-						WHERE privmsgs_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't delete private message data!", __LINE__, __FILE__, $sql);
-					}
+
+					dibi::delete(PRIVMSGS_TABLE)
+						->where('privmsgs_id IN %in', $result_array)
+						->execute();
 				}
 				else
 				{
@@ -2482,14 +2307,11 @@ switch($mode_id)
 				{
 					echo("<p class=\"gen\">" . $lang['Deleting_pm_texts'] . "</p>\n");
 					$record_list = implode(',', $result_array);
-					$sql = "DELETE FROM " . PRIVMSGS_TEXT_TABLE . "
-						WHERE privmsgs_text_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't delete private message text data!", __LINE__, __FILE__, $sql);
-					}
-					$affected_rows = $db->sql_affectedrows();
+
+					$affected_rows = dibi::delete(PRIVMSGS_TEXT_TABLE)
+						->where('privmsgs_text_id IN %in', $result_array)
+						->execute(dibi::AFFECTED_ROWS);
+
 					if ( $affected_rows == 1 )
 					{
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
@@ -2526,14 +2348,10 @@ switch($mode_id)
 					$record_list = implode(',', $result_array);
 					echo("<p class=\"gen\">" . $lang['Invalid_pm_senders_found'] . ": $record_list</p>\n");
 					echo("<p class=\"gen\">" . $lang['Updating_pms'] . "</p>\n");
-					$sql = "UPDATE " . PRIVMSGS_TABLE . "
-						SET privmsgs_from_userid = " . DELETED . "
-						WHERE privmsgs_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update private message information!", __LINE__, __FILE__, $sql);
-					}
+
+					dibi::update(PRIVMSGS_TABLE, ['privmsgs_from_userid' => DELETED])
+						->where('privmsgs_id IN %in', $result_array)
+						->execute();
 				}
 				else
 				{
@@ -2562,14 +2380,10 @@ switch($mode_id)
 					$record_list = implode(',', $result_array);
 					echo("<p class=\"gen\">" . $lang['Invalid_pm_recipients_found'] . ": $record_list</p>\n");
 					echo("<p class=\"gen\">" . $lang['Updating_pms'] . "</p>\n");
-					$sql = "UPDATE " . PRIVMSGS_TABLE . "
-						SET privmsgs_to_userid = " . DELETED . "
-						WHERE privmsgs_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update private message information!", __LINE__, __FILE__, $sql);
-					}
+
+					dibi::update(PRIVMSGS_TABLE, ['privmsgs_to_userid' => DELETED])
+						->where('privmsgs_id IN %in', $result_array)
+						->execute();
 				}
 				else
 				{
@@ -2598,20 +2412,14 @@ switch($mode_id)
 					$record_list = implode(',', $result_array);
 					echo("<p class=\"gen\">" . $lang['Invalid_pm_users_found'] . ": $record_list</p>\n");
 					echo("<p class=\"gen\">" . $lang['Deleting_pms'] . "</p>\n");
-					$sql = "DELETE FROM " . PRIVMSGS_TABLE . "
-						WHERE privmsgs_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't delete private message data!", __LINE__, __FILE__, $sql);
-					}
-					$sql = "DELETE FROM " . PRIVMSGS_TEXT_TABLE . "
-						WHERE privmsgs_text_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't delete private message data!", __LINE__, __FILE__, $sql);
-					}
+
+					dibi::delete(PRIVMSGS_TABLE)
+						->where('privmsgs_id IN %in', $result_array)
+						->execute();
+
+					dibi::delete(PRIVMSGS_TEXT_TABLE)
+						->where('privmsgs_text_id IN %in', $result_array)
+						->execute();
 				}
 				else
 				{
@@ -2657,14 +2465,10 @@ switch($mode_id)
 							$list_open = TRUE;
 						}
 						echo("<li>" . sprintf($lang['Synchronizing_user'], htmlspecialchars($row['username']), $row['user_id']) . "</li>\n");
-						$sql2 = "UPDATE " . USERS_TABLE . "
-							SET user_new_privmsg = " . $row['new_counter'] . "
-							WHERE user_id = " . $row['user_id'];
-						$result2 = $db->sql_query($sql2);
-						if ( !$result2 )
-						{
-							throw_error("Couldn't update user information!", __LINE__, __FILE__, $sql2);
-						}
+
+						dibi::update(USERS_TABLE, ['user_new_privmsg' => $row['new_counter']])
+							->where('user_id = %i', $row['user_id'])
+							->execute();
 					}
 				}
 				$db->sql_freeresult($result);
@@ -2694,14 +2498,10 @@ switch($mode_id)
 						$list_open = TRUE;
 					}
 					echo("<li>" . sprintf($lang['Synchronizing_user'], htmlspecialchars($row['username']), $row['user_id']) . "</li>\n");
-					$sql2 = "UPDATE " . USERS_TABLE . "
-						SET user_new_privmsg = 0
-						WHERE user_id = " . $row['user_id'];
-					$result2 = $db->sql_query($sql2);
-					if ( !$result2 )
-					{
-						throw_error("Couldn't update user information!", __LINE__, __FILE__, $sql2);
-					}
+
+					dibi::update(USERS_TABLE, ['user_new_privmsg' => 0])
+						->where('user_id = %i', 0)
+						->execute();
 				}
 				$db->sql_freeresult($result);
 				if ($list_open)
@@ -2753,14 +2553,10 @@ switch($mode_id)
 							$list_open = TRUE;
 						}
 						echo("<li>" . sprintf($lang['Synchronizing_user'], htmlspecialchars($row['username']), $row['user_id']) . "</li>\n");
-						$sql2 = "UPDATE " . USERS_TABLE . "
-							SET user_unread_privmsg = " . $row['new_counter'] . "
-							WHERE user_id = " . $row['user_id'];
-						$result2 = $db->sql_query($sql2);
-						if ( !$result2 )
-						{
-							throw_error("Couldn't update user information!", __LINE__, __FILE__, $sql2);
-						}
+
+						dibi::update(USERS_TABLE, ['user_unread_privmsg' => $row['new_counter']])
+							->where('user_id = %i', $row['user_id'])
+							->execute();
 					}
 				}
 				$db->sql_freeresult($result);
@@ -2790,14 +2586,10 @@ switch($mode_id)
 						$list_open = TRUE;
 					}
 					echo("<li>" . sprintf($lang['Synchronizing_user'], htmlspecialchars($row['username']), $row['user_id']) . "</li>\n");
-					$sql2 = "UPDATE " . USERS_TABLE . "
-						SET user_unread_privmsg = 0
-						WHERE user_id = " . $row['user_id'];
-					$result2 = $db->sql_query($sql2);
-					if ( !$result2 )
-					{
-						throw_error("Couldn't update user information!", __LINE__, __FILE__, $sql2);
-					}
+
+					dibi::update(USERS_TABLE, ['user_unread_privmsg' => 0])
+						->where('user_id IN %in', $result_array)
+						->execute();
 				}
 				$db->sql_freeresult($result);
 				if ($list_open)
@@ -2819,27 +2611,27 @@ switch($mode_id)
 				echo("<p class=\"gen\"><b>" . $lang['Checking_config_entries'] . "</b></p>\n");
 
 				// Update config data to match current configuration
-				if (!empty($HTTP_SERVER_VARS['SERVER_PROTOCOL']) || !empty($HTTP_ENV_VARS['SERVER_PROTOCOL']))
+				if (!empty($_SERVER['SERVER_PROTOCOL']) || !empty($_ENV['SERVER_PROTOCOL']))
 				{
-					$protocol = (!empty($HTTP_SERVER_VARS['SERVER_PROTOCOL'])) ? $HTTP_SERVER_VARS['SERVER_PROTOCOL'] : $HTTP_ENV_VARS['SERVER_PROTOCOL'];
+					$protocol = (!empty($_SERVER['SERVER_PROTOCOL'])) ? $_SERVER['SERVER_PROTOCOL'] : $_ENV['SERVER_PROTOCOL'];
 					if ( strtolower(substr($protocol, 0 , 5)) == 'https' )
 					{
 						$default_config['cookie_secure'] = '1';
 					}
 				}
-				if (!empty($HTTP_SERVER_VARS['SERVER_NAME']) || !empty($HTTP_ENV_VARS['SERVER_NAME']))
+				if (!empty($_SERVER['SERVER_NAME']) || !empty($_ENV['SERVER_NAME']))
 				{
-					$default_config['server_name'] = (!empty($HTTP_SERVER_VARS['SERVER_NAME'])) ? $HTTP_SERVER_VARS['SERVER_NAME'] : $HTTP_ENV_VARS['SERVER_NAME'];
+					$default_config['server_name'] = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : $_ENV['SERVER_NAME'];
 				}
-				else if (!empty($HTTP_SERVER_VARS['HTTP_HOST']) || !empty($HTTP_ENV_VARS['HTTP_HOST']))
+				else if (!empty($_SERVER['HTTP_HOST']) || !empty($_ENV['HTTP_HOST']))
 				{
-					$default_config['server_name'] = (!empty($HTTP_SERVER_VARS['HTTP_HOST'])) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_ENV_VARS['HTTP_HOST'];
+					$default_config['server_name'] = (!empty($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : $_ENV['HTTP_HOST'];
 				}
-				if (!empty($HTTP_SERVER_VARS['SERVER_PORT']) || !empty($HTTP_ENV_VARS['SERVER_PORT']))
+				if (!empty($_SERVER['SERVER_PORT']) || !empty($_ENV['SERVER_PORT']))
 				{
-					$default_config['server_port'] = (!empty($HTTP_SERVER_VARS['SERVER_PORT'])) ? $HTTP_SERVER_VARS['SERVER_PORT'] : $HTTP_ENV_VARS['SERVER_PORT'];
+					$default_config['server_port'] = (!empty($_SERVER['SERVER_PORT'])) ? $_SERVER['SERVER_PORT'] : $_ENV['SERVER_PORT'];
 				}
-				$default_config['script_path'] = str_replace('admin', '', dirname($HTTP_SERVER_VARS['PHP_SELF']));
+				$default_config['script_path'] = str_replace('admin', '', dirname($_SERVER['PHP_SELF']));
 				$sql = "SELECT Min(topic_time) as startdate FROM " . TOPICS_TABLE;
 				if ( $result = $db->sql_query($sql) )
 				{
@@ -2990,14 +2782,11 @@ switch($mode_id)
 					{
 						echo("<p class=\"gen\">" . $lang['Removing_part_invalid_words'] . "...</p>\n");
 						$record_list = implode(',', $result_array);
-						$sql2 = "DELETE FROM " . SEARCH_WORD_TABLE . "
-							WHERE word_id IN ($record_list)";
-						$result2 = $db->sql_query($sql2);
-						if ( !$result2 )
-						{
-							throw_error("Couldn't update search words!", __LINE__, __FILE__, $sql2);
-						}
-						$affected_rows += $db->sql_affectedrows();
+
+						$affected_rows += dibi::delete(SEARCH_WORD_TABLE)
+							->where('word_id IN %in', $result_array)
+							->execute(dibi::AFFECTED_ROWS);
+
 						$result_array = array();
 					}
 				}
@@ -3006,14 +2795,10 @@ switch($mode_id)
 				{
 					echo("<p class=\"gen\">" . $lang['Removing_invalid_words'] . "</p>\n");
 					$record_list = implode(',', $result_array);
-					$sql = "DELETE FROM " . SEARCH_WORD_TABLE . "
-						WHERE word_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update search words!", __LINE__, __FILE__, $sql);
-					}
-					$affected_rows += $db->sql_affectedrows();
+
+					$affected_rows += dibi::delete(SEARCH_WORD_TABLE)
+						->where('word_id IN %in', $result_array)
+						->execute(dibi::AFFECTED_ROWS);
 				}
 				if ( $affected_rows == 1 )
 				{
@@ -3082,10 +2867,10 @@ switch($mode_id)
 				update_config('dbmtnc_rebuild_end', intval($row['max_post_id']));
 				echo("<p class=\"gen\">" . $lang['Done'] . "</p>\n");
 
-				echo("<p class=\"gen\"><a href=\"" . append_sid("admin_db_maintenance.$phpEx?mode=perform&amp;function=perform_rebuild&amp;db_state=" . (($db_state) ? '1' : '0')) . "\">" . $lang['Can_start_rebuilding'] . "</a><br><span class=\"gensmall\">" . $lang['Click_once_warning'] . "</span></p>\n");
+				echo("<p class=\"gen\"><a href=\"" . Session::appendSid("admin_db_maintenance.php?mode=perform&amp;function=perform_rebuild&amp;db_state=" . (($db_state) ? '1' : '0')) . "\">" . $lang['Can_start_rebuilding'] . "</a><br><span class=\"gensmall\">" . $lang['Click_once_warning'] . "</span></p>\n");
 				// Send Information about processing time
 				echo('<p class="gensmall">' . sprintf($lang['Processing_time'], getmicrotime() - $timer) . '</p>');
-				include('./page_footer_admin.'.$phpEx);
+				include('./page_footer_admin.php');
 				exit;
 				break;
 			case 'proceed_rebuilding': // Proceed rebuilding search index
@@ -3099,26 +2884,25 @@ switch($mode_id)
 				{
 					throw_error("Couldn't delete from search result table!", __LINE__, __FILE__, $sql);
 				}
-				$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . "
-					WHERE post_id > " . intval($board_config['dbmtnc_rebuild_pos']) . "
-						AND post_id <= " . intval($board_config['dbmtnc_rebuild_end']);
-				if ( !($db->sql_query($sql)) )
-				{
-					throw_error("Couldn't delete from search-match table!", __LINE__, __FILE__, $sql);
-				}
+
+				dibi::delete(SEARCH_MATCH_TABLE)
+					->where('post_id > %i', (int)$board_config['dbmtnc_rebuild_pos'])
+					->where('post_id <= %i', (int)$board_config['dbmtnc_rebuild_end'])
+					->execute();
+
 				echo("<p class=\"gen\">" . $lang['Done'] . "</p>\n");
 
-				echo("<p class=\"gen\"><a href=\"" . append_sid("admin_db_maintenance.$phpEx?mode=perform&amp;function=perform_rebuild&amp;db_state=" . (($db_state) ? '1' : '0')) . "\">" . $lang['Can_start_rebuilding'] . "</a><br><span class=\"gensmall\">" . $lang['Click_once_warning'] . "</span></p>\n");
+				echo("<p class=\"gen\"><a href=\"" . Session::appendSid("admin_db_maintenance.php?mode=perform&amp;function=perform_rebuild&amp;db_state=" . (($db_state) ? '1' : '0')) . "\">" . $lang['Can_start_rebuilding'] . "</a><br><span class=\"gensmall\">" . $lang['Click_once_warning'] . "</span></p>\n");
 				// Send Information about processing time
 				echo('<p class="gensmall">' . sprintf($lang['Processing_time'], getmicrotime() - $timer) . '</p>');
-				include('./page_footer_admin.'.$phpEx);
+				include('./page_footer_admin.php');
 				exit;
 				break;
 			case 'perform_rebuild': // Rebuild search index (perform part)
 				// ATTENTION: page_header not sent yet!
-				$db_state = ( isset($HTTP_GET_VARS['db_state']) ) ? intval( $HTTP_GET_VARS['db_state'] ) : 0;
+				$db_state = ( isset($_GET['db_state']) ) ? intval( $_GET['db_state'] ) : 0;
 				// Load functions
-				include($phpbb_root_path . 'includes/functions_search.'.$phpEx);
+				include($phpbb_root_path . 'includes/functions_search.php');
 				// Identify PHP version and time limit configuration
 				if (phpversion() >= '4.0.5' && ($board_config['dbmtnc_rebuildcfg_php3only'] == 0)) // Handle PHP beffore 4.0.5 as PHP 3 since array_search is not available
 				{
@@ -3164,7 +2948,7 @@ switch($mode_id)
 				$result = $db->sql_query($sql);
 				if ( !$result )
 				{
-					include('./page_header_admin.'.$phpEx);
+					include('./page_header_admin.php');
 					throw_error("Couldn't get post data!", __LINE__, __FILE__, $sql);
 				}
 				// Get first record
@@ -3172,7 +2956,7 @@ switch($mode_id)
 				if ( !$row ) // Yeah! we reached the end of the posts - finish actions and exit
 				{
 					$db->sql_freeresult($result);
-					include('./page_header_admin.'.$phpEx);
+					include('./page_header_admin.php');
 					update_config('dbmtnc_rebuild_pos', '-1');
 					update_config('dbmtnc_rebuild_end', '0');
 					
@@ -3188,10 +2972,10 @@ switch($mode_id)
 						echo('<p class="gen">' . $lang['Ignore_unlock_command'] . "</p>\n");
 					}
 
-					echo("<p class=\"gen\"><a href=\"" . append_sid("admin_db_maintenance.$phpEx") . "\">" . $lang['Back_to_DB_Maintenance'] . "</a></p>\n");
+					echo("<p class=\"gen\"><a href=\"" . Session::appendSid("admin_db_maintenance.php") . "\">" . $lang['Back_to_DB_Maintenance'] . "</a></p>\n");
 					// Send Information about processing time
 					echo('<p class="gensmall">' . sprintf($lang['Processing_time'], getmicrotime() - $timer) . '</p>');
-					include('./page_footer_admin.'.$phpEx);
+					include('./page_footer_admin.php');
 					exit;
 				}
 				$last_post = 0;
@@ -3290,7 +3074,7 @@ switch($mode_id)
 								$sql = "INSERT INTO " . SEARCH_MATCH_TABLE . " (post_id, word_id, title_match) VALUES ($last_post_id, $last_word_id, $last_title_match)";
 								if ( !$db->sql_query($sql) )
 								{
-									include('./page_header_admin.'.$phpEx);
+									include('./page_header_admin.php');
 									throw_error("Couldn't insert into search match!", __LINE__, __FILE__, $sql);
 								}
 							}
@@ -3304,10 +3088,10 @@ switch($mode_id)
 				// All posts are indexed for this turn - update Config-Data
 				update_config('dbmtnc_rebuild_pos', $last_post);
 				// OK, all actions are done - send headers
-				$template->assign_vars(array(
-					'META' => '<meta http-equiv="refresh" content="1;url=' . append_sid("admin_db_maintenance.$phpEx?mode=perform&amp;function=perform_rebuild&amp;db_state=$db_state") . '">')
+				$template->assignVars(array(
+					'META' => '<meta http-equiv="refresh" content="1;url=' . Session::appendSid("admin_db_maintenance.php?mode=perform&amp;function=perform_rebuild&amp;db_state=$db_state") . '">')
 				);
-				include('./page_header_admin.'.$phpEx);
+				include('./page_header_admin.php');
 				ob_end_flush();
 				$db->sql_freeresult($result);
 				// Get Statistics
@@ -3337,10 +3121,10 @@ switch($mode_id)
 				}
 				
 				echo("<p class=\"gen\">" . sprintf($lang['Indexing_progress'], $posts_indexed, $posts_total, ($posts_indexed / $posts_total) * 100, $last_post) . "</p>\n");
-				echo("<p class=\"gen\"><a href=\"" . append_sid("admin_db_maintenance.$phpEx?mode=perform&amp;function=perform_rebuild&amp;db_state=$db_state") . "\">" . $lang['Click_or_wait_to_proceed'] . "</a><br><span class=\"gensmall\">" . $lang['Click_once_warning'] . "</span></p>\n");
+				echo("<p class=\"gen\"><a href=\"" . Session::appendSid("admin_db_maintenance.php?mode=perform&amp;function=perform_rebuild&amp;db_state=$db_state") . "\">" . $lang['Click_or_wait_to_proceed'] . "</a><br><span class=\"gensmall\">" . $lang['Click_once_warning'] . "</span></p>\n");
 				// Send Information about processing time
 				echo('<p class="gensmall">' . sprintf($lang['Processing_time'], getmicrotime() - $timer) . '</p>');
-				include('./page_footer_admin.'.$phpEx);
+				include('./page_footer_admin.php');
 				exit;
 				break;
 			case 'synchronize_post': // Synchronize post data
@@ -3348,7 +3132,7 @@ switch($mode_id)
 				echo("<h1>" . $lang['Synchronize_posts'] . "</h1>\n");
 				if ($function == 'synchronize_post_direct')
 				{
-					$db_state = ( isset($HTTP_GET_VARS['db_state']) ) ? intval($HTTP_GET_VARS['db_state']) : 1;
+					$db_state = ( isset($_GET['db_state']) ) ? intval($_GET['db_state']) : 1;
 				}
 				else
 				{
@@ -3392,16 +3176,16 @@ switch($mode_id)
 						$list_open = TRUE;
 					}
 					echo("<li>" . sprintf($lang['Synchronizing_topic'], $row['topic_id'], htmlspecialchars($row['topic_title'])) . "</li>\n");
-					$sql2 = "UPDATE " . TOPICS_TABLE . "
-						SET topic_replies = " . $row['new_replies'] . ",
-							topic_first_post_id = " . $row['new_first_post_id'] . ",
-							topic_last_post_id = " . $row['new_last_post_id'] . "
-						WHERE topic_id = " . $row['topic_id'];
-					$result2 = $db->sql_query($sql2);
-					if ( !$result2 )
-					{
-						throw_error("Couldn't update topic information!", __LINE__, __FILE__, $sql2);
-					}
+
+					$updateData = [
+						'topic_replies' => $row['new_replies'],
+						'topic_first_post_id' => $row['new_first_post_id'],
+						'topic_last_post_id' => $row['new_last_post_id']
+					];
+
+					dibi::update(TOPICS_TABLE, $updateData)
+						->where('topic_id = %i', $row['topic_id'])
+						->execute();
 				}
 				$db->sql_freeresult($result);
 				if ($list_open)
@@ -3459,21 +3243,21 @@ switch($mode_id)
 								$list_open = TRUE;
 							}
 							echo("<li>" . sprintf($lang['Synchronizing_moved_topic'], $row['topic_id'], $row['topic_moved_id'], htmlspecialchars($row['topic_title'])) . "</li>\n");
-							$sql3 = "UPDATE " . TOPICS_TABLE . "
-								SET topic_replies = " . $row2['topic_replies'] . ",
-									topic_first_post_id = " . $row2['topic_first_post_id'] . ",
-									topic_last_post_id = " . $row2['topic_last_post_id'] . "
-								WHERE topic_id = " . $row['topic_id'];
-							$result3 = $db->sql_query($sql3);
-							if ( !$result3 )
-							{
-								throw_error("Couldn't update topic information!", __LINE__, __FILE__, $sql3);
-							}
+
+							$updateData = [
+								'topic_replies' => $row2['topic_replies'],
+								'topic_first_post_id' => $row2['topic_first_post_id'],
+								'topic_last_post_id' => $row2['topic_last_post_id']
+							];
+
+							dibi::update(TOPICS_TABLE, $updateData)
+								->where('topic_id = %i', $row['topic_id'])
+								->execute();
 						}
 					}
 					else
 					{
-						throw_error(sprintf($lang['Inconsistencies_found'], "<a href=\"" . append_sid("admin_db_maintenance.$phpEx?mode=perform&amp;function=check_post") . "\">", '</a>'));
+						throw_error(sprintf($lang['Inconsistencies_found'], "<a href=\"" . Session::appendSid("admin_db_maintenance.php?mode=perform&amp;function=check_post") . "\">", '</a>'));
 					}
 					$db->sql_freeresult($result2);
 				}
@@ -3521,14 +3305,10 @@ switch($mode_id)
 						$list_open = TRUE;
 					}
 					echo("<li>" . sprintf($lang['Synchronizing_forum'], $row['forum_id'], htmlspecialchars($row['forum_name'])) . "</li>\n");
-					$sql2 = "UPDATE " . FORUMS_TABLE . "
-						SET forum_topics = " . $row['new_topics'] . "
-						WHERE forum_id = " . $row['forum_id'];
-					$result2 = $db->sql_query($sql2);
-					if ( !$result2 )
-					{
-						throw_error("Couldn't update forum information!", __LINE__, __FILE__, $sql2);
-					}
+
+					dibi::update(FORUMS_TABLE, ['forum_topics' => $row['new_topics']])
+						->where('forum_id = %i', $row['forum_id'])
+						->execute();
 				}
 				$db->sql_freeresult($result);
 				if ($list_open)
@@ -3561,17 +3341,10 @@ switch($mode_id)
 				$db->sql_freeresult($result);
 				if ( count($result_array) )
 				{
-					$record_list = implode(',', $result_array);
-					$sql = "UPDATE " . FORUMS_TABLE . "
-						SET forum_topics = 0,
-							forum_last_post_id = 0
-						WHERE forum_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update forum data!", __LINE__, __FILE__, $sql);
-					}
-					$affected_rows = $db->sql_affectedrows();
+					$affected_rows = dibi::update(FORUMS_TABLE, ['forum_topics' => 0, 'forum_last_post_id' => 0])
+						->where('forum_id IN %in', $result_array)
+						->execute(dibi::AFFECTED_ROWS);
+
 					if ( $affected_rows == 1 )
 					{
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
@@ -3621,15 +3394,10 @@ switch($mode_id)
 						$list_open = TRUE;
 					}
 					echo("<li>" . sprintf($lang['Synchronizing_forum'], $row['forum_id'], htmlspecialchars($row['forum_name'])) . "</li>\n");
-					$sql2 = "UPDATE " . FORUMS_TABLE . "
-						SET forum_posts = " . $row['new_posts'] . ",
-							forum_last_post_id = " . $row['new_last_post_id'] . "
-						WHERE forum_id = " . $row['forum_id'];
-					$result2 = $db->sql_query($sql2);
-					if ( !$result2 )
-					{
-						throw_error("Couldn't update forum information!", __LINE__, __FILE__, $sql2);
-					}
+
+					dibi::update(FORUMS_TABLE, ['forum_posts' => $row['new_posts'], 'forum_last_post_id' => $row['new_last_post_id']])
+						->where('forum_id = %i', $row['forum_id'])
+						->execute();
 				}
 				$db->sql_freeresult($result);
 				if ($list_open)
@@ -3663,15 +3431,11 @@ switch($mode_id)
 				if ( count($result_array) )
 				{
 					$record_list = implode(',', $result_array);
-					$sql = "UPDATE " . FORUMS_TABLE . "
-						SET forum_posts = 0
-						WHERE forum_id IN ($record_list)";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update forum data!", __LINE__, __FILE__, $sql);
-					}
-					$affected_rows = $db->sql_affectedrows();
+
+					$affected_rows = dibi::update(FORUMS_TABLE, ['forum_posts' => 0])
+						->where('forum_id IN %in', $result_array)
+						->execute(dibi::AFFECTED_ROWS);
+
 					if ( $affected_rows == 1 )
 					{
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
@@ -3709,6 +3473,8 @@ switch($mode_id)
 				lock_db();
 
 				// Updating new pm counter
+
+				// TODO ADD recount for topics counter!
 				echo("<p class=\"gen\"><b>" . $lang['Synchronize_user_post_counter'] . "</b></p>\n");
 				if (check_mysql_version())
 				{
@@ -3745,14 +3511,10 @@ switch($mode_id)
 							$list_open = TRUE;
 						}
 						echo("<li>" . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row['username']), $row['user_id'], $row['user_posts'], $row['new_counter']) . "</li>\n");
-						$sql2 = "UPDATE " . USERS_TABLE . "
-							SET user_posts = " . $row['new_counter'] . "
-							WHERE user_id = " . $row['user_id'];
-						$result2 = $db->sql_query($sql2);
-						if ( !$result2 )
-						{
-							throw_error("Couldn't update user information!", __LINE__, __FILE__, $sql2);
-						}
+
+						dibi::update(USERS_TABLE, ['user_posts' => $row['new_counter']])
+							->where('user_id = %i', $row['user_id'])
+							->execute();
 					}
 				}
 				$db->sql_freeresult($result);
@@ -3782,14 +3544,10 @@ switch($mode_id)
 						$list_open = TRUE;
 					}
 					echo("<li>" . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row['username']), $row['user_id'], $row['user_posts'], 0) . "</li>\n");
-					$sql2 = "UPDATE " . USERS_TABLE . "
-						SET user_posts = 0
-						WHERE user_id = " . $row['user_id'];
-					$result2 = $db->sql_query($sql2);
-					if ( !$result2 )
-					{
-						throw_error("Couldn't update user information!", __LINE__, __FILE__, $sql2);
-					}
+
+					dibi::update(USERS_TABLE, ['user_posts' => 0])
+						->where('user_id = %i', $row['user_id'])
+						->execute();
 				}
 				$db->sql_freeresult($result);
 				if ($list_open)
@@ -3869,14 +3627,10 @@ switch($mode_id)
 						$list_open = TRUE;
 					}
 					echo("<li>" . sprintf($lang['Changing_moderator_status'], htmlspecialchars($row['username']), $row['user_id']) . "</li>\n");
-					$sql2 = "UPDATE " . USERS_TABLE . "
-						SET user_level = " . USER . "
-						WHERE user_id = " . $row['user_id'];
-					$result2 = $db->sql_query($sql2);
-					if ( !$result2 )
-					{
-						throw_error("Couldn't update user information!", __LINE__, __FILE__, $sql2);
-					}
+
+					dibi::update(USERS_TABLE, ['user_level' => USER])
+						->where('user_id = %i', $row['user_id'])
+						->execute();
 				}
 				$db->sql_freeresult($result);
 				if ($list_open)
@@ -3909,14 +3663,10 @@ switch($mode_id)
 						$list_open = TRUE;
 					}
 					echo("<li>" . sprintf($lang['Changing_moderator_status'], htmlspecialchars($row['username']), $row['user_id']) . "</li>\n");
-					$sql2 = "UPDATE " . USERS_TABLE . "
-						SET user_level = " . MOD . "
-						WHERE user_id = " . $row['user_id'];
-					$result2 = $db->sql_query($sql2);
-					if ( !$result2 )
-					{
-						throw_error("Couldn't update user information!", __LINE__, __FILE__, $sql2);
-					}
+
+					dibi::update(USERS_TABLE, ['user_level' => MOD])
+						->where('user_id = %i', $row['user_id'])
+						->execute();
 				}
 				$db->sql_freeresult($result);
 				if ($list_open)
@@ -3940,15 +3690,11 @@ switch($mode_id)
 
 				// Checking post table
 				echo("<p class=\"gen\"><b>" . $lang['Checking_post_dates'] . "</b></p>\n");
-				$sql = "UPDATE " . POSTS_TABLE . "
-					SET post_time = $time
-					WHERE post_time > $time";
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't update post data!", __LINE__, __FILE__, $sql);
-				}
-				$affected_rows = $db->sql_affectedrows();
+
+				$affected_rows = dibi::update(POSTS_TABLE, ['post_time' => $time])
+					->where('post_time > %i', $time)
+					->execute(dibi::AFFECTED_ROWS);
+
 				if ( $affected_rows == 1 )
 				{
 					echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
@@ -3964,15 +3710,11 @@ switch($mode_id)
 
 				// Checking private messages table
 				echo("<p class=\"gen\"><b>" . $lang['Checking_pm_dates'] . "</b></p>\n");
-				$sql = "UPDATE " . PRIVMSGS_TABLE . "
-					SET privmsgs_date = $time
-					WHERE privmsgs_date > $time";
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't update private message data!", __LINE__, __FILE__, $sql);
-				}
-				$affected_rows = $db->sql_affectedrows();
+
+				$affected_rows = dibi::update(PRIVMSGS_TABLE, ['privmsgs_date' => $time])
+					->where('privmsgs_date > %i', $time)
+					->execute(dibi::AFFECTED_ROWS);
+
 				if ( $affected_rows == 1 )
 				{
 					echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
@@ -3988,15 +3730,11 @@ switch($mode_id)
 
 				// Checking user table (last e-mail)
 				echo("<p class=\"gen\"><b>" . $lang['Checking_email_dates'] . "</b></p>\n");
-				$sql = "UPDATE " . USERS_TABLE . "
-					SET user_emailtime = $time
-					WHERE user_emailtime > $time";
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't update user data!", __LINE__, __FILE__, $sql);
-				}
-				$affected_rows = $db->sql_affectedrows();
+
+				$affected_rows = dibi::update(USERS_TABLE, ['user_emailtime' => $time])
+					->where('user_emailtime > %i', $time)
+					->execute(dibi::AFFECTED_ROWS);
+
 				if ( $affected_rows == 1 )
 				{
 					echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
@@ -4014,15 +3752,11 @@ switch($mode_id)
 				if ( $phpbb_version[0] == 0 && $phpbb_version[1] >= 19 )
 				{
 					echo("<p class=\"gen\"><b>" . $lang['Checking_login_dates'] . "</b></p>\n");
-					$sql = "UPDATE " . USERS_TABLE . "
-						SET user_last_login_try = $time
-						WHERE user_last_login_try > $time";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update user data!", __LINE__, __FILE__, $sql);
-					}
-					$affected_rows = $db->sql_affectedrows();
+
+					$affected_rows = dibi::update(USERS_TABLE, ['user_last_login_try' => $time])
+						->where('user_last_login_try > %i', $time)
+						->execute(dibi::AFFECTED_ROWS);
+
 					if ( $affected_rows == 1 )
 					{
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
@@ -4041,14 +3775,12 @@ switch($mode_id)
 				if ( $phpbb_version[0] == 0 && $phpbb_version[1] >= 20 )
 				{
 					echo("<p class=\"gen\"><b>" . $lang['Checking_search_dates'] . "</b></p>\n");
-					$sql = "DELETE FROM " . SEARCH_TABLE . "
-						WHERE search_time > $time";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update search data!", __LINE__, __FILE__, $sql);
-					}
-					$affected_rows = $db->sql_affectedrows();
+
+
+					$affected_rows = dibi::delete(SEARCH_TABLE)
+						->where('search_time > %i', $time)
+						->execute(dibi::AFFECTED_ROWS);
+
 					if ( $affected_rows == 1 )
 					{
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
@@ -4354,17 +4086,17 @@ switch($mode_id)
 			default:
 				echo("<p class=\"gen\">" . $lang['function_unknown'] . "</p>\n");
 		}
-		echo("<p class=\"gen\"><a href=\"" . append_sid("admin_db_maintenance.$phpEx") . "\">" . $lang['Back_to_DB_Maintenance'] . "</a></p>\n");
+		echo("<p class=\"gen\"><a href=\"" . Session::appendSid("admin_db_maintenance.php") . "\">" . $lang['Back_to_DB_Maintenance'] . "</a></p>\n");
 		// Send Information about processing time
 		echo('<p class="gensmall">' . sprintf($lang['Processing_time'], getmicrotime() - $timer) . '</p>');
 		ob_start();
 		break;
 	default:
-		$template->set_filenames(array(
+		$template->setFileNames(array(
 			"body" => "admin/dbmtnc_list_body.tpl")
 		);
 
-		$template->assign_vars(array(
+		$template->assignVars(array(
 			"L_DBMTNC_TITLE" => $lang['DB_Maintenance'],
 			"L_DBMTNC_TEXT" => $lang['DB_Maintenance_Description'],
 			"L_FUNCTION" => $lang['Function'],
@@ -4381,15 +4113,15 @@ switch($mode_id)
 			{
 				if ($mtnc[$i][0] == '--')
 				{
-					$template->assign_block_vars('function.spaceRow', array());
+					$template->assignBlockVars('function.spaceRow', array());
 				}
 				else
 				{
-					$template->assign_block_vars('function', array(
+					$template->assignBlockVars('function', array(
 						'FUNCTION_NAME' => $mtnc[$i][1],
 						'FUNCTION_DESCRIPTION' => $mtnc[$i][2],
 
-						'U_FUNCTION_URL' => append_sid("admin_db_maintenance.$phpEx?mode=start&function=" . $mtnc[$i][0]))
+						'U_FUNCTION_URL' => Session::appendSid("admin_db_maintenance.php?mode=start&function=" . $mtnc[$i][0]))
 					);
 				}
 			};
@@ -4399,5 +4131,5 @@ switch($mode_id)
 		break;
 }
 
-include('./page_footer_admin.'.$phpEx);
+include('./page_footer_admin.php');
 ?>

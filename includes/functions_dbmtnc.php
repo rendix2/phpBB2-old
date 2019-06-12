@@ -366,27 +366,18 @@ function check_mysql_version()
 {
 	global $db;
 
-	$sql = 'SELECT VERSION() AS mysql_version';
-	$result = $db->sql_query($sql);
-	if( !$result )
-	{
+    $version = dibi::query('SELECT VERSION() AS mysql_version')->fetchSingle();
+
+    if ($version == false) {
 		throw_error("Couldn't obtain MySQL Version", __LINE__, __FILE__, $sql);
 	}
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
 
-	$version = $row['mysql_version'];
-
-	if ( preg_match("/^3\.23\.([0-9]$|[0-9]-|1[0-3]$|1[0-6]-)/", $version) ) // Version from 3.23.0 to 3.23.16
-	{
+    // Version from 3.23.0 to 3.23.16
+	if ( preg_match("/^3\.23\.([0-9]$|[0-9]-|1[0-3]$|1[0-6]-)/", $version) ) {
 		return FALSE;
-	}
-	elseif ( preg_match("/^(3\.23)|(4\.)|(5\.)/", $version) )
-	{
+	} elseif ( preg_match("/^(3\.23)|(4\.)|(5\.)/", $version) ) {
 		return TRUE;
-	}
-	else // Versions before 3.23.0
-	{
+	}else { // Versions before 3.23.0
 		return FALSE;
 	}
 }
@@ -481,7 +472,7 @@ function create_cat()
 
 	if (!$cat_created)
 	{
-		// Höchten Wert von cat_order ermitteln
+		// Hï¿½chten Wert von cat_order ermitteln
 		$sql = 'SELECT Max(cat_order) AS cat_order
 			FROM ' . CATEGORIES_TABLE;
 		$result = $db->sql_query($sql);
@@ -523,7 +514,7 @@ function create_forum()
 
 	if (!$forum_created)
 	{
-		// Höchten Wert von forum_id ermitteln
+		// Hï¿½chten Wert von forum_id ermitteln
 		$sql = 'SELECT Max(forum_id) AS forum_id
 			FROM ' . FORUMS_TABLE;
 		$result = $db->sql_query($sql);
@@ -538,7 +529,7 @@ function create_forum()
 			throw_error("Couldn't get forum data!", __LINE__, __FILE__, $sql);
 		}
 		$next_forum_id = $row['forum_id'] + 1;
-		// Höchten Wert von forum_order ermitteln
+		// Hï¿½chten Wert von forum_order ermitteln
 		$sql = 'SELECT Max(forum_order) AS forum_order
 			FROM ' . FORUMS_TABLE . "
 			WHERE cat_id = $cat_id";
@@ -859,15 +850,15 @@ function style_select($default_style, $select_name = "style", $dirname = "templa
 
 function check_authorisation($die = TRUE)
 {
-	global $db, $lang, $dbuser, $dbpasswd, $option, $HTTP_POST_VARS;
+	global $db, $lang, $dbuser, $dbpasswd, $option, $_POST;
 
-	$auth_method = ( isset($HTTP_POST_VARS['auth_method']) ) ? htmlspecialchars($HTTP_POST_VARS['auth_method']) : '';
-	$board_user = isset($HTTP_POST_VARS['board_user']) ? trim(htmlspecialchars($HTTP_POST_VARS['board_user'])) : '';
+	$auth_method = ( isset($_POST['auth_method']) ) ? htmlspecialchars($_POST['auth_method']) : '';
+	$board_user = isset($_POST['board_user']) ? trim(htmlspecialchars($_POST['board_user'])) : '';
 	$board_user = substr(str_replace("\\'", "'", $board_user), 0, 25);
 	$board_user = str_replace("'", "\\'", $board_user);
-	$board_password = ( isset($HTTP_POST_VARS['board_password']) ) ? $HTTP_POST_VARS['board_password'] : '';
-	$db_user = ( isset($HTTP_POST_VARS['db_user']) ) ? $HTTP_POST_VARS['db_user'] : '';
-	$db_password = ( isset($HTTP_POST_VARS['db_password']) ) ? $HTTP_POST_VARS['db_password'] : '';
+	$board_password = ( isset($_POST['board_password']) ) ? $_POST['board_password'] : '';
+	$db_user = ( isset($_POST['db_user']) ) ? $_POST['db_user'] : '';
+	$db_password = ( isset($_POST['db_password']) ) ? $_POST['db_password'] : '';
 	// Change authentication mode if selected option does not allow database authentication
 	if ( $option == 'rld' || $option == 'rtd' )
 	{
@@ -950,11 +941,11 @@ function get_config_data($option)
 
 function success_message($text)
 {
-	global $lang, $lg, $HTTP_SERVER_VARS;
+	global $lang, $lg, $_SERVER;
 	
 ?>
 	<p><?php echo $text; ?></p>
-	<p style="text-align:center"><a href="<?php echo $HTTP_SERVER_VARS['PHP_SELF'] . '?lg=' . $lg; ?>"><?php echo $lang['Return_ERC']; ?></a></p>
+	<p style="text-align:center"><a href="<?php echo $_SERVER['PHP_SELF'] . '?lg=' . $lg; ?>"><?php echo $lang['Return_ERC']; ?></a></p>
 <?php
 }
 ?>
