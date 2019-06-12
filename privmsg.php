@@ -613,26 +613,32 @@ if ($mode === 'newpm') {
 
             */
 
-
             'POST_SUBJECT'  => $post_subject,
             'POST_DATE'     => $post_date,
             'MESSAGE'       => $private_message,
 
             'PROFILE_IMG'    => $profile_img,
             'PROFILE'        => $profile,
+
             'SEARCH_IMG'     => $search_img,
             'SEARCH'         => $search,
+
             'EMAIL_IMG'      => $email_img,
             'EMAIL'          => $email,
+
             'WWW_IMG'        => $www_img,
             'WWW'            => $www,
+
             'ICQ_STATUS_IMG' => $icq_status_img,
             'ICQ_IMG'        => $icq_img,
             'ICQ'            => $icq,
+
             'AIM_IMG'        => $aim_img,
             'AIM'            => $aim,
+
             'MSN_IMG'        => $msn_img,
             'MSN'            => $msn,
+
             'YIM_IMG'        => $yim_img,
             'YIM'            => $yim
         ]
