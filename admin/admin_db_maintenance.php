@@ -466,36 +466,18 @@ switch($mode_id)
 					$db_updated = TRUE;
 					echo("<p class=\"gen\">" . sprintf($lang['Updating_invalid_pendig_users'], $affected_rows) . "</p>\n");
 				}
-				// Check for pending single user groups
-				if (check_mysql_version())
-				{
-					$sql = "SELECT g.group_id
-						FROM " . USER_GROUP_TABLE . " ug
-							INNER JOIN " . GROUPS_TABLE . " g ON ug.group_id = g.group_id
-						WHERE ug.user_pending = 1 AND g.group_single_user = 1";
-				}
-				else
-				{
-					$sql = "SELECT g.group_id
-						FROM " . USER_GROUP_TABLE . " ug, " .
-							GROUPS_TABLE . " g
-						WHERE ug.group_id = g.group_id
-							AND ug.user_pending = 1
-							AND g.group_single_user = 1";
-				}
-				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get user and group data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$result_array[] = $row['group_id'];
-				}
-				$db->sql_freeresult($result);
-				if ( count($result_array) )
-				{
+
+				$result_array = dibi::select('g.group_id')
+					->from(USER_GROUP_TABLE)
+					->as('ug')
+					->innerJoin(GROUPS_TABLE)
+					->as('g')
+					->on('ug.group_id = g.group_id')
+					->where('ug.user_pending = %i', 1)
+					->where('g.group_single_user = %i', 1)
+					->fetchPairs(null, 'group_id');
+
+				if (count($result_array)) {
 					$db_updated = TRUE;
 					$record_list = implode(',', $result_array);
 					echo("<p class=\"gen\">" . $lang['Updating_pending_information'] . ": $record_list</p>\n");
@@ -536,44 +518,27 @@ switch($mode_id)
 				}
 				$db->sql_freeresult($result);
 				// Check for multiple records
-				if ( count($multiple_groups) )
-				{
+				if ( count($multiple_groups) ) {
 					$db_updated = TRUE;
 					$record_list = implode(',', $multiple_groups);
 					echo("<p class=\"gen\">" . $lang['Found_multiple_SUG'] . ":</p>\n");
 					echo("<font class=\"gen\"><ul>\n");
 					$list_open = TRUE;
 					echo("<li>" . $lang['Resolving_user_id'] . ": $record_list</li>\n");
-					if (check_mysql_version())
-					{
-						$sql = "SELECT g.group_id
-							FROM " . USERS_TABLE . " u
-								INNER JOIN " . USER_GROUP_TABLE . " ug ON u.user_id = ug.user_id
-								INNER JOIN " . GROUPS_TABLE . " g ON ug.group_id = g.group_id
-							WHERE u.user_id IN ($record_list) AND g.group_single_user = 1";
-					}
-					else
-					{
-						$sql = "SELECT g.group_id
-							FROM " . USERS_TABLE . " u, " .
-								USER_GROUP_TABLE . " ug, " . 
-								GROUPS_TABLE . " g
-							WHERE u.user_id = ug.user_id
-								AND ug.group_id = g.group_id
-								AND u.user_id IN ($record_list)
-								AND g.group_single_user = 1";
-					}
-					$result_array = array();
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't get group data!", __LINE__, __FILE__, $sql);
-					}
-					while ( $row = $db->sql_fetchrow($result) )
-					{
-						$result_array[] = $row['group_id'];
-					}
-					$db->sql_freeresult($result);
+
+					$result_array = dibi::select('g.group_id')
+						->from(USERS_TABLE)
+						->as('u')
+						->innerJoin(USER_GROUP_TABLE)
+						->as('ug')
+						->on('u.user_id = ug.user_id')
+						->innerJoin(GROUPS_TABLE)
+						->as('g')
+						->on('ug.group_id = g.group_id')
+						->where('u.user_id IN %in', $multiple_groups)
+						->where('g.group_single_user = %i', 1)
+						->fetchPairs(null, 'group_id');
+
 					$record_list = implode(',', $result_array);
 					echo("<li>" . $lang['Removing_groups'] . ": $record_list</li>\n");
 
@@ -724,22 +689,17 @@ switch($mode_id)
 
 				// Remove user-group data without a valid user
 				echo("<p class=\"gen\"><b>" . $lang['Remove_invalid_user_data'] . "</b></p>\n");
-				$sql = "SELECT ug.user_id
-					FROM " . USER_GROUP_TABLE . " ug
-						LEFT JOIN " . USERS_TABLE . " u ON ug.user_id = u.user_id
-					WHERE u.user_id IS NULL
-					GROUP BY ug.user_id";
-				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get user and group data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$result_array[] = $row['user_id'];
-				}
-				$db->sql_freeresult($result);
+
+				$result_array = dibi::select('ug.user_id')
+					->from(USER_GROUP_TABLE)
+					->as('ug')
+					->leftJoin(USERS_TABLE)
+					->as('u')
+					->on('ug.user_id = u.user_id')
+					->where('u.user_id IS NULL')
+					->groupBy('ug.user_id')
+					->fetchPairs(null, 'user_id');
+
 				if ( count($result_array) )
 				{
 					$record_list = implode(',', $result_array);
@@ -1185,23 +1145,17 @@ switch($mode_id)
 
 				// Check posts for invaild posters
 				echo("<p class=\"gen\"><b>" . $lang['Checking_invalid_posters'] . "</b></p>\n");
-				$sql = "SELECT p.post_id
-					FROM " . POSTS_TABLE . " p
-						LEFT JOIN " . USERS_TABLE . " u ON p.poster_id = u.user_id
-					WHERE u.user_id IS NULL";
-				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get post and user data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$result_array[] = $row['post_id'];
-				}
-				$db->sql_freeresult($result);
-				if ( count($result_array) )
-				{
+
+				$result_array = dibi::select('p.post_id')
+					->from(POSTS_TABLE)
+					->as('p')
+					->leftJoin(USERS_TABLE)
+					->as('u')
+					->on('p.poster_id = u.user_id')
+					->where('u.user_id IS NULL')
+					->fetchPairs(null, 'post_id');
+
+				if (count($result_array)) {
 					$record_list = implode(',', $result_array);
 					echo("<p class=\"gen\">" . $lang['Invalid_poster_found'] . ": $record_list</p>\n");
 					echo("<p class=\"gen\">" . $lang['Updating_posts'] . "</p>\n");
@@ -1632,24 +1586,18 @@ switch($mode_id)
 				// Check moved topics
 				echo("<p class=\"gen\"><b>" . $lang['Checking_moved_topics'] . "</b></p>\n");
 				$db_updated = FALSE;
-				$sql = "SELECT t.topic_id
-					FROM " . TOPICS_TABLE . " t
-						LEFT JOIN " . TOPICS_TABLE . " mt ON t.topic_moved_id = mt.topic_id
-					WHERE mt.topic_id IS NULL AND
-						t.topic_status = " . TOPIC_MOVED;
-				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get topic data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$result_array[] = $row['topic_id'];
-				}
-				$db->sql_freeresult($result);
-				if ( count($result_array) )
-				{
+
+				$result_array = dibi::select('t.topic_id')
+					->from(TOPICS_TABLE)
+					->as('t')
+					->leftJoin(TOPICS_TABLE)
+					->as('mt')
+					->on('t.topic_moved_id = mt.topic_id')
+					->where('mt.topic_id IS NULL')
+					->where('t.topic_status = %i', TOPIC_MOVED)
+					->fetchPairs(null, 'topic_id');
+
+				if (count($result_array)) {
 					$record_list = implode(',', $result_array);
 					echo("<p class=\"gen\">" . $lang['Deleting_invalid_moved_topics'] . "</p>\n");
 
@@ -1691,38 +1639,30 @@ switch($mode_id)
 				// Checking for invalid prune settings
 				echo("<p class=\"gen\"><b>" . $lang['Checking_prune_settings'] . "</b></p>\n");
 				$db_updated = FALSE;
-				$sql = "SELECT p.forum_id
-					FROM " . PRUNE_TABLE . " p
-						LEFT JOIN " . FORUMS_TABLE . " f ON p.forum_id = f.forum_id
-					WHERE f.forum_id IS NULL
-					GROUP BY p.forum_id";
-				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get forum and prune data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$result_array[] = $row['forum_id'];
-				}
-				$db->sql_freeresult($result);
+
+				$result_array1 = dibi::select('p.forum_id')
+					->from(PRUNE_TABLE)
+					->as('p')
+					->leftJoin(FORUMS_TABLE)
+					->as('f')
+					->on('p.forum_id = f.forum_id')
+					->where('f.forum_id IS NULL')
+					->groupBy('p.forum_id')
+					->fetchPairs(null, 'forum_id');
+
 				// Forums with multiple prune settings
-				$sql = "SELECT p.forum_id
-					FROM " . PRUNE_TABLE . " p
-						LEFT JOIN " . FORUMS_TABLE . " f ON p.forum_id = f.forum_id
-					GROUP BY p.forum_id
-					HAVING Count(p.forum_id) > 1";
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get forum and prune data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$result_array[] = $row['forum_id'];
-				}
-				$db->sql_freeresult($result);
+				$result_array2 = dibi::select('p.forum_id')
+					->from(PRUNE_TABLE)
+					->as('p')
+					->leftJoin(FORUMS_TABLE)
+					->as('f')
+					->on('p.forum_id = f.forum_id')
+					->groupBy('p.forum_id')
+					->having('COUNT(p.forum_id) > %i', 1)
+					->fetchPairs(null, 'forum_id');
+
+				$result_array = array_merge($result_array1, $result_array2);
+
 				if ( count($result_array) )
 				{
 					echo("<p class=\"gen\">" . $lang['Removing_invalid_prune_settings'] . "</p>\n");
@@ -1743,22 +1683,16 @@ switch($mode_id)
 					}
 				}
 				// Forums with pruning enabled and no prune settings
-				$sql = "SELECT f.forum_id
-					FROM " . FORUMS_TABLE . " f
-						LEFT JOIN " . PRUNE_TABLE . " p ON f.forum_id = p.forum_id
-					WHERE p.forum_id IS NULL
-						AND f.prune_enable = 1";
-				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get forum and prune data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$result_array[] = $row['forum_id'];
-				}
-				$db->sql_freeresult($result);
+				$result_array = dibi::select('f.forum_id')
+					->from(FORUMS_TABLE)
+					->as('f')
+					->leftJoin(PRUNE_TABLE)
+					->as('p')
+					->on('f.forum_id = p.forum_id')
+					->where('p.forum_id IS NULL')
+					->where('f.prune_enable = 1')
+					->fetchPairs(null, 'forum_id');
+
 				if ( count($result_array) )
 				{
 					$record_list = implode(',', $result_array);
@@ -3412,22 +3346,17 @@ switch($mode_id)
 
 				// Updating forums without a post
 				echo("<p class=\"gen\"><b>" . $lang['Synchronize_forum_data_wo_post'] . "</b></p>\n");
-				$sql = "SELECT f.forum_id
-					FROM " . FORUMS_TABLE . " f
-						LEFT JOIN " . POSTS_TABLE . " p ON f.forum_id = p.forum_id
-					WHERE p.forum_id IS NULL AND
-						(f.forum_posts <> 0)";
-				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get forum and topic data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$result_array[] = $row['forum_id'];
-				}
-				$db->sql_freeresult($result);
+
+				$result_array = dibi::select('f.forum_id')
+					->from(FORUMS_TABLE)
+					->as('f')
+					->leftJoin(POSTS_TABLE)
+					->as('p')
+					->on('f.forum_id = p.forum_id')
+					->where('p.forum_id IS NULL')
+					->where('f.forum_posts <> %i', 0)
+					->fetchPairs(null, 'forum_id');
+
 				if ( count($result_array) )
 				{
 					$record_list = implode(',', $result_array);
