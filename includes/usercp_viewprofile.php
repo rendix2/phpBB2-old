@@ -62,14 +62,23 @@ $regdate->setTimestamp($profileData->user_regdate);
 $memberdays = new DateTime('now', $zone);
 $memberdays = $memberdays->diff($regdate)->d;
 
-$posts_per_day = $profileData->user_posts / $memberdays;
+$postsPerDay  = $profileData->user_posts / $memberdays;
+$topicsPerDay = $profileData->user_topics / $memberdays;
 
 // Get the users percentage of total posts
 if ($profileData->user_posts !== 0) {
     $total_posts = get_db_stat('postcount');
-    $percentage = $total_posts ? min(100, ($profileData->user_posts / $total_posts) * 100) : 0;
+    $percentagePosts = $total_posts ? min(100, ($profileData->user_posts / $total_posts) * 100) : 0;
 } else {
-    $percentage = 0;
+    $percentagePosts = 0;
+}
+
+// Get the users percentage of total topics
+if ($profileData->user_topics !== 0) {
+    $totalTopics = get_db_stat('topiccount');
+    $percentageTopics= $totalTopics ? min(100, ($profileData->user_topics / $totalTopics) * 100) : 0;
+} else {
+    $percentageTopics = 0;
 }
 
 $avatar_img = '';
@@ -164,11 +173,15 @@ $template->assignVars(
         'JOINED' => create_date($lang['DATE_FORMAT'], $profileData->user_regdate, $board_config['board_timezone']),
         'POSTER_RANK' => $poster_rank,
         'RANK_IMAGE' => $rank_image,
-        'POSTS_PER_DAY' => $posts_per_day,
+
         'POSTS' => $profileData->user_posts,
-        'PERCENTAGE' => $percentage . '%',
-        'POST_DAY_STATS' => sprintf($lang['User_post_day_stats'], $posts_per_day),
-        'POST_PERCENT_STATS' => sprintf($lang['User_post_pct_stats'], $percentage),
+        'POST_DAY_STATS' => sprintf($lang['User_post_day_stats'], $postsPerDay),
+        'POST_PERCENT_STATS' => sprintf($lang['User_post_pct_stats'], $percentagePosts),
+
+        'TOPICS' => $profileData->user_topics,
+        'TOPIC_DAY_STATS' => sprintf($lang['User_topic_day_stats'], $topicsPerDay),
+        'TOPIC_PERCENT_STATS' => sprintf($lang['User_post_pct_stats'], $percentageTopics),
+
 
         'SEARCH_IMG' => $search_img,
         'SEARCH' => $search,
@@ -206,7 +219,9 @@ $template->assignVars(
         'L_POSTER_RANK' => $lang['Poster_rank'],
         'L_JOINED' => $lang['Joined'],
         'L_TOTAL_POSTS' => $lang['Total_posts'],
+        'L_TOTAL_TOPICS' => $lang['Total_topics'],
         'L_SEARCH_USER_POSTS' => sprintf($lang['Search_user_posts'], $profileData->username),
+        'L_SEARCH_USER_TOPICS' => sprintf($lang['Search_user_topics'], $profileData->username),
         'L_CONTACT' => $lang['Contact'],
         'L_EMAIL_ADDRESS' => $lang['Email_address'],
         'L_EMAIL' => $lang['Email'],
@@ -220,7 +235,8 @@ $template->assignVars(
         'L_OCCUPATION' => $lang['Occupation'],
         'L_INTERESTS' => $lang['Interests'],
 
-        'U_SEARCH_USER' => Session::appendSid('search.php?search_author=' . $u_search_author),
+        'U_SEARCH_USER_POSTS' => Session::appendSid('search.php?search_author=' . $u_search_author . '&amp;show_results=posts'),
+        'U_SEARCH_USER_TOPICS' => Session::appendSid('search.php?search_author=' . $u_search_author . '&amp;show_results=topics'),
 
         'S_PROFILE_ACTION' => Session::appendSid('profile.php')
     ]

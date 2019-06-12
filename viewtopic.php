@@ -386,6 +386,7 @@ $columns = [
     'u.username',
     'u.user_id',
     'u.user_posts',
+    'u.user_topics',
     'u.user_from',
     'u.user_website',
     'u.user_email',
@@ -824,7 +825,8 @@ foreach ($posts as $i => $post) {
 
 	$post_date = create_date($board_config['default_dateformat'], $post->post_time, $board_config['board_timezone']);
 
-	$poster_posts = $post->user_id !== ANONYMOUS ? $lang['Posts'] . ': ' . $post->user_posts : '';
+    $poster_posts  = $post->user_id !== ANONYMOUS ? $lang['Posts'] . ': ' . $post->user_posts   : '';
+    $poster_topics = $post->user_id !== ANONYMOUS ? $lang['Topics'] . ': ' . $post->user_topics : '';
 
 	$poster_from = $post->user_from && $post->user_id !== ANONYMOUS ? $lang['Location'] . ': ' . $post->user_from : '';
 
@@ -1110,6 +1112,7 @@ foreach ($posts as $i => $post) {
             'POSTER_RANK'    => $poster_rank,
             'POSTER_JOINED'  => $poster_joined,
             'POSTER_POSTS'   => $poster_posts,
+            'POSTER_TOPICS'  => $poster_topics,
             'POSTER_FROM'    => $poster_from,
             'POSTER_AVATAR'  => $poster_avatar,
 

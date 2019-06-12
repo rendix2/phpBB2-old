@@ -88,6 +88,20 @@ function prune($forum_id, $prune_date, $prune_all = false)
                     ->execute();
             }
 
+		    $topicAuthors = dibi::select('topic_poster')
+                ->select('COUNT(topic_id)')
+                ->as('topics')
+                ->from(TOPICS_TABLE)
+                ->where('topic_id IN %in', $topic_data)
+                ->groupBy('topic_poster')
+                ->fetchAll();
+
+		    foreach ($topicAuthors as $author) {
+		        dibi::update(USERS_TABLE, ['user_topics%sql' => 'user_topics - '. $author->topics])
+                    ->where('user_id = %i', $author->topic_poster)
+                    ->execute();
+            }
+
 		    dibi::delete(TOPICS_WATCH_TABLE)
                 ->where('topic_id IN %in', $topic_data)
                 ->execute();

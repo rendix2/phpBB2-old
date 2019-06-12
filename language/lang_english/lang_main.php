@@ -532,10 +532,17 @@ $lang['Interests'] = 'Interests';
 $lang['Occupation'] = 'Occupation'; 
 $lang['Poster_rank'] = 'Poster rank';
 
+// posts
 $lang['Total_posts'] = 'Total posts';
 $lang['User_post_pct_stats'] = '%.2f%% of total'; // 1.25% of total
 $lang['User_post_day_stats'] = '%.2f posts per day'; // 1.5 posts per day
 $lang['Search_user_posts'] = 'Find all posts by %s'; // Find all posts by username
+
+// topics
+$lang['Total_topics'] = 'Total topics';
+$lang['User_topic_pct_stats'] = '%.2f%% of total'; // 1.25% of total
+$lang['User_topic_day_stats'] = '%.2f topics per day'; // 1.5 posts per day
+$lang['Search_user_topics'] = 'Find all topics by %s'; // Find all posts by username
 
 $lang['No_user_id_specified'] = 'Sorry, but that user does not exist.';
 $lang['Wrong_Profile'] = 'You cannot modify a profile that is not your own.';
@@ -675,6 +682,7 @@ $lang['Sort_Joined'] = 'Joined Date';
 $lang['Sort_Username'] = 'Username';
 $lang['Sort_Location'] = 'Location';
 $lang['Sort_Posts'] = 'Total posts';
+$lang['Sort_Topics'] = 'Total topics';
 $lang['Sort_Email'] = 'Email';
 $lang['Sort_Website'] = 'Website';
 $lang['Sort_Ascending'] = 'Ascending';

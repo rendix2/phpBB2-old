@@ -463,6 +463,12 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
             ->where('user_id = %i', $user_id)
             ->execute();
 	}
+
+	if ($mode === 'newtopic') {
+        dibi::update(USERS_TABLE, ['user_topics%sql' => 'user_topics + 1'])
+            ->where('user_id = %i', $user_id)
+            ->execute();
+    }
 }
 
 //
@@ -491,6 +497,10 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 
             dibi::delete(TOPICS_WATCH_TABLE)
                 ->where('topic_id = %i', $topic_id)
+                ->execute();
+
+            dibi::update(USERS_TABLE, ['user_topics%sql' => 'user_topics - 1'])
+                ->where('user_id = %i', $post_data['poster_id'])
                 ->execute();
         }
 

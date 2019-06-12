@@ -203,7 +203,22 @@ switch ($mode) {
 				message_die(GENERAL_MESSAGE, $lang['None_selected']);
 			}
 
-			$posters_of_topic = dibi::select('poster_id')
+            $topicAuthors = dibi::select('topic_poster')
+                ->select('COUNT(topic_id)')
+                ->as('topics')
+                ->from(TOPICS_TABLE)
+                ->where('topic_id IN %in', $topics)
+                ->where('forum_id = %i', $forum_id)
+                ->groupBy('topic_poster')
+                ->fetchAll();
+
+			foreach ($topicAuthors as $author) {
+                dibi::update(USERS_TABLE, ['user_topics%sql' => 'user_topics - '. $author->topics])
+                    ->where('user_id = %i', $author->topic_poster)
+                    ->execute();
+            }
+
+			$postsAuthors = dibi::select('poster_id')
                 ->select('COUNT(post_id)')
                 ->as('posts')
                 ->from(POSTS_TABLE)
@@ -211,8 +226,8 @@ switch ($mode) {
                 ->groupBy('poster_id')
                 ->fetchAll();
 
-			foreach ($posters_of_topic as $poster) {
-                dibi::update(USERS_TABLE, ['user_posts%sql' => 'user_posts - ' . $poster['posts']])
+			foreach ($postsAuthors as $poster) {
+                dibi::update(USERS_TABLE, ['user_posts%sql' => 'user_posts - ' . $poster->posts])
                     ->where('user_id = %i', $poster->poster_id)
                     ->execute();
             }
@@ -222,17 +237,12 @@ switch ($mode) {
                 ->where('topic_id IN %in', $topic_ids)
                 ->fetchPairs(null, 'post_id');
 
-			$votes = dibi::select('vote_id')
-                ->from(VOTE_DESC_TABLE)
-                ->where('topic_id IN %in', $topic_ids)
-                ->fetchPairs(null, 'vote_id');
-
 			//
 			// Got all required info so go ahead and start deleting everything
 			//
 
             dibi::delete(TOPICS_TABLE)
-                ->where('topic_id IN %in OR topic_moved_in', $topic_ids, $topic_ids)
+                ->where('topic_id IN %in OR topic_moved_id IN %in', $topic_ids, $topic_ids)
                 ->execute();
 
             if (count($post_ids)) {
@@ -246,6 +256,11 @@ switch ($mode) {
 
                 remove_search_post($post_ids);
             }
+
+            $votes = dibi::select('vote_id')
+                ->from(VOTE_DESC_TABLE)
+                ->where('topic_id IN %in', $topic_ids)
+                ->fetchPairs(null, 'vote_id');
 
             if (count($votes)) {
                 dibi::delete(VOTE_DESC_TABLE)

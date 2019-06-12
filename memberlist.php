@@ -58,6 +58,7 @@ $mode_types = [
     'username' => $lang['Sort_Username'],
     'location' => $lang['Sort_Location'],
     'posts'    => $lang['Sort_Posts'],
+    'topics'   => $lang['Sort_Topics'],
     'email'    => $lang['Sort_Email'],
     'website'  => $lang['Sort_Website'],
     'topten'   => $lang['Sort_Top_Ten']
@@ -107,6 +108,7 @@ $template->assignVars(
         'L_ICQ'                => $lang['ICQ'],
         'L_JOINED'             => $lang['Joined'],
         'L_POSTS'              => $lang['Posts'],
+        'L_TOPICS'              => $lang['Topics'],
         'L_PM'                 => $lang['Private_Message'],
 
         'S_MODE_SELECT'  => $select_sort_mode,
@@ -120,6 +122,7 @@ $columns = [
     'user_id',
     'user_viewemail',
     'user_posts',
+    'user_topics',
     'user_regdate',
     'user_from',
     'user_website',
@@ -158,6 +161,11 @@ switch ($mode) {
             ->limit($board_config['members_per_page'])
             ->offset($start);
         break;
+    case 'topics':
+        $users->orderBy('user_topics', $sort_order)
+            ->limit($board_config['members_per_page'])
+            ->offset($start);
+        break;
     case 'email':
         $users->orderBy('user_email', $sort_order)
             ->limit($board_config['members_per_page'])
@@ -187,6 +195,7 @@ foreach ($users as $user) {
     $from = !empty($user->user_from) ? $user->user_from : '&nbsp;';
     $joined = create_date($lang['DATE_FORMAT'], $user->user_regdate, $board_config['board_timezone']);
     $posts = $user->user_posts ? $user->user_posts : 0;
+    $topics = $user->user_topics ? $user->user_topics : 0;
 
     $poster_avatar = '';
 
@@ -261,6 +270,7 @@ foreach ($users as $user) {
             'FROM' => $from,
             'JOINED' => $joined,
             'POSTS' => $posts,
+            'TOPICS' => $topics,
             'AVATAR_IMG' => $poster_avatar,
             'PROFILE_IMG' => $profile_img,
             'PROFILE' => $profile,

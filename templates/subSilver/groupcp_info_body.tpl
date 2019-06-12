@@ -48,6 +48,7 @@
 	  <th class="thCornerL" height="25">{L_PM}</th>
 	  <th class="thTop">{L_USERNAME}</th>
 	  <th class="thTop">{L_POSTS}</th>
+	  <th class="thTop">{L_TOPICS}</th>
 	  <th class="thTop">{L_FROM}</th>
 	  <th class="thTop">{L_EMAIL}</th>
 	  <th class="thTop">{L_WEBSITE}</th>
@@ -60,6 +61,7 @@
 	  <td class="row1" align="center"> {MOD_PM_IMG} </td>
 	  <td class="row1" align="center"><span class="gen"><a href="{U_MOD_VIEWPROFILE}" class="gen">{MOD_USERNAME}</a></span></td>
 	  <td class="row1" align="center" valign="middle"><span class="gen">{MOD_POSTS}</span></td>
+	  <td class="row1" align="center" valign="middle"><span class="gen">{MOD_TOPICS}</span></td>
 	  <td class="row1" align="center" valign="middle"><span class="gen">{MOD_FROM}</span></td>
 	  <td class="row1" align="center" valign="middle"><span class="gen">{MOD_EMAIL_IMG}</span></td>
 	  <td class="row1" align="center">{MOD_WWW_IMG}</td>
@@ -73,7 +75,8 @@
 	  <td class="{member_row.ROW_CLASS}" align="center"> {member_row.PM_IMG} </td>
 	  <td class="{member_row.ROW_CLASS}" align="center"><span class="gen"><a href="{member_row.U_VIEWPROFILE}" class="gen">{member_row.USERNAME}</a></span></td>
 	  <td class="{member_row.ROW_CLASS}" align="center"><span class="gen">{member_row.POSTS}</span></td>
-	  <td class="{member_row.ROW_CLASS}" align="center"><span class="gen"> {member_row.FROM} 
+	  <td class="{member_row.ROW_CLASS}" align="center"><span class="gen">{member_row.TOPICS}</span></td>
+	  <td class="{member_row.ROW_CLASS}" align="center"><span class="gen"> {member_row.FROM}
 		</span></td>
 	  <td class="{member_row.ROW_CLASS}" align="center" valign="middle"><span class="gen">{member_row.EMAIL_IMG}</span></td>
 	  <td class="{member_row.ROW_CLASS}" align="center"> {member_row.WWW_IMG}</td>

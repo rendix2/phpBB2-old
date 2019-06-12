@@ -27,13 +27,15 @@ include $phpbb_root_path . 'common.php';
 
 // -------------------------
 //
-function generate_user_info(&$row, $date_format, $group_mod, &$from, &$posts, &$joined, &$poster_avatar, &$profile_img, &$profile, &$search_img, &$search, &$pm_img, &$pm, &$email_img, &$email, &$www_img, &$www, &$icq_status_img, &$icq_img, &$icq, &$aim_img, &$aim, &$msn_img, &$msn, &$yim_img, &$yim)
+function generate_user_info(&$row, $date_format, $group_mod, &$from, &$posts, &$topics, &$joined, &$poster_avatar,
+    &$profile_img, &$profile, &$search_img, &$search, &$pm_img, &$pm, &$email_img, &$email, &$www_img, &$www, &$icq_status_img, &$icq_img, &$icq, &$aim_img, &$aim, &$msn_img, &$msn, &$yim_img, &$yim)
 {
 	global $lang, $images, $board_config;
 
 	$from = !empty($row->user_from) ? $row->user_from : '&nbsp;';
 	$joined = create_date($date_format, $row->user_regdate, $board_config['board_timezone']);
 	$posts = $row->user_posts ? $row->user_posts : 0;
+	$topics = $row->user_topics ? $row->user_topics : 0;
 	$poster_avatar = '';
 
     /**
@@ -662,6 +664,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
         'user_id',
         'user_viewemail',
         'user_posts',
+        'user_topics',
         'user_regdate',
         'user_from',
         'user_website',
@@ -685,6 +688,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
         'u.user_id',
         'u.user_viewemail',
         'u.user_posts',
+        'u.user_topics',
         'u.user_regdate',
         'u.user_from',
         'u.user_website',
@@ -717,6 +721,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
         'u.user_id',
         'u.user_viewemail',
         'u.user_posts',
+        'u.user_topics',
         'u.user_regdate',
         'u.user_from',
         'u.user_website',
@@ -808,7 +813,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 	$username = $group_moderator->username;
 	$user_id = $group_moderator->user_id;
 
-	generate_user_info($group_moderator, $board_config['default_dateformat'], $is_moderator, $from, $posts, $joined, $poster_avatar, $profile_img, $profile, $search_img, $search, $pm_img, $pm, $email_img, $email, $www_img, $www, $icq_status_img, $icq_img, $icq, $aim_img, $aim, $msn_img, $msn, $yim_img, $yim);
+	generate_user_info($group_moderator, $board_config['default_dateformat'], $is_moderator, $from, $posts, $topics, $joined, $poster_avatar, $profile_img, $profile, $search_img, $search, $pm_img, $pm, $email_img, $email, $www_img, $www, $icq_status_img, $icq_img, $icq, $aim_img, $aim, $msn_img, $msn, $yim_img, $yim);
 
 	$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
@@ -833,6 +838,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
             'L_PM' => $lang['Private_Message'],
             'L_EMAIL' => $lang['Email'],
             'L_POSTS' => $lang['Posts'],
+            'L_TOPICS' => $lang['Topics'],
             'L_WEBSITE' => $lang['Website'],
             'L_FROM' => $lang['Location'],
             'L_ORDER' => $lang['Order'],
@@ -857,6 +863,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
             'MOD_FROM' => $from,
             'MOD_JOINED' => $joined,
             'MOD_POSTS' => $posts,
+            'MOD_TOPICS' => $topics,
             'MOD_AVATAR_IMG' => $poster_avatar,
             'MOD_PROFILE_IMG' => $profile_img,
             'MOD_PROFILE' => $profile,
@@ -903,7 +910,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 		$username = $group_members[$i]['username'];
 		$user_id = $group_members[$i]['user_id'];
 
-		generate_user_info($group_members[$i], $board_config['default_dateformat'], $is_moderator, $from, $posts, $joined, $poster_avatar, $profile_img, $profile, $search_img, $search, $pm_img, $pm, $email_img, $email, $www_img, $www, $icq_status_img, $icq_img, $icq, $aim_img, $aim, $msn_img, $msn, $yim_img, $yim);
+		generate_user_info($group_members[$i], $board_config['default_dateformat'], $is_moderator, $from, $posts, $topics, $joined, $poster_avatar, $profile_img, $profile, $search_img, $search, $pm_img, $pm, $email_img, $email, $www_img, $www, $icq_status_img, $icq_img, $icq, $aim_img, $aim, $msn_img, $msn, $yim_img, $yim);
 
 		if ($group_info->group_type !== GROUP_HIDDEN || $is_group_member || $is_moderator) {
 			$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
@@ -917,6 +924,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
                     'FROM'           => $from,
                     'JOINED'         => $joined,
                     'POSTS'          => $posts,
+                    'TOPICS'         => $topics,
                     'USER_ID'        => $user_id,
                     'AVATAR_IMG'     => $poster_avatar,
                     'PROFILE_IMG'    => $profile_img,
@@ -997,8 +1005,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 				$username = $modgroup_pending_value->username;
 				$user_id = $modgroup_pending_value->user_id;
 
-				generate_user_info($modgroup_pending_value, $board_config['default_dateformat'], $is_moderator,
-                    $from, $posts, $joined, $poster_avatar, $profile_img, $profile, $search_img, $search, $pm_img, $pm, $email_img, $email, $www_img, $www, $icq_status_img, $icq_img, $icq, $aim_img, $aim, $msn_img, $msn, $yim_img, $yim);
+				generate_user_info($modgroup_pending_value, $board_config['default_dateformat'], $is_moderator, $from, $posts, $topics, $joined, $poster_avatar, $profile_img, $profile, $search_img, $search, $pm_img, $pm, $email_img, $email, $www_img, $www, $icq_status_img, $icq_img, $icq, $aim_img, $aim, $msn_img, $msn, $yim_img, $yim);
 
 				$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
 				$row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];

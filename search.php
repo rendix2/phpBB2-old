@@ -58,10 +58,15 @@ if (isset($_POST['search_author']) || isset($_GET['search_author'])) {
     $search_author = '';
 }
 
-$search_id    = isset($_GET['search_id'])     ? $_GET['search_id']     : '';
-$show_results = isset($_POST['show_results']) ? $_POST['show_results'] : 'posts';
+$search_id = isset($_GET['search_id']) ? $_GET['search_id'] : '';
 
-$show_results = $show_results === 'topics' ? 'topics' : 'posts';
+if (isset($_GET['show_results'])) {
+    $show_results = $_GET['show_results'];
+} elseif (isset($_POST['show_results'])) {
+    $show_results = $_POST['show_results'];
+} else {
+    $show_results = 'posts';
+}
 
 if (isset($_POST['search_terms'])) {
     $search_terms = $_POST['search_terms'] === 'all' ? 1 : 0;
@@ -662,7 +667,7 @@ if ($mode === 'searchuser') {
                 ->select('p2.post_time')
                 ->select('p.post_id')
                 ->select('pt.post_text')
-                ->select('u.enable_html')
+                ->select('u.user_allowhtml')
                 ->from(TOPICS_TABLE)
                 ->as('t')
                 ->innerJoin(FORUMS_TABLE)
@@ -797,7 +802,7 @@ if ($mode === 'searchuser') {
 						$message = preg_replace('/\[url\]|\[\/url\]/si', '', $message);
 						$message = mb_strlen($message) > $return_chars ? substr($message, 0, $return_chars) . ' ...' : $message;
 					} else {
-                        if (!$board_config['allow_html'] && $search_set->enable_html) {
+                        if (!$board_config['allow_html'] && $search_set->user_allowhtml) {
                             $message = preg_replace('#(<)([\/]?.*?)(>)#is', '&lt;\\2&gt;', $message);
                         }
 
