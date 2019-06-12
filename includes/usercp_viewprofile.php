@@ -151,7 +151,7 @@ $msn = $msn_img;
 $yim_img = $profileData->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $profileData->user_yim . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
 $yim = $profileData->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $profileData->user_yim . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
 
-$temp_url = Session::appendSid('search.php?search_author=' . urlencode($profileData->username) . '&amp;showresults=posts');
+$temp_url = Session::appendSid('search.php?search_author=' . urlencode($profileData->username) . '&amp;show_results=posts');
 $search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $profileData->username) . '" title="' . sprintf($lang['Search_user_posts'], $profileData->username) . '" border="0" /></a>';
 $search = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $profileData->username) . '</a>';
 
