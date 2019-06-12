@@ -300,7 +300,7 @@ CREATE INDEX session_id_ip_user_id_phpbb_sessions_index ON phpbb_sessions (sessi
   Table structure for table phpbb_sessions_keys
 -------------------------------------------------------- */
 CREATE TABLE phpbb_sessions_keys (
-  key_id char(32) DEFAULT '0' NOT NULL,
+  key_id char(128) DEFAULT '0' NOT NULL,
   user_id int4 DEFAULT '0' NOT NULL,
   last_ip char(8) DEFAULT '0' NOT NULL,
   last_login int4 DEFAULT '0' NOT NULL,

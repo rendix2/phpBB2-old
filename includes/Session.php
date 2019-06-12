@@ -80,7 +80,7 @@ class Session
                     ->on('k.user_id = u.user_id')
                     ->where('u.user_id = %i', (int) $user_id)
                     ->where('u.user_active = %i', 1)
-                    ->where('k.key_id = %s', md5($sessiondata['autologinid']))
+                    ->where('k.key_id = %s', hash('sha512',$sessiondata['autologinid']))
                     ->fetch();
 
                 $userdata = $userdata->toArray();
@@ -229,16 +229,16 @@ class Session
                 if (isset($sessiondata['autologinid']) && (string) $sessiondata['autologinid'] !== '') {
                     $update_data = [
                         'last_ip' =>  $user_ip,
-                        'key_id' => md5($auto_login_key),
+                        'key_id' => hash('sha512',$auto_login_key),
                         'last_login' => $current_time
                     ];
 
                     dibi::update(SESSIONS_KEYS_TABLE, $update_data)
-                        ->where('key_id = %s', md5($sessiondata['autologinid']))
+                        ->where('key_id = %s', hash('sha512', $sessiondata['autologinid']))
                         ->execute();
                 } else {
                     $insert_data = [
-                        'key_id'     => md5($auto_login_key),
+                        'key_id'     => hash('sha512', $auto_login_key),
                         'user_id'    => $user_id,
                         'last_ip'    => $user_ip,
                         'last_login' => $current_time
@@ -460,7 +460,7 @@ class Session
         // Remove this auto-login entry (if applicable)
         //
         if (isset($userdata['session_key']) && $userdata['session_key'] !== '') {
-            $autologin_key = md5($userdata['session_key']);
+            $autologin_key = hash('sha512', $userdata['session_key']);
 
             dibi::delete(SESSIONS_KEYS_TABLE)
                 ->where('user_id = %i',(int) $user_id)
@@ -558,7 +558,7 @@ class Session
             ->where('user_id = %i', $user_id);
 
         if ($key_sql) {
-            $delete_session_keys->where('key_id != %s', md5($userdata['session_key']));
+            $delete_session_keys->where('key_id != %s', hash('sha512', $userdata['session_key']));
         }
 
         $delete_session_keys->execute();
@@ -579,12 +579,12 @@ class Session
 
             $update_data = [
                 'last_ip' => $user_ip,
-                'key_id' => md5($auto_login_key),
+                'key_id' => hash('sha512', $auto_login_key),
                 'last_login' => $current_time
             ];
 
             dibi::update(SESSIONS_KEYS_TABLE, $update_data)
-                ->where('key_id = %s', md5($userdata['session_key']))
+                ->where('key_id = %s', hash('sha512', $userdata['session_key']))
                 ->execute();
 
             // And now rebuild the cookie

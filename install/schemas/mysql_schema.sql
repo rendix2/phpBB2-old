@@ -317,7 +317,7 @@ CREATE TABLE phpbb_sessions (
 # Table structure for table `phpbb_sessions_keys`
 #
 CREATE TABLE phpbb_sessions_keys (
-  key_id varchar(32) DEFAULT '0' NOT NULL,
+  key_id varchar(128) DEFAULT '0' NOT NULL,
   user_id mediumint(8) DEFAULT '0' NOT NULL,
   last_ip varchar(8) DEFAULT '0' NOT NULL,
   last_login int(11) DEFAULT '0' NOT NULL,

@@ -197,7 +197,7 @@ CREATE TABLE [phpbb_sessions] (
 GO
 
 CREATE TABLE [phpbb_sessions_keys] (
-  [key_id] [char] (32) NOT NULL ,
+  [key_id] [char] (128) NOT NULL ,
   [user_id] [int] NOT NULL ,
   [last_ip] [char] (8) NOT NULL ,
   [last_login] [int] NOT NULL
@@ -336,6 +336,7 @@ CREATE TABLE [phpbb_users] (
 	[user_regdate] [int] NOT NULL ,
 	[user_level] [smallint] NOT NULL ,
 	[user_posts] [int] NOT NULL ,
+	[user_topics] [int] NOT NULL ,
 	[user_timezone] [varchar] (100) NOT NULL ,
 	[user_style] [int] NULL ,
 	[user_lang] [varchar] (255) NULL ,
