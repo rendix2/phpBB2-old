@@ -99,38 +99,31 @@ $default_config = array(
 	'dbmtnc_disallow_rebuild' => '0'
 );
 // append data added in later versions
-if ( isset($board_config) && isset($board_config['version']) )
-{
-	$phpbb_version = explode('.', substr($board_config['version'], 1));
+if (isset($board_config) && isset($board_config['version'])) {
+    $phpbb_version = explode('.', substr($board_config['version'], 1));
+} else {
+    // Fallback for ERC
+    $phpbb_version = [0, 22];
 }
-else
-{
-	// Fallback for ERC
-	$phpbb_version = array(0, 22);
+if ($phpbb_version[0] == 0 && $phpbb_version[1] >= 5) {
+    $tables[] = 'confirm';
 }
-if ( $phpbb_version[0] == 0 && $phpbb_version[1] >= 5 )
-{
-	$tables[] = 'confirm';
+if ($phpbb_version[0] == 0 && $phpbb_version[1] >= 18) {
+    $tables[] = 'sessions_keys';
+
+    $default_config['allow_autologin']= '1';
+    $default_config['max_autologin_time'] = '0';
 }
-if ( $phpbb_version[0] == 0 && $phpbb_version[1] >= 18 )
-{
-	$tables[] = 'sessions_keys';
-	$default_config['allow_autologin'] = '1';
-	$default_config['max_autologin_time'] = '0';
+if ($phpbb_version[0] == 0 && $phpbb_version[1] >= 19) {
+    $default_config['max_login_attempts'] = '5';
+    $default_config['login_reset_time']   = '30';
 }
-if ( $phpbb_version[0] == 0 && $phpbb_version[1] >= 19 )
-{
-	$default_config['max_login_attempts'] = '5';
-	$default_config['login_reset_time'] = '30';
+if ($phpbb_version[0] == 0 && $phpbb_version[1] >= 20) {
+    $default_config['search_flood_interval'] = '15';
+    $default_config['rand_seed'] = '0';
 }
-if ( $phpbb_version[0] == 0 && $phpbb_version[1] >= 20 )
-{
-	$default_config['search_flood_interval'] = '15';
-	$default_config['rand_seed'] = '0';
-}
-if ( $phpbb_version[0] == 0 && $phpbb_version[1] >= 21 )
-{
-	$default_config['search_min_chars'] = '3';
+if ($phpbb_version[0] == 0 && $phpbb_version[1] >= 21) {
+    $default_config['search_min_chars'] = '3';
 }
 sort($tables);
 
@@ -143,12 +136,10 @@ function update_config($name, $value)
 {
 	global $db, $board_config;
 
-	$sql = 'UPDATE ' . CONFIG_TABLE . " SET config_value = '$value' WHERE config_name = '$name'";
-	$result = $db->sql_query($sql);
-	if( !$result )
-	{
-		throw_error("Couldn't update forum configuration!", __LINE__, __FILE__, $sql);
-	}
+    dibi::update(CONFIG_TABLE, ['config_value' => $value])
+        ->where('config_name = %s', $name)
+        ->execute();
+
 	$board_config[$name] = $value;
 }
 
@@ -591,37 +582,26 @@ function create_topic()
 //
 function get_poster($topic_id)
 {
-	global $db;
-	
-	$sql = 'SELECT Min(post_id) AS first_post
-		FROM ' . POSTS_TABLE . "
-		WHERE topic_id = $topic_id";
-	$result = $db->sql_query($sql);
-	if( !$result )
-	{
-		throw_error("Couldn't get post data!", __LINE__, __FILE__, $sql);
-	}
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-	if( !$row || $row['first_post'] == '')
-	{
-		return DELETED;
-	}
-	$sql = 'SELECT poster_id
-		FROM ' . POSTS_TABLE . '
-		WHERE post_id = ' . $row['first_post'];
-	$result = $db->sql_query($sql);
-	if( !$result )
-	{
-		throw_error("Couldn't get post data!", __LINE__, __FILE__, $sql);
-	}
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-	if( !$row )
-	{
-		throw_error("Couldn't get post data!", __LINE__, __FILE__, $sql);
-	}
-	return $row['poster_id'];
+    $row = dibi::select('Min(post_id)')
+        ->as('first_post')
+        ->from(POSTS_TABLE)
+        ->where('topic_id = %i', $topic_id)
+        ->fetchSingle();
+
+    if (!$row) {
+        return DELETED;
+    }
+
+    $posterId = dibi::select('poster_id')
+        ->from(POSTS_TABLE)
+        ->where('post_id = %i', $row['first_post'])
+        ->fetch();
+
+    if (!$posterId) {
+        throw_error("Couldn't get post data!", __LINE__, __FILE__, $sql);
+    }
+
+	return $posterId;
 }
 
 //
@@ -643,48 +623,29 @@ function get_word_id($word)
 	global $stopword_array, $synonym_array;
 	
 	// Check whether word is in stopword array
-	if ( in_array($word, $stopword_array) )
-	{
-		return NULL;
-	}
-	if ( in_array($word, $synonym_array[1]) )
-	{
-		$key = array_search($word, $synonym_array[1]);
-		$word = $synonym_array[0][$key];
-	}
-	
-	$sql = "SELECT word_id, word_common
-		FROM " . SEARCH_WORD_TABLE . "  
-		WHERE word_text = '$word'";
-	$result = $db->sql_query($sql);
-	if ( !$result )
-	{
-		include('./page_header_admin.'.$phpEx);
-		throw_error("Couldn't get search word data!", __LINE__, __FILE__, $sql);
-	}
-	if ( $row = $db->sql_fetchrow($result) ) // Word was found
-	{
-		if ( $row['word_common'] ) // Common word
-		{
-			return NULL;
-		}
-		else // Not a common word
-		{
-			return $row['word_id'];
-		}
-	}
-	else // Word was not found
-	{
-		$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text, word_common)
-			VALUES ('$word', 0)";
-		if ( !$db->sql_query($sql) )
-		{
-			include('./page_header_admin.'.$phpEx);
-			throw_error("Couldn't insert search word data!", __LINE__, __FILE__, $sql);
-		}
-		return $db->sql_nextid();
-	}
-	$db->sql_freeresult($result);
+    if (in_array($word, $stopword_array, true)) {
+        return null;
+    }
+    if (in_array($word, $synonym_array[1], true)) {
+        $key  = array_search($word, $synonym_array[1]);
+        $word = $synonym_array[0][$key];
+    }
+
+    $row = dibi::select(['word_id', 'word_common'])
+        ->from(SEARCH_WORD_TABLE)
+        ->where('word_text = %s', $word)
+        ->fetch();
+
+    if ($row) { // Word was found
+        if ($row->word_common) {// Common word
+            return null;
+        } else {// Not a common word
+            return $row->word_id;
+        }
+    } else { // Word was not found
+        return dibi::insert(SEARCH_WORD_TABLE, ['word_text' => $word, 'word_common' => 0])
+            ->execute(dibi::IDENTIFIER);
+    }
 }
 
 //

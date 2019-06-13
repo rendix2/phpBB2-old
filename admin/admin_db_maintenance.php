@@ -495,28 +495,32 @@ switch($mode_id)
 				// Checking for users without a single user group
 				echo("<p class=\"gen\"><b>" . $lang['Checking_missing_user_groups'] . "</b></p>\n");
 				$db_updated = FALSE;
-				$sql = "SELECT u.user_id, Sum(g.group_single_user) AS group_count
-					FROM " . USERS_TABLE . " u
-						LEFT JOIN " . USER_GROUP_TABLE . " ug ON u.user_id = ug.user_id
-						LEFT JOIN " . GROUPS_TABLE . " g ON ug.group_id = g.group_id
-					GROUP BY u.user_id
-					HAVING group_count <> 1 OR IsNull(group_count)";
-				$missig_groups = array();
+
+				$rows = dibi::select('u.user_id')
+					->select('SUM(g.group_single_user)')
+					->as('group_count')
+					->from(USERS_TABLE)
+					->as('u')
+					->leftJoin(USER_GROUP_TABLE)
+					->as('uh')
+					->on('u.user_id = ug.user_id')
+					->leftJoin(GROUPS_TABLE)
+					->as('g')
+					->on('ug.group_id = g.group_id')
+					->groupBy('u.user_id')
+					->having('group_count <> 1 OR ISNULL(group_count)')
+					->fetchAll();
+
+				$missing_groups = array();
 				$multiple_groups = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get user and group data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					if ( $row['group_count'] != 0 )
-					{
+
+				foreach ($rows as $row) {
+					if ( $row['group_count'] !== 0 ) {
 						$multiple_groups[] = $row['user_id'];
 					}
 					$missing_groups[] = $row['user_id'];
 				}
-				$db->sql_freeresult($result);
+
 				// Check for multiple records
 				if ( count($multiple_groups) ) {
 					$db_updated = TRUE;
@@ -587,103 +591,85 @@ switch($mode_id)
 
 				// Check for group moderators who do not exist
 				echo("<p class=\"gen\"><b>" . $lang['Checking_for_invalid_moderators'] . "</b></p>\n");
-				$sql = "SELECT g.group_id, g.group_name
-					FROM " . GROUPS_TABLE . " g
-						LEFT JOIN " . USERS_TABLE . " u ON g.group_moderator = u.user_id
-					WHERE g.group_single_user = 0
-						AND (u.user_id IS NULL OR u.user_id = " . ANONYMOUS . ")";
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get group data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					if (!$list_open)
-					{
+
+				$rows = dibi::select(['g.group_id', 'g.group_name'])
+					->from(GROUPS_TABLE)
+					->as('g')
+					->leftJoin(USERS_TABLE)
+					->as('u')
+					->on('g.group_moderator = u.user_id')
+					->where('g.group_single_user = %i', 0)
+					->where('(u.user_id IS NULL OR u.user_id = %i)', ANONYMOUS)
+					->fetchAll();
+
+				foreach ($rows as $row) {
+					if (!$list_open) {
 						echo("<p class=\"gen\"><b>" . $lang['Updating_Moderator'] . ":</b></p>\n");
 						echo("<font class=\"gen\"><ul>\n");
 						$list_open = TRUE;
 					}
-					echo("<li>" . htmlspecialchars($row['group_name']) . " (" . $row['group_id'] . ")</li>\n");
+					echo("<li>" . htmlspecialchars($row->group_name) . " (" . $row->group_id . ")</li>\n");
 
 					dibi::update(GROUPS_TABLE, ['group_moderator' => $userdata['user_id']])
-						->where('group_id = %i', $row['group_id'])
+						->where('group_id = %i', $row->group_id)
 						->execute();
 				}
-				$db->sql_freeresult($result);
-				if ($list_open)
-				{
+
+				if ($list_open) {
 					echo("</ul></font>\n");
-					$list_open = FALSE;
-				}
-				else
-				{
+					$list_open = false;
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
 				// Check for group moderators who are not member of the group they moderate
 				echo("<p class=\"gen\"><b>" . $lang['Checking_moderator_membership'] . "</b></p>\n");
-				$sql = "SELECT group_id, group_name, group_moderator
-					FROM " . GROUPS_TABLE . " g
-					WHERE g.group_single_user = 0";
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get group data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$sql2 = "SELECT user_pending
-						FROM " . USER_GROUP_TABLE . "
-						WHERE group_id = " . $row['group_id'] . "
-							AND user_id = " . $row['group_moderator'];
-					$result2 = $db->sql_query($sql2);
-					if ( !$result2 )
-					{
-						throw_error("Couldn't get group data!", __LINE__, __FILE__, $sql2);
-					}
-					if ( !($row2 = $db->sql_fetchrow($result2)) ) // No record found
-					{
-						if (!$list_open)
-						{
+				$rows = dibi::select(['group_id', 'group_name', 'group_moderator'])
+					->from(GROUPS_TABLE)
+					->where('group_single_user = %i', 0)
+					->fetchAll();
+
+				foreach ($rows as $row) {
+					$row2 = dibi::select('user_pending')
+						->from(USER_GROUP_TABLE)
+						->where('group_id = %i', $row->group_id)
+						->where('user_id = %i', $row->group_moderator)
+						->fetch();
+
+					if (!$row2) {// No record found
+						if (!$list_open) {
 							echo("<p class=\"gen\"><b>" . $lang['Updating_mod_membership'] . ":</b></p>\n");
 							echo("<font class=\"gen\"><ul>\n");
 							$list_open = TRUE;
 						}
-						echo("<li>" . htmlspecialchars($row['group_name']) . " (" . $row['group_id'] . ") - " . $lang['Moderator_added'] . "</li>\n");
-						$sql3 = "INSERT INTO " . USER_GROUP_TABLE . " (group_id, user_id, user_pending)
-							VALUES (" . $row['group_id'] . ", " . $row['group_moderator'] . ", 0)";
-						$result3 = $db->sql_query($sql3);
-						if ( !$result3 )
-						{
-							throw_error("Couldn't insert data in user-group-table!", __LINE__, __FILE__, $sql3);
-						}
-					}
-					elseif ( $row2['user_pending'] == 1 ) // Record found but moderator is pending
-					{
-						if (!$list_open)
-						{
+						echo("<li>" . htmlspecialchars($row->group_name) . " (" . $row->group_id . ") - " . $lang['Moderator_added'] . "</li>\n");
+
+						$insertData = [
+							'group_id'     => $row->group_id,
+							'user_id'      => $row->group_moderator,
+							'user_pending' => 0
+						];
+
+						dibi::insert(USER_GROUP_TABLE, $insertData)->execute();
+					} elseif ($row2->user_pending === 1) { // Record found but moderator is pending
+						if (!$list_open) {
 							echo("<p class=\"gen\"><b>" . $lang['Updating_mod_membership'] . ":</b></p>\n");
 							echo("<font class=\"gen\"><ul>\n");
 							$list_open = TRUE;
 						}
-						echo("<li>" . htmlspecialchars($row['group_name']) . " (" . $row['group_id'] . ") - " . $lang['Moderator_changed_pending'] . "</li>\n");
+						echo("<li>" . htmlspecialchars($row->group_name) . " (" . $row->group_id . ") - " . $lang['Moderator_changed_pending'] . "</li>\n");
+
 						dibi::update(USER_GROUP_TABLE, ['user_pending' => 0])
-							->where('group_id = %i', $row['group_id'])
-							->where('user_id = %i', $row['group_moderator'])
+							->where('group_id = %i', $row->group_id)
+							->where('user_id = %i', $row->group_moderator)
 							->execute();
 					}
-					$db->sql_freeresult($result2);
 				}
-				$db->sql_freeresult($result);
-				if ($list_open)
-				{
+
+				if ($list_open) {
 					echo("</ul></font>\n");
-					$list_open = FALSE;
-				}
-				else
-				{
+					$list_open = false;
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
@@ -724,141 +710,115 @@ switch($mode_id)
 				// Remove groups without any members
 				echo("<p class=\"gen\"><b>" . $lang['Remove_empty_groups'] . "</b></p>\n");
 				// Since we alread added the moderators to the groups this will only include rests of single user groups. So we don't need to display more information
-				$sql = "SELECT g.group_id
-					FROM " . GROUPS_TABLE . " g
-						LEFT JOIN " . USER_GROUP_TABLE . " ug ON g.group_id = ug.group_id
-					WHERE ug.group_id IS NULL";
-				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get user and group data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$result_array[] = $row['group_id'];
-				}
-				$db->sql_freeresult($result);
-				if ( count($result_array) )
-				{
+
+				$result_array = dibi::select('g.group_id')
+					->from(GROUPS_TABLE)
+					->as('g')
+					->leftJoin(USER_GROUP_TABLE)
+					->as('ug')
+					->on('g.group_id = ug.group_id')
+					->where('ug.group_id IS NULL')
+					->fetchPairs(null, 'group_id');
+
+				if ( count($result_array) ) {
 					$record_list = implode(',', $result_array);
 
 					$affected_rows = dibi::delete(GROUPS_TABLE)
 						->where('group_id IN %in', $result_array)
 						->execute(dibi::AFFECTED_ROWS);
 
-					if ( $affected_rows == 1 )
-					{
+					if ($affected_rows == 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
-					}
-					elseif ( $affected_rows > 1 )
-					{
+					} elseif ($affected_rows > 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
 					}
-				}
-				else
-				{
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
 				// Remove user-group data without a valid group
 				echo("<p class=\"gen\"><b>" . $lang['Remove_invalid_group_data'] . "</b></p>\n");
-				$sql = "SELECT ug.group_id
-					FROM " . USER_GROUP_TABLE . " ug
-						LEFT JOIN " . GROUPS_TABLE . " g ON ug.group_id = g.group_id
-					WHERE g.group_id IS NULL
-					GROUP BY ug.group_id";
-				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get user and group data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$result_array[] = $row['group_id'];
-				}
-				$db->sql_freeresult($result);
-				if ( count($result_array) )
-				{
+
+				$result_array = dibi::select('ug.group_id')
+					->from(USER_GROUP_TABLE)
+					->as('ug')
+					->leftJoin(GROUPS_TABLE)
+					->as('g')
+					->on('ug.group_id = g.group_id')
+					->where('g.group_id IS NULL')
+					->groupBy('ug.group_id')
+					->fetchPairs(null, 'group_id');
+
+				if (count($result_array)) {
 					$affected_rows = dibi::delete(USER_GROUP_TABLE)
 						->where('group_id IN %in', $result_array)
 						->execute(dibi::AFFECTED_ROWS);
 
-					if ( $affected_rows == 1 )
-					{
+					if ($affected_rows == 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
-					}
-					elseif ( $affected_rows > 1 )
-					{
+					} elseif ($affected_rows > 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
 					}
-				}
-				else
-				{
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
 				// Checking for invalid ranks
 				echo("<p class=\"gen\"><b>" . $lang['Checking_ranks'] . "</b></p>\n");
-				$sql = "SELECT u.user_id, u.username
-					FROM " . USERS_TABLE . " u
-						LEFT JOIN " . RANKS_TABLE . " r ON u.user_rank = r.rank_id
-					WHERE r.rank_id IS NULL AND u.user_rank <> 0";
+
+				$rows = dibi::select(['u.user_id', 'u.username'])
+					->from(USERS_TABLE)
+					->as('u')
+					->leftJoin(RANKS_TABLE)
+					->as('r')
+					->on('u.user_rank = r.rank_id')
+					->where('r.rank_id IS NULL')
+					->where('u.user_rank <> %i', 0)
+					->fetchAll();
 				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get user and rank data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					if (!$list_open)
-					{
+
+				foreach ($rows as $row) {
+					if (!$list_open) {
 						echo("<p class=\"gen\">" . $lang['Invalid_ranks_found'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
 						$list_open = TRUE;
 					}
-					echo("<li>" . htmlspecialchars($row['username']) . " (" . $row['user_id'] . ")</li>\n");
-					$result_array[] = $row['user_id'];
+					echo("<li>" . htmlspecialchars($row->username) . " (" . $row->user_id . ")</li>\n");
+					$result_array[] = $row->user_id;
 				}
-				$db->sql_freeresult($result);
-				if ($list_open)
-				{
+
+				if ($list_open) {
 					echo("</ul></font>\n");
-					$list_open = FALSE;
+					$list_open = false;
 				}
-				if ( count($result_array) )
-				{
+
+				if (count($result_array)) {
 					echo("<p class=\"gen\">" . $lang['Removing_invalid_ranks'] . "</p>\n");
 					$record_list = implode(',', $result_array);
 
 					dibi::update(USERS_TABLE, ['user_rank' => 0])
 						->where('user_id IN %in', $result_array)
 						->execute();
-				}
-				else
-				{
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
 				// Checking for invalid themes
 				echo("<p class=\"gen\"><b>" . $lang['Checking_themes'] . "</b></p>\n");
-				$sql = "SELECT u.user_style
-					FROM " . USERS_TABLE . " u
-						LEFT JOIN " . THEMES_TABLE . " t ON u.user_style = t.themes_id
-					WHERE t.themes_id IS NULL AND u.user_id <> " . ANONYMOUS . "
-					GROUP BY u.user_style";
+				$rows = dibi::select('u.user_style')
+					->from(USERS_TABLE)
+					->as('u')
+					->leftJoin(THEMES_TABLE)
+					->as('t')
+					->on('u.user_style = t.themes_id')
+					->where('t.themes_id IS NULL AND u.user_id <> %i', ANONYMOUS)
+					->groupBy('u.user_style')
+					->fetchAll();
+
 				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get user and theme data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					if ( $row['user_style'] == '' )
-					{
+
+				foreach ($rows as $row) {
+					if ($row->user_style == '') {
 						// At least one style is NULL, so change these records
 						echo("<p class=\"gen\">" . $lang['Updating_users_without_style'] . "</p>\n");
 
@@ -868,49 +828,34 @@ switch($mode_id)
 							->execute();
 
 						$result_array[] = 0;
-					}
-					else
-					{
-						$result_array[] = $row['user_style'];
+					} else {
+						$result_array[] = $row->user_style;
 					}
 				}
-				$db->sql_freeresult($result);
-				if ( count($result_array) )
-				{
+
+				if (count($result_array)) {
 					$new_style = 0;
 					$record_list = implode(',', $result_array);
-					$sql = "SELECT themes_id
-						FROM " . THEMES_TABLE . "
-						WHERE themes_id = " . $board_config['default_style'];
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't get themes data!", __LINE__, __FILE__, $sql);
-					}
-					if ( $row = $db->sql_fetchrow($result) )
-					{
-						$new_style = $row['themes_id'];
-					}
-					else // the default template is not available
-					{
+
+					$new_style = dibi::select('themes_id')
+						->from(THEMES_TABLE)
+						->where('themes_id = %i', $board_config['default_style'])
+						->fetchSingle();
+
+					// the default template is not available
+					if ($new_style === false ) {
 						echo("<p class=\"gen\">" . $lang['Default_theme_invalid'] . "</p>\n");
 						$db->sql_freeresult($result);
-						$sql = "SELECT themes_id
-							FROM " . THEMES_TABLE . "
-							WHERE themes_id = " . $userdata['user_style'];
-							echo($sql);
-						$result = $db->sql_query($sql);
-						if ( !$result )
-						{
-							throw_error("Couldn't get themes data!", __LINE__, __FILE__, $sql);
-						}
-						if ( $row = $db->sql_fetchrow($result) )
-						{
-							$new_style = $row['themes_id'];
-						}
-						else // We never should get to this point. If both the board and the user style is invalid, I don't know how someone should get to this point
-						{
-							throw_error("Fatal error!");
+
+						$new_style = dibi::select('themes_id')
+							->from(THEMES_TABLE)
+							->where('themes_id = %i', $userdata['user_style'])
+							->fetchSingle();
+
+						// We never should get to this point. If both the board and the user style is invalid, I
+						// don't know how someone should get to this point
+						if ($new_style === false) {
+							throw_error("Fatal theme error!");
 						}
 					}
 					$db->sql_freeresult($result);
@@ -919,31 +864,23 @@ switch($mode_id)
 					dibi::update(USERS_TABLE, ['user_style' => $new_style])
 						->where('user_style IN %in', $result_array)
 						->execute();
-				}
-				else
-				{
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
 				// Checking for invalid theme names data
 				echo("<p class=\"gen\"><b>" . $lang['Checking_theme_names'] . "</b></p>\n");
-				$sql = "SELECT tn.themes_id
-					FROM " . THEMES_NAME_TABLE . " tn
-						LEFT JOIN " . THEMES_TABLE . " t ON tn.themes_id = t.themes_id
-					WHERE t.themes_id IS NULL";
-				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get themes data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$result_array[] = $row['themes_id'];
-				}
-				$db->sql_freeresult($result);
-				if ( count($result_array) )
-				{
+
+				$result_array = dibi::select('tn.themes_id')
+					->from(THEMES_NAME_TABLE)
+					->as('tn')
+					->leftJoin(THEMES_TABLE)
+					->as('t')
+					->on('tn.themes_id = t.themes_id')
+					->where('t.themes_id IS NULL')
+					->fetchPairs(null, 'themes_id');
+
+				if (count($result_array)) {
 					echo("<p class=\"gen\">" . $lang['Removing_invalid_theme_names'] . "</p>\n");
 					$record_list = implode(',', $result_array);
 
@@ -951,78 +888,53 @@ switch($mode_id)
 						->where('themes_id IN %in', $result_array)
 						->execute(dibi::AFFECTED_ROWS);
 
-					if ( $affected_rows == 1 )
-					{
+					if ($affected_rows == 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
-					}
-					elseif ( $affected_rows > 1 )
-					{
+					} elseif ($affected_rows > 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
 					}
-				}
-				else
-				{
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
 				// Checking for invalid languages
 				echo("<p class=\"gen\"><b>" . $lang['Checking_languages'] . "</b></p>\n");
-				$sql = "SELECT user_lang
-					FROM " . USERS_TABLE . "
-					WHERE user_id <> " . ANONYMOUS . "
-					GROUP BY user_lang";
-				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get user and theme data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					if ( !file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $row['user_lang'] . '/lang_main.php')) )
-					{
-						$result_array[] = $row['user_lang'];
+
+				$tmp_array = dibi::select('user_lang')
+					->from(USERS_TABLE)
+					->where('user_id <> %i', ANONYMOUS)
+					->groupBy('user_lang')
+					->fetchPairs(null, 'user_lang');
+
+				$result_array = [];
+
+				foreach ($tmp_array as $userLang) {
+					if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $userLang . '/lang_main.php'))) {
+						$result_array[] = $userLang;
 					}
 				}
-				$db->sql_freeresult($result);
-				if ( count($result_array) )
-				{
+
+				if (count($result_array)) {
 					// Getting default board_language as long as the original one was changed in functions.php
-					$sql = "SELECT config_value
-						FROM " . CONFIG_TABLE . "
-						WHERE config_name = 'default_lang'";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't get language data!", __LINE__, __FILE__, $sql);
-					}
-					if ( $row = $db->sql_fetchrow($result) )
-					{
-						$boad_language = $row['config_value'];
-					}
-					else
-					{
+					$boardLanguage = dibi::select('config_value')
+						->from(CONFIG_TABLE)
+						->where('config_name = %s', 'default_lang')
+						->fetchSingle();
+
+					if ($boardLanguage === false) {
 						throw_error("Couldn't get config data! Please check your configuration table.");
 					}
-					$db->sql_freeresult($result);
 
 					// Getting default language
-					if ( file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $boad_language . '/lang_main.php')) )
-					{
-						$default_lang = $boad_language;
-					}
-					elseif ( file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $userdata['user_lang'] . '/lang_main.php')) )
-					{
+					if (file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $boardLanguage . '/lang_main.php'))) {
+						$default_lang = $boardLanguage;
+					} elseif (file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $userdata['user_lang'] . '/lang_main.php'))) {
 						echo("<p class=\"gen\">" . $lang['Default_language_invalid'] . "</p>\n");
 						$default_lang = $userdata['user_lang'];
-					}
-					elseif ( file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_english/lang_main.php')) )
-					{
+					} elseif (file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_english/lang_main.php'))) {
 						echo("<p class=\"gen\">" . $lang['Default_language_invalid'] . "</p>\n");
 						$default_lang = 'english';
-					}
-					else
-					{
+					} else {
 						echo("<p class=\"gen\">" . $lang['English_language_invalid'] . "</p>\n");
 						$default_lang = 'english';
 					}
@@ -1031,62 +943,48 @@ switch($mode_id)
 					echo("<font class=\"gen\"><ul>\n");
 					$list_open = TRUE;
 
-					for($i = 0; $i < count($result_array); $i++)
-					{
-						echo("<li>" . sprintf($lang['Changing_language'], $result_array[$i], $default_lang) . "</li>\n");
+					foreach ($result_array as $value) {
+						echo("<li>" . sprintf($lang['Changing_language'], $value, $default_lang) . "</li>\n");
 
 						dibi::update(USERS_TABLE, ['user_lang' => $default_lang])
-							->where('user_lang = %s', $result_array[$i])
+							->where('user_lang = %s', $value)
 							->where('user_id <> %i', ANONYMOUS)
 							->execute();
 					}
 
 					echo("</ul></font>\n");
 					$list_open = FALSE;
-				}
-				else
-				{
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
 				// Remove ban data without a valid user
 				echo("<p class=\"gen\"><b>" . $lang['Remove_invalid_ban_data'] . "</b></p>\n");
-				$sql = "SELECT b.ban_userid
-					FROM " . BANLIST_TABLE . " b
-						LEFT JOIN " . USERS_TABLE . " u ON b.ban_userid = u.user_id
-					WHERE u.user_id IS NULL
-						AND b.ban_userid <> 0
-						AND b.ban_userid IS NOT NULL";
-				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get banlist and user data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$result_array[] = $row['ban_userid'];
-				}
-				$db->sql_freeresult($result);
-				if ( count($result_array) )
-				{
+
+				$result_array = dibi::select('b.ban_userid')
+					->from(BANLIST_TABLE)
+					->as('b')
+					->leftJoin(USERS_TABLE)
+					->as('u')
+					->on('b.ban_userid = u.user_id')
+					->where('u.user_id IS NULL')
+					->where('b.ban_userid <> %i', 0)
+					->where('b.ban_userid IS NOT NULL')
+					->fetchPairs(null, 'ban_userid');
+
+				if (count($result_array)) {
 					$record_list = implode(',', $result_array);
 
 					$affected_rows = dibi::delete(BANLIST_TABLE)
 						->where('ban_userid IN %in', $result_array)
 						->execute(dibi::AFFECTED_ROWS);
 
-					if ( $affected_rows == 1 )
-					{
+					if ($affected_rows == 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
-					}
-					elseif ( $affected_rows > 1 )
-					{
+					} elseif ($affected_rows > 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
 					}
-				}
-				else
-				{
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
@@ -1094,42 +992,29 @@ switch($mode_id)
 				if ( $phpbb_version[0] == 0 && $phpbb_version[1] >= 18 )
 				{
 					echo("<p class=\"gen\"><b>" . $lang['Remove_invalid_session_keys'] . "</b></p>\n");
-					$sql = "SELECT k.key_id
-						FROM " . SESSIONS_KEYS_TABLE . " k
-							LEFT JOIN " . USERS_TABLE . " u ON k.user_id = u.user_id
-						WHERE u.user_id IS NULL
-							OR k.user_id = " . ANONYMOUS . "
-							OR k.last_login > " . time();
-					$result_array = array();
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't get session key data!", __LINE__, __FILE__, $sql);
-					}
-					while ( $row = $db->sql_fetchrow($result) )
-					{
-						$result_array[] = $row['key_id'];
-					}
-					$db->sql_freeresult($result);
-					if ( count($result_array) )
-					{
+
+					$result_array = dibi::select('k.key_id')
+						->from(SESSIONS_KEYS_TABLE)
+						->as('k')
+						->leftJoin(USERS_TABLE)
+						->as('u')
+						->on('k.user_id = u.user_id')
+						->where('u.user_id IS NULL OR k.user_id = %i OR k.last_login > %i', ANONYMOUS, time())
+						->fetchPairs(null, 'key_id');
+
+					if (count($result_array)) {
 						$record_list = '\'' . implode('\',\'', $result_array) . '\'';
 
 						$affected_rows = dibi::delete(SESSIONS_KEYS_TABLE)
 							->where('key_id IN %in', $result_array)
 							->execute(dibi::AFFECTED_ROWS);
 
-						if ( $affected_rows == 1 )
-						{
+						if ($affected_rows == 1) {
 							echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
-						}
-						elseif ( $affected_rows > 1 )
-						{
+						} elseif ($affected_rows > 1) {
 							echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
 						}
-					}
-					else
-					{
+					} else {
 						echo($lang['Nothing_to_do']);
 					}
 				}
@@ -1157,133 +1042,126 @@ switch($mode_id)
 
 				if (count($result_array)) {
 					$record_list = implode(',', $result_array);
-					echo("<p class=\"gen\">" . $lang['Invalid_poster_found'] . ": $record_list</p>\n");
+					echo("<p class=\"gen\">" . $lang['Invaliyd_poster_found'] . ": $record_list</p>\n");
 					echo("<p class=\"gen\">" . $lang['Updating_posts'] . "</p>\n");
 
 					dibi::update(POSTS_TABLE, ['poster_id' => DELETED, 'post_username' => ''])
 						->where('post_id IN %in', $result_array)
 						->execute();
-				}
-				else
-				{
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
 				// Check topics for invaild posters
 				echo("<p class=\"gen\"><b>" . $lang['Checking_invalid_topic_posters'] . "</b></p>\n");
-				$sql = "SELECT t.topic_id, t.topic_poster
-					FROM " . TOPICS_TABLE . " t
-						LEFT JOIN " . USERS_TABLE . " u ON t.topic_poster = u.user_id
-					WHERE u.user_id IS NULL";
-				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get topic and user data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					if (!$list_open)
-					{
+
+				$rows = dibi::select(['t.topic_id', 't.topic_poster'])
+					->from(TOPICS_TABLE)
+					->as('t')
+					->leftJoin(USERS_TABLE)
+					->as('u')
+					->on('t.topic_poster = u.user_id')
+					->where('u.user_id IS NULL')
+					->fetchAll();
+
+				foreach ($rows as $row) {
+					if (!$list_open) {
 						echo("<p class=\"gen\">" . $lang['Invalid_topic_poster_found'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
 						$list_open = TRUE;
 					}
-					$poster_id = get_poster($row['topic_id']);
-					echo("<li>" . sprintf($lang['Updating_topic'], $row['topic_id'], $row['topic_poster'], $poster_id) . "</li>\n");
+					$poster_id = get_poster($row->topic_id);
+					echo("<li>" . sprintf($lang['Updating_topic'], $row->topic_id, $row->topic_poster, $poster_id) . "</li>\n");
 
 					dibi::update(TOPICS_TABLE, ['topic_poster' => $poster_id])
-						->where('topic_id = %i', $row['topic_id'])
+						->where('topic_id = %i', $row->topic_id)
 						->execute();
 				}
-				$db->sql_freeresult($result);
-				if ($list_open)
-				{
+
+				if ($list_open) {
 					echo("</ul></font>\n");
-					$list_open = FALSE;
-				}
-				else
-				{
+					$list_open = false;
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
 				// Check for forums with invalid categories
 				echo("<p class=\"gen\"><b>" . $lang['Checking_invalid_forums'] . "</b></p>\n");
-				$sql = "SELECT f.forum_id, f.forum_name
-					FROM " . FORUMS_TABLE . " f
-						LEFT JOIN " . CATEGORIES_TABLE . " c ON f.cat_id = c.cat_id
-					WHERE c.cat_id IS NULL";
+
 				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get categories and forums data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					if (!$list_open)
-					{
+
+				$rows = dibi::select(['f.forum_id', 'f.forum_name'])
+					->from(FORUMS_TABLE)
+					->as('f')
+					->leftJoin(CATEGORIES_TABLE)
+					->as('c')
+					->on('f.cat_id = c.cat_id')
+					->where('c.cat_id IS NULL')
+					->fetchAll();
+
+				foreach ($rows as $row) {
+					if (!$list_open) {
 						echo("<p class=\"gen\">" . $lang['Invalid_forums_found'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
-						$list_open = TRUE;
+						$list_open = true;
 					}
-					echo("<li>" . htmlspecialchars($row['forum_name']) . " (" . $row['forum_id'] . ")</li>\n");
-					$result_array[] = $row['forum_id'];
+					echo("<li>" . htmlspecialchars($row->forum_name) . " (" . $row->forum_id . ")</li>\n");
+					$result_array[] = $row->forum_id;
 				}
-				$db->sql_freeresult($result);
-				if ($list_open)
-				{
+
+				if ($list_open) {
 					echo("</ul></font>\n");
-					$list_open = FALSE;
+					$list_open = false;
 				}
-				if ( count($result_array) )
-				{
+				if (count($result_array)) {
 					$record_list = implode(',', $result_array);
-					$new_cat = create_cat();
+					$new_cat     = create_cat();
 					echo("<p class=\"gen\">" . sprintf($lang['Setting_category'], $lang['New_cat_name']) . " </p>\n");
 
 					dibi::update(FORUMS_TABLE, ['cat_id' => $new_cat])
 						->where('forum_id IN %in', $result_array)
 						->execute();
-				}
-				else
-				{
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
 				// Check for posts without a text
 				echo("<p class=\"gen\"><b>" . $lang['Checking_posts_wo_text'] . "</b></p>\n");
-				$sql = "SELECT p.post_id, t.topic_id, t.topic_title, u.user_id, u.username
-					FROM " . POSTS_TABLE . " p
-						LEFT JOIN " . POSTS_TEXT_TABLE . " pt ON p.post_id = pt.post_id
-						LEFT JOIN " . TOPICS_TABLE . " t ON p.topic_id = t.topic_id
-						LEFT JOIN " . USERS_TABLE . " u ON p.poster_id = u.user_id
-					WHERE pt.post_id IS NULL";
+
+				$rows = dibi::select(['p.post_id', 't.topic_id', 't.topic_title', 'u.user_id', 'u.username'])
+					->from(POSTS_TABLE)
+					->as('p')
+					->leftJoin(POSTS_TEXT_TABLE)
+					->as('pt')
+					->on('p.post_id = pt.post_id')
+					->leftJoin(TOPICS_TABLE)
+					->as('t')
+					->on('p.topic_id = t.topic_id')
+					->leftJoin(USERS_TABLE)
+					->as('u')
+					->on('p.poster_id = u.user_id')
+					->where('pt.post_id IS NULL')
+					->fetchAll();
+
 				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get post data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					if (!$list_open)
-					{
+
+				foreach ($rows as $row) {
+					if (!$list_open) {
 						echo("<p class=\"gen\">" . $lang['Posts_wo_text_found'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
 						$list_open = TRUE;
 					}
-					echo("<li>" . sprintf($lang['Deleting_post_wo_text'], $row['post_id'], htmlspecialchars($row['topic_title']), $row['topic_id'], htmlspecialchars($row['username']), $row['user_id']) . "</li>\n");
-					$result_array[] = $row['post_id'];
+
+					echo("<li>" . sprintf($lang['Deleting_post_wo_text'], $row->post_id, htmlspecialchars($row->topic_title), $row->topic_id, htmlspecialchars($row->username), $row->user_id) . "</li>\n");
+
+					$result_array[] = $row->post_id;
 				}
-				$db->sql_freeresult($result);
-				if ($list_open)
-				{
+
+				if ($list_open) {
 					echo("</ul></font>\n");
-					$list_open = FALSE;
+					$list_open = false;
 				}
-				if ( count($result_array) )
-				{
+				if (count($result_array)) {
 					$record_list = implode(',', $result_array);
 					echo("<p class=\"gen\">" . $lang['Deleting_Posts'] . " </p>\n");
 
@@ -1291,45 +1169,41 @@ switch($mode_id)
 						->where('post_id IN %in', $result_array)
 						->execute();
 
-					$update_post_data = TRUE;
-				}
-				else
-				{
+					$update_post_data = true;
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
 				// Check for topics without a post
 				echo("<p class=\"gen\"><b>" . $lang['Checking_topics_wo_post'] . "</b></p>\n");
-				$sql = "SELECT t.topic_id, t.topic_title
-					FROM " . TOPICS_TABLE . " t
-						LEFT JOIN " . POSTS_TABLE . " p ON t.topic_id = p.topic_id
-					WHERE p.topic_id IS NULL
-						AND t.topic_status <> " . TOPIC_MOVED;
+
+				$rows = dibi::select(['t.topic_id', 't.topic_title'])
+					->from(TOPICS_TABLE)
+					->as('t')
+					->leftJoin(POSTS_TABLE)
+					->as('p')
+					->on('t.topic_id = p.topic_id')
+					->where('p.topic_id IS NULL')
+					->where('t.topic_status <> %i', TOPIC_MOVED)
+					->fetchAll();
+
 				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get topic and post data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					if (!$list_open)
-					{
+
+				foreach ($rows as $row) {
+					if (!$list_open) {
 						echo("<p class=\"gen\">" . $lang['Topics_wo_post_found'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
-						$list_open = TRUE;
+						$list_open = true;
 					}
-					echo("<li>" . htmlspecialchars($row['topic_title']) . " (" . $row['topic_id'] . ")</li>\n");
-					$result_array[] = $row['topic_id'];
+					echo("<li>" . htmlspecialchars($row->topic_title) . " (" . $row->topic_id . ")</li>\n");
+					$result_array[] = $row->topic_id;
 				}
-				$db->sql_freeresult($result);
-				if ($list_open)
-				{
+
+				if ($list_open) {
 					echo("</ul></font>\n");
-					$list_open = FALSE;
+					$list_open = false;
 				}
-				if ( count($result_array) )
-				{
+				if (count($result_array)) {
 					$record_list = implode(',', $result_array);
 					echo("<p class=\"gen\">" . $lang['Deleting_topics'] . " </p>\n");
 
@@ -1337,46 +1211,42 @@ switch($mode_id)
 						->where('topic_id IN %in', $result_array)
 						->execute();
 
-					$update_post_data = TRUE;
-				}
-				else
-				{
+					$update_post_data = true;
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
 				// Check for topics with invalid forum
 				echo("<p class=\"gen\"><b>" . $lang['Checking_invalid_topics'] . "</b></p>\n");
-				$sql = "SELECT t.topic_id, t.topic_title
-					FROM " . TOPICS_TABLE . " t
-						LEFT JOIN " . FORUMS_TABLE . " f ON t.forum_id = f.forum_id
-					WHERE f.forum_id IS NULL";
+
+				$rows = dibi::select(['t.topic_id', 't.topic_title'])
+					->from(TOPICS_TABLE)
+					->as('t')
+					->leftJoin(FORUMS_TABLE)
+					->as('f')
+					->on('t.forum_id = f.forum_id')
+					->where('f.forum_id IS NULL')
+					->fetchAll();
+
 				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get topic and forum data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					if (!$list_open)
-					{
+
+				foreach ($rows as $row) {
+					if (!$list_open) {
 						echo("<p class=\"gen\">" . $lang['Invalid_topics_found'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
 						$list_open = TRUE;
 					}
-					echo("<li>" . htmlspecialchars($row['topic_title']) . " (" . $row['topic_id'] . ")</li>\n");
-					$result_array[] = $row['topic_id'];
+					echo("<li>" . htmlspecialchars($row->topic_title) . " (" . $row->topic_id . ")</li>\n");
+					$result_array[] = $row->topic_id;
 				}
-				$db->sql_freeresult($result);
-				if ($list_open)
-				{
+
+				if ($list_open) {
 					echo("</ul></font>\n");
-					$list_open = FALSE;
+					$list_open = false;
 				}
-				if ( count($result_array) )
-				{
+				if (count($result_array)) {
 					$record_list = implode(',', $result_array);
-					$new_forum = create_forum();
+					$new_forum   = create_forum();
 					echo("<p class=\"gen\">" . sprintf($lang['Setting_forum'], $lang['New_forum_name']) . " </p>\n");
 
 					dibi::update(TOPICS_TABLE, ['forum_id' => $new_forum])
@@ -1386,15 +1256,27 @@ switch($mode_id)
 					dibi::update(POSTS_TABLE, ['forum_id' => $new_forum])
 						->where('topic_id IN %in', $result_array)
 						->execute();
-					$update_post_data = TRUE;
-				}
-				else
-				{
+					$update_post_data = true;
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
 				// Check for posts with invalid topic
 				echo("<p class=\"gen\"><b>" . $lang['Checking_invalid_posts'] . "</b></p>\n");
+
+				/*
+				dibi::select(['p.post_id', 'p.topic_id'])
+					->from(POSTS_TABLE)
+					->as('p')
+					->leftJoin(TOPICS_TABLE)
+					->as('t')
+					->on('p.topic_id = t.topic_id')
+					->where('t.topic_id IS NULL OR t.topic_status = %i', TOPIC_MOVED)
+					->orderBy('p.topic_id')
+					->orderBy('p.post_time')
+					->fetchAll();
+				*/
+
 				$sql = "SELECT p.post_id, p.topic_id
 					FROM " . POSTS_TABLE . " p
 						LEFT JOIN " . TOPICS_TABLE . " t ON p.topic_id = t.topic_id
@@ -1427,36 +1309,27 @@ switch($mode_id)
 							$last_post = implode(',', array_slice($result_array, -1, 1));
 							$post_replies = count($result_array) - 1;
 							// Get title for new topic
-							$sql2 = "SELECT post_subject
-								FROM " . POSTS_TEXT_TABLE . "
-								WHERE post_id = $first_post";
-							$result2 = $db->sql_query($sql2);
-							if ( !$result2 )
-							{
-								throw_error("Couldn't get post information!", __LINE__, __FILE__, $sql2);
-							}
-							$row2 = $db->sql_fetchrow($result2);
-							if ( !$row2 )
-							{
+							$row2 = dibi::select('post_subject')
+								->from(POSTS_TEXT_TABLE)
+								->where('post_id = %i', $first_post)
+								->fetch();
+
+							if (!$row2) {
 								throw_error("Couldn't get post information!");
 							}
-							$db->sql_freeresult($result2);
-							$topic_title = ( $row2['post_subject'] == '') ? $lang['Restored_topic_name'] : $row2['post_subject'];
+
+							$topic_title = ( $row2->post_subject == '') ? $lang['Restored_topic_name'] : $row2->post_subject;
+
 							// Get data from first post
-							$sql2 = "SELECT poster_id, post_time
-								FROM " . POSTS_TABLE . "
-								WHERE post_id = $first_post";
-							$result2 = $db->sql_query($sql2);
-							if ( !$result2 )
-							{
-								throw_error("Couldn't get post information!", __LINE__, __FILE__, $sql2);
-							}
-							$row2 = $db->sql_fetchrow($result2);
-							if ( !$row2 )
-							{
+							$row2 = dibi::select(['poster_id', 'post_time'])
+								->from(POSTS_TABLE)
+								->where('post_id = %i', $first_post)
+								->fetch();
+
+							if (!$row2) {
 								throw_error("Couldn't get post information!");
 							}
-							$db->sql_freeresult($result2);
+
 							// Restore topic
 							$sql2 = 'INSERT INTO ' . TOPICS_TABLE . " (forum_id, topic_title, topic_poster, topic_time, topic_views, topic_replies, topic_status, topic_vote, topic_type, topic_first_post_id, topic_last_post_id, topic_moved_id)
 								VALUES ($new_forum, '" . addslashes($topic_title) . "', " . $row2['poster_id'] . ", " . $row2['post_time'] . ", 0, $post_replies, " . TOPIC_UNLOCKED . ", 0, " . POST_NORMAL . ", $first_post, $last_post, 0)";
@@ -1501,58 +1374,65 @@ switch($mode_id)
 
 				// Check for posts with invalid forum
 				echo("<p class=\"gen\"><b>" . $lang['Checking_invalid_forums_posts'] . "</b></p>\n");
-				$sql = "SELECT p.post_id, p.forum_id AS p_forum_id, fp.forum_name AS p_forum_name, t.forum_id AS t_forum_id, ft.forum_name AS t_forum_name
-					FROM " . POSTS_TABLE . " p
-						LEFT JOIN " . TOPICS_TABLE . " t ON p.topic_id = t.topic_id
-						LEFT JOIN " . FORUMS_TABLE . " fp ON p.forum_id = fp.forum_id
-						LEFT JOIN " . FORUMS_TABLE . " ft ON t.forum_id = ft.forum_id
-					WHERE p.forum_id <> t.forum_id";
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get post and topic data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					if (!$list_open)
-					{
+
+				$rows = dibi::select(['p.post_id'])
+					->select('p.forum_id')
+					->as('p_forum_id')
+					->select('fp.forum_name')
+					->as('p_forum_name')
+					->select('t.forum_id')
+					->as('t_forum_id')
+					->select('ft.forum_name')
+					->as('t_forum_name')
+					->from(POSTS_TABLE)
+					->as('p')
+					->leftJoin(TOPICS_TABLE)
+					->as('t')
+					->on('p.topic_id = t.topic_id')
+					->leftJoin('FORUMS_TABLE')
+					->as('fp')
+					->on('p.forum_id = fp.forum_id')
+					->leftJoin(FORUMS_TABLE)
+					->as('ft')
+					->on('t.forum_id = ft.forum_id')
+					->where('p.forum_id <> t.forum_id')
+					->fetchAll();
+
+				foreach ($rows as $row) {
+					if (!$list_open){
 						echo("<p class=\"gen\">" . $lang['Invalid_forum_posts_found'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
 						$list_open = TRUE;
 					}
-					echo("<li>" . sprintf($lang['Setting_post_forum'], $row['post_id'], htmlspecialchars($row['p_forum_name']), $row['p_forum_id'], htmlspecialchars($row['t_forum_name']), $row['t_forum_id']) . "</li>\n");
+					echo("<li>" . sprintf($lang['Setting_post_forum'], $row->post_id, htmlspecialchars($row->p_forum_name), $row->p_forum_id, htmlspecialchars($row->t_forum_name), $row->t_forum_id) . "</li>\n");
 
-					dibi::update(POSTS_TABLE, ['forum_id' => $row['t_forum_id']])
+					dibi::update(POSTS_TABLE, ['forum_id' => $row->t_forum_id])
 						->where('post_id = %i', $row['post_id'])
 						->execute();
 				}
-				$db->sql_freeresult($result);
-				if ($list_open)
-				{
+
+				if ($list_open) {
 					echo("</ul></font>\n");
-					$list_open = FALSE;
-					$update_post_data = TRUE;
-				}
-				else
-				{
+					$list_open        = false;
+					$update_post_data = true;
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
 				// Check for texts without a post
 				echo("<p class=\"gen\"><b>" . $lang['Checking_texts_wo_post'] . "</b></p>\n");
-				$sql = "SELECT pt.post_id, pt.bbcode_uid, pt.post_text
-					FROM " . POSTS_TEXT_TABLE . " pt
-						LEFT JOIN " . POSTS_TABLE . " p ON pt.post_id = p.post_id
-					WHERE p.post_id IS NULL";
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get post and text data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					if (!$list_open)
-					{
+
+				$rows = dibi::select(['pt.post_id', 'pt.bbcode_uid', 'pt.post_text'])
+					->from(POSTS_TEXT_TABLE)
+					->as('pt')
+					->leftJoin(POSTS_TABLE)
+					->as('p')
+					->on('pt.post_id = p.post_id')
+					->where('p.post_id IS NULL')
+					->fetchAll();
+
+				foreach ($rows as $row) {
+					if (!$list_open) {
 						echo("<p class=\"gen\">" . $lang['Invalid_texts_found'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
 						$list_open = TRUE;
@@ -1561,10 +1441,11 @@ switch($mode_id)
 						$enable_html = $board_config['allow_html'];
 						$enable_smilies = $board_config['allow_smilies'];
 					}
-					$enable_bbcode = ($board_config['allow_bbcode'] && $row['bbcode_uid'] != '') ? 1 : 0;
-					echo("<li>" . sprintf($lang['Recreating_post'], $row['post_id'], $lang['New_topic_name'], $lang['New_forum_name'], substr(htmlspecialchars(strip_tags($row['post_text'])), 0, 30)) . "</li>\n");
+					$enable_bbcode = ($board_config['allow_bbcode'] && $row->bbcode_uid != '') ? 1 : 0;
+					echo("<li>" . sprintf($lang['Recreating_post'], $row->post_id, $lang['New_topic_name'], $lang['New_forum_name'], substr(htmlspecialchars(strip_tags($row->post_text)), 0, 30)) . "</li>\n");
 					$sql2 = "INSERT INTO " . POSTS_TABLE . ' (post_id, topic_id, forum_id, poster_id, post_time, poster_ip, post_username, enable_bbcode, enable_html, enable_smilies, enable_sig, post_edit_time, post_edit_count)
-						VALUES (' . $row['post_id'] . ", $new_topic, $new_forum, " . ANONYMOUS . ', ' . time() . ', \'\', \'' . $lang['New_poster_name'] . "', $enable_bbcode, $enable_html, $enable_smilies, 0, NULL, 0)";
+						VALUES (' . $row->post_id . ", $new_topic, $new_forum, " . ANONYMOUS . ', ' . time() . ', 
+					\'\', \'' . $lang['New_poster_name'] . "', $enable_bbcode, $enable_html, $enable_smilies, 0, NULL, 0)";
 					$result2 = $db->sql_query($sql2);
 					if ( !$result2 )
 					{
@@ -1663,23 +1544,21 @@ switch($mode_id)
 
 				$result_array = array_merge($result_array1, $result_array2);
 
-				if ( count($result_array) )
-				{
+				if (count($result_array)) {
 					echo("<p class=\"gen\">" . $lang['Removing_invalid_prune_settings'] . "</p>\n");
 					$record_list = implode(',', $result_array);
-					$db_updated = TRUE;
+					$db_updated  = true;
 
-					$affected_rows= dibi::delete(PRUNE_TABLE)
+					$affected_rows = dibi::delete(PRUNE_TABLE)
 						->where('forum_id IN %in', $result_array)
 						->execute(dibi::AFFECTED_ROWS);
 
-					if ( $affected_rows == 1 )
-					{
-						echo("<p class=\"gen\">" . sprintf($lang['Updating_invalid_moved_topic'], $affected_rows) . "</p>\n");
-					}
-					elseif ( $affected_rows > 1 )
-					{
-						echo("<p class=\"gen\">" . sprintf($lang['Updating_invalid_moved_topics'], $affected_rows) . "</p>\n");
+					if ($affected_rows == 1) {
+						echo("<p class=\"gen\">" . sprintf($lang['Updating_invalid_moved_topic'],
+								$affected_rows) . "</p>\n");
+					} elseif ($affected_rows > 1) {
+						echo("<p class=\"gen\">" . sprintf($lang['Updating_invalid_moved_topics'],
+								$affected_rows) . "</p>\n");
 					}
 				}
 				// Forums with pruning enabled and no prune settings
@@ -1693,159 +1572,119 @@ switch($mode_id)
 					->where('f.prune_enable = 1')
 					->fetchPairs(null, 'forum_id');
 
-				if ( count($result_array) )
-				{
+				if (count($result_array)) {
 					$record_list = implode(',', $result_array);
 
 					$affected_rows = dibi::update(FORUMS_TABLE, ['prune_enable' => 0])
 						->where('forum_id IN %in', $result_array)
 						->execute(dibi::AFFECTED_ROWS);
 
-					if ( $affected_rows == 1 )
-					{
+					if ($affected_rows == 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Updating_invalid_prune_setting'], $affected_rows) . "</p>\n");
-					}
-					elseif ( $affected_rows > 1 )
-					{
+					} elseif ($affected_rows > 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Updating_invalid_moved_settings'], $affected_rows) . "</p>\n");
 					}
-				}
-				elseif ( !$db_updated )
-				{
+				} elseif (!$db_updated) {
 					echo($lang['Nothing_to_do']);
 				}
 
 				// Checking for invalid topic-watch data
 				echo("<p class=\"gen\"><b>" . $lang['Checking_topic_watch_data'] . "</b></p>\n");
-				$sql = "SELECT tw.user_id
-					FROM " . TOPICS_WATCH_TABLE . " tw
-						LEFT JOIN " . USERS_TABLE . " u ON tw.user_id = u.user_id
-					WHERE u.user_id IS NULL
-					GROUP BY tw.user_id";
-				$user_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get topic-watch and user data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$user_array[] = $row['user_id'];
-				}
-				$db->sql_freeresult($result);
-				$sql = "SELECT tw.topic_id
-					FROM " . TOPICS_WATCH_TABLE . " tw
-						LEFT JOIN " . TOPICS_TABLE . " t ON tw.topic_id = t.topic_id
-					WHERE t.topic_id IS NULL
-					GROUP BY tw.topic_id";
-				$topic_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get topic-watch and topic data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$topic_array[] = $row['topic_id'];
-				}
-				$db->sql_freeresult($result);
-				if ( count($user_array) || count($topic_array) )
-				{
-					$sql_query = '';
-					if ( count($user_array) )
-					{
-						$sql_query = 'user_id IN (' . implode(',', $user_array) . ') ';
+
+				$user_array = dibi::select('tw.user_id')
+					->from(TOPICS_WATCH_TABLE)
+					->as('tw')
+					->leftJoin(USERS_TABLE)
+					->as('u')
+					->on('tw.user_id = u.user_id')
+					->where('u.user_id IS NULL')
+					->groupBy('tw.user_id')
+					->fetchPairs(null, 'user_id');
+
+				$topic_array = dibi::select('tw.topic_id')
+					->from(TOPICS_WATCH_TABLE)
+					->as('tw')
+					->leftJoin(TOPICS_TABLE)
+					->as('t')
+					->on('tw.topic_id = t.topic_id')
+					->where('t.topic_id IS NULL')
+					->groupBy('tw.topic_id')
+					->fetchPairs(null, 'topic_id');
+
+				$countTopics = count($topic_array);
+				$countUsers = count($user_array);
+
+				if ($countUsers || $countTopics) {
+					$affected_rows = 0;
+
+					if ($countUsers) {
+						$affected_rows += dibi::delete(TOPICS_WATCH_TABLE)
+							->where('user_id IN %in', $user_array)
+							->execute(dibi::AFFECTED_ROWS);
 					}
-					if ( count($topic_array) )
-					{
-						$sql_query .= (($sql_query == '') ? '' : ' OR ') . 'topic_id IN (' . implode(',', $topic_array) . ') ';
+
+					if ($countTopics) {
+						$affected_rows += dibi::delete(TOPICS_WATCH_TABLE)
+							->where('topic_id IN %in', $topic_array)
+							->execute(dibi::AFFECTED_ROWS);
 					}
-					$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . "
-						WHERE $sql_query";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update topic-watch data!", __LINE__, __FILE__, $sql);
-					}
-					$affected_rows = $db->sql_affectedrows();
-					if ( $affected_rows == 1 )
-					{
+
+					if ($affected_rows == 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
-					}
-					elseif ( $affected_rows > 1 )
-					{
+					} elseif ($affected_rows > 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
 					}
-				}
-				else
-				{
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
 				// Checking for invalid auth-access data
 				echo("<p class=\"gen\"><b>" . $lang['Checking_auth_access_data'] . "</b></p>\n");
-				$sql = "SELECT aa.group_id
-					FROM " . AUTH_ACCESS_TABLE . " aa
-						LEFT JOIN " . GROUPS_TABLE . " g ON aa.group_id = g.group_id
-					WHERE g.group_id IS NULL
-					GROUP BY aa.group_id";
-				$group_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get auth-access and group data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$group_array[] = $row['group_id'];
-				}
-				$db->sql_freeresult($result);
-				$sql = "SELECT aa.forum_id
-					FROM " . AUTH_ACCESS_TABLE . " aa
-						LEFT JOIN " . FORUMS_TABLE . " f ON aa.forum_id = f.forum_id
-					WHERE f.forum_id IS NULL
-					GROUP BY aa.forum_id";
-				$forum_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get auth-access and forum data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$forum_array[] = $row['forum_id'];
-				}
-				$db->sql_freeresult($result);
-				if ( count($group_array) || count($forum_array) )
-				{
-					$sql_query = '';
-					if ( count($group_array) )
-					{
-						$sql_query = 'group_id IN (' . implode(',', $group_array) . ') ';
+
+				$group_array = dibi::select('aa.group_id')
+					->from(AUTH_ACCESS_TABLE)
+					->as('aa')
+					->leftJoin(GROUPS_TABLE)
+					->as('g')
+					->on('aa.group_id = g.group_id')
+					->where('g.group_id IS NULL')
+					->groupBy('aa.group_id')
+					->fetchPairs(null, 'group_id');
+
+				$forum_array = dibi::select('aa.forum_id')
+					->from(AUTH_ACCESS_TABLE)
+					->as('aa')
+					->leftJoin(FORUMS_TABLE)
+					->as('f')
+					->on('aa.forum_id = f.forum_id')
+					->where('f.forum_id IS NULL')
+					->groupBy('aa.forum_id')
+					->fetchPairs(null, 'forum_id');
+
+				$countGroups = count($group_array);
+				$countForums = count($forum_array);
+
+				if ($countGroups || $countForums) {
+					$affected_rows = 0;
+
+					if ($countGroups) {
+						$affected_rows += dibi::delete(AUTH_ACCESS_TABLE)
+							->where('group_id IN %in', $group_array)
+							->execute(dibi::AFFECTED_ROWS);
 					}
-					if ( count($forum_array) )
-					{
-						$sql_query .= (($sql_query == '') ? '' : ' OR ') . 'forum_id IN (' . implode(',', $forum_array) . ') ';
+
+					if ($countForums) {
+						$affected_rows += dibi::delete(AUTH_ACCESS_TABLE)
+							->where('forum_id IN %in', $forum_array)
+							->execute(dibi::AFFECTED_ROWS);
 					}
-					$sql = "DELETE FROM " . AUTH_ACCESS_TABLE . "
-						WHERE $sql_query";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update auth-access data!", __LINE__, __FILE__, $sql);
-					}
-					$affected_rows = $db->sql_affectedrows();
-					if ( $affected_rows == 1 )
-					{
+
+					if ($affected_rows == 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
-					}
-					elseif ( $affected_rows > 1 )
-					{
+					} elseif ($affected_rows > 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
 					}
-				}
-				else
-				{
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
@@ -1869,37 +1708,36 @@ switch($mode_id)
 				
 				// Check for votes without a topic
 				echo("<p class=\"gen\"><b>" . $lang['Checking_votes_wo_topic'] . "</b></p>\n");
-				$sql = "SELECT v.vote_id, v.vote_text, v.vote_start, v.vote_length
-					FROM " . VOTE_DESC_TABLE . " v
-						LEFT JOIN " . TOPICS_TABLE . " t ON v.topic_id = t.topic_id
-					WHERE t.topic_id IS NULL";
+
+				$rows = dibi::select(['v.vote_id', 'v.vote_text', 'v.vote_start', 'v.vote_length'])
+					->from(VOTE_DESC_TABLE)
+					->as('v')
+					->leftJoin(TOPICS_TABLE)
+					->as('t')
+					->on('v.topic_id = t.topic_id')
+					->where('t.topic_id IS NULL')
+					->fetchAll();
+
 				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get vote and topic data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					if (!$list_open)
-					{
+
+				foreach ($rows as $row) {
+					if (!$list_open) {
 						echo("<p class=\"gen\">" . $lang['Votes_wo_topic_found'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
 						$list_open = TRUE;
 					}
-					$start_time = create_date($board_config['default_dateformat'], $row['vote_start'], $board_config['board_timezone']);
-					$end_time = ( $row['vote_length'] == 0 ) ? '-' : create_date($board_config['default_dateformat'], $row['vote_start'] + $row['vote_length'], $board_config['board_timezone']);
-					echo("<li>" . sprintf($lang['Invalid_vote'], htmlspecialchars($row['vote_text']), $row['vote_id'], $start_time, $end_time) . "</li>\n");
-					$result_array[] = $row['vote_id'];
+					$start_time = create_date($board_config['default_dateformat'], $row->vote_start,
+					$board_config['board_timezone']);
+					$end_time = ( $row->vote_length == 0 ) ? '-' : create_date($board_config['default_dateformat'], $row->vote_start + $row->vote_length, $board_config['board_timezone']);
+					echo("<li>" . sprintf($lang['Invalid_vote'], htmlspecialchars($row->vote_text), $row->vote_id, $start_time, $end_time) . "</li>\n");
+					$result_array[] = $row->vote_id;
 				}
-				$db->sql_freeresult($result);
-				if ($list_open)
-				{
+
+				if ($list_open) {
 					echo("</ul></font>\n");
-					$list_open = FALSE;
+					$list_open = false;
 				}
-				if ( count($result_array) )
-				{
+				if (count($result_array)) {
 					$record_list = implode(',', $result_array);
 					echo("<p class=\"gen\">" . $lang['Deleting_Votes'] . " </p>\n");
 
@@ -1914,45 +1752,43 @@ switch($mode_id)
 					dibi::delete(VOTE_USERS_TABLE)
 						->where('vote_id IN %in', $result_array)
 						->execute();
-				}
-				else
-				{
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
 				// Check for votes without results
 				echo("<p class=\"gen\"><b>" . $lang['Checking_votes_wo_result'] . "</b></p>\n");
-				$sql = "SELECT v.vote_id, v.vote_text, v.vote_start, v.vote_length
-					FROM " . VOTE_DESC_TABLE . " v
-						LEFT JOIN " . VOTE_RESULTS_TABLE . " vr ON v.vote_id = vr.vote_id
-					WHERE vr.vote_id IS NULL";
-				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get vote and result data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					if (!$list_open)
-					{
+
+				$rows = dibi::select(['v.vote_id', 'v.vote_text', 'v.vote_start', 'v.vote_length'])
+					->from(VOTE_DESC_TABLE)
+					->as('v')
+					->leftJoin(VOTE_RESULTS_TABLE)
+					->as('vr')
+					->on('v.vote_id = vr.vote_id')
+					->where('vr.vote_id IS NULL')
+					->fetchAll();
+
+				$result_array = [];
+
+				foreach ($rows as $row) {
+					if (!$list_open) {
 						echo("<p class=\"gen\">" . $lang['Votes_wo_result_found'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
 						$list_open = TRUE;
 					}
-					$start_time = create_date($board_config['default_dateformat'], $row['vote_start'], $board_config['board_timezone']);
-					$end_time = ( $row['vote_length'] == 0 ) ? '-' : create_date($board_config['default_dateformat'], $row['vote_start'] + $row['vote_length'], $board_config['board_timezone']);
-					echo("<li>" . sprintf($lang['Invalid_vote'], htmlspecialchars($row['vote_text']), $row['vote_id'], $start_time, $end_time) . "</li>\n");
-					$result_array[] = $row['vote_id'];
+					$start_time = create_date($board_config['default_dateformat'], $row->vote_start,
+					$board_config['board_timezone']);
+					$end_time = ( $row->vote_length == 0 ) ? '-' : create_date($board_config['default_dateformat'], $row->vote_start->vote_length, $board_config['board_timezone']);
+					echo("<li>" . sprintf($lang['Invalid_vote'], htmlspecialchars($row->vote_text), $row->vote_id, $start_time, $end_time) . "</li>\n");
+					$result_array[] = $row->vote_id;
 				}
-				$db->sql_freeresult($result);
+
 				if ($list_open)
 				{
 					echo("</ul></font>\n");
 					$list_open = FALSE;
 				}
-				if ( count($result_array) )
-				{
+				if (count($result_array)) {
 					$record_list = implode(',', $result_array);
 
 					dibi::delete(VOTE_DESC_TABLE)
@@ -1968,33 +1804,25 @@ switch($mode_id)
 						->execute();
 
 					echo("<p class=\"gen\">" . $lang['Deleting_Votes'] . " </p>\n");
-				}
-				else
-				{
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
 				// Check vote data in topics
 				echo("<p class=\"gen\"><b>" . $lang['Checking_topics_vote_data'] . "</b></p>\n");
 				$db_updated = FALSE;
-				$sql = "SELECT t.topic_id
-					FROM " . TOPICS_TABLE . " t
-						LEFT JOIN " . VOTE_DESC_TABLE . " v ON t.topic_id = v.topic_id
-					WHERE v.vote_id IS NULL AND
-						t.topic_vote = 1";
-				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get topic and vote data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$result_array[] = $row['topic_id'];
-				}
-				$db->sql_freeresult($result);
-				if ( count($result_array) )
-				{
+
+				$result_array = dibi::select('t.topic_id')
+					->from(TOPICS_TABLE)
+					->as('t')
+					->leftJoin(VOTE_DESC_TABLE)
+					->as('v')
+					->on('t.topic_id = v.topic_id')
+					->where('v.vote_id IS NULL')
+					->where('t.topic_vote = %i', 1)
+					->fetchPairs(null, 'topic_id');
+
+				if (count($result_array)) {
 					$record_list = implode(',', $result_array);
 					echo("<p class=\"gen\">" . $lang['Updating_topics_wo_vote'] . "</p>\n");
 
@@ -2002,46 +1830,26 @@ switch($mode_id)
 						->where('topic_id IN %in', $result_array)
 						->execute(dibi::AFFECTED_ROWS);
 
-					if ( $affected_rows == 1 )
-					{
-						$db_updated = TRUE;
+					if ($affected_rows == 1) {
+						$db_updated = true;
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
-					}
-					elseif ( $affected_rows > 1 )
-					{
-						$db_updated = TRUE;
+					} elseif ($affected_rows > 1) {
+						$db_updated = true;
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
 					}
 				}
+
 				// Check for topics with vote not marked as vote
-				if (check_mysql_version())
-				{
-					$sql = "SELECT t.topic_id
-						FROM " . TOPICS_TABLE . " t
-							INNER JOIN " . VOTE_DESC_TABLE . " v ON t.topic_id = v.topic_id
-						WHERE t.topic_vote = 0";
-				}
-				else
-				{
-					$sql = "SELECT t.topic_id
-						FROM " . TOPICS_TABLE . " t, " .
-							VOTE_DESC_TABLE . " v
-						WHERE t.topic_id = v.topic_id
-							AND t.topic_vote = 0";
-				}
-				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get topic and vote data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$result_array[] = $row['topic_id'];
-				}
-				$db->sql_freeresult($result);
-				if ( count($result_array) )
-				{
+				$result_array = dibi::select('t.topic_id')
+					->from(TOPICS_TABLE)
+					->as('t')
+					->innerJoin(VOTE_DESC_TABLE)
+					->as('v')
+					->on('t.topic_id = v.topic_id')
+					->where('t.topic_vote = 0')
+					->fetchPairs(null, 'topic_id');
+
+				if (count($result_array)) {
 					$record_list = implode(',', $result_array);
 					echo("<p class=\"gen\">" . $lang['Updating_topics_w_vote'] . "</p>\n");
 
@@ -2049,123 +1857,98 @@ switch($mode_id)
 						->where('topic_id IN %in', $result_array)
 						->execute(dibi::AFFECTED_ROWS);
 
-					if ( $affected_rows == 1 )
-					{
-						$db_updated = TRUE;
+					if ($affected_rows == 1) {
+						$db_updated = true;
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
-					}
-					elseif ( $affected_rows > 1 )
-					{
-						$db_updated = TRUE;
+					} elseif ($affected_rows > 1) {
+						$db_updated = true;
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
 					}
 				}
-				if ( !$db_updated )
-				{
+				if (!$db_updated) {
 					echo($lang['Nothing_to_do']);
 				}
 
 				// Check for vote results without a vote
 				echo("<p class=\"gen\"><b>" . $lang['Checking_results_wo_vote'] . "</b></p>\n");
-				$sql = "SELECT vr.vote_id, vr.vote_option_id, vr.vote_option_text, vr.vote_result
-					FROM " . VOTE_RESULTS_TABLE . " vr
-						LEFT JOIN " . VOTE_DESC_TABLE . " v ON vr.vote_id = v.vote_id
-					WHERE v.vote_id IS NULL";
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get vote data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					if (!$list_open)
-					{
+				$rows = dibi::select(['vr.vote_id', 'vr.vote_option_id', 'vr.vote_option_text', 'vr.vote_result'])
+					->from(VOTE_RESULTS_TABLE)
+					->as('vr')
+					->leftJoin(VOTE_DESC_TABLE)
+					->as('v')
+					->on('vr.vote_id = v.vote_id')
+					->where('v.vote_id IS NULL')
+					->fetchAll();
+
+				foreach ($rows as $row) {
+					if (!$list_open) {
 						echo("<p class=\"gen\">" . $lang['Results_wo_vote_found'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
 						$list_open = TRUE;
 					}
-					echo("<li>" . sprintf($lang['Invalid_result'], htmlspecialchars($row['vote_option_text']), $row['vote_result']) . "</li>\n");
+
+					echo("<li>" . sprintf($lang['Invalid_result'], htmlspecialchars($row->vote_option_text), $row->vote_result) . "</li>\n");
 
 					dibi::delete(VOTE_RESULTS_TABLE)
-						->where('vote_id = %i', $row['vote_id'])
-						->where('vote_option_id = %i', $row['vote_option_id'])
+						->where('vote_id = %i', $row->vote_id)
+						->where('vote_option_id = %i', $row->vote_option_id)
 						->execute();
 				}
-				$db->sql_freeresult($result);
-				if ($list_open)
-				{
+
+				if ($list_open) {
 					echo("</ul></font>\n");
-					$list_open = FALSE;
-				}
-				else
-				{
+					$list_open = false;
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
 				// Checking for invalid voters data
 				echo("<p class=\"gen\"><b>" . $lang['Checking_voters_data'] . "</b></p>\n");
-				$sql = "SELECT vu.vote_user_id
-					FROM " . VOTE_USERS_TABLE . " vu
-						LEFT JOIN " . USERS_TABLE . " u ON vu.vote_user_id = u.user_id
-					WHERE u.user_id IS NULL
-					GROUP BY vu.vote_user_id";
-				$user_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get voters and user data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$user_array[] = $row['vote_user_id'];
-				}
-				$db->sql_freeresult($result);
-				$sql = "SELECT vu.vote_id
-					FROM " . VOTE_USERS_TABLE . " vu
-						LEFT JOIN " . VOTE_DESC_TABLE . " v ON vu.vote_id = v.vote_id
-					WHERE v.vote_id IS NULL
-					GROUP BY vu.vote_id";
-				$vote_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get voters and vote data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$vote_array[] = $row['vote_id'];
-				}
-				$db->sql_freeresult($result);
-				if ( count($user_array) || count($vote_array) )
-				{
-					$sql_query = '';
-					if ( count($user_array) )
-					{
-						$sql_query = 'vote_user_id IN (' . implode(',', $user_array) . ') ';
+
+				$user_array = dibi::select('vu.vote_user_id')
+					->from(VOTE_USERS_TABLE)
+					->as('vu')
+					->leftJoin(USERS_TABLE)
+					->as('u')
+					->on('vu.vote_user_id = u.user_id')
+					->where('u.user_id IS NULL')
+					->groupBy('vu.vote_user_id')
+					->fetchPairs(null, 'vote_user_id');
+
+				$vote_array = dibi::select('vu.vote_id')
+					->from(VOTE_USERS_TABLE)
+					->as('vu')
+					->leftJoin(VOTE_DESC_TABLE)
+					->as('v')
+					->on('vu.vote_id = v.vote_id')
+					->where('v.vote_id IS NULL')
+					->groupBy('vu.vote_id')
+					->fetchPairs(null, 'vote_id');
+
+				$countUsers = count($user_array);
+				$countVotes = count($vote_array);
+
+				if ( $countUsers || $countVotes ) {
+					$affected_rows = 0;
+
+					if ($countUsers) {
+						$affected_rows += dibi::delete(VOTE_USERS_TABLE)
+							->where('vote_user_id IN %in', $user_array)
+							->execute(dibi::AFFECTED_ROWS);
 					}
-					if ( count($vote_array) )
-					{
-						$sql_query .= (($sql_query == '') ? '' : ' OR ') . 'vote_id IN (' . implode(',', $vote_array) . ') ';
+
+					if ($countVotes) {
+						$affected_rows += dibi::delete(VOTE_USERS_TABLE)
+							->where('vote_id IN %in', $vote_array)
+							->execute(dibi::AFFECTED_ROWS);
 					}
-					$sql = "DELETE FROM " . VOTE_USERS_TABLE . "
-						WHERE $sql_query";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update voters data!", __LINE__, __FILE__, $sql);
-					}
-					$affected_rows = $db->sql_affectedrows();
-					if ( $affected_rows == 1 )
-					{
+
+					if ($affected_rows == 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
-					}
-					elseif ( $affected_rows > 1 )
-					{
+					} elseif ($affected_rows > 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
 					}
-				}
-				else
-				{
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
@@ -2177,30 +1960,42 @@ switch($mode_id)
 
 				// Check for pms without a text
 				echo("<p class=\"gen\"><b>" . $lang['Checking_pms_wo_text'] . "</b></p>\n");
-				$sql = "SELECT pm.privmsgs_id, pm.privmsgs_subject, uf.user_id AS from_user_id, uf.username AS from_username, ut.user_id AS to_user_id, ut.username AS to_username
-					FROM " . PRIVMSGS_TABLE . " pm
-						LEFT JOIN " . PRIVMSGS_TEXT_TABLE . " pmt ON pm.privmsgs_id = pmt.privmsgs_text_id
-						LEFT JOIN " . USERS_TABLE . " uf ON pm.privmsgs_from_userid = uf.user_id
-						LEFT JOIN " . USERS_TABLE . " ut ON pm.privmsgs_to_userid = ut.user_id
-					WHERE pmt.privmsgs_text_id IS NULL";
+
+				$rows = dibi::select(['pm.privmsgs_id', 'pm.privmsgs_subject'])
+					->select('uf.user_id')
+					->as('from_user_id')
+					->select('uf.username')
+					->as('from_username')
+					->select('ut.user_id')
+					->as('to_user_id')
+					->select('ut.username')
+					->as('to_username')
+					->from(PRIVMSGS_TABLE)
+					->as('pm')
+					->leftJoin(PRIVMSGS_TEXT_TABLE)
+					->as('pmt')
+					->on('pm.privmsgs_id = pmt.privmsgs_text_id')
+					->leftJoin(USERS_TABLE)
+					->as('uf')
+					->on('pm.privmsgs_from_userid = uf.user_id')
+					->leftJoin(USERS_TABLE)
+					->as('ut')
+					->on('pm.privmsgs_to_userid = ut.user_id')
+					->where('pmt.privmsgs_text_id IS NULL')
+					->fetchAll();
+
 				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get private message data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					if (!$list_open)
-					{
+
+				foreach ($rows as $row) {
+					if (!$list_open) {
 						echo("<p class=\"gen\">" . $lang['Pms_wo_text_found'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
 						$list_open = TRUE;
 					}
-					echo("<li>" . sprintf($lang['Deleting_pn_wo_text'], $row['privmsgs_id'], htmlspecialchars($row['privmsgs_subject']), htmlspecialchars($row['from_username']), $row['from_user_id'], htmlspecialchars($row['to_username']), $row['to_user_id']) . "</li>\n");
-					$result_array[] = $row['privmsgs_id'];
+					echo("<li>" . sprintf($lang['Deleting_pn_wo_text'], $row->privmsgs_id, htmlspecialchars($row['privmsgs_subject']), htmlspecialchars($row->from_username), $row->from_user_id, htmlspecialchars($row->to_username), $row->to_user_id) . "</li>\n");
+					$result_array[] = $row->privmsgs_id;
 				}
-				$db->sql_freeresult($result);
+
 				if ($list_open)
 				{
 					echo("</ul></font>\n");
@@ -2222,23 +2017,17 @@ switch($mode_id)
 
 				// Check for texts without a private message
 				echo("<p class=\"gen\"><b>" . $lang['Checking_texts_wo_pm'] . "</b></p>\n");
-				$sql = "SELECT pmt.privmsgs_text_id
-					FROM " . PRIVMSGS_TEXT_TABLE . " pmt
-						LEFT JOIN " . PRIVMSGS_TABLE . " pm ON pmt.privmsgs_text_id = pm.privmsgs_id
-					WHERE pm.privmsgs_id IS NULL";
-				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get private messages and text data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$result_array[] = $row['privmsgs_text_id'];
-				}
-				$db->sql_freeresult($result);
-				if ( count($result_array) )
-				{
+
+				$result_array = dibi::select('pmt.privmsgs_text_id')
+					->from(PRIVMSGS_TEXT_TABLE)
+					->as('pmt')
+					->leftJoin(PRIVMSGS_TABLE)
+					->as('pm')
+					->on('pmt.privmsgs_text_id = pm.privmsgs_id')
+					->where('pm.privmsgs_id IS NULL')
+					->fetchPairs(null, 'privmsgs_text_id');
+
+				if (count($result_array)) {
 					echo("<p class=\"gen\">" . $lang['Deleting_pm_texts'] . "</p>\n");
 					$record_list = implode(',', $result_array);
 
@@ -2246,39 +2035,28 @@ switch($mode_id)
 						->where('privmsgs_text_id IN %in', $result_array)
 						->execute(dibi::AFFECTED_ROWS);
 
-					if ( $affected_rows == 1 )
-					{
+					if ($affected_rows == 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
-					}
-					elseif ( $affected_rows > 1 )
-					{
+					} elseif ($affected_rows > 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
 					}
-				}
-				else
-				{
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
 				// Check pms for invaild senders
 				echo("<p class=\"gen\"><b>" . $lang['Checking_invalid_pm_senders'] . "</b></p>\n");
-				$sql = "SELECT pm.privmsgs_id
-					FROM " . PRIVMSGS_TABLE . " pm
-						LEFT JOIN " . USERS_TABLE . " u ON pm.privmsgs_from_userid = u.user_id
-					WHERE u.user_id IS NULL";
-				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get private message and user data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$result_array[] = $row['privmsgs_id'];
-				}
-				$db->sql_freeresult($result);
-				if ( count($result_array) )
-				{
+
+				$result_array = dibi::select('pm.privmsgs_id')
+					->from(PRIVMSGS_TABLE)
+					->as('pm')
+					->leftJoin(USERS_TABLE)
+					->as('u')
+					->on('pm.privmsgs_from_userid = u.user_id')
+					->where('u.user_id IS NULL')
+					->fetchPairs(null, 'privmsgs_id');
+
+				if (count($result_array)) {
 					$record_list = implode(',', $result_array);
 					echo("<p class=\"gen\">" . $lang['Invalid_pm_senders_found'] . ": $record_list</p>\n");
 					echo("<p class=\"gen\">" . $lang['Updating_pms'] . "</p>\n");
@@ -2286,31 +2064,23 @@ switch($mode_id)
 					dibi::update(PRIVMSGS_TABLE, ['privmsgs_from_userid' => DELETED])
 						->where('privmsgs_id IN %in', $result_array)
 						->execute();
-				}
-				else
-				{
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
 				// Check pms for invaild recipients
 				echo("<p class=\"gen\"><b>" . $lang['Checking_invalid_pm_recipients'] . "</b></p>\n");
-				$sql = "SELECT pm.privmsgs_id
-					FROM " . PRIVMSGS_TABLE . " pm
-						LEFT JOIN " . USERS_TABLE . " u ON pm.privmsgs_to_userid = u.user_id
-					WHERE u.user_id IS NULL";
-				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get private message and user data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$result_array[] = $row['privmsgs_id'];
-				}
-				$db->sql_freeresult($result);
-				if ( count($result_array) )
-				{
+
+				$result_array = dibi::select('pm.privmsgs_id')
+					->from(PRIVMSGS_TABLE)
+					->as('pm')
+					->leftJoin(USERS_TABLE)
+					->as('u')
+					->on('pm.privmsgs_to_userid = u.user_id')
+					->where('u.user_id IS NULL')
+					->fetchPairs(null, 'privmsgs_id');
+
+				if (count($result_array)) {
 					$record_list = implode(',', $result_array);
 					echo("<p class=\"gen\">" . $lang['Invalid_pm_recipients_found'] . ": $record_list</p>\n");
 					echo("<p class=\"gen\">" . $lang['Updating_pms'] . "</p>\n");
@@ -2318,9 +2088,7 @@ switch($mode_id)
 					dibi::update(PRIVMSGS_TABLE, ['privmsgs_to_userid' => DELETED])
 						->where('privmsgs_id IN %in', $result_array)
 						->execute();
-				}
-				else
-				{
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
@@ -2362,36 +2130,26 @@ switch($mode_id)
 
 				// Updating new pm counter
 				echo("<p class=\"gen\"><b>" . $lang['Synchronize_new_pm_data'] . "</b></p>\n");
-				if (check_mysql_version())
-				{
-					$sql = "SELECT u.user_id, u.username, u.user_new_privmsg, Count(pm.privmsgs_id) AS new_counter
-						FROM " . USERS_TABLE . " u
-							INNER JOIN " . PRIVMSGS_TABLE . " pm ON u.user_id = pm.privmsgs_to_userid
-						WHERE u.user_id <> " . ANONYMOUS . "
-							AND pm.privmsgs_type = " . PRIVMSGS_NEW_MAIL . "
-						GROUP BY u.user_id, u.username, u.user_new_privmsg";
-				}
-				else
-				{
-					$sql = "SELECT u.user_id, u.username, u.user_new_privmsg, Count(pm.privmsgs_id) AS new_counter
-						FROM " . USERS_TABLE . " u, " .
-							PRIVMSGS_TABLE . " pm 
-						WHERE u.user_id = pm.privmsgs_to_userid
-							AND u.user_id <> " . ANONYMOUS . "
-							AND pm.privmsgs_type = " . PRIVMSGS_NEW_MAIL . "
-						GROUP BY u.user_id, u.username, u.user_new_privmsg";
-				}
-				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get user and private message data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
+
+				$rows = dibi::select(['u.user_id', 'u.username', 'u.user_new_privmsg'])
+					->select('COUNT(pm.privmsgs_id)')
+					->as('new_counter')
+					->from(USERS_TABLE)
+					->as('u')
+					->innerJoin(PRIVMSGS_TABLE)
+					->as('pm')
+					->on('u.user_id = pm.privmsgs_to_userid')
+					->where('u.user_id <> %i', ANONYMOUS)
+					->where('pm.privmsgs_type = %i', PRIVMSGS_NEW_MAIL)
+					->groupBy('u.user_id')
+					->groupBy('u.username')
+					->groupBy('u.user_new_privmsg')
+					->fetchAll();
+
+				foreach ($rows as $row) {
 					$result_array[] = $row['user_id'];
-					if ($row['new_counter'] != $row['user_new_privmsg'] )
-					{
+
+					if ($row->new_counter !== $row->user_new_privmsg ) {
 						if (!$list_open)
 						{
 							echo("<p class=\"gen\">" . $lang['Synchronizing_users'] . ":</p>\n");
@@ -2407,132 +2165,102 @@ switch($mode_id)
 				}
 				$db->sql_freeresult($result);
 				// All other users
-				if ( count($result_array) )
-				{
-					$sql_string = 'user_id NOT IN (' . implode(',', $result_array) . ') AND';
+				if ( count($result_array) ) {
+					$rows = dibi::select(['user_id', 'username'])
+						->from(USERS_TABLE)
+						->where('user_id NOT IN %in', $result_array)
+						->where('user_new_privmsg <> %i', 0)
+						->fetchAll();
+				} else {
+					$rows = dibi::select(['user_id', 'username'])
+						->from(USERS_TABLE)
+						->where('user_new_privmsg <> %i', 0)
+						->fetchAll();
 				}
-				else
-				{
-					$sql_string = '';
-				}
-				$sql = "SELECT user_id, username
-					FROM " . USERS_TABLE . "
-					WHERE $sql_string user_new_privmsg <> 0";
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get user data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					if (!$list_open)
-					{
+
+				foreach ($rows as $row) {
+					if (!$list_open) {
 						echo("<p class=\"gen\">" . $lang['Synchronizing_users'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
-						$list_open = TRUE;
+						$list_open = true;
 					}
-					echo("<li>" . sprintf($lang['Synchronizing_user'], htmlspecialchars($row['username']), $row['user_id']) . "</li>\n");
+					echo("<li>" . sprintf($lang['Synchronizing_user'], htmlspecialchars($row->username), $row->user_id) . "</li>\n");
 
 					dibi::update(USERS_TABLE, ['user_new_privmsg' => 0])
-						->where('user_id = %i', 0)
+						->where('user_id = %i', $row->user_id)
 						->execute();
 				}
-				$db->sql_freeresult($result);
-				if ($list_open)
-				{
+
+				if ($list_open) {
 					echo("</ul></font>\n");
-					$list_open = FALSE;
-				}
-				else
-				{
+					$list_open = false;
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
 				// Updating unread pm counter
 				echo("<p class=\"gen\"><b>" . $lang['Synchronize_unread_pm_data'] . "</b></p>\n");
-				if (check_mysql_version())
-				{
-					$sql = "SELECT u.user_id, u.username, u.user_unread_privmsg, Count(pm.privmsgs_id) AS new_counter
-						FROM " . USERS_TABLE . " u
-							INNER JOIN " . PRIVMSGS_TABLE . " pm ON u.user_id = pm.privmsgs_to_userid
-						WHERE u.user_id <> " . ANONYMOUS . "
-							AND pm.privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . "
-						GROUP BY u.user_id, u.username, u.user_unread_privmsg";
-				}
-				else
-				{
-					$sql = "SELECT u.user_id, u.username, u.user_unread_privmsg, Count(pm.privmsgs_id) AS new_counter
-						FROM " . USERS_TABLE . " u, " .
-							PRIVMSGS_TABLE . " pm
-						WHERE u.user_id = pm.privmsgs_to_userid
-							AND u.user_id <> " . ANONYMOUS . "
-							AND pm.privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . "
-						GROUP BY u.user_id, u.username, u.user_unread_privmsg";
-				}
+
+				$rows = dibi::select(['u.user_id', 'u.username', 'u.user_unread_privmsg'])
+					->select('COUNT(pm.privmsgs_id)')
+					->as('new_counter')
+					->from(USERS_TABLE)
+					->as('u')
+					->innerJoin(PRIVMSGS_TABLE)
+					->as('pm')
+					->on('u.user_id = pm.privmsgs_to_userid')
+					->where('u.user_id <> %i', ANONYMOUS)
+					->fetchAll();
+
 				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get user and private message data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
+
+				foreach ($rows as $row) {
 					$result_array[] = $row['user_id'];
-					if ($row['new_counter'] != $row['user_unread_privmsg'] )
-					{
-						if (!$list_open)
-						{
+					if ($row->new_counter !== $row->user_unread_privmsg ) {
+						if (!$list_open) {
 							echo("<p class=\"gen\">" . $lang['Synchronizing_users'] . ":</p>\n");
 							echo("<font class=\"gen\"><ul>\n");
 							$list_open = TRUE;
 						}
-						echo("<li>" . sprintf($lang['Synchronizing_user'], htmlspecialchars($row['username']), $row['user_id']) . "</li>\n");
+						echo("<li>" . sprintf($lang['Synchronizing_user'], htmlspecialchars($row->username), $row->user_id) . "</li>\n");
 
-						dibi::update(USERS_TABLE, ['user_unread_privmsg' => $row['new_counter']])
-							->where('user_id = %i', $row['user_id'])
+						dibi::update(USERS_TABLE, ['user_unread_privmsg' => $row->new_counter])
+							->where('user_id = %i', $row->user_id)
 							->execute();
 					}
 				}
-				$db->sql_freeresult($result);
+
 				// All other users
-				if ( count($result_array) )
-				{
-					$sql_string = 'user_id NOT IN (' . implode(',', $result_array) . ') AND';
+				if (count($result_array)) {
+					$rows = dibi::select(['user_id', 'username'])
+						->from(USERS_TABLE)
+						->where('user_id NOT IN %in', $result_array)
+						->where('user_unread_privmsg <> %i', 0)
+						->fetchAll();
+				} else {
+					$rows = dibi::select(['user_id', 'username'])
+						->from(USERS_TABLE)
+						->where('user_unread_privmsg <> %i', 0)
+						->fetchAll();
 				}
-				else
-				{
-					$sql_string = '';
-				}
-				$sql = "SELECT user_id, username
-					FROM " . USERS_TABLE . "
-					WHERE $sql_string user_unread_privmsg <> 0";
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get user data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					if (!$list_open)
-					{
+
+				foreach ($rows as $row) {
+					if (!$list_open) {
 						echo("<p class=\"gen\">" . $lang['Synchronizing_users'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
 						$list_open = TRUE;
 					}
-					echo("<li>" . sprintf($lang['Synchronizing_user'], htmlspecialchars($row['username']), $row['user_id']) . "</li>\n");
+					echo("<li>" . sprintf($lang['Synchronizing_user'], htmlspecialchars($row->username), $row->user_id) . "</li>\n");
 
 					dibi::update(USERS_TABLE, ['user_unread_privmsg' => 0])
-						->where('user_id IN %in', $result_array)
+						->where('user_id = %i', $row->user_id)
 						->execute();
 				}
-				$db->sql_freeresult($result);
-				if ($list_open)
-				{
+
+				if ($list_open) {
 					echo("</ul></font>\n");
-					$list_open = FALSE;
-				}
-				else
-				{
+					$list_open = false;
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
@@ -2566,13 +2294,14 @@ switch($mode_id)
 					$default_config['server_port'] = (!empty($_SERVER['SERVER_PORT'])) ? $_SERVER['SERVER_PORT'] : $_ENV['SERVER_PORT'];
 				}
 				$default_config['script_path'] = str_replace('admin', '', dirname($_SERVER['PHP_SELF']));
-				$sql = "SELECT Min(topic_time) as startdate FROM " . TOPICS_TABLE;
-				if ( $result = $db->sql_query($sql) )
-				{
-					if ( ($row = $db->sql_fetchrow($result)) && $row['startdate'] > 0 )
-					{
-						$default_config['board_startdate'] = $row['startdate'];
-					}
+
+				$startDate = dibi::select('MIN(topic_time)')
+					->as('startdate')
+					->from(TOPICS_TABLE)
+					->fetch();
+
+				if ($startDate && $startDate->startdate) {
+					$default_config['board_startdate'] = $startDate->startdate;
 				}
 
 				// Start the job				
@@ -2596,22 +2325,14 @@ switch($mode_id)
 							$list_open = TRUE;
 						}
 						echo("<li><b>$key:</b> $value</li>\n");
-						$sql = "INSERT INTO " . CONFIG_TABLE . " (config_name, config_value)
-							VALUES ('$key', '$value')";
-						$result = $db->sql_query($sql);
-						if ( !$result )
-						{
-							throw_error("Couldn't update config table!", __LINE__, __FILE__, $sql);
-						}
+
+						dibi::insert(CONFIG_TABLE, ['config_name' => $key, 'config_value' => $value])->execute();
 					}
 				}
-				if ($list_open)
-				{
+				if ($list_open) {
 					echo("</ul></font>\n");
-					$list_open = FALSE;
-				}
-				else
-				{
+					$list_open = false;
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 				
@@ -2623,69 +2344,53 @@ switch($mode_id)
 
 				// Checking for invalid search word match data
 				echo("<p class=\"gen\"><b>" . $lang['Checking_search_data'] . "</b></p>\n");
-				$sql = "SELECT sm.post_id
-					FROM " . SEARCH_MATCH_TABLE . " sm
-						LEFT JOIN " . POSTS_TABLE . " p ON sm.post_id = p.post_id
-					WHERE p.post_id IS NULL
-					GROUP BY sm.post_id";
-				$post_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get search-match and post data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$post_array[] = $row['post_id'];
-				}
-				$db->sql_freeresult($result);
-				$sql = "SELECT sm.word_id
-					FROM " . SEARCH_MATCH_TABLE . " sm
-						LEFT JOIN " . SEARCH_WORD_TABLE . " sw ON sm.word_id = sw.word_id
-					WHERE sw.word_id IS NULL
-						OR sw.word_common = 1
-					GROUP BY sm.word_id";
-				$word_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get search-match and word data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$word_array[] = $row['word_id'];
-				}
-				$db->sql_freeresult($result);
-				if ( count($post_array) || count($word_array) )
-				{
-					$sql_query = '';
-					if ( count($post_array) )
-					{
+
+				$post_array = dibi::select('sm.post_id')
+					->from(SEARCH_MATCH_TABLE)
+					->as('sm')
+					->leftJoin(POSTS_TABLE)
+					->as('p')
+					->on('sm.post_id = p.post_id')
+					->where('p.post_id IS NULL')
+					->groupBy('sm.post_id')
+					->fetchPairs(null, 'post_id');
+
+				$word_array = dibi::select('sm.word_id')
+					->from(SEARCH_MATCH_TABLE)
+					->as('sm')
+					->leftJoin(SEARCH_WORD_TABLE)
+					->as('sw')
+					->on('sm.word_id = sw.word_id')
+					->where('sw.word_id IS NULL OR sw.word_common = %i', 1)
+					->groupBy('sm.word_id')
+					->fetchPairs(null, 'word_id');
+
+				$postCount = count($post_array);
+				$wordCount = count($word_array);
+
+				if ($postCount || $wordCount) {
+					$affected_rows = 0;
+
+					if ($postCount) {
+						$affected_rows += dibi::delete(SEARCH_MATCH_TABLE)
+							->where('post_id IN %in', $post_array)
+							->execute(dibi::AFFECTED_ROWS);
+
 						$sql_query = 'post_id IN (' . implode(',', $post_array) . ') ';
 					}
-					if ( count($word_array) )
-					{
-						$sql_query .= (($sql_query == '') ? '' : ' OR ') . 'word_id IN (' . implode(',', $word_array) . ') ';
+
+					if ($wordCount) {
+						$affected_rows += dibi::delete(SEARCH_MATCH_TABLE)
+							->where('word_id IN %in', $word_array)
+							->execute(dibi::AFFECTED_ROWS);
 					}
-					$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . "
-						WHERE $sql_query";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't update search-match data!", __LINE__, __FILE__, $sql);
-					}
-					$affected_rows = $db->sql_affectedrows();
-					if ( $affected_rows == 1 )
-					{
+
+					if ($affected_rows == 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
-					}
-					elseif ( $affected_rows > 1 )
-					{
+					} elseif ($affected_rows > 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
 					}
-				}
-				else
-				{
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
@@ -2697,21 +2402,22 @@ switch($mode_id)
 
 				// Checking for invalid search word list data
 				echo("<p class=\"gen\"><b>" . $lang['Checking_search_words'] . "</b></p>\n");
-				$sql = "SELECT sw.word_id
-					FROM " . SEARCH_WORD_TABLE . " sw
-						LEFT JOIN " . SEARCH_MATCH_TABLE . " sm ON sw.word_id = sm.word_id
-					WHERE sm.word_id IS NULL
-						AND sw.word_common <> 1";
+
+				$rows = dibi::select('sw.word_id')
+					->from(SEARCH_WORD_TABLE)
+					->as('sw')
+					->leftJoin(SEARCH_MATCH_TABLE)
+					->as('sm')
+					->on('sw.word_id = sm.word_id')
+					->where('sm.word_id IS NULL')
+					->where('sw.word_common <> 1')
+					->fetchAll();
+
 				$result_array = array();
 				$affected_rows = 0;
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get search data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$result_array[] = $row['word_id'];
+
+				foreach ($rows as $row) {
+					$result_array[] = $row->word_id;
 					if ( count($result_array) >= 100 )
 					{
 						echo("<p class=\"gen\">" . $lang['Removing_part_invalid_words'] . "...</p>\n");
@@ -2724,7 +2430,7 @@ switch($mode_id)
 						$result_array = array();
 					}
 				}
-				$db->sql_freeresult($result);
+
 				if ( count($result_array) )
 				{
 					echo("<p class=\"gen\">" . $lang['Removing_invalid_words'] . "</p>\n");
@@ -2785,20 +2491,18 @@ switch($mode_id)
 				// Set data for start position in config table
 				update_config('dbmtnc_rebuild_pos', '0');
 				// Get data for end position
-				$sql = "SELECT Max(post_id) AS max_post_id
-					FROM " . POSTS_TABLE;
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get post data!", __LINE__, __FILE__, $sql);
+
+				$row = dibi::select('MAX(post_id)')
+					->as('max_post_id')
+					->from(POSTS_TABLE)
+					->fetch();
+
+				if (!$row) {
+					throw_error("Couldn't get post data!");
 				}
-				if ( !($row = $db->sql_fetchrow($result)) )
-				{
-					throw_error("Couldn't get post data!", __LINE__, __FILE__, $sql);
-				}
-				$db->sql_freeresult($result);
+
 				// Set data for end position in config table
-				update_config('dbmtnc_rebuild_end', intval($row['max_post_id']));
+				update_config('dbmtnc_rebuild_end', intval($row->max_post_id));
 				echo("<p class=\"gen\">" . $lang['Done'] . "</p>\n");
 
 				echo("<p class=\"gen\"><a href=\"" . Session::appendSid("admin_db_maintenance.php?mode=perform&amp;function=perform_rebuild&amp;db_state=" . (($db_state) ? '1' : '0')) . "\">" . $lang['Can_start_rebuilding'] . "</a><br><span class=\"gensmall\">" . $lang['Click_once_warning'] . "</span></p>\n");
@@ -2873,6 +2577,14 @@ switch($mode_id)
 					$posts_to_index = intval($board_config['dbmtnc_rebuildcfg_timeoverwrite']);
 				}
 				// We have all data so get the post information
+				$row = dibi::select(['post_id', 'post_subject', 'post_text'])
+					->from(POSTS_TEXT_TABLE)
+					->where('post_id > %i', $board_config['dbmtnc_rebuild_pos'])
+					->where('post_id <= %i', $board_config['dbmtnc_rebuild_end'])
+					->orderBy('post_id')
+					->limit($posts_to_index)
+					->fetch();
+
 				$sql = "SELECT post_id, post_subject, post_text
 					FROM " . POSTS_TEXT_TABLE . "
 					WHERE post_id > " . intval($board_config['dbmtnc_rebuild_pos']) . "
@@ -3029,30 +2741,18 @@ switch($mode_id)
 				ob_end_flush();
 				$db->sql_freeresult($result);
 				// Get Statistics
-				$posts_total = 0;
-				$sql = "SELECT Count(*) AS posts_total
-					FROM " . POSTS_TEXT_TABLE . "
-					WHERE post_id <= " . intval($board_config['dbmtnc_rebuild_end']);
-				if ( $result = $db->sql_query($sql) )
-				{
-					if ( $row = $db->sql_fetchrow($result) )
-					{
-						$posts_total = $row['posts_total'];
-					}
-					$db->sql_freeresult($result);
-				}
-				$posts_indexed = 0;
-				$sql = "SELECT Count(*) AS posts_indexed
-					FROM " . POSTS_TEXT_TABLE . "
-					WHERE post_id <= " . intval($last_post);
-				if ( $result = $db->sql_query($sql) )
-				{
-					if ( $row = $db->sql_fetchrow($result) )
-					{
-						$posts_indexed = $row['posts_indexed'];
-					}
-					$db->sql_freeresult($result);
-				}
+
+				$posts_total = dibi::select('Count(*)')
+					->as('posts_total')
+					->from(POSTS_TEXT_TABLE)
+					->where('post_id <= %i', $board_config['dbmtnc_rebuild_end'])
+					->fetchSingle();
+
+				$posts_indexed = dibi::select('Count(*)')
+					->as('posts_indexed')
+					->from(POSTS_TEXT_TABLE)
+					->where('post_id <= %i', $last_post)
+					->fetchSingle();
 				
 				echo("<p class=\"gen\">" . sprintf($lang['Indexing_progress'], $posts_indexed, $posts_total, ($posts_indexed / $posts_total) * 100, $last_post) . "</p>\n");
 				echo("<p class=\"gen\"><a href=\"" . Session::appendSid("admin_db_maintenance.php?mode=perform&amp;function=perform_rebuild&amp;db_state=$db_state") . "\">" . $lang['Click_or_wait_to_proceed'] . "</a><br><span class=\"gensmall\">" . $lang['Click_once_warning'] . "</span></p>\n");
@@ -3075,53 +2775,47 @@ switch($mode_id)
 
 				// Updating normal topics
 				echo("<p class=\"gen\"><b>" . $lang['Synchronize_topic_data'] . "</b></p>\n");
-				if (check_mysql_version())
-				{
-					$sql = "SELECT t.topic_id, t.topic_title, t.topic_replies, t.topic_first_post_id, t.topic_last_post_id, Count(p.post_id) - 1 AS new_replies, Min(p.post_id) AS new_first_post_id, Max(p.post_id) AS new_last_post_id
-						FROM " . TOPICS_TABLE . " t
-							INNER JOIN " . POSTS_TABLE . " p ON t.topic_id = p.topic_id
-						GROUP BY t.topic_id, t.topic_title, t.topic_replies, t.topic_first_post_id, t.topic_last_post_id
-						HAVING new_replies <> t.topic_replies OR
-							new_first_post_id <> t.topic_first_post_id OR
-							new_last_post_id <> t.topic_last_post_id";
-				}
-				else
-				{
-					$sql = "SELECT t.topic_id, t.topic_title, t.topic_replies, t.topic_first_post_id, t.topic_last_post_id, Count(p.post_id) - 1 AS new_replies, Min(p.post_id) AS new_first_post_id, Max(p.post_id) AS new_last_post_id
-						FROM " . TOPICS_TABLE . " t, " .
-							POSTS_TABLE . " p
-						WHERE t.topic_id = p.topic_id
-						GROUP BY t.topic_id, t.topic_title, t.topic_replies, t.topic_first_post_id, t.topic_last_post_id
-						HAVING new_replies <> t.topic_replies OR
-							new_first_post_id <> t.topic_first_post_id OR
-							new_last_post_id <> t.topic_last_post_id";
-				}
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get topic and post data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
+
+				$rows = dibi::select(['t.topic_id', 't.topic_title', 't.topic_replies', 't.topic_first_post_id','t.topic_last_post_id'])
+					->select('Count(p.post_id) - 1')
+					->as('new_replies')
+					->select('Min(p.post_id)')
+					->as('new_first_post_id')
+					->select('Max(p.post_id)')
+					->as('new_last_post_id')
+					->from(TOPICS_TABLE)
+					->as('t')
+					->innerJoin(POSTS_TABLE)
+					->as('p')
+					->on('t.topic_id = p.topic_id')
+					->groupBy('t.topic_id')
+					->groupBy('t.topic_title')
+					->groupBy('t.topic_replies')
+					->groupBy('t.topic_first_post_id')
+					->groupBy('t.topic_last_post_id')
+					->having('new_replies <> t.topic_replies OR new_first_post_id <> t.topic_first_post_id OR new_last_post_id <> t.topic_last_post_id')
+					->fetchAll();
+
+				foreach ($rows as $row) {
 					if (!$list_open)
 					{
 						echo("<p class=\"gen\">" . $lang['Synchronizing_topics'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
 						$list_open = TRUE;
 					}
-					echo("<li>" . sprintf($lang['Synchronizing_topic'], $row['topic_id'], htmlspecialchars($row['topic_title'])) . "</li>\n");
+					echo("<li>" . sprintf($lang['Synchronizing_topic'], $row->topic_id, htmlspecialchars($row->topic_title)) . "</li>\n");
 
 					$updateData = [
-						'topic_replies' => $row['new_replies'],
-						'topic_first_post_id' => $row['new_first_post_id'],
-						'topic_last_post_id' => $row['new_last_post_id']
+						'topic_replies'       => $row->new_replies,
+						'topic_first_post_id' => $row->new_first_post_id,
+						'topic_last_post_id'  => $row->new_last_post_id
 					];
 
 					dibi::update(TOPICS_TABLE, $updateData)
-						->where('topic_id = %i', $row['topic_id'])
+						->where('topic_id = %i', $row->topic_id)
 						->execute();
 				}
-				$db->sql_freeresult($result);
+
 				if ($list_open)
 				{
 					echo("</ul></font>\n");
@@ -3134,44 +2828,41 @@ switch($mode_id)
 
 				// Updating moved topics
 				echo("<p class=\"gen\"><b>" . $lang['Synchronize_moved_topic_data'] . "</b></p>\n");
-				$sql = "SELECT topic_id, topic_title, topic_last_post_id, topic_moved_id
-					FROM " . TOPICS_TABLE . "
-					WHERE topic_status = " . TOPIC_MOVED;
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get topic data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
+
+				$rows = dibi::select(['topic_id', 'topic_title', 'topic_last_post_id', 'topic_moved_id'])
+					->from(TOPICS_TABLE)
+					->where('topic_status = %i', TOPIC_MOVED)
+					->fetchAll();
+
+				foreach ($rows as $row) {
 					// Getting data for original topic
-					$sql2 = "SELECT topic_id, Count(post_id) - 1 AS topic_replies, Min(post_id) AS topic_first_post_id, Max(post_id) AS topic_last_post_id
-						FROM " . POSTS_TABLE . "
-						WHERE topic_id = " . $row['topic_moved_id'] . " AND
-							post_id <= " . $row['topic_last_post_id'] . "
-						GROUP BY topic_id";
-					$result2 = $db->sql_query($sql2);
-					if ( !$result2 )
-					{
-						throw_error("Couldn't get post information!", __LINE__, __FILE__, $sql2);
-					}
-					if ( $row2 = $db->sql_fetchrow($result2) )
-					{
-						$sql3 = "SELECT topic_id
-							FROM " . TOPICS_TABLE . "
-							WHERE topic_id = " . $row['topic_id'] . " AND
-								(topic_replies <> " . $row2['topic_replies'] . " OR topic_first_post_id <> " . $row2['topic_first_post_id'] . " OR topic_last_post_id <> " . $row2['topic_last_post_id'] . ")";
-						$result3 = $db->sql_query($sql3);
-						if ( !$result3 )
-						{
-							throw_error("Couldn't get topic information!", __LINE__, __FILE__, $sql3);
-						}
-						$row3 = $db->sql_fetchrow($result3);
-						$db->sql_freeresult($result3);
-						if ( $row3 )
-						{
-							if (!$list_open)
-							{
+
+					$row2 = dibi::select('topic_id')
+						->select('COUNT(post_id) - 1')
+						->as('topic_replies')
+						->select('MIN(post_id)')
+						->as('topic_first_post_id')
+						->select('MAX(post_id)')
+						->as('topic_last_post_id')
+						->from(POSTS_TABLE)
+						->where('topic_id = %i', $row->topic_moved_id)
+						->where('post_id <= %i', $row['topic_last_post_id'])
+						->groupBy('topic_id')
+						->fetch();
+
+					if ($row2) {
+						$row3 = dibi::select('topic_id')
+							->from(TOPICS_TABLE)
+							->where('topic_id = %i', $row->topic_id)
+							->where(
+								'(topic_replies <> %i OR topic_first_post_id <> OR topic_last_post_id <> %i )',
+								$row2['topic_replies'],
+								$row2['topic_first_post_id'],
+								$row2['topic_last_post_id']
+							)->fetchAll();
+
+						if ($row3) {
+							if (!$list_open) {
 								echo("<p class=\"gen\">" . $lang['Synchronizing_moved_topics'] . ":</p>\n");
 								echo("<font class=\"gen\"><ul>\n");
 								$list_open = TRUE;
@@ -3188,159 +2879,120 @@ switch($mode_id)
 								->where('topic_id = %i', $row['topic_id'])
 								->execute();
 						}
-					}
-					else
-					{
+					} else {
 						throw_error(sprintf($lang['Inconsistencies_found'], "<a href=\"" . Session::appendSid("admin_db_maintenance.php?mode=perform&amp;function=check_post") . "\">", '</a>'));
 					}
-					$db->sql_freeresult($result2);
 				}
-				$db->sql_freeresult($result);
-				if ($list_open)
-				{
+
+				if ($list_open) {
 					echo("</ul></font>\n");
-					$list_open = FALSE;
-				}
-				else
-				{
+					$list_open = false;
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
 				// Updating topic data of forums
 				echo("<p class=\"gen\"><b>" . $lang['Synchronize_forum_topic_data'] . "</b></p>\n");
-				if (check_mysql_version())
-				{
-					$sql = "SELECT f.forum_id, f.forum_name, f.forum_topics, Count(t.topic_id) AS new_topics
-						FROM " . FORUMS_TABLE . " f
-							INNER JOIN " . TOPICS_TABLE . " t ON f.forum_id = t.forum_id
-						GROUP BY f.forum_id, f.forum_name, f.forum_topics
-						HAVING new_topics <> f.forum_topics";
-				}
-				else
-				{
-					$sql = "SELECT f.forum_id, f.forum_name, f.forum_topics, Count(t.topic_id) AS new_topics
-						FROM " . FORUMS_TABLE . " f, " .
-							TOPICS_TABLE . " t
-						WHERE f.forum_id = t.forum_id
-						GROUP BY f.forum_id, f.forum_name, f.forum_topics
-						HAVING new_topics <> f.forum_topics";
-				}
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get forum and topic data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					if (!$list_open)
-					{
+
+				$rows = dibi::select(['f.forum_id', 'f.forum_name', 'f.forum_topics'])
+					->select('COUNT(t.topic_id)')
+					->as('new_topics')
+					->from(FORUMS_TABLE)
+					->as('f')
+					->innerJoin(TOPICS_TABLE)
+					->as('t')
+					->on('f.forum_id = t.forum_id')
+					->groupBy('f.forum_id')
+					->groupBy('f.forum_name')
+					->groupBy('f.forum_topics')
+					->having('new_topics <> f.forum_topics')
+					->fetchAll();
+
+				foreach ($rows as $row) {
+					if (!$list_open) {
 						echo("<p class=\"gen\">" . $lang['Synchronizing_forums'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
 						$list_open = TRUE;
 					}
-					echo("<li>" . sprintf($lang['Synchronizing_forum'], $row['forum_id'], htmlspecialchars($row['forum_name'])) . "</li>\n");
+					echo("<li>" . sprintf($lang['Synchronizing_forum'], $row->forum_id, htmlspecialchars($row->forum_name)) . "</li>\n");
 
-					dibi::update(FORUMS_TABLE, ['forum_topics' => $row['new_topics']])
-						->where('forum_id = %i', $row['forum_id'])
+					dibi::update(FORUMS_TABLE, ['forum_topics' => $row->new_topics])
+						->where('forum_id = %i', $row->forum_id)
 						->execute();
 				}
-				$db->sql_freeresult($result);
-				if ($list_open)
-				{
+
+				if ($list_open) {
 					echo("</ul></font>\n");
-					$list_open = FALSE;
-				}
-				else
-				{
+					$list_open = false;
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
 				// Updating forums without a topic
 				echo("<p class=\"gen\"><b>" . $lang['Synchronize_forum_data_wo_topic'] . "</b></p>\n");
-				$sql = "SELECT f.forum_id
-					FROM " . FORUMS_TABLE . " f
-						LEFT JOIN " . TOPICS_TABLE . " t ON f.forum_id = t.forum_id
-					WHERE t.forum_id IS NULL AND
-						(f.forum_topics <> 0 OR f.forum_last_post_id <> 0)";
-				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get forum and topic data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$result_array[] = $row['forum_id'];
-				}
-				$db->sql_freeresult($result);
-				if ( count($result_array) )
-				{
+
+				$result_array = dibi::select('f.forum_id')
+					->from(FORUMS_TABLE)
+					->as('f')
+					->leftJoin(TOPICS_TABLE)
+					->as('t')
+					->on('f.forum_id = t.forum_id')
+					->where('t.forum_id IS NULL')
+					->where('(f.forum_topics <> %i OR f.forum_last_post_id <> %i)', 0, 0)
+					->fetchPairs(null, 'forum_id');
+
+				if (count($result_array)) {
 					$affected_rows = dibi::update(FORUMS_TABLE, ['forum_topics' => 0, 'forum_last_post_id' => 0])
 						->where('forum_id IN %in', $result_array)
 						->execute(dibi::AFFECTED_ROWS);
 
-					if ( $affected_rows == 1 )
-					{
+					if ($affected_rows == 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
-					}
-					elseif ( $affected_rows > 1 )
-					{
+					} elseif ($affected_rows > 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
 					}
-				}
-				elseif ( !$db_updated )
-				{
+				} elseif (!$db_updated) {
 					echo($lang['Nothing_to_do']);
 				}
 
 				// Updating post data of forums
 				echo("<p class=\"gen\"><b>" . $lang['Synchronize_forum_post_data'] . "</b></p>\n");
-				if (check_mysql_version())
-				{
-					$sql = "SELECT f.forum_id, f.forum_name, f.forum_posts, f.forum_last_post_id, Count(p.post_id) AS new_posts, Max(p.post_id) AS new_last_post_id
-						FROM " . FORUMS_TABLE . " f
-							INNER JOIN " . POSTS_TABLE . " p ON f.forum_id = p.forum_id
-						GROUP BY f.forum_id, f.forum_name, f.forum_posts, f.forum_last_post_id
-						HAVING new_posts <> f.forum_posts OR
-							new_last_post_id <> f.forum_last_post_id";
-				}
-				else
-				{
-					$sql = "SELECT f.forum_id, f.forum_name, f.forum_posts, f.forum_last_post_id, Count(p.post_id) AS new_posts, Max(p.post_id) AS new_last_post_id
-						FROM " . FORUMS_TABLE . " f, " .
-							POSTS_TABLE . " p
-						WHERE f.forum_id = p.forum_id
-						GROUP BY f.forum_id, f.forum_name, f.forum_posts, f.forum_last_post_id
-						HAVING new_posts <> f.forum_posts OR
-							new_last_post_id <> f.forum_last_post_id";
-				}
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get forum and post data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					if (!$list_open)
-					{
+
+				$rows = dibi::select(['f.forum_id', 'f.forum_name', 'f.forum_posts', 'f.forum_last_post_id'])
+					->select('COUNT(p.post_id)')
+					->as('new_posts')
+					->select('MAX(p.post_id)')
+					->as('new_last_post_id')
+					->from(FORUMS_TABLE)
+					->as('f')
+					->innerJoin(POSTS_TABLE)
+					->as('p')
+					->on('f.forum_id = p.forum_id')
+					->groupBy('f.forum_id')
+					->groupBy('f.forum_name')
+					->groupBy('f.forum_name')
+					->groupBy('f.forum_posts')
+					->groupBy('f.forum_last_post_id')
+					->having('new_posts <> f.forum_posts OR new_last_post_id <> f.forum_last_post_id')
+					->fetchAll();
+
+				foreach ($rows as $row) {
+					if (!$list_open) {
 						echo("<p class=\"gen\">" . $lang['Synchronizing_forums'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
 						$list_open = TRUE;
 					}
-					echo("<li>" . sprintf($lang['Synchronizing_forum'], $row['forum_id'], htmlspecialchars($row['forum_name'])) . "</li>\n");
+					echo("<li>" . sprintf($lang['Synchronizing_forum'], $row->forum_id, htmlspecialchars($row->forum_name)) . "</li>\n");
 
-					dibi::update(FORUMS_TABLE, ['forum_posts' => $row['new_posts'], 'forum_last_post_id' => $row['new_last_post_id']])
-						->where('forum_id = %i', $row['forum_id'])
+					dibi::update(FORUMS_TABLE, ['forum_posts' => $row->new_posts, 'forum_last_post_id' => $row->new_last_post_id])
+						->where('forum_id = %i', $row->forum_id)
 						->execute();
 				}
-				$db->sql_freeresult($result);
-				if ($list_open)
-				{
+
+				if ($list_open) {
 					echo("</ul></font>\n");
-					$list_open = FALSE;
-				}
-				else
-				{
+					$list_open = false;
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
@@ -3357,43 +3009,31 @@ switch($mode_id)
 					->where('f.forum_posts <> %i', 0)
 					->fetchPairs(null, 'forum_id');
 
-				if ( count($result_array) )
-				{
+				if (count($result_array)) {
 					$record_list = implode(',', $result_array);
 
 					$affected_rows = dibi::update(FORUMS_TABLE, ['forum_posts' => 0])
 						->where('forum_id IN %in', $result_array)
 						->execute(dibi::AFFECTED_ROWS);
 
-					if ( $affected_rows == 1 )
-					{
+					if ($affected_rows == 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
-					}
-					elseif ( $affected_rows > 1 )
-					{
+					} elseif ($affected_rows > 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
 					}
-				}
-				elseif ( !$db_updated )
-				{
+				} elseif (!$db_updated) {
 					echo($lang['Nothing_to_do']);
 				}
 
-				if ($function == 'synchronize_post_direct')
-				{
-					if ($db_state == 0)
-					{
-						lock_db(TRUE, TRUE, TRUE);
-					}
-					else
-					{
+				if ($function == 'synchronize_post_direct') {
+					if ($db_state == 0) {
+						lock_db(true, true, true);
+					} else {
 						echo('<p class="gen"><b>' . $lang['Unlock_db'] . "</b></p>\n");
 						echo('<p class="gen">' . $lang['Ignore_unlock_command'] . "</p>\n");
 					}
-				}
-				else
-				{
-					lock_db(TRUE);
+				} else {
+					lock_db(true);
 				}
 
 				break;
@@ -3405,40 +3045,33 @@ switch($mode_id)
 
 				// TODO ADD recount for topics counter!
 				echo("<p class=\"gen\"><b>" . $lang['Synchronize_user_post_counter'] . "</b></p>\n");
-				if (check_mysql_version())
-				{
-					$sql = "SELECT u.user_id, u.username, u.user_posts, Count(p.post_id) AS new_counter
-						FROM " . USERS_TABLE . " u
-							INNER JOIN " . POSTS_TABLE . " p ON u.user_id = p.poster_id
-						WHERE u.user_id <> " . ANONYMOUS . "
-						GROUP BY u.user_id, u.username, u.user_posts";
-				}
-				else
-				{
-					$sql = "SELECT u.user_id, u.username, u.user_posts, Count(p.post_id) AS new_counter
-						FROM " . USERS_TABLE . " u, " .
-							POSTS_TABLE . " p
-						WHERE u.user_id = p.poster_id
-							AND u.user_id <> " . ANONYMOUS . "
-						GROUP BY u.user_id, u.username, u.user_posts";
-				}
+
+				$rows = dibi::select(['u.user_id', 'u.username', 'u.user_posts'])
+					->select('COUNT(p.post_id)')
+					->as('new_counter')
+					->from(USERS_TABLE)
+					->as('u')
+					->innerJoin(POSTS_TABLE)
+					->as('p')
+					->on('u.user_id = p.poster_id')
+					->where('u.user_id <> %i', ANONYMOUS)
+					->groupBy('u.user_id')
+					->groupBy('u.username')
+					->groupBy('u.user_posts')
+					->fetchAll();
+
 				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get user and post data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$result_array[] = $row['user_id'];
-					if ($row['new_counter'] != $row['user_posts'] )
-					{
-						if (!$list_open)
-						{
+
+				foreach ($rows as $row) {
+					$result_array[] = $row->user_id;
+
+					if ($row->new_counter !== $row->user_posts) {
+						if (!$list_open) {
 							echo("<p class=\"gen\">" . $lang['Synchronizing_users'] . ":</p>\n");
 							echo("<font class=\"gen\"><ul>\n");
 							$list_open = TRUE;
 						}
+
 						echo("<li>" . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row['username']), $row['user_id'], $row['user_posts'], $row['new_counter']) . "</li>\n");
 
 						dibi::update(USERS_TABLE, ['user_posts' => $row['new_counter']])
@@ -3446,39 +3079,36 @@ switch($mode_id)
 							->execute();
 					}
 				}
-				$db->sql_freeresult($result);
+
 				// All other users
-				if ( count($result_array) )
-				{
+				if (count($result_array)) {
+					$rows = dibi::select(['user_id', 'username', 'user_posts'])
+						->from(USERS_TABLE)
+						->where('user_id NOT IN %in', $result_array)
+						->where('user_posts <> %i', 0)
+						->fetchAll();
+
 					$sql_string = 'user_id NOT IN (' . implode(',', $result_array) . ') AND';
+				} else {
+					$rows = dibi::select(['user_id', 'username', 'user_posts'])
+						->from(USERS_TABLE)
+						->where('user_posts <> %i', 0)
+						->fetchAll();
 				}
-				else
-				{
-					$sql_string = '';
-				}
-				$sql = "SELECT user_id, username, user_posts
-					FROM " . USERS_TABLE . "
-					WHERE $sql_string user_posts <> 0";
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get user data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					if (!$list_open)
-					{
+
+				foreach ($rows as $row) {
+					if (!$list_open) {
 						echo("<p class=\"gen\">" . $lang['Synchronizing_users'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
 						$list_open = TRUE;
 					}
-					echo("<li>" . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row['username']), $row['user_id'], $row['user_posts'], 0) . "</li>\n");
+					echo("<li>" . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row->username), $row->user_id, $row->user_posts, 0) . "</li>\n");
 
 					dibi::update(USERS_TABLE, ['user_posts' => 0])
-						->where('user_id = %i', $row['user_id'])
+						->where('user_id = %i', $row->user_id)
 						->execute();
 				}
-				$db->sql_freeresult($result);
+
 				if ($list_open)
 				{
 					echo("</ul></font>\n");
@@ -3497,35 +3127,18 @@ switch($mode_id)
 
 				// Getting moderator data
 				echo("<p class=\"gen\"><b>" . $lang['Getting_moderators'] . "</b></p>\n");
-				if (check_mysql_version())
-				{
-					$sql = "SELECT ug.user_id
-						FROM " . USER_GROUP_TABLE . " ug
-							INNER JOIN " . AUTH_ACCESS_TABLE . " aa ON ug.group_id = aa.group_id
-						WHERE aa.auth_mod = 1 AND ug.user_pending <> 1
-						GROUP BY ug.user_id";
-				}
-				else
-				{
-					$sql = "SELECT ug.user_id
-						FROM " . USER_GROUP_TABLE . " ug, " .
-							AUTH_ACCESS_TABLE . " aa
-						WHERE ug.group_id = aa.group_id
-							AND aa.auth_mod = 1
-							AND ug.user_pending <> 1
-						GROUP BY ug.user_id";
-				}
-				$result_array = array();
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get moderator data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					$result_array[] = $row['user_id'];
-				}
-				$db->sql_freeresult($result);
+
+				$result_array = dibi::select('ug.user_id')
+					->from(USER_GROUP_TABLE)
+					->as('ug')
+					->innerJoin(AUTH_ACCESS_TABLE)
+					->as('aa')
+					->on('ug.group_id = aa.group_id')
+					->where('aa.auth_mod = %i', 1)
+					->where('ug.user_pending <> %i', 1)
+					->groupBy('ug.user_id')
+					->fetchPairs(null, 'user_id');
+
 				if ( count($result_array) )
 				{
 					$moderator_list = implode(',', $result_array);
@@ -3538,30 +3151,26 @@ switch($mode_id)
 
 				// Checking non moderators
 				echo("<p class=\"gen\"><b>" . $lang['Checking_non_moderators'] . "</b></p>\n");
-				$sql = "SELECT user_id, username
-					FROM " . USERS_TABLE . "
-					WHERE user_level = " . MOD . "
-						AND user_id NOT IN ($moderator_list)";
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get user data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					if (!$list_open)
-					{
+
+				$rows = dibi::select(['user_id', 'username'])
+					->from(USERS_TABLE)
+					->where('user_level = %i', MOD)
+					->where('user_id NOT IN %in', $result_array)
+					->fetchAll();
+
+				foreach ($rows as $row) {
+					if (!$list_open) {
 						echo("<p class=\"gen\">" . $lang['Updating_mod_state'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
 						$list_open = TRUE;
 					}
-					echo("<li>" . sprintf($lang['Changing_moderator_status'], htmlspecialchars($row['username']), $row['user_id']) . "</li>\n");
+					echo("<li>" . sprintf($lang['Changing_moderator_status'], htmlspecialchars($row->username), $row->user_id) . "</li>\n");
 
 					dibi::update(USERS_TABLE, ['user_level' => USER])
-						->where('user_id = %i', $row['user_id'])
+						->where('user_id = %i', $row->user_id)
 						->execute();
 				}
-				$db->sql_freeresult($result);
+
 				if ($list_open)
 				{
 					echo("</ul></font>\n");
@@ -3574,37 +3183,30 @@ switch($mode_id)
 
 				// Checking moderators
 				echo("<p class=\"gen\"><b>" . $lang['Checking_moderators'] . "</b></p>\n");
-				$sql = "SELECT user_id, username
-					FROM " . USERS_TABLE . "
-					WHERE user_level = " . USER . "
-						AND user_id IN ($moderator_list)";
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					throw_error("Couldn't get user data!", __LINE__, __FILE__, $sql);
-				}
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					if (!$list_open)
-					{
+
+				$rows = dibi::select(['user_id', 'username'])
+					->from(USERS_TABLE)
+					->where('user_level = %i', USER)
+					->where('user_id IN %in', $result_array)
+					->fetchAll();
+
+				foreach ($rows as $row) {
+					if (!$list_open) {
 						echo("<p class=\"gen\">" . $lang['Updating_mod_state'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
 						$list_open = TRUE;
 					}
-					echo("<li>" . sprintf($lang['Changing_moderator_status'], htmlspecialchars($row['username']), $row['user_id']) . "</li>\n");
+					echo("<li>" . sprintf($lang['Changing_moderator_status'], htmlspecialchars($row->username), $row->user_id) . "</li>\n");
 
 					dibi::update(USERS_TABLE, ['user_level' => MOD])
-						->where('user_id = %i', $row['user_id'])
+						->where('user_id = %i', $row->user_id)
 						->execute();
 				}
-				$db->sql_freeresult($result);
-				if ($list_open)
-				{
+
+				if ($list_open) {
 					echo("</ul></font>\n");
-					$list_open = FALSE;
-				}
-				else
-				{
+					$list_open = false;
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
@@ -3624,16 +3226,11 @@ switch($mode_id)
 					->where('post_time > %i', $time)
 					->execute(dibi::AFFECTED_ROWS);
 
-				if ( $affected_rows == 1 )
-				{
+				if ($affected_rows == 1) {
 					echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
-				}
-				elseif ( $affected_rows > 1 )
-				{
+				} elseif ($affected_rows > 1) {
 					echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
-				}
-				else
-				{
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
@@ -3644,16 +3241,11 @@ switch($mode_id)
 					->where('privmsgs_date > %i', $time)
 					->execute(dibi::AFFECTED_ROWS);
 
-				if ( $affected_rows == 1 )
-				{
+				if ($affected_rows == 1) {
 					echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
-				}
-				elseif ( $affected_rows > 1 )
-				{
+				} elseif ($affected_rows > 1) {
 					echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
-				}
-				else
-				{
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
@@ -3664,16 +3256,11 @@ switch($mode_id)
 					->where('user_emailtime > %i', $time)
 					->execute(dibi::AFFECTED_ROWS);
 
-				if ( $affected_rows == 1 )
-				{
+				if ($affected_rows == 1) {
 					echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
-				}
-				elseif ( $affected_rows > 1 )
-				{
+				} elseif ($affected_rows > 1) {
 					echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
-				}
-				else
-				{
+				} else {
 					echo($lang['Nothing_to_do']);
 				}
 
@@ -3686,16 +3273,11 @@ switch($mode_id)
 						->where('user_last_login_try > %i', $time)
 						->execute(dibi::AFFECTED_ROWS);
 
-					if ( $affected_rows == 1 )
-					{
+					if ($affected_rows == 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
-					}
-					elseif ( $affected_rows > 1 )
-					{
+					} elseif ($affected_rows > 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
-					}
-					else
-					{
+					} else {
 						echo($lang['Nothing_to_do']);
 					}
 				}
@@ -3710,16 +3292,11 @@ switch($mode_id)
 						->where('search_time > %i', $time)
 						->execute(dibi::AFFECTED_ROWS);
 
-					if ( $affected_rows == 1 )
-					{
+					if ($affected_rows == 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
-					}
-					elseif ( $affected_rows > 1 )
-					{
+					} elseif ($affected_rows > 1) {
 						echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
-					}
-					else
-					{
+					} else {
 						echo($lang['Nothing_to_do']);
 					}
 				}
@@ -3962,40 +3539,35 @@ switch($mode_id)
 				break;
 			case 'heap_convert': // Convert session table to HEAP
 				echo("<h1>" . $lang['Reset_ai'] . "</h1>\n");
-				if ( !check_mysql_version() )
-				{
+				if ( !check_mysql_version() ) {
 					echo("<p class=\"gen\">" . $lang['Old_MySQL_Version'] . "</p>\n");
 					break;
 				}
 				lock_db();
 				echo("<p class=\"gen\"><b>" . $lang['Converting_heap'] . "...</b></p>\n");
-				
+
 				// First check for current table size
-				$sql = "SELECT Count(*) as count FROM " . SESSIONS_TABLE;
-				if ( !($result = $db->sql_query($sql)) )
-				{
+				$sessionCount = dibi::select('Count(*)')
+					->as('count')
+					->from(SESSIONS_TABLE)
+					->fetchSingle();
+
+				if ($sessionCount === false) {
 					throw_error("Couldn't get session data!", __LINE__, __FILE__, $sql);
 				}
-				if ( !($row = $db->sql_fetchrow($result)) )
-				{
-					throw_error("Couldn't get session data!", __LINE__, __FILE__, $sql);
-				}
-				if ( intval($row['count']) > HEAP_SIZE )
-				{
-					// Table is to big - so delete some records
-					$sql = "DELETE FROM " . SESSIONS_TABLE . "
-						WHERE session_id != '" . $userdata['session_id'] . "'";
-					if ( SQL_LAYER == 'mysql4' )
-					{
-						// When using MySQL 4: delete only the oldest records
-						$sql .= " ORDER BY session_start
-							LIMIT " . (intval($row['count']) - HEAP_SIZE);
+
+				// Table is to big - so delete some records
+				if ($sessionCount > HEAP_SIZE) {
+					$deleteFluent = dibi::delete(SESSIONS_TABLE)
+						->where('session_id != %s', $userdata['session_id']);
+
+					// When using MySQL 4: delete only the oldest records
+					if ($dbms === 'mysql4') {
+						$deleteFluent->orderBy('session_start')
+							->limit($sessionCount - HEAP_SIZE);
 					}
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						throw_error("Couldn't delete session data!", __LINE__, __FILE__, $sql);
-					}
+
+					$deleteFluent->execute();
 				}
 				
 				$sql = "ALTER TABLE " . SESSIONS_TABLE . "
