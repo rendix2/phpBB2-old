@@ -493,7 +493,7 @@ switch($mode_id) {
                     ->from(USERS_TABLE)
                     ->as('u')
                     ->leftJoin(USER_GROUP_TABLE)
-                    ->as('uh')
+                    ->as('ug')
                     ->on('u.user_id = ug.user_id')
                     ->leftJoin(GROUPS_TABLE)
                     ->as('g')
@@ -2051,24 +2051,27 @@ switch($mode_id) {
                     echo($lang['Nothing_to_do']);
                 }
 
+                $fromArray = [
+					PRIVMSGS_NEW_MAIL,
+					PRIVMSGS_UNREAD_MAIL,
+					PRIVMSGS_SENT_MAIL,
+					PRIVMSGS_SAVED_OUT_MAIL
+				];
+
+                 $toArray = [
+					 PRIVMSGS_NEW_MAIL,
+					 PRIVMSGS_UNREAD_MAIL,
+					 PRIVMSGS_READ_MAIL,
+					 PRIVMSGS_SAVED_IN_MAIL
+				 ];
+
 				// Check for pns with deleted sender or recipient
 				echo("<p class=\"gen\"><b>" . $lang['Checking_pm_deleted_users'] . "</b></p>\n");
-				$sql = "SELECT privmsgs_id
-					FROM " . PRIVMSGS_TABLE . "
-					WHERE (privmsgs_from_userid = " . DELETED . " AND privmsgs_type IN (" . PRIVMSGS_NEW_MAIL . "," . PRIVMSGS_UNREAD_MAIL . "," . PRIVMSGS_SENT_MAIL . "," . PRIVMSGS_SAVED_OUT_MAIL . ")) OR
-						(privmsgs_to_userid = " . DELETED . " AND privmsgs_type IN (" . PRIVMSGS_NEW_MAIL . "," . PRIVMSGS_UNREAD_MAIL . "," . PRIVMSGS_READ_MAIL . "," . PRIVMSGS_SAVED_IN_MAIL . "))";
-				$result_array = array();
-				$result = $db->sql_query($sql);
+				$result_array = dibi::select('privmsgs_id')
+					->from(PRIVMSGS_TABLE)
+					->where('(privmsgs_from_userid = %i AND privmsgs_type IN %in) OR (privmsgs_to_userid = %i AND privmsgs_type IN %in)', DELETED, $fromArray, DELETED, $toArray)
+					->fetchPairs(null, 'privmsgs_id');
 
-				if ( !$result ) {
-					throw_error("Couldn't get private message and user data!", __LINE__, __FILE__, $sql);
-				}
-
-				while ( $row = $db->sql_fetchrow($result) ) {
-					$result_array[] = $row['privmsgs_id'];
-				}
-
-				$db->sql_freeresult($result);
 				if ( count($result_array) ) {
 					$record_list = implode(',', $result_array);
 					echo("<p class=\"gen\">" . $lang['Invalid_pm_users_found'] . ": $record_list</p>\n");
@@ -2119,7 +2122,7 @@ switch($mode_id) {
                             ->execute();
                     }
                 }
-				$db->sql_freeresult($result);
+
 				// All other users
                 if (count($result_array)) {
                     $rows = dibi::select(['user_id', 'username'])
@@ -2255,18 +2258,15 @@ switch($mode_id) {
                     $default_config['board_startdate'] = $startDate->startdate;
                 }
 
-				// Start the job				
-				reset($default_config);
-                while (list($key, $value) = each($default_config)) {
-                    $sql = 'SELECT config_value FROM ' . CONFIG_TABLE . "
-						WHERE config_name = '$key'";
+				// Start the job
+                foreach ($default_config as $key => $value) {
+                	// todo get_config_data() may be used
+					$config = dibi::select('config_value')
+						->from(CONFIG_TABLE)
+						->where('config_name = %s', $key)
+						->fetch();
 
-                    $result = $db->sql_query($sql);
-                    if (!$result) {
-                        throw_error("Couldn't query config table!", __LINE__, __FILE__, $sql);
-                    }
-
-                    if (!($row = $db->sql_fetchrow($result))) {
+                    if (!$config) {
                         // entry does not exists
                         if (!$list_open) {
                             echo("<p class=\"gen\">" . $lang['Restoring_config'] . ":</p>\n");
@@ -2405,23 +2405,16 @@ switch($mode_id) {
 
 				// Clear Tables
 				echo("<p class=\"gen\"><b>" . $lang['Deleting_search_tables'] . "</b></p>\n");
-				$sql = "DELETE FROM " . SEARCH_TABLE;
 
-                if (!($db->sql_query($sql))) {
-                    throw_error("Couldn't delete from search result table!", __LINE__, __FILE__, $sql);
-                }
-                $sql = "DELETE FROM " . SEARCH_WORD_TABLE;
+				dibi::query('TRUNCATE TABLE %n', SEARCH_TABLE);
+				dibi::query('TRUNCATE TABLE %n', SEARCH_WORD_TABLE);
+				dibi::query('TRUNCATE TABLE %n', SEARCH_MATCH_TABLE);
 
-                if (!($db->sql_query($sql))) {
-                    throw_error("Couldn't delete from search-word table!", __LINE__, __FILE__, $sql);
-                }
-                $sql = "DELETE FROM " . SEARCH_MATCH_TABLE;
 
-                if (!($db->sql_query($sql))) {
-                    throw_error("Couldn't delete from search-match table!", __LINE__, __FILE__, $sql);
-                }
 				echo("<p class=\"gen\">" . $lang['Done'] . "</p>\n");
 
+				// TODO we should not need it
+				/*
 				// Reset auto increment
 				echo("<p class=\"gen\"><b>" . $lang['Reset_search_autoincrement'] . "</b></p>\n");
 				$sql = "ALTER TABLE " . SEARCH_WORD_TABLE . " AUTO_INCREMENT=1";
@@ -2430,6 +2423,7 @@ switch($mode_id) {
                     throw_error("Couldn't reset auto_increment!", __LINE__, __FILE__, $sql);
                 }
                 echo("<p class=\"gen\">" . $lang['Done'] . "</p>\n");
+				*/
 
                 echo("<p class=\"gen\"><b>" . $lang['Preparing_config_data'] . "</b></p>\n");
                 // Set data for start position in config table
@@ -3218,44 +3212,28 @@ switch($mode_id) {
 
 				// Deleting tables
 				echo("<p class=\"gen\"><b>" . $lang['Deleting_session_tables'] . "</b></p>\n");
-				$sql = "DELETE FROM " . SESSIONS_TABLE;
-				$result = $db->sql_query($sql);
 
-				if ( !$result ) {
-					throw_error("Couldn't delete from session table!", __LINE__, __FILE__, $sql);
-				}
-				$sql = "DELETE FROM " . SEARCH_TABLE;
-				$result = $db->sql_query($sql);
+				dibi::query('TRUNCATE TABLE %n', SESSIONS_TABLE);
+				dibi::query('TRUNCATE TABLE %n', SEARCH_TABLE);
 
-				if ( !$result ) {
-					throw_error("Couldn't delete from search result table!", __LINE__, __FILE__, $sql);
-				}
 				echo("<p class=\"gen\">" . $lang['Done'] . "</p>\n");
 
 				// Restore session data of current user to prevent getting thrown out of the admin panel
 				echo("<p class=\"gen\"><b>" . $lang['Restoring_session'] . "</b></p>\n");
 				// Set Variables
-				$session_id = $userdata['session_id'];
-				$user_id = $userdata['user_id'];
-				$current_time = time();
-				$user_ip = $userdata['session_ip'];
-				$page_id = $userdata['session_page'];
-				$login = $userdata['session_logged_in'];
+				$insertData = [
+					'session_id' => $userdata['session_id'],
+					'session_user_id' => $userdata['user_id'],
+					'session_start' => time(),
+					'session_time' => $time,
+					'session_ip' => $userdata['session_ip'],
+					'session_page' => $userdata['session_page'],
+					'session_logged_in' => $userdata['session_page'],
+					'session_admin' => 1
+				];
 
-				if ( $phpbb_version[1] >= 15 ) {
-					$sql = "INSERT INTO " . SESSIONS_TABLE . "
-						(session_id, session_user_id, session_start, session_time, session_ip, session_page, session_logged_in, session_admin)
-						VALUES ('$session_id', $user_id, $current_time, $current_time, '$user_ip', $page_id, $login, 1)";
-				} else {
-					$sql = "INSERT INTO " . SESSIONS_TABLE . "
-						(session_id, session_user_id, session_start, session_time, session_ip, session_page, session_logged_in)
-						VALUES ('$session_id', $user_id, $current_time, $current_time, '$user_ip', $page_id, $login)";
-				}
-				$result = $db->sql_query($sql);
+				dibi::insert(SESSIONS_TABLE, $insertData)->execute();
 
-				if ( !$result ) {
-					throw_error("Couldn't restore session data!", __LINE__, __FILE__, $sql);
-				}
 				echo("<p class=\"gen\">" . $lang['Done'] . "</p>\n");
 
 				lock_db(TRUE);

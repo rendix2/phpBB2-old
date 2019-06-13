@@ -880,24 +880,16 @@ function check_authorisation($die = TRUE)
 
 function get_config_data($option)
 {
-	global $db;
-	
-	$sql = "SELECT config_value
-		FROM " . CONFIG_TABLE . "
-		WHERE config_name = '$option'";
-	$result = $db->sql_query($sql);
-	if ( !$result )
-	{
-		erc_throw_error("Couldn't get config data!", __LINE__, __FILE__, $sql);
-	}
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-	if ( !$row )
-	{
-		erc_throw_error("Config data does not exist!", __LINE__, __FILE__, $sql);
-	}
+	$config = dibi::select('config_value')
+        ->from(CONFIG_TABLE)
+        ->where('config_name = %s', $option)
+        ->fetchSingle();
 
-	return $row['config_value'];
+    if (!$config) {
+        erc_throw_error("Couldn't get config data!", __LINE__, __FILE__, $sql);
+    }
+
+	return $config;
 }
 
 function success_message($text)
