@@ -734,18 +734,10 @@ switch($mode)
 		{
 			case 'cls': // Clear Sessions
 				check_authorisation();
-				$sql = "DELETE FROM " . SESSIONS_TABLE;
-				$result = $db->sql_query($sql);
-				if( !$result )
-				{
-					erc_throw_error("Couldn't delete session table!", __LINE__, __FILE__, $sql);
-				}
-				$sql = "DELETE FROM " . SEARCH_TABLE;
-				$result = $db->sql_query($sql);
-				if( !$result )
-				{
-					erc_throw_error("Couldn't delete search result table!", __LINE__, __FILE__, $sql);
-				}
+
+				dibi::query('TRUNCATE TABLE %n', SESSIONS_TABLE);
+				dibi::query('TRUNCATE TABLE %n', SEARCH_TABLE);
+
 				success_message($lang['cls_success']);
 				break;
 			case 'rdb': // Clear Sessions
@@ -1140,14 +1132,11 @@ switch($mode)
 						}
 						$new_state = intval(( $row2 = $db->sql_fetchrow($result2) ) ? MOD : USER);
 						$db->sql_freeresult($result2);
-						$sql2 = "UPDATE " . USERS_TABLE . "
-							SET user_level = $new_state
-							WHERE user_id = " . $row['user_id'];
-						$result2 = $db->sql_query($sql2);
-						if ( !$result2 )
-						{
-							erc_throw_error("Couldn't update user data!", __LINE__, __FILE__, $sql2);
-						}
+
+						dibi::update(USERS_TABLE, ['user_level' => $new_state])
+						    ->where('user_id = %i', $row['user_id'])
+						    ->execute();
+
 ?>
 	<li><?php echo htmlspecialchars($row['username']) ?></li>
 <?php

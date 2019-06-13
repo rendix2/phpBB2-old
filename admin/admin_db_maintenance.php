@@ -431,13 +431,47 @@ switch($mode_id) {
                 } else // anonymous user does not exist
                 {
                     // Recreate entry
-                    $sql    = "INSERT INTO " . USERS_TABLE . " (user_id, username, user_level, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_style, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_pm, user_notify_pm, user_allow_viewonline, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active)
-						VALUES (" . ANONYMOUS . ", 'Anonymous', 0, 0, '', '', '', '', '', '', '', '', 0, NULL, '', '', '', 0, 0, 1, 1, 1, 0, 1, 1, 0, '', '', 0, '', '', '', 0, 0)";
-                    $result = $db->sql_query($sql);
 
-                    if (!$result) {
-                        throw_error("Couldn't add user data!", __LINE__, __FILE__, $sql);
-                    }
+                    $insertData = [
+                        'user_id' => ANONYMOUS,
+                        'username' => 'Anonymous',
+                        'user_level' => 0,
+                        'user_regdate' => 0,
+                        'user_password' => '',
+                        'user_email'    => '',
+                        'user_icq'      => '',
+                        'user_website'  => '',
+                        'user_occ'   => '',
+                        'user_from' => '',
+                        'user_interests' => '',
+                        'user_sig' => '',
+                        'user_viewemail' => 0,
+                        'user_style' => null,
+                        'user_aim' =>'',
+                        'user_yim' =>'',
+                        'user_msnm' =>'',
+                        'user_posts' => 0,
+                        'user_topics' => 0,
+                        'user_attachsig' => 0,
+                        'user_allowsmile' => 1,
+                        'user_allowhtml' => 1,
+                        'user_allowbbcode' => 1,
+                        'user_allow_pm' => 1,
+                        'user_notify_pm' => 0,
+                        'user_allow_viewonline' => 1,
+                        'user_rank' => 1,
+                        'user_avatar' => '',
+                        'user_lang' => '',
+                        'user_timezone' => '',
+                        'user_dateformat' => '',
+                        'user_actkey' => '',
+                        'user_newpasswd' => '',
+                        'user_notify' => 0,
+                        'user_active' => 0
+                    ];
+
+                    dibi::insert(USERS_TABLE, $insertData)->execute();
+
                     echo("<p class=\"gen\">" . sprintf($lang['Anonymous_recreated'], $affected_rows) . "</p>\n");
                 }
 
@@ -556,19 +590,24 @@ switch($mode_id) {
 					echo("<p class=\"gen\">" . $lang['Recreating_SUG'] . ": $record_list</p>\n");
 					for($i = 0; $i < count($missing_groups); $i++) {
 						$group_name = ($missing_groups[$i] == ANONYMOUS) ? 'Anonymous' : '';
-						$sql = "INSERT INTO " . GROUPS_TABLE . " (group_type, group_name, group_description, group_moderator, group_single_user)
-							VALUES (1, '$group_name', 'Personal User', 0, 1)";
-						$result = $db->sql_query($sql);
-                        if (!$result) {
-                            throw_error("Couldn't add group data!", __LINE__, __FILE__, $sql);
-                        }
-						$group_id = $db->sql_nextid();
-						$sql = "INSERT INTO " . USER_GROUP_TABLE . " (group_id, user_id, user_pending)
-							VALUES ($group_id, " . $missing_groups[$i] . ", 0)";
-						$result = $db->sql_query($sql);
-                        if (!$result) {
-                            throw_error("Couldn't add user - group connection!", __LINE__, __FILE__, $sql);
-                        }
+
+						$insertData = [
+						    'group_type' => 1,
+                            'group_name' => $group_name,
+                            'group_description' => 'Personal User',
+                            'group_moderator' => 0,
+                            'group_single_user' => 1
+                        ];
+
+                        $group_id = dibi::insert(GROUPS_TABLE, $insertData)->execute(dibi::IDENTIFIER);
+
+                        $insertData = [
+                            'group_id' => $group_id,
+                            'user_id'  => $missing_groups[$i],
+                            'user_pending' => 0
+                        ];
+
+                        dibi::insert(USER_GROUP_TABLE, $insertData)->execute();
                     }
                 }
                 if (!$db_updated) {
@@ -826,7 +865,6 @@ switch($mode_id) {
                     // the default template is not available
                     if ($new_style === false) {
                         echo("<p class=\"gen\">" . $lang['Default_theme_invalid'] . "</p>\n");
-                        $db->sql_freeresult($result);
 
                         $new_style = dibi::select('themes_id')
                             ->from(THEMES_TABLE)
@@ -1243,100 +1281,84 @@ switch($mode_id) {
                 }
 
 				// Check for posts with invalid topic
+                // new and simplies logic
+                // we group posts by topic, its mooore simplier
 				echo("<p class=\"gen\"><b>" . $lang['Checking_invalid_posts'] . "</b></p>\n");
 
-				/*
-				dibi::select(['p.post_id', 'p.topic_id'])
-					->from(POSTS_TABLE)
-					->as('p')
-					->leftJoin(TOPICS_TABLE)
-					->as('t')
-					->on('p.topic_id = t.topic_id')
-					->where('t.topic_id IS NULL OR t.topic_status = %i', TOPIC_MOVED)
-					->orderBy('p.topic_id')
-					->orderBy('p.post_time')
-					->fetchAll();
-				*/
+                $rows = dibi::select(['p.post_id', 'p.topic_id'])
+                    ->from(POSTS_TABLE)
+                    ->as('p')
+                    ->leftJoin(TOPICS_TABLE)
+                    ->as('t')
+                    ->on('p.topic_id = t.topic_id')
+                    ->where('t.topic_id IS NULL OR t.topic_status = %i', TOPIC_MOVED)
+                    ->orderBy('p.topic_id')
+                    ->orderBy('p.post_time')
+                    ->fetchAll();
 
-				$sql = "SELECT p.post_id, p.topic_id
-					FROM " . POSTS_TABLE . " p
-						LEFT JOIN " . TOPICS_TABLE . " t ON p.topic_id = t.topic_id
-					WHERE t.topic_id IS NULL OR t.topic_status = " . TOPIC_MOVED . "
-					ORDER BY p.topic_id, p.post_time";
-				$current_topic = -1;
-				$result_array = array();
-				$result = $db->sql_query($sql);
+                if (count($rows)) {
+                    $topics = [];
 
-				if ( !$result ) {
-					throw_error("Couldn't get post and topic data!", __LINE__, __FILE__, $sql);
-				}
-
-				$row = $db->sql_fetchrow($result); // We need to do it outside the while-condition to prevent endless loops
-
-                while ($row || count($result_array)) {
-                    if ($current_topic != $row['topic_id'] || !$row) {
-                        if (count($result_array)) {
-                            // Restoring topic
-                            if (!$list_open) {
-								echo("<p class=\"gen\">" . $lang['Invalid_posts_found'] . ":</p>\n");
-								echo("<font class=\"gen\"><ul>\n");
-								$list_open = TRUE;
-							}
-							$record_list = implode(',', $result_array);
-							$new_forum = create_forum();
-							$first_post = implode(',', array_slice($result_array, 0, 1));
-							$last_post = implode(',', array_slice($result_array, -1, 1));
-							$post_replies = count($result_array) - 1;
-							// Get title for new topic
-							$row2 = dibi::select('post_subject')
-								->from(POSTS_TEXT_TABLE)
-								->where('post_id = %i', $first_post)
-								->fetch();
-
-							if (!$row2) {
-								throw_error("Couldn't get post information!");
-							}
-
-							$topic_title = ( $row2->post_subject == '') ? $lang['Restored_topic_name'] : $row2->post_subject;
-
-							// Get data from first post
-							$row2 = dibi::select(['poster_id', 'post_time'])
-								->from(POSTS_TABLE)
-								->where('post_id = %i', $first_post)
-								->fetch();
-
-							if (!$row2) {
-								throw_error("Couldn't get post information!");
-							}
-
-							// Restore topic
-							$sql2 = 'INSERT INTO ' . TOPICS_TABLE . " (forum_id, topic_title, topic_poster, topic_time, topic_views, topic_replies, topic_status, topic_vote, topic_type, topic_first_post_id, topic_last_post_id, topic_moved_id)
-								VALUES ($new_forum, '" . addslashes($topic_title) . "', " . $row2['poster_id'] . ", " . $row2['post_time'] . ", 0, $post_replies, " . TOPIC_UNLOCKED . ", 0, " . POST_NORMAL . ", $first_post, $last_post, 0)";
-							$result2 = $db->sql_query($sql2);
-							if ( !$result2 ) {
-								throw_error("Couldn't update topic data!", __LINE__, __FILE__, $sql2);
-							}
-							$new_topic = $db->sql_nextid();
-							echo("<li>" . sprintf($lang['Setting_topic'], $record_list, htmlspecialchars($topic_title), $new_topic, $lang['New_forum_name']) . " </li>\n");
-
-							dibi::update(POSTS_TABLE, ['forum_id' => $new_forum, 'topic_id' => $new_topic])
-								->where('post_id IN ', $result_array)
-								->execute();
-						}
-						// Reset data
-						$result_array = array();
-						if ( $row ) // Update the array only if we have a new post
-						{
-							$result_array[] = $row['post_id'];
-							$current_topic = $row['topic_id'];
-							$row = $db->sql_fetchrow($result); // Go to the next record
-						}
-                    } else {
-                        $result_array[] = $row['post_id'];
-                        $row            = $db->sql_fetchrow($result); // Go to the next record
+                    foreach ($rows as $row) {
+                        $topics[$row->topic_id][] = $row->post_id;
                     }
-				}
-				$db->sql_freeresult($result);
+
+                    $result_array = [];
+                    $new_forum = create_forum();
+
+                    foreach ($topics as $topicId => $posts) {
+                        $last_post_key = count($posts) - 1;
+                        $first_post = $posts[0];
+                        $last_post = $posts[$last_post_key];
+
+                        $row2 = dibi::select('post_subject')
+                            ->from(POSTS_TEXT_TABLE)
+                            ->where('post_id = %i', $first_post)
+                            ->fetch();
+
+                        if (!$row2) {
+                            throw_error("Couldn't get post information!");
+                        }
+
+                        $topic_title = ($row2->post_subject == '') ? $lang['Restored_topic_name'] : $row2->post_subject;
+
+                        // Get data from first post
+                        $firstPost = dibi::select(['poster_id', 'post_time'])
+                            ->from(POSTS_TABLE)
+                            ->where('post_id = %i', $first_post)
+                            ->fetch();
+
+                        if (!$firstPost) {
+                            throw_error("Couldn't get post information!");
+                        }
+
+                        // Restore topic
+                        $insertData = [
+                            'forum_id' => $new_forum,
+                            'topic_title' => $topic_title,
+                            'topic_poster' => $firstPost->poster_id,
+                            'topic_time' => $firstPost->post_time,
+                            'topic_views' => 0,
+                            'topic_replies' => $last_post_key,
+                            'topic_status' => TOPIC_UNLOCKED,
+                            'topic_vote' => 0,
+                            'topic_type' => POST_NORMAL,
+                            'topic_moved_id' => 0,
+                            'topic_first_post_id' => $first_post,
+                            'topic_last_post_id' => $last_post,
+                        ];
+
+                        $new_topic = dibi::insert(TOPICS_TABLE, $insertData)->execute(dibi::IDENTIFIER);
+                        $current_topic = $new_topic;
+
+                        echo("<li>" . sprintf($lang['Setting_topic'], implode(', ', $posts), htmlspecialchars($topic_title), $new_topic, $lang['New_forum_name']) . " </li>\n");
+
+                        dibi::update(POSTS_TABLE, ['forum_id' => $new_forum, 'topic_id' => $new_topic])
+                            ->where('post_id IN %in', $result_array)
+                            ->execute();
+                    }
+                }
+
                 if ($list_open) {
                     echo("</ul></font>\n");
                     $list_open = false;
@@ -1362,7 +1384,7 @@ switch($mode_id) {
                     ->leftJoin(TOPICS_TABLE)
                     ->as('t')
                     ->on('p.topic_id = t.topic_id')
-                    ->leftJoin('FORUMS_TABLE')
+                    ->leftJoin(FORUMS_TABLE)
                     ->as('fp')
                     ->on('p.forum_id = fp.forum_id')
                     ->leftJoin(FORUMS_TABLE)
@@ -1377,9 +1399,7 @@ switch($mode_id) {
                         echo("<font class=\"gen\"><ul>\n");
                         $list_open = true;
                     }
-                    echo("<li>" . sprintf($lang['Setting_post_forum'], $row->post_id,
-                            htmlspecialchars($row->p_forum_name), $row->p_forum_id,
-                            htmlspecialchars($row->t_forum_name), $row->t_forum_id) . "</li>\n");
+                    echo("<li>" . sprintf($lang['Setting_post_forum'], $row->post_id, htmlspecialchars($row->p_forum_name), $row->p_forum_id, htmlspecialchars($row->t_forum_name), $row->t_forum_id) . "</li>\n");
 
                     dibi::update(POSTS_TABLE, ['forum_id' => $row->t_forum_id])
                         ->where('post_id = %i', $row['post_id'])
@@ -1388,7 +1408,7 @@ switch($mode_id) {
 
                 if ($list_open) {
                     echo("</ul></font>\n");
-                    $list_open        = false;
+                    $list_open = false;
                     $update_post_data = true;
                 } else {
                     echo($lang['Nothing_to_do']);
@@ -1427,7 +1447,7 @@ switch($mode_id) {
 						throw_error("Couldn't update post information!", __LINE__, __FILE__, $sql2);
 					}
 				}
-				$db->sql_freeresult($result);
+
                 if ($list_open) {
                     echo("</ul></font>\n");
                     $list_open = false;
@@ -2455,10 +2475,8 @@ switch($mode_id) {
 
                 // Clear Tables
                 echo("<p class=\"gen\"><b>" . $lang['Preparing_search_tables'] . "</b></p>\n");
-                $sql = "DELETE FROM " . SEARCH_TABLE;
-                if (!($db->sql_query($sql))) {
-                    throw_error("Couldn't delete from search result table!", __LINE__, __FILE__, $sql);
-                }
+
+                dibi::query('TRUNCATE TABLE %n', SEARCH_TABLE);
 
                 dibi::delete(SEARCH_MATCH_TABLE)
                     ->where('post_id > %i', (int)$board_config['dbmtnc_rebuild_pos'])
@@ -2509,32 +2527,17 @@ switch($mode_id) {
 					$posts_to_index = intval($board_config['dbmtnc_rebuildcfg_timeoverwrite']);
 				}
 				// We have all data so get the post information
-				$row = dibi::select(['post_id', 'post_subject', 'post_text'])
+				$rows = dibi::select(['post_id', 'post_subject', 'post_text'])
 					->from(POSTS_TEXT_TABLE)
 					->where('post_id > %i', $board_config['dbmtnc_rebuild_pos'])
 					->where('post_id <= %i', $board_config['dbmtnc_rebuild_end'])
 					->orderBy('post_id')
 					->limit($posts_to_index)
-					->fetch();
+					->fetchAll();
 
-				$sql = "SELECT post_id, post_subject, post_text
-					FROM " . POSTS_TEXT_TABLE . "
-					WHERE post_id > " . intval($board_config['dbmtnc_rebuild_pos']) . "
-						AND post_id <= " . intval($board_config['dbmtnc_rebuild_end']) . "
-					ORDER BY post_id
-					LIMIT $posts_to_index";
-
-				$result = $db->sql_query($sql);
-
-				if ( !$result ) {
-					include('./page_header_admin.php');
-					throw_error("Couldn't get post data!", __LINE__, __FILE__, $sql);
-				}
 				// Get first record
-				$row = $db->sql_fetchrow($result);
-				if ( !$row ) // Yeah! we reached the end of the posts - finish actions and exit
+				if ( !count($rows) ) // Yeah! we reached the end of the posts - finish actions and exit
 				{
-					$db->sql_freeresult($result);
 					include('./page_header_admin.php');
 					update_config('dbmtnc_rebuild_pos', '-1');
 					update_config('dbmtnc_rebuild_end', '0');
@@ -2554,17 +2557,24 @@ switch($mode_id) {
 					include('./page_footer_admin.php');
 					exit;
 				}
+
 				$last_post = 0;
+
+				// TODO we use native phpBB functions add_search_words()
+                foreach ($rows as $row) {
+                    $last_post = $row['post_id'];
+                    add_search_words('single', $row->post_id, stripslashes($row->post_text), stripslashes($row->post_subject));
+                }
+
+/*
+				bdump($php_ver);
 				switch ($php_ver) {
 					case 3: // use standard method if we have PHP 3
-						while ($row) {
-							$last_post = $row['post_id'];
-							add_search_words('single', $last_post, stripslashes($row['post_text']), stripslashes($row['post_subject']));
-							$row = $db->sql_fetchrow($result);
-						}
+                    case 4:
+
 					break;
 					case 4: // use advanced method if we have PHP 4+ (we can make use of the advanced array functions)
-						$post_size = strlen($row['post_text']) + strlen($row['post_subject']); // needed for controlling array size
+						$post_size = strlen($row->post_text) + strlen($row->post_subject); // needed for controlling array size
 						// get stopword and synonym array
 						$stopword_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . "/search_stopwords.txt"); 
 						$synonym_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . "/search_synonyms.txt");
@@ -2651,6 +2661,7 @@ switch($mode_id) {
 						remove_common('single', 4/10, $word_array);
 					break;
 				}
+*/
 				// All posts are indexed for this turn - update Config-Data
 				update_config('dbmtnc_rebuild_pos', $last_post);
 				// OK, all actions are done - send headers
@@ -2659,7 +2670,6 @@ switch($mode_id) {
 				);
 				include('./page_header_admin.php');
 				ob_end_flush();
-				$db->sql_freeresult($result);
 				// Get Statistics
 
 				$posts_total = dibi::select('Count(*)')
@@ -3252,30 +3262,24 @@ switch($mode_id) {
 
 				for($i = 0; $i < count($tables); $i++) {
 					$tablename = $table_prefix . $tables[$i];
-					$sql = "CHECK TABLE $tablename";
-					$result = $db->sql_query($sql);
-					if ( !$result ) {
-						throw_error("Couldn't check table!", __LINE__, __FILE__, $sql);
-					}
-                    if ($row = $db->sql_fetchrow($result)) {
-                        if ($row['Msg_type'] == 'status') {
+
+                    $row = dibi::query('CHECK TABLE %n', $tablename)->fetch();
+
+                    if ($row) {
+                        if ($row->Msg_type == 'status') {
                             echo("<li>$tablename: " . $lang['Table_OK'] . "</li>\n");
                         } else { //  We got an error
 							// Check whether the error results from HEAP-table type
-							$sql2 = "SHOW TABLE STATUS LIKE '$tablename'";
-							$result2 = $db->sql_query($sql2);
-							$row2 = $db->sql_fetchrow($result2);
-							if ( (isset($row2['Type']) && $row2['Type'] == 'HEAP') || (isset($row2['Engine']) && ($row2['Engine'] == 'HEAP' || $row2['Engine'] == 'MEMORY')) )
-							{
+                            $row2 = dibi::query('SHOW TABLE STATUS LIKE %~like~', $tablename)->fetch();
+
+							if ( (isset($row2['Type']) && $row2['Type'] == 'HEAP') || (isset($row2['Engine']) && ($row2['Engine'] == 'HEAP' || $row2['Engine'] == 'MEMORY')) ) {
 								// Table is from HEAP-table type
 								echo("<li>$tablename: " . $lang['Table_HEAP_info'] . "</li>\n");
                             } else {
                                 echo("<li><b>$tablename:</b> " . htmlspecialchars($row['Msg_text']) . "</li>\n");
                             }
-							$db->sql_freeresult($result2);
 						}
 					}
-					$db->sql_freeresult($result);
 				}
 				echo("</ul></font>\n");
 				$list_open = FALSE;
@@ -3294,20 +3298,17 @@ switch($mode_id) {
 
 				for($i = 0; $i < count($tables); $i++) {
 					$tablename = $table_prefix . $tables[$i];
-					$sql = "REPAIR TABLE $tablename";
-					$result = $db->sql_query($sql);
-                    if (!$result) {
-                        throw_error("Couldn't repair table!", __LINE__, __FILE__, $sql);
-                    }
-                    if ($row = $db->sql_fetchrow($result)) {
-                        if ($row['Msg_type'] == 'status') {
+
+                    $row = dibi::query('REPAIR TABLE %n', $tablename)->fetch();
+
+                    if ($row) {
+                        if ($row->Msg_type == 'status') {
                             echo("<li>$tablename: " . $lang['Table_OK'] . "</li>\n");
                         }
 						else { //  We got an error
 							// Check whether the error results from HEAP-table type
-							$sql2 = "SHOW TABLE STATUS LIKE '$tablename'";
-							$result2 = $db->sql_query($sql2);
-							$row2 = $db->sql_fetchrow($result2);
+                            $row2 = dibi::query('SHOW TABLE STATUS LIKE %~like~', $tablename)->fetch();
+
 							if ( (isset($row2['Type']) && $row2['Type'] == 'HEAP') || (isset($row2['Engine']) && ($row2['Engine'] == 'HEAP' || $row2['Engine'] == 'MEMORY')) )
 							{
 								// Table is from HEAP-table type
@@ -3315,10 +3316,8 @@ switch($mode_id) {
 							} else {
 								echo("<li><b>$tablename:</b> " . htmlspecialchars($row['Msg_text']) . "</li>\n");
 							}
-							$db->sql_freeresult($result2);
 						}
 					}
-					$db->sql_freeresult($result);
 				}
 				echo("</ul></font>\n");
 				$list_open = FALSE;
@@ -3339,23 +3338,19 @@ switch($mode_id) {
 
 				for($i = 0; $i < count($tables); $i++) {
 					$tablename = $table_prefix . $tables[$i];
-					$sql = "OPTIMIZE TABLE $tablename";
-					$result = $db->sql_query($sql);
 
-					if ( !$result ) {
-						throw_error("Couldn't optimize table!", __LINE__, __FILE__, $sql);
-					}
+					$row = dibi::query('OPTIMIZE TABLE %n', $tablename)->fetch();
 
-                    if ($row = $db->sql_fetchrow($result)) {
-                        if ($row['Msg_type'] == 'status') {
+                    if ($row) {
+                        if ($row->Msg_type == 'status') {
                             echo("<li>$tablename: " . $lang['Table_OK'] . "</li>\n");
                         }
 						else //  We got an error
 						{
 							// Check whether the error results from HEAP-table type
-							$sql2 = "SHOW TABLE STATUS LIKE '$tablename'";
-							$result2 = $db->sql_query($sql2);
-							$row2 = $db->sql_fetchrow($result2);
+
+                            $row2 = dibi::query('SHOW TABLE STATUS LIKE %~like~', $tablename)->fetch();
+
 							if ( (isset($row2['Type']) && $row2['Type'] == 'HEAP') || (isset($row2['Engine']) && ($row2['Engine'] == 'HEAP' || $row2['Engine'] == 'MEMORY')) )
 							{
 								// Table is from HEAP-table type
@@ -3363,10 +3358,8 @@ switch($mode_id) {
 							} else {
 								echo("<li><b>$tablename:</b> " . htmlspecialchars($row['Msg_text']) . "</li>\n");
 							}
-							$db->sql_freeresult($result2);
 						}
 					}
-					$db->sql_freeresult($result);
 				}
 				echo("</ul></font>\n");
 				$list_open = FALSE;

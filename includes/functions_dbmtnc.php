@@ -461,34 +461,24 @@ function create_cat()
 	static $cat_created = FALSE;
 	static $cat_id = 0;
 
-	if (!$cat_created)
-	{
+	if (!$cat_created) {
 		// H�chten Wert von cat_order ermitteln
-		$sql = 'SELECT Max(cat_order) AS cat_order
-			FROM ' . CATEGORIES_TABLE;
-		$result = $db->sql_query($sql);
-		if( !$result )
-		{
-			throw_error("Couldn't get categories data!", __LINE__, __FILE__, $sql);
-		}
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-		if( !$row )
-		{
-			throw_error("Couldn't get categories data!", __LINE__, __FILE__, $sql);
-		}
-		$next_cat_order = $row['cat_order'] + 10;
+        $next_cat_order = dibi::select('MAX(cat_order)')
+            ->as('cart_order')
+            ->from(CATEGORIES_TABLE)
+            ->fetchSingle();
 
-		$sql = 'INSERT INTO ' . CATEGORIES_TABLE . ' (cat_title, cat_order)
-			VALUES (\'' . $lang['New_cat_name'] . "', $next_cat_order)";
-		$result = $db->sql_query($sql);
-		if( !$result )
-		{
-			throw_error("Couldn't update categories data!", __LINE__, __FILE__, $sql);
-		}
-		$cat_id = $db->sql_nextid();
-		$cat_created = TRUE;
+        $next_cat_order += 10;
+
+        $insertData = [
+            'cat_title' => $lang['New_cat_name'],
+            'cat_order' => $next_cat_order
+        ];
+
+        $cat_id = dibi::insert(CATEGORIES_TABLE, $insertData)->execute(dibi::IDENTIFIER);
+		$cat_created = true;
 	}
+
 	return $cat_id;
 }
 
@@ -505,47 +495,39 @@ function create_forum()
 
 	if (!$forum_created)
 	{
-		// H�chten Wert von forum_id ermitteln
-		$sql = 'SELECT Max(forum_id) AS forum_id
-			FROM ' . FORUMS_TABLE;
-		$result = $db->sql_query($sql);
-		if( !$result )
-		{
-			throw_error("Couldn't get forum data!", __LINE__, __FILE__, $sql);
-		}
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-		if( !$row )
-		{
-			throw_error("Couldn't get forum data!", __LINE__, __FILE__, $sql);
-		}
-		$next_forum_id = $row['forum_id'] + 1;
-		// H�chten Wert von forum_order ermitteln
-		$sql = 'SELECT Max(forum_order) AS forum_order
-			FROM ' . FORUMS_TABLE . "
-			WHERE cat_id = $cat_id";
-		$result = $db->sql_query($sql);
-		if( !$result )
-		{
-			throw_error("Couldn't get forum data!", __LINE__, __FILE__, $sql);
-		}
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-		if( !$row )
-		{
-			throw_error("Couldn't get forum data!", __LINE__, __FILE__, $sql);
-		}
-		$next_forum_order = $row['forum_order'] + 10;
+        $next_forum_order = dibi::select('MAX(forum_order)')
+            ->as('forum_order')
+            ->from(FORUMS_TABLE)
+            ->where('cat_id = %i', $cat_id)
+            ->fetchSingle();
 
-		$forum_permission = AUTH_ADMIN;
-		$sql = 'INSERT INTO ' . FORUMS_TABLE . " (forum_id, cat_id, forum_name, forum_desc, forum_status, forum_order, forum_posts, forum_topics, forum_last_post_id, prune_next, prune_enable, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_sticky, auth_announce, auth_vote, auth_pollcreate, auth_attachments)
-			VALUES ($next_forum_id, $cat_id, '" . $lang['New_forum_name'] . "', '', " . FORUM_LOCKED . ", $next_forum_order, 0, 0, 0, NULL, 0, $forum_permission, $forum_permission, $forum_permission, $forum_permission, $forum_permission, $forum_permission, $forum_permission, $forum_permission, $forum_permission, $forum_permission, 0)";
-		$result = $db->sql_query($sql);
-		if( !$result )
-		{
-			throw_error("Couldn't update forums data!", __LINE__, __FILE__, $sql);
-		}
-		$forum_id = $next_forum_id;
+        $next_forum_order += 10;
+
+        $insertData = [
+            'cat_id' =>  $cat_id,
+            'forum_name' => $lang['New_forum_name'],
+            'forum_desc' => '',
+            'forum_status' => FORUM_LOCKED,
+            'forum_order' => $next_forum_order,
+            'forum_posts' => 0,
+            'forum_topics' => 0,
+            'forum_last_post_id' => 0,
+            'prune_next' => null,
+            'prune_enable' => 0,
+            'auth_view' => AUTH_ADMIN,
+            'auth_read' => AUTH_ADMIN,
+            'auth_post' => AUTH_ADMIN,
+            'auth_reply' => AUTH_ADMIN,
+            'auth_edit' => AUTH_ADMIN,
+            'auth_delete' => AUTH_ADMIN,
+            'auth_sticky' => AUTH_ADMIN,
+            'auth_announce' => AUTH_ADMIN,
+            'auth_vote' => AUTH_ADMIN,
+            'auth_pollcreate' => AUTH_ADMIN,
+            'auth_attachments' => 0,
+        ];
+
+        $forum_id = dibi::insert(FORUMS_TABLE, $insertData)->execute(dibi::IDENTIFIER);
 		$forum_created = TRUE;
 	}
 	return $forum_id;
