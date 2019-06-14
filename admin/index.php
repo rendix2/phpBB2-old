@@ -65,7 +65,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
     ksort($module);
 
 	foreach ($module as $cat => $action_array) {
-		$cat = !empty($lang[$cat]) ? $lang[$cat] : preg_replace('/_/', ' ', $cat);
+		$cat = !empty($lang[$cat]) ? $lang[$cat] : str_replace('_', ' ', $cat);
 
         $template->assignBlockVars('catrow', ['ADMIN_CATEGORY' => $cat]);
 
@@ -77,7 +77,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
 			$row_color = !($rowCount%2) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = !($rowCount%2) ? $theme['td_class1'] : $theme['td_class2'];
 
-			$action = !empty($lang[$action]) ? $lang[$action] : preg_replace('/_/', ' ', $action);
+			$action = !empty($lang[$action]) ? $lang[$action] : str_replace('_', ' ', $action);
 
             $template->assignBlockVars('catrow.modulerow',
                 [

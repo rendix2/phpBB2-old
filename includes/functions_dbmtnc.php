@@ -726,17 +726,10 @@ function check_authorisation($die = TRUE)
 
 			break;
 		case 'db':
-			if ($db_user === $dbuser && $db_password === $dbpasswd)
-			{
-				$allow_access = TRUE;
-			}
-			else
-			{
-				$allow_access = FALSE;
-			}
+            $allow_access = $db_user === $dbuser && $db_password === $dbpasswd;
 			break;
 		default:
-			$allow_access = FALSE;
+            $allow_access = false;
 	}
 	if ( !$allow_access && $die )
 	{

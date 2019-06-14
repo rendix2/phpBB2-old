@@ -587,7 +587,7 @@ switch($mode)
 				<tr>
 					<td><input type="radio" name="method" value="select_theme" checked="checked" /></td>
 					<td><?php echo $lang['select_theme']; ?></td>
-					<td><?php echo Select::style_select('', 'new_style'); ?></td>
+					<td><?php echo Select::style('', 'new_style'); ?></td>
 				</tr>
 <?php
 				}

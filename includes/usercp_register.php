@@ -969,7 +969,7 @@ if (isset($_POST['avatargallery']) && !$error) {
             'AVATAR' => $avatar_img,
             'AVATAR_SIZE' => $board_config['avatar_filesize'],
             'LANGUAGE_SELECT' => language_select($user_lang),
-            'STYLE_SELECT' => Select::style_select($user_style),
+            'STYLE_SELECT' => Select::style($user_style),
             'TIMEZONE_SELECT' => Select::timezone($user_timezone),
             'DATE_FORMAT' => $user_dateformat,
             'HTML_STATUS' => $html_status,

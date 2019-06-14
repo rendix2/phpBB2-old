@@ -130,7 +130,7 @@ class Select
      *
      * @return string
      */
-    function style_select($default_style, $select_name = 'style', $dirname = 'templates')
+    public static function style($default_style, $select_name = 'style', $dirname = 'templates')
     {
         $themes = dibi::select(['themes_id', 'style_name'])
             ->from(THEMES_TABLE)
