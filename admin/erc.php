@@ -661,11 +661,10 @@ switch($mode)
 							} else //  We got an error
 							{
 								// Check whether the error results from HEAP-table type
-								$sql2 = "SHOW TABLE STATUS LIKE '$tablename'";
-								$result2 = $db->sql_query($sql2);
-								$row2 = $db->sql_fetchrow($result2);
-								if ( (isset($row2['Type']) && $row2['Type'] === 'HEAP') || (isset($row2['Engine']) && ($row2['Engine'] === 'HEAP' || $row2['Engine'] === 'MEMORY')) )
-								{
+
+								$row2 = dibi::query('SHOW TABLE STATUS LIKE %~like~', $tablename)->fetch();
+
+								if ( (isset($row2['Type']) && $row2['Type'] === 'HEAP') || (isset($row2['Engine']) && ($row2['Engine'] === 'HEAP' || $row2['Engine'] === 'MEMORY')) ) {
 									// Table is from HEAP-table type
 ?>
 		<li><?php echo "$tablename: " . $lang['Table_HEAP_info']?></li>
@@ -675,10 +674,8 @@ switch($mode)
 		<li><?php echo "<b>$tablename:</b> " . htmlspecialchars($row['Msg_text'])?></li>
 <?php
 								}
-								$db->sql_freeresult($result2);
 							}
 						}
-						$db->sql_freeresult($result);
 					}
 ?>
 	</ul>
@@ -709,12 +706,14 @@ switch($mode)
 				}
 
 				$default_config['script_path'] = str_replace('admin', '', dirname($_SERVER['PHP_SELF']));
-				$sql = 'SELECT Min(topic_time) as startdate FROM ' . TOPICS_TABLE;
 
-				if ( $result = $db->sql_query($sql) ){
-					if ( ($row = $db->sql_fetchrow($result)) && $row['startdate'] > 0 ){
-						$default_config['board_startdate'] = $row['startdate'];
-					}
+				$row = dibi::select('MIN(topic_time)')
+				    ->as('startdate')
+				    ->from(TOPICS_TABLE)
+				    ->fetch();
+
+				if ($row && $row->startdate > 0 ) {
+				    $default_config['board_startdate'] = $row['startdate'];
 				}
 
 				// Start the job				
@@ -722,7 +721,6 @@ switch($mode)
 	<p><?php echo $lang['Restoring_config'] . ':'; ?></p>
 	<ul>
 <?php
-				reset($default_config);
 				foreach ($default_config as $key => $value) {
 				    $row = dibi::select('config_value')
 				    ->from(CONFIG_TABLE)
@@ -899,43 +897,30 @@ switch($mode)
 				$board_user = isset($_POST['board_user']) ? trim(htmlspecialchars($_POST['board_user'])) : '';
 				$board_user = substr(str_replace("\\'", "'", $board_user), 0, 25);
 
-				$sql = 'SELECT user_id, username
-					FROM ' . USERS_TABLE . '
-					WHERE user_level = ' . ADMIN;
-				$result = $db->sql_query($sql);
-
-				if (!$result) {
-					erc_throw_error("Couldn't get user data!", __LINE__, __FILE__, $sql);
-				}
+				$rows = dibi::select(['user_id', 'username'])
+				->from(USERS_TABLE)
+				->where('user_level = %i', ADMIN)
+				->fetchAll();
 ?>
 	<p><?php echo $lang['Removing_admins'] . ':'; ?></p>
 	<ul>
 <?php
-				while ( $row = $db->sql_fetchrow($result) ) {
-					if ( $auth_method !== 'board' || $board_user !== $row['username'] ) {
+				foreach ($rows as $row) {
+					if ( $auth_method !== 'board' || $board_user !== $row->username ) {
 						// Checking whether user is a moderator
-						if( check_mysql_version() ) {
-							$sql2 = 'SELECT ug.user_id
-								FROM ' . USER_GROUP_TABLE . ' ug
-									INNER JOIN ' . AUTH_ACCESS_TABLE . ' aa ON ug.group_id = aa.group_id
-								WHERE ug.user_id = ' . $row['user_id'] . ' AND ug.user_pending <> 1 AND aa.auth_mod = 1';
-						} else {
-							$sql2 = 'SELECT ug.user_id
-								FROM ' . USER_GROUP_TABLE . ' ug, ' .
-									AUTH_ACCESS_TABLE . ' aa
-								WHERE ug.group_id = aa.group_id
-									AND ug.user_id = ' . $row['user_id'] . '
-									AND ug.user_pending <> 1 AND aa.auth_mod = 1';
-						}
 
-						$result2 = $db->sql_query($sql2);
+						$row2 = dibi::select('ug.user_id')
+						    ->from(USER_GROUP_TABLE)
+						    ->as('ug')
+						    ->innerJoin(AUTH_ACCESS_TABLE)
+						    ->as('aa')
+						    ->on('ug.group_id = aa.group_id')
+						    ->where('ug.user_id = %i', $row->user_id)
+						    ->where('ug.user_pending <> %i', 1)
+						    ->where('aa.auth_mod = %i', 1)
+						    ->fetch();
 
-						if ( !$result2 ) {
-							erc_throw_error("Couldn't get moderator data!", __LINE__, __FILE__, $sql2);
-						}
-
-						$new_state = (int) (( $row2 = $db->sql_fetchrow($result2) ) ? MOD : USER);
-						$db->sql_freeresult($result2);
+						$new_state = ($row2) ? MOD : USER;
 
 						dibi::update(USERS_TABLE, ['user_level' => $new_state])
 						    ->where('user_id = %i', $row['user_id'])
@@ -946,7 +931,6 @@ switch($mode)
 <?php
 					}
 				}
-				$db->sql_freeresult($result);
 ?>
 	</ul>
 <?php

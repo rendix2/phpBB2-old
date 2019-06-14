@@ -1438,14 +1438,24 @@ switch($mode_id) {
 					}
 					$enable_bbcode = ($board_config['allow_bbcode'] && $row->bbcode_uid != '') ? 1 : 0;
 					echo("<li>" . sprintf($lang['Recreating_post'], $row->post_id, $lang['New_topic_name'], $lang['New_forum_name'], substr(htmlspecialchars(strip_tags($row->post_text)), 0, 30)) . "</li>\n");
-					$sql2 = "INSERT INTO " . POSTS_TABLE . ' (post_id, topic_id, forum_id, poster_id, post_time, poster_ip, post_username, enable_bbcode, enable_html, enable_smilies, enable_sig, post_edit_time, post_edit_count)
-						VALUES (' . $row->post_id . ", $new_topic, $new_forum, " . ANONYMOUS . ', ' . time() . ', 
-					\'\', \'' . $lang['New_poster_name'] . "', $enable_bbcode, $enable_html, $enable_smilies, 0, NULL, 0)";
-					$result2 = $db->sql_query($sql2);
-					if ( !$result2 )
-					{
-						throw_error("Couldn't update post information!", __LINE__, __FILE__, $sql2);
-					}
+
+					$insertData = [
+					    'post_id' => $row->post_id,
+                        'topic_id' => $new_topic,
+                        'forum_id' => $new_forum,
+                        'poster_id' => ANONYMOUS,
+                        'post_time' => time(),
+                        'poster_ip' => '',
+                        'post_username' => $lang['New_poster_name'],
+                        'enable_bbcode' => $enable_bbcode,
+                        'enable_html' => $enable_html,
+                        'enable_smilies' => $enable_smilies,
+                        'enable_sig' => 0,
+                        'post_edit_time' => null,
+                        'post_edit_count' => 0
+                    ];
+
+					dibi::insert(POSTS_TABLE, $insertData)->execute();
 				}
 
                 if ($list_open) {
