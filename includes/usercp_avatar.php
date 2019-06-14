@@ -52,11 +52,11 @@ function user_avatar_delete($avatar_type, $avatar_file)
 
 	$avatar_file = basename($avatar_file);
 
-	if ($avatar_type === USER_AVATAR_UPLOAD && $avatar_file !== '') {
-		if (@file_exists(@phpbb_realpath('./' . $board_config['avatar_path'] . '/' . $avatar_file))) {
-			@unlink('./' . $board_config['avatar_path'] . '/' . $avatar_file);
-		}
-	}
+	$fileExists = @file_exists(@phpbb_realpath('./' . $board_config['avatar_path'] . '/' . $avatar_file));
+
+    if ($avatar_type === USER_AVATAR_UPLOAD && $avatar_file !== '' && $fileExists) {
+        @unlink('./' . $board_config['avatar_path'] . '/' . $avatar_file);
+    }
 
 	return ['user_avatar' => '', 'user_avatar_type' => USER_AVATAR_NONE];
 }
@@ -84,7 +84,10 @@ function user_avatar_gallery($mode, &$error, &$error_msg, $avatarFileName, $avat
         return [];
     }
 
-    if (file_exists(@phpbb_realpath($board_config['avatar_gallery_path'] . '/' . $avatarCategory . '/' . $avatarFileName)) && ($mode === 'editprofile')) {
+    $filePath   = $board_config['avatar_gallery_path'] . '/' . $avatarCategory . '/' . $avatarFileName;
+    $fileExists = file_exists(@phpbb_realpath($filePath));
+
+    if ($fileExists && $mode === 'editprofile') {
         return ['user_avatar' => $avatarCategory . '/' . $avatarFileName, 'user_avatar_type' => USER_AVATAR_GALLERY];
     } else {
         return [];

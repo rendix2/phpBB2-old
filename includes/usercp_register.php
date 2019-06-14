@@ -832,6 +832,7 @@ if (isset($_POST['avatargallery']) && !$error) {
 
 	$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';
 	$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
+
 	if ($mode === 'editprofile') {
 		$s_hidden_fields .= '<input type="hidden" name="user_id" value="' . $userdata['user_id'] . '" />';
 		//
@@ -869,6 +870,7 @@ if (isset($_POST['avatargallery']) && !$error) {
 
 	// Visual Confirmation
 	$confirm_image = '';
+
 	if (!empty($board_config['enable_confirm']) && $mode === 'register') {
 	    $sessions = dibi::select('session_id')
             ->from(SESSIONS_TABLE)

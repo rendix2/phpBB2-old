@@ -105,36 +105,39 @@ if (isset($board_config) && isset($board_config['version'])) {
     // Fallback for ERC
     $phpbb_version = [0, 22];
 }
+
 if ($phpbb_version[0] === 0 && $phpbb_version[1] >= 5) {
     $tables[] = 'confirm';
 }
+
 if ($phpbb_version[0] === 0 && $phpbb_version[1] >= 18) {
     $tables[] = 'sessions_keys';
 
     $default_config['allow_autologin']= '1';
     $default_config['max_autologin_time'] = '0';
 }
+
 if ($phpbb_version[0] === 0 && $phpbb_version[1] >= 19) {
     $default_config['max_login_attempts'] = '5';
     $default_config['login_reset_time']   = '30';
 }
+
 if ($phpbb_version[0] === 0 && $phpbb_version[1] >= 20) {
     $default_config['search_flood_interval'] = '15';
     $default_config['rand_seed'] = '0';
 }
+
 if ($phpbb_version[0] === 0 && $phpbb_version[1] >= 21) {
     $default_config['search_min_chars'] = '3';
 }
 sort($tables);
-
-
 
 //
 // Function for updating the config_table
 //
 function update_config($name, $value)
 {
-	global $db, $board_config;
+	global $board_config;
 
     dibi::update(CONFIG_TABLE, ['config_value' => $value])
         ->where('config_name = %s', $name)
@@ -201,10 +204,10 @@ function throw_error($msg_text = '', $err_line = '', $err_file = '', $sql = '')
 //
 // Locks or unlocks the database
 //
-function lock_db($unlock = FALSE, $delay = TRUE, $ignore_default = FALSE)
+function lock_db($unlock = false, $delay = true, $ignore_default = false)
 {
-	global $board_config, $db, $lang;
-	static $db_was_locked = FALSE;
+    global $board_config, $lang;
+    static $db_was_locked = false;
 
 	if ($unlock) {
 		echo('<p class="gen"><b>' . $lang['Unlock_db'] . "</b></p>\n");
@@ -253,8 +256,8 @@ function check_condition($check)
 
 	switch ($check)
 	{
-		case 0: // No check
-			return TRUE;
+        case 0: // No check
+            return true;
 			break;
 		case 1: // MySQL >= 3.23.17
 			return check_mysql_version();
@@ -278,15 +281,15 @@ function check_condition($check)
 		case 4: // Search index in recreation
 			if( $board_config['dbmtnc_rebuild_pos'] !== -1 ) {
 				// Rebuilding was interrupted - check for end position
-				if ( $board_config['dbmtnc_rebuild_end'] >= $board_config['dbmtnc_rebuild_pos'] ) {
-					return TRUE;
-				} else {
-					return FALSE;
-				}
-			} else {
-				// Rebuilding was not interrupted
-				return FALSE;
-			}
+                if ($board_config['dbmtnc_rebuild_end'] >= $board_config['dbmtnc_rebuild_pos']) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                // Rebuilding was not interrupted
+                return false;
+            }
 			break;
 		case 5: // Configuration disabled
 			return CONFIG_LEVEL !== 0;
@@ -319,13 +322,13 @@ function check_mysql_version()
 	}
 
     // Version from 3.23.0 to 3.23.16
-	if ( preg_match("/^3\.23\.([0-9]$|[0-9]-|1[0-3]$|1[0-6]-)/", $version) ) {
-		return FALSE;
-	} elseif ( preg_match("/^(3\.23)|(4\.)|(5\.)/", $version) ) {
-		return TRUE;
-	}else { // Versions before 3.23.0
-		return FALSE;
-	}
+    if (preg_match("/^3\.23\.([0-9]$|[0-9]-|1[0-3]$|1[0-6]-)/", $version)) {
+        return false;
+    } elseif (preg_match("/^(3\.23)|(4\.)|(5\.)/", $version)) {
+        return true;
+    } else { // Versions before 3.23.0
+        return false;
+    }
 }
 
 //
@@ -334,9 +337,8 @@ function check_mysql_version()
 function getmicrotime()
 {
 	list($usec, $sec) = explode(' ', microtime());
-	return ((float)$usec + (float)$sec); 
+	return ((float)$usec + (float)$sec);
 }
-
 
 //
 // Gets table statistics
@@ -360,20 +362,20 @@ function get_table_statistic()
 
     foreach ($rows as $row) {
         $stat['all']['count']++;
-        $stat['all']['records'] += (int)$row['Rows'];
-        $stat['all']['size']    += (int)$row['Data_length'] + (int)$row['Index_length'];
+        $stat['all']['records'] += (int)$row->Rows;
+        $stat['all']['size']    += (int)$row->Data_length + (int)$row->Index_length;
 
-        if ($table_prefix === substr($row['Name'], 0, strlen($table_prefix))) {
+        if ($table_prefix === substr($row->Name, 0, strlen($table_prefix))) {
             $stat['advanced']['count']++;
-            $stat['advanced']['records'] += (int)$row['Rows'];
-            $stat['advanced']['size']    += (int)$row['Data_length'] + (int)$row['Index_length'];
+            $stat['advanced']['records'] += (int)$row->Rows;
+            $stat['advanced']['size']    += (int)$row->Data_length + (int)$row->Index_length;
         }
 
         foreach ($tables as $table) {
-            if ($table_prefix . $table === $row['Name']) {
+            if ($table_prefix . $table === $row->Name) {
                 $stat['core']['count']++;
-                $stat['core']['records'] += (int)$row['Rows'];
-                $stat['core']['size']    += (int)$row['Data_length'] + (int)$row['Index_length'];
+                $stat['core']['records'] += (int)$row->Rows;
+                $stat['core']['size']    += (int)$row->Data_length + (int)$row->Index_length;
             }
         }
     }
@@ -496,7 +498,7 @@ function create_topic()
 			throw_error("Couldn't update topics data!", __LINE__, __FILE__, $sql);
 		}
 		$topic_id = $db->sql_nextid();
-		$topic_created = TRUE;
+        $topic_created = true;
 	}
 	return $topic_id;
 }
@@ -506,19 +508,19 @@ function create_topic()
 //
 function get_poster($topic_id)
 {
-    $row = dibi::select('Min(post_id)')
+    $firstPost = dibi::select('Min(post_id)')
         ->as('first_post')
         ->from(POSTS_TABLE)
         ->where('topic_id = %i', $topic_id)
         ->fetchSingle();
 
-    if (!$row) {
+    if (!$firstPost) {
         return DELETED;
     }
 
     $posterId = dibi::select('poster_id')
         ->from(POSTS_TABLE)
-        ->where('post_id = %i', $row['first_post'])
+        ->where('post_id = %i', $firstPost)
         ->fetch();
 
     if (!$posterId) {
@@ -534,7 +536,7 @@ function get_poster($topic_id)
 function catch_error($errno, $errstr)
 {
 	global $execution_time;
-	
+
 	$execution_time = ini_get('max_execution_time'); // Will only get executet when running on PHP 4+
 }
 
@@ -545,7 +547,7 @@ function get_word_id($word)
 {
 	global $board_config, $db, $lang, $phpEx, $template, $theme;
 	global $stopword_array, $synonym_array;
-	
+
 	// Check whether word is in stopword array
     if (in_array($word, $stopword_array, true)) {
         return null;
@@ -694,17 +696,19 @@ function language_select($default, $select_name = 'language', $file_to_check = '
 	return $lang_select;
 }
 
-function check_authorisation($die = TRUE)
+function check_authorisation($die = true)
 {
-	global $db, $lang, $dbuser, $dbpasswd, $option, $_POST;
+	global $lang, $dbuser, $dbpasswd, $option, $_POST;
 
-	$auth_method = isset($_POST['auth_method']) ? htmlspecialchars($_POST['auth_method']) : '';
-	$board_user = isset($_POST['board_user']) ? trim(htmlspecialchars($_POST['board_user'])) : '';
-	$board_user = substr(str_replace("\\'", "'", $board_user), 0, 25);
-	$board_user = str_replace("'", "\\'", $board_user);
-	$board_password = isset($_POST['board_password']) ? $_POST['board_password'] : '';
-	$db_user = isset($_POST['db_user']) ? $_POST['db_user'] : '';
-	$db_password = isset($_POST['db_password']) ? $_POST['db_password'] : '';
+    $auth_method    = isset($_POST['auth_method']) ? htmlspecialchars($_POST['auth_method']) : '';
+    $board_password = isset($_POST['board_password']) ? $_POST['board_password'] : '';
+    $db_user        = isset($_POST['db_user']) ? $_POST['db_user'] : '';
+    $db_password    = isset($_POST['db_password']) ? $_POST['db_password'] : '';
+
+    $board_user = isset($_POST['board_user']) ? trim(htmlspecialchars($_POST['board_user'])) : '';
+    $board_user = substr(str_replace("\\'", "'", $board_user), 0, 25);
+    $board_user = str_replace("'", "\\'", $board_user);
+
 	// Change authentication mode if selected option does not allow database authentication
 
 	if ( $option === 'rld' || $option === 'rtd' ) {
@@ -721,7 +725,7 @@ function check_authorisation($die = TRUE)
             if ($row === false) {
                 $allow_access = false;
             } else {
-                $allow_access = password_verify($board_password, $row['user_password'])  && $row['user_active'] && $row['user_level'] === ADMIN;
+                $allow_access = password_verify($board_password, $row->user_password)  && $row->user_active && $row->user_level === ADMIN;
             }
 
 			break;
@@ -731,8 +735,7 @@ function check_authorisation($die = TRUE)
 		default:
             $allow_access = false;
 	}
-	if ( !$allow_access && $die )
-	{
+    if (!$allow_access && $die) {
 ?>
 	<p><span style="color:red"><?php echo $lang['Auth_failed']; ?></span></p>
 </body>
@@ -760,7 +763,7 @@ function get_config_data($option)
 function success_message($text)
 {
 	global $lang, $lg, $_SERVER;
-	
+
 ?>
 	<p><?php echo $text; ?></p>
 	<p style="text-align:center"><a href="<?php echo $_SERVER['PHP_SELF'] . '?lg=' . $lg; ?>"><?php echo $lang['Return_ERC']; ?></a></p>

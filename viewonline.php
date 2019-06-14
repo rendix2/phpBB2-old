@@ -142,7 +142,7 @@ foreach ($rows as $row) {
 		}
 	}
 
-	$prev_ip = $row['session_ip'];
+	$prev_ip = $row->session_ip;
 
     if ($view_online) {
         if ($row->session_page < 1 || !$is_auth_ary[$row->session_page]['auth_view']) {

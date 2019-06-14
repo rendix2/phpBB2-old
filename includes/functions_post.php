@@ -20,9 +20,8 @@
  *
  ***************************************************************************/
 
-if (!defined('IN_PHPBB'))
-{
-	die('Hacking attempt');
+if (!defined('IN_PHPBB')) {
+    die('Hacking attempt');
 }
 
 $html_entities_match   = ['#&(?!(\#[0-9]+;))#', '#<#', '#>#', '#"#'];
@@ -44,8 +43,7 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 	//
 	$message = trim($message);
 
-	if ($html_on)
-	{
+	if ($html_on) {
 		// If HTML is on, we try to make it safe
 		// This approach is quite agressive and anything that does not look like a valid tag
 		// is going to get converted to HTML entities

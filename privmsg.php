@@ -919,7 +919,7 @@ if ($mode === 'newpm') {
 				$update_users = $update_list = [];
 			
 				foreach ($rows as $row) {
-					switch ($row['privmsgs_type']) {
+					switch ($row->privmsgs_type) {
 						case PRIVMSGS_NEW_MAIL:
 							$update_users['new'][$row->privmsgs_to_userid]++;
 							break;

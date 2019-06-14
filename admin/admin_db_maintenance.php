@@ -540,10 +540,10 @@ switch($mode_id) {
                 $multiple_groups = [];
 
                 foreach ($rows as $row) {
-                    if ($row['group_count'] !== 0) {
-                        $multiple_groups[] = $row['user_id'];
+                    if ($row->group_count !== 0) {
+                        $multiple_groups[] = $row->user_id;
                     }
-                    $missing_groups[] = $row['user_id'];
+                    $missing_groups[] = $row->user_id;
                 }
 
                 // Check for multiple records
@@ -1402,7 +1402,7 @@ switch($mode_id) {
                     echo("<li>" . sprintf($lang['Setting_post_forum'], $row->post_id, htmlspecialchars($row->p_forum_name), $row->p_forum_id, htmlspecialchars($row->t_forum_name), $row->t_forum_id) . "</li>\n");
 
                     dibi::update(POSTS_TABLE, ['forum_id' => $row->t_forum_id])
-                        ->where('post_id = %i', $row['post_id'])
+                        ->where('post_id = %i', $row->post_id)
                         ->execute();
                 }
 
@@ -1430,7 +1430,7 @@ switch($mode_id) {
 					if (!$list_open) {
 						echo("<p class=\"gen\">" . $lang['Invalid_texts_found'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
-						$list_open = TRUE;
+                        $list_open = true;
 						$new_forum = create_forum();
 						$new_topic = create_topic();
 						$enable_html = $board_config['allow_html'];
@@ -1974,7 +1974,7 @@ switch($mode_id) {
                         echo("<font class=\"gen\"><ul>\n");
                         $list_open = true;
                     }
-                    echo("<li>" . sprintf($lang['Deleting_pn_wo_text'], $row->privmsgs_id, htmlspecialchars($row['privmsgs_subject']), htmlspecialchars($row->from_username), $row->from_user_id, htmlspecialchars($row->to_username), $row->to_user_id) . "</li>\n");
+                    echo("<li>" . sprintf($lang['Deleting_pn_wo_text'], $row->privmsgs_id, htmlspecialchars($row->privmsgs_subject), htmlspecialchars($row->from_username), $row->from_user_id, htmlspecialchars($row->to_username), $row->to_user_id) . "</li>\n");
                     $result_array[] = $row->privmsgs_id;
                 }
 
@@ -2127,7 +2127,7 @@ switch($mode_id) {
                     ->fetchAll();
 
                 foreach ($rows as $row) {
-                    $result_array[] = $row['user_id'];
+                    $result_array[] = $row->user_id;
 
                     if ($row->new_counter !== $row->user_new_privmsg) {
                         if (!$list_open) {
@@ -2135,10 +2135,11 @@ switch($mode_id) {
                             echo("<font class=\"gen\"><ul>\n");
                             $list_open = true;
                         }
-                        echo("<li>" . sprintf($lang['Synchronizing_user'], htmlspecialchars($row['username']), $row['user_id']) . "</li>\n");
+                        echo("<li>" . sprintf($lang['Synchronizing_user'], htmlspecialchars($row->username), $row->user_id)
+                            . "</li>\n");
 
-                        dibi::update(USERS_TABLE, ['user_new_privmsg' => $row['new_counter']])
-                            ->where('user_id = %i', $row['user_id'])
+                        dibi::update(USERS_TABLE, ['user_new_privmsg' => $row->new_counter])
+                            ->where('user_id = %i', $row->user_id)
                             ->execute();
                     }
                 }
@@ -2194,7 +2195,7 @@ switch($mode_id) {
                 $result_array = [];
 
                 foreach ($rows as $row) {
-                    $result_array[] = $row['user_id'];
+                    $result_array[] = $row->user_id;
 
                     if ($row->new_counter !== $row->user_unread_privmsg) {
                         if (!$list_open) {
@@ -2562,7 +2563,7 @@ switch($mode_id) {
 
 				// TODO we use native phpBB functions add_search_words()
                 foreach ($rows as $row) {
-                    $last_post = $row['post_id'];
+                    $last_post = $row->post_id;
                     add_search_words('single', $row->post_id, stripslashes($row->post_text), stripslashes($row->post_subject));
                 }
 
@@ -2601,9 +2602,9 @@ switch($mode_id) {
 						$i = 0;
 						while ($row && ($post_size <= $board_config['dbmtnc_rebuildcfg_maxmemory'] * 1024 || $i < $board_config['dbmtnc_rebuildcfg_minposts']))
 						{
-							$last_post = $row['post_id'];
+							$last_post = $row->post_id;
 							// handle text
-							$word_list = split_words(clean_words('post', $row['post_text'], $empty_array, $empty_array));
+							$word_list = split_words(clean_words('post', $row->post_text, $empty_array, $empty_array));
 							foreach ($word_list as $word) {
 								// cutting of long words in functions_search.php seems not to work under some conditions - so check it again
                                 if ($word != '' && strlen($word) <= 20) {
@@ -2613,7 +2614,7 @@ switch($mode_id) {
                                 }
                             }
 							// handle subject
-							$word_list = split_words(clean_words('post', $row['post_subject'], $empty_array, $empty_array));
+							$word_list = split_words(clean_words('post', $row->post_subject, $empty_array, $empty_array));
                             foreach ($word_list as $word) {
 								// cutting of long words in functions_search.php seems not to work under some conditions - so check it again
                                 if ($word != '' && strlen($word) <= 20) {
@@ -2625,7 +2626,7 @@ switch($mode_id) {
 							unset($word_list);
 							$row = $db->sql_fetchrow($result);
 							$i++;
-							$post_size += strlen($row['post_text']) + strlen($row['post_subject']);
+							$post_size += strlen($row->post_text) + strlen($row->post_subject);
 						}
 						// sort array
 						array_multisort($result_array[2], SORT_ASC, SORT_STRING, $result_array[0], SORT_ASC, SORT_NUMERIC, $result_array[1]);
@@ -2770,7 +2771,7 @@ switch($mode_id) {
 						->as('topic_last_post_id')
 						->from(POSTS_TABLE)
 						->where('topic_id = %i', $row->topic_moved_id)
-						->where('post_id <= %i', $row['topic_last_post_id'])
+						->where('post_id <= %i', $row->topic_last_post_id)
 						->groupBy('topic_id')
 						->fetch();
 
@@ -2780,9 +2781,9 @@ switch($mode_id) {
 							->where('topic_id = %i', $row->topic_id)
 							->where(
 								'(topic_replies <> %i OR topic_first_post_id <> OR topic_last_post_id <> %i )',
-								$row2['topic_replies'],
-								$row2['topic_first_post_id'],
-								$row2['topic_last_post_id']
+								$row2->topic_replies,
+								$row2->topic_first_post_id,
+								$row2->topic_last_post_id
 							)->fetchAll();
 
 						if ($row3) {
@@ -2791,16 +2792,16 @@ switch($mode_id) {
 								echo("<font class=\"gen\"><ul>\n");
 								$list_open = TRUE;
 							}
-							echo("<li>" . sprintf($lang['Synchronizing_moved_topic'], $row['topic_id'], $row['topic_moved_id'], htmlspecialchars($row['topic_title'])) . "</li>\n");
+							echo("<li>" . sprintf($lang['Synchronizing_moved_topic'], $row->topic_id, $row->topic_moved_id, htmlspecialchars($row->topic_title)) . "</li>\n");
 
 							$updateData = [
-								'topic_replies' => $row2['topic_replies'],
-								'topic_first_post_id' => $row2['topic_first_post_id'],
-								'topic_last_post_id' => $row2['topic_last_post_id']
+								'topic_replies' => $row2->topic_replies,
+								'topic_first_post_id' => $row2->topic_first_post_id,
+								'topic_last_post_id' => $row2->topic_last_post_id
 							];
 
 							dibi::update(TOPICS_TABLE, $updateData)
-								->where('topic_id = %i', $row['topic_id'])
+								->where('topic_id = %i', $row->topic_id)
 								->execute();
 						}
 					} else {
@@ -2904,7 +2905,7 @@ switch($mode_id) {
 					if (!$list_open) {
 						echo("<p class=\"gen\">" . $lang['Synchronizing_forums'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
-						$list_open = TRUE;
+                        $list_open = true;
 					}
 					echo("<li>" . sprintf($lang['Synchronizing_forum'], $row->forum_id, htmlspecialchars($row->forum_name)) . "</li>\n");
 
@@ -2996,10 +2997,10 @@ switch($mode_id) {
 							$list_open = TRUE;
 						}
 
-						echo("<li>" . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row['username']), $row['user_id'], $row['user_posts'], $row['new_counter']) . "</li>\n");
+						echo("<li>" . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row->username), $row->user_id, $row->user_posts, $row->new_counter) . "</li>\n");
 
-						dibi::update(USERS_TABLE, ['user_posts' => $row['new_counter']])
-							->where('user_id = %i', $row['user_id'])
+						dibi::update(USERS_TABLE, ['user_posts' => $row->new_counter])
+							->where('user_id = %i', $row->user_id)
 							->execute();
 					}
 				}
@@ -3066,10 +3067,10 @@ switch($mode_id) {
                             $list_open = TRUE;
                         }
 
-                        echo("<li>" . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row['username']), $row['user_id'], $row['user_topics'], $row['new_counter']) . "</li>\n");
+                        echo("<li>" . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row->username), $row->user_id, $row->user_topics, $row->new_counter) . "</li>\n");
 
-                        dibi::update(USERS_TABLE, ['user_topics' => $row['new_counter']])
-                            ->where('user_id = %i', $row['user_id'])
+                        dibi::update(USERS_TABLE, ['user_topics' => $row->new_counter])
+                            ->where('user_id = %i', $row->user_id)
                             ->execute();
                     }
                 }
@@ -3108,7 +3109,7 @@ switch($mode_id) {
                     echo($lang['Nothing_to_do']);
                 }
 
-				lock_db(TRUE);
+                lock_db(true);
 				break;
 			case 'synchronize_mod_state': // Synchronize moderator status
 				echo("<h1>" . $lang['Synchronize_moderators'] . "</h1>\n");
@@ -3328,23 +3329,23 @@ switch($mode_id) {
 				echo("<font class=\"gen\"><ul>\n");
 				$list_open = TRUE;
 
-				for($i = 0; $i < count($tables); $i++) {
-					$tablename = $table_prefix . $tables[$i];
+				foreach ($tables as $table) {
+					$tablename = $table_prefix . $table;
 
                     $row = dibi::query('CHECK TABLE %n', $tablename)->fetch();
 
                     if ($row) {
-                        if ($row->Msg_type == 'status') {
+                        if ($row->Msg_type === 'status') {
                             echo("<li>$tablename: " . $lang['Table_OK'] . "</li>\n");
                         } else { //  We got an error
 							// Check whether the error results from HEAP-table type
                             $row2 = dibi::query('SHOW TABLE STATUS LIKE %~like~', $tablename)->fetch();
 
-							if ( (isset($row2['Type']) && $row2['Type'] == 'HEAP') || (isset($row2['Engine']) && ($row2['Engine'] == 'HEAP' || $row2['Engine'] == 'MEMORY')) ) {
+							if ( (isset($row2->Type) && $row2->Type == 'HEAP') || (isset($row2->Engine) && ($row2->Engine == 'HEAP' || $row2->Engine == 'MEMORY')) ) {
 								// Table is from HEAP-table type
 								echo("<li>$tablename: " . $lang['Table_HEAP_info'] . "</li>\n");
                             } else {
-                                echo("<li><b>$tablename:</b> " . htmlspecialchars($row['Msg_text']) . "</li>\n");
+                                echo("<li><b>$tablename:</b> " . htmlspecialchars($row->Msg_text) . "</li>\n");
                             }
 						}
 					}
@@ -3364,8 +3365,8 @@ switch($mode_id) {
 				echo("<font class=\"gen\"><ul>\n");
 				$list_open = TRUE;
 
-				for($i = 0; $i < count($tables); $i++) {
-					$tablename = $table_prefix . $tables[$i];
+				foreach ($tables as $table) {
+					$tablename = $table_prefix . $table;
 
                     $row = dibi::query('REPAIR TABLE %n', $tablename)->fetch();
 
@@ -3377,35 +3378,35 @@ switch($mode_id) {
 							// Check whether the error results from HEAP-table type
                             $row2 = dibi::query('SHOW TABLE STATUS LIKE %~like~', $tablename)->fetch();
 
-							if ( (isset($row2['Type']) && $row2['Type'] == 'HEAP') || (isset($row2['Engine']) && ($row2['Engine'] == 'HEAP' || $row2['Engine'] == 'MEMORY')) )
-							{
+							if ( (isset($row2->Type) && $row2->Type == 'HEAP') || (isset($row2->Engine) && ($row2->Engine == 'HEAP' || $row2->Engine == 'MEMORY')) ) {
 								// Table is from HEAP-table type
 								echo("<li>$tablename: " . $lang['Table_HEAP_info'] . "</li>\n");
 							} else {
-								echo("<li><b>$tablename:</b> " . htmlspecialchars($row['Msg_text']) . "</li>\n");
+								echo("<li><b>$tablename:</b> " . htmlspecialchars($row->Msg_text) . "</li>\n");
 							}
 						}
 					}
 				}
 				echo("</ul></font>\n");
-				$list_open = FALSE;
-				lock_db(TRUE);
+                $list_open = false;
+                lock_db(true);
 				break;
 			case 'optimize_db': // Optimize database
 				echo("<h1>" . $lang['Optimizing_db'] . "</h1>\n");
 
-				if ( !check_mysql_version() ) {
-					echo("<p class=\"gen\">" . $lang['Old_MySQL_Version'] . "</p>\n");
-					break;
-				}
+                if (!check_mysql_version()) {
+                    echo("<p class=\"gen\">" . $lang['Old_MySQL_Version'] . "</p>\n");
+                    break;
+                }
+
 				lock_db();
 				$old_stat = get_table_statistic();
 				echo("<p class=\"gen\"><b>" . $lang['Optimizing_tables'] . ":</b></p>\n");
 				echo("<font class=\"gen\"><ul>\n");
-				$list_open = TRUE;
+                $list_open = true;
 
-				for($i = 0; $i < count($tables); $i++) {
-					$tablename = $table_prefix . $tables[$i];
+				foreach ($tables as $table) {
+					$tablename = $table_prefix . $table;
 
 					$row = dibi::query('OPTIMIZE TABLE %n', $tablename)->fetch();
 
@@ -3419,12 +3420,12 @@ switch($mode_id) {
 
                             $row2 = dibi::query('SHOW TABLE STATUS LIKE %~like~', $tablename)->fetch();
 
-							if ( (isset($row2['Type']) && $row2['Type'] == 'HEAP') || (isset($row2['Engine']) && ($row2['Engine'] == 'HEAP' || $row2['Engine'] == 'MEMORY')) )
+							if ( (isset($row2->Type) && $row2->Type == 'HEAP') || (isset($row2->Engine) && ($row2->Engine == 'HEAP' || $row2->Engine == 'MEMORY')) )
 							{
 								// Table is from HEAP-table type
 								echo("<li>$tablename: " . $lang['Table_HEAP_info'] . "</li>\n");
 							} else {
-								echo("<li><b>$tablename:</b> " . htmlspecialchars($row['Msg_text']) . "</li>\n");
+								echo("<li><b>$tablename:</b> " . htmlspecialchars($row->Msg_text) . "</li>\n");
 							}
 						}
 					}
@@ -3495,14 +3496,8 @@ switch($mode_id) {
 
 					$deleteFluent->execute();
 				}
-				
-				$sql = "ALTER TABLE " . SESSIONS_TABLE . "
-					TYPE=HEAP MAX_ROWS=" . HEAP_SIZE;
-				$result = $db->sql_query($sql);
 
-				if ( !$result ) {
-					throw_error("Couldn't convert table!", __LINE__, __FILE__, $sql);
-				}
+				dibi::query('ALTER TABLE %n TYPE = HEAP MAX_ROWS = %i', SESSIONS_TABLE, HEAP_SIZE);
 
 				lock_db(TRUE);
 				break;
@@ -3519,18 +3514,22 @@ switch($mode_id) {
 		ob_start();
 		break;
 	default:
-		$template->setFileNames(array(
-			"body" => "admin/dbmtnc_list_body.tpl")
-		);
+        $template->setFileNames(
+            [
+                "body" => "admin/dbmtnc_list_body.tpl"
+            ]
+        );
 
-		$template->assignVars(array(
-			"L_DBMTNC_TITLE" => $lang['DB_Maintenance'],
-			"L_DBMTNC_TEXT" => $lang['DB_Maintenance_Description'],
-			"L_FUNCTION" => $lang['Function'],
-			"L_FUNCTION_DESCRIPTION" => $lang['Function_Description'])
-		);
+        $template->assignVars(
+            [
+                "L_DBMTNC_TITLE"         => $lang['DB_Maintenance'],
+                "L_DBMTNC_TEXT"          => $lang['DB_Maintenance_Description'],
+                "L_FUNCTION"             => $lang['Function'],
+                "L_FUNCTION_DESCRIPTION" => $lang['Function_Description']
+            ]
+        );
 
-		//
+        //
 		// OK, let's list the functions
 		//
 

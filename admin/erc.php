@@ -20,97 +20,30 @@
 
 define('IN_PHPBB', 1);
 $phpbb_root_path = './../';
-include($phpbb_root_path . 'config.php');
-include($phpbb_root_path . 'includes/constants.php');
-include($phpbb_root_path . 'includes/functions.php');
-include($phpbb_root_path . 'includes/functions_dbmtnc.php');
+include$phpbb_root_path . 'common.php';
+include$phpbb_root_path . 'includes/functions_dbmtnc.php';
 
 //
 // addslashes to vars if magic_quotes_gpc is off
 // this is a security precaution to prevent someone
 // trying to break out of a SQL statement.
 //
-if( !get_magic_quotes_gpc() )
-{
-	if( is_array($_GET) )
-	{
-		while( list($k, $v) = each($_GET) )
-		{
-			if( is_array($_GET[$k]) )
-			{
-				while( list($k2, $v2) = each($_GET[$k]) )
-				{
-					$_GET[$k][$k2] = addslashes($v2);
-				}
-				@reset($_GET[$k]);
-			}
-			else
-			{
-				$_GET[$k] = addslashes($v);
-			}
-		}
-		@reset($_GET);
-	}
-
-	if( is_array($_POST) )
-	{
-		while( list($k, $v) = each($_POST) )
-		{
-			if( is_array($_POST[$k]) )
-			{
-				while( list($k2, $v2) = each($_POST[$k]) )
-				{
-					$_POST[$k][$k2] = addslashes($v2);
-				}
-				@reset($_POST[$k]);
-			}
-			else
-			{
-				$_POST[$k] = addslashes($v);
-			}
-		}
-		@reset($_POST);
-	}
-
-	if( is_array($_COOKIE) )
-	{
-		while( list($k, $v) = each($_COOKIE) )
-		{
-			if( is_array($_COOKIE[$k]) )
-			{
-				while( list($k2, $v2) = each($_COOKIE[$k]) )
-				{
-					$_COOKIE[$k][$k2] = addslashes($v2);
-				}
-				@reset($_COOKIE[$k]);
-			}
-			else
-			{
-				$_COOKIE[$k] = addslashes($v);
-			}
-		}
-		@reset($_COOKIE);
-	}
-}
-
-$mode = ( isset($_POST['mode']) ) ? htmlspecialchars($_POST['mode']) : (( isset($_GET['mode']) ) ? htmlspecialchars($_GET['mode']) : 'start');
-$option = ( isset($_POST['option']) ) ? htmlspecialchars($_POST['option']) : '';
+$mode = isset($_POST['mode']) ? htmlspecialchars($_POST['mode']) : (isset($_GET['mode']) ? htmlspecialchars($_GET['mode']) : 'start');
+$option = isset($_POST['option']) ? htmlspecialchars($_POST['option']) : '';
 
 // Before doing anything else send config.php if requested
-if ( $mode == 'download' )
-{
+if ( $mode === 'download' ) {
 	// Get and convert Variables
-	$new_dbms = ( isset($_GET['ndbms']) ) ? $_GET['ndbms'] : '';
-	$new_dbhost = ( isset($_GET['ndbh']) ) ? $_GET['ndbh'] : '';
-	$new_dbname = ( isset($_GET['ndbn']) ) ? $_GET['ndbn'] : '';
-	$new_dbuser = ( isset($_GET['ndbu']) ) ? $_GET['ndbu'] : '';
-	$new_dbpasswd = ( isset($_GET['ndbp']) ) ? $_GET['ndbp'] : '';
-	$new_table_prefix = ( isset($_GET['ntp']) ) ? $_GET['ntp'] : '';
+	$new_dbms         = isset($_GET['ndbms']) ? $_GET['ndbms'] : '';
+	$new_dbhost       = isset($_GET['ndbh'])  ? $_GET['ndbh']  : '';
+	$new_dbname       = isset($_GET['ndbn'])  ? $_GET['ndbn']  : '';
+	$new_dbuser       = isset($_GET['ndbu'])  ? $_GET['ndbu']  : '';
+	$new_dbpasswd     = isset($_GET['ndbp'])  ? $_GET['ndbp']  : '';
+	$new_table_prefix = isset($_GET['ntp'])   ? $_GET['ntp']   : '';
 
 	$var_array = array('new_dbms', 'new_dbhost', 'new_dbname', 'new_dbuser', 'new_dbpasswd', 'new_table_prefix');
-	reset($var_array);
-	while (list(, $var) = each ($var_array))
-	{
+
+	foreach ($var_array as $var) {
 		$$var = stripslashes($$var);
 		$$var = str_replace("'", "\\'", str_replace("\\", "\\\\", $$var));
 	}
@@ -134,63 +67,49 @@ if ( $mode == 'download' )
 		"\n" .
 		"define('PHPBB_INSTALLED', true);\n" .
 		"\n" .
-		"?>";
+		'?>';
 	header('Content-type: text/plain');
-	header("Content-Disposition: attachment; filename=config.php");
+	header('Content-Disposition: attachment; filename=config.php');
 	echo $data;
 	exit;
 }
 
 // Load a language if one was selected
-if ( isset($_POST['lg']) || isset($_GET['lg']) )
-{
-	$lg = ( isset($_POST['lg']) ) ? htmlspecialchars($_POST['lg']) : htmlspecialchars($_GET['lg']);
-	if ( file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $lg . '/lang_dbmtnc.php')) )
-	{
-		include($phpbb_root_path . 'language/lang_' . $lg . '/lang_dbmtnc.php');
-		include($phpbb_root_path . 'language/lang_' . $lg . '/lang_main.php');
-	}
-	else
-	{
+if ( isset($_POST['lg']) || isset($_GET['lg']) ) {
+	$lg = isset($_POST['lg']) ? htmlspecialchars($_POST['lg']) : htmlspecialchars($_GET['lg']);
+	if ( file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $lg . '/lang_dbmtnc.php')) ) {
+		include$phpbb_root_path . 'language/lang_' . $lg . '/lang_dbmtnc.php';
+		include$phpbb_root_path . 'language/lang_' . $lg . '/lang_main.php';
+	} else {
 		$lg = '';
 	}
-}
-else
-{
+} else {
 	$lg = '';
 }
 
 // If no language was selected, check for available languages
-if ($lg == '')
-{
+if ($lg === '') {
 	$dirname = 'language';
 	$dir = opendir($phpbb_root_path . $dirname);
 	$lang_list = Array();
-	while ( $file = readdir($dir) )
-	{
-		if (preg_match('#^lang_#i', $file) && !is_file(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file)) && !is_link(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file)) && is_file(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file . '/lang_dbmtnc.php')))
-		{
-			$filename = trim(str_replace("lang_", "", $file));
+
+	while ( $file = readdir($dir) )	{
+		if (preg_match('#^lang_#i', $file) && !is_file(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file)) && !is_link(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file)) && is_file(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file . '/lang_dbmtnc.php'))){
+			$filename = trim(str_replace('lang_', '', $file));
 			$lang_list[] = $filename;
 		}
 	}
 	closedir($dir);
-	if (count($lang_list) == 1)
-	{
+	if (count($lang_list) === 1) {
 		$lg = $lang_list[0];
-		include($phpbb_root_path . 'language/lang_' . $lg . '/lang_dbmtnc.php');
-		include($phpbb_root_path . 'language/lang_' . $lg . '/lang_main.php');
-	}
-	else // Try to load english language
-	{
-		if ( file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_english/lang_dbmtnc.php')) )
-		{
-			include($phpbb_root_path . 'language/lang_english/lang_dbmtnc.php');
-			include($phpbb_root_path . 'language/lang_english/lang_main.php');
+		include$phpbb_root_path . 'language/lang_' . $lg . '/lang_dbmtnc.php';
+		include$phpbb_root_path . 'language/lang_' . $lg . '/lang_main.php';
+	} else { // Try to load english language
+		if ( file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_english/lang_dbmtnc.php')) ) {
+			include$phpbb_root_path . 'language/lang_english/lang_dbmtnc.php';
+			include$phpbb_root_path . 'language/lang_english/lang_main.php';
 			$mode = 'select_lang';
-		}
-		else
-		{
+		} else {
 			$lang['Forum_Home'] = 'Forum Home';
 			$lang['ERC'] = 'Emergency Recovery Console';
 			$lang['Submit_text'] = 'Send';
@@ -232,7 +151,7 @@ hr	{ height: 0px; border: solid #D1D7DC 0px; border-top-width: 1px;}
 			<tr>
 				<td><img src="../templates/subSilver/images/logo_phpBB.gif" border="0" alt="<?php echo $lang['Forum_Home']; ?>" vspace="1" /></td>
 				<td align="center" width="100%" valign="middle"><span class="maintitle"><?php echo $lang['ERC']; ?></span><br />
-					<?php echo ($option == '') ? '' : $lang[$option] ?></td>
+					<?php echo ($option === '') ? '' : $lang[$option] ?></td>
 			</tr>
 		</table></td>
 	</tr>
@@ -274,8 +193,7 @@ switch($mode)
 					<select size="1" name="option">
 					<option value="cls"><?php echo $lang['cls']; ?></option>
 <?php
-	if ( check_mysql_version() )
-	{
+	if ( check_mysql_version() ) {
 ?>
 					<option value="rdb"><?php echo $lang['rdb']; ?></option>
 <?php
@@ -308,14 +226,12 @@ switch($mode)
 <?php
 		break;
 	case 'datainput':
-		if ( $option != 'rcp' )
-		{
+		if ( $option !== 'rcp' ) {
 ?>
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
 <table border="0" cellspacing="0" cellpadding="10">
 <?php
-			if ( $option != 'rld' && $option != 'rtd' )
-			{
+			if ( $option !== 'rld' && $option !== 'rtd' ) {
 ?>
 	<tr>
 		<td><b><?php echo $lang['Authenticate_methods']; ?>:</b></td>
@@ -324,9 +240,7 @@ switch($mode)
 		<td><?php echo $lang['Authenticate_methods_help_text']; ?></td>
 	</tr>
 <?php
-			}
-			else
-			{
+			} else {
 ?>
 	<tr>
 		<td><b><?php echo $lang['Authenticate_user_only']; ?>:</b></td>
@@ -343,8 +257,7 @@ switch($mode)
 				<tr>
 					<td><b><?php echo $lang['Admin_Account']; ?></b></td>
 <?php
-			if ( $option != 'rld' && $option != 'rtd' )
-			{
+			if ( $option !== 'rld' && $option !== 'rtd' ) {
 ?>
 					<td width="20">&nbsp;</td>
 					<td><b><?php echo $lang['Database_Login']; ?></b></td>
@@ -368,8 +281,7 @@ switch($mode)
 						</table>
 					</td>
 <?php
-			if ( $option != 'rld' && $option != 'rtd' )
-			{
+			if ( $option !== 'rld' && $option !== 'rtd' ) {
 ?>
 					<td>&nbsp;</td>
 					<td>
@@ -397,16 +309,14 @@ switch($mode)
 		<td>&nbsp;</td>
 	</tr>
 <?php
-		}
-		else
-		{
+		} else {
 ?>
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
 <table border="0" cellspacing="0" cellpadding="10">
 <?php
 		}
-		switch ($option)
-		{
+
+		switch ($option) {
 			case 'cls': // Clear Sessions
 ?>
 	<tr>
@@ -431,37 +341,32 @@ switch($mode)
 			case 'rpd': // Reset path data
 				// Get path information
 				$secure_cur = get_config_data('cookie_secure');
-				if (!empty($_SERVER['SERVER_PROTOCOL']) || !empty($_ENV['SERVER_PROTOCOL']))
-				{
-					$protocol = (!empty($_SERVER['SERVER_PROTOCOL'])) ? $_SERVER['SERVER_PROTOCOL'] : $_ENV['SERVER_PROTOCOL'];
+
+				if (!empty($_SERVER['SERVER_PROTOCOL']) || !empty($_ENV['SERVER_PROTOCOL'])) {
+					$protocol = !empty($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : $_ENV['SERVER_PROTOCOL'];
 					$secure_rec = ( strtolower(substr($protocol, 0 , 5)) == 'https' ) ? '1' : '0';
-				}
-				else
-				{
+				} else {
 					$secure_rec = '0';
 				}
+
 				$domain_cur = get_config_data('server_name');
-				if (!empty($_SERVER['SERVER_NAME']) || !empty($_ENV['SERVER_NAME']))
-				{
-					$domain_rec = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : $_ENV['SERVER_NAME'];
-				}
-				else if (!empty($_SERVER['HTTP_HOST']) || !empty($_ENV['HTTP_HOST']))
-				{
-					$domain_rec = (!empty($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : $_ENV['HTTP_HOST'];
-				}
-				else
-				{
+
+				if (!empty($_SERVER['SERVER_NAME']) || !empty($_ENV['SERVER_NAME'])) {
+					$domain_rec = !empty($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : $_ENV['SERVER_NAME'];
+				} else if (!empty($_SERVER['HTTP_HOST']) || !empty($_ENV['HTTP_HOST'])) {
+					$domain_rec = !empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_ENV['HTTP_HOST'];
+				} else {
 					$domain_rec = '';
 				}
+
 				$port_cur = get_config_data('server_port');
-				if (!empty($_SERVER['SERVER_PORT']) || !empty($_ENV['SERVER_PORT']))
-				{
-					$port_rec = (!empty($_SERVER['SERVER_PORT'])) ? $_SERVER['SERVER_PORT'] : $_ENV['SERVER_PORT'];
-				}
-				else
-				{
+
+				if (!empty($_SERVER['SERVER_PORT']) || !empty($_ENV['SERVER_PORT'])) {
+					$port_rec = !empty($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : $_ENV['SERVER_PORT'];
+				} else {
 					$port_rec = '80';
 				}
+
 				$path_cur = get_config_data('script_path');
 				$path_rec = str_replace('admin', '', dirname($_SERVER['PHP_SELF']));
 ?>
@@ -476,34 +381,34 @@ switch($mode)
 				</tr>
 				<tr>
 					<td><b><?php echo $lang['secure']; ?></b></td>
-					<td><input type="radio" name="secure_select" value="0"<?php echo ( $secure_cur == $secure_rec ) ? ' checked="checked"' : '' ?> /></td>
+					<td><input type="radio" name="secure_select" value="0"<?php echo ( $secure_cur === $secure_rec ) ? ' checked="checked"' : '' ?> /></td>
 					<td><?php echo $lang[($secure_cur == '1') ? 'secure_yes' : 'secure_no' ]; ?></td>
 					<td>&nbsp;</td>
-					<td><input type="radio" name="secure_select" value="1"<?php echo ( $secure_cur != $secure_rec ) ? ' checked="checked"' : '' ?> /></td>
+					<td><input type="radio" name="secure_select" value="1"<?php echo ( $secure_cur !== $secure_rec ) ? ' checked="checked"' : '' ?> /></td>
 					<td><input type="radio" name="secure" value="1"<?php echo ( $secure_rec == '1' ) ? ' checked="checked"' : '' ?> /><?php echo $lang['secure_yes']; ?><input type="radio" name="secure" value="0"<?php echo ( $secure_rec == '0' ) ? ' checked="checked"' : '' ?> /><?php echo $lang['secure_no']; ?></td>
 				</tr>
 				<tr>
 					<td><b><?php echo $lang['domain']; ?></b></td>
-					<td><input type="radio" name="domain_select" value="0"<?php echo ( $domain_cur == $domain_rec ) ? ' checked="checked"' : '' ?> /></td>
+					<td><input type="radio" name="domain_select" value="0"<?php echo ( $domain_cur === $domain_rec ) ? ' checked="checked"' : '' ?> /></td>
 					<td><?php echo htmlspecialchars($domain_cur); ?></td>
 					<td>&nbsp;</td>
-					<td><input type="radio" name="domain_select" value="1"<?php echo ( $domain_cur != $domain_rec ) ? ' checked="checked"' : '' ?> /></td>
+					<td><input type="radio" name="domain_select" value="1"<?php echo ( $domain_cur !== $domain_rec ) ? ' checked="checked"' : '' ?> /></td>
 					<td><input type="input" name="domain" value="<?php echo htmlspecialchars($domain_rec); ?>" maxlength="255" size="40" /></td>
 				</tr>
 				<tr>
 					<td><b><?php echo $lang['port']; ?></b></td>
-					<td><input type="radio" name="port_select" value="0"<?php echo ( $port_cur == $port_rec ) ? ' checked="checked"' : '' ?> /></td>
+					<td><input type="radio" name="port_select" value="0"<?php echo ( $port_cur === $port_rec ) ? ' checked="checked"' : '' ?> /></td>
 					<td><?php echo htmlspecialchars($port_cur); ?></td>
 					<td>&nbsp;</td>
-					<td><input type="radio" name="port_select" value="1"<?php echo ( $port_cur != $port_rec ) ? ' checked="checked"' : '' ?> /></td>
+					<td><input type="radio" name="port_select" value="1"<?php echo ( $port_cur !== $port_rec ) ? ' checked="checked"' : '' ?> /></td>
 					<td><input type="input" name="port" value="<?php echo htmlspecialchars($port_rec); ?>" maxlength="5" size="5" /></td>
 				</tr>
 				<tr>
 					<td><b><?php echo $lang['path']; ?></b></td>
-					<td><input type="radio" name="path_select" value="0"<?php echo ( $path_cur == $path_rec ) ? ' checked="checked"' : '' ?> /></td>
+					<td><input type="radio" name="path_select" value="0"<?php echo ( $path_cur === $path_rec ) ? ' checked="checked"' : '' ?> /></td>
 					<td><?php echo htmlspecialchars($path_cur); ?></td>
 					<td>&nbsp;</td>
-					<td><input type="radio" name="path_select" value="1"<?php echo ( $path_cur != $path_rec ) ? ' checked="checked"' : '' ?> /></td>
+					<td><input type="radio" name="path_select" value="1"<?php echo ( $path_cur !== $path_rec ) ? ' checked="checked"' : '' ?> /></td>
 					<td><input type="input" name="path" value="<?php echo htmlspecialchars($path_rec); ?>" maxlength="255" size="40" /></td>
 				</tr>
 			</table>
@@ -561,28 +466,17 @@ switch($mode)
 <?php
 				break;
 			case 'rtd': // Reset template data
-				$sql = "SELECT count(*) AS themes_count
-					FROM " . THEMES_TABLE;
-				if ( !($result = $db->sql_query($sql)) )
-				{
-					erc_throw_error("Couldn't count records of themes table!", __LINE__, __FILE__, $sql);
-				}
-				if ( $row = $db->sql_fetchrow($result) )
-				{
-					$themes_count = $row['themes_count'];
-				}
-				else
-				{
-					$themes_count = 0;
-				}
-				$db->sql_freeresult($result);
+
+			    $themes_count = dibi::select('COUNT(*)')
+			    ->as('themes_count')
+			    ->from(THEMES_TABLE)
+			    ->fetchSingle();
 ?>
 	<tr>
 		<td>
 			<table border="0" cellspacing="2" cellpadding="0">
 <?php
-				if ($themes_count != 0)
-				{
+				if ($themes_count !== 0) {
 ?>
 				<tr>
 					<td><input type="radio" name="method" value="select_theme" checked="checked" /></td>
@@ -593,14 +487,14 @@ switch($mode)
 				}
 ?>
 				<tr>
-					<td><input type="radio" name="method" value="recreate_theme"<?php echo ( $themes_count == 0 ) ? ' checked="checked"' : '' ?> /></td>
+					<td><input type="radio" name="method" value="recreate_theme"<?php echo ( $themes_count === 0 ) ? ' checked="checked"' : '' ?> /></td>
 					<td colspan="2"><?php echo $lang['reset_thmeme']; ?></td>
 				</tr>
 			</table>
 		</td>
 	</tr>
 	<tr>
-		<td><?php echo ($themes_count != 0) ? $lang['rtd_info'] : $lang['rtd_info_no_theme'] ; ?></td>
+		<td><?php echo ($themes_count !== 0) ? $lang['rtd_info'] : $lang['rtd_info_no_theme'] ; ?></td>
 	</tr>
 <?php
 				break;
@@ -663,8 +557,7 @@ switch($mode)
 						'LABEL'			=> 'MS SQL Server [ ODBC ]'
 					));
 				$dbms_select = '<select name="new_dbms">';
-				while (list($dbms_name, $details) = @each($available_dbms))
-				{
+				while (list($dbms_name, $details) = @each($available_dbms)) {
 					$dbms_select .= '<option value="' . $dbms_name . '">' . $details['LABEL'] . '</option>';
 				}
 				$dbms_select .= '</select>';
@@ -754,38 +647,30 @@ switch($mode)
 	<p><?php echo $lang['Repairing_tables'] ?>:</p>
 	<ul>
 <?php
-					for($i = 0; $i < count($tables); $i++)
-					{
-						$tablename = $table_prefix . $tables[$i];
-						$sql = "REPAIR TABLE $tablename";
-						$result = $db->sql_query($sql);
-						if ( !$result )
-						{
-							throw_error("Couldn't repair table!", __LINE__, __FILE__, $sql);
-						}
-						if ( $row = $db->sql_fetchrow($result) )
-						{
-							if ($row['Msg_type'] == 'status')
-							{
+					foreach ($tables as $table) {
+						$tablename = $table_prefix . $table;
+
+						$row = dibi::query('REPAIR TABLE %n', $tablename)->fetch();
+
+
+						if ($row) {
+							if ($row['Msg_type'] == 'status') {
 ?>
 		<li><?php echo "$tablename: " . $lang['Table_OK']?></li>
 <?php
-							}
-							else //  We got an error
+							} else //  We got an error
 							{
 								// Check whether the error results from HEAP-table type
 								$sql2 = "SHOW TABLE STATUS LIKE '$tablename'";
 								$result2 = $db->sql_query($sql2);
 								$row2 = $db->sql_fetchrow($result2);
-								if ( (isset($row2['Type']) && $row2['Type'] == 'HEAP') || (isset($row2['Engine']) && ($row2['Engine'] == 'HEAP' || $row2['Engine'] == 'MEMORY')) )
+								if ( (isset($row2['Type']) && $row2['Type'] === 'HEAP') || (isset($row2['Engine']) && ($row2['Engine'] === 'HEAP' || $row2['Engine'] === 'MEMORY')) )
 								{
 									// Table is from HEAP-table type
 ?>
 		<li><?php echo "$tablename: " . $lang['Table_HEAP_info']?></li>
 <?php
-								}
-								else
-								{
+								} else {
 ?>
 		<li><?php echo "<b>$tablename:</b> " . htmlspecialchars($row['Msg_text'])?></li>
 <?php
@@ -805,32 +690,29 @@ switch($mode)
 				check_authorisation();
 
 				// Update config data to match current configuration
-				if (!empty($_SERVER['SERVER_PROTOCOL']) || !empty($_ENV['SERVER_PROTOCOL']))
-				{
-					$protocol = (!empty($_SERVER['SERVER_PROTOCOL'])) ? $_SERVER['SERVER_PROTOCOL'] : $_ENV['SERVER_PROTOCOL'];
-					if ( strtolower(substr($protocol, 0 , 5)) == 'https' )
-					{
+				if (!empty($_SERVER['SERVER_PROTOCOL']) || !empty($_ENV['SERVER_PROTOCOL'])) {
+					$protocol = !empty($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : $_ENV['SERVER_PROTOCOL'];
+
+					if ( strtolower(substr($protocol, 0 , 5)) === 'https' ) {
 						$default_config['cookie_secure'] = '1';
 					}
 				}
-				if (!empty($_SERVER['SERVER_NAME']) || !empty($_ENV['SERVER_NAME']))
-				{
-					$default_config['server_name'] = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : $_ENV['SERVER_NAME'];
+
+				if (!empty($_SERVER['SERVER_NAME']) || !empty($_ENV['SERVER_NAME'])) {
+					$default_config['server_name'] = !empty($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : $_ENV['SERVER_NAME'];
+				} else if (!empty($_SERVER['HTTP_HOST']) || !empty($_ENV['HTTP_HOST'])) {
+					$default_config['server_name'] = !empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_ENV['HTTP_HOST'];
 				}
-				else if (!empty($_SERVER['HTTP_HOST']) || !empty($_ENV['HTTP_HOST']))
-				{
-					$default_config['server_name'] = (!empty($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : $_ENV['HTTP_HOST'];
+
+				if (!empty($_SERVER['SERVER_PORT']) || !empty($_ENV['SERVER_PORT'])) {
+					$default_config['server_port'] = !empty($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : $_ENV['SERVER_PORT'];
 				}
-				if (!empty($_SERVER['SERVER_PORT']) || !empty($_ENV['SERVER_PORT']))
-				{
-					$default_config['server_port'] = (!empty($_SERVER['SERVER_PORT'])) ? $_SERVER['SERVER_PORT'] : $_ENV['SERVER_PORT'];
-				}
+
 				$default_config['script_path'] = str_replace('admin', '', dirname($_SERVER['PHP_SELF']));
-				$sql = "SELECT Min(topic_time) as startdate FROM " . TOPICS_TABLE;
-				if ( $result = $db->sql_query($sql) )
-				{
-					if ( ($row = $db->sql_fetchrow($result)) && $row['startdate'] > 0 )
-					{
+				$sql = 'SELECT Min(topic_time) as startdate FROM ' . TOPICS_TABLE;
+
+				if ( $result = $db->sql_query($sql) ){
+					if ( ($row = $db->sql_fetchrow($result)) && $row['startdate'] > 0 ){
 						$default_config['board_startdate'] = $row['startdate'];
 					}
 				}
@@ -841,25 +723,16 @@ switch($mode)
 	<ul>
 <?php
 				reset($default_config);
-				while (list($key, $value) = each($default_config))
-				{
-					$sql = 'SELECT config_value FROM ' . CONFIG_TABLE . "
-						WHERE config_name = '$key'";
-					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
-						erc_throw_error("Couldn't query config table!", __LINE__, __FILE__, $sql);
-					}
-					if ( !($row = $db->sql_fetchrow($result)) )
-					{
+				foreach ($default_config as $key => $value) {
+				    $row = dibi::select('config_value')
+				    ->from(CONFIG_TABLE)
+				    ->where('config_name = %s', $key)
+				    ->fetch();
+
+					if (!$row){
 						echo("<li><b>$key:</b> $value</li>\n");
-						$sql = "INSERT INTO " . CONFIG_TABLE . " (config_name, config_value)
-							VALUES ('$key', '$value')";
-						$result = $db->sql_query($sql);
-						if ( !$result )
-						{
-							erc_throw_error("Couldn't update config table!", __LINE__, __FILE__, $sql);
-						}
+
+						dibi::insert(CONFIG_TABLE, ['config_name' => $key, 'config_value' => $value])->execute();
 					}
 				}
 ?>
@@ -870,142 +743,100 @@ switch($mode)
 			case 'rpd': // Reset path data
 				check_authorisation();
 				// Get variables
-				$secure_select = ( isset($_POST['secure_select']) ) ? intval($_POST['secure_select']) : 1;
-				$domain_select = ( isset($_POST['domain_select']) ) ? intval($_POST['domain_select']) : 1;
-				$port_select = ( isset($_POST['port_select']) ) ? intval($_POST['port_select']) : 1;
-				$path_select = ( isset($_POST['path_select']) ) ? intval($_POST['path_select']) : 1;
-				$secure = ( isset($_POST['secure']) ) ? intval($_POST['secure']) : 0;
-				$domain = ( isset($_POST['domain']) ) ? str_replace("\\'", "''", $_POST['domain']) : '';
-				$port = ( isset($_POST['port']) ) ? str_replace("\\'", "''", $_POST['port']) : '';
-				$path = ( isset($_POST['path']) ) ? str_replace("\\'", "''", $_POST['path']) : '';
+				$secure_select = isset($_POST['secure_select']) ? (int) $_POST['secure_select'] : 1;
+				$domain_select = isset($_POST['domain_select']) ? (int) $_POST['domain_select'] : 1;
+				$port_select = isset($_POST['port_select']) ? (int) $_POST['port_select'] : 1;
+				$path_select = isset($_POST['path_select']) ? (int) $_POST['path_select'] : 1;
+				$secure = isset($_POST['secure']) ? (int) $_POST['secure'] : 0;
+				$domain = isset($_POST['domain']) ? str_replace("\\'", "''", $_POST['domain']) : '';
+				$port = isset($_POST['port']) ? str_replace("\\'", "''", $_POST['port']) : '';
+				$path = isset($_POST['path']) ? str_replace("\\'", "''", $_POST['path']) : '';
 				
-				if ($secure_select == 1)
-				{
-					$sql = "UPDATE " . CONFIG_TABLE . "
-						SET config_value = '$secure'
-						WHERE config_name = 'cookie_secure'";
-					$result = $db->sql_query($sql);
-					if( !$result )
-					{
-						erc_throw_error("Couldn't update config table!", __LINE__, __FILE__, $sql);
-					}
+				if ($secure_select === 1) {
+				    dibi::update(CONFIG_TABLE, ['config_value' => $secure])
+				        ->where('config_name = %s', 'cookie_secure')
+				        ->execute();
 				}
-				if ($domain_select == 1)
-				{
-					$sql = "UPDATE " . CONFIG_TABLE . "
-						SET config_value = '$domain'
-						WHERE config_name = 'server_name'";
-					$result = $db->sql_query($sql);
-					if( !$result )
-					{
-						erc_throw_error("Couldn't update config table!", __LINE__, __FILE__, $sql);
-					}
+
+				if ($domain_select === 1) {
+				    dibi::update(CONFIG_TABLE, ['config_value' => $domain])
+				        ->where('config_name = %s', 'server_name')
+				        ->execute();
 				}
-				if ($port_select == 1)
-				{
-					$sql = "UPDATE " . CONFIG_TABLE . "
-						SET config_value = '$port'
-						WHERE config_name = 'server_port'";
-					$result = $db->sql_query($sql);
-					if( !$result )
-					{
-						erc_throw_error("Couldn't update config table!", __LINE__, __FILE__, $sql);
-					}
+
+				if ($port_select === 1) {
+				    dibi::update(CONFIG_TABLE, ['config_value' => $port])
+				        ->where('config_name = %s', 'server_port')
+				        ->execute();
 				}
-				if ($path_select == 1)
-				{
-					$sql = "UPDATE " . CONFIG_TABLE . "
-						SET config_value = '$path'
-						WHERE config_name = 'script_path'";
-					$result = $db->sql_query($sql);
-					if( !$result )
-					{
-						erc_throw_error("Couldn't update config table!", __LINE__, __FILE__, $sql);
-					}
+
+				if ($path_select === 1) {
+				    dibi::update(CONFIG_TABLE, ['config_value' => $path])
+				        ->where('config_name = %s', 'script_path')
+				        ->execute();
 				}
+
 				success_message($lang['rpd_success']);
 				break;
 			case 'rcd': // Reset cookie data
 				check_authorisation();
 				// Get variables
-				$cookie_domain = ( isset($_POST['cookie_domain']) ) ? str_replace("\\'", "''", $_POST['cookie_domain']) : '';
-				$cookie_name = ( isset($_POST['cookie_name']) ) ? str_replace("\\'", "''", $_POST['cookie_name']) : '';
-				$cookie_path = ( isset($_POST['cookie_path']) ) ? str_replace("\\'", "''", $_POST['cookie_path']) : '';
+				$cookie_domain = isset($_POST['cookie_domain']) ? str_replace("\\'", "''", $_POST['cookie_domain']) : '';
+				$cookie_name = isset($_POST['cookie_name']) ? str_replace("\\'", "''", $_POST['cookie_name']) : '';
+				$cookie_path = isset($_POST['cookie_path']) ? str_replace("\\'", "''", $_POST['cookie_path']) : '';
 
-				$sql = "UPDATE " . CONFIG_TABLE . "
-					SET config_value = '$cookie_domain'
-					WHERE config_name = 'cookie_domain'";
-				$result = $db->sql_query($sql);
-				if( !$result )
-				{
-					erc_throw_error("Couldn't update config table!", __LINE__, __FILE__, $sql);
-				}
-				$sql = "UPDATE " . CONFIG_TABLE . "
-					SET config_value = '$cookie_name'
-					WHERE config_name = 'cookie_name'";
-				$result = $db->sql_query($sql);
-				if( !$result )
-				{
-					erc_throw_error("Couldn't update config table!", __LINE__, __FILE__, $sql);
-				}
-				$sql = "UPDATE " . CONFIG_TABLE . "
-					SET config_value = '$cookie_path'
-					WHERE config_name = 'cookie_path'";
-				$result = $db->sql_query($sql);
-				if( !$result )
-				{
-					erc_throw_error("Couldn't update config table!", __LINE__, __FILE__, $sql);
-				}
+				dibi::update(CONFIG_TABLE, ['config_value' => $cookie_domain])
+				->where('config_name = %s', 'cookie_domain')
+				->execute();
+
+				dibi::update(CONFIG_TABLE, ['config_value' => $cookie_name])
+				->where('config_name = %s', 'cookie_name')
+				->execute();
+
+				dibi::update(CONFIG_TABLE, ['config_value' => $cookie_path])
+				->where('config_name = %s', 'cookie_path')
+				->execute();
+
 				success_message($lang['rcd_success']);
 				break;
 			case 'rld': // Reset language data
 				check_authorisation();
-				$new_lang = ( isset($_POST['new_lang']) ) ? str_replace("\\'", "''", $_POST['new_lang']) : '';
+				$new_lang   = isset($_POST['new_lang']) ? str_replace("\\'", "''", $_POST['new_lang']) : '';
 				$board_user = isset($_POST['board_user']) ? trim(htmlspecialchars($_POST['board_user'])) : '';
 				$board_user = substr(str_replace("\\'", "'", $board_user), 0, 25);
 				$board_user = str_replace("'", "\\'", $board_user);
 
-				if ( is_file(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $new_lang . '/lang_main.php')) && is_file(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $new_lang . '/lang_admin.php')) )
-				{
-					$sql = "UPDATE " . USERS_TABLE . "
-						SET user_lang = '$new_lang'
-						WHERE username = '$board_user'";
-					$result = $db->sql_query($sql);
-					if( !$result )
-					{
-						erc_throw_error("Couldn't update user table!", __LINE__, __FILE__, $sql);
-					}
-					$sql = "UPDATE " . CONFIG_TABLE . "
-						SET config_value = '$new_lang'
-						WHERE config_name = 'default_lang'";
-					$result = $db->sql_query($sql);
-					if( !$result )
-					{
-						erc_throw_error("Couldn't update config table!", __LINE__, __FILE__, $sql);
-					}
+				if ( is_file(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $new_lang . '/lang_main.php')) && is_file(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $new_lang . '/lang_admin.php')) ){
+				    dibi::update(USERS_TABLE, ['user_lang' => $new_lang])
+				     ->where('username = %s', $board_user)
+				      ->execute();
+
+				    dibi::update(CONFIG_TABLE, ['config_value' => $new_lang])
+				        ->where('config_name = %s', 'default_lang')
+				        ->execute();
+
 					success_message($lang['rld_success']);
-				}
-				else
-				{
+				} else {
 					success_message($lang['rld_failed']);
 				}
+
 				break;
 			case 'rtd': // Reset template data
 				check_authorisation();
-				$method = ( isset($_POST['method']) ) ? htmlspecialchars($_POST['method']) : '';
-				$new_style = ( isset($_POST['new_style']) ) ? intval($_POST['new_style']) : 0;
+				$method = isset($_POST['method']) ? htmlspecialchars($_POST['method']) : '';
+				$new_style = isset($_POST['new_style']) ? (int) $_POST['new_style'] : 0;
 				$board_user = isset($_POST['board_user']) ? trim(htmlspecialchars($_POST['board_user'])) : '';
 				$board_user = substr(str_replace("\\'", "'", $board_user), 0, 25);
 				$board_user = str_replace("'", "\\'", $board_user);
 
-				if ($method == 'recreate_theme')
-				{
-					$sql = "INSERT INTO " . THEMES_TABLE . "
+				if ($method === 'recreate_theme') {
+					$sql = 'INSERT INTO ' . THEMES_TABLE . "
 						(template_name, style_name, head_stylesheet, body_background, body_bgcolor, body_text, body_link, body_vlink, body_alink, body_hlink, tr_color1, tr_color2, tr_color3, tr_class1, tr_class2, tr_class3, th_color1, th_color2, th_color3, th_class1, th_class2, th_class3, td_color1, td_color2, td_color3, td_class1, td_class2, td_class3, fontface1, fontface2, fontface3, fontsize1, fontsize2, fontsize3, fontcolor1, fontcolor2, fontcolor3, span_class1, span_class2, span_class3, img_size_poll, img_size_privmsg) VALUES
 						('subSilver', 'subSilver', 'subSilver.css', '', 'E5E5E5', '000000', '006699', '5493B4', '', 'DD6900', 'EFEFEF', 'DEE3E7', 'D1D7DC', '', '', '', '98AAB1', '006699', 'FFFFFF', 'cellpic1.gif', 'cellpic3.gif', 'cellpic2.jpg', 'FAFAFA', 'FFFFFF', '', 'row1', 'row2', '', 'Verdana, Arial, Helvetica, sans-serif', 'Trebuchet MS', 'Courier, \\'Courier New\\', sans-serif', 10, 11, 12, '444444', '006600', 'FFA34F', '', '', '', NULL, NULL)";
+
 					$result = $db->sql_query($sql);
-					if( !$result )
-					{
+
+					if(!$result) {
 						erc_throw_error("Couldn't update themes table!", __LINE__, __FILE__, $sql);
 					}
 					$method = 'select_theme';
@@ -1014,72 +845,48 @@ switch($mode)
 	<p><?php echo $lang['rtd_restore_success'];?></p>
 <?php
 				}
-				if ($method == 'select_theme')
-				{
-					$sql = "UPDATE " . USERS_TABLE . "
-						SET user_style = $new_style
-						WHERE username = '$board_user'";
-					$result = $db->sql_query($sql);
-					if( !$result )
-					{
-						erc_throw_error("Couldn't update user table!", __LINE__, __FILE__, $sql);
-					}
-					$sql = "UPDATE " . CONFIG_TABLE . "
-						SET config_value = '$new_style'
-						WHERE config_name = 'default_style'";
-					$result = $db->sql_query($sql);
-					if( !$result )
-					{
-						erc_throw_error("Couldn't update config table!", __LINE__, __FILE__, $sql);
-					}
+
+				if ($method === 'select_theme') {
+				    dibi::update(USERS_TABLE, ['user_style' => $new_style])
+				    ->where('username = %s', $board_user)
+				    ->execute();
+
+				    dibi::update(CONFIG_TABLE, ['config_value' => $new_style])
+				    ->where('config_name = %s', 'default_style')
+				    ->execute();
+
 					success_message($lang['rtd_success']);
 				}
 				break;
 			case 'dgc': // Disable GZip compression 
 				check_authorisation();
-					$sql = "UPDATE " . CONFIG_TABLE . "
-						SET config_value = '0'
-						WHERE config_name = 'gzip_compress'";
-					$result = $db->sql_query($sql);
-					if( !$result )
-					{
-						erc_throw_error("Couldn't update config table!", __LINE__, __FILE__, $sql);
-					}
+
+				dibi::update(CONFIG_TABLE, ['config_value' => 0])
+				->where('config_name = %s', 'gzip_compress')
+				->execute();
+
 				success_message($lang['dgc_success']);
 				break;
 			case 'cbl': // Clear ban list 
 				check_authorisation();
-				$sql = "DELETE FROM " . BANLIST_TABLE;
-				$result = $db->sql_query($sql);
-				if( !$result )
-				{
-					erc_throw_error("Couldn't delete ban list table!", __LINE__, __FILE__, $sql);
-				}
-				$sql = "DELETE FROM " . DISALLOW_TABLE;
-				$result = $db->sql_query($sql);
-				if( !$result )
-				{
-					erc_throw_error("Couldn't delete disallowed users table!", __LINE__, __FILE__, $sql);
-				}
-				$sql = "SELECT user_id FROM " . USERS_TABLE . "
-					WHERE user_id = " . ANONYMOUS;
-				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
-					erc_throw_error("Couldn't get user information!", __LINE__, __FILE__, $sql);
-				}
-				if ( $row = $db->sql_fetchrow($result) ) // anonymous user exists
-				{
+
+				dibi::query('TRUNCATE TABLE %n', BANLIST_TABLE);
+				dibi::query('TRUNCATE TABLE %n', DISALLOW_TABLE);
+
+				$row = dibi::select('user_id')
+				->from(USERS_TABLE)
+				->where('user_id = %i', ANONYMOUS)
+				->fetch();
+
+				if ($row) { // anonymous user exists
 					success_message($lang['cbl_success']);
-				}
-				else // anonymous user does not exist
-				{
+				} else { // anonymous user does not exist
 					// Recreate entry
-					$sql = "INSERT INTO " . USERS_TABLE . " (user_id, username, user_level, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_style, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_pm, user_notify_pm, user_allow_viewonline, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active)
-						VALUES (" . ANONYMOUS . ", 'Anonymous', 0, 0, '', '', '', '', '', '', '', '', 0, NULL, '', '', '', 0, 0, 1, 1, 1, 0, 1, 1, 0, '', '', 0, '', '', '', 0, 0)";
+					$sql = 'INSERT INTO ' . USERS_TABLE . ' (user_id, username, user_level, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_style, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_pm, user_notify_pm, user_allow_viewonline, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active)
+						VALUES (' . ANONYMOUS . ", 'Anonymous', 0, 0, '', '', '', '', '', '', '', '', 0, NULL, '', '', '', 0, 0, 1, 1, 1, 0, 1, 1, 0, '', '', 0, '', '', '', 0, 0)";
 					$result = $db->sql_query($sql);
-					if ( !$result )
-					{
+
+					if ( !$result ){
 						throw_error("Couldn't add user data!", __LINE__, __FILE__, $sql);
 					}
 					success_message($lang['cbl_success_anonymous']);
@@ -1088,49 +895,46 @@ switch($mode)
 			case 'raa': // Remove all administrators
 				check_authorisation();
 				// Get userdata to check for current user
-				$auth_method = ( isset($_POST['auth_method']) ) ? htmlspecialchars($_POST['auth_method']) : '';
+				$auth_method = isset($_POST['auth_method']) ? htmlspecialchars($_POST['auth_method']) : '';
 				$board_user = isset($_POST['board_user']) ? trim(htmlspecialchars($_POST['board_user'])) : '';
 				$board_user = substr(str_replace("\\'", "'", $board_user), 0, 25);
 
-				$sql = "SELECT user_id, username
-					FROM " . USERS_TABLE . "
-					WHERE user_level = " . ADMIN;
+				$sql = 'SELECT user_id, username
+					FROM ' . USERS_TABLE . '
+					WHERE user_level = ' . ADMIN;
 				$result = $db->sql_query($sql);
-				if ( !$result )
-				{
+
+				if (!$result) {
 					erc_throw_error("Couldn't get user data!", __LINE__, __FILE__, $sql);
 				}
 ?>
 	<p><?php echo $lang['Removing_admins'] . ':'; ?></p>
 	<ul>
 <?php
-				while ( $row = $db->sql_fetchrow($result) )
-				{
-					if ( $auth_method != 'board' || $board_user != $row['username'] )
-					{
+				while ( $row = $db->sql_fetchrow($result) ) {
+					if ( $auth_method !== 'board' || $board_user !== $row['username'] ) {
 						// Checking whether user is a moderator
-						if( check_mysql_version() )
-						{
-							$sql2 = "SELECT ug.user_id
-								FROM " . USER_GROUP_TABLE . " ug
-									INNER JOIN " . AUTH_ACCESS_TABLE . " aa ON ug.group_id = aa.group_id
-								WHERE ug.user_id = " . $row['user_id'] . " AND ug.user_pending <> 1 AND aa.auth_mod = 1";
-						}
-						else
-						{
-							$sql2 = "SELECT ug.user_id
-								FROM " . USER_GROUP_TABLE . " ug, " .
-									AUTH_ACCESS_TABLE . " aa
+						if( check_mysql_version() ) {
+							$sql2 = 'SELECT ug.user_id
+								FROM ' . USER_GROUP_TABLE . ' ug
+									INNER JOIN ' . AUTH_ACCESS_TABLE . ' aa ON ug.group_id = aa.group_id
+								WHERE ug.user_id = ' . $row['user_id'] . ' AND ug.user_pending <> 1 AND aa.auth_mod = 1';
+						} else {
+							$sql2 = 'SELECT ug.user_id
+								FROM ' . USER_GROUP_TABLE . ' ug, ' .
+									AUTH_ACCESS_TABLE . ' aa
 								WHERE ug.group_id = aa.group_id
-									AND ug.user_id = " . $row['user_id'] . "
-									AND ug.user_pending <> 1 AND aa.auth_mod = 1";
+									AND ug.user_id = ' . $row['user_id'] . '
+									AND ug.user_pending <> 1 AND aa.auth_mod = 1';
 						}
+
 						$result2 = $db->sql_query($sql2);
-						if ( !$result2 )
-						{
+
+						if ( !$result2 ) {
 							erc_throw_error("Couldn't get moderator data!", __LINE__, __FILE__, $sql2);
 						}
-						$new_state = intval(( $row2 = $db->sql_fetchrow($result2) ) ? MOD : USER);
+
+						$new_state = (int) (( $row2 = $db->sql_fetchrow($result2) ) ? MOD : USER);
 						$db->sql_freeresult($result2);
 
 						dibi::update(USERS_TABLE, ['user_level' => $new_state])
@@ -1150,44 +954,32 @@ switch($mode)
 				break;
 			case 'mua': // Grant user admin privileges
 				check_authorisation();
-				$username = ( isset($_POST['username']) ) ? str_replace("\\'", "''", $_POST['username']) : '';
+				$username = isset($_POST['username']) ? str_replace("\\'", "''", $_POST['username']) : '';
 
-				$sql = "UPDATE " . USERS_TABLE . "
-					SET user_active = 1, user_level = " . ADMIN . "
-					WHERE username = '$username' AND user_id <> -1";
-				$result = $db->sql_query($sql);
-				if( !$result )
-				{
-					erc_throw_error("Couldn't update user table!", __LINE__, __FILE__, $sql);
-				}
-				$affected_rows = $db->sql_affectedrows();
+				$affected_rows1 = dibi::update(USERS_TABLE, ['user_active' => 1, 'user_level' => ADMIN])
+				->where('username = %s', $username)
+				->where('user_id <> %i', ANONYMOUS)
+				->execute(dibi::AFFECTED_ROWS);
+
 				// Try to update the login data
-				$sql = "UPDATE " . USERS_TABLE . "
-					SET user_login_tries = 0, user_last_login_try = 0
-					WHERE username = '$username' AND user_id <> -1";
-				$result = $db->sql_query($sql);
-				if( $result )
-				{
-					// Only proceed when successful. Otherwise these fields may not exist
-					$affected_rows = max($db->sql_affectedrows(), $affected_rows);
-				}
+				$affected_rows2 = dibi::update(USERS_TABLE, ['user_login_tries' => 0, 'user_last_login_try' => 0])
+				->where('username = %s', $username)
+				->execute(dibi::AFFECTED_ROWS);
 
-				if ($affected_rows == 0)
-				{
+				$affected_rows = max($affected_rows1, $affected_rows2);
+
+				if ($affected_rows === 0) {
 					success_message($lang['mua_failed']);
-				}
-				else
-				{
+				}else {
 					success_message($lang['mua_success']);
 				}
 				break;
 			case 'rcp': // Recreate config.php
 				// Get Variables
 				$var_array = array('new_dbms', 'new_dbhost', 'new_dbname', 'new_dbuser', 'new_dbpasswd', 'new_table_prefix');
-				reset($var_array);
-				while (list(, $var) = each ($var_array))
-				{
-					$$var = ( isset($_POST[$var]) ) ? stripslashes($_POST[$var]) : '';
+
+				foreach ($var_array as $var) {
+					$$var = isset($_POST[$var]) ? stripslashes($_POST[$var]) : '';
 				}
 
 ?>
@@ -1225,7 +1017,7 @@ switch($mode)
 				$ndbu = urlencode($new_dbuser);
 				$ndbp = urlencode($new_dbpasswd);
 				$ntp = urlencode($new_table_prefix);
-				success_message(sprintf($lang['rcp_success'], "<a href=\"" . $_SERVER['PHP_SELF'] . "?mode=download&ndbms=$ndbms&ndbh=$ndbh&ndbn=$ndbn&ndbu=$ndbu&ndbp=$ndbp&ntp=$ntp\">", '</a>'));
+				success_message(sprintf($lang['rcp_success'], '<a href="' . $_SERVER['PHP_SELF'] . "?mode=download&ndbms=$ndbms&ndbh=$ndbh&ndbn=$ndbn&ndbu=$ndbu&ndbp=$ndbp&ntp=$ntp\">", '</a>'));
 				break;
 			default:
 ?>

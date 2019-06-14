@@ -496,7 +496,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
                     message_die(GENERAL_MESSAGE, $message);
                 } else {
 				    $insert_data = [
-				        'user_id' => $row['user_id'],
+				        'user_id' => $row->user_id,
                         'group_id' =>$group_id,
                         'user_pending' => 0
                     ];
