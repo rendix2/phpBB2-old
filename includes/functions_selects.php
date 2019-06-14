@@ -58,32 +58,4 @@ function language_select($default, $select_name = 'language', $dirname= 'languag
 	return $lang_select;
 }
 
-//
-// Pick a template/theme combo, 
-//
-function style_select($default_style, $select_name = 'style', $dirname = 'templates')
-{
-    $themes = dibi::select(['themes_id', 'style_name'])
-        ->from(THEMES_TABLE)
-        ->orderBy('template_name')
-        ->orderBy('themes_id')
-        ->fetchPairs('themes_id', 'style_name');
-
-    if (!count($themes)) {
-        message_die(GENERAL_ERROR, 'Could not query themes table.');
-    }
-
-	$style_select = '<select name="' . $select_name . '">';
-
-	foreach ($themes as $themes_id => $style_name) {
-		$selected = ( $themes_id === $default_style ) ? ' selected="selected"' : '';
-
-		$style_select .= '<option value="' . $themes_id . '"' . $selected . '>' . $style_name . '</option>';
-	}
-
-	$style_select .= '</select>';
-
-	return $style_select;
-}
-
 ?>

@@ -694,31 +694,6 @@ function language_select($default, $select_name = 'language', $file_to_check = '
 	return $lang_select;
 }
 
-function style_select($default_style, $select_name = 'style', $dirname = 'templates')
-{
-	global $db;
-
-	$sql = 'SELECT themes_id, style_name
-		FROM ' . THEMES_TABLE . '
-		ORDER BY template_name, themes_id';
-
-	if ( !($result = $db->sql_query($sql)) ) {
-		erc_throw_error('Couldn\'t query themes table', __LINE__, __FILE__, $sql);
-	}
-
-	$style_select = '<select name="' . $select_name . '">';
-
-	while ( $row = $db->sql_fetchrow($result) ) {
-		$selected = ( $row['themes_id'] === $default_style ) ? ' selected="selected"' : '';
-		$style_select .= '<option value="' . $row['themes_id'] . '"' . $selected . '>' . htmlspecialchars($row['style_name']) . '</option>';
-	}
-
-	$db->sql_freeresult($result);
-	$style_select .= '</select>';
-
-	return $style_select;
-}
-
 function check_authorisation($die = TRUE)
 {
 	global $db, $lang, $dbuser, $dbpasswd, $option, $_POST;

@@ -78,7 +78,7 @@ if (isset($_POST['submit'])) {
     message_die(GENERAL_MESSAGE, $message);
 }
 
-$style_select = style_select($new['default_style'], 'default_style', '../templates');
+$style_select = Select::style_select($new['default_style'], 'default_style', '../templates');
 $lang_select = language_select($new['default_lang'], 'default_lang');
 $timezone_select = Select::timezone($new['board_timezone'], 'board_timezone');
 
