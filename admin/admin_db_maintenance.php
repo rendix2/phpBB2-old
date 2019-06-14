@@ -221,7 +221,7 @@ switch($mode_id) {
 				if (check_mysql_version())
 				{
 					$stat = get_table_statistic();
-					$template->assignBlockVars('db_statistics', array());
+                    $template->assignBlockVars('db_statistics', []);
                     $template->assignVars(
                         [
                             'NUMBER_OF_DB_TABLES'           => $stat['all']['count'],
@@ -1699,7 +1699,7 @@ switch($mode_id) {
                     ->where('t.topic_id IS NULL')
                     ->fetchAll();
 
-				$result_array = array();
+                $result_array = [];
 
                 foreach ($rows as $row) {
                     if (!$list_open) {
@@ -1966,7 +1966,7 @@ switch($mode_id) {
                     ->where('pmt.privmsgs_text_id IS NULL')
                     ->fetchAll();
 
-				$result_array = array();
+				$result_array = [];
 
                 foreach ($rows as $row) {
                     if (!$list_open) {
@@ -2396,7 +2396,7 @@ switch($mode_id) {
 							->where('word_id IN %in', $result_array)
 							->execute(dibi::AFFECTED_ROWS);
 
-						$result_array = array();
+						$result_array = [];
 					}
 				}
 
@@ -2984,9 +2984,9 @@ switch($mode_id) {
 					->groupBy('u.user_posts')
 					->fetchAll();
 
-				$result_array = array();
+                $result_array = [];
 
-				foreach ($rows as $row) {
+                foreach ($rows as $row) {
 					$result_array[] = $row->user_id;
 
 					if ($row->new_counter !== $row->user_posts) {
@@ -3011,8 +3011,6 @@ switch($mode_id) {
                         ->where('user_id NOT IN %in', $result_array)
                         ->where('user_posts <> %i', 0)
                         ->fetchAll();
-
-                    $sql_string = 'user_id NOT IN (' . implode(',', $result_array) . ') AND';
                 } else {
                     $rows = dibi::select(['user_id', 'username', 'user_posts'])
                         ->from(USERS_TABLE)
@@ -3029,6 +3027,76 @@ switch($mode_id) {
                     echo("<li>" . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row->username), $row->user_id, $row->user_posts, 0) . "</li>\n");
 
                     dibi::update(USERS_TABLE, ['user_posts' => 0])
+                        ->where('user_id = %i', $row->user_id)
+                        ->execute();
+                }
+
+                if ($list_open) {
+                    echo("</ul></font>\n");
+                    $list_open = false;
+                } else {
+                    echo($lang['Nothing_to_do']);
+                }
+
+                echo("<p class=\"gen\"><b>" . $lang['Synchronize_user_topic_counter'] . "</b></p>\n");
+
+                $rows = dibi::select(['u.user_id', 'u.username', 'u.user_topics'])
+                    ->select('COUNT(t.topic_id)')
+                    ->as('new_counter')
+                    ->from(USERS_TABLE)
+                    ->as('u')
+                    ->innerJoin(TOPICS_TABLE)
+                    ->as('t')
+                    ->on('u.user_id = t.topic_poster')
+                    ->where('u.user_id <> %i', ANONYMOUS)
+                    ->groupBy('u.user_id')
+                    ->groupBy('u.username')
+                    ->groupBy('u.user_posts')
+                    ->fetchAll();
+
+                $result_array = [];
+
+                foreach ($rows as $row) {
+                    $result_array[] = $row->user_id;
+
+                    if ($row->new_counter !== $row->user_topics) {
+                        if (!$list_open) {
+                            echo("<p class=\"gen\">" . $lang['Synchronizing_users'] . ":</p>\n");
+                            echo("<font class=\"gen\"><ul>\n");
+                            $list_open = TRUE;
+                        }
+
+                        echo("<li>" . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row['username']), $row['user_id'], $row['user_topics'], $row['new_counter']) . "</li>\n");
+
+                        dibi::update(USERS_TABLE, ['user_topics' => $row['new_counter']])
+                            ->where('user_id = %i', $row['user_id'])
+                            ->execute();
+                    }
+                }
+
+                // All other users
+                if (count($result_array)) {
+                    $rows = dibi::select(['user_id', 'username', 'user_topics'])
+                        ->from(USERS_TABLE)
+                        ->where('user_id NOT IN %in', $result_array)
+                        ->where('user_topics <> %i', 0)
+                        ->fetchAll();
+                } else {
+                    $rows = dibi::select(['user_id', 'username', 'user_topics'])
+                        ->from(USERS_TABLE)
+                        ->where('user_topics <> %i', 0)
+                        ->fetchAll();
+                }
+
+                foreach ($rows as $row) {
+                    if (!$list_open) {
+                        echo("<p class=\"gen\">" . $lang['Synchronizing_users'] . ":</p>\n");
+                        echo("<font class=\"gen\"><ul>\n");
+                        $list_open = true;
+                    }
+                    echo("<li>" . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row->username), $row->user_id, $row->user_topics, 0) . "</li>\n");
+
+                    dibi::update(USERS_TABLE, ['user_topics' => 0])
                         ->where('user_id = %i', $row->user_id)
                         ->execute();
                 }

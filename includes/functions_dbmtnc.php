@@ -105,24 +105,24 @@ if (isset($board_config) && isset($board_config['version'])) {
     // Fallback for ERC
     $phpbb_version = [0, 22];
 }
-if ($phpbb_version[0] == 0 && $phpbb_version[1] >= 5) {
+if ($phpbb_version[0] === 0 && $phpbb_version[1] >= 5) {
     $tables[] = 'confirm';
 }
-if ($phpbb_version[0] == 0 && $phpbb_version[1] >= 18) {
+if ($phpbb_version[0] === 0 && $phpbb_version[1] >= 18) {
     $tables[] = 'sessions_keys';
 
     $default_config['allow_autologin']= '1';
     $default_config['max_autologin_time'] = '0';
 }
-if ($phpbb_version[0] == 0 && $phpbb_version[1] >= 19) {
+if ($phpbb_version[0] === 0 && $phpbb_version[1] >= 19) {
     $default_config['max_login_attempts'] = '5';
     $default_config['login_reset_time']   = '30';
 }
-if ($phpbb_version[0] == 0 && $phpbb_version[1] >= 20) {
+if ($phpbb_version[0] === 0 && $phpbb_version[1] >= 20) {
     $default_config['search_flood_interval'] = '15';
     $default_config['rand_seed'] = '0';
 }
-if ($phpbb_version[0] == 0 && $phpbb_version[1] >= 21) {
+if ($phpbb_version[0] === 0 && $phpbb_version[1] >= 21) {
     $default_config['search_min_chars'] = '3';
 }
 sort($tables);
@@ -157,52 +157,44 @@ function throw_error($msg_text = '', $err_line = '', $err_file = '', $sql = '')
 	// Get SQL error if we are debugging. Do this as soon as possible to prevent
 	// subsequent queries from overwriting the status of sql_error()
 	//
-	if ( DEBUG )
-	{
+	if ( DEBUG ) {
 		$sql_error = $db->sql_error();
 
 		$debug_text = '';
 
-		if ( $sql_error['message'] != '' )
-		{
-			$debug_text .= '<br /><br />SQL Error : ' . $sql_error['code'] . ' ' . $sql_error['message'];
-		}
+        if ($sql_error['message'] !== '') {
+            $debug_text .= '<br /><br />SQL Error : ' . $sql_error['code'] . ' ' . $sql_error['message'];
+        }
 
-		if ( $sql_store != '' )
-		{
-			$debug_text .= "<br /><br />$sql_store";
-		}
+        if ($sql_store !== '') {
+            $debug_text .= "<br /><br />$sql_store";
+        }
 
-		if ( $err_line != '' && $err_file != '' )
-		{
-			$debug_text .= '</br /><br />Line : ' . $err_line . '<br />File : ' . $err_file;
-		}
-	}
-	else
-	{
-		$debug_text = '';
-	}
+        if ($err_line !== '' && $err_file !== '') {
+            $debug_text .= '</br /><br />Line : ' . $err_line . '<br />File : ' . $err_file;
+        }
+    } else {
+        $debug_text = '';
+    }
 
 	//
 	// Close the list if one is still open
 	//
-	if ( $list_open )
-	{
-		echo("</ul></span>\n");
-	}
+    if ($list_open) {
+        echo("</ul></span>\n");
+    }
 
-	if ( $msg_text == '' )
-	{
-		$msg_text = $lang['An_error_occured'];
-	}
+    if ($msg_text === '') {
+        $msg_text = $lang['An_error_occured'];
+    }
 
 	echo('<p class="gen"><b><span style="color:#' . $theme['fontcolor3'] . '">' . $lang['Error'] . ":</span></b> $msg_text$debug_text</p>\n");
 
 	//
 	// Include Tail and exit
 	//
-	echo("<p class=\"gen\"><a href=\"" . append_sid("admin_db_maintenance.$phpEx") . "\">" . $lang['Back_to_DB_Maintenance'] . "</a></p>\n");
-	include('./page_footer_admin.'.$phpEx);
+	echo('<p class="gen"><a href="' . Session::appendSid("admin_db_maintenance.$phpEx") . '">' . $lang['Back_to_DB_Maintenance'] . "</a></p>\n");
+	include './page_footer_admin.'.$phpEx;
 	exit;
 }
 
@@ -214,8 +206,7 @@ function lock_db($unlock = FALSE, $delay = TRUE, $ignore_default = FALSE)
 	global $board_config, $db, $lang;
 	static $db_was_locked = FALSE;
 
-	if ($unlock)
-	{
+	if ($unlock) {
 		echo('<p class="gen"><b>' . $lang['Unlock_db'] . "</b></p>\n");
 		if ( $db_was_locked && !$ignore_default )
 		{
@@ -223,39 +214,31 @@ function lock_db($unlock = FALSE, $delay = TRUE, $ignore_default = FALSE)
 			echo('<p class="gen">' . $lang['Ignore_unlock_command'] . "</p>\n");
 			return;
 		}
-	}
-	else
-	{
+	} else {
 		echo('<p class="gen"><b>' . $lang['Lock_db'] . "</b></p>\n");
 		// Check current lock state
-		if ( $board_config['board_disable'] == 1 )
-		{
-			// DB is already locked. Write this to var and exit
-			$db_was_locked = TRUE;
-			echo('<p class="gen">' . $lang['Already_locked'] . "</p>\n");
-			return $db_was_locked;
-		}
-		else
-		{
-			$db_was_locked = FALSE;
-		}
+		if ( $board_config['board_disable'] === 1 ) {
+            // DB is already locked. Write this to var and exit
+            $db_was_locked = true;
+            echo('<p class="gen">' . $lang['Already_locked'] . "</p>\n");
+            return $db_was_locked;
+        } else {
+            $db_was_locked = false;
+        }
 	}
 
 	// OK, now we can update the settings
-	update_config('board_disable', ($unlock) ? '0' : '1');
+	update_config('board_disable', $unlock ? '0' : '1');
 
 	//
 	// Delay 3 seconds to allow database to finish operation
 	//
-	if (!$unlock && $delay)
-	{
+	if (!$unlock && $delay) {
 		global $timer;
 		echo('<p class="gen">' . $lang['Delay_info'] . "</p>\n");
 		sleep(3);
 		$timer += 3; // remove delaying time from timer
-	}
-	else
-	{
+	} else {
 		echo('<p class="gen">' . $lang['Done'] . "</p>\n");
 	}
 	return $db_was_locked;
@@ -277,76 +260,48 @@ function check_condition($check)
 			return check_mysql_version();
 			break;
 		case 2: // Session Table not HEAP
-			if (!check_mysql_version())
-			{
-				return FALSE;
-			}
-			$sql = "SHOW TABLE STATUS
-				LIKE '" . SESSIONS_TABLE . "'";
-			$result = $db->sql_query($sql);
-			if( !$result )
-			{
-				return FALSE; // Status unknown
-			}
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-			if( !$row )
-			{
-				return FALSE; // Status unknown
-			}
-			if ( (isset($row['Type']) && $row['Type'] == 'HEAP') || (isset($row['Engine']) && ($row['Engine'] == 'HEAP' || $row['Engine'] == 'MEMORY')) )
-			{
-				return FALSE;
-			}
-			else
-			{
-				return TRUE;
-			}
+            if (!check_mysql_version()) {
+                return false;
+            }
+
+            $row = dibi::query('SHOW TABLE STATUS LIKE %~like~', SESSIONS_TABLE)->fetch();
+
+            if (!$row) {
+                return false; // Status unknown
+            }
+
+            return !((isset($row->Type) && $row->Type == 'HEAP') || (isset($row->Engine) && ($row->Engine == 'HEAP' || $row->Engine === 'MEMORY')));
 			break;
 		case 3: // DB locked
-			if ( $board_config['board_disable'] == 1 )
-			{
-				// DB is locked
-				return TRUE;
-			}
-			else
-			{
-				return FALSE;
-			}
+           return $board_config['board_disable'] === 1;
 			break;
 		case 4: // Search index in recreation
-			if( $board_config['dbmtnc_rebuild_pos'] <> -1 )
-			{
+			if( $board_config['dbmtnc_rebuild_pos'] !== -1 ) {
 				// Rebuilding was interrupted - check for end position
-				if ( $board_config['dbmtnc_rebuild_end'] >= $board_config['dbmtnc_rebuild_pos'] )
-				{
+				if ( $board_config['dbmtnc_rebuild_end'] >= $board_config['dbmtnc_rebuild_pos'] ) {
 					return TRUE;
-				}
-				else
-				{
+				} else {
 					return FALSE;
 				}
-			}
-			else
-			{
+			} else {
 				// Rebuilding was not interrupted
 				return FALSE;
 			}
 			break;
 		case 5: // Configuration disabled
-			return (CONFIG_LEVEL != 0) ? TRUE : FALSE;
+			return CONFIG_LEVEL !== 0;
 			break;
 		case 6: // User post counter disabled
-			return ($board_config['dbmtnc_disallow_postcounter'] != 1) ? TRUE : FALSE;
+			return $board_config['dbmtnc_disallow_postcounter'] !== 1;
 			break;
 		case 7: // Rebuilding disabled
-			return ($board_config['dbmtnc_disallow_rebuild'] != 1) ? TRUE : FALSE;
+			return $board_config['dbmtnc_disallow_rebuild'] !== 1;
 			break;
 		case 8: // Seperator for rebuilding
-			return (check_condition(4) || check_condition(7)) ? TRUE : FALSE;
+			return (check_condition(4) || check_condition(7));
 			break;
-		default:
-			return FALSE;
+        default:
+            return false;
 	}
 }
 
@@ -359,8 +314,8 @@ function check_mysql_version()
 
     $version = dibi::query('SELECT VERSION() AS mysql_version')->fetchSingle();
 
-    if ($version == false) {
-		throw_error("Couldn't obtain MySQL Version", __LINE__, __FILE__, $sql);
+    if ($version === false) {
+		throw_error("Couldn't obtain MySQL Version");
 	}
 
     // Version from 3.23.0 to 3.23.16
@@ -378,7 +333,7 @@ function check_mysql_version()
 //
 function getmicrotime()
 {
-	list($usec, $sec) = explode(" ", microtime()); 
+	list($usec, $sec) = explode(' ', microtime());
 	return ((float)$usec + (float)$sec); 
 }
 
@@ -388,7 +343,7 @@ function getmicrotime()
 //
 function get_table_statistic()
 {
-	global $db, $table_prefix;
+	global $table_prefix;
 	global $tables;
 
 	$stat['all']['count'] = 0;
@@ -400,35 +355,29 @@ function get_table_statistic()
 	$stat['core']['count'] = 0;
 	$stat['core']['records'] = 0;
 	$stat['core']['size'] = 0;
-	
-	$sql = 'SHOW TABLE STATUS';
-	$result = $db->sql_query($sql);
-	if( !$result )
-	{
-		throw_error("Couldn't obtain table data", __LINE__, __FILE__, $sql);
-	}
-	while( $row = $db->sql_fetchrow($result) )
-	{
-		$stat['all']['count']++;
-		$stat['all']['records'] += intval($row['Rows']);
-		$stat['all']['size'] += intval($row['Data_length']) + intval($row['Index_length']);
-		if ( $table_prefix == substr($row['Name'], 0, strlen($table_prefix)) )
-		{
-			$stat['advanced']['count']++;
-			$stat['advanced']['records'] += intval($row['Rows']);
-			$stat['advanced']['size'] += intval($row['Data_length']) + intval($row['Index_length']);
-		}
-		for ($i = 0; $i < count($tables); $i++)
-		{
-			if ($table_prefix . $tables[$i] == $row['Name'])
-			{
-				$stat['core']['count']++;
-				$stat['core']['records'] += intval($row['Rows']);
-				$stat['core']['size'] += intval($row['Data_length']) + intval($row['Index_length']);
-			}
-		}
-	}
-	$db->sql_freeresult($result);
+
+	$rows = dibi::query('SHOW TABLE STATUS')->fetchAll();
+
+    foreach ($rows as $row) {
+        $stat['all']['count']++;
+        $stat['all']['records'] += (int)$row['Rows'];
+        $stat['all']['size']    += (int)$row['Data_length'] + (int)$row['Index_length'];
+
+        if ($table_prefix === substr($row['Name'], 0, strlen($table_prefix))) {
+            $stat['advanced']['count']++;
+            $stat['advanced']['records'] += (int)$row['Rows'];
+            $stat['advanced']['size']    += (int)$row['Data_length'] + (int)$row['Index_length'];
+        }
+
+        foreach ($tables as $table) {
+            if ($table_prefix . $table === $row['Name']) {
+                $stat['core']['count']++;
+                $stat['core']['records'] += (int)$row['Rows'];
+                $stat['core']['size']    += (int)$row['Data_length'] + (int)$row['Index_length'];
+            }
+        }
+    }
+
 	return $stat;
 }
 
@@ -437,18 +386,13 @@ function get_table_statistic()
 //
 function convert_bytes($bytes)
 {
-	if( $bytes >= 1048576 )
-	{
-		return sprintf("%.2f MB", ( $bytes / 1048576 ));
-	}
-	else if( $bytes >= 1024 )
-	{
-		return sprintf("%.2f KB", ( $bytes / 1024 ));
-	}
-	else
-	{
-		return sprintf("%.2f Bytes", $bytes);
-	}
+    if ($bytes >= 1048576) {
+        return sprintf('%.2f MB', $bytes / 1048576);
+    } elseif ($bytes >= 1024) {
+        return sprintf('%.2f KB', $bytes / 1024);
+    } else {
+        return sprintf('%.2f Bytes', $bytes);
+    }
 }
 
 //
@@ -456,9 +400,9 @@ function convert_bytes($bytes)
 //
 function create_cat()
 {
-	global $db, $lang;
+	global $lang;
 
-	static $cat_created = FALSE;
+    static $cat_created = false;
 	static $cat_id = 0;
 
 	if (!$cat_created) {
@@ -487,14 +431,13 @@ function create_cat()
 //
 function create_forum()
 {
-	global $db, $lang;
+	global $lang;
 
-	static $forum_created = FALSE;
+    static $forum_created = false;
 	static $forum_id = 0;
 	$cat_id = create_cat();
 
-	if (!$forum_created)
-	{
+	if (!$forum_created) {
         $next_forum_order = dibi::select('MAX(forum_order)')
             ->as('forum_order')
             ->from(FORUMS_TABLE)
@@ -528,7 +471,7 @@ function create_forum()
         ];
 
         $forum_id = dibi::insert(FORUMS_TABLE, $insertData)->execute(dibi::IDENTIFIER);
-		$forum_created = TRUE;
+        $forum_created = true;
 	}
 	return $forum_id;
 }
@@ -540,14 +483,13 @@ function create_topic()
 {
 	global $db, $lang;
 
-	static $topic_created = FALSE;
+    static $topic_created = false;
 	static $topic_id = 0;
 	$forum_id = create_forum();
 
-	if (!$topic_created)
-	{
+	if (!$topic_created) {
 		$sql = 'INSERT INTO ' . TOPICS_TABLE . " (forum_id, topic_title, topic_poster, topic_time, topic_views, topic_replies, topic_status, topic_vote, topic_type, topic_first_post_id, topic_last_post_id, topic_moved_id)
-			VALUES ($forum_id, '" . $lang['New_topic_name'] . "', -1, " . time() . ", 0, 0, " . TOPIC_UNLOCKED . ", 0, " . POST_NORMAL . ", 0, 0, 0)";
+			VALUES ($forum_id, '" . $lang['New_topic_name'] . "', -1, " . time() . ', 0, 0, ' . TOPIC_UNLOCKED . ', 0, ' . POST_NORMAL . ', 0, 0, 0)';
 		$result = $db->sql_query($sql);
 		if( !$result )
 		{
@@ -580,7 +522,7 @@ function get_poster($topic_id)
         ->fetch();
 
     if (!$posterId) {
-        throw_error("Couldn't get post data!", __LINE__, __FILE__, $sql);
+        throw_error("Couldn't get post data!");
     }
 
 	return $posterId;
@@ -609,7 +551,7 @@ function get_word_id($word)
         return null;
     }
     if (in_array($word, $synonym_array[1], true)) {
-        $key  = array_search($word, $synonym_array[1]);
+        $key  = array_search($word, $synonym_array[1], true);
         $word = $synonym_array[0][$key];
     }
 
@@ -637,41 +579,37 @@ function set_autoincrement($table, $column, $length, $unsigned = TRUE)
 {
 	global $db, $lang;
 
-	$sql = "ALTER IGNORE TABLE $table MODIFY $column mediumint($length) " . (($unsigned) ? 'unsigned ' : '') . "NOT NULL auto_increment";
-	if (check_mysql_version())
-	{
+	$sql = "ALTER IGNORE TABLE $table MODIFY $column mediumint($length) " . ($unsigned ? 'unsigned ' : '') . 'NOT NULL auto_increment';
+
+	if (check_mysql_version()) {
 		$sql2 = "SHOW COLUMNS FROM $table LIKE '$column'";
 		$result = $db->sql_query($sql2);
-		if( !$result )
-		{
+
+		if( !$result ) {
 			throw_error("Couldn't get table status!", __LINE__, __FILE__, $sql2);
 		}
+
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
-		if( !$row )
-		{
+
+		if( !$row ) {
 			throw_error("Couldn't get table status!", __LINE__, __FILE__, $sql2);
 		}
-		if (strpos($row['Extra'], 'auto_increment') !== FALSE)
-		{
+		if (strpos($row['Extra'], 'auto_increment') !== FALSE) {
 			echo("<li>$table: " . $lang['Ai_message_no_update'] . "</li>\n");
-		}
-		else
-		{
+		} else {
 			echo("<li>$table: <b>" . $lang['Ai_message_update_table'] . "</b></li>\n");
 			$result = $db->sql_query($sql);
-			if( !$result )
-			{
+			if( !$result ) {
 				throw_error("Couldn't alter table!", __LINE__, __FILE__, $sql);
 			}
 		}
 	}
-	else // old Version of MySQL - do the update in any case
-	{
+	else { // old Version of MySQL - do the update in any case
 		echo("<li>$table: <b>" . $lang['Ai_message_update_table_old_mysql'] . "</b></li>\n");
 		$result = $db->sql_query($sql);
-		if( !$result )
-		{
+
+		if( !$result ) {
 			throw_error("Couldn't alter table!", __LINE__, __FILE__, $sql);
 		}
 	}
@@ -690,55 +628,46 @@ function erc_throw_error($msg_text = '', $err_line = '', $err_file = '', $sql = 
 	// Get SQL error if we are debugging. Do this as soon as possible to prevent
 	// subsequent queries from overwriting the status of sql_error()
 	//
-	if ( DEBUG )
-	{
-		$sql_error = $db->sql_error();
+    if (DEBUG) {
+        $sql_error = $db->sql_error();
 
-		$debug_text = '';
+        $debug_text = '';
 
-		if ( $sql_error['message'] != '' )
-		{
-			$debug_text .= '<br /><br />SQL Error : ' . $sql_error['code'] . ' ' . $sql_error['message'];
-		}
+        if ($sql_error['message'] !== '') {
+            $debug_text .= '<br /><br />SQL Error : ' . $sql_error['code'] . ' ' . $sql_error['message'];
+        }
 
-		if ( $sql_store != '' )
-		{
-			$debug_text .= "<br /><br />$sql_store";
-		}
+        if ($sql_store !== '') {
+            $debug_text .= "<br /><br />$sql_store";
+        }
 
-		if ( $err_line != '' && $err_file != '' )
-		{
-			$debug_text .= '</br /><br />Line : ' . $err_line . '<br />File : ' . $err_file;
-		}
-	}
-	else
-	{
-		$debug_text = '';
-	}
+        if ($err_line !== '' && $err_file !== '') {
+            $debug_text .= '</br /><br />Line : ' . $err_line . '<br />File : ' . $err_file;
+        }
+    } else {
+        $debug_text = '';
+    }
 
-	if ( $msg_text == '' )
-	{
-		$msg_text = $lang['An_error_occured'];
-	}
+    if ($msg_text === '') {
+        $msg_text = $lang['An_error_occured'];
+    }
 
 	echo('<p class="gen"><b>' . $lang['Error'] . ":</b> $msg_text$debug_text</p>\n");
 
 	exit;
 }
 
-function language_select($default, $select_name = "language", $file_to_check = "main", $dirname="language")
+function language_select($default, $select_name = 'language', $file_to_check = 'main', $dirname= 'language')
 {
 	global $phpEx, $phpbb_root_path, $lang;
 
 	$dir = opendir($phpbb_root_path . $dirname);
 
 	$lg = array();
-	while ( $file = readdir($dir) )
-	{
-		if (preg_match('#^lang_#i', $file) && !is_file(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file)) && !is_link(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file)) && is_file(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file . '/lang_' . $file_to_check . '.' . $phpEx)) )
-		{
-			$filename = trim(str_replace("lang_", "", $file));
-			$displayname = preg_replace("/^(.*?)_(.*)$/", "\\1 [ \\2 ]", $filename);
+	while ( $file = readdir($dir) ) {
+		if (preg_match('#^lang_#i', $file) && !is_file(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file)) && !is_link(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file)) && is_file(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file . '/lang_' . $file_to_check . '.' . $phpEx)) ) {
+			$filename = trim(str_replace('lang_', '', $file));
+			$displayname = preg_replace('/^(.*?)_(.*)$/', "\\1 [ \\2 ]", $filename);
 			$displayname = preg_replace("/\[(.*?)_(.*)\]/", "[ \\1 - \\2 ]", $displayname);
 			$lg[$displayname] = $filename;
 		}
@@ -749,44 +678,43 @@ function language_select($default, $select_name = "language", $file_to_check = "
 	@asort($lg);
 	@reset($lg);
 
-	if ( count($lg) )
-	{
+	if ( count($lg) ) {
 		$lang_select = '<select name="' . $select_name . '">';
-		while ( list($displayname, $filename) = @each($lg) )
-		{
-			$selected = ( strtolower($default) == strtolower($filename) ) ? ' selected="selected"' : '';
+
+		while ( list($displayname, $filename) = @each($lg) ) {
+			$selected = ( strtolower($default) === strtolower($filename) ) ? ' selected="selected"' : '';
 			$lang_select .= '<option value="' . $filename . '"' . $selected . '>' . ucwords($displayname) . '</option>';
 		}
+
 		$lang_select .= '</select>';
-	}
-	else
-	{
+	} else {
 		$lang_select = $lang['No_selectable_language'];
 	}
 
 	return $lang_select;
 }
 
-function style_select($default_style, $select_name = "style", $dirname = "templates")
+function style_select($default_style, $select_name = 'style', $dirname = 'templates')
 {
 	global $db;
 
-	$sql = "SELECT themes_id, style_name
-		FROM " . THEMES_TABLE . "
-		ORDER BY template_name, themes_id";
-	if ( !($result = $db->sql_query($sql)) )
-	{
+	$sql = 'SELECT themes_id, style_name
+		FROM ' . THEMES_TABLE . '
+		ORDER BY template_name, themes_id';
+
+	if ( !($result = $db->sql_query($sql)) ) {
 		erc_throw_error('Couldn\'t query themes table', __LINE__, __FILE__, $sql);
 	}
 
 	$style_select = '<select name="' . $select_name . '">';
-	while ( $row = $db->sql_fetchrow($result) )
-	{
-		$selected = ( $row['themes_id'] == $default_style ) ? ' selected="selected"' : '';
+
+	while ( $row = $db->sql_fetchrow($result) ) {
+		$selected = ( $row['themes_id'] === $default_style ) ? ' selected="selected"' : '';
 		$style_select .= '<option value="' . $row['themes_id'] . '"' . $selected . '>' . htmlspecialchars($row['style_name']) . '</option>';
 	}
+
 	$db->sql_freeresult($result);
-	$style_select .= "</select>";
+	$style_select .= '</select>';
 
 	return $style_select;
 }
@@ -795,48 +723,35 @@ function check_authorisation($die = TRUE)
 {
 	global $db, $lang, $dbuser, $dbpasswd, $option, $_POST;
 
-	$auth_method = ( isset($_POST['auth_method']) ) ? htmlspecialchars($_POST['auth_method']) : '';
+	$auth_method = isset($_POST['auth_method']) ? htmlspecialchars($_POST['auth_method']) : '';
 	$board_user = isset($_POST['board_user']) ? trim(htmlspecialchars($_POST['board_user'])) : '';
 	$board_user = substr(str_replace("\\'", "'", $board_user), 0, 25);
 	$board_user = str_replace("'", "\\'", $board_user);
-	$board_password = ( isset($_POST['board_password']) ) ? $_POST['board_password'] : '';
-	$db_user = ( isset($_POST['db_user']) ) ? $_POST['db_user'] : '';
-	$db_password = ( isset($_POST['db_password']) ) ? $_POST['db_password'] : '';
+	$board_password = isset($_POST['board_password']) ? $_POST['board_password'] : '';
+	$db_user = isset($_POST['db_user']) ? $_POST['db_user'] : '';
+	$db_password = isset($_POST['db_password']) ? $_POST['db_password'] : '';
 	// Change authentication mode if selected option does not allow database authentication
-	if ( $option == 'rld' || $option == 'rtd' )
-	{
+
+	if ( $option === 'rld' || $option === 'rtd' ) {
 		$auth_method = 'board';
 	}
 
-	switch ($auth_method)
-	{
+	switch ($auth_method) {
 		case 'board':
-			$sql = "SELECT user_id, username, user_password, user_active, user_level
-				FROM " . USERS_TABLE . "
-				WHERE username = '" . str_replace("\\'", "''", $board_user) . "'";
-			if ( !($result = $db->sql_query($sql)) )
-			{
-				erc_throw_error('Error in obtaining userdata', __LINE__, __FILE__, $sql);
-			}
-			if( $row = $db->sql_fetchrow($result) )
-			{
-				if( md5($board_password) == $row['user_password'] && $row['user_active'] && $row['user_level'] == ADMIN )
-				{
-					$allow_access = TRUE;
-				}
-				else
-				{
-					$allow_access = FALSE;
-				}
-			}
-			else
-			{
-				$allow_access = FALSE;
-			}
-			$db->sql_freeresult($result);
+            $row = dibi::select(['user_id', 'username', 'user_password', 'user_active', 'user_level'])
+                ->from(USERS_TABLE)
+                ->where('username = %s', $board_user)
+                ->fetch();
+
+            if ($row === false) {
+                $allow_access = false;
+            } else {
+                $allow_access = password_verify($board_password, $row['user_password'])  && $row['user_active'] && $row['user_level'] === ADMIN;
+            }
+
 			break;
 		case 'db':
-			if ($db_user == $dbuser && $db_password == $dbpasswd)
+			if ($db_user === $dbuser && $db_password === $dbpasswd)
 			{
 				$allow_access = TRUE;
 			}
@@ -868,7 +783,7 @@ function get_config_data($option)
         ->fetchSingle();
 
     if (!$config) {
-        erc_throw_error("Couldn't get config data!", __LINE__, __FILE__, $sql);
+        erc_throw_error("Couldn't get config data!");
     }
 
 	return $config;

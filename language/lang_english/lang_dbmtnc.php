@@ -124,8 +124,8 @@ $mtnc[] = array('synchronize_post',
 	'This command will take some ammount of time to complete. If your server does not allow the usage of the set_time_limit() command, this command may be interruped by PHP. No data will get lost by this but some data may not be updated. Proceed?',
 	0);
 $mtnc[] = array('synchronize_user',
-	'Synchronize user post counters',
-	'This will synchronize the post counters for the users.',
+	'Synchronize user counters',
+	'This will synchronize the post and topic counters for the users.',
 	'<b>Attention:</b> pruned posts are normaly not substracted from the post counter. When running this command, the pruned posts will be substracted from the counter and cannot be restored. Proceed?',
 	6);
 $mtnc[] = array('synchronize_mod_state',
@@ -404,6 +404,7 @@ $lang['Synchronize_forum_data_wo_post'] = 'Synchronizing forums without any post
 // synchronize_user
 $lang['Synchronize_post_counters'] = 'Synchronizing post counters';
 $lang['Synchronize_user_post_counter'] = 'Synchronizing post counter of users';
+$lang['Synchronize_user_topic_counter'] = 'Synchronizing topic counter of users';
 $lang['Synchronizing_user_counter'] = 'Updating user %s (%d): %d -&gt; %d';
 // synchronize_mod_state
 $lang['Synchronize_moderators'] = 'Synchronizing moderator status in user table';
