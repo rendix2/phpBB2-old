@@ -483,21 +483,29 @@ function create_forum()
 //
 function create_topic()
 {
-	global $db, $lang;
+	global $lang;
 
     static $topic_created = false;
 	static $topic_id = 0;
 	$forum_id = create_forum();
 
 	if (!$topic_created) {
-		$sql = 'INSERT INTO ' . TOPICS_TABLE . " (forum_id, topic_title, topic_poster, topic_time, topic_views, topic_replies, topic_status, topic_vote, topic_type, topic_first_post_id, topic_last_post_id, topic_moved_id)
-			VALUES ($forum_id, '" . $lang['New_topic_name'] . "', -1, " . time() . ', 0, 0, ' . TOPIC_UNLOCKED . ', 0, ' . POST_NORMAL . ', 0, 0, 0)';
-		$result = $db->sql_query($sql);
-		if( !$result )
-		{
-			throw_error("Couldn't update topics data!", __LINE__, __FILE__, $sql);
-		}
-		$topic_id = $db->sql_nextid();
+	    $insertData = [
+	        'forum_id' => $forum_id,
+            'topic_title' => $lang['New_topic_name'],
+            'topic_poster' => ANONYMOUS,
+            'topic_time' => time(),
+            'topic_views' => 0,
+            'topic_replies' => 0,
+            'topic_status' => TOPIC_UNLOCKED,
+            'topic_vote' => 0,
+            'topic_type' => POST_NORMAL,
+            'topic_first_post_id' => 0,
+            'topic_last_post_id' => 0,
+            'topic_moved_id' => 0,
+        ];
+
+	    $topic_id = dibi::insert(TOPICS_TABLE, $insertData)->execute(dibi::IDENTIFIER);
         $topic_created = true;
 	}
 	return $topic_id;
@@ -579,41 +587,24 @@ function get_word_id($word)
 //
 function set_autoincrement($table, $column, $length, $unsigned = TRUE)
 {
-	global $db, $lang;
+	global $lang;
 
 	$sql = "ALTER IGNORE TABLE $table MODIFY $column mediumint($length) " . ($unsigned ? 'unsigned ' : '') . 'NOT NULL auto_increment';
 
 	if (check_mysql_version()) {
-		$sql2 = "SHOW COLUMNS FROM $table LIKE '$column'";
-		$result = $db->sql_query($sql2);
+	    $row = dibi::query('SHOW COLUMNS FROM %n LIKE %~like~ %n', $table, $column)->fetch();
 
-		if( !$result ) {
-			throw_error("Couldn't get table status!", __LINE__, __FILE__, $sql2);
-		}
-
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		if( !$row ) {
-			throw_error("Couldn't get table status!", __LINE__, __FILE__, $sql2);
-		}
 		if (strpos($row['Extra'], 'auto_increment') !== FALSE) {
 			echo("<li>$table: " . $lang['Ai_message_no_update'] . "</li>\n");
 		} else {
 			echo("<li>$table: <b>" . $lang['Ai_message_update_table'] . "</b></li>\n");
-			$result = $db->sql_query($sql);
-			if( !$result ) {
-				throw_error("Couldn't alter table!", __LINE__, __FILE__, $sql);
-			}
-		}
-	}
-	else { // old Version of MySQL - do the update in any case
-		echo("<li>$table: <b>" . $lang['Ai_message_update_table_old_mysql'] . "</b></li>\n");
-		$result = $db->sql_query($sql);
 
-		if( !$result ) {
-			throw_error("Couldn't alter table!", __LINE__, __FILE__, $sql);
+			dibi::query($sql);
 		}
+	} else { // old Version of MySQL - do the update in any case
+		echo("<li>$table: <b>" . $lang['Ai_message_update_table_old_mysql'] . "</b></li>\n");
+
+        dibi::query($sql);
 	}
 }
 

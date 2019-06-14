@@ -828,17 +828,66 @@ switch($mode)
 				$board_user = str_replace("'", "\\'", $board_user);
 
 				if ($method === 'recreate_theme') {
-					$sql = 'INSERT INTO ' . THEMES_TABLE . "
-						(template_name, style_name, head_stylesheet, body_background, body_bgcolor, body_text, body_link, body_vlink, body_alink, body_hlink, tr_color1, tr_color2, tr_color3, tr_class1, tr_class2, tr_class3, th_color1, th_color2, th_color3, th_class1, th_class2, th_class3, td_color1, td_color2, td_color3, td_class1, td_class2, td_class3, fontface1, fontface2, fontface3, fontsize1, fontsize2, fontsize3, fontcolor1, fontcolor2, fontcolor3, span_class1, span_class2, span_class3, img_size_poll, img_size_privmsg) VALUES
-						('subSilver', 'subSilver', 'subSilver.css', '', 'E5E5E5', '000000', '006699', '5493B4', '', 'DD6900', 'EFEFEF', 'DEE3E7', 'D1D7DC', '', '', '', '98AAB1', '006699', 'FFFFFF', 'cellpic1.gif', 'cellpic3.gif', 'cellpic2.jpg', 'FAFAFA', 'FFFFFF', '', 'row1', 'row2', '', 'Verdana, Arial, Helvetica, sans-serif', 'Trebuchet MS', 'Courier, \\'Courier New\\', sans-serif', 10, 11, 12, '444444', '006600', 'FFA34F', '', '', '', NULL, NULL)";
+				    $insertData = [
+				       'template_name' => 'subSilver',
+				       'style_name'    => 'subSilver',
+				       'head_stylesheet' =>    'subSilver.css',
+				       'body_background' => '',
+				       'body_bgcolor' => 'E5E5E5',
+				       'body_text' => '000000',
+				       'body_link' => '006699',
+				       'body_vlink' => '5493B4',
+				       'body_alink' => '',
+				       'body_hlink' => 'DD6900',
 
-					$result = $db->sql_query($sql);
+				       'tr_color1' => 'EFEFEF',
+				       'tr_color2' => 'DEE3E7',
+				       'tr_color3' => 'D1D7DC',
 
-					if(!$result) {
-						erc_throw_error("Couldn't update themes table!", __LINE__, __FILE__, $sql);
-					}
+				       'tr_class1' => '',
+				       'tr_class2' => '',
+				       'tr_class3' => '',
+
+				       'th_color1' => '98AAB1',
+				       'th_color2' => '006699',
+				       'th_color3' => 'FFFFFF',
+
+				       'th_class1' => 'cellpic1.gif',
+				       'th_class2' =>  'cellpic3.gif',
+				       'th_class3' => 'cellpic2.jpg',
+
+				       'td_color1' => 'FAFAFA',
+				       'td_color2' => 'FFFFFF',
+				       'td_color3' => '',
+
+				       'td_class1' => 'row1',
+				       'td_class2' => 'row2',
+				       'td_class3' => '',
+
+				       'fontface1' => 'Verdana, Arial, Helvetica, sans-serif',
+				       'fontface2' => 'Trebuchet MS',
+				       'fontface3' => "Courier, 'Courier New', sans-serif",
+
+				       'fontsize1' => 10,
+				       'fontsize2' => 11,
+				       'fontsize3' => 12,
+
+				       'fontcolor1' => '444444',
+				       'fontcolor2' => '006600',
+				       'fontcolor3' => 'FFA34F',
+
+				       'span_class1' => '',
+				       'span_class2' => '',
+				       'span_class3' => '',
+
+				       'img_size_poll' => null,
+				       'img_size_privmsg' => null,
+
+                    ];
+
+				    $new_style = dibi::insert(THEMES_TABLE, $insertData)->execute(dibi::IDENTIFIER);
+
 					$method = 'select_theme';
-					$new_style = $db->sql_nextid();
 ?>
 	<p><?php echo $lang['rtd_restore_success'];?></p>
 <?php
@@ -880,13 +929,46 @@ switch($mode)
 					success_message($lang['cbl_success']);
 				} else { // anonymous user does not exist
 					// Recreate entry
-					$sql = 'INSERT INTO ' . USERS_TABLE . ' (user_id, username, user_level, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_viewemail, user_style, user_aim, user_yim, user_msnm, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_pm, user_notify_pm, user_allow_viewonline, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active)
-						VALUES (' . ANONYMOUS . ", 'Anonymous', 0, 0, '', '', '', '', '', '', '', '', 0, NULL, '', '', '', 0, 0, 1, 1, 1, 0, 1, 1, 0, '', '', 0, '', '', '', 0, 0)";
-					$result = $db->sql_query($sql);
+					$insertData = [
+                        'user_id' => ANONYMOUS,
+                        'username' => 'Anonymous',
+                        'user_level' => 0,
+                        'user_regdate' => 0,
+                        'user_password' => '',
+                        'user_email'    => '',
+                        'user_icq'      => '',
+                        'user_website'  => '',
+                        'user_occ'   => '',
+                        'user_from' => '',
+                        'user_interests' => '',
+                        'user_sig' => '',
+                        'user_viewemail' => 0,
+                        'user_style' => null,
+                        'user_aim' =>'',
+                        'user_yim' =>'',
+                        'user_msnm' =>'',
+                        'user_posts' => 0,
+                        'user_topics' => 0,
+                        'user_attachsig' => 0,
+                        'user_allowsmile' => 1,
+                        'user_allowhtml' => 1,
+                        'user_allowbbcode' => 1,
+                        'user_allow_pm' => 0,
+                        'user_notify_pm' => 1,
+                        'user_allow_viewonline' => 1,
+                        'user_rank' => 0,
+                        'user_avatar' => '',
+                        'user_lang' => '',
+                        'user_timezone' => '',
+                        'user_dateformat' => '',
+                        'user_actkey' => '',
+                        'user_newpasswd' => '',
+                        'user_notify' => 0,
+                        'user_active' => 0
+                    ];
 
-					if ( !$result ){
-						throw_error("Couldn't add user data!", __LINE__, __FILE__, $sql);
-					}
+                    dibi::insert(USERS_TABLE, $insertData)->execute();
+
 					success_message($lang['cbl_success_anonymous']);
 				}
 				break;
