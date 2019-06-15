@@ -149,32 +149,18 @@ function update_config($name, $value)
 //
 // This is the equivalent function for message_die. Since we do not use the template system when doing database work, message_die() will not work.
 //
-function throw_error($msg_text = '', $err_line = '', $err_file = '', $sql = '')
+function throw_error($msg_text = '', $err_line = '', $err_file = '')
 {
-	global $db, $template, $lang, $phpEx, $phpbb_root_path, $theme;
+	global $template, $lang, $phpEx, $phpbb_root_path, $theme;
 	global $list_open;
-
-	$sql_store = $sql;
 
 	//
 	// Get SQL error if we are debugging. Do this as soon as possible to prevent
 	// subsequent queries from overwriting the status of sql_error()
 	//
 	if ( DEBUG ) {
-		$sql_error = $db->sql_error();
-
-		$debug_text = '';
-
-        if ($sql_error['message'] !== '') {
-            $debug_text .= '<br /><br />SQL Error : ' . $sql_error['code'] . ' ' . $sql_error['message'];
-        }
-
-        if ($sql_store !== '') {
-            $debug_text .= "<br /><br />$sql_store";
-        }
-
         if ($err_line !== '' && $err_file !== '') {
-            $debug_text .= '</br /><br />Line : ' . $err_line . '<br />File : ' . $err_file;
+            $debug_text = '</br /><br />Line : ' . $err_line . '<br />File : ' . $err_file;
         }
     } else {
         $debug_text = '';
@@ -611,31 +597,17 @@ function set_autoincrement($table, $column, $length, $unsigned = TRUE)
 //
 // Functions for Emergency Recovery Console
 //
-function erc_throw_error($msg_text = '', $err_line = '', $err_file = '', $sql = '')
+function erc_throw_error($msg_text = '', $err_line = '', $err_file = '')
 {
-	global $db, $lang;
-
-	$sql_store = $sql;
+	global $lang;
 
 	//
 	// Get SQL error if we are debugging. Do this as soon as possible to prevent
 	// subsequent queries from overwriting the status of sql_error()
 	//
     if (DEBUG) {
-        $sql_error = $db->sql_error();
-
-        $debug_text = '';
-
-        if ($sql_error['message'] !== '') {
-            $debug_text .= '<br /><br />SQL Error : ' . $sql_error['code'] . ' ' . $sql_error['message'];
-        }
-
-        if ($sql_store !== '') {
-            $debug_text .= "<br /><br />$sql_store";
-        }
-
         if ($err_line !== '' && $err_file !== '') {
-            $debug_text .= '</br /><br />Line : ' . $err_line . '<br />File : ' . $err_file;
+            $debug_text = '</br /><br />Line : ' . $err_line . '<br />File : ' . $err_file;
         }
     } else {
         $debug_text = '';

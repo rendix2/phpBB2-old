@@ -175,7 +175,7 @@ switch($mode_id) {
                     ->fetchSingle();
 
                 if ($total_deactivated_users === false) {
-                    throw_error("Couldn't get statistic data!", __LINE__, __FILE__, $sql);
+                    throw_error("Couldn't get statistic data!");
                 }
 
                 $total_moderators = dibi::select('COUNT(user_id)')
@@ -185,7 +185,7 @@ switch($mode_id) {
                     ->fetchSingle();
 
                 if ($total_moderators === false) {
-                    throw_error("Couldn't get statistic data!", __LINE__, __FILE__, $sql);
+                    throw_error("Couldn't get statistic data!");
                 }
 
                 $total_administrators = dibi::select('COUNT(user_id)')
@@ -195,7 +195,7 @@ switch($mode_id) {
                     ->fetchSingle();
 
                 if ($total_administrators === false) {
-                    throw_error("Couldn't get statistic data!", __LINE__, __FILE__, $sql);
+                    throw_error("Couldn't get statistic data!");
                 }
 
 				$administrator_names = dibi::select('username')
@@ -2356,8 +2356,6 @@ switch($mode_id) {
                         $affected_rows += dibi::delete(SEARCH_MATCH_TABLE)
                             ->where('post_id IN %in', $post_array)
                             ->execute(dibi::AFFECTED_ROWS);
-
-                        $sql_query = 'post_id IN (' . implode(',', $post_array) . ') ';
                     }
 
                     if ($wordCount) {
@@ -3490,7 +3488,7 @@ switch($mode_id) {
 					->fetchSingle();
 
 				if ($sessionCount === false) {
-					throw_error("Couldn't get session data!", __LINE__, __FILE__, $sql);
+					throw_error("Couldn't get session data!");
 				}
 
 				// Table is to big - so delete some records
