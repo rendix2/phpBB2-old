@@ -41,8 +41,8 @@ function get_db_stat($mode)
                 ->fetch();
 
         case 'postcount':
-            return dibi::select('SUM(forum_topics)')
-                ->as('topic_total')
+            return dibi::select('SUM(forum_posts)')
+                ->as('post_total')
                 ->from(FORUMS_TABLE)
                 ->fetchSingle();
 
