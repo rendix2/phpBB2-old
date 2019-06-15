@@ -10,6 +10,8 @@
  *
  ***************************************************************************/
 
+use Nette\Caching\Cache;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -635,14 +637,27 @@ function replace_listitems($text, $uid)
 function smilies_pass($message)
 {
 	static $orig, $repl;
+	global $storage;
 
 	if (!isset($orig)) {
 		global $board_config;
 		$orig = $repl = [];
 
-		$smilies = dibi::select('*')
-            ->from(SMILIES_TABLE)
-            ->fetchAll();
+        $cache = new Cache($storage, SMILIES_TABLE);
+
+        $key = SMILIES_TABLE . '_all';
+
+        $smileysCaches = $cache->load($key);
+
+        if ($smileysCaches !== null) {
+            $smilies = $smileysCaches;
+        } else {
+            $smilies = dibi::select('*')
+                ->from(SMILIES_TABLE)
+                ->fetchAll();
+
+            $cache->save($key, $smilies);
+        }
 
 		if (count($smilies)) {
 			usort($smilies, 'smiley_sort');

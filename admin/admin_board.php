@@ -11,6 +11,8 @@
  *
  ***************************************************************************/
 
+use Nette\Caching\Storages\FileStorage;
+
 define('IN_PHPBB', 1);
 
 if (!empty($setmodules)) {
@@ -73,6 +75,10 @@ foreach ($configs as $config) {
 }
 
 if (isset($_POST['submit'])) {
+    $cache = new Cache($storage, CONFIG_TABLE);
+
+    $cache->remove(CONFIG_TABLE);
+
     $message = $lang['Config_updated'] . '<br /><br />' . sprintf($lang['Click_return_config'], '<a href="' . Session::appendSid('admin_board.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
     message_die(GENERAL_MESSAGE, $message);

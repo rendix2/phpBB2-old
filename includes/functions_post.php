@@ -11,6 +11,8 @@
  *
  ***************************************************************************/
 
+use Nette\Caching\Cache;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -679,6 +681,7 @@ function generate_smilies($mode, $page_id)
 	global $board_config, $template, $lang, $images, $theme, $phpbb_root_path;
 	global $user_ip, $session_length;
 	global $userdata;
+	global $storage;
 
 	$inline_columns = 4;
 	$inline_rows = 5;
@@ -696,10 +699,22 @@ function generate_smilies($mode, $page_id)
         $template->setFileNames(['smiliesbody' => 'posting_smilies.tpl']);
     }
 
-	$smilies = dibi::select(['emoticon', 'code', 'smile_url'])
-        ->from(SMILIES_TABLE)
-        ->orderBy('smilies_id')
-        ->fetchAll();
+    $cache = new Cache($storage, SMILIES_TABLE);
+
+	$key = SMILIES_TABLE . '_ordered_by_smilies_id';
+
+	$smileysCaches = $cache->load($key);
+
+	if ($smileysCaches !== null) {
+	    $smilies = $smileysCaches;
+    } else {
+        $smilies = dibi::select(['emoticon', 'code', 'smile_url'])
+            ->from(SMILIES_TABLE)
+            ->orderBy('smilies_id')
+            ->fetchAll();
+
+        $cache->save($key, $smilies);
+    }
 
 	if (count($smilies)) {
 		$numSmilies = 0;

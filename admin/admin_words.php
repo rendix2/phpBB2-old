@@ -11,6 +11,8 @@
  *
  ***************************************************************************/
 
+use Nette\Caching\Cache;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -112,6 +114,10 @@ if ($mode !== '') {
             message_die(GENERAL_MESSAGE, $lang['Must_enter_word']);
         }
 
+        $cache = new Cache($storage, WORDS_TABLE);
+
+        $cache->remove(WORDS_TABLE);
+
 		if ($word_id) {
 		    $update_data = [
 		        'word' => $word,
@@ -148,6 +154,10 @@ if ($mode !== '') {
 		$confirm = isset($_POST['confirm']);
 
 		if ($word_id && $confirm) {
+            $cache = new Cache($storage, WORDS_TABLE);
+
+            $cache->remove(WORDS_TABLE);
+
 		    dibi::delete(WORDS_TABLE)
                 ->where('word_id = %i', $word_id)
                 ->execute();

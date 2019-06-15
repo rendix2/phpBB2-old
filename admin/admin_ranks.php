@@ -10,6 +10,8 @@
  *
  ***************************************************************************/
 
+use Nette\Caching\Cache;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -150,6 +152,11 @@ if ($mode !== '') {
 			}
 		}
 
+		$cache = new Cache($storage, RANKS_TABLE);
+		$key   = RANKS_TABLE . '_ordered_by_rank_special_rank_min';
+
+		$cache->remove($key);
+
 		if ($rank_id) {
 			if (!$special_rank) {
 				dibi::update(USERS_TABLE, ['user_rank' => 0])
@@ -200,6 +207,11 @@ if ($mode !== '') {
 		$confirm = isset($_POST['confirm']);
 		
 		if ($rank_id && $confirm) {
+			$cache = new Cache($storage, RANKS_TABLE);
+			$key   = RANKS_TABLE . '_ordered_by_rank_special_rank_min';
+
+			$cache->remove($key);
+
 			dibi::delete(RANKS_TABLE)
 				->where('rank_id = %i', $rank_id)
 				->execute();

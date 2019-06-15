@@ -466,11 +466,22 @@ if ($resync) {
         ->fetchSingle();
 }
 
-$ranks = dibi::select('*')
-    ->from(RANKS_TABLE)
-    ->orderBy('rank_special')
-    ->orderBy('rank_min')
-    ->fetchAll();
+$cache = new \Nette\Caching\Cache($storage, RANKS_TABLE);
+$key   = RANKS_TABLE . '_ordered_by_rank_special_rank_min';
+
+$cachedRanks = $cache->load($key);
+
+if ($cachedRanks !== null) {
+    $ranks = $cachedRanks;
+} else {
+    $ranks = dibi::select('*')
+        ->from(RANKS_TABLE)
+        ->orderBy('rank_special')
+        ->orderBy('rank_min')
+        ->fetchAll();
+
+    $cache->save($key, $ranks);
+}
 
 //
 // Define censored word matches

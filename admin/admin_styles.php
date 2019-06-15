@@ -11,6 +11,8 @@
  *
  ***************************************************************************/
 
+use Nette\Caching\Cache;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -231,6 +233,11 @@ switch( $mode) {
 			//
 			
 			if ($mode === 'edit') {
+                $cache = new Cache($storage, THEMES_TABLE);
+                $key   = THEMES_TABLE . '_'. $style_id;
+
+                $cache->remove($key);
+
 			    dibi::update(THEMES_TABLE, $updated)
                     ->where('themes_id = %i', $style_id)
                     ->execute();
@@ -601,6 +608,11 @@ switch( $mode) {
 			// The user has confirmed the delete. Remove the style, the style element
 			// names and update any users who might be using this style
 			//
+            $cache = new Cache($storage, THEMES_TABLE);
+            $key   = THEMES_TABLE . '_'. $style_id;
+
+            $cache->remove($key);
+
             dibi::delete(THEMES_TABLE)
                 ->where('themes_id = %i', $style_id)
                 ->execute();

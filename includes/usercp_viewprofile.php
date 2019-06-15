@@ -11,6 +11,8 @@
  *
  ***************************************************************************/
 
+use Nette\Caching\Cache;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -35,11 +37,22 @@ if (!$profileData) {
 	message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
 }
 
-$ranks = dibi::select('*')
-    ->from(RANKS_TABLE)
-    ->orderBy('rank_special')
-    ->orderBy('rank_min')
-    ->fetchAll();
+$cache = new Cache($storage, RANKS_TABLE);
+$key   = RANKS_TABLE . '_ordered_by_rank_special_rank_min';
+
+$cachedRanks = $cache->load($key);
+
+if ($cachedRanks !== null) {
+    $ranks = $cachedRanks;
+} else {
+    $ranks = dibi::select('*')
+        ->from(RANKS_TABLE)
+        ->orderBy('rank_special')
+        ->orderBy('rank_min')
+        ->fetchAll();
+
+    $cache->save($key, $ranks);
+}
 
 //
 // Output page header and profile_view template

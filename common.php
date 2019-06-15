@@ -1,6 +1,7 @@
 <?php
 
 use Dibi\Bridges\Tracy\Panel;
+use Nette\Caching\Cache;
 use Tracy\Debugger;
 
 /***************************************************************************
@@ -132,9 +133,20 @@ $user_ip = encode_ip($client_ip);
 // basic forum information is not available
 //
 
-$board_config = dibi::select('*')
-    ->from(CONFIG_TABLE)
-    ->fetchPairs('config_name', 'config_value');
+$storage = new Nette\Caching\Storages\FileStorage(__DIR__ . '/temp');
+$cache   = new Cache($storage, CONFIG_TABLE);
+
+$boardConfigCached = $cache->load(CONFIG_TABLE);
+
+if ($boardConfigCached !== null) {
+    $board_config = $boardConfigCached;
+} else {
+    $board_config = dibi::select('*')
+        ->from(CONFIG_TABLE)
+        ->fetchPairs('config_name', 'config_value');
+
+    $cache->save(CONFIG_TABLE, $board_config);
+}
 
 if (!$board_config) {
     message_die(CRITICAL_ERROR, 'Could not query config information');

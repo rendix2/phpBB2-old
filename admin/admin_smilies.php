@@ -10,6 +10,8 @@
 *
 ****************************************************************************/
 
+use Nette\Caching\Cache;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -101,6 +103,15 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
 		//
 		if (!empty($clear_current) ) {
 		    // TODO really without where???!
+
+            $cache = new Cache($storage, SMILIES_TABLE);
+
+            $key = SMILIES_TABLE . '_ordered_by_smilies_id';
+            $key_all = SMILIES_TABLE . '_all';
+
+            $cache->remove($key);
+            $cache->remove($key_all);
+
 		    dibi::delete(SMILIES_TABLE)
                 ->execute();
 		} else {
@@ -120,6 +131,14 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
 		if (empty($fcontents)) {
 			message_die(GENERAL_ERROR, "Couldn't read smiley pak file", '', __LINE__, __FILE__);
 		}
+
+        $cache = new Cache($storage, SMILIES_TABLE);
+
+        $key = SMILIES_TABLE . '_ordered_by_smilies_id';
+        $key_all = SMILIES_TABLE . '_all';
+
+        $cache->remove($key);
+        $cache->remove($key_all);
 
 		foreach ($fcontents as $line) {
 			$smile_data = explode($delimeter, trim(addslashes($line)));
@@ -276,6 +295,14 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
 			$confirm = isset($_POST['confirm']);
 
 			if ($confirm) {
+                $cache = new Cache($storage, SMILIES_TABLE);
+
+                $key = SMILIES_TABLE . '_ordered_by_smilies_id';
+                $key_all = SMILIES_TABLE . '_all';
+
+                $cache->remove($key);
+                $cache->remove($key_all);
+
 			    dibi::delete(SMILIES_TABLE)
                     ->where('smilies_id = %i', $smiley_id)
                     ->execute();
@@ -397,6 +424,14 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
 			// Proceed with updating the smiley table.
 			//
 
+            $cache = new Cache($storage, SMILIES_TABLE);
+
+            $key = SMILIES_TABLE . '_ordered_by_smilies_id';
+            $key_all = SMILIES_TABLE . '_all';
+
+            $cache->remove($key);
+            $cache->remove($key_all);
+
             $update_data = [
                 'code' => $smile_code,
                 'smile_url' => $smile_url,
@@ -442,6 +477,14 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
 			//
 			// Save the data to the smiley table.
 			//
+
+            $cache = new Cache($storage, SMILIES_TABLE);
+
+            $key = SMILIES_TABLE . '_ordered_by_smilies_id';
+            $key_all = SMILIES_TABLE . '_all';
+
+            $cache->remove($key);
+            $cache->remove($key_all);
 
             $insert_data = [
                 'code' => $smile_code,

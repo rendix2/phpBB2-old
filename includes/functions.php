@@ -11,6 +11,8 @@
  *
  ***************************************************************************/
 
+use Nette\Caching\Cache;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -305,11 +307,23 @@ function init_userprefs($userdata)
 function setup_style($style)
 {
 	global $board_config, $template, $images, $phpbb_root_path;
+	global $storage;
 
-	$theme = dibi::select('*')
-        ->from(THEMES_TABLE)
-        ->where('themes_id = %i', (int) $style)
-        ->fetch();
+	$cache = new Cache($storage, THEMES_TABLE);
+
+	$key = THEMES_TABLE . '_'. (int)$style;
+	$cachedTheme = $cache->load($key);
+
+	if ($cachedTheme !== null) {
+        $theme = $cachedTheme;
+	} else {
+        $theme = dibi::select('*')
+            ->from(THEMES_TABLE)
+            ->where('themes_id = %i', (int)$style)
+            ->fetch();
+
+        $cache->save($key, $theme);
+    }
 
 	if (!$theme) {
         if ($board_config['default_style'] === $style) {
@@ -474,12 +488,24 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 //
 function obtain_word_list(&$orig_word, &$replacement_word)
 {
+    global $storage;
+
+    $cache = new Cache($storage, WORDS_TABLE);
+
+    $cachedWords = $cache->load(WORDS_TABLE);
+
 	//
 	// Define censored word matches
 	//
-	$words = dibi::select(['word', 'replacement'])
-        ->from(WORDS_TABLE)
-        ->fetchPairs('word', 'replacement');
+    if ($cachedWords !== null) {
+        $words = $cachedWords;
+    } else {
+        $words = dibi::select(['word', 'replacement'])
+            ->from(WORDS_TABLE)
+            ->fetchPairs('word', 'replacement');
+
+        $cache->save(WORDS_TABLE, $words);
+    }
 
     foreach ($words as $word => $replacement) {
         $orig_word[] = '#\b(' . str_replace('\*', '\w*?', preg_quote($word, '#')) . ')\b#i';
