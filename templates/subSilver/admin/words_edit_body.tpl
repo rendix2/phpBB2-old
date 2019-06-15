@@ -8,12 +8,16 @@
 		<th colspan="2" class="thHead">{L_WORD_CENSOR}</th>
 	</tr>
 	<tr>
-		<td class="row1">{L_WORD}</td>
-		<td class="row2"><input class="post" type="text" name="word" value="{WORD}" /></td>
+		<td class="row1">
+			<label for="word">{L_WORD}</label>
+		</td>
+		<td class="row2"><input class="post" type="text" name="word" id="word" value="{WORD}" /></td>
 	</tr>
 	<tr>
-		<td class="row1">{L_REPLACEMENT}</td>
-		<td class="row2"><input class="post" type="text" name="replacement" value="{REPLACEMENT}" /></td>
+		<td class="row1">
+			<label for="replacement">{L_REPLACEMENT}</label>
+		</td>
+		<td class="row2"><input class="post" type="text" name="replacement" id="replacement" value="{REPLACEMENT}" /></td>
 	</tr>
 	<tr>
 		<td class="catBottom" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="save" value="{L_SUBMIT}" class="mainoption" /></td>

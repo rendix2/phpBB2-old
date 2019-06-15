@@ -9,20 +9,32 @@
 	  <td class="row1" colspan="2"><span class="gensmall">{L_ITEMS_REQUIRED}</span></td>
 	</tr>
 	<tr> 
-	  <td class="row1" width="38%"><span class="gen">{L_GROUP_NAME}:</span></td>
+	  <td class="row1" width="38%">
+		  <label for="group_name">
+			  <span class="gen">{L_GROUP_NAME}:</span>
+		  </label>
+	  </td>
 	  <td class="row2" width="62%"> 
-		<input class="post" type="text" name="group_name" size="35" maxlength="40" value="{GROUP_NAME}" />
+		<input class="post" type="text" name="group_name" id="group_name" size="35" maxlength="40" value="{GROUP_NAME}" />
 	  </td>
 	</tr>
 	<tr> 
-	  <td class="row1" width="38%"><span class="gen">{L_GROUP_DESCRIPTION}:</span></td>
+	  <td class="row1" width="38%">
+		  <label for="group_description">
+			  <span class="gen">{L_GROUP_DESCRIPTION}:</span>
+		  </label>
+	  </td>
 	  <td class="row2" width="62%"> 
-		<textarea class="post" name="group_description" rows="5" cols="51">{GROUP_DESCRIPTION}</textarea>
+		<textarea class="post" name="group_description" id="group_description" rows="5" cols="51">{GROUP_DESCRIPTION}</textarea>
 	  </td>
 	</tr>
 	<tr> 
-	  <td class="row1" width="38%"><span class="gen">{L_GROUP_MODERATOR}:</span></td>
-	  <td class="row2" width="62%"><input class="post" type="text" class="post" name="username" maxlength="50" size="20" value="{GROUP_MODERATOR}" /> &nbsp; <input type="submit" name="usersubmit" value="{L_FIND_USERNAME}" class="liteoption" onClick="window.open('{U_SEARCH_USER}', '_phpbbsearch', 'HEIGHT=250,resizable=yes,WIDTH=400');return false;" /></td>
+		<td class="row1" width="38%">
+			<label for="username">
+				<span class="gen">{L_GROUP_MODERATOR}:</span>
+			</label>
+	  	</td>
+	  	<td class="row2" width="62%"><input class="post" type="text" class="post" name="username" id="username" maxlength="50" size="20" value="{GROUP_MODERATOR}" /> &nbsp; <input type="submit" name="usersubmit" value="{L_FIND_USERNAME}" class="liteoption" onClick="window.open('{U_SEARCH_USER}', '_phpbbsearch', 'HEIGHT=250,resizable=yes,WIDTH=400');return false;" /></td>
 	</tr>
 
 	<tr> 
@@ -32,22 +44,30 @@
 	</tr>
 	<!-- BEGIN group_edit -->
 	<tr> 
-	  <td class="row1" width="38%"><span class="gen">{L_DELETE_MODERATOR}</span>
-	  <br />
-	  <span class="gensmall">{L_DELETE_MODERATOR_EXPLAIN}</span></td>
-	  <td class="row2" width="62%"> 
-		<input type="checkbox" name="delete_old_moderator" value="1">
-		{L_YES}</td>
+		<td class="row1" width="38%">
+			<label for="delete_old_moderator">
+				<span class="gen">{L_DELETE_MODERATOR}</span>
+			</label>
+	  		<br />
+	  		<span class="gensmall">{L_DELETE_MODERATOR_EXPLAIN}</span>
+		</td>
+	  	<td class="row2" width="62%">
+			<input type="checkbox" name="delete_old_moderator" id="delete_old_moderator" value="1">{L_YES}
+		</td>
 	</tr>
-	<tr> 
-	  <td class="row1" width="38%"><span class="gen">{L_GROUP_DELETE}:</span></td>
-	  <td class="row2" width="62%"> 
-		<input type="checkbox" name="group_delete" value="1">
-		{L_GROUP_DELETE_CHECK}</td>
+	<tr>
+		<td class="row1" width="38%">
+			<label for="group_delete">
+				<span class="gen">{L_GROUP_DELETE}:</span>
+		  	</label>
+	  	</td>
+	  	<td class="row2" width="62%">
+			<input type="checkbox" name="group_delete" id="group_delete" value="1">{L_GROUP_DELETE_CHECK}
+		</td>
 	</tr>
 	<!-- END group_edit -->
 	<tr> 
-	  <td class="catBottom" colspan="2" align="center"><span class="cattitle"> 
+	  <td class="catBottom" colspan="2" align="center"><span class="cattitle">
 		<input type="submit" name="group_update" value="{L_SUBMIT}" class="mainoption" />
 		&nbsp;&nbsp; 
 		<input type="reset" value="{L_RESET}" name="reset" class="liteoption" />
