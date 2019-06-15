@@ -286,9 +286,15 @@ function storeCaret(textEl) {
 	</tr>
 	<!-- END switch_privmsg -->
 	<tr> 
-	  <td class="row1" width="22%"><span class="gen"><b>{L_SUBJECT}</b></span></td>
+	  <td class="row1" width="22%">
+		  <label for="subject">
+		  	<span class="gen">
+				  <b>{L_SUBJECT}</b>
+			  </span>
+		  </label>
+	  </td>
 	  <td class="row2" width="78%"> <span class="gen"> 
-		<input type="text" name="subject" size="45" maxlength="60" style="width:450px" tabindex="2" class="post" value="{SUBJECT}" />
+		<input type="text" name="subject" id="subject" size="45" maxlength="60" style="width:450px" tabindex="2" class="post" value="{SUBJECT}" />
 		</span> </td>
 	</tr>
 	<tr> 
@@ -355,8 +361,8 @@ function storeCaret(textEl) {
 			<td colspan="9"> 
 			  <table width="100%" border="0" cellspacing="0" cellpadding="0">
 				<tr> 
-				  <td><span class="genmed"> &nbsp;{L_FONT_COLOR}: 
-					<select name="addbbcode18" onChange="bbfontstyle('[color=' + this.form.addbbcode18.options[this.form.addbbcode18.selectedIndex].value + ']', '[/color]');this.selectedIndex=0;" onMouseOver="helpline('s')">
+				  <td><span class="genmed">&nbsp;<label for="addbbcode18">{L_FONT_COLOR}:</label>
+					<select name="addbbcode18" id="addbbcode18" onChange="bbfontstyle('[color=' + this.form.addbbcode18.options[this.form.addbbcode18.selectedIndex].value + ']', '[/color]');this.selectedIndex=0;" onMouseOver="helpline('s')">
 					  <option style="color:black; background-color: {T_TD_COLOR1}" value="{T_FONTCOLOR1}" class="genmed">{L_COLOR_DEFAULT}</option>
 					  <option style="color:darkred; background-color: {T_TD_COLOR1}" value="darkred" class="genmed">{L_COLOR_DARK_RED}</option>
 					  <option style="color:red; background-color: {T_TD_COLOR1}" value="red" class="genmed">{L_COLOR_RED}</option>
@@ -372,7 +378,7 @@ function storeCaret(textEl) {
 					  <option style="color:violet; background-color: {T_TD_COLOR1}" value="violet" class="genmed">{L_COLOR_VIOLET}</option>
 					  <option style="color:white; background-color: {T_TD_COLOR1}" value="white" class="genmed">{L_COLOR_WHITE}</option>
 					  <option style="color:black; background-color: {T_TD_COLOR1}" value="black" class="genmed">{L_COLOR_BLACK}</option>
-					</select> &nbsp;{L_FONT_SIZE}:<select name="addbbcode20" selected onChange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.selectedIndex=0;" onMouseOver="helpline('f')">
+					</select> &nbsp;<label for="addbbcode20">{L_FONT_SIZE}:</label> <select name="addbbcode20" id="addbbcode20" selected onChange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.selectedIndex=0;" onMouseOver="helpline('f')">
 					  <option value="0" class="genmed">{L_FONT_SIZE}</option>
 					  <option value="7" class="genmed">{L_FONT_TINY}</option>
 					  <option value="9" class="genmed">{L_FONT_SMALL}</option>
@@ -406,49 +412,73 @@ function storeCaret(textEl) {
 		  <!-- BEGIN switch_html_checkbox -->
 		  <tr> 
 			<td> 
-			  <input type="checkbox" name="disable_html" {S_HTML_CHECKED} />
+			  <input type="checkbox" name="disable_html" id="disable_html" {S_HTML_CHECKED} />
 			</td>
-			<td><span class="gen">{L_DISABLE_HTML}</span></td>
+			<td>
+				<label for="disable_html">
+					<span class="gen">{L_DISABLE_HTML}</span>
+				</label>
+			</td>
 		  </tr>
 		  <!-- END switch_html_checkbox -->
 		  <!-- BEGIN switch_bbcode_checkbox -->
 		  <tr> 
 			<td> 
-			  <input type="checkbox" name="disable_bbcode" {S_BBCODE_CHECKED} />
+			  <input type="checkbox" name="disable_bbcode" id="disable_bbcode" {S_BBCODE_CHECKED} />
 			</td>
-			<td><span class="gen">{L_DISABLE_BBCODE}</span></td>
+			<td>
+				<label for="disable_bbcode">
+					<span class="gen">{L_DISABLE_BBCODE}</span>
+				</label>
+			</td>
 		  </tr>
 		  <!-- END switch_bbcode_checkbox -->
 		  <!-- BEGIN switch_smilies_checkbox -->
 		  <tr> 
 			<td> 
-			  <input type="checkbox" name="disable_smilies" {S_SMILIES_CHECKED} />
+			  <input type="checkbox" name="disable_smilies" id="disable_smilies" {S_SMILIES_CHECKED} />
 			</td>
-			<td><span class="gen">{L_DISABLE_SMILIES}</span></td>
+			<td>
+				<label for="disable_smilies">
+					<span class="gen">{L_DISABLE_SMILIES}</span>
+				</label>
+			</td>
 		  </tr>
 		  <!-- END switch_smilies_checkbox -->
 		  <!-- BEGIN switch_signature_checkbox -->
 		  <tr> 
 			<td> 
-			  <input type="checkbox" name="attach_sig" {S_SIGNATURE_CHECKED} />
+			  <input type="checkbox" name="attach_sig" id="attach_sig" {S_SIGNATURE_CHECKED} />
 			</td>
-			<td><span class="gen">{L_ATTACH_SIGNATURE}</span></td>
+			<td>
+				<label for="attach_sig">
+					<span class="gen">{L_ATTACH_SIGNATURE}</span>
+				</label>
+			</td>
 		  </tr>
 		  <!-- END switch_signature_checkbox -->
 		  <!-- BEGIN switch_notify_checkbox -->
 		  <tr> 
 			<td> 
-			  <input type="checkbox" name="notify" {S_NOTIFY_CHECKED} />
+			  <input type="checkbox" name="notify" id="notify" {S_NOTIFY_CHECKED} />
 			</td>
-			<td><span class="gen">{L_NOTIFY_ON_REPLY}</span></td>
+			<td>
+				<label for="notify">
+					<span class="gen">{L_NOTIFY_ON_REPLY}</span>
+				</label>
+			</td>
 		  </tr>
 		  <!-- END switch_notify_checkbox -->
 		  <!-- BEGIN switch_delete_checkbox -->
 		  <tr> 
 			<td> 
-			  <input type="checkbox" name="delete" />
+			  <input type="checkbox" name="delete" id="delete" />
 			</td>
-			<td><span class="gen">{L_DELETE_POST}</span></td>
+			<td>
+				<label for="delete">
+					<span class="gen">{L_DELETE_POST}</span>
+				</label>
+			</td>
 		  </tr>
 		  <!-- END switch_delete_checkbox -->
 		  <!-- BEGIN switch_type_toggle -->
