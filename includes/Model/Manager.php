@@ -6,7 +6,7 @@ use Dibi\Fluent;
 class Manager
 {
 
-    /**\
+    /**
      * @var string $tableName
      */
     private $tableName;
@@ -16,14 +16,33 @@ class Manager
      */
     private $primaryKey;
 
+    /**
+     * @var string $tablePrefix
+     */
+    private $tablePrefix;
+
+    /**
+     * Manager constructor.
+     */
     public function __construct()
     {
+        global $table_prefix;
+
+        $origClassName = str_replace('Manager', '', get_class($this));
+        $explodedName  = explode('\\', $origClassName);
+        $count         = count($explodedName);
+        $className     = $explodedName[$count - 1];
+
+        $this->tablePrefix = $table_prefix;
+        $this->tableName   = mb_strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $className));
+        $this->tableName   = $this->tablePrefix . $this->tableName;
+        $this->primaryKey  = dibi::getDatabaseInfo()->getTable($this->tableName)->primaryKey->columns[0]->getName();
     }
 
     /**
      * @return string
      */
-    public function getPrimaryKey()
+    protected function getPrimaryKey()
     {
         return $this->primaryKey;
     }
@@ -31,7 +50,7 @@ class Manager
     /**
      * @return string
      */
-    public function getTableName()
+    protected function getTableName()
     {
         return $this->tableName;
     }
@@ -87,7 +106,7 @@ class Manager
      * @param string $column
      * @return array
      */
-    public function getPairs($column)
+    public function getAllPairs($column)
     {
         return $this->selectFluent()->fetchPairs($this->primaryKey, $column);
     }

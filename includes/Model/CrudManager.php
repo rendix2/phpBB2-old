@@ -40,7 +40,7 @@ class CrudManager extends Manager
     public function getByPrimaryKey($primaryKey)
     {
         return $this->selectFluent()
-            ->where('%n = %i', $this->getTableName(), $primaryKey)
+            ->where('%n = %i', $this->getPrimaryKey(), $primaryKey)
             ->fetch();
     }
 
