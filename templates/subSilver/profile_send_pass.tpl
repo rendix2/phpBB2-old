@@ -13,16 +13,24 @@
 	  <td class="row2" colspan="2"><span class="gensmall">{L_ITEMS_REQUIRED}</span></td>
 	</tr>
 	<tr> 
-	  <td class="row1" width="38%"><span class="gen">{L_USERNAME}: *</span></td>
+	  <td class="row1" width="38%">
+		  <label for="username">
+		  	<span class="gen">{L_USERNAME}: *</span>
+		  </label>
+	  </td>
 	  <td class="row2"> 
-		<input type="text" class="post" style="width: 200px" name="username" size="25" maxlength="40" value="{USERNAME}" />
+		<input type="text" class="post" style="width: 200px" name="username" id="username" size="25" maxlength="40" value="{USERNAME}" />
 	  </td>
 	</tr>
-	<tr> 
-	  <td class="row1"><span class="gen">{L_EMAIL_ADDRESS}: *</span></td>
-	  <td class="row2"> 
-		<input type="text" class="post" style="width: 200px" name="email" size="25" maxlength="255" value="{EMAIL}" />
-	  </td>
+	<tr>
+		<td class="row1">
+			<label for="email">
+				<span class="gen">{L_EMAIL_ADDRESS}: *</span>
+			</label>
+		</td>
+		<td class="row2">
+			<input type="text" class="post" style="width: 200px" name="email" id="email" size="25" maxlength="255" value="{EMAIL}"/>
+		</td>
 	</tr>
 	<tr> 
 	  <td class="catBottom" colspan="2" align="center" height="28">{S_HIDDEN_FIELDS} 

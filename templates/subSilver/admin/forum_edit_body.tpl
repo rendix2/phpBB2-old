@@ -20,9 +20,15 @@
 	  </td>
 	  <td class="row2"><textarea rows="5" cols="45" wrap="virtual" name="forumdesc" id="forumdesc" class="post">{DESCRIPTION}</textarea></td>
 	</tr>
-	<tr> 
-	  <td class="row1">{L_CATEGORY}</td>
-	  <td class="row2"><select name="c">{S_CAT_LIST}</select></td>
+	<tr>
+		<td class="row1">
+			<label for="c">
+				{L_CATEGORY}
+			</label>
+		</td>
+		<td class="row2">
+			<select name="c" id="c">{S_CAT_LIST}</select>
+		</td>
 	</tr>
 	<tr> 
 	  <td class="row1">
