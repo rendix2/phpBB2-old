@@ -11,6 +11,7 @@
  *
  ***************************************************************************/
 
+use Nette\Caching\Cache;
 use Nette\Caching\Storages\FileStorage;
 
 define('IN_PHPBB', 1);
