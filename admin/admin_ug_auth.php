@@ -121,13 +121,13 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
         $row = dibi::select(['g.group_id', 'u.user_level'])
             ->from(USER_GROUP_TABLE)
             ->as('ug')
-            ->from(USERS_TABLE)
+            ->innerJoin(USERS_TABLE)
             ->as('u')
+            ->on('ug.user_id = u.user_id')
             ->from(GROUPS_TABLE)
             ->as('g')
+            ->on('g.group_id = ug.group_id')
             ->where('u.user_id = %i', $user_id)
-            ->where('ug.user_id = u.user_id')
-            ->where('g.group_id = ug.group_id')
             ->where('g.group_single_user = %i', 1)
             ->fetch();
 
@@ -366,12 +366,12 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
         $set_mod = dibi::select('u.user_id')
             ->from(AUTH_ACCESS_TABLE)
             ->as('aa')
-            ->from(USER_GROUP_TABLE)
+            ->innerJoin(USER_GROUP_TABLE)
             ->as('ug')
-            ->from(USERS_TABLE)
+            ->on('ug.group_id = aa.group_id')
+            ->innerJoin(USERS_TABLE)
             ->as('u')
-            ->where('ug.group_id = aa.group_id')
-            ->where('u.user_id = ug.user_id')
+            ->on('u.user_id = ug.user_id')
             ->where('ug.user_pending = %i', 0)
             ->where('u.user_level NOT IN %in', [MOD, ADMIN])
             ->groupBy('u.user_id')
@@ -537,7 +537,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
     } else {
         $ug_info->where('g.group_id = %i', $group_id)
             ->where('ug.group_id = g.group_id')
-            ->where(' u.user_id = ug.user_id');
+            ->where('u.user_id = ug.user_id');
     }
 
     $ug_info = $ug_info->fetchAll();

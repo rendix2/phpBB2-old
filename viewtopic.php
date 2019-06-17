@@ -137,10 +137,10 @@ if (!$post_id) {
     $forum_topic_data = dibi::select($columns)
         ->from(TOPICS_TABLE)
         ->as('t')
-        ->from(FORUMS_TABLE)
+        ->innerJoin(FORUMS_TABLE)
         ->as('f')
+        ->on('f.forum_id = t.forum_id')
         ->where('t.topic_id = %i', $topic_id)
-        ->where('f.forum_id = t.forum_id')
         ->fetch();
 } else {
     $columns = ['t.topic_id', 't.topic_title', 't.topic_status', 't.topic_replies', 't.topic_time', 't.topic_type',

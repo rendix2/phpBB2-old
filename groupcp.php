@@ -197,9 +197,9 @@ if (isset($_POST['groupstatus']) && $group_id) {
         ->as('ug')
         ->from(GROUPS_TABLE)
         ->as('g')
+        ->on('ug.group_id = g.group_id')
         ->where('g.group_id = %i', $group_id)
         ->where('g.group_type <> %i', GROUP_HIDDEN)
-        ->where('ug.group_id = g.group_id')
         ->fetchAll();
 
 	if (!count($rows)) {
