@@ -61,9 +61,10 @@
 	<tr> 
 	  <td align="left" valign="middle">{POST_PM_IMG}</td>
 	  <td align="left" width="100%">&nbsp;<span class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a></span></td>
-	  <td align="right" nowrap="nowrap"><span class="gensmall">{L_DISPLAY_MESSAGES}: 
-		<select name="msgdays">{S_SELECT_MSG_DAYS}
-		</select>
+	  <td align="right" nowrap="nowrap">
+		  <span class="gensmall">
+			  <label for="msgdays">{L_DISPLAY_MESSAGES}:</label>
+			  <select name="msgdays" id="msgdays">{S_SELECT_MSG_DAYS}</select>
 		<input type="submit" value="{L_GO}" name="submit_msgdays" class="liteoption" />
 		</span></td>
 	</tr>

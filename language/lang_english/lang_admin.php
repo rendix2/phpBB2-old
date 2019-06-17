@@ -749,6 +749,8 @@ $lang['Max_login_attempts_explain'] = 'The number of allowed board login attempt
 $lang['Login_reset_time'] = 'Login lock time';
 $lang['Login_reset_time_explain'] = 'Time in minutes the user have to wait until he is allowed to login again after exceeding the number of allowed login attempts.';
 
+$lang['Category_name'] = 'Category name';
+
 //
 // That's all Folks!
 // -------------------------------------------------

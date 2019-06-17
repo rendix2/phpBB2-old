@@ -72,24 +72,29 @@
 
 <!-- BEGIN switch_user_logged_out -->
 <form method="post" action="{S_LOGIN_ACTION}">
-  <table width="100%" cellpadding="3" cellspacing="1" border="0" class="forumline">
-	<tr> 
-	  <td class="catHead" height="28"><a name="login"></a><span class="cattitle">{L_LOGIN_LOGOUT}</span></td>
-	</tr>
-	<tr> 
-	  <td class="row1" align="center" valign="middle" height="28"><span class="gensmall">{L_USERNAME}: 
-		<input class="post" type="text" name="username" size="10" />
-		&nbsp;&nbsp;&nbsp;{L_PASSWORD}: 
-		<input class="post" type="password" name="password" size="10" maxlength="32" />
-		<!-- BEGIN switch_allow_autologin -->
-		&nbsp;&nbsp; &nbsp;&nbsp;{L_AUTO_LOGIN} 
-		<input class="text" type="checkbox" name="autologin" />
-		<!-- END switch_allow_autologin -->
-		&nbsp;&nbsp;&nbsp; 
-		<input type="submit" class="mainoption" name="login" value="{L_LOGIN}" />
-		</span> </td>
-	</tr>
-  </table>
+	<table width="100%" cellpadding="3" cellspacing="1" border="0" class="forumline">
+		<tr>
+			<td class="catHead" height="28"><a name="login"></a><span class="cattitle">{L_LOGIN_LOGOUT}</span></td>
+		</tr>
+		<tr>
+			<td class="row1" align="center" valign="middle" height="28">
+		  		<span class="gensmall">
+			  		<label for="username">{L_USERNAME}:</label>
+					<input class="post" type="text" name="username" id="username" size="10"/>
+
+					<label for="password">{L_PASSWORD}:</label>
+					<input class="post" type="password" name="password" id="password" size="10" maxlength="32"/>
+
+			 		<!-- BEGIN switch_allow_autologin -->
+			  		<label for="autologin">{L_AUTO_LOGIN}</label>
+					<input class="text" type="checkbox" name="autologin" id="autologin"/>
+			  		<!-- END switch_allow_autologin -->
+
+					<input type="submit" class="mainoption" name="login" value="{L_LOGIN}"/>
+				</span>
+			</td>
+		</tr>
+	</table>
 </form>
 <!-- END switch_user_logged_out -->
 

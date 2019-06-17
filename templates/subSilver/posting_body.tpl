@@ -275,14 +275,26 @@ function storeCaret(textEl) {
 	</tr>
 	<!-- BEGIN switch_username_select -->
 	<tr> 
-		<td class="row1"><span class="gen"><b>{L_USERNAME}</b></span></td>
-		<td class="row2"><span class="genmed"><input type="text" class="post" tabindex="1" name="username" size="25" maxlength="25" value="{USERNAME}" /></span></td>
+		<td class="row1">
+			<span class="gen">
+				<label for="username">
+					<b>{L_USERNAME}</b>
+				</label>
+			</span>
+		</td>
+		<td class="row2"><span class="genmed"><input type="text" class="post" tabindex="1" name="username" id="username" size="25" maxlength="25" value="{USERNAME}" /></span></td>
 	</tr>
 	<!-- END switch_username_select -->
 	<!-- BEGIN switch_privmsg -->
 	<tr> 
-		<td class="row1"><span class="gen"><b>{L_USERNAME}</b></span></td>
-		<td class="row2"><span class="genmed"><input type="text"  class="post" name="username" maxlength="25" size="25" tabindex="1" value="{USERNAME}" />&nbsp;<input type="submit" name="usersubmit" value="{L_FIND_USERNAME}" class="liteoption" onClick="window.open('{U_SEARCH_USER}', '_phpbbsearch', 'HEIGHT=250,resizable=yes,WIDTH=400');return false;" /></span></td>
+		<td class="row1">
+			<span class="gen">
+				<label for="username">
+					<b>{L_USERNAME}</b>
+				</label>
+			</span>
+		</td>
+		<td class="row2"><span class="genmed"><input type="text"  class="post" name="username" id="username" maxlength="25" size="25" tabindex="1" value="{USERNAME}" />&nbsp;<input type="submit" name="usersubmit" value="{L_FIND_USERNAME}" class="liteoption" onClick="window.open('{U_SEARCH_USER}', '_phpbbsearch', 'HEIGHT=250,resizable=yes,WIDTH=400');return false;" /></span></td>
 	</tr>
 	<!-- END switch_privmsg -->
 	<tr> 
@@ -393,9 +405,11 @@ function storeCaret(textEl) {
 			</td>
 		  </tr>
 		  <tr> 
-			<td colspan="9"> <span class="gensmall"> 
-			  <input type="text" name="helpbox" size="45" maxlength="100" style="width:450px; font-size:10px" class="helpline" value="{L_STYLES_TIP}" />
-			  </span></td>
+			<td colspan="9">
+				<span class="gensmall">
+					<input type="text" name="helpbox" size="45" maxlength="100" style="width:450px; font-size:10px" class="helpline" value="{L_STYLES_TIP}" />
+			  </span>
+			</td>
 		  </tr>
 		  <tr> 
 			<td colspan="9"><span class="gen"> 
