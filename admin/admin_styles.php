@@ -42,7 +42,7 @@ if (!empty($setmodules)) {
 $phpbb_root_path = './../';
 
 $confirm = isset($_POST['confirm']);
-$cancel = isset($_POST['cancel']);
+$cancel  = isset($_POST['cancel']);
 
 $no_page_header = !empty($_POST['send_file']) || !empty($_POST['send_file']) || $cancel;
 
@@ -59,7 +59,7 @@ if (isset($_GET[POST_MODE]) || isset($_POST[POST_MODE])) {
     $mode = '';
 }
 
-switch( $mode) {
+switch ($mode) {
 	case 'addnew':
 		$install_to = isset($_GET['install_to']) ? urldecode($_GET['install_to']) : $_POST['install_to'];
 		$style_name = isset($_GET['style']) ? urldecode($_GET['style']) : $_POST['style'];
@@ -89,8 +89,7 @@ switch( $mode) {
 			
 			if ($dir = @opendir($phpbb_root_path. 'templates/')) {
 				while ($sub_dir = @readdir($dir)) {
-					if (!is_file(phpbb_realpath($phpbb_root_path . 'templates/' .$sub_dir)) && !is_link
-                        (phpbb_realpath($phpbb_root_path . 'templates/' .$sub_dir)) && $sub_dir !== '.' && $sub_dir !== '..' && $sub_dir !== 'CVS') {
+					if (!is_file(phpbb_realpath($phpbb_root_path . 'templates/' .$sub_dir)) && !is_link(phpbb_realpath($phpbb_root_path . 'templates/' .$sub_dir)) && $sub_dir !== '.' && $sub_dir !== '..' && $sub_dir !== 'CVS') {
 						if (@file_exists(@phpbb_realpath($phpbb_root_path. 'templates/' . $sub_dir . '/theme_info.cfg'))) {
 							include $phpbb_root_path. 'templates/' . $sub_dir . '/theme_info.cfg';
 							$countSubDirs = count($$sub_dir);
@@ -127,8 +126,8 @@ switch( $mode) {
                 );
 
                 foreach ($installable_themes as $installable_theme) {
-					$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-					$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+					$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+					$row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
                     $template->assignBlockVars('styles',
                         [
@@ -293,10 +292,7 @@ switch( $mode) {
 			if ($mode === 'edit') {
 				$themes_title = $lang['Edit_theme'];
 				$themes_explain = $lang['Edit_theme_explain'];
-				
 				$style_id = (int)$_GET['style_id'];
-				
-				$selected_names = [];
 
 				// 
 				// Fetch the Theme Info from the db
@@ -658,8 +654,8 @@ switch( $mode) {
         foreach ($styles as $style) {
             $i++;
             // TODO $theme should be $style?
-			$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+			$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+			$row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
             $template->assignBlockVars('styles',
                 [

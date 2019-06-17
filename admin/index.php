@@ -33,8 +33,7 @@ require './pagestart.php';
 //
 // Generate relevant output
 //
-if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
-{
+if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
 	$dir = @opendir('.');
 
 	$setmodules = 1;
@@ -455,8 +454,8 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left' )
 				$location = $forum_data[$guest->session_page];
 			}
 
-			$row_color = ( $guest_users % 2 ) ? $theme['td_color1'] : $theme['td_color2'];
-			$row_class = ( $guest_users % 2 ) ? $theme['td_class1'] : $theme['td_class2'];
+            $row_color = ($guest_users % 2) ? $theme['td_color1'] : $theme['td_color2'];
+            $row_class = ($guest_users % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
 			$guest_ip = decode_ip($guest->session_ip);
 

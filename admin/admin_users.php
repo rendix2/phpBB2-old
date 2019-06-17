@@ -84,7 +84,6 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
                 ->where('poster_id = %i', $user_id)
                 ->execute();
 
-
             dibi::update(TOPICS_TABLE, ['topic_poster' => DELETED])
                 ->where('topic_poster = %i', $user_id)
                 ->execute();
@@ -160,11 +159,12 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
         $msn = !empty($_POST['msn']) ? trim(strip_tags($_POST['msn'])) : '';
         $yim = !empty($_POST['yim']) ? trim(strip_tags($_POST['yim'])) : '';
 
-		$website = !empty($_POST['website']) ? trim(strip_tags($_POST['website'] ) ) : '';
-		$location = !empty($_POST['location']) ? trim(strip_tags($_POST['location'] ) ) : '';
-		$occupation = !empty($_POST['occupation']) ? trim(strip_tags($_POST['occupation'] ) ) : '';
-		$interests = !empty($_POST['interests']) ? trim(strip_tags($_POST['interests'] ) ) : '';
-		$signature = !empty($_POST['signature']) ? trim(str_replace('<br />', "\n", $_POST['signature'] ) ) : '';
+        $website    = !empty($_POST['website'])    ? trim(strip_tags($_POST['website']))    : '';
+        $location   = !empty($_POST['location'])   ? trim(strip_tags($_POST['location']))   : '';
+        $occupation = !empty($_POST['occupation']) ? trim(strip_tags($_POST['occupation'])) : '';
+        $interests  = !empty($_POST['interests'])  ? trim(strip_tags($_POST['interests']))  : '';
+
+        $signature = !empty($_POST['signature']) ? trim(str_replace('<br />', "\n", $_POST['signature'])) : '';
 
 		validate_optional_fields($icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature);
 
@@ -607,11 +607,11 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 			$msn = htmlspecialchars(stripslashes($msn));
 			$yim = htmlspecialchars(stripslashes($yim));
 
-			$website = htmlspecialchars(stripslashes($website));
-			$location = htmlspecialchars(stripslashes($location));
-			$occupation = htmlspecialchars(stripslashes($occupation));
-			$interests = htmlspecialchars(stripslashes($interests));
-			$signature = htmlspecialchars(stripslashes($signature));
+            $website    = htmlspecialchars(stripslashes($website));
+            $location   = htmlspecialchars(stripslashes($location));
+            $occupation = htmlspecialchars(stripslashes($occupation));
+            $interests  = htmlspecialchars(stripslashes($interests));
+            $signature  = htmlspecialchars(stripslashes($signature));
 
 			$user_lang = stripslashes($user_lang);
 			$user_dateformat = htmlspecialchars(stripslashes($user_dateformat));
@@ -677,9 +677,9 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 		
 		$COPPA = false;
 
-		$html_status =  $this_userdata['user_allowhtml'] ? $lang['HTML_is_ON'] : $lang['HTML_is_OFF'];
-		$bbcode_status = $this_userdata['user_allowbbcode'] ? $lang['BBCode_is_ON'] : $lang['BBCode_is_OFF'];
-		$smilies_status = $this_userdata['user_allowsmile'] ? $lang['Smilies_are_ON'] : $lang['Smilies_are_OFF'];
+		$html_status    = $this_userdata['user_allowhtml']   ? $lang['HTML_is_ON']     : $lang['HTML_is_OFF'];
+		$bbcode_status  = $this_userdata['user_allowbbcode'] ? $lang['BBCode_is_ON']   : $lang['BBCode_is_OFF'];
+		$smilies_status = $this_userdata['user_allowsmile']  ? $lang['Smilies_are_ON'] : $lang['Smilies_are_OFF'];
 	}
 
 	if (isset($_POST['avatargallery']) && !$error) {
