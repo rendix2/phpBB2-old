@@ -412,10 +412,10 @@ if ($mode === 'searchuser') {
                             ->as('p');
 
                         if ($search_author !== '') {
-                            $search_ids->from(USERS_TABLE)
+                            $search_ids->innerJoin(USERS_TABLE)
                                 ->as('u')
-                                ->where('u.user_id = p.poster_id')
-                                ->where('u.username LIKE %~like~', $search_author);
+                                ->on('u.user_id = p.poster_id')
+                                ->where('u.user_id IN %in', $user_ids);
 
                             if ($search_time) {
                                 $search_ids->where('p.post_time >= %i', $search_time);
