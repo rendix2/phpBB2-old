@@ -724,6 +724,12 @@ new indexes
 
 
  CREATE  INDEX [IX_group_id_user_id] ON [phpbb_user_group]([group_id], [user_id]) ON [PRIMARY]
+
+ GO
+
+ CREATE  UNIQUE  INDEX [IX_user_name] ON [phpbb_users]([username]) WITH  IGNORE_DUP_KEY  ON [PRIMARY]
+
+
 GO
 
 COMMIT

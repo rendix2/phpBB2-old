@@ -572,3 +572,4 @@ CREATE TABLE phpbb_words (
 --------------------------------------*/
 
 ALTER TABLE `phpbb_user_group` ADD PRIMARY KEY (`group_id`, `user_id`);
+ALTER TABLE `phpbb_users` ADD UNIQUE(`username`);
