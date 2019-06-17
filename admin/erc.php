@@ -226,12 +226,12 @@ switch($mode)
 <?php
 		break;
 	case 'datainput':
-		if ( $option !== 'rcp' ) {
+		if ($option !== 'rcp') {
 ?>
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
 <table border="0" cellspacing="0" cellpadding="10">
 <?php
-			if ( $option !== 'rld' && $option !== 'rtd' ) {
+			if ($option !== 'rld' && $option !== 'rtd') {
 ?>
 	<tr>
 		<td><b><?php echo $lang['Authenticate_methods']; ?>:</b></td>
@@ -257,7 +257,7 @@ switch($mode)
 				<tr>
 					<td><b><?php echo $lang['Admin_Account']; ?></b></td>
 <?php
-			if ( $option !== 'rld' && $option !== 'rtd' ) {
+			if ($option !== 'rld' && $option !== 'rtd') {
 ?>
 					<td width="20">&nbsp;</td>
 					<td><b><?php echo $lang['Database_Login']; ?></b></td>
@@ -281,7 +281,7 @@ switch($mode)
 						</table>
 					</td>
 <?php
-			if ( $option !== 'rld' && $option !== 'rtd' ) {
+			if ($option !== 'rld' && $option !== 'rtd') {
 ?>
 					<td>&nbsp;</td>
 					<td>
@@ -623,8 +623,7 @@ switch($mode)
 <?php
 		break;
 	case 'execute':
-		switch ($option)
-		{
+		switch ($option) {
 			case 'cls': // Clear Sessions
 				check_authorisation();
 
@@ -635,8 +634,7 @@ switch($mode)
 				break;
 			case 'rdb': // Clear Sessions
 				check_authorisation();
-				if ( !check_mysql_version() )
-				{
+				if (!check_mysql_version()) {
 ?>
 	<p><span style="color:red"><?php echo $lang['Old_MySQL_Version'] ?></span></p>
 <?php
@@ -712,7 +710,7 @@ switch($mode)
 				    ->from(TOPICS_TABLE)
 				    ->fetch();
 
-				if ($row && $row->startdate > 0 ) {
+				if ($row && $row->startdate > 0) {
 				    $default_config['board_startdate'] = $row['startdate'];
 				}
 

@@ -8,21 +8,42 @@
 		<th class="thTop" colspan="2">{L_RANKS_TITLE}</th>
 	</tr>
 	<tr>
-		<td class="row1" width="38%"><span class="gen">{L_RANK_TITLE}:</span></td>
-		<td class="row2"><input class="post" type="text" name="title" size="35" maxlength="40" value="{RANK}" /></td>
+		<td class="row1" width="38%">
+			<label for="title">
+				<span class="gen">{L_RANK_TITLE}:</span>
+			</label>
+		</td>
+		<td class="row2">
+			<input class="post" type="text" name="title" id="title" size="35" maxlength="40" value="{RANK}" />
+		</td>
 	</tr>
 	<tr>
 		<td class="row1"><span class="gen">{L_RANK_SPECIAL}</span></td>
 		<td class="row2"><input type="radio" name="special_rank" value="1" {SPECIAL_RANK} />{L_YES} &nbsp;&nbsp;<input type="radio" name="special_rank" value="0" {NOT_SPECIAL_RANK} /> {L_NO}</td>
 	</tr>
 	<tr>
-		<td class="row1" width="38%"><span class="gen">{L_RANK_MINIMUM}:</span></td>
-		<td class="row2"><input class="post" type="text" name="min_posts" size="5" maxlength="10" value="{MINIMUM}" /></td>
+		<td class="row1" width="38%">
+			<label for="min_posts">
+				<span class="gen">{L_RANK_MINIMUM}:</span>
+			</label>
+		</td>
+		<td class="row2">
+			<input class="post" type="text" name="min_posts" id="min_posts" size="5" maxlength="10" value="{MINIMUM}" />
+		</td>
 	</tr>
 	<tr>
-		<td class="row1" width="38%"><span class="gen">{L_RANK_IMAGE}:</span><br />
-		<span class="gensmall">{L_RANK_IMAGE_EXPLAIN}</span></td>
-		<td class="row2"><input class="post" type="text" name="rank_image" size="40" maxlength="255" value="{IMAGE}" /><br />{IMAGE_DISPLAY}</td>
+		<td class="row1" width="38%">
+			<label for="rank_image">
+				<span class="gen">{L_RANK_IMAGE}:</span>
+			</label>
+			<br />
+			<span class="gensmall">{L_RANK_IMAGE_EXPLAIN}</span>
+		</td>
+		<td class="row2">
+			<input class="post" type="text" name="rank_image" id="rank_image" size="40" maxlength="255" value="{IMAGE}" />
+			<br />
+			{IMAGE_DISPLAY}
+		</td>
 	</tr>
 	<tr>
 		<td class="catBottom" colspan="2" align="center"><input type="submit" name="submit" value="{L_SUBMIT}" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="{L_RESET}" class="liteoption" /></td>

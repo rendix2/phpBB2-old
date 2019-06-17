@@ -39,14 +39,28 @@ $phpbb_root_path = './../';
 
 require './pagestart.php';
 
-$params = ['mode' => 'mode', 'user_id' => POST_USERS_URL, 'group_id' => POST_GROUPS_URL, 'adv' => 'adv'];
+if (!empty($_POST[POST_MODE]) || !empty($_GET[POST_MODE])) {
+    $mode = !empty($_POST[POST_MODE]) ? $_POST[POST_MODE] : $_GET[POST_MODE];
+} else {
+    $mode = '';
+}
 
-foreach ($params as $var => $param) {
-    if (!empty($_POST[$param]) || !empty($_GET[$param])) {
-        $$var = !empty($_POST[$param]) ? $_POST[$param] : $_GET[$param];
-    } else {
-        $$var = '';
-    }
+if (!empty($_POST[POST_USERS_URL]) || !empty($_GET[POST_USERS_URL])) {
+    $user_id = !empty($_POST[POST_USERS_URL]) ? $_POST[POST_USERS_URL] : $_GET[POST_USERS_URL];
+} else {
+    $user_id = '';
+}
+
+if (!empty($_POST[POST_GROUPS_URL]) || !empty($_GET[POST_GROUPS_URL])) {
+    $group_id = !empty($_POST[POST_GROUPS_URL]) ? $_POST[POST_GROUPS_URL] : $_GET[POST_GROUPS_URL];
+} else {
+    $group_id = '';
+}
+
+if (!empty($_POST['adv']) || !empty($_GET['adv'])) {
+    $adv = !empty($_POST['adv']) ? $_POST['adv'] : $_GET['adv'];
+} else {
+    $adv = '';
 }
 
 $user_id = (int)$user_id;

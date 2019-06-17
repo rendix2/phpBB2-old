@@ -50,8 +50,7 @@ class Auth
         $a_sql = [];
         $auth_fields = [];
 
-        switch( $type )
-        {
+        switch ($type) {
             case AUTH_ALL:
                 $a_sql = ['a.auth_view', 'a.auth_read', 'a.auth_post', 'a.auth_reply', 'a.auth_edit', 'a.auth_delete', 'a.auth_sticky', 'a.auth_announce', 'a.auth_vote', 'a.auth_pollcreate'];
                 $auth_fields = ['auth_view', 'auth_read', 'auth_post', 'auth_reply', 'auth_edit', 'auth_delete', 'auth_sticky', 'auth_announce', 'auth_vote', 'auth_pollcreate'];

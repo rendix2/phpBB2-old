@@ -92,8 +92,8 @@ if ($mode !== '') {
 
 		$s_hidden_fields .= '<input type="hidden" name="mode" value="save" />';
 
-		$rank_is_special = $rank_info->rank_special ? 'checked="checked"' : '';
-		$rank_is_not_special = ( !$rank_info->rank_special ) ? 'checked="checked"' : '';
+		$rank_is_special     =  $rank_info->rank_special ? 'checked="checked"' : '';
+		$rank_is_not_special = !$rank_info->rank_special ? 'checked="checked"' : '';
 
 		$template->setFileNames(['body' => 'admin/ranks_edit_body.tpl']);
 
@@ -104,7 +104,7 @@ if ($mode !== '') {
                 'NOT_SPECIAL_RANK' => $rank_is_not_special,
                 'MINIMUM'          => $rank_is_special ? '' : $rank_info->rank_min,
                 'IMAGE'            => $rank_info->rank_image,
-                'IMAGE_DISPLAY'    => ($rank_info->rank_image !== '') ? '<img src="../' . $rank_info->rank_image . '" />' : '',
+                'IMAGE_DISPLAY'    => $rank_info->rank_image !== '' ? '<img src="../' . $rank_info->rank_image . '" />' : '',
 
                 'L_RANKS_TITLE'        => $lang['Ranks_title'],
                 'L_RANKS_TEXT'         => $lang['Ranks_explain'],

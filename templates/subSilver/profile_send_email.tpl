@@ -40,21 +40,55 @@ function checkForm(formObj) {
 		<td class="row2" width="78%"><span class="gen"><b>{USERNAME}</b></span> </td>
 	</tr>
 	<tr> 
-		<td class="row1" width="22%"><span class="gen"><b>{L_SUBJECT}</b></span></td>
-		<td class="row2" width="78%"><span class="gen"><input type="text" name="subject" size="45" maxlength="100" style="width:450px" tabindex="2" class="post" value="{SUBJECT}" /></span> </td>
+		<td class="row1" width="22%">
+			<span class="gen">
+				<label for="subject">
+					<b>{L_SUBJECT}</b>
+				</label>
+			</span>
+		</td>
+		<td class="row2" width="78%">
+			<span class="gen">
+				<input type="text" name="subject" id="subject" size="45" maxlength="100" style="width:450px" tabindex="2" class="post" value="{SUBJECT}" />
+			</span>
+		</td>
 	</tr>
 	<tr> 
-		<td class="row1" valign="top"><span class="gen"><b>{L_MESSAGE_BODY}</b></span><br /><span class="gensmall">{L_MESSAGE_BODY_DESC}</span></td>
-		<td class="row2"><span class="gen"><textarea name="message" rows="25" cols="40" wrap="virtual" style="width:500px" tabindex="3" class="post">{MESSAGE}</textarea></span></td>
+		<td class="row1" valign="top">
+			<span class="gen">
+				<label for="message">
+					<b>{L_MESSAGE_BODY}</b>
+				</label>
+			</span>
+			<br />
+			<span class="gensmall">{L_MESSAGE_BODY_DESC}</span>
+		</td>
+		<td class="row2">
+			<span class="gen">
+				<textarea name="message" rows="25" cols="40" wrap="virtual" style="width:500px" tabindex="3" class="post">{MESSAGE}</textarea>
+			</span>
+		</td>
 	</tr>
 	<tr> 
-		<td class="row1" valign="top"><span class="gen"><b>{L_OPTIONS}</b></span></td>
-		<td class="row2"><table cellspacing="0" cellpadding="1" border="0">
-			<tr> 
-				<td><input type="checkbox" name="cc_email"  value="1" checked="checked" /></td>
-				<td><span class="gen">{L_CC_EMAIL}</span></td>
-			</tr>
-		</table></td>
+		<td class="row1" valign="top">
+			<span class="gen">
+				<label for="cc_email">
+					<b>{L_OPTIONS}</b>
+				</label>
+			</span>
+		</td>
+		<td class="row2">
+			<table cellspacing="0" cellpadding="1" border="0">
+				<tr>
+					<td>
+						<input type="checkbox" name="cc_email"  value="1" checked="checked" />
+					</td>
+					<td>
+						<span class="gen">{L_CC_EMAIL}</span>
+					</td>
+				</tr>
+			</table>
+		</td>
 	</tr>
 	<tr>
 		<td class="catBottom" colspan="2" align="center" height="28">{S_HIDDEN_FIELDS}<input type="submit" tabindex="6" name="submit" class="mainoption" value="{L_SEND_EMAIL}" /></td>

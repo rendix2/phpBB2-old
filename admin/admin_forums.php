@@ -805,6 +805,7 @@ $template->assignVars(
         'L_FORUM_EXPLAIN'   => $lang['Forum_admin_explain'],
         'L_CREATE_FORUM'    => $lang['Create_forum'],
         'L_CREATE_CATEGORY' => $lang['Create_category'],
+        'L_CATEGORY_NAME'   => $lang['Category_name'],
         'L_EDIT'            => $lang['Edit'],
         'L_DELETE'          => $lang['Delete'],
         'L_MOVE_UP'         => $lang['Move_up'],
@@ -861,6 +862,7 @@ if ($category_count) {
                 'CAT_DESC' => $category->cat_title,
 
                 'L_POSTS'  => $lang['Number_posts'],
+                'L_FORUM_NAME'  => $lang['Forum_name'],
                 'L_TOPICS' => $lang['Number_topics'],
 
                 'U_CAT_EDIT'      => Session::appendSid('admin_forums.php?mode=editcat&amp;' . POST_CAT_URL . "=$cat_id"),

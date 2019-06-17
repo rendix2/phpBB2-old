@@ -12,8 +12,10 @@
 		<td class="row2">{S_SMILE_SELECT}</td>
 	</tr>
 	<tr>
-		<td class="row1">{L_DEL_EXISTING}</td>
-		<td class="row1"><input type="checkbox" name="clear_current" value="1" /></td>
+		<td class="row1">
+			<label for="clear_current">{L_DEL_EXISTING}</label>
+		</td>
+		<td class="row1"><input type="checkbox" name="clear_current" id="clear_current" value="1" /></td>
 	</tr>
 	<tr>
 		<td class="row2" colspan="2" align="center">{L_CONFLICTS}<br /><input type="radio" name="replace" value="1" checked="checked"/> {L_REPLACE_EXISTING} &nbsp; <input type="radio" name="replace" value="0" /> {L_KEEP_EXISTING}</td>

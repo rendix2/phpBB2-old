@@ -128,7 +128,8 @@ $template->assignVars(
 		'T_SPAN_CLASS1' => $theme['span_class1'],
 		'T_SPAN_CLASS2' => $theme['span_class2'],
 		'T_SPAN_CLASS3' => $theme['span_class3']
-	]);
+	]
+);
 
 // Work around for "current" Apache 2 + PHP module which seems to not
 // cope with private cache control setting
