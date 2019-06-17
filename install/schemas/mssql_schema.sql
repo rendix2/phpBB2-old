@@ -716,7 +716,14 @@ GO
  CREATE  INDEX [IX_phpbb_vote_voters] ON [phpbb_vote_voters]([vote_id]) ON [PRIMARY]
 GO
 
- CREATE  INDEX [IX_phpbb_vote_voters_1] ON [phpbb_vote_voters]([vote_user_id]) ON [PRIMARY]
+/* -------------------------------------------
+
+new indexes
+
+---------------------------------------------*/
+
+
+ CREATE  INDEX [IX_group_id_user_id] ON [phpbb_user_group]([group_id], [user_id]) ON [PRIMARY]
 GO
 
 COMMIT

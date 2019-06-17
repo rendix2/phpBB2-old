@@ -564,3 +564,11 @@ CREATE TABLE phpbb_words (
    replacement varchar(100) DEFAULT '' NOT NULL,
    CONSTRAINT phpbb_words_pkey PRIMARY KEY (word_id)
 );
+
+/* -------------------------------------------
+
+    new indexes
+
+--------------------------------------*/
+
+ALTER TABLE `phpbb_user_group` ADD PRIMARY KEY (`group_id`, `user_id`);

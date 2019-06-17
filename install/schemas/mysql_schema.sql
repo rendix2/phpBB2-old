@@ -583,3 +583,12 @@ CREATE TABLE phpbb_words (
    replacement char(100) NOT NULL,
    PRIMARY KEY (word_id)
 );
+
+
+/* -------------------------------------------
+
+    new indexes
+
+--------------------------------------*/
+
+ALTER TABLE `phpbb_user_group` ADD PRIMARY KEY (`group_id`, `user_id`);
