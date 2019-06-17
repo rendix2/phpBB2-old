@@ -291,8 +291,8 @@ if ($mode === 'newpm') {
             ->select('MIN(privmsgs_date)')
             ->as('oldest_post_time')
             ->from(PRIVMSGS_TABLE)
-            ->where('privmsgs_type = %i', PRIVMSGS_SENT_MAIL)
             ->where('privmsgs_from_userid = %i', $privmsg->privmsgs_from_userid)
+            ->where('privmsgs_type = %i', PRIVMSGS_SENT_MAIL)
             ->fetch();
 
 		$sql_priority = ( $dbms === 'mysql' ) ? 'LOW_PRIORITY' : '';
@@ -1766,7 +1766,7 @@ $sql_tot = dibi::select('COUNT(privmsgs_id)')
 $sql = dibi::select(['pm.privmsgs_type', 'pm.privmsgs_id', 'pm.privmsgs_date', 'pm.privmsgs_subject', 'u.user_id', 'u.username'])
     ->from(PRIVMSGS_TABLE)
     ->as('pm')
-    ->from(USERS_TABLE)
+    ->innerJoin(USERS_TABLE)
     ->as('u');
 
 switch( $folder) {
@@ -1774,8 +1774,8 @@ switch( $folder) {
         $sql_tot->where('privmsgs_to_userid = %i', $userdata['user_id'])
             ->where('privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_READ_MAIL, PRIVMSGS_UNREAD_MAIL]);
 
-		$sql->where('privmsgs_to_userid = %i', $userdata['user_id'])
-            ->where('u.user_id = pm.privmsgs_from_userid')
+		$sql->on('u.user_id = pm.privmsgs_from_userid')
+            ->where('privmsgs_to_userid = %i', $userdata['user_id'])
             ->where('pm.privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_READ_MAIL, PRIVMSGS_UNREAD_MAIL]);
 		break;
 
@@ -1783,8 +1783,8 @@ switch( $folder) {
         $sql_tot->where('privmsgs_from_userid = %i', $userdata['user_id'])
             ->where('privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_READ_MAIL]);
 
-        $sql->where('pm.privmsgs_from_userid = %i', $userdata['user_id'])
-            ->where('u.user_id = pm.privmsgs_to_userid')
+        $sql->on('u.user_id = pm.privmsgs_to_userid')
+            ->where('pm.privmsgs_from_userid = %i', $userdata['user_id'])
             ->where('pm.privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL]);
 		break;
 
@@ -1792,8 +1792,8 @@ switch( $folder) {
         $sql_tot->where('privmsgs_from_userid = %i', $userdata['user_id'])
             ->where('privmsgs_type = %i', PRIVMSGS_SENT_MAIL);
 
-        $sql->where('pm.privmsgs_from_userid = %i', $userdata['user_id'])
-            ->where('u.user_id = pm.privmsgs_to_userid')
+        $sql->on('u.user_id = pm.privmsgs_to_userid')
+            ->where('pm.privmsgs_from_userid = %i', $userdata['user_id'])
             ->where('pm.privmsgs_type = %i', PRIVMSGS_SENT_MAIL);
 		break;
 
@@ -1806,7 +1806,7 @@ switch( $folder) {
             PRIVMSGS_SAVED_OUT_MAIL
         );
 
-        $sql->where('u.user_id = pm.privmsgs_from_userid')
+        $sql->on('u.user_id = pm.privmsgs_from_userid')
             ->where(
                 '((pm.privmsgs_to_userid = %i AND pm.privmsgs_type = %i) OR (pm.privmsgs_from_userid = %i AND pm.privmsgs_type = %i))',
                 $userdata['user_id'],
