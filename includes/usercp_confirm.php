@@ -140,7 +140,7 @@ function randomise($scanline, $width)
 {
 	$new_line = '';
 	$start = floor($width/2);
-	$end = mb_strlen($scanline) - ceil($width/2);
+	$end = strlen($scanline) - ceil($width/2);
 
 	for ($i = $start; $i < $end; $i++) {
 		$pixel = ord($scanline{$i});
@@ -185,7 +185,7 @@ function create_png($raw_image, $width, $height)
 
 	if (@extension_loaded('zlib')) {
 		$raw_image = gzcompress($raw_image);
-		$length = mb_strlen($raw_image);
+		$length = strlen($raw_image);
 	} else {
 		// The total length of this image, uncompressed, is just a calculation of pixels
 		$length = ($width + 1) * $height;
