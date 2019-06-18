@@ -277,4 +277,5 @@
 	</tr>
 </table>
 
+	{F_LOGIN_FORM_TOKEN}
 </form>

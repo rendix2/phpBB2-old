@@ -98,6 +98,8 @@ if (
 	include $phpbb_root_path . 'includes/functions_post.php';
 
     if ($mode === 'editprofile') {
+        CSRF::validate();
+
 		$user_id = (int)$_POST['user_id'];
 		$current_email = trim(htmlspecialchars($_POST['current_email']));
 	}
@@ -977,6 +979,8 @@ if (isset($_POST['avatargallery']) && !$error) {
             'HTML_STATUS' => $html_status,
             'BBCODE_STATUS' => sprintf($bbcode_status, '<a href="' . Session::appendSid('faq.php?mode=bbcode') . '" target="_phpbbcode">', '</a>'),
             'SMILIES_STATUS' => $smilies_status,
+
+            'F_LOGIN_FORM_TOKEN' => CSRF::getInputHtml(),
 
             'L_CURRENT_PASSWORD' => $lang['Current_password'],
             'L_NEW_PASSWORD' => $mode === 'register' ? $lang['Password'] : $lang['New_password'],
