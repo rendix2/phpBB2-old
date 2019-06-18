@@ -132,7 +132,7 @@ if ($mode !== '') {
 		$min_posts  = isset($_POST['min_posts'])  ? (int)$_POST['min_posts']   : -1;
 		$rank_image = isset($_POST['rank_image']) ? trim($_POST['rank_image']) : '';
 
-		$special_rank = ($_POST['special_rank'] === 1) ? true : 0;
+		$special_rank = $_POST['special_rank'] === '1';
 
 		if ($rank_title === '') {
 			message_die(GENERAL_MESSAGE, $lang['Must_select_rank']);
@@ -303,7 +303,7 @@ foreach ($ranks as $i => $rank) {
 		[
             'ROW_COLOR'    => '#' . $row_color,
             'ROW_CLASS'    => $row_class,
-            'RANK'         => $rank->rank_title,
+            'RANK'         => htmlspecialchars($rank->rank_title, ENT_QUOTES),
             'SPECIAL_RANK' => $rank_is_special,
             'RANK_MIN'     => $rank_min,
 

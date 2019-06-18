@@ -283,8 +283,8 @@ $l_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $
 //
 $template->assignVars(
     [
-        'SITENAME'                    => $board_config['sitename'],
-        'SITE_DESCRIPTION'            => $board_config['site_desc'],
+        'SITENAME'                    => htmlspecialchars($board_config['sitename'], ENT_QUOTES),
+        'SITE_DESCRIPTION'            => htmlspecialchars($board_config['site_desc'], ENT_QUOTES),
         'PAGE_TITLE'                  => $page_title,
         'LAST_VISIT_DATE'             => sprintf($lang['You_last_visit'], $s_last_visit),
         'CURRENT_TIME'                => sprintf($lang['Current_time'], create_date($board_config['default_dateformat'], time(), $board_config['board_timezone'])),

@@ -82,7 +82,7 @@ class Select
 
         if (count($disallowed)) {
             foreach ($disallowed as $disallow_id => $disallow_username) {
-                $disallow_select .= '<option value="' . $disallow_id . '">' . $disallow_username . '</option>';
+                $disallow_select .= '<option value="' . $disallow_id . '">' . htmlspecialchars($disallow_username, ENT_QUOTES) . '</option>';
             }
         } else {
             $disallow_select .= '<option value="">' . $lang['no_disallowed'] . '</option>';
@@ -98,7 +98,7 @@ class Select
         $select_list = '<select name="' . POST_GROUPS_URL . '">';
 
         foreach ($groups as $group_id => $group_name) {
-            $select_list .= '<option value="' . $group_id . '">' . $group_name . '</option>';
+            $select_list .= '<option value="' . $group_id . '">' . htmlspecialchars($group_name, ENT_QUOTES) . '</option>';
         }
 
         $select_list .= '</select>';

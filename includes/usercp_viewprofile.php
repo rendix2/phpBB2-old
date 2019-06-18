@@ -155,14 +155,14 @@ if (!empty($profileData->user_icq)) {
 	$icq = '&nbsp;';
 }
 
-$aim_img = $profileData->user_aim ? '<a href="aim:goim?screenname=' . $profileData->user_aim . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '&nbsp;';
-$aim = $profileData->user_aim ? '<a href="aim:goim?screenname=' . $profileData->user_aim . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '&nbsp;';
+$aim_img = $profileData->user_aim ? '<a href="aim:goim?screenname=' . htmlspecialchars($profileData->user_aim, ENT_QUOTES) . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '&nbsp;';
+$aim = $profileData->user_aim ? '<a href="aim:goim?screenname=' . htmlspecialchars($profileData->user_aim, ENT_QUOTES) . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '&nbsp;';
 
-$msn_img = $profileData->user_msnm ? $profileData->user_msnm : '&nbsp;';
+$msn_img = $profileData->user_msnm ? htmlspecialchars($profileData->user_msnm, ENT_QUOTES) : '&nbsp;';
 $msn = $msn_img;
 
-$yim_img = $profileData->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $profileData->user_yim . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
-$yim = $profileData->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $profileData->user_yim . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
+$yim_img = $profileData->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . htmlspecialchars($profileData->user_yim, ENT_QUOTES) . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
+$yim = $profileData->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . htmlspecialchars($profileData->user_yim, ENT_QUOTES) . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
 
 $temp_url = Session::appendSid('search.php?search_author=' . urlencode($profileData->username) . '&amp;show_results=posts');
 $search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $profileData->username) . '" title="' . sprintf($lang['Search_user_posts'], $profileData->username) . '" border="0" /></a>';
@@ -221,9 +221,9 @@ $template->assignVars(
         'YIM_IMG' => $yim_img,
         'YIM' => $yim,
 
-        'LOCATION' => $profileData->user_from ? $profileData->user_from : '&nbsp;',
-        'OCCUPATION' => $profileData->user_occ ? $profileData->user_occ : '&nbsp;',
-        'INTERESTS' => $profileData->user_interests ? $profileData->user_interests : '&nbsp;',
+        'LOCATION' => $profileData->user_from ? htmlspecialchars($profileData->user_from, ENT_QUOTES) : '&nbsp;',
+        'OCCUPATION' => $profileData->user_occ ? htmlspecialchars($profileData->user_occ, ENT_QUOTES) : '&nbsp;',
+        'INTERESTS' => $profileData->user_interests ? htmlspecialchars($profileData->user_interests, ENT_QUOTES) : '&nbsp;',
         'AVATAR_IMG' => $avatar_img,
 
         'L_VIEWING_PROFILE' => sprintf($lang['Viewing_user_profile'], $profileData->username),

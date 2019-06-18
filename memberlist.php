@@ -192,7 +192,7 @@ $users = $users->fetchAll();
 $i = 0;
 
 foreach ($users as $user) {
-    $from = !empty($user->user_from) ? $user->user_from : '&nbsp;';
+    $from = !empty($user->user_from) ? htmlspecialchars($user->user_from, ENT_QUOTES) : '&nbsp;';
     $joined = create_date($lang['DATE_FORMAT'], $user->user_regdate, $board_config['board_timezone']);
     $posts = $user->user_posts ? $user->user_posts : 0;
     $topics = $user->user_topics ? $user->user_topics : 0;

@@ -59,7 +59,6 @@ $mark_list = !empty($_POST['mark']) ? $_POST['mark'] : 0;
 // todo
 if (isset($_POST['folder']) || isset($_GET['folder'])) {
     $folder = isset($_POST['folder']) ? $_POST['folder'] : $_GET['folder'];
-    $folder = htmlspecialchars($folder);
 
     if ($folder !== 'inbox' && $folder !== 'outbox' && $folder !== 'sentbox' && $folder !== 'savebox') {
         $folder = 'inbox';
@@ -89,7 +88,6 @@ if ($cancel) {
 //
 if (!empty($_POST[POST_MODE]) || !empty($_GET[POST_MODE])) {
     $mode = !empty($_POST[POST_MODE]) ? $_POST[POST_MODE] : $_GET[POST_MODE];
-    $mode = htmlspecialchars($mode);
 } else {
     $mode = '';
 }
@@ -518,15 +516,15 @@ if ($mode === 'newpm') {
 		$icq = '';
 	}
 
-	$aim_img = $privmsg->user_aim ? '<a href="aim:goim?screenname=' . $privmsg->user_aim . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
-	$aim     = $privmsg->user_aim ? '<a href="aim:goim?screenname=' . $privmsg->user_aim . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
+	$aim_img = $privmsg->user_aim ? '<a href="aim:goim?screenname=' . htmlspecialchars($privmsg->user_aim, ENT_QUOTES) . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
+	$aim     = $privmsg->user_aim ? '<a href="aim:goim?screenname=' . htmlspecialchars($privmsg->user_aim, ENT_QUOTES) . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
 
 	$temp_url = Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$user_id_from");
 	$msn_img  = $privmsg->user_msnm ? '<a href="' . $temp_url . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
 	$msn      = $privmsg->user_msnm ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
 
-	$yim_img = $privmsg->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $privmsg->user_yim . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
-	$yim     = $privmsg->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $privmsg->user_yim . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
+	$yim_img = $privmsg->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . htmlspecialchars($privmsg->user_yim, ENT_QUOTES) . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
+	$yim     = $privmsg->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . htmlspecialchars($privmsg->user_yim, ENT_QUOTES) . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
 
 	$temp_url   = Session::appendSid('search.php?search_author=' . urlencode($username_from) . '&amp;show_results=posts');
 	$search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $username_from) . '" title="' . sprintf($lang['Search_user_posts'], $username_from) . '" border="0" /></a>';
@@ -613,7 +611,7 @@ if ($mode === 'newpm') {
 
             */
 
-            'POST_SUBJECT'  => $post_subject,
+            'POST_SUBJECT'  => htmlspecialchars($post_subject, ENT_QUOTES),
             'POST_DATE'     => $post_date,
             'MESSAGE'       => $private_message,
 
@@ -1080,7 +1078,7 @@ if ($mode === 'newpm') {
             $error_msg .= (!empty($error_msg) ? '<br />' : '') . $lang['No_to_user'];
         }
 
-        $privmsg_subject = trim(htmlspecialchars($_POST['subject']));
+        $privmsg_subject = trim($_POST['subject']);
         if (empty($privmsg_subject)) {
             $error = true;
             $error_msg .= (!empty($error_msg) ? '<br />' : '') . $lang['Empty_subject'];
@@ -1266,7 +1264,7 @@ if ($mode === 'newpm') {
 		// where neccessary, etc.
 		//
 		$to_username     = isset($_POST['username']) ? trim(htmlspecialchars(stripslashes($_POST['username']))) : '';
-		$privmsg_subject = isset($_POST['subject']) ? trim(htmlspecialchars(stripslashes($_POST['subject'])))   : '';
+		$privmsg_subject = isset($_POST['subject']) ? trim(stripslashes($_POST['subject']))   : '';
 
 		$privmsg_message = isset($_POST['message']) ? trim($_POST['message']) : '';
 		// $privmsg_message = preg_replace('#<textarea>#si', '&lt;textarea&gt;', $privmsg_message);
@@ -1505,8 +1503,7 @@ if ($mode === 'newpm') {
                 'POST_SUBJECT' => $preview_subject,
                 'MESSAGE_TO'   => $to_username,
                 'MESSAGE_FROM' => $userdata['username'],
-                'POST_DATE'    => create_date($board_config['default_dateformat'], time(),
-                    $board_config['board_timezone']),
+                'POST_DATE'    => create_date($board_config['default_dateformat'], time(), $board_config['board_timezone']),
                 'MESSAGE'      => $preview_message,
 
                 'S_HIDDEN_FIELDS' => $s_hidden_fields,
@@ -2028,7 +2025,7 @@ if (count($rows)) {
                 'ROW_COLOR'          => '#' . $row_color,
                 'ROW_CLASS'          => $row_class,
                 'FROM'               => $msg_username,
-                'SUBJECT'            => $msg_subject,
+                'SUBJECT'            => htmlspecialchars($msg_subject, ENT_QUOTES),
                 'DATE'               => $msg_date,
                 'PRIVMSG_FOLDER_IMG' => $icon_flag,
 

@@ -20,7 +20,6 @@
 			<td align="center" width="30%"> 
 			  <input type="submit" value="{L_VIEW_INFORMATION}" class="liteoption" />{S_HIDDEN_FIELDS}
 			</td>
-				{F_LOGIN_FORM_TOKEN}
 		</form></tr>
 	  </table>
 	</td>
@@ -36,7 +35,6 @@
 			<td align="center" width="30%"> 
 			  <input type="submit" value="{L_VIEW_INFORMATION}" class="liteoption" />{S_HIDDEN_FIELDS}
 			</td>
-				{F_LOGIN_FORM_TOKEN}
 		</form></tr>
 	  </table>
 	</td>
@@ -56,7 +54,6 @@
 			<td align="center" width="30%"> 
 			  <input type="submit" value="{L_VIEW_INFORMATION}" class="liteoption" />{S_HIDDEN_FIELDS}
 			</td>
-				{F_LOGIN_FORM_TOKEN}
 		</form></tr>
 	  </table>
 	</td>

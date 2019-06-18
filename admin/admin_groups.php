@@ -44,7 +44,6 @@ if (isset($_POST[POST_GROUPS_URL]) || isset($_GET[POST_GROUPS_URL])) {
 
 if (isset($_POST[POST_MODE]) || isset($_GET[POST_MODE])) {
     $mode = isset($_POST[POST_MODE]) ? $_POST[POST_MODE] : $_GET[POST_MODE];
-    $mode = htmlspecialchars($mode);
 } else {
     $mode = '';
 }
@@ -114,8 +113,8 @@ if (isset($_POST['edit']) || isset($_POST['new'])) {
 
 	$template->assignVars(
 		[
-            'GROUP_NAME'        => $group_info['group_name'],
-            'GROUP_DESCRIPTION' => $group_info['group_description'],
+            'GROUP_NAME'        => htmlspecialchars($group_info->group_name, ENT_QUOTES),
+            'GROUP_DESCRIPTION' => htmlspecialchars($group_info->group_description, ENT_QUOTES),
             'GROUP_MODERATOR'   => $group_moderator,
 
             'L_GROUP_TITLE'        => $lang['Group_administration'],
@@ -223,7 +222,7 @@ if (isset($_POST['edit']) || isset($_POST['new'])) {
 		message_die(GENERAL_MESSAGE, $message);
 	} else {
 		$group_type = isset($_POST['group_type']) ? (int)$_POST['group_type'] : GROUP_OPEN;
-		$group_name = isset($_POST['group_name']) ? htmlspecialchars(trim($_POST['group_name'])) : '';
+		$group_name = isset($_POST['group_name']) ? trim($_POST['group_name']) : '';
 		$group_description = isset($_POST['group_description']) ? trim($_POST['group_description']) : '';
 		$group_moderator = isset($_POST['username']) ? $_POST['username'] : '';
 		$delete_old_moderator = isset($_POST['delete_old_moderator']);
@@ -331,7 +330,7 @@ if (isset($_POST['edit']) || isset($_POST['new'])) {
 		$select_list .= '<select name="' . POST_GROUPS_URL . '">';
 
 		foreach ($groups as $group_id => $group_name) {
-			$select_list .= '<option value="' . $group_id . '">' . $group_name . '</option>';
+			$select_list .= '<option value="' . $group_id . '">' . htmlspecialchars($group_name, ENT_QUOTES) . '</option>';
 		}
 
 		$select_list .= '</select>';

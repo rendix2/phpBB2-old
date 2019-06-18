@@ -99,7 +99,7 @@ if (isset($_POST['doprune'])) {
                 'ROW_COLOR' => '#' . $row_color,
                 'ROW_CLASS' => $row_class,
 
-                'FORUM_NAME'   => $forum->forum_name,
+                'FORUM_NAME'   => htmlspecialchars($forum->forum_name, ENT_QUOTES),
                 'FORUM_TOPICS' => $prune_result['topics'],
                 'FORUM_POSTS'  => $prune_result['posts']
             ]
@@ -130,7 +130,7 @@ if (isset($_POST['doprune'])) {
 		$select_list .= '<option value="-1">' . $lang['All_Forums'] . '</option>';
 
 		foreach ($forums as $forum) {
-            $select_list .= '<option value="' . $forum->forum_id . '">' . $forum->forum_name . '</option>';
+            $select_list .= '<option value="' . $forum->forum_id . '">' . htmlspecialchars($forum->forum_name, ENT_QUOTES) . '</option>';
         }
 
 		$select_list .= '</select>';
@@ -168,7 +168,7 @@ if (isset($_POST['doprune'])) {
 		//
 		$template->assignVars(
 		    [
-                'FORUM_NAME' => $forum_name,
+                'FORUM_NAME' => htmlspecialchars($forum_name, ENT_QUOTES),
                 'L_FORUM'    => $lang['Forum'],
                 'L_DO_PRUNE' => $lang['Do_Prune'],
 

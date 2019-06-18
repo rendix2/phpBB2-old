@@ -154,15 +154,15 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 		$password = !empty($_POST['password']) ? trim(strip_tags(htmlspecialchars($_POST['password'] ) )) : '';
 		$password_confirm = !empty($_POST['password_confirm']) ? trim(strip_tags(htmlspecialchars($_POST['password_confirm'] ) )) : '';
 
-        $icq = !empty($_POST['icq']) ? trim(strip_tags($_POST['icq'])) : '';
-        $aim = !empty($_POST['aim']) ? trim(strip_tags($_POST['aim'])) : '';
-        $msn = !empty($_POST['msn']) ? trim(strip_tags($_POST['msn'])) : '';
-        $yim = !empty($_POST['yim']) ? trim(strip_tags($_POST['yim'])) : '';
+        $icq = !empty($_POST['icq']) ? trim($_POST['icq']) : '';
+        $aim = !empty($_POST['aim']) ? trim($_POST['aim']) : '';
+        $msn = !empty($_POST['msn']) ? trim($_POST['msn']) : '';
+        $yim = !empty($_POST['yim']) ? trim($_POST['yim']) : '';
 
-        $website    = !empty($_POST['website'])    ? trim(strip_tags($_POST['website']))    : '';
-        $location   = !empty($_POST['location'])   ? trim(strip_tags($_POST['location']))   : '';
-        $occupation = !empty($_POST['occupation']) ? trim(strip_tags($_POST['occupation'])) : '';
-        $interests  = !empty($_POST['interests'])  ? trim(strip_tags($_POST['interests']))  : '';
+        $website    = !empty($_POST['website'])    ? trim($_POST['website'])    : '';
+        $location   = !empty($_POST['location'])   ? trim($_POST['location'])   : '';
+        $occupation = !empty($_POST['occupation']) ? trim($_POST['occupation']) : '';
+        $interests  = !empty($_POST['interests'])  ? trim($_POST['interests'])  : '';
 
         $signature = !empty($_POST['signature']) ? trim(str_replace('<br />', "\n", $_POST['signature'])) : '';
 
@@ -214,18 +214,18 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 			$password_confirm = '';
 
 			$icq = stripslashes($icq);
-			$aim = htmlspecialchars(stripslashes($aim));
-			$msn = htmlspecialchars(stripslashes($msn));
-			$yim = htmlspecialchars(stripslashes($yim));
+			$aim = stripslashes($aim);
+			$msn = stripslashes($msn);
+			$yim = stripslashes($yim);
 
-            $website    = htmlspecialchars(stripslashes($website));
-            $location   = htmlspecialchars(stripslashes($location));
-            $occupation = htmlspecialchars(stripslashes($occupation));
-            $interests  = htmlspecialchars(stripslashes($interests));
-            $signature  = htmlspecialchars(stripslashes($signature));
+            $website    = stripslashes($website);
+            $location   = stripslashes($location);
+            $occupation = stripslashes($occupation);
+            $interests  = stripslashes($interests);
+            $signature  = stripslashes($signature);
 
 			$user_lang = stripslashes($user_lang);
-			$user_dateformat = htmlspecialchars(stripslashes($user_dateformat));
+			$user_dateformat = stripslashes($user_dateformat);
 
             if (!isset($_POST['cancelavatar'])) {
 				$user_avatar = $user_avatar_category . '/' . $user_avatar_local;
@@ -330,7 +330,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 				$error_msg .= $lang['Only_one_avatar'];
 			}
 
-			if ($user_avatar_loc !== '') {
+			if ($user_avatar_loc !== null) {
 				if (file_exists(@phpbb_realpath($user_avatar_loc)) && preg_match('#.jpg$|.gif$|.png$#', $user_avatar_name)) {
 					if ($user_avatar_size <= $board_config['avatar_filesize'] && $user_avatar_size > 0) {
 						$error_type = false;
@@ -597,24 +597,24 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 
             $template->assignVarFromHandle('ERROR_BOX', 'reg_header');
 
-			$username = htmlspecialchars(stripslashes($username));
+			$username = stripslashes($username);
 			$email = stripslashes($email);
 			$password = '';
 			$password_confirm = '';
 
 			$icq = stripslashes($icq);
-			$aim = htmlspecialchars(str_replace('+', ' ', stripslashes($aim)));
-			$msn = htmlspecialchars(stripslashes($msn));
-			$yim = htmlspecialchars(stripslashes($yim));
+			$aim = str_replace('+', ' ', stripslashes($aim));
+			$msn = stripslashes($msn);
+			$yim = stripslashes($yim);
 
-            $website    = htmlspecialchars(stripslashes($website));
-            $location   = htmlspecialchars(stripslashes($location));
-            $occupation = htmlspecialchars(stripslashes($occupation));
-            $interests  = htmlspecialchars(stripslashes($interests));
-            $signature  = htmlspecialchars(stripslashes($signature));
+            $website    = stripslashes($website);
+            $location   = stripslashes($location);
+            $occupation = stripslashes($occupation);
+            $interests  = stripslashes($interests);
+            $signature  = stripslashes($signature);
 
 			$user_lang = stripslashes($user_lang);
-			$user_dateformat = htmlspecialchars(stripslashes($user_dateformat));
+			$user_dateformat = stripslashes($user_dateformat);
 		}
 	} elseif (!isset( $_POST['submit'] ) && $mode !== 'save' && !isset( $_POST['avatargallery'] ) && !isset( $_POST['submitavatar'] ) && !isset( $_POST['cancelavatar'] )) {
 		if (isset( $_GET[POST_USERS_URL]) || isset( $_POST[POST_USERS_URL])) {
@@ -642,14 +642,14 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 		$password_confirm = '';
 
 		$icq = $this_userdata['user_icq'];
-		$aim = htmlspecialchars(str_replace('+', ' ', $this_userdata['user_aim'] ));
-		$msn = htmlspecialchars($this_userdata['user_msnm']);
-		$yim = htmlspecialchars($this_userdata['user_yim']);
+		$aim = str_replace('+', ' ', $this_userdata['user_aim'] );
+		$msn = $this_userdata['user_msnm'];
+		$yim = $this_userdata['user_yim'];
 
-		$website = htmlspecialchars($this_userdata['user_website']);
-		$location = htmlspecialchars($this_userdata['user_from']);
-		$occupation = htmlspecialchars($this_userdata['user_occ']);
-		$interests = htmlspecialchars($this_userdata['user_interests']);
+		$website = $this_userdata['user_website'];
+		$location = $this_userdata['user_from'];
+		$occupation = $this_userdata['user_occ'];
+		$interests = $this_userdata['user_interests'];
 
 		$signature = ($this_userdata['user_sig_bbcode_uid'] !== '') ? preg_replace('#:' . $this_userdata['user_sig_bbcode_uid'] . '#si', '', $this_userdata['user_sig']) : $this_userdata['user_sig'];
 		$signature = preg_replace($html_entities_match, $html_entities_replace, $signature);
@@ -853,15 +853,15 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 		$template->assignVars(
 		    [
                 'USERNAME' => $username,
-                'EMAIL' => $email,
-                'YIM' => $yim,
-                'ICQ' => $icq,
-                'MSN' => $msn,
-                'AIM' => $aim,
-                'OCCUPATION' => $occupation,
-                'INTERESTS' => $interests,
-                'LOCATION' => $location,
-                'WEBSITE' => $website,
+                'EMAIL' => htmlspecialchars($email, ENT_QUOTES),
+                'YIM' => htmlspecialchars($yim, ENT_QUOTES),
+                'ICQ' => htmlspecialchars($icq, ENT_QUOTES),
+                'MSN' => htmlspecialchars($msn, ENT_QUOTES),
+                'AIM' => htmlspecialchars($aim, ENT_QUOTES),
+                'OCCUPATION' => htmlspecialchars($occupation, ENT_QUOTES),
+                'INTERESTS' => htmlspecialchars($interests, ENT_QUOTES),
+                'LOCATION' => htmlspecialchars($location, ENT_QUOTES),
+                'WEBSITE' => htmlspecialchars($website, ENT_QUOTES),
                 'SIGNATURE' => str_replace('<br />', "\n", $signature),
                 'VIEW_EMAIL_YES' => $viewemail ? 'checked="checked"' : '',
                 'VIEW_EMAIL_NO' => !$viewemail ? 'checked="checked"' : '',

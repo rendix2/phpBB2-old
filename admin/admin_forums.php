@@ -136,7 +136,7 @@ function get_list($mode, $id, $select)
             $selected = ' selected="selected"';
 		}
 
-        $cat_list .= '<option value="'.$key.'" '.$selected.'>' . $value . "</option>\n";
+        $cat_list .= '<option value="'.$key.'" '.$selected.'>' . htmlspecialchars($value, ENT_QUOTES) . "</option>\n";
 	}
 
 	return $cat_list;
@@ -299,8 +299,8 @@ if (!empty($mode)) {
 
                 'PRUNE_DAYS'  => isset($pr_row['prune_days']) ? $pr_row->prune_days : 7,
                 'PRUNE_FREQ'  => isset($pr_row['prune_freq']) ? $pr_row->prune_freq : 1,
-                'FORUM_NAME'  => $forumname,
-                'DESCRIPTION' => $forumdesc
+                'FORUM_NAME'  => htmlspecialchars($forumname, ENT_QUOTES),
+                'DESCRIPTION' => htmlspecialchars($forumdesc, ENT_QUOTES)
             ]
         );
         $template->pparse('body');
@@ -362,7 +362,7 @@ if (!empty($mode)) {
 
 		case 'modforum':
 			// Modify a forum in the DB
-            if (isset($_POST['prune_enable']) && $_POST['prune_enable'] !== 1) {
+            if (isset($_POST['prune_enable']) && $_POST['prune_enable'] !== '1') {
                 $_POST['prune_enable'] = 0;
             }
 
@@ -378,7 +378,7 @@ if (!empty($mode)) {
                 ->where('forum_id = %i', (int)$_POST[POST_FORUM_URL])
                 ->execute();
 
-            if ($_POST['prune_enable'] === 1) {
+            if ($_POST['prune_enable'] === '1') {
 				if ($_POST['prune_days'] === '' || $_POST['prune_freq'] === '') {
 					message_die(GENERAL_MESSAGE, $lang['Set_prune_data']);
 				}
@@ -468,7 +468,7 @@ if (!empty($mode)) {
 
             $template->assignVars(
                 [
-                    'CAT_TITLE' => $cat_title,
+                    'CAT_TITLE' => htmlspecialchars($cat_title, ENT_QUOTES),
 
                     'L_EDIT_CATEGORY'         => $lang['Edit_Category'],
                     'L_EDIT_CATEGORY_EXPLAIN' => $lang['Edit_Category_explain'],
@@ -859,7 +859,7 @@ if ($category_count) {
                 'S_ADD_FORUM_NAME'   => "forumname[$cat_id]",
 
                 'CAT_ID'   => $cat_id,
-                'CAT_DESC' => $category->cat_title,
+                'CAT_DESC' => htmlspecialchars($category->cat_title, ENT_QUOTES),
 
                 'L_POSTS'  => $lang['Number_posts'],
                 'L_FORUM_NAME'  => $lang['Forum_name'],
@@ -893,8 +893,8 @@ if ($category_count) {
 
                 $template->assignBlockVars('catrow.forumrow',
                     [
-                        'FORUM_NAME' => $forum->forum_name,
-                        'FORUM_DESC' => $forum->forum_desc,
+                        'FORUM_NAME' => htmlspecialchars($forum->forum_name, ENT_QUOTES),
+                        'FORUM_DESC' => htmlspecialchars($forum->forum_desc, ENT_QUOTES),
 
                         'ROW_COLOR'  => '#' . $row_color,
                         'ROW_CLASS'  => $row_class,

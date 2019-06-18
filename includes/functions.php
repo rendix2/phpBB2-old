@@ -57,7 +57,7 @@ function get_db_stat($mode)
 // added at phpBB 2.0.11 to properly format the username
 function phpbb_clean_username($username)
 {
-	$username = substr(htmlspecialchars(str_replace("\'", "'", trim($username))), 0, 25);
+	$username = substr(htmlspecialchars(str_replace("\'", "'", trim($username)), ENT_QUOTES), 0, 25);
 	$username = rtrim($username, "\\");
 	$username = str_replace("'", "\'", $username);
 
@@ -158,7 +158,7 @@ function make_jumpbox($action, $match_forum_id = 0)
 //					if ($forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $is_auth[$forum_rows[$j]['forum_id']]['auth_view'] )
 //					{
 						$selected = $forum->forum_id === $match_forum_id ? 'selected="selected"' : '';
-						$boxstring_forums .=  '<option value="' . $forum->forum_id . '"' . $selected . '>' . $forum->forum_name . '</option>';
+						$boxstring_forums .=  '<option value="' . $forum->forum_id . '"' . $selected . '>' . htmlspecialchars($forum->forum_name, ENT_QUOTES) . '</option>';
 
 						//
 						// Add an array to $nav_links for the Mozilla navigation bar.

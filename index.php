@@ -258,7 +258,7 @@ $forum_moderators_data = dibi::select('aa.forum_id, g.group_id, g.group_name')
     ->fetchAll();
 
 foreach ($forum_moderators_data as $row) {
-    $forum_moderators[$row->forum_id][] = '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . '=' . $row->group_id) . '">' . $row->group_name . '</a>';
+    $forum_moderators[$row->forum_id][] = '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . '=' . $row->group_id) . '">' . htmlspecialchars($row->group_name, ENT_QUOTES) . '</a>';
 }
 
 //
@@ -332,7 +332,7 @@ foreach ($categories as $i => $category) {
     if (isset($display_categories[$cat_id]) && $display_categories[$cat_id]) {
         $template->assignBlockVars('catrow', [
                 'CAT_ID'    => $cat_id,
-                'CAT_DESC'  => $category->cat_title,
+                'CAT_DESC'  => htmlspecialchars($category->cat_title, ENT_QUOTES),
                 'U_VIEWCAT' => Session::appendSid('index.php?' . POST_CAT_URL . "=$cat_id")
             ]);
 
@@ -416,8 +416,8 @@ foreach ($categories as $i => $category) {
                             'ROW_COLOR'        => '#' . $row_color,
                             'ROW_CLASS'        => $row_class,
                             'FORUM_FOLDER_IMG' => $folder_image,
-                            'FORUM_NAME'       => $forum->forum_name,
-                            'FORUM_DESC'       => $forum->forum_desc,
+                            'FORUM_NAME'       => htmlspecialchars($forum->forum_name, ENT_QUOTES),
+                            'FORUM_DESC'       => htmlspecialchars($forum->forum_desc, ENT_QUOTES),
                             'POSTS'            => $forum->forum_posts,
                             'TOPICS'           => $forum->forum_topics,
                             'LAST_POST'        => $last_post,

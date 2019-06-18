@@ -703,7 +703,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
             [
             'ROW_COLOR'  => '#' . $row_color,
             'ROW_CLASS'  => $row_class,
-            'FORUM_NAME' => $forum_access[$i]['forum_name'],
+            'FORUM_NAME' => htmlspecialchars($forum_access[$i]['forum_name'], ENT_QUOTES),
 
             'U_FORUM_AUTH' => Session::appendSid('admin_forumauth.php?f=' . $forum_access[$i]['forum_id']),
 
@@ -735,7 +735,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
         $t_username  = $ug_info[0]->username;
         $s_user_type = $is_admin ? '<select name="userlevel"><option value="admin" selected="selected">' . $lang['Auth_Admin'] . '</option><option value="user">' . $lang['Auth_User'] . '</option></select>' : '<select name="userlevel"><option value="admin">' . $lang['Auth_Admin'] . '</option><option value="user" selected="selected">' . $lang['Auth_User'] . '</option></select>';
     } else {
-        $t_groupname = $ug_info[0]->group_name;
+        $t_groupname = htmlspecialchars($ug_info[0]->group_name, ENT_QUOTES);
     }
 
 	$names = [];
@@ -760,9 +760,9 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
             $ug = ($mode === 'user') ? 'group&amp;' . POST_GROUPS_URL : 'user&amp;' . POST_USERS_URL;
 
             if (!$ug_info_value->user_pending) {
-                $t_usergroup_list .= (($t_usergroup_list !== '') ? ', ' : '') . '<a href="' . Session::appendSid("admin_ug_auth.php?mode=$ug=" . $names[$i]['id']) . '">' . $names[$i]['name'] . '</a>';
+                $t_usergroup_list .= (($t_usergroup_list !== '') ? ', ' : '') . '<a href="' . Session::appendSid("admin_ug_auth.php?mode=$ug=" . $names[$i]['id']) . '">' . htmlspecialchars($names[$i]['name'], ENT_QUOTES) . '</a>';
             } else {
-                $t_pending_list .= (($t_pending_list !== '') ? ', ' : '') . '<a href="' . Session::appendSid("admin_ug_auth.php?mode=$ug=" . $names[$i]['id']) . '">' . $names[$i]['name'] . '</a>';
+                $t_pending_list .= (($t_pending_list !== '') ? ', ' : '') . '<a href="' . Session::appendSid("admin_ug_auth.php?mode=$ug=" . $names[$i]['id']) . '">' . htmlspecialchars($names[$i]['name'], ENT_QUOTES) . '</a>';
             }
         }
     }

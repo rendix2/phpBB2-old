@@ -32,7 +32,7 @@ function generate_user_info(&$row, $date_format, $group_mod, &$from, &$posts, &$
 {
 	global $lang, $images, $board_config;
 
-	$from = !empty($row->user_from) ? $row->user_from : '&nbsp;';
+	$from = !empty($row->user_from) ? htmlspecialchars($row->user_from, ENT_QUOTES) : '&nbsp;';
 	$joined = create_date($date_format, $row->user_regdate, $board_config['board_timezone']);
 	$posts = $row->user_posts ? $row->user_posts : 0;
 	$topics = $row->user_topics ? $row->user_topics : 0;
@@ -363,8 +363,6 @@ if (isset($_POST['groupstatus']) && $group_id) {
             redirect(Session::appendSid('login.php?redirect=groupcp.php&' . POST_GROUPS_URL . "=$group_id", true));
         }
     }
-
-    CSRF::validateGet();
 
 	//
 	// For security, get the ID of the group moderator.
@@ -855,35 +853,46 @@ if (isset($_POST['groupstatus']) && $group_id) {
             'L_ADD_MEMBER' => $lang['Add_member'],
             'L_FIND_USERNAME' => $lang['Find_username'],
 
-            'GROUP_NAME' => $group_info->group_name,
-            'GROUP_DESC' => $group_info->group_description,
+            'GROUP_NAME' => htmlspecialchars($group_info->group_name, ENT_QUOTES),
+            'GROUP_DESC' => htmlspecialchars($group_info->group_description, ENT_QUOTES),
             'GROUP_DETAILS' => $group_details,
 
             'MOD_ROW_COLOR' => '#' . $theme['td_color1'],
             'MOD_ROW_CLASS' => $theme['td_class1'],
+
             'MOD_USERNAME' => $username,
             'MOD_FROM' => $from,
             'MOD_JOINED' => $joined,
             'MOD_POSTS' => $posts,
             'MOD_TOPICS' => $topics,
+
             'MOD_AVATAR_IMG' => $poster_avatar,
+
             'MOD_PROFILE_IMG' => $profile_img,
             'MOD_PROFILE' => $profile,
+
             'MOD_SEARCH_IMG' => $search_img,
             'MOD_SEARCH' => $search,
+
             'MOD_PM_IMG' => $pm_img,
             'MOD_PM' => $pm,
+
             'MOD_EMAIL_IMG' => $email_img,
             'MOD_EMAIL' => $email,
+
             'MOD_WWW_IMG' => $www_img,
             'MOD_WWW' => $www,
+
             'MOD_ICQ_STATUS_IMG' => $icq_status_img,
             'MOD_ICQ_IMG' => $icq_img,
             'MOD_ICQ' => $icq,
+
             'MOD_AIM_IMG' => $aim_img,
             'MOD_AIM' => $aim,
+
             'MOD_MSN_IMG' => $msn_img,
             'MOD_MSN' => $msn,
+
             'MOD_YIM_IMG' => $yim_img,
             'MOD_YIM' => $yim,
 
@@ -896,9 +905,14 @@ if (isset($_POST['groupstatus']) && $group_id) {
             'S_GROUP_OPEN_CHECKED' => $group_info->group_type === GROUP_OPEN ? ' checked="checked"' : '',
             'S_GROUP_CLOSED_CHECKED' => $group_info->group_type === GROUP_CLOSED ? ' checked="checked"' : '',
             'S_GROUP_HIDDEN_CHECKED' => $group_info->group_type === GROUP_HIDDEN ? ' checked="checked"' : '',
+
             'S_HIDDEN_FIELDS' => $s_hidden_fields,
-            'S_MODE_SELECT' => $select_sort_mode,
-            'S_ORDER_SELECT' => $select_sort_order,
+
+            /**
+             * todo do we need this?
+             */
+            //'S_MODE_SELECT' => $select_sort_mode,
+            //'S_ORDER_SELECT' => $select_sort_order,
             'S_GROUPCP_ACTION' => Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$group_id")]
 	);
 
@@ -1100,9 +1114,9 @@ if (isset($_POST['groupstatus']) && $group_id) {
             $in_group[] = $row->group_id;
 
             if ($row->user_pending) {
-                $s_pending_groups_opt .= '<option value="' . $row->group_id . '">' . $row->group_name . '</option>';
+                $s_pending_groups_opt .= '<option value="' . $row->group_id . '">' . htmlspecialchars($row->group_name, ENT_QUOTES) . '</option>';
             } else {
-                $s_member_groups_opt .= '<option value="' . $row->group_id . '">' . $row->group_name . '</option>';
+                $s_member_groups_opt .= '<option value="' . $row->group_id . '">' . htmlspecialchars($row->group_name, ENT_QUOTES) . '</option>';
             }
         }
 
@@ -1172,8 +1186,6 @@ if (isset($_POST['groupstatus']) && $group_id) {
                 'L_SUBSCRIBE'                => $lang['Subscribe'],
                 'L_UNSUBSCRIBE'              => $lang['Unsubscribe'],
                 'L_VIEW_INFORMATION'         => $lang['View_Information'],
-
-                'F_LOGIN_FORM_TOKEN' => CSRF::getInputHtml(),
 
                 'S_USERGROUP_ACTION' => Session::appendSid('groupcp.php'),
                 'S_HIDDEN_FIELDS'    => $s_hidden_fields,

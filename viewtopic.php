@@ -839,7 +839,7 @@ foreach ($posts as $i => $post) {
     $poster_posts  = $post->user_id !== ANONYMOUS ? $lang['Posts'] . ': ' . $post->user_posts   : '';
     $poster_topics = $post->user_id !== ANONYMOUS ? $lang['Topics'] . ': ' . $post->user_topics : '';
 
-	$poster_from = $post->user_from && $post->user_id !== ANONYMOUS ? $lang['Location'] . ': ' . $post->user_from : '';
+	$poster_from = $post->user_from && $post->user_id !== ANONYMOUS ? $lang['Location'] . ': ' . htmlspecialchars($post->user_from, ENT_QUOTES) : '';
 
 	$poster_joined = $post->user_id !== ANONYMOUS ? $lang['Joined'] . ': ' . create_date($lang['DATE_FORMAT'], $post->user_regdate, $board_config['board_timezone']) : '';
 
@@ -938,15 +938,15 @@ foreach ($posts as $i => $post) {
 			$icq = '';
 		}
 
-		$aim_img = $post->user_aim ? '<a href="aim:goim?screenname=' . $post->user_aim . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
-		$aim = $post->user_aim ? '<a href="aim:goim?screenname=' . $post->user_aim . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
+		$aim_img = $post->user_aim ? '<a href="aim:goim?screenname=' . htmlspecialchars($post->user_aim, ENT_QUOTES) . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
+		$aim = $post->user_aim ? '<a href="aim:goim?screenname=' . htmlspecialchars($post->user_aim, ENT_QUOTES) . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
 
 		$temp_url = Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$poster_id");
 		$msn_img = $post->user_msnm ? '<a href="' . $temp_url . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
 		$msn = $post->user_msnm ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
 
-		$yim_img = $post->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $post->user_yim . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
-		$yim = $post->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $post->user_yim . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
+		$yim_img = $post->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . htmlspecialchars($post->user_yim, ENT_QUOTES) . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
+		$yim = $post->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . htmlspecialchars($post->user_yim, ENT_QUOTES) . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
 	} else {
 		$profile_img = '';
 		$profile = '';

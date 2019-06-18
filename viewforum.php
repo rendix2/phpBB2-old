@@ -404,7 +404,7 @@ make_jumpbox('viewforum.php');
 $template->assignVars(
     [
         'FORUM_ID'   => $forum_id,
-        'FORUM_NAME' => $forum->forum_name,
+        'FORUM_NAME' => htmlspecialchars($forum->forum_name, ENT_QUOTES),
         'MODERATORS' => $forum_moderators,
         'POST_IMG'   => $forum->forum_status === FORUM_LOCKED ? $images['post_locked'] : $images['post_new'],
 

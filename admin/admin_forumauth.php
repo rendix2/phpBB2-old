@@ -182,7 +182,7 @@ if (empty($forum_id)) {
     $select_list = '<select name="' . POST_FORUM_URL . '">';
 
     foreach ($forums as $forum) {
-		$select_list .= '<option value="' . $forum->forum_id . '">' . $forum->forum_name . '</option>';
+		$select_list .= '<option value="' . $forum->forum_id . '">' . htmlspecialchars($forum->forum_name, ENT_QUOTES) . '</option>';
 	}
 
 	$select_list .= '</select>';
@@ -282,7 +282,7 @@ if (empty($forum_id)) {
 
 	$template->assignVars(
 	    [
-            'FORUM_NAME' => $forum_name,
+            'FORUM_NAME' => htmlspecialchars($forum_name, ENT_QUOTES),
 
             'L_FORUM' => $lang['Forum'],
             'L_AUTH_TITLE' => $lang['Auth_Control_Forum'],

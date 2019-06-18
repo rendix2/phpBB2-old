@@ -107,15 +107,16 @@ if (
     // Strip all tags from data ... may p**s some people off, bah, strip_tags is
     // doing the job but can still break HTML output ... have no choice, have
     // to use htmlspecialchars ... be prepared to be moaned at.
-    $email        = !empty($_POST['email'])        ? trim(htmlspecialchars($_POST['email']))        : '';
-    $icq          = !empty($_POST['icq'])          ? trim(htmlspecialchars($_POST['icq']))          : '';
-    $aim          = !empty($_POST['aim'])          ? trim(htmlspecialchars($_POST['aim']))          : '';
-    $msn          = !empty($_POST['msn'])          ? trim(htmlspecialchars($_POST['msn']))          : '';
-    $yim          = !empty($_POST['yim'])          ? trim(htmlspecialchars($_POST['yim']))          : '';
-    $website      = !empty($_POST['website'])      ? trim(htmlspecialchars($_POST['website']))      : '';
-    $location     = !empty($_POST['location'])     ? trim(htmlspecialchars($_POST['location']))     : '';
-    $interests    = !empty($_POST['interests'])    ? trim(htmlspecialchars($_POST['interests']))    : '';
-    $confirm_code = !empty($_POST['confirm_code']) ? trim(htmlspecialchars($_POST['confirm_code'])) : '';
+    $email        = !empty($_POST['email'])        ? trim($_POST['email'])        : '';
+    $icq          = !empty($_POST['icq'])          ? trim($_POST['icq'])          : '';
+    $aim          = !empty($_POST['aim'])          ? trim($_POST['aim'])          : '';
+    $msn          = !empty($_POST['msn'])          ? trim($_POST['msn'])          : '';
+    $yim          = !empty($_POST['yim'])          ? trim($_POST['yim'])          : '';
+    $website      = !empty($_POST['website'])      ? trim($_POST['website'])      : '';
+    $location     = !empty($_POST['location'])     ? trim($_POST['location'])     : '';
+    $occupation   = !empty($_POST['occupation'])   ? trim($_POST['occupation'])   : '';
+    $interests    = !empty($_POST['interests'])    ? trim($_POST['interests'])    : '';
+    $confirm_code = !empty($_POST['confirm_code']) ? trim($_POST['confirm_code']) : '';
 
     $username         = !empty($_POST['username'])         ? phpbb_clean_username($_POST['username']) : '';
     $cur_password     = !empty($_POST['cur_password'])     ? trim($_POST['cur_password'])             : '';
@@ -933,14 +934,14 @@ if (isset($_POST['avatargallery']) && !$error) {
             'PASSWORD_CONFIRM' => isset($password_confirm) ? $password_confirm : '',
             'EMAIL'            => isset($email) ? $email : '',
             'CONFIRM_IMG'      => $confirm_image,
-            'YIM'              => $yim,
-            'ICQ'              => $icq,
-            'MSN'              => $msn,
-            'AIM'              => $aim,
-            'OCCUPATION'       => $occupation,
-            'INTERESTS'        => $interests,
-            'LOCATION'         => $location,
-            'WEBSITE'          => $website,
+            'YIM'              => htmlspecialchars($yim, ENT_QUOTES),
+            'ICQ'              => htmlspecialchars($icq, ENT_QUOTES),
+            'MSN'              => htmlspecialchars($msn, ENT_QUOTES),
+            'AIM'              => htmlspecialchars($aim, ENT_QUOTES),
+            'OCCUPATION'       => htmlspecialchars($occupation, ENT_QUOTES),
+            'INTERESTS'        => htmlspecialchars($interests, ENT_QUOTES),
+            'LOCATION'         => htmlspecialchars($location, ENT_QUOTES),
+            'WEBSITE'          => htmlspecialchars($website, ENT_QUOTES),
             'SIGNATURE'        => str_replace('<br />', "\n", $signature),
 
             'VIEW_EMAIL_YES' => $viewemail ? 'checked="checked"' : '',
