@@ -79,7 +79,7 @@ if ($mode === 'download') {
 if (isset($_POST['lg']) || isset($_GET['lg'])) {
 	$lg = isset($_POST['lg']) ? htmlspecialchars($_POST['lg']) : htmlspecialchars($_GET['lg']);
 
-	if ( file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $lg . '/lang_dbmtnc.php')) ) {
+	if (file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $lg . '/lang_dbmtnc.php'))) {
 		include $phpbb_root_path . 'language/lang_' . $lg . '/lang_dbmtnc.php';
 		include $phpbb_root_path . 'language/lang_' . $lg . '/lang_main.php';
 	} else {
@@ -109,7 +109,7 @@ if ($lg === '') {
 		include $phpbb_root_path . 'language/lang_' . $lg . '/lang_dbmtnc.php';
 		include $phpbb_root_path . 'language/lang_' . $lg . '/lang_main.php';
 	} else { // Try to load english language
-		if ( file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_english/lang_dbmtnc.php')) ) {
+		if (file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_english/lang_dbmtnc.php'))) {
 			include $phpbb_root_path . 'language/lang_english/lang_dbmtnc.php';
 			include $phpbb_root_path . 'language/lang_english/lang_main.php';
 			$mode = 'select_lang';
@@ -196,7 +196,7 @@ switch($mode) {
 					<select size="1" name="option">
 					<option value="cls"><?php echo $lang['cls']; ?></option>
 <?php
-	if ( check_mysql_version() ) {
+	if (check_mysql_version()) {
 ?>
 					<option value="rdb"><?php echo $lang['rdb']; ?></option>
 <?php
@@ -651,13 +651,12 @@ switch($mode) {
 ?>
 		<li><?php echo "$tablename: " . $lang['Table_OK']?></li>
 <?php
-							} else //  We got an error
-							{
+							} else {//  We got an error
 								// Check whether the error results from HEAP-table type
 
 								$row2 = dibi::query('SHOW TABLE STATUS LIKE %~like~', $tablename)->fetch();
 
-								if ( (isset($row2['Type']) && $row2['Type'] === 'HEAP') || (isset($row2['Engine']) && ($row2['Engine'] === 'HEAP' || $row2['Engine'] === 'MEMORY')) ) {
+								if ((isset($row2['Type']) && $row2['Type'] === 'HEAP') || (isset($row2['Engine']) && ($row2['Engine'] === 'HEAP' || $row2['Engine'] === 'MEMORY'))) {
 									// Table is from HEAP-table type
 ?>
 		<li><?php echo "$tablename: " . $lang['Table_HEAP_info']?></li>
@@ -683,7 +682,7 @@ switch($mode) {
 				if (!empty($_SERVER['SERVER_PROTOCOL']) || !empty($_ENV['SERVER_PROTOCOL'])) {
 					$protocol = !empty($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : $_ENV['SERVER_PROTOCOL'];
 
-					if ( strtolower(substr($protocol, 0 , 5)) === 'https' ) {
+					if (strtolower(substr($protocol, 0 , 5)) === 'https') {
 						$default_config['cookie_secure'] = '1';
 					}
 				}
@@ -797,7 +796,7 @@ switch($mode) {
 				$board_user = substr(str_replace("\\'", "'", $board_user), 0, 25);
 				$board_user = str_replace("'", "\\'", $board_user);
 
-				if ( is_file(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $new_lang . '/lang_main.php')) && is_file(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $new_lang . '/lang_admin.php')) ){
+				if (is_file(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $new_lang . '/lang_main.php')) && is_file(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $new_lang . '/lang_admin.php'))){
 				    dibi::update(USERS_TABLE, ['user_lang' => $new_lang])
 				     ->where('username = %s', $board_user)
 				      ->execute();
@@ -981,7 +980,7 @@ switch($mode) {
 	<ul>
 <?php
 				foreach ($rows as $row) {
-					if ( $auth_method !== 'board' || $board_user !== $row->username ) {
+					if ($auth_method !== 'board' || $board_user !== $row->username) {
 						// Checking whether user is a moderator
 
 						$row2 = dibi::select('ug.user_id')

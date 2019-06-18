@@ -60,18 +60,18 @@ if (isset($_POST['edit']) || isset($_POST['new'])) {
 		// They're editing. Grab the vars.
 		//
 		$group_info = dibi::select('*')
-            ->from(GROUPS_TABLE)
-            ->where('group_single_user <> %i', 1)
-            ->where('group_id = %i', $group_id)
-            ->fetch();
+			->from(GROUPS_TABLE)
+			->where('group_single_user <> %i', 1)
+			->where('group_id = %i', $group_id)
+			->fetch();
 
-		if(!$group_info) {
+		if (!$group_info) {
 			message_die(GENERAL_MESSAGE, $lang['Group_not_exist']);
 		}
 
 		$mode = 'editgroup';
 		$template->assignBlockVars('group_edit', []);
-    } elseif (isset($_POST['new'])) {
+	} elseif (isset($_POST['new'])) {
 		$group_info = [
 			'group_name'        => '',
 			'group_description' => '',

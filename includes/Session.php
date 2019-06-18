@@ -186,7 +186,7 @@ class Session
             ->where('session_ip = %s', $user_ip)
             ->execute();
 
-        if(!$result || !dibi::getAffectedRows()) {
+        if (!$result || !dibi::getAffectedRows()) {
             $session_id = md5(dss_rand());
 
             $insert_data = [

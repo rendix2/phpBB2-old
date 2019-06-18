@@ -603,7 +603,7 @@ if (!empty($mode)) {
                 ->where('a.auth_mod = %i', 1)
                 ->fetchPairs(null, 'user_id');
 
-			if(count($user_mods_ids)) {
+            if (count($user_mods_ids)) {
                 $user_ids = dibi::select('ug.user_id')
                     ->from(AUTH_ACCESS_TABLE)
                     ->as('a')

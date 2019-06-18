@@ -201,7 +201,7 @@ function throw_error($msg_text = '', $err_line = '', $err_file = '')
 	// Get SQL error if we are debugging. Do this as soon as possible to prevent
 	// subsequent queries from overwriting the status of sql_error()
 	//
-	if ( DEBUG ) {
+    if (DEBUG) {
         if ($err_line !== '' && $err_file !== '') {
             $debug_text = '</br /><br />Line : ' . $err_line . '<br />File : ' . $err_file;
         }
@@ -240,19 +240,20 @@ function lock_db($unlock = false, $delay = true, $ignore_default = false)
 
 	if ($unlock) {
 		echo('<p class="gen"><b>' . $lang['Unlock_db'] . "</b></p>\n");
-		if ( $db_was_locked && !$ignore_default )
-		{
-			// The database was locked and we were not told to ignore the default. So we exit
-			echo('<p class="gen">' . $lang['Ignore_unlock_command'] . "</p>\n");
-			return;
-		}
+        if ($db_was_locked && !$ignore_default) {
+            // The database was locked and we were not told to ignore the default. So we exit
+            echo('<p class="gen">' . $lang['Ignore_unlock_command'] . "</p>\n");
+
+            return;
+        }
 	} else {
 		echo('<p class="gen"><b>' . $lang['Lock_db'] . "</b></p>\n");
 		// Check current lock state
-		if ( $board_config['board_disable'] === 1 ) {
+        if ($board_config['board_disable'] === 1) {
             // DB is already locked. Write this to var and exit
             $db_was_locked = true;
             echo('<p class="gen">' . $lang['Already_locked'] . "</p>\n");
+
             return $db_was_locked;
         } else {
             $db_was_locked = false;
@@ -308,7 +309,7 @@ function check_condition($check)
            return $board_config['board_disable'] === 1;
 			break;
 		case 4: // Search index in recreation
-			if( $board_config['dbmtnc_rebuild_pos'] !== -1 ) {
+            if ($board_config['dbmtnc_rebuild_pos'] !== -1) {
 				// Rebuilding was interrupted - check for end position
                 if ($board_config['dbmtnc_rebuild_end'] >= $board_config['dbmtnc_rebuild_pos']) {
                     return true;
@@ -718,7 +719,7 @@ function check_authorisation($die = true)
 
 	// Change authentication mode if selected option does not allow database authentication
 
-	if ( $option === 'rld' || $option === 'rtd' ) {
+    if ($option === 'rld' || $option === 'rtd') {
 		$auth_method = 'board';
 	}
 

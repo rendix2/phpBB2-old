@@ -107,12 +107,12 @@ switch($mode_id) {
             if (count($mtnc[$i]) && $mtnc[$i][0] == $function) {
                 $warning_message         = $mtnc[$i];
                 $warning_message_defined = true;
-            };
+            }
         }
 
-		if ( !$warning_message_defined ) {
-			message_die(GENERAL_ERROR, $lang['function_unknown']);
-		} elseif ($warning_message[3] != '') {
+        if (!$warning_message_defined) {
+            message_die(GENERAL_ERROR, $lang['function_unknown']);
+        } elseif ($warning_message[3] != '') {
 			$s_hidden_fields = '<input type="hidden" name="mode" value="perform" />';
 			$s_hidden_fields .= '<input type="hidden" name="function" value="' . $function . '" />';
 
@@ -277,8 +277,7 @@ switch($mode_id) {
                 $template->pparse("body");
 				break;
 			case 'config': // Configuration
-				if( isset($_POST['submit']) )
-				{
+                if (isset($_POST['submit'])) {
 					$disallow_postcounter = (isset($_POST['disallow_postcounter'])) ? intval($_POST['disallow_postcounter']) : 0;
 					$disallow_rebuild = (isset($_POST['disallow_rebuild'])) ? intval($_POST['disallow_rebuild']) : 0;
 					$rebuildcfg_timelimit = (isset($_POST['rebuildcfg_timelimit']) && is_numeric($_POST['rebuildcfg_timelimit'])) ? intval($_POST['rebuildcfg_timelimit']) : 240;
@@ -587,10 +586,11 @@ switch($mode_id) {
                     $list_open = false;
 				}
 				// Create single user groups
-				if ( count($missing_groups) ) {
+                if (count($missing_groups)) {
 					$db_updated = TRUE;
 					$record_list = implode(',', $missing_groups);
 					echo("<p class=\"gen\">" . $lang['Recreating_SUG'] . ": $record_list</p>\n");
+
 					for($i = 0; $i < count($missing_groups); $i++) {
 						$group_name = ($missing_groups[$i] == ANONYMOUS) ? 'Anonymous' : '';
 
@@ -613,6 +613,7 @@ switch($mode_id) {
                         dibi::insert(USER_GROUP_TABLE, $insertData)->execute();
                     }
                 }
+
                 if (!$db_updated) {
                     echo($lang['Nothing_to_do']);
                 }
@@ -2100,26 +2101,27 @@ switch($mode_id) {
 
 				// Check for pns with deleted sender or recipient
 				echo("<p class=\"gen\"><b>" . $lang['Checking_pm_deleted_users'] . "</b></p>\n");
+
 				$result_array = dibi::select('privmsgs_id')
 					->from(PRIVMSGS_TABLE)
 					->where('(privmsgs_from_userid = %i AND privmsgs_type IN %in) OR (privmsgs_to_userid = %i AND privmsgs_type IN %in)', DELETED, $fromArray, DELETED, $toArray)
 					->fetchPairs(null, 'privmsgs_id');
 
-				if ( count($result_array) ) {
-					$record_list = implode(',', $result_array);
-					echo("<p class=\"gen\">" . $lang['Invalid_pm_users_found'] . ": $record_list</p>\n");
-					echo("<p class=\"gen\">" . $lang['Deleting_pms'] . "</p>\n");
+                if (count($result_array)) {
+                    $record_list = implode(',', $result_array);
+                    echo("<p class=\"gen\">" . $lang['Invalid_pm_users_found'] . ": $record_list</p>\n");
+                    echo("<p class=\"gen\">" . $lang['Deleting_pms'] . "</p>\n");
 
-					dibi::delete(PRIVMSGS_TABLE)
-						->where('privmsgs_id IN %in', $result_array)
-						->execute();
+                    dibi::delete(PRIVMSGS_TABLE)
+                        ->where('privmsgs_id IN %in', $result_array)
+                        ->execute();
 
-					dibi::delete(PRIVMSGS_TEXT_TABLE)
-						->where('privmsgs_text_id IN %in', $result_array)
-						->execute();
-				} else {
-					echo($lang['Nothing_to_do']);
-				}
+                    dibi::delete(PRIVMSGS_TEXT_TABLE)
+                        ->where('privmsgs_text_id IN %in', $result_array)
+                        ->execute();
+                } else {
+                    echo($lang['Nothing_to_do']);
+                }
 
 				// Updating new pm counter
 				echo("<p class=\"gen\"><b>" . $lang['Synchronize_new_pm_data'] . "</b></p>\n");
@@ -2267,17 +2269,19 @@ switch($mode_id) {
 				echo("<p class=\"gen\"><b>" . $lang['Checking_config_entries'] . "</b></p>\n");
 
 				// Update config data to match current configuration
-				if (!empty($_SERVER['SERVER_PROTOCOL']) || !empty($_ENV['SERVER_PROTOCOL'])) {
-					$protocol = (!empty($_SERVER['SERVER_PROTOCOL'])) ? $_SERVER['SERVER_PROTOCOL'] : $_ENV['SERVER_PROTOCOL'];
-					if ( strtolower(substr($protocol, 0 , 5)) == 'https' ) {
-						$default_config['cookie_secure'] = '1';
-					}
-				}
+                if (!empty($_SERVER['SERVER_PROTOCOL']) || !empty($_ENV['SERVER_PROTOCOL'])) {
+                    $protocol = (!empty($_SERVER['SERVER_PROTOCOL'])) ? $_SERVER['SERVER_PROTOCOL'] : $_ENV['SERVER_PROTOCOL'];
+                    if (strtolower(substr($protocol, 0, 5)) == 'https') {
+                        $default_config['cookie_secure'] = '1';
+                    }
+                }
+
 				if (!empty($_SERVER['SERVER_NAME']) || !empty($_ENV['SERVER_NAME'])) {
 					$default_config['server_name'] = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : $_ENV['SERVER_NAME'];
 				} else if (!empty($_SERVER['HTTP_HOST']) || !empty($_ENV['HTTP_HOST'])) {
 					$default_config['server_name'] = (!empty($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : $_ENV['HTTP_HOST'];
 				}
+
 				if (!empty($_SERVER['SERVER_PORT']) || !empty($_ENV['SERVER_PORT'])) {
 					$default_config['server_port'] = (!empty($_SERVER['SERVER_PORT'])) ? $_SERVER['SERVER_PORT'] : $_ENV['SERVER_PORT'];
 				}
@@ -2399,27 +2403,27 @@ switch($mode_id) {
                 $affected_rows = 0;
 
                 foreach ($rows as $row) {
-					$result_array[] = $row->word_id;
-					if ( count($result_array) >= 100 ) {
-						echo("<p class=\"gen\">" . $lang['Removing_part_invalid_words'] . "...</p>\n");
-						$record_list = implode(',', $result_array);
+                    $result_array[] = $row->word_id;
+                    if (count($result_array) >= 100) {
+                        echo("<p class=\"gen\">" . $lang['Removing_part_invalid_words'] . "...</p>\n");
+                        $record_list = implode(',', $result_array);
 
-						$affected_rows += dibi::delete(SEARCH_WORD_TABLE)
-							->where('word_id IN %in', $result_array)
-							->execute(dibi::AFFECTED_ROWS);
+                        $affected_rows += dibi::delete(SEARCH_WORD_TABLE)
+                            ->where('word_id IN %in', $result_array)
+                            ->execute(dibi::AFFECTED_ROWS);
 
-						$result_array = [];
-					}
-				}
+                        $result_array = [];
+                    }
+                }
 
-				if ( count($result_array) ) {
-					echo("<p class=\"gen\">" . $lang['Removing_invalid_words'] . "</p>\n");
-					$record_list = implode(',', $result_array);
+                if (count($result_array)) {
+                    echo("<p class=\"gen\">" . $lang['Removing_invalid_words'] . "</p>\n");
+                    $record_list = implode(',', $result_array);
 
-					$affected_rows += dibi::delete(SEARCH_WORD_TABLE)
-						->where('word_id IN %in', $result_array)
-						->execute(dibi::AFFECTED_ROWS);
-				}
+                    $affected_rows += dibi::delete(SEARCH_WORD_TABLE)
+                        ->where('word_id IN %in', $result_array)
+                        ->execute(dibi::AFFECTED_ROWS);
+                }
 
                 if ($affected_rows == 1) {
                     echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
@@ -2535,9 +2539,9 @@ switch($mode_id) {
 					$posts_to_index = $board_config['dbmtnc_rebuildcfg_minposts'];
 				}
 				// Check whether a special limit was set
-				if ( intval($board_config['dbmtnc_rebuildcfg_timeoverwrite']) != 0 ) {
-					$posts_to_index = intval($board_config['dbmtnc_rebuildcfg_timeoverwrite']);
-				}
+                if (intval($board_config['dbmtnc_rebuildcfg_timeoverwrite']) != 0) {
+                    $posts_to_index = intval($board_config['dbmtnc_rebuildcfg_timeoverwrite']);
+                }
 				// We have all data so get the post information
 				$rows = dibi::select(['post_id', 'post_subject', 'post_text'])
 					->from(POSTS_TEXT_TABLE)
@@ -2548,8 +2552,7 @@ switch($mode_id) {
 					->fetchAll();
 
 				// Get first record
-				if ( !count($rows) ) // Yeah! we reached the end of the posts - finish actions and exit
-				{
+                if (!count($rows)) {// Yeah! we reached the end of the posts - finish actions and exit
 					include('./page_header_admin.php');
 					update_config('dbmtnc_rebuild_pos', '-1');
 					update_config('dbmtnc_rebuild_end', '0');
@@ -2677,12 +2680,15 @@ switch($mode_id) {
 				// All posts are indexed for this turn - update Config-Data
 				update_config('dbmtnc_rebuild_pos', $last_post);
 				// OK, all actions are done - send headers
+
                 $template->assignVars(
                     [
                         'META' => '<meta http-equiv="refresh" content="1;url=' . Session::appendSid("admin_db_maintenance.php?mode=perform&amp;function=perform_rebuild&amp;db_state=$db_state") . '">'
                     ]
                 );
+
                 include('./page_header_admin.php');
+
 				ob_end_flush();
 				// Get Statistics
 
@@ -2700,9 +2706,12 @@ switch($mode_id) {
 				
 				echo("<p class=\"gen\">" . sprintf($lang['Indexing_progress'], $posts_indexed, $posts_total, ($posts_indexed / $posts_total) * 100, $last_post) . "</p>\n");
 				echo("<p class=\"gen\"><a href=\"" . Session::appendSid("admin_db_maintenance.php?mode=perform&amp;function=perform_rebuild&amp;db_state=$db_state") . "\">" . $lang['Click_or_wait_to_proceed'] . "</a><br><span class=\"gensmall\">" . $lang['Click_once_warning'] . "</span></p>\n");
+
 				// Send Information about processing time
 				echo('<p class="gensmall">' . sprintf($lang['Processing_time'], getmicrotime() - $timer) . '</p>');
+
 				include('./page_footer_admin.php');
+
 				exit;
 				break;
 			case 'synchronize_post': // Synchronize post data
@@ -2803,6 +2812,7 @@ switch($mode_id) {
 							if (!$list_open) {
 								echo("<p class=\"gen\">" . $lang['Synchronizing_moved_topics'] . ":</p>\n");
 								echo("<font class=\"gen\"><ul>\n");
+
 								$list_open = TRUE;
 							}
 							echo("<li>" . sprintf($lang['Synchronizing_moved_topic'], $row->topic_id, $row->topic_moved_id, htmlspecialchars($row->topic_title)) . "</li>\n");
@@ -3332,11 +3342,10 @@ switch($mode_id) {
 				break;
 			case 'check_db': // Check database
 				echo("<h1>" . $lang['Checking_db'] . "</h1>\n");
-				if ( !check_mysql_version() )
-				{
-					echo("<p class=\"gen\">" . $lang['Old_MySQL_Version'] . "</p>\n");
-					break;
-				}
+                if (!check_mysql_version()) {
+                    echo("<p class=\"gen\">" . $lang['Old_MySQL_Version'] . "</p>\n");
+                    break;
+                }
 				lock_db();
 				echo("<p class=\"gen\"><b>" . $lang['Checking_tables'] . ":</b></p>\n");
 				echo("<font class=\"gen\"><ul>\n");
@@ -3354,7 +3363,7 @@ switch($mode_id) {
 							// Check whether the error results from HEAP-table type
                             $row2 = dibi::query('SHOW TABLE STATUS LIKE %~like~', $tablename)->fetch();
 
-							if ( (isset($row2->Type) && $row2->Type == 'HEAP') || (isset($row2->Engine) && ($row2->Engine == 'HEAP' || $row2->Engine == 'MEMORY')) ) {
+                            if ((isset($row2->Type) && $row2->Type == 'HEAP') || (isset($row2->Engine) && ($row2->Engine == 'HEAP' || $row2->Engine == 'MEMORY'))) {
 								// Table is from HEAP-table type
 								echo("<li>$tablename: " . $lang['Table_HEAP_info'] . "</li>\n");
                             } else {
@@ -3363,19 +3372,27 @@ switch($mode_id) {
 						}
 					}
 				}
+
 				echo("</ul></font>\n");
+
 				$list_open = FALSE;
+
 				lock_db(TRUE);
+
 				break;
 			case 'repair_db': // Repair database
 				echo("<h1>" . $lang['Repairing_db'] . "</h1>\n");
-				if ( !check_mysql_version() ) {
+
+                if (!check_mysql_version()) {
 					echo("<p class=\"gen\">" . $lang['Old_MySQL_Version'] . "</p>\n");
 					break;
 				}
+
 				lock_db();
+
 				echo("<p class=\"gen\"><b>" . $lang['Repairing_tables'] . ":</b></p>\n");
 				echo("<font class=\"gen\"><ul>\n");
+
 				$list_open = TRUE;
 
 				foreach ($tables as $table) {
@@ -3386,12 +3403,11 @@ switch($mode_id) {
                     if ($row) {
                         if ($row->Msg_type == 'status') {
                             echo("<li>$tablename: " . $lang['Table_OK'] . "</li>\n");
-                        }
-						else { //  We got an error
+                        } else { //  We got an error
 							// Check whether the error results from HEAP-table type
                             $row2 = dibi::query('SHOW TABLE STATUS LIKE %~like~', $tablename)->fetch();
 
-							if ( (isset($row2->Type) && $row2->Type == 'HEAP') || (isset($row2->Engine) && ($row2->Engine == 'HEAP' || $row2->Engine == 'MEMORY')) ) {
+                            if ((isset($row2->Type) && $row2->Type == 'HEAP') || (isset($row2->Engine) && ($row2->Engine == 'HEAP' || $row2->Engine == 'MEMORY'))) {
 								// Table is from HEAP-table type
 								echo("<li>$tablename: " . $lang['Table_HEAP_info'] . "</li>\n");
 							} else {
@@ -3426,21 +3442,18 @@ switch($mode_id) {
                     if ($row) {
                         if ($row->Msg_type == 'status') {
                             echo("<li>$tablename: " . $lang['Table_OK'] . "</li>\n");
-                        }
-						else //  We got an error
-						{
-							// Check whether the error results from HEAP-table type
+                        } else {//  We got an error
+                            // Check whether the error results from HEAP-table type
 
                             $row2 = dibi::query('SHOW TABLE STATUS LIKE %~like~', $tablename)->fetch();
 
-							if ( (isset($row2->Type) && $row2->Type == 'HEAP') || (isset($row2->Engine) && ($row2->Engine == 'HEAP' || $row2->Engine == 'MEMORY')) )
-							{
-								// Table is from HEAP-table type
-								echo("<li>$tablename: " . $lang['Table_HEAP_info'] . "</li>\n");
-							} else {
-								echo("<li><b>$tablename:</b> " . htmlspecialchars($row->Msg_text) . "</li>\n");
-							}
-						}
+                            if ((isset($row2->Type) && $row2->Type == 'HEAP') || (isset($row2->Engine) && ($row2->Engine == 'HEAP' || $row2->Engine == 'MEMORY'))) {
+                                // Table is from HEAP-table type
+                                echo("<li>$tablename: " . $lang['Table_HEAP_info'] . "</li>\n");
+                            } else {
+                                echo("<li><b>$tablename:</b> " . htmlspecialchars($row->Msg_text) . "</li>\n");
+                            }
+                        }
 					}
 				}
 				echo("</ul></font>\n");
@@ -3479,11 +3492,14 @@ switch($mode_id) {
 				break;
 			case 'heap_convert': // Convert session table to HEAP
 				echo("<h1>" . $lang['Reset_ai'] . "</h1>\n");
-				if ( !check_mysql_version() ) {
-					echo("<p class=\"gen\">" . $lang['Old_MySQL_Version'] . "</p>\n");
-					break;
-				}
+
+                if (!check_mysql_version()) {
+                    echo("<p class=\"gen\">" . $lang['Old_MySQL_Version'] . "</p>\n");
+                    break;
+                }
+
 				lock_db();
+
 				echo("<p class=\"gen\"><b>" . $lang['Converting_heap'] . "...</b></p>\n");
 
 				// First check for current table size
@@ -3545,18 +3561,17 @@ switch($mode_id) {
         //
 		// OK, let's list the functions
 		//
-
-        for ($i = 0; $i < count($mtnc); $i++) {
-            if (count($mtnc[$i]) && check_condition($mtnc[$i][4])) {
-                if ($mtnc[$i][0] == '--') {
+        foreach ($mtnc as $value) {
+            if (count($value) && check_condition($value[4])) {
+                if ($value[0] === '--') {
                     $template->assignBlockVars('function.spaceRow', []);
                 } else {
                     $template->assignBlockVars('function',
                         [
-                            'FUNCTION_NAME'        => $mtnc[$i][1],
-                            'FUNCTION_DESCRIPTION' => $mtnc[$i][2],
+                            'FUNCTION_NAME'        => $value[1],
+                            'FUNCTION_DESCRIPTION' => $value[2],
 
-                            'U_FUNCTION_URL' => Session::appendSid("admin_db_maintenance.php?mode=start&function=" . $mtnc[$i][0])
+                            'U_FUNCTION_URL' => Session::appendSid("admin_db_maintenance.php?mode=start&function=" . $value[0])
                         ]
                     );
                 }
