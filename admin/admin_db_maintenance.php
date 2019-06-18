@@ -242,38 +242,39 @@ switch($mode_id) {
 				// Version information
 				$mysql_version = dibi::query('SELECT VERSION() AS mysql_version')->fetchSingle();
 
-				$template->assignVars(array(
+                $template->assignVars(
+                    [
                         'PHPBB_VERSION' => '2' . $board_config['version'],
                         'MOD_VERSION'   => DBMTNC_VERSION,
                         'PHP_VERSION'   => phpversion(),
                         'MYSQL_VERSION' => $mysql_version,
 
-                    'L_DBMTNC_TITLE'             => $lang['DB_Maintenance'],
-                    'L_DBMTNC_SUB_TITLE'         => $lang['Statistic_title'],
-                    'L_DB_INFO'                  => $lang['Database_table_info'],
-                    'L_BOARD_STATISTIC'          => $lang['Board_statistic'],
-                    'L_DB_STATISTIC'             => $lang['Database_statistic'],
-                    'L_VERSION_INFO'             => $lang['Version_info'],
-                    'L_NUMBER_POSTS'             => $lang['Number_posts'], // from lang_admin.php
-                    'L_NUMBER_TOPICS'            => $lang['Number_topics'], // from lang_admin.php
-                    'L_NUMBER_USERS'             => $lang['Number_users'], // from lang_admin.php
-                    'L_NUMBER_DEACTIVATED_USERS' => $lang['Thereof_deactivated_users'],
-                    'L_NUMBER_MODERATORS'        => $lang['Thereof_Moderators'],
-                    'L_NUMBER_ADMINISTRATORS'    => $lang['Thereof_Administrators'],
-                    'L_NAME_ADMINISTRATORS'      => $lang['Users_with_Admin_Privileges'],
-                    'L_NUMBER_DB_TABLES'         => $lang['Number_tables'],
-                    'L_NUMBER_DB_RECORDS'        => $lang['Number_records'],
-                    'L_DB_SIZE'                  => $lang['DB_size'],
-                    'L_THEREOF_PHPBB_CORE'       => $lang['Thereof_phpbb_core'],
-                    'L_THEREOF_PHPBB_ADVANCED'   => $lang['Thereof_phpbb_advanced'],
-                    'L_BOARD_VERSION'            => $lang['Version_of_board'],
-                    'L_MOD_VERSION'              => $lang['Version_of_mod'],
-                    'L_PHP_VERSION'              => $lang['Version_of_PHP'],
-                    'L_MYSQL_VERSION'            => $lang['Version_of_MySQL']
-                    )
-				);
+                        'L_DBMTNC_TITLE'             => $lang['DB_Maintenance'],
+                        'L_DBMTNC_SUB_TITLE'         => $lang['Statistic_title'],
+                        'L_DB_INFO'                  => $lang['Database_table_info'],
+                        'L_BOARD_STATISTIC'          => $lang['Board_statistic'],
+                        'L_DB_STATISTIC'             => $lang['Database_statistic'],
+                        'L_VERSION_INFO'             => $lang['Version_info'],
+                        'L_NUMBER_POSTS'             => $lang['Number_posts'], // from lang_admin.php
+                        'L_NUMBER_TOPICS'            => $lang['Number_topics'], // from lang_admin.php
+                        'L_NUMBER_USERS'             => $lang['Number_users'], // from lang_admin.php
+                        'L_NUMBER_DEACTIVATED_USERS' => $lang['Thereof_deactivated_users'],
+                        'L_NUMBER_MODERATORS'        => $lang['Thereof_Moderators'],
+                        'L_NUMBER_ADMINISTRATORS'    => $lang['Thereof_Administrators'],
+                        'L_NAME_ADMINISTRATORS'      => $lang['Users_with_Admin_Privileges'],
+                        'L_NUMBER_DB_TABLES'         => $lang['Number_tables'],
+                        'L_NUMBER_DB_RECORDS'        => $lang['Number_records'],
+                        'L_DB_SIZE'                  => $lang['DB_size'],
+                        'L_THEREOF_PHPBB_CORE'       => $lang['Thereof_phpbb_core'],
+                        'L_THEREOF_PHPBB_ADVANCED'   => $lang['Thereof_phpbb_advanced'],
+                        'L_BOARD_VERSION'            => $lang['Version_of_board'],
+                        'L_MOD_VERSION'              => $lang['Version_of_mod'],
+                        'L_PHP_VERSION'              => $lang['Version_of_PHP'],
+                        'L_MYSQL_VERSION'            => $lang['Version_of_MySQL']
+                    ]
+                );
 
-				$template->pparse("body");
+                $template->pparse("body");
 				break;
 			case 'config': // Configuration
 				if( isset($_POST['submit']) )

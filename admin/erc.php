@@ -20,19 +20,20 @@
 
 define('IN_PHPBB', 1);
 $phpbb_root_path = './../';
-include$phpbb_root_path . 'common.php';
-include$phpbb_root_path . 'includes/functions_dbmtnc.php';
+
+include $phpbb_root_path . 'common.php';
+include $phpbb_root_path . 'includes/functions_dbmtnc.php';
 
 //
 // addslashes to vars if magic_quotes_gpc is off
 // this is a security precaution to prevent someone
 // trying to break out of a SQL statement.
 //
-$mode = isset($_POST['mode']) ? htmlspecialchars($_POST['mode']) : (isset($_GET['mode']) ? htmlspecialchars($_GET['mode']) : 'start');
+$mode   = isset($_POST['mode'])   ? htmlspecialchars($_POST['mode']) : (isset($_GET['mode']) ? htmlspecialchars($_GET['mode']) : 'start');
 $option = isset($_POST['option']) ? htmlspecialchars($_POST['option']) : '';
 
 // Before doing anything else send config.php if requested
-if ( $mode === 'download' ) {
+if ($mode === 'download') {
 	// Get and convert Variables
 	$new_dbms         = isset($_GET['ndbms']) ? $_GET['ndbms'] : '';
 	$new_dbhost       = isset($_GET['ndbh'])  ? $_GET['ndbh']  : '';
@@ -75,11 +76,12 @@ if ( $mode === 'download' ) {
 }
 
 // Load a language if one was selected
-if ( isset($_POST['lg']) || isset($_GET['lg']) ) {
+if (isset($_POST['lg']) || isset($_GET['lg'])) {
 	$lg = isset($_POST['lg']) ? htmlspecialchars($_POST['lg']) : htmlspecialchars($_GET['lg']);
+
 	if ( file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $lg . '/lang_dbmtnc.php')) ) {
-		include$phpbb_root_path . 'language/lang_' . $lg . '/lang_dbmtnc.php';
-		include$phpbb_root_path . 'language/lang_' . $lg . '/lang_main.php';
+		include $phpbb_root_path . 'language/lang_' . $lg . '/lang_dbmtnc.php';
+		include $phpbb_root_path . 'language/lang_' . $lg . '/lang_main.php';
 	} else {
 		$lg = '';
 	}
@@ -91,7 +93,7 @@ if ( isset($_POST['lg']) || isset($_GET['lg']) ) {
 if ($lg === '') {
 	$dirname = 'language';
 	$dir = opendir($phpbb_root_path . $dirname);
-	$lang_list = Array();
+	$lang_list = [];
 
 	while ( $file = readdir($dir) )	{
 		if (preg_match('#^lang_#i', $file) && !is_file(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file)) && !is_link(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file)) && is_file(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file . '/lang_dbmtnc.php'))){
@@ -99,15 +101,17 @@ if ($lg === '') {
 			$lang_list[] = $filename;
 		}
 	}
+
 	closedir($dir);
+
 	if (count($lang_list) === 1) {
 		$lg = $lang_list[0];
-		include$phpbb_root_path . 'language/lang_' . $lg . '/lang_dbmtnc.php';
-		include$phpbb_root_path . 'language/lang_' . $lg . '/lang_main.php';
+		include $phpbb_root_path . 'language/lang_' . $lg . '/lang_dbmtnc.php';
+		include $phpbb_root_path . 'language/lang_' . $lg . '/lang_main.php';
 	} else { // Try to load english language
 		if ( file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_english/lang_dbmtnc.php')) ) {
-			include$phpbb_root_path . 'language/lang_english/lang_dbmtnc.php';
-			include$phpbb_root_path . 'language/lang_english/lang_main.php';
+			include $phpbb_root_path . 'language/lang_english/lang_dbmtnc.php';
+			include $phpbb_root_path . 'language/lang_english/lang_main.php';
 			$mode = 'select_lang';
 		} else {
 			$lang['Forum_Home'] = 'Forum Home';
@@ -160,8 +164,7 @@ hr	{ height: 0px; border: solid #D1D7DC 0px; border-top-width: 1px;}
 <br clear="all" />
 
 <?php
-switch($mode)
-{
+switch($mode) {
 	case 'select_lang':
 ?>
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">

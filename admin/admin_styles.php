@@ -340,7 +340,8 @@ switch ($mode) {
 
 			$s_hidden_fields .= '<input type="hidden" name="mode" value="' . $mode . '" />';
 
-			$template->assignVars(array(
+            $template->assignVars(
+                [
                     'L_THEMES_TITLE'       => $themes_title,
                     'L_THEMES_EXPLAIN'     => $themes_explain,
                     'L_THEME_NAME'         => $lang['Theme_name'],
@@ -462,10 +463,11 @@ switch ($mode) {
 
                     'S_THEME_ACTION'    => Session::appendSid('admin_styles.php'),
                     'S_TEMPLATE_SELECT' => $s_template_select,
-                    'S_HIDDEN_FIELDS'   => $s_hidden_fields)
-			);
-			
-			$template->pparse('body');
+                    'S_HIDDEN_FIELDS'   => $s_hidden_fields
+                ]
+            );
+
+            $template->pparse('body');
 		}
 		break;
 
