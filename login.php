@@ -49,7 +49,7 @@ if (isset($_POST['sid']) || isset($_GET['sid'])) {
 
 if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) || isset($_GET['logout'])) {
 	if (( isset($_POST['login']) || isset($_GET['login']) ) && (!$userdata['session_logged_in'] || isset($_POST['admin']))) {
-        CSRF::validate();
+        CSRF::validatePost();
 
 		$username = isset($_POST['username']) ? phpbb_clean_username($_POST['username']) : '';
 		$password = isset($_POST['password']) ? $_POST['password'] : '';

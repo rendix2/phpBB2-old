@@ -26,6 +26,8 @@ if (!defined('IN_PHPBB')) {
 }
 
 if (isset($_POST['submit'])) {
+    CSRF::validatePost();
+
 	$username = !empty($_POST['username']) ? phpbb_clean_username($_POST['username'])            : '';
 	$email    = !empty($_POST['email'])    ? trim(strip_tags(htmlspecialchars($_POST['email']))) : '';
 
@@ -42,9 +44,6 @@ if (isset($_POST['submit'])) {
     if (!$user->user_active) {
         message_die(GENERAL_MESSAGE, $lang['No_send_account_inactive']);
     }
-
-    $username = $user->username;
-    $user_id  = $user->user_id;
 
     $user_actkey   = gen_rand_string(true);
     $key_len       = 54 - mb_strlen($server_url);
@@ -73,11 +72,11 @@ if (isset($_POST['submit'])) {
     $emailer->assignVars(
         [
             'SITENAME'  => $board_config['sitename'],
-            'USERNAME'  => $username,
+            'USERNAME'  => $user->username,
             'PASSWORD'  => $user_password,
             'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
 
-            'U_ACTIVATE' => $server_url . '?mode=activate&' . POST_USERS_URL . '=' . $user_id . '&act_key=' . $user_actkey
+            'U_ACTIVATE' => $server_url . '?mode=activate&' . POST_USERS_URL . '=' . $user->user_id . '&act_key=' . $user_actkey
         ]
     );
     $emailer->send();
@@ -104,8 +103,10 @@ make_jumpbox('viewforum.php');
 
 $template->assignVars(
     [
-        'USERNAME' => $username,
+        'USERNAME' => $user->username,
         'EMAIL'    => $email,
+
+        'F_LOGIN_FORM_TOKEN' => CSRF::getInputHtml(),
 
         'L_SEND_PASSWORD'  => $lang['Send_password'],
         'L_ITEMS_REQUIRED' => $lang['Items_required'],

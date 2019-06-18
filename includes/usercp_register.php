@@ -98,7 +98,7 @@ if (
 	include $phpbb_root_path . 'includes/functions_post.php';
 
     if ($mode === 'editprofile') {
-        CSRF::validate();
+        CSRF::validatePost();
 
 		$user_id = (int)$_POST['user_id'];
 		$current_email = trim(htmlspecialchars($_POST['current_email']));

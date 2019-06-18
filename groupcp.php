@@ -364,6 +364,8 @@ if (isset($_POST['groupstatus']) && $group_id) {
         }
     }
 
+    CSRF::validateGet();
+
 	//
 	// For security, get the ID of the group moderator.
 	//
@@ -1171,6 +1173,8 @@ if (isset($_POST['groupstatus']) && $group_id) {
                 'L_UNSUBSCRIBE'              => $lang['Unsubscribe'],
                 'L_VIEW_INFORMATION'         => $lang['View_Information'],
 
+                'F_LOGIN_FORM_TOKEN' => CSRF::getInputHtml(),
+
                 'S_USERGROUP_ACTION' => Session::appendSid('groupcp.php'),
                 'S_HIDDEN_FIELDS'    => $s_hidden_fields,
 
@@ -1182,7 +1186,6 @@ if (isset($_POST['groupstatus']) && $group_id) {
 
         $template->pparse('user');
 	} else{
-	    bdump('c');
 		message_die(GENERAL_MESSAGE, $lang['No_groups_exist']);
 	}
 }

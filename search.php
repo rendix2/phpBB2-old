@@ -125,6 +125,8 @@ if ($mode === 'searchuser') {
     //
     // This handles the simple windowed user search functions called from various other scripts
     //
+    CSRF::validatePost();
+
     if (isset($_POST['search_username'])) {
         username_search($_POST['search_username']);
     } else {
@@ -135,6 +137,8 @@ if ($mode === 'searchuser') {
 } elseif ($search_keywords !== '' || $search_author !== '' || $search_id) {
     $split_search = [];
     $search_results = '';
+
+    CSRF::validatePost();
 
 	//
 	// Search ID Limiter, decrease this value if you experience further timeout problems with searching forums
@@ -1148,6 +1152,8 @@ if ($mode === 'searchuser') {
 		message_die(GENERAL_MESSAGE, $lang['No_search_match']);
 	}
 }
+
+$template->assignVars(['F_LOGIN_FORM_TOKEN' => CSRF::getInputHtml()]);
 
 //
 // Search forum

@@ -15,7 +15,7 @@ class CSRF
     /**
      * @return bool
      */
-    public static function checkToken()
+    public static function checkPostToken()
     {
         if (!isset($_POST[self::TOKEN_NAME])) {
             return false;
@@ -29,13 +29,43 @@ class CSRF
     }
 
     /**
+     * @return bool
+     */
+    public static function checkGetToken()
+    {
+        if (!isset($_GET[self::TOKEN_NAME])) {
+            return false;
+        }
+
+        if (!isset($_SESSION[self::TOKEN_NAME])) {
+            return false;
+        }
+
+        return $_GET[self::TOKEN_NAME] === $_SESSION[self::TOKEN_NAME];
+    }
+
+    /**
      * @return void
      */
-    public static function validate()
+    public static function validatePost()
     {
         global $lang;
 
-        if (!self::checkToken()) {
+        if (!self::checkPostToken()) {
+            message_die(GENERAL_MESSAGE, $lang['Session_invalid']);
+        }
+
+        self::resetSession();
+    }
+
+    /**
+     * @return void
+     */
+    public static function validateGet()
+    {
+        global $lang;
+
+        if (!self::checkGetToken()) {
             message_die(GENERAL_MESSAGE, $lang['Session_invalid']);
         }
 

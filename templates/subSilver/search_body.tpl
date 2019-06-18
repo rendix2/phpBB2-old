@@ -48,7 +48,10 @@
 	<tr> 
 		<td align="right" valign="middle"><span class="gensmall">{S_TIMEZONE}</span></td>
 	</tr>
-</table></form>
+</table>
+
+	{F_LOGIN_FORM_TOKEN}
+</form>
 
 <table width="100%" border="0">
 	<tr>
