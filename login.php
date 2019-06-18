@@ -49,6 +49,8 @@ if (isset($_POST['sid']) || isset($_GET['sid'])) {
 
 if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) || isset($_GET['logout'])) {
 	if (( isset($_POST['login']) || isset($_GET['login']) ) && (!$userdata['session_logged_in'] || isset($_POST['admin']))) {
+        CSRF::validate();
+
 		$username = isset($_POST['username']) ? phpbb_clean_username($_POST['username']) : '';
 		$password = isset($_POST['password']) ? $_POST['password'] : '';
 
@@ -223,6 +225,8 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
         $template->assignVars(
             [
                 'USERNAME' => $username,
+
+                'F_LOGIN_FORM_TOKEN' => CSRF::getInputHtml(),
 
                 'L_ENTER_PASSWORD' => isset($_GET['admin']) ? $lang['Admin_reauthenticate'] : $lang['Enter_password'],
                 'L_SEND_PASSWORD'  => $lang['Forgotten_password'],

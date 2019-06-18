@@ -91,6 +91,8 @@
 			  		<!-- END switch_allow_autologin -->
 
 					<input type="submit" class="mainoption" name="login" value="{L_LOGIN}"/>
+
+					{F_LOGIN_FORM_TOKEN}
 				</span>
 			</td>
 		</tr>

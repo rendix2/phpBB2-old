@@ -285,6 +285,8 @@ $template->assignVars(
         'FORUM_NEW_IMG'    => $images['forum_new'],
         'FORUM_LOCKED_IMG' => $images['forum_locked'],
 
+        'F_LOGIN_FORM_TOKEN' => CSRF::getInputHtml(),
+
         'L_FORUM'               => $lang['Forum'],
         'L_TOPICS'              => $lang['Topics'],
         'L_REPLIES'             => $lang['Replies'],
