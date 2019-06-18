@@ -171,6 +171,9 @@ if (defined('SHOW_ONLINE')) {
 		dibi::update(CONFIG_TABLE, ['config_value' => $board_config['record_online_date']])
             ->where('config_name = %s', 'record_online_date')
             ->execute();
+
+        $cache = new \Nette\Caching\Cache($storage, CONFIG_TABLE);
+        $cache->remove(CONFIG_TABLE);
 	}
 
     if ($totalOnlineUsers === 0) {

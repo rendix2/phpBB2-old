@@ -725,6 +725,9 @@ switch($mode) {
 						dibi::insert(CONFIG_TABLE, ['config_name' => $key, 'config_value' => $value])->execute();
 					}
 				}
+
+				$cache = new \Nette\Caching\Cache($storage, CONFIG_TABLE);
+                $cache->remove(CONFIG_TABLE);
 ?>
 	</ul>
 <?php
@@ -766,6 +769,9 @@ switch($mode) {
 				        ->execute();
 				}
 
+                $cache = new \Nette\Caching\Cache($storage, CONFIG_TABLE);
+                $cache->remove(CONFIG_TABLE);
+
 				success_message($lang['rpd_success']);
 				break;
 			case 'rcd': // Reset cookie data
@@ -787,6 +793,9 @@ switch($mode) {
 				->where('config_name = %s', 'cookie_path')
 				->execute();
 
+				$cache = new \Nette\Caching\Cache($storage, CONFIG_TABLE);
+                $cache->remove(CONFIG_TABLE);
+
 				success_message($lang['rcd_success']);
 				break;
 			case 'rld': // Reset language data
@@ -804,6 +813,9 @@ switch($mode) {
 				    dibi::update(CONFIG_TABLE, ['config_value' => $new_lang])
 				        ->where('config_name = %s', 'default_lang')
 				        ->execute();
+
+				    $cache = new \Nette\Caching\Cache($storage, CONFIG_TABLE);
+                    $cache->remove(CONFIG_TABLE);
 
 					success_message($lang['rld_success']);
 				} else {
@@ -894,6 +906,9 @@ switch($mode) {
 				    ->where('config_name = %s', 'default_style')
 				    ->execute();
 
+				    $cache = new \Nette\Caching\Cache($storage, CONFIG_TABLE);
+                    $cache->remove(CONFIG_TABLE);
+
 					success_message($lang['rtd_success']);
 				}
 				break;
@@ -903,6 +918,9 @@ switch($mode) {
 				dibi::update(CONFIG_TABLE, ['config_value' => 0])
 				->where('config_name = %s', 'gzip_compress')
 				->execute();
+
+				$cache = new \Nette\Caching\Cache($storage, CONFIG_TABLE);
+                $cache->remove(CONFIG_TABLE);
 
 				success_message($lang['dgc_success']);
 				break;

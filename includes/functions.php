@@ -74,6 +74,7 @@ function phpbb_clean_username($username)
 function dss_rand()
 {
 	global $board_config, $dss_seeded;
+	global $storage;
 
 	$val = $board_config['rand_seed'] . microtime();
 	$val = md5($val);
@@ -83,6 +84,9 @@ function dss_rand()
         dibi::update(CONFIG_TABLE, ['config_value' => $board_config['rand_seed']])
             ->where('config_name = %s', 'rand_seed')
             ->execute();
+
+        $cache = new \Nette\Caching\Cache($storage, CONFIG_TABLE);
+        $cache->remove(CONFIG_TABLE);
 
         $dss_seeded = true;
     }
@@ -206,6 +210,7 @@ function init_userprefs($userdata)
 	global $board_config, $theme, $images;
 	global $template, $lang, $phpbb_root_path;
 	global $nav_links;
+	global $storage;
 
     $default_lang = '';
 
@@ -253,6 +258,9 @@ function init_userprefs($userdata)
         dibi::update(CONFIG_TABLE, ['config_value' => $default_lang])
             ->where('config_name = %s', 'default_lang')
             ->execute();
+
+        $cache = new \Nette\Caching\Cache($storage, CONFIG_TABLE);
+        $cache->remove(CONFIG_TABLE);
 	}
 
 	$board_config['default_lang'] = $default_lang;

@@ -181,10 +181,14 @@ sort($tables);
 function update_config($name, $value)
 {
 	global $board_config;
+	global $storage;
 
     dibi::update(CONFIG_TABLE, ['config_value' => $value])
         ->where('config_name = %s', $name)
         ->execute();
+
+    $cache = new \Nette\Caching\Cache($storage, CONFIG_TABLE);
+    $cache->remove(CONFIG_TABLE);
 
 	$board_config[$name] = $value;
 }

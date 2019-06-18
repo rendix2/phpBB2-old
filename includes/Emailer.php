@@ -240,6 +240,7 @@ class Emailer
 	public function send()
 	{
 		global $board_config, $lang, $phpbb_root_path;
+		global $storage;
 
     	// Escape all quotes, else the eval will fail.
 		$this->msg = str_replace ("'", "\'", $this->msg);
@@ -306,6 +307,9 @@ class Emailer
 				dibi::update(CONFIG_TABLE, ['config_value' => 1])
                     ->where('config_name =  %s', 'sendmail_fix')
                     ->execute();
+
+                $cache = new \Nette\Caching\Cache($storage, CONFIG_TABLE);
+                $cache->remove(CONFIG_TABLE);
 
 				$board_config['sendmail_fix'] = 1;
 				$result = @mail($to, $this->subject, preg_replace("#(?<!\r)\n#s", "\n", $this->msg), $this->extra_headers);

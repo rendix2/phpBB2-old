@@ -2317,6 +2317,10 @@ switch($mode_id) {
                             ->execute();
                     }
                 }
+
+                $cache = new \Nette\Caching\Cache($storage, CONFIG_TABLE);
+                $cache->remove(CONFIG_TABLE);
+
                 if ($list_open) {
                     echo("</ul></font>\n");
                     $list_open = false;
@@ -2530,18 +2534,23 @@ switch($mode_id) {
                     // Try to set unlimited execution time
                     @set_time_limit(0);
                 }
+
 				if ($execution_time === FALSE) {
 					$execution_time = 30; // Asume 30 if an error occurs
 				}
+
 				// Calculate posts to process
 				$posts_to_index = intval(($execution_time - 5) * (($php_ver == 4) ? $board_config['dbmtnc_rebuildcfg_php4pps'] : $board_config['dbmtnc_rebuildcfg_php3pps']));
+
 				if ($posts_to_index < $board_config['dbmtnc_rebuildcfg_minposts']) {
 					$posts_to_index = $board_config['dbmtnc_rebuildcfg_minposts'];
 				}
+
 				// Check whether a special limit was set
                 if (intval($board_config['dbmtnc_rebuildcfg_timeoverwrite']) != 0) {
                     $posts_to_index = intval($board_config['dbmtnc_rebuildcfg_timeoverwrite']);
                 }
+
 				// We have all data so get the post information
 				$rows = dibi::select(['post_id', 'post_subject', 'post_text'])
 					->from(POSTS_TEXT_TABLE)
