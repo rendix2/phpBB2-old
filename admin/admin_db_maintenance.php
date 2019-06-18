@@ -58,11 +58,11 @@ include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/
 //
 // Set up variables and constants
 //
-$function = ( isset($_GET['function']) ) ? htmlspecialchars(trim( $_GET['function'] )) : '';
-$mode_id = ( isset($_GET['mode']) ) ? htmlspecialchars(trim( $_GET['mode'] )) : '';
+$function = isset($_GET['function']) ? htmlspecialchars(trim($_GET['function'])) : '';
+$mode_id  = isset($_GET['mode'])     ? htmlspecialchars(trim($_GET['mode']))     : '';
 // Check for parameters
-reset ($config_data);
-while (list(, $value) = each($config_data)) {
+
+foreach ($config_data as $value) {
     if (!isset($board_config[$value])) {
         message_die(GENERAL_MESSAGE, sprintf($lang['Incomplete_configuration'], $value));
     }
@@ -116,9 +116,11 @@ switch($mode_id) {
 			$s_hidden_fields = '<input type="hidden" name="mode" value="perform" />';
 			$s_hidden_fields .= '<input type="hidden" name="function" value="' . $function . '" />';
 
-			$template->setFileNames(array(
-				'body' => 'admin/dbmtnc_confirm_body.tpl')
-			);
+            $template->setFileNames(
+                [
+                    'body' => 'admin/dbmtnc_confirm_body.tpl'
+                ]
+            );
 
             $template->assignVars(
                 [
@@ -2674,10 +2676,12 @@ switch($mode_id) {
 				// All posts are indexed for this turn - update Config-Data
 				update_config('dbmtnc_rebuild_pos', $last_post);
 				// OK, all actions are done - send headers
-				$template->assignVars(array(
-					'META' => '<meta http-equiv="refresh" content="1;url=' . Session::appendSid("admin_db_maintenance.php?mode=perform&amp;function=perform_rebuild&amp;db_state=$db_state") . '">')
-				);
-				include('./page_header_admin.php');
+                $template->assignVars(
+                    [
+                        'META' => '<meta http-equiv="refresh" content="1;url=' . Session::appendSid("admin_db_maintenance.php?mode=perform&amp;function=perform_rebuild&amp;db_state=$db_state") . '">'
+                    ]
+                );
+                include('./page_header_admin.php');
 				ob_end_flush();
 				// Get Statistics
 
@@ -3546,13 +3550,15 @@ switch($mode_id) {
                 if ($mtnc[$i][0] == '--') {
                     $template->assignBlockVars('function.spaceRow', []);
                 } else {
-                    $template->assignBlockVars('function', array(
-						'FUNCTION_NAME' => $mtnc[$i][1],
-						'FUNCTION_DESCRIPTION' => $mtnc[$i][2],
+                    $template->assignBlockVars('function',
+                        [
+                            'FUNCTION_NAME'        => $mtnc[$i][1],
+                            'FUNCTION_DESCRIPTION' => $mtnc[$i][2],
 
-						'U_FUNCTION_URL' => Session::appendSid("admin_db_maintenance.php?mode=start&function=" . $mtnc[$i][0]))
-					);
-				}
+                            'U_FUNCTION_URL' => Session::appendSid("admin_db_maintenance.php?mode=start&function=" . $mtnc[$i][0])
+                        ]
+                    );
+                }
 			}
 		}
 

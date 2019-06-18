@@ -41,7 +41,7 @@ if ( $mode === 'download' ) {
 	$new_dbpasswd     = isset($_GET['ndbp'])  ? $_GET['ndbp']  : '';
 	$new_table_prefix = isset($_GET['ntp'])   ? $_GET['ntp']   : '';
 
-	$var_array = array('new_dbms', 'new_dbhost', 'new_dbname', 'new_dbuser', 'new_dbpasswd', 'new_table_prefix');
+	$var_array = ['new_dbms', 'new_dbhost', 'new_dbname', 'new_dbuser', 'new_dbpasswd', 'new_table_prefix'];
 
 	foreach ($var_array as $var) {
 		$$var = stripslashes($$var);
@@ -537,29 +537,21 @@ switch($mode)
 <?php
 				break;
 			case 'rcp': // Recreate config.php
-				$available_dbms = array(
-					'mysql'=> array(
-						'LABEL'			=> 'MySQL 3.x'
-					), 
-					'mysql4' => array(
-						'LABEL'			=> 'MySQL 4.x'
-					), 
-					'postgres' => array(
-						'LABEL'			=> 'PostgreSQL 7.x'
-					), 
-					'mssql' => array(
-						'LABEL'			=> 'MS SQL Server 7/2000'
-					),
-					'msaccess' => array(
-						'LABEL'			=> 'MS Access [ ODBC ]'
-					),
-					'mssql-odbc' =>	array(
-						'LABEL'			=> 'MS SQL Server [ ODBC ]'
-					));
+				$available_dbms = [
+					'mysql'      => ['LABEL'=> 'MySQL 3.x'],
+					'mysql4'     => ['LABEL'=> 'MySQL 4.x'],
+					'postgres'   => ['LABEL'=> 'PostgreSQL 7.x'],
+					'mssql'      => ['LABEL'=> 'MS SQL Server 7/2000'],
+					'msaccess'   => ['LABEL'=> 'MS Access [ ODBC ]'],
+					'mssql-odbc' =>	['LABEL'=> 'MS SQL Server [ ODBC ]']
+				];
+
 				$dbms_select = '<select name="new_dbms">';
-				while (list($dbms_name, $details) = @each($available_dbms)) {
+
+				foreach ($available_dbms as $dbms_name => $details) {
 					$dbms_select .= '<option value="' . $dbms_name . '">' . $details['LABEL'] . '</option>';
 				}
+
 				$dbms_select .= '</select>';
 
 ?>
@@ -1040,7 +1032,7 @@ switch($mode)
 				break;
 			case 'rcp': // Recreate config.php
 				// Get Variables
-				$var_array = array('new_dbms', 'new_dbhost', 'new_dbname', 'new_dbuser', 'new_dbpasswd', 'new_table_prefix');
+				$var_array = ['new_dbms', 'new_dbhost', 'new_dbname', 'new_dbuser', 'new_dbpasswd', 'new_table_prefix'];
 
 				foreach ($var_array as $var) {
 					$$var = isset($_POST[$var]) ? stripslashes($_POST[$var]) : '';

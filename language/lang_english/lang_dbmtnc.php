@@ -70,131 +70,175 @@ $lang['New_poster_name'] = 'Restored post'; // Name for Poster of a restored pos
 // Usage: $mtnc[] = array(internal Name, Name of Function, Description of Function, Warning Message (leef empty to avoid), Number of Check function (Integer))
 // Use $mtnc[] = array('--', '', '', '', 0) for a space row (you can us a different check function)
 //
-$mtnc[] = array('statistic',
+$mtnc[] = [
+	'statistic',
 	'Statistics',
 	'Shows information about the board and the database.',
 	'',
-	0);
-$mtnc[] = array('config',
+	0
+];
+$mtnc[] = [
+	'config',
 	'Configuration',
 	'Allows the configuration of DB Maintenance.',
 	'',
-	5);
-$mtnc[] = array('--', '', '', '', 0);
-$mtnc[] = array('check_user',
+	5
+];
+$mtnc[] = ['--', '', '', '', 0];
+$mtnc[] = [
+	'check_user',
 	'Check user and group tables',
 	'This will check the user and the group tables for errors and will restore missing single user groups.',
 	'You will loose all groups without any member by this action. Proceed?',
-	0);
-$mtnc[] = array('check_post',
+	0
+];
+$mtnc[] = [
+	'check_post',
 	'Check post and topic tables',
 	'This will check the post and the topic tables for errors.',
 	'You will loose all posts without any text. Proceed?',
-	0);
-$mtnc[] = array('check_vote',
+	0
+];
+$mtnc[] = [
+	'check_vote',
 	'Check vote tables',
 	'This will check the vote tables for errors.',
 	'You will loose all vote data without a corresponding vote. Proceed?',
-	0);
-$mtnc[] = array('check_pm',
+	0
+];
+$mtnc[] = [
+	'check_pm',
 	'Check private message tables',
 	'This will check the private messages tables for errors.',
 	'Unread messages will be deleted when either the sender or the recipient do not exist. Proceed?',
-	0);
-$mtnc[] = array('check_config',
+	0
+];
+$mtnc[] = [
+	'check_config',
 	'Check configuration table',
 	'This will check the configuration table for missing entries.',
 	'',
-	0);
-$mtnc[] = array('--', '', '', '', 0);
-$mtnc[] = array('check_search_wordmatch',
+	0
+];
+$mtnc[] = ['--', '', '', '', 0];
+$mtnc[] = [
+	'check_search_wordmatch',
 	'Check search word match table',
 	'This will check the word match table for errors. This table is used for the search function.',
 	'',
-	0);
-$mtnc[] = array('check_search_wordlist',
+	0
+];
+$mtnc[] = [
+	'check_search_wordlist',
 	'Check search word list table',
 	'This will remove all unnecessary words in the word list used for search.',
 	'This function may take some time to execute. It is not necessary to perform this check but doing so may reduce database size a bit. Proceed?',
-	0);
-$mtnc[] = array('--', '', '', '', 0);
-$mtnc[] = array('synchronize_post',
+	0
+];
+$mtnc[] = ['--', '', '', '', 0];
+$mtnc[] = [
+	'synchronize_post',
 	'Synchronize forums and topics',
 	'This will synchronize the post counters and the post data in the forums and topics.',
 	'This command will take some ammount of time to complete. If your server does not allow the usage of the set_time_limit() command, this command may be interruped by PHP. No data will get lost by this but some data may not be updated. Proceed?',
-	0);
-$mtnc[] = array('synchronize_user',
+	0
+];
+$mtnc[] = [
+	'synchronize_user',
 	'Synchronize user counters',
 	'This will synchronize the post and topic counters for the users.',
 	'<b>Attention:</b> pruned posts are normaly not substracted from the post counter. When running this command, the pruned posts will be substracted from the counter and cannot be restored. Proceed?',
-	6);
-$mtnc[] = array('synchronize_mod_state',
+	6
+];
+$mtnc[] = [
+	'synchronize_mod_state',
 	'Synchronize moderator status',
 	'This will resync the moderator status in the user table.',
 	'',
-	0);
-$mtnc[] = array('--', '', '', '', 0);
-$mtnc[] = array('reset_date',
+	0
+];
+$mtnc[] = ['--', '', '', '', 0];
+$mtnc[] = [
+	'reset_date',
 	'Reset dates in future',
 	'This will reset the last post data if it is in the future. This will solve issues where users get a message that they are not allowed to make another post so soon after the last one. This check also involves the user and the search table.',
 	'Any time of a post and any login attempt in the future will be set to the current time. Search result with a future timestamp will be deleted. Proceed?',
-	0);
-$mtnc[] = array('reset_sessions',
+	0
+];
+$mtnc[] = [
+	'reset_sessions',
 	'Reset all sessions',
 	'This will reset all current sessions by emptying the session table.',
 	'All currently active users will loose their session and their search results. Proceed?',
-	0);
-$mtnc[] = array('--', '', '', '', 8);
-$mtnc[] = array('rebuild_search_index',
+	0
+];
+$mtnc[] = ['--', '', '', '', 8];
+$mtnc[] = [
+	'rebuild_search_index',
 	'Rebuild search index',
 	'This function will rebuild the index used for searching. You won\'t need this function under normal conditions.',
 	'This will delete the complete search index and rebuild it. It can take up to several hours to complete this task. The board will not be accessible during this time. Proceed?',
-	7);
-$mtnc[] = array('proceed_rebuilding',
+	7
+];
+$mtnc[] = [
+	'proceed_rebuilding',
 	'Restart rebuilding',
 	'Use this function if recreation of the search index was interrupted.',
 	'',
-	4);
-$mtnc[] = array('--', '', '', '', 1);
-$mtnc[] = array('check_db',
+	4
+];
+$mtnc[] = ['--', '', '', '', 1];
+$mtnc[] = [
+	'check_db',
 	'Check database',
 	'Checks the database for errors.',
 	'',
-	1);
-$mtnc[] = array('optimize_db',
+	1
+];
+$mtnc[] = [
+	'optimize_db',
 	'Optimize database',
 	'Optimizes the tables. This will reduce the database size after deleting lots of records and so on.',
 	'',
-	1);
-$mtnc[] = array('repair_db',
+	1
+];
+$mtnc[] = [
+	'repair_db',
 	'Repair database',
 	'Fixes the database when an error is found.',
 	'You only should perform this action if an error is reported when checking the database. Proceed?',
-	1);
-$mtnc[] = array('--', '', '', '', 0);
-$mtnc[] = array('reset_auto_increment',
+	1
+];
+$mtnc[] = ['--', '', '', '', 0];
+$mtnc[] = [
+	'reset_auto_increment',
 	'Reset auto increment values',
 	'This function resets the auto increment values. This should only be performed if there seems to be a problem when inserting new data in the tables.',
 	'Do you realy want to reset the auto increment values? No data will get lost but this function only should be used if neccessary.',
-	0);
-$mtnc[] = array('heap_convert',
+	0
+];
+$mtnc[] = [
+	'heap_convert',
 	'Convert Session-Table',
 	'This function converts the session-table to HEAP table type. This normaly will be done during installation and speed up phpBB a bit. You should use this function if your session-table is not of the HEAP table type.',
 	'Do you realy want to convert the table?',
-	2);
-$mtnc[] = array('--', '', '', '', 3);
-$mtnc[] = array('unlock_db',
+	2
+];
+$mtnc[] = ['--', '', '', '', 3];
+$mtnc[] = [
+	'unlock_db',
 	'Unlock the board',
 	'Use this function if you got an error during an opperation done before and the board is still locked.',
 	'',
-	3);
+	3
+];
 
 //
 // Function specific vars
 //
 
 // statistic
-$lang['Statistic_title'] = 'Board and database statistics';
+$lang['Statistic_title']     = 'Board and database statistics';
 $lang['Database_table_info'] = 'Database statistics will deliver three different values: these for all tables of the database, these of all
 	tables deliverd by phpBB by default (core tables) and these starting with the prefix of the board tables (advanced tables).';
 $lang['Board_statistic'] = 'Board statistics';

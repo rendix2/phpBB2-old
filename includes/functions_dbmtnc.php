@@ -19,85 +19,128 @@
  ***************************************************************************/
 
 // List of tables used
-$tables = array('auth_access', 'banlist', 'categories', 'config', 'disallow', 'forums', 'forum_prune', 'groups', 'posts', 'posts_text', 'privmsgs', 'privmsgs_text', 'ranks', 'search_results', 'search_wordlist', 'search_wordmatch', 'sessions', 'smilies', 'themes', 'themes_name', 'topics', 'topics_watch', 'user_group', 'users', 'vote_desc', 'vote_results', 'vote_voters', 'words');
+$tables = [
+    'auth_access',
+    'banlist',
+    'categories',
+    'config',
+    'disallow',
+    'forums',
+    'forum_prune',
+    'groups',
+    'posts',
+    'posts_text',
+    'privmsgs',
+    'privmsgs_text',
+    'ranks',
+    'search_results',
+    'search_wordlist',
+    'search_wordmatch',
+    'sessions',
+    'smilies',
+    'themes',
+    'themes_name',
+    'topics',
+    'topics_watch',
+    'user_group',
+    'users',
+    'vote_desc',
+    'vote_results',
+    'vote_voters',
+    'words'
+];
+
 // List of configuration data required
-$config_data = array('dbmtnc_disallow_postcounter', 'dbmtnc_disallow_rebuild', 'dbmtnc_rebuildcfg_maxmemory', 'dbmtnc_rebuildcfg_minposts', 'dbmtnc_rebuildcfg_php3only', 'dbmtnc_rebuildcfg_php3pps', 'dbmtnc_rebuildcfg_php4pps', 'dbmtnc_rebuildcfg_timeoverwrite', 'dbmtnc_rebuildcfg_timelimit', 'dbmtnc_rebuild_end', 'dbmtnc_rebuild_pos');
+$config_data = [
+    'dbmtnc_disallow_postcounter',
+    'dbmtnc_disallow_rebuild',
+    'dbmtnc_rebuildcfg_maxmemory',
+    'dbmtnc_rebuildcfg_minposts',
+    'dbmtnc_rebuildcfg_php3only',
+    'dbmtnc_rebuildcfg_php3pps',
+    'dbmtnc_rebuildcfg_php4pps',
+    'dbmtnc_rebuildcfg_timeoverwrite',
+    'dbmtnc_rebuildcfg_timelimit',
+    'dbmtnc_rebuild_end',
+    'dbmtnc_rebuild_pos'
+];
+
 // Default configuration records - from installation file
-$default_config = array(
-	'config_id' => '1',
-	'board_disable' => '0',
-	'sitename' => 'yourdomain.com',
-	'site_desc' => 'A _little_ text to describe your forum',
-	'cookie_name' => 'phpbb2mysql',
-	'cookie_path' => '/',
-	'cookie_domain' => '',
-	'cookie_secure' => '0',
-	'session_length' => '3600',
-	'allow_html' => '0',
-	'allow_html_tags' => 'b,i,u,pre',
-	'allow_bbcode' => '1',
-	'allow_smilies' => '1',
-	'allow_sig' => '1',
-	'allow_namechange' => '0',
-	'allow_theme_create' => '0',
-	'allow_avatar_local' => '0',
-	'allow_avatar_remote' => '0',
-	'allow_avatar_upload' => '0',
-	'enable_confirm' => '0',
-	'override_user_style' => '0',
-	'posts_per_page' => '15',
-	'topics_per_page' => '50',
-	'hot_threshold' => '25',
-	'max_poll_options' => '10',
-	'max_sig_chars' => '255',
-	'max_inbox_privmsgs' => '50',
-	'max_sentbox_privmsgs' => '25',
-	'max_savebox_privmsgs' => '50',
-	'board_email_sig' => 'Thanks, The Management',
-	'board_email' => 'youraddress@yourdomain.com',
-	'smtp_delivery' => '0',
-	'smtp_host' => '',
-	'smtp_username' => '',
-	'smtp_password' => '',
-	'sendmail_fix' => '0',
-	'require_activation' => '0',
-	'flood_interval' => '15',
-	'board_email_form' => '0',
-	'avatar_filesize' => '6144',
-	'avatar_max_width' => '80',
-	'avatar_max_height' => '80',
-	'avatar_path' => 'images/avatars',
-	'avatar_gallery_path' => 'images/avatars/gallery',
-	'smilies_path' => 'images/smiles',
-	'default_style' => '1',
-	'default_dateformat' => 'D M d, Y g:i a',
-	'board_timezone' => '0',
-	'prune_enable' => '1',
-	'privmsg_disable' => '0',
-	'gzip_compress' => '0',
-	'coppa_fax' => '',
-	'coppa_mail' => '',
-	'record_online_users' => '0',
-	'record_online_date' => '0',
-	'server_name' => 'www.myserver.tld',
-	'server_port' => '80',
-	'script_path' => '/phpBB2/',
-	'version' => '.0.0',
-	'default_lang' => 'english',
-	'board_startdate' => '0',
-	// DB Maintenance specific entries
-	'dbmtnc_rebuild_end' => '0',
-	'dbmtnc_rebuild_pos' => '-1',
-	'dbmtnc_rebuildcfg_maxmemory' => '500',
-	'dbmtnc_rebuildcfg_minposts' => '3',
-	'dbmtnc_rebuildcfg_php3only' => '0',
-	'dbmtnc_rebuildcfg_php3pps' => '1',
-	'dbmtnc_rebuildcfg_php4pps' => '8',
-	'dbmtnc_rebuildcfg_timelimit' => '240',
-	'dbmtnc_rebuildcfg_timeoverwrite' => '0',
-	'dbmtnc_disallow_postcounter' => '0',
-	'dbmtnc_disallow_rebuild' => '0'
-);
+$default_config = [
+    'config_id'                       => '1',
+    'board_disable'                   => '0',
+    'sitename'                        => 'yourdomain.com',
+    'site_desc'                       => 'A _little_ text to describe your forum',
+    'cookie_name'                     => 'phpbb2mysql',
+    'cookie_path'                     => '/',
+    'cookie_domain'                   => '',
+    'cookie_secure'                   => '0',
+    'session_length'                  => '3600',
+    'allow_html'                      => '0',
+    'allow_html_tags'                 => 'b,i,u,pre',
+    'allow_bbcode'                    => '1',
+    'allow_smilies'                   => '1',
+    'allow_sig'                       => '1',
+    'allow_namechange'                => '0',
+    'allow_theme_create'              => '0',
+    'allow_avatar_local'              => '0',
+    'allow_avatar_remote'             => '0',
+    'allow_avatar_upload'             => '0',
+    'enable_confirm'                  => '0',
+    'override_user_style'             => '0',
+    'posts_per_page'                  => '15',
+    'topics_per_page'                 => '50',
+    'hot_threshold'                   => '25',
+    'max_poll_options'                => '10',
+    'max_sig_chars'                   => '255',
+    'max_inbox_privmsgs'              => '50',
+    'max_sentbox_privmsgs'            => '25',
+    'max_savebox_privmsgs'            => '50',
+    'board_email_sig'                 => 'Thanks, The Management',
+    'board_email'                     => 'youraddress@yourdomain.com',
+    'smtp_delivery'                   => '0',
+    'smtp_host'                       => '',
+    'smtp_username'                   => '',
+    'smtp_password'                   => '',
+    'sendmail_fix'                    => '0',
+    'require_activation'              => '0',
+    'flood_interval'                  => '15',
+    'board_email_form'                => '0',
+    'avatar_filesize'                 => '6144',
+    'avatar_max_width'                => '80',
+    'avatar_max_height'               => '80',
+    'avatar_path'                     => 'images/avatars',
+    'avatar_gallery_path'             => 'images/avatars/gallery',
+    'smilies_path'                    => 'images/smiles',
+    'default_style'                   => '1',
+    'default_dateformat'              => 'D M d, Y g:i a',
+    'board_timezone'                  => '0',
+    'prune_enable'                    => '1',
+    'privmsg_disable'                 => '0',
+    'gzip_compress'                   => '0',
+    'coppa_fax'                       => '',
+    'coppa_mail'                      => '',
+    'record_online_users'             => '0',
+    'record_online_date'              => '0',
+    'server_name'                     => 'www.myserver.tld',
+    'server_port'                     => '80',
+    'script_path'                     => '/phpBB2/',
+    'version'                         => '.0.0',
+    'default_lang'                    => 'english',
+    'board_startdate'                 => '0',
+    // DB Maintenance specific entries
+    'dbmtnc_rebuild_end'              => '0',
+    'dbmtnc_rebuild_pos'              => '-1',
+    'dbmtnc_rebuildcfg_maxmemory'     => '500',
+    'dbmtnc_rebuildcfg_minposts'      => '3',
+    'dbmtnc_rebuildcfg_php3only'      => '0',
+    'dbmtnc_rebuildcfg_php3pps'       => '1',
+    'dbmtnc_rebuildcfg_php4pps'       => '8',
+    'dbmtnc_rebuildcfg_timelimit'     => '240',
+    'dbmtnc_rebuildcfg_timeoverwrite' => '0',
+    'dbmtnc_disallow_postcounter'     => '0',
+    'dbmtnc_disallow_rebuild'         => '0'
+];
 // append data added in later versions
 if (isset($board_config) && isset($board_config['version'])) {
     $phpbb_version = explode('.', substr($board_config['version'], 1));
@@ -628,8 +671,9 @@ function language_select($default, $select_name = 'language', $file_to_check = '
 
 	$dir = opendir($phpbb_root_path . $dirname);
 
-	$lg = array();
-	while ( $file = readdir($dir) ) {
+    $lg = [];
+
+    while ($file = readdir($dir)) {
 		if (preg_match('#^lang_#i', $file) && !is_file(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file)) && !is_link(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file)) && is_file(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file . '/lang_' . $file_to_check . '.' . $phpEx)) ) {
 			$filename = trim(str_replace('lang_', '', $file));
 			$displayname = preg_replace('/^(.*?)_(.*)$/', "\\1 [ \\2 ]", $filename);
@@ -643,10 +687,10 @@ function language_select($default, $select_name = 'language', $file_to_check = '
 	@asort($lg);
 	@reset($lg);
 
-	if ( count($lg) ) {
+    if (count($lg)) {
 		$lang_select = '<select name="' . $select_name . '">';
 
-		while ( list($displayname, $filename) = @each($lg) ) {
+		foreach ($lg as $displayname => $filename) {
 			$selected = ( strtolower($default) === strtolower($filename) ) ? ' selected="selected"' : '';
 			$lang_select .= '<option value="' . $filename . '"' . $selected . '>' . ucwords($displayname) . '</option>';
 		}
