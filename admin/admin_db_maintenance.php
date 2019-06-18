@@ -103,9 +103,9 @@ switch($mode_id) {
 		}
 		$warning_message_defined = FALSE;
 
-        for ($i = 0; $i < count($mtnc); $i++) {
-            if (count($mtnc[$i]) && $mtnc[$i][0] == $function) {
-                $warning_message         = $mtnc[$i];
+        foreach ($mtnc as $value) {
+            if (count($value) && $value[0] == $function) {
+                $warning_message = $value;
                 $warning_message_defined = true;
             }
         }
@@ -591,8 +591,8 @@ switch($mode_id) {
 					$record_list = implode(',', $missing_groups);
 					echo("<p class=\"gen\">" . $lang['Recreating_SUG'] . ": $record_list</p>\n");
 
-					for($i = 0; $i < count($missing_groups); $i++) {
-						$group_name = ($missing_groups[$i] == ANONYMOUS) ? 'Anonymous' : '';
+					foreach ($missing_groups as $missingGroup) {
+						$group_name = ($missingGroup == ANONYMOUS) ? 'Anonymous' : '';
 
 						$insertData = [
 						    'group_type' => 1,
@@ -606,7 +606,7 @@ switch($mode_id) {
 
                         $insertData = [
                             'group_id' => $group_id,
-                            'user_id'  => $missing_groups[$i],
+                            'user_id'  => $missingGroup,
                             'user_pending' => 0
                         ];
 
