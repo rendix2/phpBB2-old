@@ -125,7 +125,16 @@ if ($mode === 'searchuser') {
     //
     // This handles the simple windowed user search functions called from various other scripts
     //
-    CSRF::validatePost();
+
+    if (isset($_POST[CSRF::TOKEN_NAME])) {
+        CSRF::validatePost();
+    } elseif (isset($_GET[CSRF::TOKEN_NAME])) {
+        CSRF::validateGet();
+    } else {
+        message_die(GENERAL_MESSAGE, $lang['Session_invalid']);
+
+        CSRF::resetSession();
+    }
 
     if (isset($_POST['search_username'])) {
         username_search($_POST['search_username']);

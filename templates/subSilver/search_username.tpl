@@ -54,5 +54,7 @@ function refresh_username(selected_username)
 			</table>
 		</td>
 	</tr>
+
+	{F_LOGIN_FORM_TOKEN}
 </table>
 </form>

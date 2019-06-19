@@ -356,7 +356,7 @@ if (isset($_POST['submit'])) {
             'L_LOOK_UP'             => $lang['Look_up_User'],
             'L_FIND_USERNAME'       => $lang['Find_username'],
 
-            'U_SEARCH_USER'            => Session::appendSid('./../search.php?mode=searchuser'),
+            'U_SEARCH_USER'            => Session::appendSid('./../search.php?mode=searchuser&'.CSRF::TOKEN_NAME.'=' .CSRF::createToken()),
             'S_UNBAN_USERLIST_SELECT'  => $select_userlist,
             'S_UNBAN_IPLIST_SELECT'    => $select_iplist,
             'S_UNBAN_EMAILLIST_SELECT' => $select_emaillist,

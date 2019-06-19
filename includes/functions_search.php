@@ -373,6 +373,8 @@ function username_search($search_match)
         [
             'USERNAME' => !empty($search_match) ? phpbb_clean_username($search_match) : '',
 
+            'F_LOGIN_FORM_TOKEN' => CSRF::getInputHtml(),
+
             'L_CLOSE_WINDOW'    => $lang['Close_window'],
             'L_SEARCH_USERNAME' => $lang['Find_username'],
             'L_UPDATE_USERNAME' => $lang['Select_username'],
