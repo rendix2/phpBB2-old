@@ -9,18 +9,28 @@
 	<tr> 
 	  <th class="thHead" colspan="{S_COLSPAN}" height="25" valign="middle">{L_AVATAR_GALLERY}</th>
 	</tr>
-	<tr> 
-	  <td class="catBottom" align="center" valign="middle" colspan="6" height="28"><span class="genmed">{L_CATEGORY}:&nbsp;<select name="avatarcategory">{S_OPTIONS_CATEGORIES}</select>&nbsp;<input type="submit" class="liteoption" value="{L_GO}" name="avatargallery" /></span></td>
+	<tr>
+		<td class="catBottom" align="center" valign="middle" colspan="6" height="28">
+		  <span class="genmed">
+			  <label for="avatarcategory">{L_CATEGORY}:</label>&nbsp;
+
+			  <select name="avatarcategory" id="avatarcategory">{S_OPTIONS_CATEGORIES}</select>&nbsp;
+			  <input type="submit" class="liteoption" value="{L_GO}" name="avatargallery"/></span>
+		</td>
 	</tr>
 	<!-- BEGIN avatar_row -->
 	<tr> 
 	<!-- BEGIN avatar_column -->
-		<td class="row1" align="center"><img src="{avatar_row.avatar_column.AVATAR_IMAGE}" /></td>
+		<td class="row1" align="center">
+			<img src="{avatar_row.avatar_column.AVATAR_IMAGE}" />
+		</td>
 	<!-- END avatar_column -->
 	</tr>
 	<tr>
 	<!-- BEGIN avatar_option_column -->
-		<td class="row2" align="center"><input type="radio" name="avatarselect" value="{avatar_row.avatar_option_column.S_OPTIONS_AVATAR}" /></td>
+		<td class="row2" align="center">
+			<input type="radio" name="avatarselect" value="{avatar_row.avatar_option_column.S_OPTIONS_AVATAR}" />
+		</td>
 	<!-- END avatar_option_column -->
 	</tr>
 

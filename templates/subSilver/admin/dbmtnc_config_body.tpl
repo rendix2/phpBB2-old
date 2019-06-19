@@ -13,7 +13,10 @@
 			<br />
 			<span class="gensmall">{L_DISALLOW_POSTCOUNTER_EXPLAIN}</span>
 		</td>
-		<td class="row2" nowrap="nowrap"><input type="radio" name="disallow_postcounter" id="disallow_postcounter" value="1" {DISALLOW_POSTCOUNTER_YES} /> {L_YES}&nbsp;&nbsp;<input type="radio" name="disallow_postcounter" value="0" {DISALLOW_POSTCOUNTER_NO} /> {L_NO}</td>
+		<td class="row2" nowrap="nowrap">
+			<input type="radio" name="disallow_postcounter" id="disallow_postcounter" value="1" {DISALLOW_POSTCOUNTER_YES} /> {L_YES}&nbsp;&nbsp;
+			<input type="radio" name="disallow_postcounter" value="0" {DISALLOW_POSTCOUNTER_NO} /> {L_NO}
+		</td>
 	</tr>
 	<tr>
 		<td class="row1">
@@ -21,7 +24,10 @@
 			<br />
 			<span class="gensmall">{L_DISALLOW_REBUILD_EXPLAIN}</span>
 		</td>
-		<td class="row2"><input type="radio" name="disallow_rebuild" id="disallow_rebuild" value="1" {DISALLOW_REBUILD_YES} /> {L_YES}&nbsp;&nbsp;<input type="radio" name="disallow_rebuild" value="0" {DISALLOW_REBUILD_NO} /> {L_NO}</td>
+		<td class="row2">
+			<input type="radio" name="disallow_rebuild" id="disallow_rebuild" value="1" {DISALLOW_REBUILD_YES} /> {L_YES}&nbsp;&nbsp;
+			<input type="radio" name="disallow_rebuild" value="0" {DISALLOW_REBUILD_NO} /> {L_NO}
+		</td>
 	</tr>
 <!-- BEGIN rebuild_settings -->
 	<tr>

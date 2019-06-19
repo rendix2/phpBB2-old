@@ -40,7 +40,10 @@
 	<tr> 
 	  <td class="row1" width="38%"><span class="gen">{L_GROUP_STATUS}:</span></td>
 	  <td class="row2" width="62%"> 
-		<input type="radio" name="group_type" value="{S_GROUP_OPEN_TYPE}" {S_GROUP_OPEN_CHECKED} /> {L_GROUP_OPEN} &nbsp;&nbsp;<input type="radio" name="group_type" value="{S_GROUP_CLOSED_TYPE}" {S_GROUP_CLOSED_CHECKED} />	{L_GROUP_CLOSED} &nbsp;&nbsp;<input type="radio" name="group_type" value="{S_GROUP_HIDDEN_TYPE}" {S_GROUP_HIDDEN_CHECKED} />	{L_GROUP_HIDDEN}</td> 
+		<input type="radio" name="group_type" id="group_type_o" value="{S_GROUP_OPEN_TYPE}" {S_GROUP_OPEN_CHECKED} /> <label for="group_type_o">{L_GROUP_OPEN}</label> &nbsp;&nbsp;
+		  <input type="radio" name="group_type" id="group_type_c" value="{S_GROUP_CLOSED_TYPE}" {S_GROUP_CLOSED_CHECKED} />	<label for="group_type_c">{L_GROUP_CLOSED}</label> &nbsp;&nbsp;
+		  <input type="radio" name="group_type" id="group_type_h" value="{S_GROUP_HIDDEN_TYPE}" {S_GROUP_HIDDEN_CHECKED} />	<label for="group_type_h">{L_GROUP_HIDDEN}</label>
+	  </td>
 	</tr>
 	<!-- BEGIN group_edit -->
 	<tr> 
