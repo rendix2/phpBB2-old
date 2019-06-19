@@ -28,7 +28,7 @@ function refresh_username(selected_username)
 					<td valign="top" class="row1">
 						<span class="genmed">
 							<br />
-							<input type="text" name="search_username" value="{USERNAME}" class="post" />&nbsp;
+							<input type="text" name="search_username" id="search_username" value="{USERNAME}" class="post" />&nbsp;
 							<input type="submit" name="search" value="{L_SEARCH}" class="liteoption" />
 						</span>
 						<br />

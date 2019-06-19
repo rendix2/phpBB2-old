@@ -21,7 +21,7 @@ function update_smiley(newimage)
 			<label for="smile_code">{L_SMILEY_CODE}</label>
 		</td>
 		<td class="row2">
-			<input class="post" type="text" name="smile_code" value="{SMILEY_CODE}" />
+			<input class="post" type="text" name="smile_code" id="smile_code" value="{SMILEY_CODE}" />
 		</td>
 	</tr>
 	<tr>
