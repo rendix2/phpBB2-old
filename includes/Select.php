@@ -12,7 +12,7 @@ class Select
     {
         $timeZones = DateTimeZone::listIdentifiers();
 
-        $tz_select = '<select name="' . $select_name . '">';
+        $tz_select = '<select name="' . $select_name . '" id="' . $select_name . '">';
 
         foreach ($timeZones as $timeZone) {
             $selected = $timeZone === $default ? ' selected="selected"' : '';
@@ -142,7 +142,7 @@ class Select
             message_die(GENERAL_ERROR, 'Could not query themes table.');
         }
 
-        $style_select = '<select name="' . $select_name . '">';
+        $style_select = '<select name="' . $select_name . '" id="' . $select_name . '">';
 
         foreach ($themes as $themes_id => $style_name) {
             $selected = ( $themes_id === $default_style ) ? ' selected="selected"' : '';

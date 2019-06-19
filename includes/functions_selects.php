@@ -46,7 +46,7 @@ function language_select($default, $select_name = 'language', $dirname= 'languag
 
 	$default = strtolower($default);
 
-	$lang_select = '<select name="' . $select_name . '">';
+    $lang_select = '<select name="' . $select_name . '" id="' . $select_name . '"">';
 
 	foreach ($langs as $displayName => $filename) {
 		$selected = $default === strtolower($filename) ? ' selected="selected"' : '';
