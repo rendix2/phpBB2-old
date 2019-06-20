@@ -169,4 +169,185 @@ function sync($type, $id = false)
     return true;
 }
 
+/**
+ * Return formatted string for filesizes
+ *
+ * copied from phpBB3
+ *
+ * @param mixed	$value			filesize in bytes
+ *								(non-negative number; int, float or string)
+ * @param bool	$string_only	true if language string should be returned
+ * @param array	$allowed_units	only allow these units (data array indexes)
+ *
+ * @return mixed					data array if $string_only is false
+ */
+function get_formatted_filesize($value, $string_only = true, $allowed_units = false)
+{
+    global $user;
+
+    $available_units = array(
+        'tb' => array(
+            'min' 		=> 1099511627776, // pow(2, 40)
+            'index'		=> 4,
+            'si_unit'	=> 'TB',
+            'iec_unit'	=> 'TIB',
+        ),
+        'gb' => array(
+            'min' 		=> 1073741824, // pow(2, 30)
+            'index'		=> 3,
+            'si_unit'	=> 'GB',
+            'iec_unit'	=> 'GIB',
+        ),
+        'mb' => array(
+            'min'		=> 1048576, // pow(2, 20)
+            'index'		=> 2,
+            'si_unit'	=> 'MB',
+            'iec_unit'	=> 'MIB',
+        ),
+        'kb' => array(
+            'min'		=> 1024, // pow(2, 10)
+            'index'		=> 1,
+            'si_unit'	=> 'KB',
+            'iec_unit'	=> 'KIB',
+        ),
+        'b' => array(
+            'min'		=> 0,
+            'index'		=> 0,
+            'si_unit'	=> 'BYTES', // Language index
+            'iec_unit'	=> 'BYTES',  // Language index
+        ),
+    );
+
+    foreach ($available_units as $si_identifier => $unit_info) {
+        if (!empty($allowed_units) && $si_identifier != 'b' && !in_array($si_identifier, $allowed_units)) {
+            continue;
+        }
+
+        if ($value >= $unit_info['min']) {
+            $unit_info['si_identifier'] = $si_identifier;
+
+            break;
+        }
+    }
+    unset($available_units);
+
+    for ($i = 0; $i < $unit_info['index']; $i++) {
+        $value /= 1024;
+    }
+    $value = round($value, 2);
+
+    // Default to IEC
+    $unit_info['unit'] = $unit_info['iec_unit'];
+
+    if (!$string_only) {
+        $unit_info['value'] = $value;
+
+        return $unit_info;
+    }
+
+    return $value  . ' ' . $unit_info['unit'];
+}
+
+/**
+ * Get database size
+ * Currently only mysql and mssql are supported
+ * copied from phpbb3
+ */
+function get_database_size()
+{
+    global $dbms, $table_prefix, $lang, $dbname;
+
+    $database_size = false;
+
+    // This code is heavily influenced by a similar routine in phpMyAdmin 2.2.0
+    switch ($dbms) {
+        case 'mysql':
+            $row = dibi::query('SELECT VERSION() AS mysql_version')->fetch();
+
+            if ($row) {
+                $version = $row->mysql_version;
+
+                if (preg_match('#(3\.23|[45]\.|10\.[0-9]\.[0-9]{1,2}-+Maria)#', $version)) {
+                    $tables = dibi::query('SHOW TABLE STATUS FROM %n', $dbname)->fetchAll();
+
+                    $database_size = 0;
+
+                    foreach ($tables as $table) {
+                        if ((isset($table->Type) && $table->Type != 'MRG_MyISAM') || (isset($table->Engine) && ($table->Engine == 'MyISAM' || $table->Engine == 'InnoDB' || $table->Engine == 'Aria'))) {
+                            if ($table_prefix != '') {
+                                if (strpos($table->Name, $table_prefix) !== false) {
+                                    $database_size += $table->Data_length + $table->Index_length;
+                                }
+                            } else {
+                                $database_size += $table->Data_length + $table->Index_length;
+                            }
+                        }
+                    }
+                }
+            }
+            break;
+
+        case 'sqlite3':
+            global $dbhost;
+
+            if (file_exists($dbhost)) {
+                $database_size = filesize($dbhost);
+            }
+
+            break;
+
+        case 'mssql_odbc':
+        case 'mssqlnative':
+            $row = dibi::select('@@VERSION')->as('mssql_version')->fetch();
+
+            if ($row) {
+                // Azure stats are stored elsewhere
+                if (strpos($row['mssql_version'], 'SQL Azure') !== false) {
+                    $database_size = dibi::select('((SUM(size) * 8.0) * 1024.0)')->as('dbsize')
+                        ->from('sys.dm_db_partition_stats')
+                        ->fetchSingle();
+
+                } else {
+                    $database_size = dibi::select('((SUM(size) * 8.0) * 1024.0)')->as('dbsize')
+                        ->from('sysfiles')
+                        ->fetchSingle();
+                }
+            }
+
+            break;
+
+        case 'postgres':
+            $row = dibi::select('proname')
+                ->from('pg_proc')
+                ->where('proname = %s', 'pg_database_size')
+                ->fetch();
+
+            if ($row['proname'] == 'pg_database_size') {
+                $database = dibi::getDatabaseInfo()->getName();
+
+                if (strpos($database, '.') !== false) {
+                    list($database, ) = explode('.', $database);
+                }
+
+                $oid = dibi::select('oid')
+                    ->from('pg_database')
+                    ->where('datname = %s', $database)
+                    ->fetchSingle();
+
+                $database_size = dibi::select( 'pg_database_size(%n)', $oid)->as('size')->fetchSingle();
+            }
+            break;
+
+        case 'oracle':
+            $database_size = dibi::select('SUM(bytes)')->as('dbsize')
+                ->from('user_segments')
+                ->fetchSingle();
+            break;
+    }
+
+    $database_size = ($database_size !== false) ? get_formatted_filesize($database_size) : $lang['Not_available'];
+
+    return $database_size;
+}
+
 ?>

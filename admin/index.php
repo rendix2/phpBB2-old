@@ -193,66 +193,12 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
         $users_per_day = $total_users;
     }
 
-	//
-	// DB size ... MySQL only
-	//
-	// This code is heavily influenced by a similar routine
-	// in phpMyAdmin 2.2.0
-	//
-	if (preg_match('/^mysql/', $dbms)) {
-        $row = dibi::query('SELECT VERSION() AS mysql_version')->fetch();
+    /**
+     * this functions is from phpBB3
+     */
+    include $phpbb_root_path .'includes/functions_admin.php';
 
-		if ($row) {
-			$version = $row->mysql_version;
-
-			if (preg_match("/^(3\.23|4\.|5\.)/", $version)) {
-				$db_name = preg_match("/^(3\.23\.[6-9])|(3\.23\.[1-9][1-9])|(4\.)|(5\.)/", $version) ? "`$dbname`" : $dbname;
-
-				$tables = dibi::query('SHOW TABLE STATUS FROM %SQL', $db_name)->fetchAll();
-
-                if (count($tables)) {
-					$dbsize = 0;
-
-                    foreach ($tables as $table) {
-                        if ($table->Type !== 'MRG_MyISAM') {
-                            if ($table_prefix !== '') {
-                                if (false !== strpos($table->Name, $table_prefix)) {
-                                    $dbsize += $table->Data_length + $table->Index_length;
-                                }
-                            } else {
-                                $dbsize += $table->Data_length + $table->Index_length;
-                            }
-                        }
-                    }
-				} // Else we couldn't get the table status.
-            } else {
-                $dbsize = $lang['Not_available'];
-            }
-        } else {
-            $dbsize = $lang['Not_available'];
-        }
-	} elseif (preg_match('/^mssql/', $dbms)) {
-        $dbsize = dibi::select('((SUM(size) * 8.0) * 1024.0)')
-            ->as('dbsize')
-            ->from('sysfiles')
-            ->fetchSingle();
-
-        if (!$dbsize) {
-            $lang['Not_available'] ;
-        }
-	} else {
-		$dbsize = $lang['Not_available'];
-	}
-
-    if (is_int($dbsize)) {
-        if ($dbsize >= 1048576) {
-            $dbsize = sprintf('%.2f MB', $dbsize / 1048576);
-        } elseif ($dbsize >= 1024) {
-            $dbsize = sprintf('%.2f KB', $dbsize / 1024);
-        } else {
-            $dbsize = sprintf('%.2f Bytes', $dbsize);
-        }
-    }
+    $dbsize = get_database_size();
 
     $template->assignVars(
         [
