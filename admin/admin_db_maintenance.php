@@ -220,24 +220,23 @@ switch($mode_id) {
                 );
 
                 // Database statistic
-				if (check_mysql_version())
-				{
-					$stat = get_table_statistic();
-                    $template->assignBlockVars('db_statistics', []);
-                    $template->assignVars(
-                        [
-                            'NUMBER_OF_DB_TABLES'           => $stat['all']['count'],
-                            'NUMBER_OF_CORE_DB_TABLES'      => $stat['core']['count'],
-                            'NUMBER_OF_ADVANCED_DB_TABLES'  => $stat['advanced']['count'],
-                            'NUMBER_OF_DB_RECORDS'          => $stat['all']['records'],
-                            'NUMBER_OF_CORE_DB_RECORDS'     => $stat['core']['records'],
-                            'NUMBER_OF_ADVANCED_DB_RECORDS' => $stat['advanced']['records'],
-                            'SIZE_OF_DB'                    => convert_bytes($stat['all']['size']),
-                            'SIZE_OF_CORE_DB'               => convert_bytes($stat['core']['size']),
-                            'SIZE_OF_ADVANCED_DB'           => convert_bytes($stat['advanced']['size'])
-                        ]
-                    );
-                }
+                $stat = get_table_statistic();
+
+                $template->assignBlockVars('db_statistics', []);
+                $template->assignVars(
+                    [
+                        'NUMBER_OF_DB_TABLES'           => $stat['all']['count'],
+                        'NUMBER_OF_CORE_DB_TABLES'      => $stat['core']['count'],
+                        'NUMBER_OF_ADVANCED_DB_TABLES'  => $stat['advanced']['count'],
+                        'NUMBER_OF_DB_RECORDS'          => $stat['all']['records'],
+                        'NUMBER_OF_CORE_DB_RECORDS'     => $stat['core']['records'],
+                        'NUMBER_OF_ADVANCED_DB_RECORDS' => $stat['advanced']['records'],
+
+                        'SIZE_OF_DB'          => get_formatted_filesize($stat['all']['size']),
+                        'SIZE_OF_CORE_DB'     => get_formatted_filesize($stat['core']['size']),
+                        'SIZE_OF_ADVANCED_DB' => get_formatted_filesize($stat['advanced']['size'])
+                    ]
+                );
 
 				// Version information
 				$mysql_version = dibi::query('SELECT VERSION() AS mysql_version')->fetchSingle();
@@ -3351,10 +3350,7 @@ switch($mode_id) {
 				break;
 			case 'check_db': // Check database
 				echo("<h1>" . $lang['Checking_db'] . "</h1>\n");
-                if (!check_mysql_version()) {
-                    echo("<p class=\"gen\">" . $lang['Old_MySQL_Version'] . "</p>\n");
-                    break;
-                }
+
 				lock_db();
 				echo("<p class=\"gen\"><b>" . $lang['Checking_tables'] . ":</b></p>\n");
 				echo("<font class=\"gen\"><ul>\n");
@@ -3392,11 +3388,6 @@ switch($mode_id) {
 			case 'repair_db': // Repair database
 				echo("<h1>" . $lang['Repairing_db'] . "</h1>\n");
 
-                if (!check_mysql_version()) {
-					echo("<p class=\"gen\">" . $lang['Old_MySQL_Version'] . "</p>\n");
-					break;
-				}
-
 				lock_db();
 
 				echo("<p class=\"gen\"><b>" . $lang['Repairing_tables'] . ":</b></p>\n");
@@ -3432,11 +3423,6 @@ switch($mode_id) {
 			case 'optimize_db': // Optimize database
 				echo("<h1>" . $lang['Optimizing_db'] . "</h1>\n");
 
-                if (!check_mysql_version()) {
-                    echo("<p class=\"gen\">" . $lang['Old_MySQL_Version'] . "</p>\n");
-                    break;
-                }
-
 				lock_db();
 				$old_stat = get_table_statistic();
 				echo("<p class=\"gen\"><b>" . $lang['Optimizing_tables'] . ":</b></p>\n");
@@ -3470,7 +3456,7 @@ switch($mode_id) {
 				$new_stat = get_table_statistic();
 				$reduction_absolute = $old_stat['core']['size'] - $new_stat['core']['size'];
 				$reduction_percent = ($reduction_absolute / $old_stat['core']['size']) * 100;
-				echo("<p class=\"gen\">" . sprintf($lang['Optimization_statistic'], convert_bytes($old_stat['core']['size']), convert_bytes($new_stat['core']['size']), convert_bytes($reduction_absolute), $reduction_percent) . "</b></p>\n");
+				echo("<p class=\"gen\">" . sprintf($lang['Optimization_statistic'], get_formatted_filesize($old_stat['core']['size']), get_formatted_filesize($new_stat['core']['size']), get_formatted_filesize(abs($reduction_absolute)), $reduction_percent) . "</b></p>\n");
 				lock_db(TRUE);
 				break;
 			case 'reset_auto_increment': // Reset autoincrement values
@@ -3502,11 +3488,6 @@ switch($mode_id) {
 			case 'heap_convert': // Convert session table to HEAP
 				echo("<h1>" . $lang['Reset_ai'] . "</h1>\n");
 
-                if (!check_mysql_version()) {
-                    echo("<p class=\"gen\">" . $lang['Old_MySQL_Version'] . "</p>\n");
-                    break;
-                }
-
 				lock_db();
 
 				echo("<p class=\"gen\"><b>" . $lang['Converting_heap'] . "...</b></p>\n");
@@ -3535,7 +3516,7 @@ switch($mode_id) {
 					$deleteFluent->execute();
 				}
 
-				dibi::query('ALTER TABLE %n TYPE = HEAP MAX_ROWS = %i', SESSIONS_TABLE, HEAP_SIZE);
+				dibi::query('ALTER TABLE %n ENGINE = HEAP, MAX_ROWS = %i', SESSIONS_TABLE, HEAP_SIZE);
 
 				lock_db(TRUE);
 				break;

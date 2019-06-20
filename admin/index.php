@@ -163,19 +163,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
 
 		@closedir($avatar_dir);
 
-		//
-		// This bit of code translates the avatar directory size into human readable format
-		// Borrowed the code from the PHP.net annoted manual, origanally written by:
-		// Jesse (jesse@jess.on.ca)
-		//
-
-        if ($avatar_dir_size >= 1048576) {
-            $avatar_dir_size = round($avatar_dir_size / 1048576 * 100) / 100 . ' MB';
-        } elseif ($avatar_dir_size >= 1024) {
-            $avatar_dir_size = round($avatar_dir_size / 1024 * 100) / 100 . ' KB';
-        } else {
-            $avatar_dir_size .= ' Bytes';
-        }
+        $avatar_dir_size = get_formatted_filesize($avatar_dir_size);
 	} else {
 		// Couldn't open Avatar dir.
 		$avatar_dir_size = $lang['Not_available'];

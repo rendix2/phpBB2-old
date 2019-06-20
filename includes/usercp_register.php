@@ -1014,7 +1014,7 @@ if (isset($_POST['avatargallery']) && !$error) {
             'L_ALWAYS_ADD_SIGNATURE'        => $lang['Always_add_sig'],
 
             'L_AVATAR_PANEL'               => $lang['Avatar_panel'],
-            'L_AVATAR_EXPLAIN'             => sprintf($lang['Avatar_explain'], $board_config['avatar_max_width'], $board_config['avatar_max_height'], round($board_config['avatar_filesize'] / 1024)),
+            'L_AVATAR_EXPLAIN'             => sprintf($lang['Avatar_explain'], $board_config['avatar_max_width'], $board_config['avatar_max_height'], get_formatted_filesize($board_config['avatar_filesize'])),
             'L_UPLOAD_AVATAR_FILE'         => $lang['Upload_Avatar_file'],
             'L_UPLOAD_AVATAR_URL'          => $lang['Upload_Avatar_URL'],
             'L_UPLOAD_AVATAR_URL_EXPLAIN'  => $lang['Upload_Avatar_URL_explain'],

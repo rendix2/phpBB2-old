@@ -187,7 +187,7 @@ $mtnc[] = [
 	'',
 	4
 ];
-$mtnc[] = ['--', '', '', '', 1];
+$mtnc[] = ['--', '', '', '', 0];
 $mtnc[] = [
 	'check_db',
 	'Check database',
@@ -200,14 +200,14 @@ $mtnc[] = [
 	'Optimize database',
 	'Optimizes the tables. This will reduce the database size after deleting lots of records and so on.',
 	'',
-	1
+	0
 ];
 $mtnc[] = [
 	'repair_db',
 	'Repair database',
 	'Fixes the database when an error is found.',
 	'You only should perform this action if an error is reported when checking the database. Proceed?',
-	1
+	0
 ];
 $mtnc[] = ['--', '', '', '', 0];
 $mtnc[] = [

@@ -24,6 +24,7 @@ $tables = [
     'banlist',
     'categories',
     'config',
+    'confirm',
     'disallow',
     'forums',
     'forum_prune',
@@ -37,6 +38,7 @@ $tables = [
     'search_wordlist',
     'search_wordmatch',
     'sessions',
+    'sessions_keys',
     'smilies',
     'themes',
     'themes_name',
@@ -147,17 +149,6 @@ if (isset($board_config) && isset($board_config['version'])) {
 } else {
     // Fallback for ERC
     $phpbb_version = [0, 22];
-}
-
-if ($phpbb_version[0] === 0 && $phpbb_version[1] >= 5) {
-    $tables[] = 'confirm';
-}
-
-if ($phpbb_version[0] === 0 && $phpbb_version[1] >= 18) {
-    $tables[] = 'sessions_keys';
-
-    $default_config['allow_autologin']= '1';
-    $default_config['max_autologin_time'] = '0';
 }
 
 if ($phpbb_version[0] === 0 && $phpbb_version[1] >= 19) {
@@ -291,16 +282,9 @@ function check_condition($check)
 	switch ($check)
 	{
         case 0: // No check
+        case 1: // MySQL >= 3.23.17
             return true;
-			break;
-		case 1: // MySQL >= 3.23.17
-			return check_mysql_version();
-			break;
 		case 2: // Session Table not HEAP
-            if (!check_mysql_version()) {
-                return false;
-            }
-
             $row = dibi::query('SHOW TABLE STATUS LIKE %~like~', SESSIONS_TABLE)->fetch();
 
             if (!$row) {
@@ -310,7 +294,7 @@ function check_condition($check)
             return !((isset($row->Type) && $row->Type == 'HEAP') || (isset($row->Engine) && ($row->Engine == 'HEAP' || $row->Engine === 'MEMORY')));
 			break;
 		case 3: // DB locked
-           return $board_config['board_disable'] === 1;
+           return (int)$board_config['board_disable'] === 1;
 			break;
 		case 4: // Search index in recreation
             if ($board_config['dbmtnc_rebuild_pos'] !== -1) {
@@ -343,29 +327,6 @@ function check_condition($check)
 }
 
 //
-// Checks whether MySQL supports HEAP-Tables, ANSI compatible INNER JOINs and other commands
-//
-function check_mysql_version()
-{
-	global $db;
-
-    $version = dibi::query('SELECT VERSION() AS mysql_version')->fetchSingle();
-
-    if ($version === false) {
-		throw_error("Couldn't obtain MySQL Version");
-	}
-
-    // Version from 3.23.0 to 3.23.16
-    if (preg_match("/^3\.23\.([0-9]$|[0-9]-|1[0-3]$|1[0-6]-)/", $version)) {
-        return false;
-    } elseif (preg_match("/^(3\.23)|(4\.)|(5\.)/", $version)) {
-        return true;
-    } else { // Versions before 3.23.0
-        return false;
-    }
-}
-
-//
 // Gets the current time in microseconds
 //
 function getmicrotime()
@@ -394,12 +355,18 @@ function get_table_statistic()
 
 	$rows = dibi::query('SHOW TABLE STATUS')->fetchAll();
 
+	$prefixedTables = [];
+
+	foreach ($tables as  $key => $table) {
+	    $prefixedTables[$key] = $table_prefix . $table;
+    }
+
     foreach ($rows as $row) {
         $stat['all']['count']++;
         $stat['all']['records'] += (int)$row->Rows;
         $stat['all']['size']    += (int)$row->Data_length + (int)$row->Index_length;
 
-        if ($table_prefix === substr($row->Name, 0, strlen($table_prefix))) {
+        if (!in_array($row->Name, $prefixedTables)) {
             $stat['advanced']['count']++;
             $stat['advanced']['records'] += (int)$row->Rows;
             $stat['advanced']['size']    += (int)$row->Data_length + (int)$row->Index_length;
@@ -415,20 +382,6 @@ function get_table_statistic()
     }
 
 	return $stat;
-}
-
-//
-// Converts Bytes to a apropriate Value
-//
-function convert_bytes($bytes)
-{
-    if ($bytes >= 1048576) {
-        return sprintf('%.2f MB', $bytes / 1048576);
-    } elseif ($bytes >= 1024) {
-        return sprintf('%.2f KB', $bytes / 1024);
-    } else {
-        return sprintf('%.2f Bytes', $bytes);
-    }
 }
 
 //
@@ -623,23 +576,17 @@ function set_autoincrement($table, $column, $length, $unsigned = TRUE)
 {
 	global $lang;
 
-	$sql = "ALTER IGNORE TABLE $table MODIFY $column mediumint($length) " . ($unsigned ? 'unsigned ' : '') . 'NOT NULL auto_increment';
+    $sql = "ALTER IGNORE TABLE $table MODIFY $column mediumint($length) " . ($unsigned ? 'unsigned ' : '') . 'NOT NULL auto_increment';
 
-	if (check_mysql_version()) {
-	    $row = dibi::query('SHOW COLUMNS FROM %n LIKE %~like~ %n', $table, $column)->fetch();
+    $row = dibi::query('SHOW COLUMNS FROM %n LIKE %~like~', $table, $column)->fetch();
 
-		if (strpos($row['Extra'], 'auto_increment') !== FALSE) {
-			echo("<li>$table: " . $lang['Ai_message_no_update'] . "</li>\n");
-		} else {
-			echo("<li>$table: <b>" . $lang['Ai_message_update_table'] . "</b></li>\n");
-
-			dibi::query($sql);
-		}
-	} else { // old Version of MySQL - do the update in any case
-		echo("<li>$table: <b>" . $lang['Ai_message_update_table_old_mysql'] . "</b></li>\n");
+    if (strpos($row['Extra'], 'auto_increment') !== FALSE) {
+        echo("<li>$table: " . $lang['Ai_message_no_update'] . "</li>\n");
+    } else {
+        echo("<li>$table: <b>" . $lang['Ai_message_update_table'] . "</b></li>\n");
 
         dibi::query($sql);
-	}
+    }
 }
 
 //

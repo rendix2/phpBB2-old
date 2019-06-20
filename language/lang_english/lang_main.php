@@ -579,7 +579,7 @@ $lang['password_if_changed'] = 'You only need to supply a password if you want t
 $lang['password_confirm_if_changed'] = 'You only need to confirm your password if you changed it above';
 
 $lang['Avatar'] = 'Avatar';
-$lang['Avatar_explain'] = 'Displays a small graphic image below your details in posts. Only one image can be displayed at a time, its width can be no greater than %d pixels, the height no greater than %d pixels, and the file size no more than %d KB.';
+$lang['Avatar_explain'] = 'Displays a small graphic image below your details in posts. Only one image can be displayed at a time, its width can be no greater than %d pixels, the height no greater than %d pixels, and the file size no more than %s.';
 $lang['Upload_Avatar_file'] = 'Upload Avatar from your machine';
 $lang['Upload_Avatar_URL'] = 'Upload Avatar from a URL';
 $lang['Upload_Avatar_URL_explain'] = 'Enter the URL of the location containing the Avatar image, it will be copied to this site.';

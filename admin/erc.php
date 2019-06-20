@@ -195,13 +195,7 @@ switch($mode) {
 					<input type="hidden" name="mode" value="datainput" />
 					<select size="1" name="option">
 					<option value="cls"><?php echo $lang['cls']; ?></option>
-<?php
-	if (check_mysql_version()) {
-?>
 					<option value="rdb"><?php echo $lang['rdb']; ?></option>
-<?php
-	}
-?>
 					<option value="cct"><?php echo $lang['cct']; ?></option>
 					<option value="rpd"><?php echo $lang['rpd']; ?></option>
 					<option value="rcd"><?php echo $lang['rcd']; ?></option>
@@ -629,13 +623,6 @@ switch($mode) {
 				break;
 			case 'rdb': // Clear Sessions
 				check_authorisation();
-				if (!check_mysql_version()) {
-?>
-	<p><span style="color:red"><?php echo $lang['Old_MySQL_Version'] ?></span></p>
-<?php
-				}
-				else
-				{
 ?>
 	<p><?php echo $lang['Repairing_tables'] ?>:</p>
 	<ul>
@@ -644,7 +631,6 @@ switch($mode) {
 						$tablename = $table_prefix . $table;
 
 						$row = dibi::query('REPAIR TABLE %n', $tablename)->fetch();
-
 
 						if ($row) {
 							if ($row['Msg_type'] == 'status') {
@@ -673,7 +659,6 @@ switch($mode) {
 	</ul>
 <?php
 					success_message($lang['rdb_success']);
-				}
 				break;
 			case 'cct': // Check config table
 				check_authorisation();
