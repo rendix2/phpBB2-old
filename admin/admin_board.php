@@ -173,6 +173,7 @@ $template->assignVars(
         'S_PRIVMSG_ENABLED'  => $privmsg_on,
         'S_PRIVMSG_DISABLED' => $privmsg_off,
 
+        'BYTES' => get_formatted_filesize($board_config['avatar_filesize']),
 
         'L_YES' => $lang['Yes'],
         'L_NO'  => $lang['No'],

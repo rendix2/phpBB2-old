@@ -300,7 +300,9 @@
 			<br />
 			<span class="gensmall">{L_MAX_FILESIZE_EXPLAIN}</span>
 		</td>
-		<td class="row2"><input class="post" type="text" size="4" maxlength="10" name="avatar_filesize" id="avatar_filesize" value="{AVATAR_FILESIZE}" /> Bytes</td>
+		<td class="row2">
+			<input class="post" type="text" size="4" maxlength="10" name="avatar_filesize" id="avatar_filesize" value="{AVATAR_FILESIZE}" /> {BYTES}
+		</td>
 	</tr>
 	<tr>
 		<td class="row1">
