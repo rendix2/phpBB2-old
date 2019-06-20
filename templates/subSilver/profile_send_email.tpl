@@ -65,7 +65,7 @@ function checkForm(formObj) {
 		</td>
 		<td class="row2">
 			<span class="gen">
-				<textarea name="message" rows="25" cols="40" wrap="virtual" style="width:500px" tabindex="3" class="post">{MESSAGE}</textarea>
+				<textarea name="message" id="message" rows="25" cols="40" wrap="virtual" style="width:500px" tabindex="3" class="post">{MESSAGE}</textarea>
 			</span>
 		</td>
 	</tr>
@@ -81,7 +81,7 @@ function checkForm(formObj) {
 			<table cellspacing="0" cellpadding="1" border="0">
 				<tr>
 					<td>
-						<input type="checkbox" name="cc_email"  value="1" checked="checked" />
+						<input type="checkbox" name="cc_email" id="cc_email" value="1" checked="checked" />
 					</td>
 					<td>
 						<span class="gen">{L_CC_EMAIL}</span>
@@ -91,7 +91,10 @@ function checkForm(formObj) {
 		</td>
 	</tr>
 	<tr>
-		<td class="catBottom" colspan="2" align="center" height="28">{S_HIDDEN_FIELDS}<input type="submit" tabindex="6" name="submit" class="mainoption" value="{L_SEND_EMAIL}" /></td>
+		<td class="catBottom" colspan="2" align="center" height="28">
+			{S_HIDDEN_FIELDS}
+			<input type="submit" tabindex="6" name="submit" class="mainoption" value="{L_SEND_EMAIL}" />
+		</td>
 	</tr>
 </table>
 

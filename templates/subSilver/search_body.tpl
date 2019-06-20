@@ -63,11 +63,13 @@
 			</span>
             </td>
             <td class="row1" align="right" nowrap="nowrap">
-                <span class="gen">{L_SEARCH_PREVIOUS}:&nbsp;</span>
+                <label for="search_time">
+                    <span class="gen">{L_SEARCH_PREVIOUS}:&nbsp;</span>
+                </label>
             </td>
             <td class="row2" valign="middle">
 			<span class="genmed">
-				<select class="post" name="search_time">{S_TIME_OPTIONS}</select>
+				<select class="post" name="search_time" id="search_time">{S_TIME_OPTIONS}</select>
 
                 <br/>
 
@@ -87,9 +89,10 @@
                     <span class="gen">{L_CATEGORY}:&nbsp;</span>
                 </label>
             </td>
-            <td class="row2"><span class="genmed">
-				<select class="post" name="search_cat" id="search_cat">{S_CATEGORY_OPTIONS}</select>
-			</span>
+            <td class="row2">
+                <span class="genmed">
+				    <select class="post" name="search_cat" id="search_cat">{S_CATEGORY_OPTIONS}</select>
+			    </span>
             </td>
             <td class="row1" align="right">
                 <label for="sort_by">

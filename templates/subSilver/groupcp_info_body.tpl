@@ -12,28 +12,58 @@
 		<th class="thHead" colspan="7" height="25">{L_GROUP_INFORMATION}</th>
 	</tr>
 	<tr> 
-		<td class="row1" width="20%"><span class="gen">{L_GROUP_NAME}:</span></td>
-		<td class="row2"><span class="gen"><b>{GROUP_NAME}</b></span></td>
+		<td class="row1" width="20%">
+			<span class="gen">{L_GROUP_NAME}:</span>
+		</td>
+		<td class="row2">
+			<span class="gen">
+				<b>{GROUP_NAME}</b>
+			</span>
+		</td>
 	</tr>
 	<tr> 
-		<td class="row1" width="20%"><span class="gen">{L_GROUP_DESC}:</span></td>
-		<td class="row2"><span class="gen">{GROUP_DESC}</span></td>
+		<td class="row1" width="20%">
+			<span class="gen">{L_GROUP_DESC}:</span>
+		</td>
+		<td class="row2">
+			<span class="gen">{GROUP_DESC}</span>
+		</td>
 	</tr>
 	<tr> 
-		<td class="row1" width="20%"><span class="gen">{L_GROUP_MEMBERSHIP}:</span></td>
-		<td class="row2"><span class="gen">{GROUP_DETAILS} &nbsp;&nbsp;
-		<!-- BEGIN switch_subscribe_group_input -->
-		<input class="mainoption" type="submit" name="joingroup" value="{L_JOIN_GROUP}" />
-		<!-- END switch_subscribe_group_input -->
-		<!-- BEGIN switch_unsubscribe_group_input -->
-		<input class="mainoption" type="submit" name="unsub" value="{L_UNSUBSCRIBE_GROUP}" />
-		<!-- END switch_unsubscribe_group_input -->
-		</span></td>
+		<td class="row1" width="20%">
+			<span class="gen">{L_GROUP_MEMBERSHIP}:</span>
+		</td>
+		<td class="row2">
+			<span class="gen">{GROUP_DETAILS} &nbsp;&nbsp;
+				<!-- BEGIN switch_subscribe_group_input -->
+				<input class="mainoption" type="submit" name="joingroup" value="{L_JOIN_GROUP}" />
+				<!-- END switch_subscribe_group_input -->
+
+				<!-- BEGIN switch_unsubscribe_group_input -->
+				<input class="mainoption" type="submit" name="unsub" value="{L_UNSUBSCRIBE_GROUP}" />
+				<!-- END switch_unsubscribe_group_input -->
+			</span>
+		</td>
 	</tr>
 	<!-- BEGIN switch_mod_option -->
 	<tr> 
-		<td class="row1" width="20%"><span class="gen">{L_GROUP_TYPE}:</span></td>
-		<td class="row2"><span class="gen"><input type="radio" name="group_type" value="{S_GROUP_OPEN_TYPE}" {S_GROUP_OPEN_CHECKED} /> {L_GROUP_OPEN} &nbsp;&nbsp;<input type="radio" name="group_type" value="{S_GROUP_CLOSED_TYPE}" {S_GROUP_CLOSED_CHECKED} />	{L_GROUP_CLOSED} &nbsp;&nbsp;<input type="radio" name="group_type" value="{S_GROUP_HIDDEN_TYPE}" {S_GROUP_HIDDEN_CHECKED} />	{L_GROUP_HIDDEN} &nbsp;&nbsp; <input class="mainoption" type="submit" name="groupstatus" value="{L_UPDATE}" /></span></td>
+		<td class="row1" width="20%">
+			<span class="gen">{L_GROUP_TYPE}:</span>
+		</td>
+		<td class="row2">
+			<span class="gen">
+				<input type="radio" name="group_type" id="group_type_o" value="{S_GROUP_OPEN_TYPE}" {S_GROUP_OPEN_CHECKED} />
+				<label for="group_type_o">{L_GROUP_OPEN}</label> &nbsp;&nbsp;
+
+				<input type="radio" name="group_type" id="group_type_c" value="{S_GROUP_CLOSED_TYPE}" {S_GROUP_CLOSED_CHECKED} />
+				<label for="group_type_c">{L_GROUP_CLOSED}</label> &nbsp;&nbsp;
+
+				<input type="radio" name="group_type" id="group_type_h" value="{S_GROUP_HIDDEN_TYPE}" {S_GROUP_HIDDEN_CHECKED} />
+				<label for="group_type_h">{L_GROUP_HIDDEN}</label> &nbsp;&nbsp;
+
+				<input class="mainoption" type="submit" name="groupstatus" value="{L_UPDATE}" />
+			</span>
+		</td>
 	</tr>
 	<!-- END switch_mod_option -->
 </table>
@@ -112,11 +142,16 @@
 <table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">
 	<tr>
 		<td align="left" valign="top">
-		<!-- BEGIN switch_mod_option -->
-		<span class="genmed"><input type="text"  class="post" name="username" maxlength="50" size="20" /> <input type="submit" name="add" value="{L_ADD_MEMBER}" class="mainoption" /> <input type="submit" name="usersubmit" value="{L_FIND_USERNAME}" class="liteoption" onClick="window.open('{U_SEARCH_USER}', '_phpbbsearch', 'HEIGHT=250,resizable=yes,WIDTH=400');return false;" /></span><br /><br />
-		<!-- END switch_mod_option -->
-		<span class="nav">{PAGE_NUMBER}</span></td>
-		<td align="right" valign="top"><span class="gensmall">{S_TIMEZONE}</span><br /><span class="nav">{PAGINATION}</span></td>
+			<!-- BEGIN switch_mod_option -->
+			<span class="genmed"><input type="text"  class="post" name="username" maxlength="50" size="20" /> <input type="submit" name="add" value="{L_ADD_MEMBER}" class="mainoption" /> <input type="submit" name="usersubmit" value="{L_FIND_USERNAME}" class="liteoption" onClick="window.open('{U_SEARCH_USER}', '_phpbbsearch', 'HEIGHT=250,resizable=yes,WIDTH=400');return false;" /></span><br /><br />
+			<!-- END switch_mod_option -->
+			<span class="nav">{PAGE_NUMBER}</span>
+		</td>
+		<td align="right" valign="top">
+			<span class="gensmall">{S_TIMEZONE}</span>
+			<br />
+			<span class="nav">{PAGINATION}</span>
+		</td>
 	</tr>
 </table>
 
@@ -125,7 +160,7 @@
 {S_HIDDEN_FIELDS}</form>
 
 <table width="100%" cellspacing="2" border="0" align="center">
-  <tr> 
-	<td valign="top" align="right">{JUMPBOX}</td>
-  </tr>
+	<tr>
+		<td valign="top" align="right">{JUMPBOX}</td>
+	</tr>
 </table>

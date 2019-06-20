@@ -18,8 +18,16 @@
 		</td>
 	</tr>
 	<tr>
-		<td class="row1"><span class="gen">{L_RANK_SPECIAL}</span></td>
-		<td class="row2"><input type="radio" name="special_rank" value="1" {SPECIAL_RANK} />{L_YES} &nbsp;&nbsp;<input type="radio" name="special_rank" value="0" {NOT_SPECIAL_RANK} /> {L_NO}</td>
+		<td class="row1">
+			<span class="gen">{L_RANK_SPECIAL}</span>
+		</td>
+		<td class="row2">
+			<input type="radio" name="special_rank" id="special_rank_1" value="1" {SPECIAL_RANK} />
+			<label for="special_rank_1">{L_YES}</label> &nbsp;&nbsp;
+
+			<input type="radio" name="special_rank" id="special_rank_0" value="0" {NOT_SPECIAL_RANK} />
+			<label for="special_rank_0">{L_NO}</label>
+		</td>
 	</tr>
 	<tr>
 		<td class="row1" width="38%">
