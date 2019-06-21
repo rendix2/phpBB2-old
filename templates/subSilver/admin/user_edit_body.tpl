@@ -401,10 +401,12 @@
 		<!-- BEGIN avatar_remote_link -->
 		<tr>
 			<td class="row1">
-				<span class="gen">{L_LINK_REMOTE_AVATAR}</span>
+				<label for="avatarremoteurl">
+					<span class="gen">{L_LINK_REMOTE_AVATAR}</span>
+				</label>
 			</td>
 			<td class="row2">
-				<input class="post" type="text" name="avatarremoteurl" size="40" style="width: 200px"/>
+				<input class="post" type="text" name="avatarremoteurl" id="avatarremoteurl" size="40" style="width: 200px"/>
 			</td>
 		</tr>
 		<!-- END avatar_remote_link -->
@@ -480,10 +482,12 @@
 		</tr>
 		<tr>
 			<td class="row1">
-				<span class="gen">{L_SELECT_RANK}</span>
+				<label for="user_rank">
+					<span class="gen">{L_SELECT_RANK}</span>
+				</label>
 			</td>
 			<td class="row2">
-				<select name="user_rank">{RANK_SELECT_BOX}</select>
+				<select name="user_rank" id="user_rank">{RANK_SELECT_BOX}</select>
 			</td>
 		</tr>
 		<tr>
