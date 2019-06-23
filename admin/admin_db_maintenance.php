@@ -170,30 +170,27 @@ switch($mode_id) {
                 $total_posts  = get_db_stat('postcount');
                 $total_users  = get_db_stat('usercount');
 
-                $total_deactivated_users = dibi::select('COUNT(user_id)')
+                $total_deactivated_users = dibi::select('COUNT(user_id) - 1')
                     ->from(USERS_TABLE)
                     ->where('user_active = %i', 0)
-                    ->where('user_id <> %i', ANONYMOUS)
                     ->fetchSingle();
 
                 if ($total_deactivated_users === false) {
                     throw_error("Couldn't get statistic data!");
                 }
 
-                $total_moderators = dibi::select('COUNT(user_id)')
+                $total_moderators = dibi::select('COUNT(user_id) - 1')
                     ->from(USERS_TABLE)
                     ->where('user_level = %i', MOD)
-                    ->where('user_id <> %i', ANONYMOUS)
                     ->fetchSingle();
 
                 if ($total_moderators === false) {
                     throw_error("Couldn't get statistic data!");
                 }
 
-                $total_administrators = dibi::select('COUNT(user_id)')
+                $total_administrators = dibi::select('COUNT(user_id) - 1')
                     ->from(USERS_TABLE)
                     ->where('user_level = %i', ADMIN)
-                    ->where('user_id <> %i', ANONYMOUS)
                     ->fetchSingle();
 
                 if ($total_administrators === false) {

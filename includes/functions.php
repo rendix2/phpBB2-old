@@ -27,10 +27,9 @@ function get_db_stat($mode)
 {
     switch ($mode) {
         case 'usercount':
-            return dibi::select('COUNT(user_id)')
+            return dibi::select('COUNT(user_id) - 1')
                 ->as('total')
                 ->from(USERS_TABLE)
-                ->where('user_id <> %i', ANONYMOUS)
                 ->fetchSingle();
 
         case 'newestuser':

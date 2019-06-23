@@ -301,10 +301,9 @@ foreach ($users as $user) {
 
 
 if ($mode !== 'topten' || $board_config['members_per_page'] < 10) {
-    $total_members = dibi::select('COUNT(*)')
+    $total_members = dibi::select('COUNT(*) - 1')
         ->as('total')
         ->from(USERS_TABLE)
-        ->where('user_id <> %i', ANONYMOUS)
         ->fetchSingle();
 
     if ($total_members) {

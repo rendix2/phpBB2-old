@@ -1310,17 +1310,21 @@ if ($mode === 'newpm') {
         if (!empty($_GET[POST_USERS_URL])) {
 			$user_id = (int)$_GET[POST_USERS_URL];
 
-			$user_check = dibi::select('username')
-                ->from(USERS_TABLE)
-                ->where('user_id = %i', $user_id)
-                ->where('user_id <> %i', ANONYMOUS)
-                ->fetch();
-
-			if ($user_check) {
-			    $to_username = $user_check->username;
-            } else {
-                $error     = true;
+			if ($user_id === ANONYMOUS) {
+                $error = true;
                 $error_msg = $lang['No_such_user'];
+            } else {
+                $user_check = dibi::select('username')
+                    ->from(USERS_TABLE)
+                    ->where('user_id = %i', $user_id)
+                    ->fetch();
+
+                if ($user_check) {
+                    $to_username = $user_check->username;
+                } else {
+                    $error     = true;
+                    $error_msg = $lang['No_such_user'];
+                }
             }
         } elseif ($mode === 'edit') {
 		    $columns = [
