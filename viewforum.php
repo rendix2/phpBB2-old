@@ -195,7 +195,7 @@ $userModerators = dibi::select('u.user_id, u.username')
 $moderators = [];
 
 foreach ($userModerators as $moderator) {
-    $moderators[] = '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $moderator->user_id) . '">' . $moderator->username . '</a>';
+    $moderators[] = '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $moderator->user_id) . '">' . htmlspecialchars($moderator->username, ENT_QUOTES) . '</a>';
 }
 
 $groupModerators = dibi::select('g.group_id, g.group_name')
@@ -217,7 +217,7 @@ $groupModerators = dibi::select('g.group_id, g.group_name')
     ->fetchAll();
 
 foreach ($groupModerators as $moderator) {
-    $moderators[] = '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . '=' . $moderator->group_id) . '">' . $moderator->group_name . '</a>';
+    $moderators[] = '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . '=' . $moderator->group_id) . '">' . htmlspecialchars($moderator->group_name, ENT_QUOTES) . '</a>';
 }
 
 $moderators_count = count($moderators);
