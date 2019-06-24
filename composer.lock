@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e5c67bab5b9daa3fb381e01ba36dc791",
+    "content-hash": "7e85adddfd3cf2fb22b0ee42382ab3f9",
     "packages": [
         {
             "name": "dibi/dibi",

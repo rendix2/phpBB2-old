@@ -11,6 +11,8 @@
  *
  ***************************************************************************/
 
+use Nette\Utils\Finder;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -148,26 +150,28 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
     $boardRunningDays->setTimezone($zone);
     $boardRunningDays = $boardRunningDays->diff($boardStartDay)->d;
 
-	$posts_per_day = sprintf('%.2f', $total_posts / $boardRunningDays);
+	$posts_per_day  = sprintf('%.2f', $total_posts / $boardRunningDays);
 	$topics_per_day = sprintf('%.2f', $total_topics / $boardRunningDays);
-	$users_per_day = sprintf('%.2f', $total_users / $boardRunningDays);
+	$users_per_day  = sprintf('%.2f', $total_users / $boardRunningDays);
 
-	$avatar_dir_size = 0;
+	$avatar_dir_size   = 0;
+	$enabledExtensions = ['*.jpg', '*.jpeg', '*.pjpeg', '*.gif', '*.png'];
 
-    if ($avatar_dir = @opendir($phpbb_root_path . $board_config['avatar_path'])) {
-        while ($file = @readdir($avatar_dir)) {
-            if ($file !== '.' && $file !== '..') {
-                $avatar_dir_size += @filesize($phpbb_root_path . $board_config['avatar_path'] . '/' . $file);
-            }
+    $files = Finder::findFiles($enabledExtensions)->in($phpbb_root_path . $board_config['avatar_path']);
+
+    if (count($files)) {
+        /**
+         * @var SplFileInfo $file
+         */
+        foreach ($files as $file) {
+            $avatar_dir_size += $file->getSize();
         }
 
-		@closedir($avatar_dir);
-
         $avatar_dir_size = get_formatted_filesize($avatar_dir_size);
-	} else {
-		// Couldn't open Avatar dir.
-		$avatar_dir_size = $lang['Not_available'];
-	}
+    } else {
+        // Couldn't open Avatar dir.
+        $avatar_dir_size = $lang['Not_available'];
+    }
 
     if ($posts_per_day > $total_posts) {
         $posts_per_day = $total_posts;
