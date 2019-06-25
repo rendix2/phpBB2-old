@@ -260,6 +260,8 @@ $template->assignVars(
         'L_MEMBERS_PER_PAGE' => $lang['Members_per_page'],
         'L_PM_PER_PAGE'      => $lang['PMs_per_page'],
 
+        'L_GROUP_MEMBERS_PER_PAGE' => $lang['Group_members_per_page'],
+
         'L_HOT_THRESHOLD' => $lang['Hot_threshold'],
 
         'L_DEFAULT_STYLE' => $lang['Default_style'],
@@ -380,6 +382,8 @@ $template->assignVars(
         'MEMBERS_PER_PAGE' => $new['members_per_page'],
         'PM_PER_PAGE'      => $new['pm_per_page'],
         'POSTS_PER_PAGE'   => $new['posts_per_page'],
+
+        'GROUP_MEMBERS_PER_PAGE' => $new['group_members_per_page'],
 
         'HOT_TOPIC' => $new['hot_threshold'],
 

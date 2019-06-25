@@ -920,7 +920,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 	// Dump out the remaining users
 	//
 
-    $min = min($board_config['topics_per_page'] + $start, $members_count);
+    $min = min($board_config['group_members_per_page'] + $start, $members_count);
 
     for ($i = $start; $i < $min; $i++) {
 		$username = $group_members[$i]['username'];
@@ -985,12 +985,12 @@ if (isset($_POST['groupstatus']) && $group_id) {
         );
     }
 
-    $current_page = $members_count ? ceil($members_count / $board_config['topics_per_page']) : 1;
+    $current_page = $members_count ? ceil($members_count / $board_config['group_members_per_page']) : 1;
 
     $template->assignVars(
         [
-            'PAGINATION'  => generate_pagination('groupcp.php?' . POST_GROUPS_URL . "=$group_id", $members_count, $board_config['topics_per_page'], $start),
-            'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $board_config['topics_per_page']) + 1, $current_page),
+            'PAGINATION'  => generate_pagination('groupcp.php?' . POST_GROUPS_URL . "=$group_id", $members_count, $board_config['group_members_per_page'], $start),
+            'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $board_config['group_members_per_page']) + 1, $current_page),
 
             'L_GOTO_PAGE' => $lang['Goto_page']
         ]

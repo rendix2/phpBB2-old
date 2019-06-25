@@ -95,6 +95,7 @@ $default_config = [
     'posts_per_page'                  => '15',
     'topics_per_page'                 => '50',
     'members_per_page'                => '50',
+    'group_members_per_page'          => '50',
     'pm_per_page'                     => '50',
     'hot_threshold'                   => '25',
     'max_poll_options'                => '10',
