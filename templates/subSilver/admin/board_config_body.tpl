@@ -198,6 +198,15 @@
 
         <tr>
             <td class="row1">
+                <label for="pm_per_page">{L_PM_PER_PAGE}</label>
+            </td>
+            <td class="row2">
+                <input class="post" type="text" name="pm_per_page" id="pm_per_page" size="3" maxlength="4" value="{PM_PER_PAGE}"/>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="row1">
                 <label for="hot_threshold">{L_HOT_THRESHOLD}</label>
             </td>
             <td class="row2">

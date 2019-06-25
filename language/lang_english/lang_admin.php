@@ -266,6 +266,7 @@ $lang['Board_email_form'] = 'User email via board';
 $lang['Board_email_form_explain'] = 'Users send email to each other via this board';
 $lang['Topics_per_page'] = 'Topics Per Page';
 $lang['Members_per_page'] = 'Members Per Page';
+$lang['PMs_per_page'] = 'Private messages Per Page';
 $lang['Posts_per_page'] = 'Posts Per Page';
 $lang['Hot_threshold'] = 'Posts for Popular Threshold';
 $lang['Default_style'] = 'Default Style';
