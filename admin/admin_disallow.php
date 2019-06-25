@@ -59,6 +59,12 @@ if (isset($_POST['add_name'])) {
 } elseif (isset($_POST['delete_name'])) {
 	$disallowed_id = isset($_POST['disallowed_id']) ? (int)$_POST['disallowed_id'] : (int)$_GET['disallowed_id'];
 
+	if ($disallowed_id === -1) {
+        $message .= $lang['No_disallowed'] . '<br /><br />' . sprintf($lang['Click_return_disallowadmin'], '<a href="' . Session::appendSid('admin_disallow.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+
+        message_die(GENERAL_MESSAGE, $message);
+    }
+
     dibi::delete(DISALLOW_TABLE)
         ->where('disallow_id = %i', $disallowed_id)
         ->execute();

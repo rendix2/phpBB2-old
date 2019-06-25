@@ -28,7 +28,6 @@ if (!empty($setmodules)) {
 $phpbb_root_path = './../';
 
 require './pagestart.php';
-include $phpbb_root_path . 'includes/functions_selects.php';
 
 //
 // Pull all config data
@@ -88,7 +87,7 @@ if (isset($_POST['submit'])) {
 }
 
 $style_select = Select::style($new['default_style'], 'default_style', '../templates');
-$lang_select = language_select($new['default_lang'], 'default_lang');
+$lang_select = Select::language($phpbb_root_path, $new['default_lang'], 'default_lang');
 $timezone_select = Select::timezone($new['board_timezone'], 'board_timezone');
 
 $disable_board_yes =  $new['board_disable'] ? 'checked="checked"' : '';

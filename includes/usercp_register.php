@@ -47,7 +47,12 @@ $unhtml_specialchars_replace = ['>', '<', '"', '&'];
 //
 function show_coppa()
 {
-	global $template, $lang;
+    /**
+     * @var Template $template
+     */
+    global $template;
+
+	global $lang;
 
     $template->setFileNames(['body' => 'agreement.tpl']);
 
@@ -807,8 +812,6 @@ if (isset($_POST['avatargallery']) && !$error) {
 
 	display_avatar_gallery($mode, $avatar_category, $user_id, $email, $current_email, $coppa, $username, $email, $new_password, $cur_password, $password_confirm, $icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature, $viewemail, $notifypm, $popup_pm, $notifyreply, $attachsig, $allowhtml, $allowbbcode, $allowsmilies, $allowviewonline, $user_style, $user_lang, $user_timezone, $user_dateformat, $userdata['session_id']);
 } else {
-	include $phpbb_root_path . 'includes/functions_selects.php';
-
     if (!isset($coppa)) {
         $coppa = false;
     }
@@ -974,7 +977,7 @@ if (isset($_POST['avatargallery']) && !$error) {
             'ALLOW_AVATAR'    => $board_config['allow_avatar_upload'],
             'AVATAR'          => $avatar_img,
             'AVATAR_SIZE'     => $board_config['avatar_filesize'],
-            'LANGUAGE_SELECT' => language_select($user_lang),
+            'LANGUAGE_SELECT' => Select::language($phpbb_root_path, $user_lang),
             'STYLE_SELECT'    => Select::style($user_style),
             'TIMEZONE_SELECT' => Select::timezone($user_timezone),
             'DATE_FORMAT'     => $user_dateformat,

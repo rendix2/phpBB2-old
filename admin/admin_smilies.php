@@ -11,6 +11,7 @@
 ****************************************************************************/
 
 use Nette\Caching\Cache;
+use Nette\Utils\Finder;
 
 /***************************************************************************
  *
@@ -69,22 +70,25 @@ $delimeter  = '=+:';
 
 //
 // Read a listing of uploaded smilies for use in the add or edit smliey code...
+// TODO we should do it only for situation when we need it, NO for all the time
 //
-$dir = @opendir($phpbb_root_path . $board_config['smilies_path']);
+$smilies = Finder::findFiles('*')->from($phpbb_root_path . $board_config['smilies_path']);
 
-while ($file = @readdir($dir)) {
-	if (!@is_dir(phpbb_realpath($phpbb_root_path . $board_config['smilies_path'] . '/' . $file))) {
-		$img_size = @getimagesize($phpbb_root_path . $board_config['smilies_path'] . '/' . $file);
+$smiley_images = [];
+$smiley_paks = [];
 
-		if ($img_size[0] && $img_size[1]) {
-			$smiley_images[] = $file;
-		} elseif (eregi('.pak$', $file)) {
-			$smiley_paks[] = $file;
-		}
-	}
+/**
+ * @var SplFileInfo $smile
+ */
+foreach ($smilies as $smile) {
+    $img_size = @getimagesize($phpbb_root_path . $board_config['smilies_path'] . '/' . $smile->getFilename());
+
+    if ($img_size[0] && $img_size[1]) {
+        $smiley_images[] = $smile->getFilename();
+    } elseif (preg_match('#.pak$#', $smile->getFilename())) {
+        $smiley_paks[] = $smile->getFilename();
+    }
 }
-
-@closedir($dir);
 
 //
 // Select main mode

@@ -34,7 +34,6 @@ $phpbb_root_path = './../';
 require './pagestart.php';
 require $phpbb_root_path . 'includes/bbcode.php';
 require $phpbb_root_path . 'includes/functions_post.php';
-require $phpbb_root_path . 'includes/functions_selects.php';
 require $phpbb_root_path . 'includes/functions_validate.php';
 
 $html_entities_match   = ['#<#', '#>#'];
@@ -882,7 +881,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
                 'ALWAYS_ALLOW_SMILIES_YES' => $allowsmilies ? 'checked="checked"' : '',
                 'ALWAYS_ALLOW_SMILIES_NO' => !$allowsmilies ? 'checked="checked"' : '',
                 'AVATAR' => $avatar,
-                'LANGUAGE_SELECT' => language_select($user_lang),
+                'LANGUAGE_SELECT' => Select::language($phpbb_root_path, $user_lang),
                 'TIMEZONE_SELECT' => Select::timezone($user_timezone),
                 'STYLE_SELECT' => Select::style($user_style),
                 'DATE_FORMAT' => $user_dateformat,

@@ -320,24 +320,6 @@ switch ($mode) {
 
             $template->setFileNames(['body' => 'admin/styles_edit_body.tpl']);
 
-            if ($dir = @opendir($phpbb_root_path . 'templates/')) {
-                $s_template_select = '<select name="template_name">';
-
-                while ($file = @readdir($dir)) {
-                    if (!is_file(phpbb_realpath($phpbb_root_path . 'templates/' . $file)) && !is_link(phpbb_realpath($phpbb_root_path . 'templates/' . $file)) && $file !== '.' && $file !== '..' && $file !== 'CVS') {
-                        if ($file === $selected['template_name']) {
-                            $s_template_select .= '<option value="' . $file . '" selected="selected">' . $file . "</option>\n";
-                        } else {
-                            $s_template_select .= '<option value="' . $file . '">' . $file . "</option>\n";
-                        }
-                    }
-				}
-
-				$s_template_select .= '</select>';
-			} else {
-				message_die(GENERAL_MESSAGE, $lang['No_template_dir']);
-			}
-
 			$s_hidden_fields .= '<input type="hidden" name="mode" value="' . $mode . '" />';
 
             $template->assignVars(
@@ -462,7 +444,7 @@ switch ($mode) {
                     'SPAN_CLASS3_NAME' => $selected['span_class3_name'],
 
                     'S_THEME_ACTION'    => Session::appendSid('admin_styles.php'),
-                    'S_TEMPLATE_SELECT' => $s_template_select,
+                    'S_TEMPLATE_SELECT' => Select::styleFiles($phpbb_root_path, $lang, $selected, 'template_name'),
                     'S_HIDDEN_FIELDS'   => $s_hidden_fields
                 ]
             );
@@ -540,20 +522,6 @@ switch ($mode) {
 		} else {
             $template->setFileNames(['body' => 'admin/styles_exporter.tpl']);
 
-            if ($dir = @opendir($phpbb_root_path . 'templates/')) {
-				$s_template_select = '<select name="export_template">';
-				while ($file = @readdir($dir)) {
-					if (!is_file(phpbb_realpath($phpbb_root_path . 'templates/' . $file)) && !is_link(phpbb_realpath($phpbb_root_path . 'templates/' .$file)) && $file !== '.' && $file !== '..' && $file !== 'CVS') {
-						$s_template_select .= '<option value="' . $file . '">' . $file . "</option>\n";
-					}
-				}
-
-				$s_template_select .= '</select>';
-
-            } else {
-                message_die(GENERAL_MESSAGE, $lang['No_template_dir']);
-            }
-
             $template->assignVars(
                 [
                     'L_STYLE_EXPORTER'   => $lang['Export_themes'],
@@ -562,7 +530,7 @@ switch ($mode) {
                     'L_SUBMIT'           => $lang['Submit'],
 
                     'S_EXPORTER_ACTION' => Session::appendSid('admin_styles.php?mode=export'),
-                    'S_TEMPLATE_SELECT' => $s_template_select
+                    'S_TEMPLATE_SELECT' => Select::styleFiles($phpbb_root_path, $lang, ['template_name' => null], 'export_template')
                 ]
             );
 
