@@ -444,7 +444,7 @@ switch ($mode) {
                     'SPAN_CLASS3_NAME' => $selected['span_class3_name'],
 
                     'S_THEME_ACTION'    => Session::appendSid('admin_styles.php'),
-                    'S_TEMPLATE_SELECT' => Select::styleFiles($phpbb_root_path, $lang, $selected, 'template_name'),
+                    'S_TEMPLATE_SELECT' => Select::styleFiles($phpbb_root_path, $lang, $board_config,'template_name'),
                     'S_HIDDEN_FIELDS'   => $s_hidden_fields
                 ]
             );
@@ -530,7 +530,7 @@ switch ($mode) {
                     'L_SUBMIT'           => $lang['Submit'],
 
                     'S_EXPORTER_ACTION' => Session::appendSid('admin_styles.php?mode=export'),
-                    'S_TEMPLATE_SELECT' => Select::styleFiles($phpbb_root_path, $lang, ['template_name' => null], 'export_template')
+                    'S_TEMPLATE_SELECT' => Select::styleFiles($phpbb_root_path, $lang, $board_config,'export_template')
                 ]
             );
 

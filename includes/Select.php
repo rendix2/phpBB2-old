@@ -180,12 +180,12 @@ class Select
     /**
      * @param string $phpbb_root_path
      * @param array  $lang
-     * @param array $selected
+     * @param array  $boardConfig
      * @param string $selectName
      *
      * @return string
      */
-    public static function styleFiles($phpbb_root_path, array $lang, array $selected, $selectName)
+    public static function styleFiles($phpbb_root_path, array $lang, $boardConfig, $selectName)
     {
         $templateDirs = Finder::findDirectories('*')->in($phpbb_root_path . 'templates/');
 
@@ -193,13 +193,20 @@ class Select
             message_die(GENERAL_MESSAGE, $lang['No_template_dir']);
         }
 
+        // this method is not used so much, so we can let here the new query
+        // and fix bug in origin code
+        $defaultTheme = dibi::select(['style_name'])
+            ->from(THEMES_TABLE)
+            ->where('themes_id = %i', $boardConfig['default_style'])
+            ->fetchSingle();
+
         $templateOptions = '';
 
         /**
          * @var SplFileInfo $templateDir
          */
         foreach ($templateDirs as $templateDir) {
-            if ($templateDir->getFilename() === $selected['template_name']) {
+            if ($templateDir->getFilename() === $defaultTheme) {
                 $templateOptions .= '<option value="' . $templateDir->getFilename() . '" selected="selected">' . $templateDir->getFilename() . "</option>\n";
             } else {
                 $templateOptions .= '<option value="' . $templateDir->getFilename() . '">' . $templateDir->getFilename() . "</option>\n";
