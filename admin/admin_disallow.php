@@ -37,15 +37,13 @@ $phpbb_root_path = './../';
 require './pagestart.php';
 
 if (isset($_POST['add_name'])) {
-	include $phpbb_root_path . 'includes/functions_validate.php';
-
 	$disallowed_user = isset($_POST['disallowed_user']) ? trim($_POST['disallowed_user']) : trim($_GET['disallowed_user']);
 
 	if ($disallowed_user === '') {
 		message_die(GENERAL_MESSAGE, $lang['Fields_empty']);
 	}
 
-	if (!validate_username($disallowed_user)) {
+	if (!Validator::userName($disallowed_user, $lang, $userdata)) {
 		$message = $lang['Disallowed_already'];
 	} else {
 		dibi::insert(DISALLOW_TABLE, ['disallow_username' => $disallowed_user])->execute();

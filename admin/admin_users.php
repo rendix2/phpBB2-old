@@ -34,7 +34,6 @@ $phpbb_root_path = './../';
 require './pagestart.php';
 require $phpbb_root_path . 'includes/bbcode.php';
 require $phpbb_root_path . 'includes/functions_post.php';
-require $phpbb_root_path . 'includes/functions_validate.php';
 
 $html_entities_match   = ['#<#', '#>#'];
 $html_entities_replace = ['&lt;', '&gt;'];
@@ -165,7 +164,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 
         $signature = !empty($_POST['signature']) ? trim(str_replace('<br />', "\n", $_POST['signature'])) : '';
 
-		validate_optional_fields($icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature);
+		Validator::optionalFields($icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature);
 
 		$viewemail       = isset($_POST['viewemail'])   ? (bool)$_POST['viewemail']   : 0;
         $allowviewonline = isset($_POST['hideonline'])  ? (bool)$_POST['hideonline']  : true;
@@ -244,7 +243,8 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
             unset($rename_user);
 
             if (stripslashes(strtolower($username)) !== strtolower($this_userdata['username'])) {
-                $result = validate_username($username);
+                //TODO maybe user $this_userdata instead userdata!!
+                $result = Validator::userName($username, $lang, $userdata);
 
                 if ($result['error']) {
 					$error = true;

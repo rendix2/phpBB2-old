@@ -97,9 +97,8 @@ function prepare_post(&$mode, &$post_data, &$bbcode_on, &$html_on, &$smilies_on,
 		$username = phpbb_clean_username($username);
 
 		if (!$userdata['session_logged_in'] || ($userdata['session_logged_in'] && $username !== $userdata['username'])) {
-			include $phpbb_root_path . 'includes/functions_validate.php';
+			$result = Validator::userName($username, $lang, $userdata);
 
-			$result = validate_username($username);
 			if ($result['error']) {
 				$error_msg .= !empty($error_msg) ? '<br />' . $result['error_msg'] : $result['error_msg'];
 			}
