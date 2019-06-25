@@ -135,6 +135,8 @@ $default_config = [
     'version'                         => '.0.0',
     'default_lang'                    => 'english',
     'board_startdate'                 => '0',
+    'enable_topic_review'             => '0',
+
     // DB Maintenance specific entries
     'dbmtnc_rebuild_end'              => '0',
     'dbmtnc_rebuild_pos'              => '-1',
@@ -146,7 +148,7 @@ $default_config = [
     'dbmtnc_rebuildcfg_timelimit'     => '240',
     'dbmtnc_rebuildcfg_timeoverwrite' => '0',
     'dbmtnc_disallow_postcounter'     => '0',
-    'dbmtnc_disallow_rebuild'         => '0'
+    'dbmtnc_disallow_rebuild'         => '0',
 ];
 // append data added in later versions
 if (isset($board_config) && isset($board_config['version'])) {

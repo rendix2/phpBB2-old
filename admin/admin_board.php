@@ -129,6 +129,9 @@ $privmsg_off =  $new['privmsg_disable'] ? 'checked="checked"' : '';
 $prune_yes =  $new['prune_enable'] ? 'checked="checked"' : '';
 $prune_no  = !$new['prune_enable'] ? 'checked="checked"' : '';
 
+$topic_review_yes =  $new['topic_review'] ? 'checked="checked"' : '';
+$topic_review_no  = !$new['topic_review'] ? 'checked="checked"' : '';
+
 $smile_yes =  $new['allow_smilies'] ? 'checked="checked"' : '';
 $smile_no  = !$new['allow_smilies'] ? 'checked="checked"' : '';
 
@@ -280,6 +283,8 @@ $template->assignVars(
 
         'L_ENABLE_PRUNE' => $lang['Enable_prune'],
 
+        'L_ENABLE_TOPIC_REVIEW' => $lang['Enable_topic_review'],
+
         'L_ALLOW_HTML' => $lang['Allow_HTML'],
 
         'L_ALLOW_BBCODE' => $lang['Allow_BBCode'],
@@ -414,6 +419,9 @@ $template->assignVars(
 
         'PRUNE_YES' => $prune_yes,
         'PRUNE_NO'  => $prune_no,
+
+        'TOPIC_REVIEW_YES' => $topic_review_yes,
+        'TOPIC_REVIEW_NO'  => $topic_review_no,
 
         'HTML_TAGS' => $html_tags,
         'HTML_YES'  => $html_yes,
