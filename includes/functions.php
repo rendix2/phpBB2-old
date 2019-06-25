@@ -84,7 +84,7 @@ function dss_rand()
             ->where('config_name = %s', 'rand_seed')
             ->execute();
 
-        $cache = new \Nette\Caching\Cache($storage, CONFIG_TABLE);
+        $cache = new Cache($storage, CONFIG_TABLE);
         $cache->remove(CONFIG_TABLE);
 
         $dss_seeded = true;
@@ -120,7 +120,11 @@ function get_userdata($user_id, $force_str = false)
 
 function make_jumpbox($action, $match_forum_id = 0)
 {
-	global $template, $userdata, $lang, $nav_links, $SID;
+    /**
+     * @var Template $template
+     */
+	global $template;
+	global $userdata, $lang, $nav_links, $SID;
 
 //	$is_auth = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
 
@@ -258,7 +262,7 @@ function init_userprefs($userdata)
             ->where('config_name = %s', 'default_lang')
             ->execute();
 
-        $cache = new \Nette\Caching\Cache($storage, CONFIG_TABLE);
+        $cache = new Cache($storage, CONFIG_TABLE);
         $cache->remove(CONFIG_TABLE);
 	}
 
@@ -773,7 +777,7 @@ function get_formatted_filesize($value, $string_only = true, $allowed_units = fa
     );
 
     foreach ($available_units as $si_identifier => $unit_info) {
-        if (!empty($allowed_units) && $si_identifier != 'b' && !in_array($si_identifier, $allowed_units)) {
+        if (!empty($allowed_units) && $si_identifier !== 'b' && !in_array($si_identifier, $allowed_units, true)) {
             continue;
         }
 

@@ -67,23 +67,30 @@ function make_download($dbms, $dbhost, $dbname, $dbuser, $dbpasswd, $table_prefi
     return $config_file; 
 } 
 
-/* make all the vars safe to display in form inputs and on the user's screen. Borrowed from usercp_register.php */ 
-$check_var_list = array('dbms' => 'dbms', 'dbhost' => 'dbhost', 'dbname' => 'dbname', 'dbuser' => 'dbuser', 'dbpasswd' => 'dbpasswd', 'table_prefix' => 'table_prefix'); 
+/* make all the vars safe to display in form inputs and on the user's screen. Borrowed from usercp_register.php */
+$check_var_list = [
+    'dbms'         => 'dbms',
+    'dbhost'       => 'dbhost',
+    'dbname'       => 'dbname',
+    'dbuser'       => 'dbuser',
+    'dbpasswd'     => 'dbpasswd',
+    'table_prefix' => 'table_prefix'
+];
 
 foreach ($check_var_list as $var => $param) {
     if (!empty($_POST[$param])) {
         $$var = stripslashes(htmlspecialchars(strip_tags($_POST[$param])));
     } 
-} 
+}
 
-$available_dbms = array( 
-    'mysql' => 'MySQL 3.x', 
-    'mysql4' => 'MySQL 4.x', 
-    'postgres' => 'PostgreSQL 7.x', 
-    'mssql' => 'MS SQL Server 7/2000', 
-    'msaccess' => 'MS Access [ ODBC ]', 
-    'mssql-odbc' => 'MS SQL Server [ OBDC ]', 
-); 
+$available_dbms = [
+    'mysql'      => 'MySQL 3.x',
+    'mysql4'     => 'MySQL 4.x',
+    'postgres'   => 'PostgreSQL 7.x',
+    'mssql'      => 'MS SQL Server 7/2000',
+    'msaccess'   => 'MS Access [ ODBC ]',
+    'mssql-odbc' => 'MS SQL Server [ OBDC ]',
+];
 
 if (isset($_POST['download_config']) && $_POST['download_config'] == true && isset($_POST['submit_download_config']) && $_POST['submit_download_config'] == 'Download')
 { 

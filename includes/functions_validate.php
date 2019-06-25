@@ -20,11 +20,15 @@
  *
  ***************************************************************************/
 
-//
-// Check to see if the username has been taken, or if it is disallowed.
-// Also checks if it includes the " character, which we don't allow in usernames.
-// Used for registering, changing names, and posting anonymously with a username
-//
+/**
+ * Check to see if the username has been taken, or if it is disallowed.
+ * Also checks if it includes the " character, which we don't allow in usernames.
+ * Used for registering, changing names, and posting anonymously with a username
+ *
+ * @param $username
+ *
+ * @return array
+ */
 function validate_username($username)
 {
 	global $lang, $userdata;
@@ -85,10 +89,14 @@ function validate_username($username)
     return ['error' => false, 'error_msg' => ''];
 }
 
-//
-// Check to see if email address is banned
-// or already present in the DB
-//
+/**
+ * Check to see if email address is banned
+ * or already present in the DB
+ *
+ * @param $email
+ *
+ * @return array
+ */
 function validate_email($email)
 {
 	global $lang;

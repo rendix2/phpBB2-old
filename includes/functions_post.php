@@ -678,7 +678,12 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 //
 function generate_smilies($mode, $page_id)
 {
-	global $board_config, $template, $lang, $images, $theme, $phpbb_root_path;
+    /**
+     * @var Template $template
+     */
+    global $template;
+
+	global $board_config, $lang, $images, $theme, $phpbb_root_path;
 	global $user_ip, $session_length;
 	global $userdata;
 	global $storage;
