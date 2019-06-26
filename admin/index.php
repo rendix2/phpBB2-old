@@ -46,7 +46,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
         }
     }
 
-	@closedir($dir);
+    @closedir($dir);
 
 	unset($setmodules);
 
@@ -54,14 +54,16 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
 
     $template->setFileNames(['body' => 'admin/index_navigate.tpl']);
 
-    $template->assignVars([
-        'U_FORUM_INDEX' => Session::appendSid('../index.php'),
-        'U_ADMIN_INDEX' => Session::appendSid('index.php?pane=right'),
+    $template->assignVars(
+        [
+            'U_FORUM_INDEX' => Session::appendSid('../index.php'),
+            'U_ADMIN_INDEX' => Session::appendSid('index.php?pane=right'),
 
-        'L_FORUM_INDEX'   => $lang['Main_index'],
-        'L_ADMIN_INDEX'   => $lang['Admin_Index'],
-        'L_PREVIEW_FORUM' => $lang['Preview_forum']
-        ]);
+            'L_FORUM_INDEX'   => $lang['Main_index'],
+            'L_ADMIN_INDEX'   => $lang['Admin_Index'],
+            'L_PREVIEW_FORUM' => $lang['Preview_forum']
+        ]
+    );
 
     ksort($module);
 
@@ -99,46 +101,104 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
 } elseif (isset($_GET['pane']) && $_GET['pane'] === 'right') {
 
 	include './page_header_admin.php';
+    include $phpbb_root_path .'includes/functions_admin.php';
 
     $template->setFileNames(['body' => 'admin/index_body.tpl']);
 
     $template->assignVars(
         [
-            'L_WELCOME'          => $lang['Welcome_phpBB'],
-            'L_ADMIN_INTRO'      => $lang['Admin_intro'],
-            'L_FORUM_STATS'      => $lang['Forum_stats'],
-            'L_USERNAME'         => $lang['Username'],
-            'L_LOCATION'         => $lang['Location'],
-            'L_LAST_UPDATE'      => $lang['Last_updated'],
-            'L_IP_ADDRESS'       => $lang['IP_Address'],
-            'L_STATISTIC'        => $lang['Statistic'],
-            'L_VALUE'            => $lang['Value'],
-            'L_NUMBER_POSTS'     => $lang['Number_posts'],
-            'L_POSTS_PER_DAY'    => $lang['Posts_per_day'],
-            'L_NUMBER_TOPICS'    => $lang['Number_topics'],
-            'L_TOPICS_PER_DAY'   => $lang['Topics_per_day'],
-            'L_NUMBER_USERS'     => $lang['Number_users'],
-            'L_USERS_PER_DAY'    => $lang['Users_per_day'],
-            'L_BOARD_STARTED'    => $lang['Board_started'],
-            'L_AVATAR_DIR_SIZE'  => $lang['Avatar_dir_size'],
-            'L_DB_SIZE'          => $lang['Database_size'],
+            'L_WELCOME'     => $lang['Welcome_phpBB'],
+            'L_ADMIN_INTRO' => $lang['Admin_intro'],
+            'L_USERNAME'    => $lang['Username'],
+            'L_LOCATION'    => $lang['Location'],
+            'L_LAST_UPDATE' => $lang['Last_updated'],
+            'L_IP_ADDRESS'  => $lang['IP_Address'],
+
+            'L_NUMBER_FORUMS'     => $lang['Number_forums'],
+            'L_NUMBER_CATEGORIES' => $lang['Number_categories'],
+
+            'L_NUMBER_POSTS'  => $lang['Number_posts'],
+            'L_NUMBER_TOPICS' => $lang['Number_topics'],
+            'L_NUMBER_USERS'  => $lang['Number_users'],
+
+            'L_POSTS_PER_DAY'  => $lang['Posts_per_day'],
+            'L_TOPICS_PER_DAY' => $lang['Topics_per_day'],
+            'L_USERS_PER_DAY'  => $lang['Users_per_day'],
+
+            'L_AVATAR_DIR_SIZE' => $lang['Avatar_dir_size'],
+            'L_DB_SIZE'         => $lang['Database_size'],
+
+            'L_BOARD_STARTED' => $lang['Board_started'],
+
             'L_FORUM_LOCATION'   => $lang['Forum_Location'],
             'L_STARTED'          => $lang['Login'],
             'L_GZIP_COMPRESSION' => $lang['Gzip_compression'],
-            'L_ONLINE_USERS'     => $lang['Online_users'],
+
+            'L_NUMBER_ONLINE_USERS'    => $lang['Online_users'],
+            'L_NUMBER_MODERATORS'      => $lang['Thereof_Moderators'],
+            'L_NUMBER_ADMINISTRATORS'  => $lang['Thereof_Administrators'],
+            'L_NUMBER_ACTIVE_USERS'    => $lang['Thereof_activated_users'],
+            'L_NUMBER_NONACTIVE_USERS' => $lang['Thereof_deactivated_users'],
+
+            'L_FORUM_STATISTICS' => $lang['Forum_stats'],
+            'L_BOARD_STATISTICS' => $lang['Board_Statistics'],
+
+            'L_VERSION_STATISTICS'  => $lang['Version_Statistics'],
+            'L_MEMBERS_STATISTICS'  => $lang['Members_Statistics'],
+            'L_DATABASE_STATISTICS' => $lang['Database_Statistics'],
+
+            'L_PHPBB_VERSION' => $lang['Version_of_board'],
+            'L_PHP_VERSION'   => $lang['Version_of_PHP'],
+            'L_MYSQL_VERSION' => $lang['Version_of_MySQL'],
         ]
     );
 
     //
 	// Get forum statistics
 	//
-	$total_posts = get_db_stat('postcount');
-	$total_users = get_db_stat('usercount');
-	$total_topics = get_db_stat('topiccount');
+	$totalPosts  = get_db_stat('postcount');
+	$totalUsers  = get_db_stat('usercount');
+	$totalTopics = get_db_stat('topiccount');
 
-	$usersOnline = dibi::select('COUNT(*)')
+    $mysql_version = dibi::query('SELECT VERSION() AS mysql_version')->fetchSingle();
+
+	$totalForumsCount = dibi::select('COUNT(*)')
+        ->as('total')
+        ->from(FORUMS_TABLE)
+        ->fetchSingle();
+
+    $totalCategoriesCount = dibi::select('COUNT(*)')
+        ->as('total')
+        ->from(CATEGORIES_TABLE)
+        ->fetchSingle();
+
+	$totalOnlineUsers = dibi::select('COUNT(*)')
         ->from(SESSIONS_TABLE)
         ->fetchSingle();
+
+    // admin stats mod BEGIN
+    $totalUnactiveUsers = dibi::select('COUNT(*)')
+        ->as('total')
+        ->from(USERS_TABLE)
+        ->where('user_active = %i', 0)
+        ->where('user_id != %i', ANONYMOUS)
+        ->fetchSingle();
+
+    $totalModerators = dibi::select('COUNT(user_id)')
+        ->as('total')
+        ->from(USERS_TABLE)
+        ->where('user_level = %i', MOD)
+        ->where('user_id != %i', ANONYMOUS)
+        ->fetchSingle();
+
+    $totalAdministrators = dibi::select('COUNT(user_id)')
+        ->as('total')
+        ->from(USERS_TABLE)
+        ->where('user_level = %i', ADMIN)
+        ->where('user_id != %i', ANONYMOUS)
+        ->fetchSingle();
+
+    $totalActiveUsers = $totalUsers - $totalUnactiveUsers;
 
 	$start_date = create_date($board_config['default_dateformat'], $board_config['board_startdate'], $board_config['board_timezone']);
 
@@ -154,58 +214,73 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
     $boardRunningDays->setTimezone($zone);
     $boardRunningDays = $boardRunningDays->diff($boardStartDay)->d;
 
-	$posts_per_day  = sprintf('%.2f', $total_posts / $boardRunningDays);
-	$topics_per_day = sprintf('%.2f', $total_topics / $boardRunningDays);
-	$users_per_day  = sprintf('%.2f', $total_users / $boardRunningDays);
+	$postsPerDay  = sprintf('%.2f', $totalPosts / $boardRunningDays);
+	$topicsPerDay = sprintf('%.2f', $totalTopics / $boardRunningDays);
+	$usersPerDay  = sprintf('%.2f', $totalUsers / $boardRunningDays);
 
-	$avatar_dir_size   = 0;
+	$avatarDirSize   = 0;
 	$enabledExtensions = ['*.jpg', '*.jpeg', '*.pjpeg', '*.gif', '*.png'];
 
-    $files = Finder::findFiles($enabledExtensions)->in($phpbb_root_path . $board_config['avatar_path']);
+    $avatars = Finder::findFiles($enabledExtensions)->in($phpbb_root_path . $board_config['avatar_path']);
 
-    if (count($files)) {
+    if (count($avatars)) {
         /**
          * @var SplFileInfo $file
          */
-        foreach ($files as $file) {
-            $avatar_dir_size += $file->getSize();
+        foreach ($avatars as $avatar) {
+            $avatarDirSize += $avatar->getSize();
         }
 
-        $avatar_dir_size = get_formatted_filesize($avatar_dir_size);
+        $avatarDirSize = get_formatted_filesize($avatarDirSize);
     } else {
         // Couldn't open Avatar dir.
-        $avatar_dir_size = $lang['Not_available'];
+        $avatarDirSize = $lang['Not_available'];
     }
 
-    if ($posts_per_day > $total_posts) {
-        $posts_per_day = $total_posts;
+    if ($postsPerDay > $totalPosts) {
+        $postsPerDay = $totalPosts;
     }
 
-    if ($topics_per_day > $total_topics) {
-        $topics_per_day = $total_topics;
+    if ($topicsPerDay > $totalTopics) {
+        $topicsPerDay = $totalTopics;
     }
 
-    if ($users_per_day > $total_users) {
-        $users_per_day = $total_users;
+    if ($usersPerDay > $totalUsers) {
+        $usersPerDay = $totalUsers;
     }
 
-    include $phpbb_root_path .'includes/functions_admin.php';
-
-    $dbsize = get_database_size();
+    $dbSize = get_database_size();
 
     $template->assignVars(
         [
-            'NUMBER_OF_POSTS'  => $total_posts,
-            'NUMBER_OF_TOPICS' => $total_topics,
-            'NUMBER_OF_USERS'  => $total_users,
-            'START_DATE'       => $start_date,
-            'POSTS_PER_DAY'    => $posts_per_day,
-            'TOPICS_PER_DAY'   => $topics_per_day,
-            'USERS_PER_DAY'    => $users_per_day,
-            'AVATAR_DIR_SIZE'  => $avatar_dir_size,
-            'DB_SIZE'          => $dbsize,
+            'START_DATE' => $start_date,
+
+            'POSTS_PER_DAY'  => $postsPerDay,
+            'TOPICS_PER_DAY' => $topicsPerDay,
+            'USERS_PER_DAY'  => $usersPerDay,
+
+            'AVATAR_DIR_SIZE' => $avatarDirSize,
+            'DB_SIZE'         => $dbSize,
+
             'GZIP_COMPRESSION' => $board_config['gzip_compress'] ? $lang['ON'] : $lang['OFF'],
-            'ONLINE_USERS'     => $usersOnline
+
+            'NUMBER_OF_CATEGORIES' => $totalCategoriesCount,
+            'NUMBER_OF_FORUMS'     => $totalForumsCount,
+            'NUMBER_OF_TOPICS'     => $totalTopics,
+            'NUMBER_OF_POSTS'      => $totalPosts,
+            'NUMBER_OF_USERS'      => $totalUsers,
+
+            'NUMBER_OF_ONLINE_USERS' => $totalOnlineUsers,
+
+            'NUMBER_OF_ACTIVE_USERS'    => $totalActiveUsers,
+            'NUMBER_OF_NONACTIVE_USERS' => $totalUnactiveUsers,
+
+            'NUMBER_OF_MODERATORS'      => $totalModerators,
+            'NUMBER_OF_ADMINISTRATORS'  => $totalAdministrators,
+
+            "PHPBB_VERSION" => '2' . $board_config['version'],
+            "PHP_VERSION"   => PHP_VERSION,
+            "MYSQL_VERSION" => $mysql_version,
         ]
     );
 

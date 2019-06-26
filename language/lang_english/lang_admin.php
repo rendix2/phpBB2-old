@@ -71,9 +71,10 @@ $lang['Preview_forum'] = 'Preview Forum';
 
 $lang['Click_return_admin_index'] = 'Click %sHere%s to return to the Admin Index';
 
-$lang['Statistic'] = 'Statistic';
 $lang['Value'] = 'Value';
 $lang['Number_posts'] = 'Number of posts';
+$lang['Number_forums'] = 'Number of forums';
+$lang['Number_categories'] = 'Number of categories';
 $lang['Posts_per_day'] = 'Posts per day';
 $lang['Number_topics'] = 'Number of topics';
 $lang['Topics_per_day'] = 'Topics per day';
@@ -83,7 +84,8 @@ $lang['Board_started'] = 'Board started';
 $lang['Avatar_dir_size'] = 'Avatar directory size';
 $lang['Database_size'] = 'Database size';
 $lang['Gzip_compression'] ='Gzip compression';
-$lang['Online_users'] ='Online users';
+$lang['Online_users'] = 'Number of online users';
+$lang['Offline_users'] = 'Number of offline users';
 $lang['Not_available'] = 'Not available';
 
 $lang['ON'] = 'ON'; // This is for GZip compression
@@ -754,6 +756,22 @@ $lang['Login_reset_time'] = 'Login lock time';
 $lang['Login_reset_time_explain'] = 'Time in minutes the user have to wait until he is allowed to login again after exceeding the number of allowed login attempts.';
 
 $lang['Category_name'] = 'Category name';
+
+//
+//Advance Admin Index
+//
+$lang['Members_Statistics'] = 'Members Statistics';
+$lang['Version_Statistics'] = 'Version Statistics';
+$lang['Board_Statistics'] = 'Board Statistics';
+$lang['Database_Statistics'] = 'Database Statistics';
+$lang['Thereof_deactivated_users'] = 'Number of non-active members';
+$lang['Thereof_activated_users'] = 'Number of active members';
+$lang['Thereof_Moderators'] = 'Number of Moderators';
+$lang['Thereof_Administrators'] = 'Number of Administrators';
+$lang['DB_size'] = 'Size of the Database';
+$lang['Version_of_board'] = 'Version of <a href="http://www.phpbb.com">phpbb</a>';
+$lang['Version_of_PHP'] = 'Version of <a href="http://www.php.net/">PHP</a>';
+$lang['Version_of_MySQL'] = 'Version of <a href="http://www.mysql.com/">MySQL</a>';
 
 //
 // That's all Folks!
