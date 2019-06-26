@@ -11,6 +11,7 @@
  ***************************************************************************/
 
 use Nette\Loaders\RobotLoader;
+use Nette\Utils\Finder;
 
 /***************************************************************************
  *
@@ -517,22 +518,22 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['up
         }
     }
 
-	$dirname = $phpbb_root_path . 'language';
-	$dir = opendir($dirname);
+    $lang_options = [];
+    $languages = Finder::findDirectories('lang_*')->in($phpbb_root_path . 'language');
 
-	$lang_options = [];
-	while ($file = readdir($dir)) {
-		if (preg_match('#^lang_#i', $file) && !is_file(@phpbb_realpath($dirname . '/' . $file)) && !is_link(@phpbb_realpath($dirname . '/' . $file))) {
-			$filename = trim(str_replace('lang_', '', $file));
-			$displayname = preg_replace('/^(.*?)_(.*)$/', '\1 [ \2 ]', $filename);
-			$displayname = preg_replace('/\[(.*?)_(.*)\]/', '[ \1 - \2 ]', $displayname);
-			$lang_options[$displayname] = $filename;
-		}
-	}
+    /**
+     * @var SplFileInfo $language
+     */
+    foreach ($languages as $language) {
+        $filename = trim(str_replace('lang_', '', $language->getFilename()));
 
-	closedir($dir);
+        $displayName = preg_replace('/^(.*?)_(.*)$/', "\\1 [ \\2 ]", $filename);
+        $displayName = preg_replace("/\[(.*?)_(.*)\]/", "[ \\1 - \\2 ]", $displayName);
 
-	@asort($lang_options);
+        $lang_options[$displayName] = $filename;
+    }
+
+    @asort($lang_options);
 
 	$lang_select = '<select name="lang" onchange="this.form.submit()">';
 

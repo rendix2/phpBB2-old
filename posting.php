@@ -107,7 +107,7 @@ $topic_type = in_array($topic_type, [POST_NORMAL, POST_STICKY, POST_ANNOUNCE], t
 // If the mode is set to topic review then output
 // that review ...
 //
-if ($mode === 'topicreview') {
+if ($mode === 'topicreview' && (int)$board_config['topic_review'] === 1) {
     require $phpbb_root_path . 'includes/topic_review.php';
 
     topic_review($topic_id, false);
@@ -1124,12 +1124,13 @@ if (($mode === 'newtopic' || ($mode === 'editpost' && $post_data['edit_poll'])) 
 //
 // Topic review
 //
-if ($mode === 'reply' && $is_auth['auth_read']) {
-	require $phpbb_root_path . 'includes/topic_review.php';
-	topic_review($topic_id, true);
+if ($mode === 'reply' && $is_auth['auth_read'] && (int)$board_config['topic_review'] === 1) {
+    require $phpbb_root_path . 'includes/topic_review.php';
 
-	$template->assignBlockVars('switch_inline_mode', []);
-	$template->assignVarFromHandle('TOPIC_REVIEW_BOX', 'reviewbody');
+    topic_review($topic_id, true);
+
+    $template->assignBlockVars('switch_inline_mode', []);
+    $template->assignVarFromHandle('TOPIC_REVIEW_BOX', 'reviewbody');
 }
 
 $template->pparse('body');

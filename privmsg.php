@@ -1849,7 +1849,7 @@ if ($submit_msgdays && (!empty($_POST['msgdays']) || !empty($_GET['msgdays']))) 
 }
 
 $sql = $limit_msg_time->orderBy('pm.privmsgs_date', dibi::DESC)
-    ->limit($board_config['topics_per_page'])
+    ->limit($board_config['pm_per_page'])
     ->offset($start);
 
 $sql_all_tot = $sql_tot;
@@ -2045,8 +2045,8 @@ if (count($rows)) {
 
     $template->assignVars(
         [
-            'PAGINATION'  => generate_pagination("privmsg.php?folder=$folder", $pm_total, $board_config['topics_per_page'], $start),
-            'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $board_config['topics_per_page']) + 1, ceil($pm_total / $board_config['topics_per_page'])),
+            'PAGINATION'  => generate_pagination("privmsg.php?folder=$folder", $pm_total, $board_config['pm_per_page'], $start),
+            'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $board_config['pm_per_page']) + 1, ceil($pm_total / $board_config['pm_per_page'])),
 
             'L_GOTO_PAGE' => $lang['Goto_page']
         ]

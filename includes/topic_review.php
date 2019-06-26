@@ -29,7 +29,12 @@
  */
 function topic_review($topic_id, $is_inline_review)
 {
-	global $board_config, $template, $lang, $images, $theme, $phpbb_root_path;
+    /**
+     * @var Template $template
+     */
+    global $template;
+
+	global $board_config, $lang, $images, $theme, $phpbb_root_path;
 	global $userdata, $user_ip;
 	global $orig_word, $replacement_word;
 

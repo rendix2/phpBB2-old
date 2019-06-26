@@ -19,7 +19,7 @@
  *
  ***************************************************************************/
 
-function clean_words($mode, &$entry, array &$stopwords, array &$synonyms)
+function clean_words( $mode, &$entry, array &$stopwords, array &$synonyms)
 {
     static $drop_char_matches = [
         '^'  => ' ',
@@ -276,6 +276,7 @@ function remove_common($mode, $fraction, $word_id_list = [])
 
 /**
  * @param array $post_ids
+ *
  * @return int
  */
 function remove_search_post(array $post_ids)
@@ -284,47 +285,42 @@ function remove_search_post(array $post_ids)
 
 	$words_removed = false;
 
-    switch ($dbms) {
-        case 'mysql':
-            $words = dibi::select('word_id')
+    if ($dbms === 'mysql') {
+        $words = dibi::select('word_id')
+            ->from(SEARCH_MATCH_TABLE)
+            ->where('post_id IN %in', $post_ids)
+            ->groupBy('word_id')
+            ->fetchPairs(null, 'word_id');
+
+        if (count($words)) {
+            $words_match = dibi::select('word_id')
                 ->from(SEARCH_MATCH_TABLE)
-                ->where('post_id IN %in', $post_ids)
+                ->where('word_id IN %in', $words)
                 ->groupBy('word_id')
+                ->having('COUNT(word_id) = 1')
                 ->fetchPairs(null, 'word_id');
 
-            if (count($words)) {
-                $words_match = dibi::select('word_id')
-                    ->from(SEARCH_MATCH_TABLE)
-                    ->where('word_id IN %in', $words)
-                    ->groupBy('word_id')
-                    ->having('COUNT(word_id) = 1')
-                    ->fetchPairs(null, 'word_id');
-
-                if (count($words_match)) {
-                    $words_removed = dibi::delete(SEARCH_WORD_TABLE)
-                        ->where('word_id IN %in', $words_match)
-                        ->execute(dibi::AFFECTED_ROWS);
-                }
+            if (count($words_match)) {
+                $words_removed = dibi::delete(SEARCH_WORD_TABLE)
+                    ->where('word_id IN %in', $words_match)
+                    ->execute(dibi::AFFECTED_ROWS);
             }
-            break;
+        }
+    } else {
+        $words_removed = dibi::delete(SEARCH_WORD_TABLE)
+            ->where('word_id IN',
 
-		default:
-            $words_removed = dibi::delete(SEARCH_WORD_TABLE)
-                ->where('word_id IN',
+                dibi::select('word_id')
+                    ->from(SEARCH_MATCH_TABLE)
+                    ->where('word_id IN',
 
-                    dibi::select('word_id')
-                        ->from(SEARCH_MATCH_TABLE)
-                        ->where('word_id IN',
-
-                            dibi::select('word_id')
-                                ->from(SEARCH_MATCH_TABLE)
-                                ->where('post_id IN', $post_ids))
-                        ->groupBy('word_id')
-                        ->having('COUNT(word_id) = %i', 1))
-                ->execute(dibi::AFFECTED_ROWS);
-
-			break;
-	}
+                        dibi::select('word_id')
+                            ->from(SEARCH_MATCH_TABLE)
+                            ->where('post_id IN', $post_ids))
+                    ->groupBy('word_id')
+                    ->having('COUNT(word_id) = %i', 1))
+            ->execute(dibi::AFFECTED_ROWS);
+    }
 
 	dibi::delete(SEARCH_MATCH_TABLE)
         ->where('post_id IN %in', $post_ids)
@@ -338,7 +334,12 @@ function remove_search_post(array $post_ids)
 //
 function username_search($search_match)
 {
-	global $board_config, $template, $lang, $images, $theme, $phpbb_root_path;
+    /**
+     * @var Template $template
+     */
+    global $template;
+
+	global $board_config, $lang, $images, $theme, $phpbb_root_path;
 	global $gen_simple_header;
 
 	$gen_simple_header = true;

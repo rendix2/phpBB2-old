@@ -37,15 +37,13 @@ $phpbb_root_path = './../';
 require './pagestart.php';
 
 if (isset($_POST['add_name'])) {
-	include $phpbb_root_path . 'includes/functions_validate.php';
-
 	$disallowed_user = isset($_POST['disallowed_user']) ? trim($_POST['disallowed_user']) : trim($_GET['disallowed_user']);
 
 	if ($disallowed_user === '') {
 		message_die(GENERAL_MESSAGE, $lang['Fields_empty']);
 	}
 
-	if (!validate_username($disallowed_user)) {
+	if (!Validator::userName($disallowed_user, $lang, $userdata)) {
 		$message = $lang['Disallowed_already'];
 	} else {
 		dibi::insert(DISALLOW_TABLE, ['disallow_username' => $disallowed_user])->execute();
@@ -58,6 +56,12 @@ if (isset($_POST['add_name'])) {
 	message_die(GENERAL_MESSAGE, $message);
 } elseif (isset($_POST['delete_name'])) {
 	$disallowed_id = isset($_POST['disallowed_id']) ? (int)$_POST['disallowed_id'] : (int)$_GET['disallowed_id'];
+
+	if ($disallowed_id === -1) {
+        $message .= $lang['No_disallowed'] . '<br /><br />' . sprintf($lang['Click_return_disallowadmin'], '<a href="' . Session::appendSid('admin_disallow.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+
+        message_die(GENERAL_MESSAGE, $message);
+    }
 
     dibi::delete(DISALLOW_TABLE)
         ->where('disallow_id = %i', $disallowed_id)

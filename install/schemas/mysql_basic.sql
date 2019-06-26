@@ -29,6 +29,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_autologin_time
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('override_user_style','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('posts_per_page','15');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('topics_per_page','50');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_per_page','50');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('group_members_per_page','50');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('members_per_page','50');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('hot_threshold','25');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_poll_options','10');
@@ -71,6 +73,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_port', '80'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('script_path', '/phpBB2/');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '.0.23');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('rand_seed', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_topic_review', '0');
 
 
 # -- Categories

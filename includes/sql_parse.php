@@ -28,10 +28,12 @@
 *
 \***************************************************************************/
 
-//
-// remove_comments will strip the sql comment lines out of an uploaded sql file
-// specifically for mssql and postgres type files in the install....
-//
+/**
+ * remove_comments will strip the sql comment lines out of an uploaded sql file
+ * specifically for mssql and postgres type files in the install....
+ *
+ * @param $output
+ */
 function remove_comments(&$output)
 {
 	$lines = explode("\n", $output);
@@ -41,6 +43,7 @@ function remove_comments(&$output)
 	$linecount = count($lines);
 
 	$in_comment = false;
+
 	foreach ($lines as $line) {
 		if (preg_match("/^\/\*/", preg_quote($line))) {
 			$in_comment = true;
@@ -59,9 +62,13 @@ function remove_comments(&$output)
 	return $output;
 }
 
-//
-// remove_remarks will strip the sql comment lines out of an uploaded sql file
-//
+/**
+ * remove_remarks will strip the sql comment lines out of an uploaded sql file
+ *
+ * @param $sql
+ *
+ * @return
+ */
 function remove_remarks($sql)
 {
 	$lines = explode("\n", $sql);
@@ -85,13 +92,17 @@ function remove_remarks($sql)
 	}
 	
 	return $output;
-	
 }
 
-//
-// split_sql_file will split an uploaded sql file into single sql statements.
-// Note: expects trim() to have already been run on $sql.
-//
+/**
+ * split_sql_file will split an uploaded sql file into single sql statements.
+ * Note: expects trim() to have already been run on $sql.
+ *
+ * @param string $sql
+ * @param string $delimiter
+ *
+ * @return array
+ */
 function split_sql_file($sql, $delimiter)
 {
 	// Split up our string into "possible" SQL statements.

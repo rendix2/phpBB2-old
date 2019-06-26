@@ -19,7 +19,9 @@
 		</tr>
 
 		<tr>
-			<td class="row1">{L_TEMPLATE}:</td>
+			<td class="row1">
+				<label for="template_name">{L_TEMPLATE}:</label>
+			</td>
 			<td class="row2" colspan="2">{S_TEMPLATE_SELECT}</td>
 		</tr>
 

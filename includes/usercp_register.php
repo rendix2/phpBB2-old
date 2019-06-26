@@ -47,7 +47,12 @@ $unhtml_specialchars_replace = ['>', '<', '"', '&'];
 //
 function show_coppa()
 {
-	global $template, $lang;
+    /**
+     * @var Template $template
+     */
+    global $template;
+
+	global $lang;
 
     $template->setFileNames(['body' => 'agreement.tpl']);
 
@@ -93,7 +98,6 @@ if (
 	isset($_POST['cancelavatar']) ||
 	$mode === 'register'
 ) {
-	include $phpbb_root_path . 'includes/functions_validate.php';
 	include $phpbb_root_path . 'includes/bbcode.php';
 	include $phpbb_root_path . 'includes/functions_post.php';
 
@@ -129,7 +133,7 @@ if (
 
 	// Run some validation on the optional fields. These are pass-by-ref, so they'll be changed to
 	// empty strings if they fail.
-	validate_optional_fields($icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature);
+	Validator::optionalFields($icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature);
 
     $viewemail       = isset($_POST['viewemail'])   ? (bool)$_POST['hideonline']  : 0;
     $allowviewonline = isset($_POST['hideonline'])  ? (bool)!$_POST['hideonline'] : true;
@@ -332,7 +336,7 @@ if (isset($_POST['submit'])) {
 	// Do a ban check on this email address
 	//
     if ($email !== $userdata['user_email'] || $mode === 'register') {
-        $result = validate_email($email);
+        $result = Validator::email($email, $lang);
 
         if ($result['error']) {
             $email = $userdata['user_email'];
@@ -367,7 +371,7 @@ if (isset($_POST['submit'])) {
             $error = true;
         } elseif ($username !== $userdata['username'] || $mode === 'register') {
             if (strtolower($username) !== strtolower($userdata['username']) || $mode === 'register') {
-				$result = validate_username($username);
+				$result = Validator::userName($username, $lang, $userdata);
 
                 if ($result['error']) {
                     $error = true;
@@ -807,8 +811,6 @@ if (isset($_POST['avatargallery']) && !$error) {
 
 	display_avatar_gallery($mode, $avatar_category, $user_id, $email, $current_email, $coppa, $username, $email, $new_password, $cur_password, $password_confirm, $icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature, $viewemail, $notifypm, $popup_pm, $notifyreply, $attachsig, $allowhtml, $allowbbcode, $allowsmilies, $allowviewonline, $user_style, $user_lang, $user_timezone, $user_dateformat, $userdata['session_id']);
 } else {
-	include $phpbb_root_path . 'includes/functions_selects.php';
-
     if (!isset($coppa)) {
         $coppa = false;
     }
@@ -974,7 +976,7 @@ if (isset($_POST['avatargallery']) && !$error) {
             'ALLOW_AVATAR'    => $board_config['allow_avatar_upload'],
             'AVATAR'          => $avatar_img,
             'AVATAR_SIZE'     => $board_config['avatar_filesize'],
-            'LANGUAGE_SELECT' => language_select($user_lang),
+            'LANGUAGE_SELECT' => Select::language($phpbb_root_path, $user_lang),
             'STYLE_SELECT'    => Select::style($user_style),
             'TIMEZONE_SELECT' => Select::timezone($user_timezone),
             'DATE_FORMAT'     => $user_dateformat,

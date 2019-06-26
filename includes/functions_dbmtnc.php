@@ -9,6 +9,8 @@
  *   part of DB Maintenance Mod 1.3.8
  ***************************************************************************/
 
+use Nette\Caching\Cache;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -92,6 +94,9 @@ $default_config = [
     'override_user_style'             => '0',
     'posts_per_page'                  => '15',
     'topics_per_page'                 => '50',
+    'members_per_page'                => '50',
+    'group_members_per_page'          => '50',
+    'pm_per_page'                     => '50',
     'hot_threshold'                   => '25',
     'max_poll_options'                => '10',
     'max_sig_chars'                   => '255',
@@ -130,6 +135,8 @@ $default_config = [
     'version'                         => '.0.0',
     'default_lang'                    => 'english',
     'board_startdate'                 => '0',
+    'enable_topic_review'             => '0',
+
     // DB Maintenance specific entries
     'dbmtnc_rebuild_end'              => '0',
     'dbmtnc_rebuild_pos'              => '-1',
@@ -141,7 +148,7 @@ $default_config = [
     'dbmtnc_rebuildcfg_timelimit'     => '240',
     'dbmtnc_rebuildcfg_timeoverwrite' => '0',
     'dbmtnc_disallow_postcounter'     => '0',
-    'dbmtnc_disallow_rebuild'         => '0'
+    'dbmtnc_disallow_rebuild'         => '0',
 ];
 // append data added in later versions
 if (isset($board_config) && isset($board_config['version'])) {
@@ -178,7 +185,7 @@ function update_config($name, $value)
         ->where('config_name = %s', $name)
         ->execute();
 
-    $cache = new \Nette\Caching\Cache($storage, CONFIG_TABLE);
+    $cache = new Cache($storage, CONFIG_TABLE);
     $cache->remove(CONFIG_TABLE);
 
 	$board_config[$name] = $value;
@@ -291,7 +298,7 @@ function check_condition($check)
                 return false; // Status unknown
             }
 
-            return !((isset($row->Type) && $row->Type == 'HEAP') || (isset($row->Engine) && ($row->Engine == 'HEAP' || $row->Engine === 'MEMORY')));
+            return !((isset($row->Type) && $row->Type === 'HEAP') || (isset($row->Engine) && ($row->Engine == 'HEAP' || $row->Engine === 'MEMORY')));
 			break;
 		case 3: // DB locked
            return (int)$board_config['board_disable'] === 1;
@@ -366,7 +373,7 @@ function get_table_statistic()
         $stat['all']['records'] += (int)$row->Rows;
         $stat['all']['size']    += (int)$row->Data_length + (int)$row->Index_length;
 
-        if (!in_array($row->Name, $prefixedTables)) {
+        if (!in_array($row->Name, $prefixedTables, true)) {
             $stat['advanced']['count']++;
             $stat['advanced']['records'] += (int)$row->Rows;
             $stat['advanced']['size']    += (int)$row->Data_length + (int)$row->Index_length;
@@ -617,6 +624,7 @@ function erc_throw_error($msg_text = '', $err_line = '', $err_file = '')
 	exit;
 }
 
+// TODO we should someway use Select class!!!
 function language_select($default, $select_name = 'language', $file_to_check = 'main', $dirname= 'language')
 {
 	global $phpEx, $phpbb_root_path, $lang;

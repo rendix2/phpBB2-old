@@ -146,6 +146,7 @@ if ($user->user_viewemail || $userdata['user_level'] === ADMIN) {
     include $phpbb_root_path . 'includes/page_header.php';
 
     $template->setFileNames(['body' => 'profile_send_email.tpl']);
+
     make_jumpbox('viewforum.php');
 
     if ($error) {

@@ -194,8 +194,8 @@ function get_database_size()
                     $database_size = 0;
 
                     foreach ($tables as $table) {
-                        if ((isset($table->Type) && $table->Type != 'MRG_MyISAM') || (isset($table->Engine) && ($table->Engine == 'MyISAM' || $table->Engine == 'InnoDB' || $table->Engine == 'Aria'))) {
-                            if ($table_prefix != '') {
+                        if ((isset($table->Type) && $table->Type !== 'MRG_MyISAM') || (isset($table->Engine) && ($table->Engine === 'MyISAM' || $table->Engine === 'InnoDB' || $table->Engine === 'Aria'))) {
+                            if ($table_prefix !== '') {
                                 if (strpos($table->Name, $table_prefix) !== false) {
                                     $database_size += $table->Data_length + $table->Index_length;
                                 }
@@ -243,7 +243,7 @@ function get_database_size()
                 ->where('proname = %s', 'pg_database_size')
                 ->fetch();
 
-            if ($row['proname'] == 'pg_database_size') {
+            if ($row['proname'] === 'pg_database_size') {
                 $database = dibi::getDatabaseInfo()->getName();
 
                 if (strpos($database, '.') !== false) {

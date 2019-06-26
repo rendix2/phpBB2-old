@@ -10,6 +10,8 @@
 
 ***************************************************************************/
 
+use Nette\Caching\Cache;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -308,7 +310,7 @@ class Emailer
                     ->where('config_name =  %s', 'sendmail_fix')
                     ->execute();
 
-                $cache = new \Nette\Caching\Cache($storage, CONFIG_TABLE);
+                $cache = new Cache($storage, CONFIG_TABLE);
                 $cache->remove(CONFIG_TABLE);
 
 				$board_config['sendmail_fix'] = 1;

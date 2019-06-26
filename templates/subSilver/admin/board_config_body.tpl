@@ -198,6 +198,24 @@
 
         <tr>
             <td class="row1">
+                <label for="pm_per_page">{L_PM_PER_PAGE}</label>
+            </td>
+            <td class="row2">
+                <input class="post" type="text" name="pm_per_page" id="pm_per_page" size="3" maxlength="4" value="{PM_PER_PAGE}"/>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="row1">
+                <label for="group_members_per_page">{L_GROUP_MEMBERS_PER_PAGE}</label>
+            </td>
+            <td class="row2">
+                <input class="post" type="text" name="group_members_per_page" id="group_members_per_page" size="3" maxlength="4" value="{GROUP_MEMBERS_PER_PAGE}"/>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="row1">
                 <label for="hot_threshold">{L_HOT_THRESHOLD}</label>
             </td>
             <td class="row2">
@@ -272,6 +290,17 @@
 
                 <input type="radio" name="prune_enable" id="prune_enable_0" value="0" {PRUNE_NO} />
                 <label for="prune_enable_0">{L_NO}</label>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="row1">{L_ENABLE_TOPIC_REVIEW}</td>
+            <td class="row2">
+                <input type="radio" name="topic_review" id="topic_review_1" value="1" {TOPIC_REVIEW_YES} />
+                <label for="topic_review_1">{L_YES}</label>
+
+                <input type="radio" name="topic_review" id="topic_review_0" value="0" {TOPIC_REVIEW_NO} />
+                <label for="topic_review_0">{L_NO}</label>
             </td>
         </tr>
 

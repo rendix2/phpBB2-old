@@ -11,6 +11,8 @@
  *
  ***************************************************************************/
 
+use Nette\Caching\Cache;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -172,7 +174,7 @@ if (defined('SHOW_ONLINE')) {
             ->where('config_name = %s', 'record_online_date')
             ->execute();
 
-        $cache = new \Nette\Caching\Cache($storage, CONFIG_TABLE);
+        $cache = new Cache($storage, CONFIG_TABLE);
         $cache->remove(CONFIG_TABLE);
 	}
 

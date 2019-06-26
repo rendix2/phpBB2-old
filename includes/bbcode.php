@@ -43,6 +43,9 @@ $bbcode_tpl = null;
  */
 function load_bbcode_template()
 {
+    /**
+     * @var Template $template
+     */
 	global $template;
 	$tpl_filename = $template->makeFileName('bbcode.tpl');
 	$tpl = fread(fopen($tpl_filename, 'rb'), filesize($tpl_filename));
@@ -430,9 +433,12 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 				if (0 === strcasecmp($close_tag, $possible_end)) {
 					// We have an ending tag.
 					// Check if we've already found a matching starting tag.
-					if (count($stack) > 0) {
+
+                    $stackCount = count($stack);
+
+					if ($stackCount > 0) {
 						// There exists a starting tag.
-						$curr_nesting_depth = count($stack);
+						$curr_nesting_depth = $stackCount;
 						// We need to do 2 replacements now.
 						$match = array_pop($stack);
 						$start_index = $match['pos'];
@@ -487,7 +493,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 						// Now.. we've screwed up the indices by changing the length of the string.
 						// So, if there's anything in the stack, we want to resume searching just after it.
 						// otherwise, we go back to the start.
-						if (count($stack) > 0) {
+						if ($stackCount > 0) {
 							$match = array_pop($stack);
 							$curr_pos = $match['pos'];
 //							++$curr_pos;

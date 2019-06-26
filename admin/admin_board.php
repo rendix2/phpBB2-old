@@ -28,7 +28,6 @@ if (!empty($setmodules)) {
 $phpbb_root_path = './../';
 
 require './pagestart.php';
-include $phpbb_root_path . 'includes/functions_selects.php';
 
 //
 // Pull all config data
@@ -88,7 +87,7 @@ if (isset($_POST['submit'])) {
 }
 
 $style_select = Select::style($new['default_style'], 'default_style', '../templates');
-$lang_select = language_select($new['default_lang'], 'default_lang');
+$lang_select = Select::language($phpbb_root_path, $new['default_lang'], 'default_lang');
 $timezone_select = Select::timezone($new['board_timezone'], 'board_timezone');
 
 $disable_board_yes =  $new['board_disable'] ? 'checked="checked"' : '';
@@ -129,6 +128,9 @@ $privmsg_off =  $new['privmsg_disable'] ? 'checked="checked"' : '';
 
 $prune_yes =  $new['prune_enable'] ? 'checked="checked"' : '';
 $prune_no  = !$new['prune_enable'] ? 'checked="checked"' : '';
+
+$topic_review_yes =  $new['topic_review'] ? 'checked="checked"' : '';
+$topic_review_no  = !$new['topic_review'] ? 'checked="checked"' : '';
 
 $smile_yes =  $new['allow_smilies'] ? 'checked="checked"' : '';
 $smile_no  = !$new['allow_smilies'] ? 'checked="checked"' : '';
@@ -259,6 +261,9 @@ $template->assignVars(
         'L_TOPICS_PER_PAGE'  => $lang['Topics_per_page'],
         'L_POSTS_PER_PAGE'   => $lang['Posts_per_page'],
         'L_MEMBERS_PER_PAGE' => $lang['Members_per_page'],
+        'L_PM_PER_PAGE'      => $lang['PMs_per_page'],
+
+        'L_GROUP_MEMBERS_PER_PAGE' => $lang['Group_members_per_page'],
 
         'L_HOT_THRESHOLD' => $lang['Hot_threshold'],
 
@@ -277,6 +282,8 @@ $template->assignVars(
         'L_ENABLE_GZIP' => $lang['Enable_gzip'],
 
         'L_ENABLE_PRUNE' => $lang['Enable_prune'],
+
+        'L_ENABLE_TOPIC_REVIEW' => $lang['Enable_topic_review'],
 
         'L_ALLOW_HTML' => $lang['Allow_HTML'],
 
@@ -378,7 +385,10 @@ $template->assignVars(
 
         'TOPICS_PER_PAGE'  => $new['topics_per_page'],
         'MEMBERS_PER_PAGE' => $new['members_per_page'],
+        'PM_PER_PAGE'      => $new['pm_per_page'],
         'POSTS_PER_PAGE'   => $new['posts_per_page'],
+
+        'GROUP_MEMBERS_PER_PAGE' => $new['group_members_per_page'],
 
         'HOT_TOPIC' => $new['hot_threshold'],
 
@@ -409,6 +419,9 @@ $template->assignVars(
 
         'PRUNE_YES' => $prune_yes,
         'PRUNE_NO'  => $prune_no,
+
+        'TOPIC_REVIEW_YES' => $topic_review_yes,
+        'TOPIC_REVIEW_NO'  => $topic_review_no,
 
         'HTML_TAGS' => $html_tags,
         'HTML_YES'  => $html_yes,

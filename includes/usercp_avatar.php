@@ -21,6 +21,13 @@
  *
  ***************************************************************************/
 
+/**
+ * @param $type
+ * @param $error
+ * @param $error_msg
+ *
+ * @return bool|string
+ */
 function check_image_type(&$type, &$error, &$error_msg)
 {
 	global $lang;
@@ -46,6 +53,12 @@ function check_image_type(&$type, &$error, &$error_msg)
 	return false;
 }
 
+/**
+ * @param $avatar_type
+ * @param $avatar_file
+ *
+ * @return array
+ */
 function user_avatar_delete($avatar_type, $avatar_file)
 {
 	global $board_config, $userdata;
@@ -276,7 +289,12 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 
 function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current_email, &$coppa, &$username, &$email, &$new_password, &$cur_password, &$password_confirm, &$icq, &$aim, &$msn, &$yim, &$website, &$location, &$occupation, &$interests, &$signature, &$viewemail, &$notifypm, &$popup_pm, &$notifyreply, &$attachsig, &$allowhtml, &$allowbbcode, &$allowsmilies, &$hideonline, &$style, &$language, &$timezone, &$dateformat, &$session_id)
 {
-	global $board_config, $template, $lang, $images, $theme;
+    /**
+     * @var Template $template
+     */
+    global $template;
+
+	global $board_config, $lang, $images, $theme;
 	global $phpbb_root_path;
 
 	$dir = @opendir($board_config['avatar_gallery_path']);
