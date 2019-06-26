@@ -31,7 +31,7 @@ include $phpbb_root_path . 'common.php';
 //
 // Start session management
 //
-$userdata = Session::pageStart($user_ip, PAGE_INDEX);
+$userdata = Session::pageStart($user_ip, PAGE_ADMIN_INDEX);
 init_userprefs($userdata);
 //
 // End session management

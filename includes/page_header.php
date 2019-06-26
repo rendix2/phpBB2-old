@@ -89,7 +89,7 @@ if (defined('SHOW_ONLINE')) {
 
     $time = new DateTime();
     $time->setTimezone(new DateTimeZone($user_timezone));
-    $time->sub(new DateInterval('PT300S'));
+    $time->sub(new DateInterval('PT' . ONLINE_TIME_DIFF . 'S'));
 
 	$rows = dibi::select(['u.username', 'u.user_id', 'u.user_allow_viewonline', 'u.user_level', 's.session_logged_in', 's.session_ip'])
         ->from(USERS_TABLE)

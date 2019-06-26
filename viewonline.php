@@ -78,7 +78,7 @@ $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] 
 
 $time = new DateTime();
 $time->setTimezone(new DateTimeZone($user_timezone));
-$time->sub(new DateInterval('PT300S'));
+$time->sub(new DateInterval('PT' . ONLINE_TIME_DIFF . 'S'));
 
 $rows = dibi::select($columns)
     ->from(USERS_TABLE)

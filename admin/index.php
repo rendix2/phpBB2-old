@@ -107,7 +107,6 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
             'L_WELCOME'          => $lang['Welcome_phpBB'],
             'L_ADMIN_INTRO'      => $lang['Admin_intro'],
             'L_FORUM_STATS'      => $lang['Forum_stats'],
-            'L_WHO_IS_ONLINE'    => $lang['Who_is_Online'],
             'L_USERNAME'         => $lang['Username'],
             'L_LOCATION'         => $lang['Location'],
             'L_LAST_UPDATE'      => $lang['Last_updated'],
@@ -125,7 +124,8 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
             'L_DB_SIZE'          => $lang['Database_size'],
             'L_FORUM_LOCATION'   => $lang['Forum_Location'],
             'L_STARTED'          => $lang['Login'],
-            'L_GZIP_COMPRESSION' => $lang['Gzip_compression']
+            'L_GZIP_COMPRESSION' => $lang['Gzip_compression'],
+            'L_ONLINE_USERS'     => $lang['Online_users'],
         ]
     );
 
@@ -135,6 +135,10 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
 	$total_posts = get_db_stat('postcount');
 	$total_users = get_db_stat('usercount');
 	$total_topics = get_db_stat('topiccount');
+
+	$usersOnline = dibi::select('COUNT(*)')
+        ->from(SESSIONS_TABLE)
+        ->fetchSingle();
 
 	$start_date = create_date($board_config['default_dateformat'], $board_config['board_startdate'], $board_config['board_timezone']);
 
@@ -185,9 +189,6 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
         $users_per_day = $total_users;
     }
 
-    /**
-     * this functions is from phpBB3
-     */
     include $phpbb_root_path .'includes/functions_admin.php';
 
     $dbsize = get_database_size();
@@ -203,217 +204,10 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
             'USERS_PER_DAY'    => $users_per_day,
             'AVATAR_DIR_SIZE'  => $avatar_dir_size,
             'DB_SIZE'          => $dbsize,
-            'GZIP_COMPRESSION' => $board_config['gzip_compress'] ? $lang['ON'] : $lang['OFF']
+            'GZIP_COMPRESSION' => $board_config['gzip_compress'] ? $lang['ON'] : $lang['OFF'],
+            'ONLINE_USERS'     => $usersOnline
         ]
     );
-    //
-    // End forum statistics
-	//
-
-	//
-	// Get users online information.
-	//
-    $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
-
-    $time = new DateTime();
-    $time->setTimezone(new DateTimeZone($user_timezone));
-    $time->sub(new DateInterval('PT300S'));
-
-    $onlinerow_reg = dibi::select(['u.user_id', 'u.username', 'u.user_session_time', 'u.user_session_page', 'u.user_allow_viewonline', 's.session_logged_in', 's.session_ip', 's.session_start'])
-        ->from(USERS_TABLE)
-        ->as('u')
-        ->innerJoin(SESSIONS_TABLE)
-        ->as('s')
-        ->on('u.user_id = s.session_user_id')
-        ->where('s.session_logged_in = %i', 1)
-        ->where('u.user_id <> %i', ANONYMOUS)
-        ->where('s.session_time >= %i', $time->getTimestamp())
-        ->orderBy('u.user_session_time', dibi::DESC)
-        ->fetchAll();
-
-    $onlinerow_guest = dibi::select(['session_page', 'session_logged_in', 'session_time', 'session_ip', 'session_start'])
-        ->from(SESSIONS_TABLE)
-        ->where('session_logged_in = %i', 0)
-        ->where('session_time >= %i', $time->getTimestamp())
-        ->orderBy('session_time', 'DESC')
-        ->fetchAll();
-
-	$forums_result = dibi::select(['forum_name', 'forum_id'])
-        ->from(FORUMS_TABLE)
-        ->fetchPairs('forum_id', 'forum_name');
-
-	$reg_userid_ary = [];
-
-    if (count($onlinerow_reg)) {
-        $registered_users = 0;
-
-        foreach ($onlinerow_reg as $online_user) {
-            if (!in_array($online_user->user_id, $reg_userid_ary, true)) {
-				$reg_userid_ary[] = $online_user->user_id;
-
-				$username = $online_user->username;
-
-                if ($online_user->user_allow_viewonline || $userdata['user_level'] === ADMIN) {
-                    $registered_users++;
-                    $hidden = false;
-                } else {
-                    $hidden_users++;
-                    $hidden = true;
-                }
-
-				if ($online_user->user_session_page < 1) {
-					switch($online_user->user_session_page) {
-						case PAGE_INDEX:
-							$location = $lang['Forum_index'];
-							$location_url = 'index.php?pane=right';
-							break;
-						case PAGE_POSTING:
-							$location = $lang['Posting_message'];
-							$location_url = 'index.php?pane=right';
-							break;
-						case PAGE_LOGIN:
-							$location = $lang['Logging_on'];
-							$location_url = 'index.php?pane=right';
-							break;
-						case PAGE_SEARCH:
-							$location = $lang['Searching_forums'];
-							$location_url = 'index.php?pane=right';
-							break;
-						case PAGE_PROFILE:
-							$location = $lang['Viewing_profile'];
-							$location_url = 'index.php?pane=right';
-							break;
-						case PAGE_VIEWONLINE:
-							$location = $lang['Viewing_online'];
-							$location_url = 'index.php?pane=right';
-							break;
-						case PAGE_VIEWMEMBERS:
-							$location = $lang['Viewing_member_list'];
-							$location_url = 'index.php?pane=right';
-							break;
-						case PAGE_PRIVMSGS:
-							$location = $lang['Viewing_priv_msgs'];
-							$location_url = 'index.php?pane=right';
-							break;
-						case PAGE_FAQ:
-							$location = $lang['Viewing_FAQ'];
-							$location_url = 'index.php?pane=right';
-							break;
-						default:
-							$location = $lang['Forum_index'];
-							$location_url = 'index.php?pane=right';
-					}
-				} else {
-					$location_url = Session::appendSid('admin_forums.php?mode=editforum&amp;' . POST_FORUM_URL . '=' . $online_user->user_session_page);
-					$location = $forum_data[$online_user->user_session_page];
-				}
-
-                $row_color = ($registered_users % 2) ? $theme['td_color1'] : $theme['td_color2'];
-                $row_class = ($registered_users % 2) ? $theme['td_class1'] : $theme['td_class2'];
-
-				$reg_ip = decode_ip($online_user->session_ip);
-
-                $template->assignBlockVars('reg_user_row',
-                    [
-                        'ROW_COLOR'      => '#' . $row_color,
-                        'ROW_CLASS'      => $row_class,
-                        'USERNAME'       => $username,
-                        'STARTED'        => create_date($board_config['default_dateformat'], $online_user->session_start, $board_config['board_timezone']),
-                        'LASTUPDATE'     => create_date($board_config['default_dateformat'], $online_user->user_session_time, $board_config['board_timezone']),
-                        'FORUM_LOCATION' => $location,
-                        'IP_ADDRESS'     => $reg_ip,
-
-                        'U_WHOIS_IP'       => "http://network-tools.com/default.asp?host=$reg_ip",
-                        'U_USER_PROFILE'   => Session::appendSid('admin_users.php?mode=edit&amp;' . POST_USERS_URL . '=' . $online_user->user_id),
-                        'U_FORUM_LOCATION' => Session::appendSid($location_url)
-                    ]
-                );
-            }
-		}
-
-	} else {
-        $template->assignVars(['L_NO_REGISTERED_USERS_BROWSING' => $lang['No_users_browsing']]);
-    }
-
-    //
-	// Guest users
-	//
-	if (count($onlinerow_guest)) {
-		$guest_users = 0;
-
-        foreach ($onlinerow_guest as $guest) {
-			$guest_userip_ary[] = $guest->session_ip;
-			$guest_users++;
-
-			if ($guest->session_page < 1) {
-				switch( $guest->session_page) {
-					case PAGE_INDEX:
-						$location = $lang['Forum_index'];
-						$location_url = 'index.php?pane=right';
-						break;
-					case PAGE_POSTING:
-						$location = $lang['Posting_message'];
-						$location_url = 'index.php?pane=right';
-						break;
-					case PAGE_LOGIN:
-						$location = $lang['Logging_on'];
-						$location_url = 'index.php?pane=right';
-						break;
-					case PAGE_SEARCH:
-						$location = $lang['Searching_forums'];
-						$location_url = 'index.php?pane=right';
-						break;
-					case PAGE_PROFILE:
-						$location = $lang['Viewing_profile'];
-						$location_url = 'index.php?pane=right';
-						break;
-					case PAGE_VIEWONLINE:
-						$location = $lang['Viewing_online'];
-						$location_url = 'index.php?pane=right';
-						break;
-					case PAGE_VIEWMEMBERS:
-						$location = $lang['Viewing_member_list'];
-						$location_url = 'index.php?pane=right';
-						break;
-					case PAGE_PRIVMSGS:
-						$location = $lang['Viewing_priv_msgs'];
-						$location_url = 'index.php?pane=right';
-						break;
-					case PAGE_FAQ:
-						$location = $lang['Viewing_FAQ'];
-						$location_url = 'index.php?pane=right';
-						break;
-					default:
-						$location = $lang['Forum_index'];
-						$location_url = 'index.php?pane=right';
-				}
-			} else {
-				$location_url = Session::appendSid('admin_forums.php?mode=editforum&amp;' . POST_FORUM_URL . '=' . $guest->session_page);
-				$location = $forum_data[$guest->session_page];
-			}
-
-            $row_color = ($guest_users % 2) ? $theme['td_color1'] : $theme['td_color2'];
-            $row_class = ($guest_users % 2) ? $theme['td_class1'] : $theme['td_class2'];
-
-			$guest_ip = decode_ip($guest->session_ip);
-
-            $template->assignBlockVars('guest_user_row', [
-                    'ROW_COLOR'      => '#' . $row_color,
-                    'ROW_CLASS'      => $row_class,
-                    'USERNAME'       => $lang['Guest'],
-                    'STARTED'        => create_date($board_config['default_dateformat'], $guest->session_start, $board_config['board_timezone']),
-                    'LASTUPDATE'     => create_date($board_config['default_dateformat'], $guest->session_time, $board_config['board_timezone']),
-                    'FORUM_LOCATION' => $location,
-                    'IP_ADDRESS'     => $guest_ip,
-
-                    'U_WHOIS_IP'       => "http://network-tools.com/default.asp?host=$guest_ip",
-                    'U_FORUM_LOCATION' => Session::appendSid($location_url)
-                ]
-            );
-        }
-    } else {
-        $template->assignVars(['L_NO_GUESTS_BROWSING' => $lang['No_users_browsing']]);
-    }
 
     $template->pparse('body');
 

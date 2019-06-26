@@ -83,6 +83,7 @@ $lang['Board_started'] = 'Board started';
 $lang['Avatar_dir_size'] = 'Avatar directory size';
 $lang['Database_size'] = 'Database size';
 $lang['Gzip_compression'] ='Gzip compression';
+$lang['Online_users'] ='Online users';
 $lang['Not_available'] = 'Not available';
 
 $lang['ON'] = 'ON'; // This is for GZip compression

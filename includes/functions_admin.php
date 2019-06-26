@@ -271,4 +271,40 @@ function get_database_size()
     return $database_size;
 }
 
+/**
+ * its says when user is and what he does
+ *
+ * @param int $sessionPage
+ * @param array $lang
+ *
+ * @return string
+ */
+function getForumLocation($sessionPage, array $lang)
+{
+    switch($sessionPage) {
+        case PAGE_INDEX:
+            return $lang['Forum_index'];
+        case PAGE_ADMIN_INDEX:
+            return $lang['Admin_index'];
+        case PAGE_POSTING:
+            return $lang['Posting_message'];
+        case PAGE_LOGIN:
+            return $lang['Logging_on'];
+        case PAGE_SEARCH:
+            return $lang['Searching_forums'];
+        case PAGE_PROFILE:
+            return $lang['Viewing_profile'];
+        case PAGE_VIEWONLINE:
+            return $lang['Viewing_online'];
+        case PAGE_VIEWMEMBERS:
+            return $lang['Viewing_member_list'];
+        case PAGE_PRIVMSGS:
+            return $lang['Viewing_priv_msgs'];
+        case PAGE_FAQ:
+            return $lang['Viewing_FAQ'];
+        default:
+            return $lang['Forum_index'];
+    }
+}
+
 ?>

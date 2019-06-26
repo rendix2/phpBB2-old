@@ -844,6 +844,7 @@ $lang['Forum_Location'] = 'Forum Location';
 $lang['Last_updated'] = 'Last Updated';
 
 $lang['Forum_index'] = 'Forum index';
+$lang['Admin_index'] = 'Administration';
 $lang['Logging_on'] = 'Logging on';
 $lang['Posting_message'] = 'Posting a message';
 $lang['Searching_forums'] = 'Searching forums';
