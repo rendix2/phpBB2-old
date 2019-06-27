@@ -96,7 +96,7 @@ if (isset($_POST['submit'])) {
 //
 // Output basic page
 //
-include $phpbb_root_path . 'includes/page_header.php';
+require_once $phpbb_root_path . 'includes/page_header.php';
 
 $template->setFileNames(['body' => 'profile_send_pass.tpl']);
 make_jumpbox('viewforum.php');
@@ -121,6 +121,6 @@ $template->assignVars(
 
 $template->pparse('body');
 
-include $phpbb_root_path . 'includes/page_tail.php';
+require_once $phpbb_root_path . 'includes/page_tail.php';
 
 ?>

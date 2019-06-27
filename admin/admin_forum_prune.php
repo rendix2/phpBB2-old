@@ -32,9 +32,9 @@ if (!empty($setmodules)) {
 // Load default header
 //
 $phpbb_root_path = './../';
-require './pagestart.php';
-require $phpbb_root_path . 'includes/prune.php';
-require $phpbb_root_path . 'includes/functions_admin.php';
+
+require_once './pagestart.php';
+require_once $phpbb_root_path . 'includes/prune.php';
 
 //
 // Get the forum ID for pruning
@@ -187,6 +187,6 @@ if (isset($_POST['doprune'])) {
 //
 $template->pparse('body');
 
-include './page_footer_admin.php';
+require_once './page_footer_admin.php';
 
 ?>

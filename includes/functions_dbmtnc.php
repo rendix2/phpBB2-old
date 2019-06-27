@@ -196,7 +196,7 @@ function update_config($name, $value)
 //
 function throw_error($msg_text = '', $err_line = '', $err_file = '')
 {
-	global $template, $lang, $phpEx, $phpbb_root_path, $theme;
+	global $template, $lang, $phpbb_root_path, $theme;
 	global $list_open;
 
 	//
@@ -227,8 +227,9 @@ function throw_error($msg_text = '', $err_line = '', $err_file = '')
 	//
 	// Include Tail and exit
 	//
-	echo('<p class="gen"><a href="' . Session::appendSid("admin_db_maintenance.$phpEx") . '">' . $lang['Back_to_DB_Maintenance'] . "</a></p>\n");
-	include './page_footer_admin.'.$phpEx;
+	echo('<p class="gen"><a href="' . Session::appendSid("admin_db_maintenance.php") . '">' . $lang['Back_to_DB_Maintenance'] . "</a></p>\n");
+
+    require_once './page_footer_admin.php';
 	exit;
 }
 
@@ -547,7 +548,7 @@ function catch_error($errno, $errstr)
 //
 function get_word_id($word)
 {
-	global $board_config, $db, $lang, $phpEx, $template, $theme;
+	global $board_config, $db, $lang, $template, $theme;
 	global $stopword_array, $synonym_array;
 
 	// Check whether word is in stopword array
@@ -627,14 +628,14 @@ function erc_throw_error($msg_text = '', $err_line = '', $err_file = '')
 // TODO we should someway use Select class!!!
 function language_select($default, $select_name = 'language', $file_to_check = 'main', $dirname= 'language')
 {
-	global $phpEx, $phpbb_root_path, $lang;
+	global $phpbb_root_path, $lang;
 
 	$dir = opendir($phpbb_root_path . $dirname);
 
     $lg = [];
 
     while ($file = readdir($dir)) {
-		if (preg_match('#^lang_#i', $file) && !is_file(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file)) && !is_link(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file)) && is_file(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file . '/lang_' . $file_to_check . '.' . $phpEx)) ) {
+		if (preg_match('#^lang_#i', $file) && !is_file(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file)) && !is_link(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file)) && is_file(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file . '/lang_' . $file_to_check . '.php')) ) {
 			$filename = trim(str_replace('lang_', '', $file));
 			$displayname = preg_replace('/^(.*?)_(.*)$/', "\\1 [ \\2 ]", $filename);
 			$displayname = preg_replace("/\[(.*?)_(.*)\]/", "[ \\1 - \\2 ]", $displayname);

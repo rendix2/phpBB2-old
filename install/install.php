@@ -245,8 +245,8 @@ $loader->setTempDirectory(__DIR__ . '/temp');
 $loader->register(); // Run the RobotLoader
 
 // Include some required functions
-include $phpbb_root_path.'includes/constants.php';
-include $phpbb_root_path.'includes/functions.php';
+require_once $phpbb_root_path.'includes/constants.php';
+require_once $phpbb_root_path.'includes/functions.php';
 
 // Define schema info
 $available_dbms_temp = [
@@ -363,7 +363,7 @@ if (!empty($_POST['server_port'])) {
 
 // Open config.php ... if it exists
 if (@file_exists(@phpbb_realpath('config.php'))) {
-    include $phpbb_root_path . 'config.php';
+    require_once $phpbb_root_path . 'config.php';
 }
 
 // Is phpBB already installed? Yes? Redirect to the index
@@ -372,8 +372,8 @@ if (defined('PHPBB_INSTALLED')) {
 }
 
 // Import language file, setup template ...
-include $phpbb_root_path.'language/lang_' . $language . '/lang_main.php';
-include $phpbb_root_path.'language/lang_' . $language . '/lang_admin.php';
+require_once $phpbb_root_path.'language/lang_' . $language . '/lang_main.php';
+require_once $phpbb_root_path.'language/lang_' . $language . '/lang_admin.php';
 
 // Ok for the time being I'm commenting this out whilst I'm working on
 // better integration of the install with upgrade as per Bart's request
@@ -485,7 +485,7 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['up
 
 		if ($upgrade === 1)
 		{
-			require 'upgrade.php';
+            require_once 'upgrade.php';
 			exit;
 		}
 
@@ -678,7 +678,7 @@ else
 		if ($upgrade !== 1) {
 			if ($dbms !== 'msaccess') {
 				// Load in the sql parser
-				include $phpbb_root_path.'includes/sql_parse.php';
+                require_once $phpbb_root_path.'includes/sql_parse.php';
 
 				// Ok we have the db info go ahead and read in the relevant schema
 				// and work on building the table.. probably ought to provide some
@@ -841,7 +841,8 @@ else
 		// First off let's check and see if we are supposed to be doing an upgrade.
 		if ($upgrade === 1 && $upgrade_now === $lang['upgrade_submit']) {
 			define('INSTALLING', true);
-			require 'upgrade.php';
+
+            require_once 'upgrade.php';
 			exit;
 		}
 

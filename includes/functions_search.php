@@ -366,7 +366,8 @@ function username_search($search_match)
 	}
 
 	$page_title = $lang['Search'];
-	include $phpbb_root_path . 'includes/page_header.php';
+
+    require_once $phpbb_root_path . 'includes/page_header.php';
 
     $template->setFileNames(['search_user_body' => 'search_username.tpl']);
 
@@ -394,7 +395,7 @@ function username_search($search_match)
 
 	$template->pparse('search_user_body');
 
-	include $phpbb_root_path . 'includes/page_tail.php';
+    require_once $phpbb_root_path . 'includes/page_tail.php';
 }
 
 ?>

@@ -38,7 +38,7 @@ $phpbb_root_path = './../';
 $cancel = isset($_POST['cancel']);
 $no_page_header = $cancel;
 
-require './pagestart.php';
+require_once './pagestart.php';
 
 if ($cancel) {
     redirect('admin/' . Session::appendSid('admin_words.php', true));
@@ -104,7 +104,7 @@ if ($mode !== '') {
 
         $template->pparse('body');
 
-		include './page_footer_admin.php';
+        require_once './page_footer_admin.php';
 	} elseif ($mode === 'save') {
 		$word_id     = isset($_POST['id'])          ? (int)$_POST['id'] : 0;
 		$word        = isset($_POST['word'])        ? trim($_POST['word']) : '';
@@ -233,6 +233,6 @@ if ($mode !== '') {
 
 $template->pparse('body');
 
-include './page_footer_admin.php';
+require_once './page_footer_admin.php';
 
 ?>

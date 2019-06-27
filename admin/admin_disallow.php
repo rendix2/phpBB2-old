@@ -34,7 +34,7 @@ if (!empty($setmodules)) {
 //
 $phpbb_root_path = './../';
 
-require './pagestart.php';
+require_once './pagestart.php';
 
 if (isset($_POST['add_name'])) {
 	$disallowed_user = isset($_POST['disallowed_user']) ? trim($_POST['disallowed_user']) : trim($_GET['disallowed_user']);
@@ -107,6 +107,6 @@ $template->assignVars(
 
 $template->pparse('body');
 
-include './page_footer_admin.php';
+require_once './page_footer_admin.php';
 
 ?>

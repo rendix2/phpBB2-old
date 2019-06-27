@@ -27,7 +27,7 @@ if (!empty($setmodules)) {
 //
 $phpbb_root_path = './../';
 
-require './pagestart.php';
+require_once './pagestart.php';
 
 //
 // Pull all config data
@@ -484,6 +484,6 @@ $template->assignVars(
 
 $template->pparse('body');
 
-include './page_footer_admin.php';
+require_once './page_footer_admin.php';
 
 ?>

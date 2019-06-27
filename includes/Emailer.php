@@ -293,7 +293,7 @@ class Emailer
 		// Send message ... removed $this->encode() from subject for time being
 		if ($this->use_smtp) {
 			if (!defined('SMTP_INCLUDED')) {
-				include $phpbb_root_path . 'includes/smtp.php';
+                require_once $phpbb_root_path . 'includes/smtp.php';
 			}
 
 			$result = smtpmail($to, $this->subject, $this->msg, $this->extra_headers);

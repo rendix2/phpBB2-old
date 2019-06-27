@@ -50,7 +50,7 @@ if ((!empty($_GET['export_pack']) && $_GET['export_pack'] === 'send') || (!empty
 	$no_page_header = true;
 }
 
-require './pagestart.php';
+require_once './pagestart.php';
 
 if ($cancel) {
 	redirect('admin/' . Session::appendSid('admin_smilies.php', true));
@@ -571,6 +571,6 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
 //
 // Page Footer
 //
-include './page_footer_admin.php';
+require_once './page_footer_admin.php';
 
 ?>

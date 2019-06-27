@@ -34,7 +34,7 @@ if (!empty($setmodules)) {
 //
 $phpbb_root_path = './../';
 
-require './pagestart.php';
+require_once './pagestart.php';
 
 if (isset($_POST[POST_GROUPS_URL]) || isset($_GET[POST_GROUPS_URL])) {
     $group_id = isset($_POST[POST_GROUPS_URL]) ? (int)$_POST[POST_GROUPS_URL] : (int)$_GET[POST_GROUPS_URL];
@@ -362,6 +362,6 @@ if (isset($_POST['edit']) || isset($_POST['new'])) {
     $template->pparse('body');
 }
 
-include './page_footer_admin.php';
+require_once './page_footer_admin.php';
 
 ?>

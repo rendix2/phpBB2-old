@@ -268,14 +268,14 @@ function init_userprefs($userdata)
 
 	$board_config['default_lang'] = $default_lang;
 
-	include $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.php';
+    require_once $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.php';
 
 	if (defined('IN_ADMIN')) {
 		if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.php'))) {
 			$board_config['default_lang'] = 'english';
 		}
 
-		include $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.php';
+        require_once $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.php';
 	}
 
 	//
@@ -362,7 +362,7 @@ function setup_style($style)
 
 	if ($template) {
 		$current_template_path = $template_path . $template_name;
-		@include $phpbb_root_path . $template_path . $template_name . '/' . $template_name . '.cfg';
+		@require_once $phpbb_root_path . $template_path . $template_name . '/' . $template_name . '.cfg';
 
 		if (!defined('TEMPLATE_CONFIG')) {
 			message_die(CRITICAL_ERROR, "Could not open $template_name template config file", '', __LINE__, __FILE__);
@@ -579,9 +579,9 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
     if (!defined('HEADER_INC') && $msg_code !== CRITICAL_ERROR) {
         if (empty($lang)) {
             if (!empty($board_config['default_lang'])) {
-                include $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.php';
+                require_once $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.php';
             } else {
-                include $phpbb_root_path . 'language/lang_english/lang_main.php';
+                require_once $phpbb_root_path . 'language/lang_english/lang_main.php';
             }
         }
 
@@ -593,9 +593,9 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
         // Load the Page Header
         //
         if (!defined('IN_ADMIN')) {
-            include $phpbb_root_path . 'includes/page_header.php';
+            require_once $phpbb_root_path . 'includes/page_header.php';
         } else {
-            include $phpbb_root_path . 'admin/page_header_admin.php';
+            require_once $phpbb_root_path . 'admin/page_header_admin.php';
         }
 	}
 
@@ -627,7 +627,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
             // Critical errors mean we cannot rely on _ANY_ DB information being
             // available so we're going to dump out a simple echo'd statement
             //
-            include $phpbb_root_path . 'language/lang_english/lang_main.php';
+            require_once $phpbb_root_path . 'language/lang_english/lang_main.php';
 
             if ($msg_text === '') {
                 $msg_text = $lang['A_critical_error'];
@@ -670,9 +670,9 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
         $template->pparse('message_body');
 
         if (!defined('IN_ADMIN')) {
-            include $phpbb_root_path . 'includes/page_tail.php';
+            require_once $phpbb_root_path . 'includes/page_tail.php';
         } else {
-            include $phpbb_root_path . 'admin/page_footer_admin.php';
+            require_once $phpbb_root_path . 'admin/page_footer_admin.php';
         }
     } else {
         echo "<html>\n<body>\n" . $msg_title . "\n<br /><br />\n" . $msg_text . "</body>\n</html>";

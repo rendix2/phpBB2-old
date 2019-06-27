@@ -46,7 +46,7 @@ $cancel  = isset($_POST['cancel']);
 
 $no_page_header = !empty($_POST['send_file']) || !empty($_POST['send_file']) || $cancel;
 
-require './pagestart.php';
+require_once './pagestart.php';
 
 if ($cancel) {
     redirect('admin/' . Session::appendSid('admin_styles.php', true));
@@ -65,7 +65,7 @@ switch ($mode) {
 		$style_name = isset($_GET['style']) ? urldecode($_GET['style']) : $_POST['style'];
 	
 		if (isset($install_to)) {
-			include $phpbb_root_path. 'templates/' . basename($install_to) . '/theme_info.cfg';
+            require_once $phpbb_root_path. 'templates/' . basename($install_to) . '/theme_info.cfg';
 
 			$template_names = $$install_to;
 
@@ -91,7 +91,7 @@ switch ($mode) {
 				while ($sub_dir = @readdir($dir)) {
 					if (!is_file(phpbb_realpath($phpbb_root_path . 'templates/' .$sub_dir)) && !is_link(phpbb_realpath($phpbb_root_path . 'templates/' .$sub_dir)) && $sub_dir !== '.' && $sub_dir !== '..' && $sub_dir !== 'CVS') {
 						if (@file_exists(@phpbb_realpath($phpbb_root_path. 'templates/' . $sub_dir . '/theme_info.cfg'))) {
-							include $phpbb_root_path. 'templates/' . $sub_dir . '/theme_info.cfg';
+                            require_once $phpbb_root_path. 'templates/' . $sub_dir . '/theme_info.cfg';
 							$countSubDirs = count($$sub_dir);
 							
 							for ($i = 0; $i < $countSubDirs; $i++) {
@@ -645,7 +645,7 @@ switch ($mode) {
 }
 
 if (empty($_POST['send_file'])) {
-	include './page_footer_admin.php';
+    require_once './page_footer_admin.php';
 }
 
 ?>

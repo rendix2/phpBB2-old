@@ -31,9 +31,9 @@
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
 
-include $phpbb_root_path . 'common.php';
-include $phpbb_root_path . 'includes/bbcode.php';
-include $phpbb_root_path . 'includes/functions_admin.php';
+require_once $phpbb_root_path . 'common.php';
+require_once $phpbb_root_path . 'includes/bbcode.php';
+require_once $phpbb_root_path . 'includes/functions_admin.php';
 
 //
 // Obtain initial var settings
@@ -182,14 +182,15 @@ switch ($mode) {
         }
 
 		$page_title = $lang['Mod_CP'];
-		include $phpbb_root_path . 'includes/page_header.php';
+
+        require_once $phpbb_root_path . 'includes/page_header.php';
 
         if ($confirm) {
             if (empty($_POST['topic_id_list']) && empty($topic_id)) {
                 message_die(GENERAL_MESSAGE, $lang['None_selected']);
             }
 
-			include $phpbb_root_path . 'includes/functions_search.php';
+            require_once $phpbb_root_path . 'includes/functions_search.php';
 
             $topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topic_id];
 
@@ -333,13 +334,14 @@ switch ($mode) {
 
             $template->pparse('confirm');
 
-			include $phpbb_root_path . 'includes/page_tail.php';
+            require_once $phpbb_root_path . 'includes/page_tail.php';
 		}
 		break;
 
 	case 'move':
 		$page_title = $lang['Mod_CP'];
-		include $phpbb_root_path . 'includes/page_header.php';
+
+        require_once $phpbb_root_path . 'includes/page_header.php';
 
         if ($confirm) {
             if (empty($_POST['topic_id_list']) && empty($topic_id)) {
@@ -463,7 +465,7 @@ switch ($mode) {
 
             $template->pparse('movetopic');
 
-			include $phpbb_root_path . 'includes/page_tail.php';
+            require_once $phpbb_root_path . 'includes/page_tail.php';
 		}
 		break;
 
@@ -538,7 +540,8 @@ switch ($mode) {
 
 	case 'split':
 		$page_title = $lang['Mod_CP'];
-		include $phpbb_root_path . 'includes/page_header.php';
+
+        require_once $phpbb_root_path . 'includes/page_header.php';
 
         $posts = [];
 
@@ -762,7 +765,8 @@ switch ($mode) {
 
 	case 'ip':
 		$page_title = $lang['Mod_CP'];
-		include $phpbb_root_path . 'includes/page_header.php';
+
+        require_once $phpbb_root_path . 'includes/page_header.php';
 
 		$rdns_ip_num = isset($_GET['rdns']) ? $_GET['rdns'] : '';
 
@@ -896,7 +900,8 @@ switch ($mode) {
 
 	default:
 		$page_title = $lang['Mod_CP'];
-		include $phpbb_root_path . 'includes/page_header.php';
+
+        require_once $phpbb_root_path . 'includes/page_header.php';
 
         $template->assignVars(
             [
@@ -1023,6 +1028,6 @@ switch ($mode) {
 		break;
 }
 
-include $phpbb_root_path . 'includes/page_tail.php';
+require_once $phpbb_root_path . 'includes/page_tail.php';
 
 ?>

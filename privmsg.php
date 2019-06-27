@@ -24,9 +24,9 @@ define('IN_PHPBB', true);
 
 $phpbb_root_path = './';
 
-include $phpbb_root_path . 'common.php';
-include $phpbb_root_path . 'includes/bbcode.php';
-include $phpbb_root_path . 'includes/functions_post.php';
+require_once $phpbb_root_path . 'common.php';
+require_once $phpbb_root_path . 'includes/bbcode.php';
+require_once $phpbb_root_path . 'includes/functions_post.php';
 
 //
 // Is PM disabled?
@@ -125,7 +125,8 @@ if ($mode === 'newpm') {
     $gen_simple_header = true;
 
 	$page_title = $lang['Private_Messaging'];
-	include $phpbb_root_path . 'includes/page_header.php';
+
+    require_once $phpbb_root_path . 'includes/page_header.php';
 
     $template->setFileNames(['body' => 'privmsgs_popup.tpl']);
 
@@ -150,7 +151,7 @@ if ($mode === 'newpm') {
 
     $template->pparse('body');
 
-	include $phpbb_root_path . 'includes/page_tail.php';
+    require_once $phpbb_root_path . 'includes/page_tail.php';
 
 } elseif ($mode === 'read') {
     if (!empty($_GET[POST_POST_URL])) {
@@ -428,7 +429,8 @@ if ($mode === 'newpm') {
 	$s_hidden_fields = '<input type="hidden" name="mark[]" value="' . $privmsgs_id . '" />';
 
 	$page_title = $lang['Read_pm'];
-	include $phpbb_root_path . 'includes/page_header.php';
+
+    require_once $phpbb_root_path . 'includes/page_header.php';
 
 	//
 	// Load templates
@@ -644,7 +646,7 @@ if ($mode === 'newpm') {
 
     $template->pparse('body');
 
-	include $phpbb_root_path . 'includes/page_tail.php';
+    require_once $phpbb_root_path . 'includes/page_tail.php';
 
 } elseif (($delete && $mark_list) || $delete_all) {
     if (!$userdata['session_logged_in']) {
@@ -668,7 +670,7 @@ if ($mode === 'newpm') {
 		//
 		// Output confirmation page
 		//
-		include $phpbb_root_path . 'includes/page_header.php';
+        require_once $phpbb_root_path . 'includes/page_header.php';
 
         $template->setFileNames(['confirm_body' => 'confirm_body.tpl']);
         $template->assignVars(
@@ -686,7 +688,7 @@ if ($mode === 'newpm') {
 
         $template->pparse('confirm_body');
 
-		include $phpbb_root_path . 'includes/page_tail.php';
+        require_once $phpbb_root_path . 'includes/page_tail.php';
 
 	} elseif ($confirm && $sid === $userdata['session_id']) {
 	    // check marklist
@@ -1443,7 +1445,8 @@ if ($mode === 'newpm') {
 	// Start output, first preview, then errors then post form
 	//
 	$page_title = $lang['Send_private_message'];
-	include $phpbb_root_path . 'includes/page_header.php';
+
+    require_once $phpbb_root_path . 'includes/page_header.php';
 
     if ($preview && !$error) {
 		$orig_word = [];
@@ -1702,7 +1705,7 @@ if ($mode === 'newpm') {
 
 	$template->pparse('body');
 
-	include $phpbb_root_path . 'includes/page_tail.php';
+    require_once $phpbb_root_path . 'includes/page_tail.php';
 }
 
 //
@@ -1740,7 +1743,8 @@ $userdata['user_unread_privmsg'] = ( $userdata['user_new_privmsg'] + $userdata['
 // Generate page
 //
 $page_title = $lang['Private_Messaging'];
-include $phpbb_root_path . 'includes/page_header.php';
+
+require_once $phpbb_root_path . 'includes/page_header.php';
 
 //
 // Load templates
@@ -2064,6 +2068,6 @@ if (count($rows)) {
 
 $template->pparse('body');
 
-include $phpbb_root_path . 'includes/page_tail.php';
+require_once $phpbb_root_path . 'includes/page_tail.php';
 
 ?>

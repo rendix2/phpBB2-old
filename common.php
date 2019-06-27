@@ -75,15 +75,15 @@ $nav_links = [];
 $dss_seeded = false;
 $gen_simple_header = false;
 
-include $phpbb_root_path . 'config.php';
+require_once $phpbb_root_path . 'config.php';
 
 if (!defined('PHPBB_INSTALLED')) {
 	header('Location: ' . $phpbb_root_path . 'install/install.php');
 	exit;
 }
 
-include $phpbb_root_path . 'includes/constants.php';
-include $phpbb_root_path . 'includes/functions.php';
+require_once $phpbb_root_path . 'includes/constants.php';
+require_once $phpbb_root_path . 'includes/functions.php';
 
 // now we connect to database via dibi!
 $connection = dibi::connect([

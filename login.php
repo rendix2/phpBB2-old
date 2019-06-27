@@ -29,7 +29,7 @@ define('IN_PHPBB', true);
 
 $phpbb_root_path = './';
 
-include $phpbb_root_path . 'common.php';
+require_once $phpbb_root_path . 'common.php';
 
 //
 // Set page ID for session management
@@ -187,7 +187,8 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 	//
 	if (!$userdata['session_logged_in'] || (isset($_GET['admin']) && $userdata['session_logged_in'] && $userdata['user_level'] === ADMIN)) {
 		$page_title = $lang['Login'];
-		include $phpbb_root_path . 'includes/page_header.php';
+
+        require_once $phpbb_root_path . 'includes/page_header.php';
 
         $template->setFileNames(['body' => 'login_body.tpl']);
 
@@ -242,7 +243,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 
         $template->pparse('body');
 
-        include $phpbb_root_path . 'includes/page_tail.php';
+        require_once $phpbb_root_path . 'includes/page_tail.php';
     } else {
         redirect(Session::appendSid('index.php', true));
     }

@@ -31,9 +31,9 @@ if (!empty($setmodules)) {
 
 $phpbb_root_path = './../';
 
-require './pagestart.php';
-require $phpbb_root_path . 'includes/bbcode.php';
-require $phpbb_root_path . 'includes/functions_post.php';
+require_once './pagestart.php';
+require_once $phpbb_root_path . 'includes/bbcode.php';
+require_once $phpbb_root_path . 'includes/functions_post.php';
 
 $html_entities_match   = ['#<#', '#>#'];
 $html_entities_replace = ['&lt;', '&gt;'];
@@ -233,7 +233,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 	}
 
     if (isset($_POST['submit'])) {
-		include $phpbb_root_path . 'includes/usercp_avatar.php';
+        require_once $phpbb_root_path . 'includes/usercp_avatar.php';
 
         $error = false;
 
@@ -1010,6 +1010,6 @@ else
 
 }
 
-include './page_footer_admin.php';
+require_once './page_footer_admin.php';
 
 ?>

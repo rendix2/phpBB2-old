@@ -37,7 +37,7 @@ $phpbb_root_path = './../';
 $cancel = isset($_POST['cancel']);
 $no_page_header = $cancel;
 
-require './pagestart.php';
+require_once './pagestart.php';
 
 if ($cancel) {
 	redirect('admin/' . Session::appendSid('admin_ranks.php', true));
@@ -253,7 +253,7 @@ if ($mode !== '') {
 
 	$template->pparse('body');
 
-	include './page_footer_admin.php';
+	require_once './page_footer_admin.php';
 }
 
 //
@@ -315,6 +315,6 @@ foreach ($ranks as $i => $rank) {
 
 $template->pparse('body');
 
-include './page_footer_admin.php';
+require_once './page_footer_admin.php';
 
 ?>

@@ -23,8 +23,8 @@
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
 
-include $phpbb_root_path . 'common.php';
-include $phpbb_root_path . 'includes/bbcode.php';
+require_once $phpbb_root_path . 'common.php';
+require_once $phpbb_root_path . 'includes/bbcode.php';
 
 //
 // Start initial var setup
@@ -435,7 +435,8 @@ $posts = $posts
 $total_posts = count($posts);
 
 if (!$total_posts) {
-    include $phpbb_root_path . 'includes/functions_admin.php';
+    require_once $phpbb_root_path . 'includes/functions_admin.php';
+
     sync('topic', $topic_id);
 
     message_die(GENERAL_MESSAGE, $lang['No_posts_topic']);
@@ -455,9 +456,10 @@ if ($forum_topic_data->topic_replies + 1 < $start + $total_posts)  {
    $resync = true;
 } 
 
-if ($resync) { 
-   include $phpbb_root_path . 'includes/functions_admin.php';
-   sync('topic', $topic_id);
+if ($resync) {
+    require_once $phpbb_root_path . 'includes/functions_admin.php';
+
+    sync('topic', $topic_id);
 
     $total_replies = dibi::select('COUNT(post_id)')
         ->as('total')
@@ -585,7 +587,8 @@ make_jumpbox('viewforum.php', $forum_id);
 // Output page header
 //
 $page_title = $lang['View_topic'] .' - ' . $topic_title;
-include $phpbb_root_path . 'includes/page_header.php';
+
+require_once $phpbb_root_path . 'includes/page_header.php';
 
 //
 // User authorisation levels output
@@ -1186,6 +1189,6 @@ foreach ($posts as $i => $post) {
 
 $template->pparse('body');
 
-include $phpbb_root_path . 'includes/page_tail.php';
+require_once $phpbb_root_path . 'includes/page_tail.php';
 
 ?>

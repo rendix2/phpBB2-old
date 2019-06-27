@@ -79,11 +79,11 @@ $error_msg = '';
 $page_title = $mode === 'editprofile' ? $lang['Edit_profile'] : $lang['Register'];
 
 if ($mode === 'register' && !isset($_POST['agreed']) && !isset($_GET['agreed']) ) {
-	include $phpbb_root_path . 'includes/page_header.php';
+    require_once $phpbb_root_path . 'includes/page_header.php';
 
 	show_coppa();
 
-	include $phpbb_root_path . 'includes/page_tail.php';
+    require_once $phpbb_root_path . 'includes/page_tail.php';
 }
 
 $coppa = empty($_POST['coppa']) && empty($_GET['coppa']) ? 0 : true;
@@ -98,8 +98,8 @@ if (
 	isset($_POST['cancelavatar']) ||
 	$mode === 'register'
 ) {
-	include $phpbb_root_path . 'includes/bbcode.php';
-	include $phpbb_root_path . 'includes/functions_post.php';
+    require_once $phpbb_root_path . 'includes/bbcode.php';
+    require_once $phpbb_root_path . 'includes/functions_post.php';
 
     if ($mode === 'editprofile') {
         CSRF::validatePost();
@@ -241,7 +241,7 @@ if ($mode === 'register' && ($userdata['session_logged_in'] || $username === $us
 // Did the user submit? In this case build a query to update the users profile in the DB
 //
 if (isset($_POST['submit'])) {
-	include $phpbb_root_path . 'includes/usercp_avatar.php';
+    require_once $phpbb_root_path . 'includes/usercp_avatar.php';
 
 	// session id check
 	if ($sid === '' || $sid !== $userdata['session_id']) {
@@ -789,7 +789,7 @@ if ($error) {
 //
 // Default pages
 //
-include $phpbb_root_path . 'includes/page_header.php';
+require_once $phpbb_root_path . 'includes/page_header.php';
 
 make_jumpbox('viewforum.php');
 
@@ -801,7 +801,7 @@ if ($mode === 'editprofile') {
 }
 
 if (isset($_POST['avatargallery']) && !$error) {
-	include $phpbb_root_path . 'includes/usercp_avatar.php';
+    require_once $phpbb_root_path . 'includes/usercp_avatar.php';
 
 	$avatar_category = !empty($_POST['avatarcategory']) ? htmlspecialchars($_POST['avatarcategory']) : '';
 
@@ -1085,6 +1085,6 @@ if (isset($_POST['avatargallery']) && !$error) {
 
 $template->pparse('body');
 
-include $phpbb_root_path . 'includes/page_tail.php';
+require_once $phpbb_root_path . 'includes/page_tail.php';
 
 ?>

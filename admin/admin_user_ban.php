@@ -34,7 +34,7 @@ if (!empty($setmodules)) {
 //
 $phpbb_root_path = './../';
 
-require './pagestart.php';
+require_once './pagestart.php';
 
 //
 // Start program
@@ -367,6 +367,6 @@ if (isset($_POST['submit'])) {
 
 $template->pparse('body');
 
-include './page_footer_admin.php';
+require_once './page_footer_admin.php';
 
 ?>

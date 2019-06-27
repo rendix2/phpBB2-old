@@ -34,7 +34,7 @@ if (!empty($setmodules)) {
 $no_page_header = true;
 $phpbb_root_path = './../';
 
-require './pagestart.php';
+require_once './pagestart.php';
 
 //
 // Increase maximum execution time in case of a lot of users, but don't complain about it if it isn't
@@ -161,7 +161,7 @@ $select_list .= '</select>';
 //
 // Generate page
 //
-include './page_header_admin.php';
+require_once './page_header_admin.php';
 
 $template->setFileNames(['body' => 'admin/user_email_body.tpl']);
 
@@ -186,6 +186,6 @@ $template->assignVars(
 
 $template->pparse('body');
 
-include './page_footer_admin.php';
+require_once './page_footer_admin.php';
 
 ?>

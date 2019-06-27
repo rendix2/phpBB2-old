@@ -39,8 +39,8 @@ if (!empty($setmodules)) {
 $phpbb_root_path = "./../";
 $no_page_header = TRUE; // We do not send the page header right here to prevent problems with GZIP-compression
 
-require('./pagestart.php');
-require($phpbb_root_path . 'includes/functions_dbmtnc.php');
+require_once './pagestart.php';
+require_once $phpbb_root_path . 'includes/functions_dbmtnc.php';
 
 //
 // Set up timer
@@ -86,7 +86,7 @@ if ($mode_id == 'start' || $mode_id == 'perform') {
 }
 if ($function != 'perform_rebuild') // Don't send header when rebuilding the search index
 {
-    include('./page_header_admin.php');
+    require_once './page_header_admin.php';
 }
 
 //

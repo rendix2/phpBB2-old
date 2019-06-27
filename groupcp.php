@@ -21,9 +21,10 @@
  ***************************************************************************/
 
 define('IN_PHPBB', true);
+
 $phpbb_root_path = './';
 
-include $phpbb_root_path . 'common.php';
+require_once $phpbb_root_path . 'common.php';
 
 // -------------------------
 //
@@ -333,7 +334,8 @@ if (isset($_POST['groupstatus']) && $group_id) {
 		$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
 		$page_title = $lang['Group_Control_Panel'];
-		include $phpbb_root_path . 'includes/page_header.php';
+
+        require_once $phpbb_root_path . 'includes/page_header.php';
 
         $template->setFileNames(['confirm' => 'confirm_body.tpl']);
 
@@ -350,7 +352,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 
         $template->pparse('confirm');
 
-		include $phpbb_root_path . 'includes/page_tail.php';
+        require_once $phpbb_root_path . 'includes/page_tail.php';
 	}
 
 } elseif ($group_id) {
@@ -799,7 +801,8 @@ if (isset($_POST['groupstatus']) && $group_id) {
     }
 
 	$page_title = $lang['Group_Control_Panel'];
-	include $phpbb_root_path . 'includes/page_header.php';
+
+    require_once $phpbb_root_path . 'includes/page_header.php';
 
 	//
 	// Load templates
@@ -1153,7 +1156,8 @@ if (isset($_POST['groupstatus']) && $group_id) {
 		// Load and process templates
 		//
 		$page_title = $lang['Group_Control_Panel'];
-		include $phpbb_root_path . 'includes/page_header.php';
+
+        require_once $phpbb_root_path . 'includes/page_header.php';
 
         $template->setFileNames(['user' => 'groupcp_user_body.tpl']);
         make_jumpbox('viewforum.php');
@@ -1202,6 +1206,6 @@ if (isset($_POST['groupstatus']) && $group_id) {
 	}
 }
 
-include $phpbb_root_path . 'includes/page_tail.php';
+require_once $phpbb_root_path . 'includes/page_tail.php';
 
 ?>

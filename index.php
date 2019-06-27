@@ -21,9 +21,10 @@
  ***************************************************************************/
 
 define('IN_PHPBB', true);
+
 $phpbb_root_path = './';
 
-include $phpbb_root_path . 'common.php';
+require_once $phpbb_root_path . 'common.php';
 
 //
 // Start session management
@@ -271,7 +272,8 @@ $is_auth_array = Auth::authorize(AUTH_VIEW, AUTH_LIST_ALL, $userdata, $forum_dat
 //
 define('SHOW_ONLINE', true);
 $page_title = $lang['Index'];
-include $phpbb_root_path . 'includes/page_header.php';
+
+require_once $phpbb_root_path . 'includes/page_header.php';
 
 $template->setFileNames(['body' => 'index_body.tpl']);
 
@@ -442,6 +444,6 @@ foreach ($categories as $i => $category) {
 //
 $template->pparse('body');
 
-include $phpbb_root_path . 'includes/page_tail.php';
+require_once $phpbb_root_path . 'includes/page_tail.php';
 
 ?>

@@ -172,7 +172,7 @@ $search = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $
 // Generate page
 //
 $page_title = $lang['Viewing_profile'];
-include $phpbb_root_path . 'includes/page_header.php';
+require_once $phpbb_root_path . 'includes/page_header.php';
 
 if (function_exists('get_html_translation_table')) {
 	$u_search_author = urlencode(strtr($profileData->username, array_flip(get_html_translation_table(HTML_ENTITIES))));
@@ -257,6 +257,6 @@ $template->assignVars(
 
 $template->pparse('body');
 
-include $phpbb_root_path . 'includes/page_tail.php';
+require_once $phpbb_root_path . 'includes/page_tail.php';
 
 ?>

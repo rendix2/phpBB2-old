@@ -13,8 +13,7 @@ if (!empty($setmodules)) {
 //
 $phpbb_root_path = './../';
 
-require './pagestart.php';
-include $phpbb_root_path .'includes/functions_admin.php';
+require_once './pagestart.php';
 
 $template->setFileNames(['body' => 'admin/user_online.tpl']);
 
@@ -129,4 +128,4 @@ if (count($guestUsers)) {
 
 $template->pparse('body');
 
-include './page_footer_admin.php';
+require_once './page_footer_admin.php';

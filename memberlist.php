@@ -22,7 +22,7 @@
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
 
-include $phpbb_root_path . 'common.php';
+require_once $phpbb_root_path . 'common.php';
 
 //
 // Start session management
@@ -87,7 +87,7 @@ $select_sort_order .= '</select>';
 //
 $page_title = $lang['Memberlist'];
 
-include $phpbb_root_path . 'includes/page_header.php';
+require_once $phpbb_root_path . 'includes/page_header.php';
 
 $template->setFileNames(['body' => 'memberlist_body.tpl']);
 
@@ -325,6 +325,6 @@ $template->assignVars(
 
 $template->pparse('body');
 
-include $phpbb_root_path . 'includes/page_tail.php';
+require_once $phpbb_root_path . 'includes/page_tail.php';
 
 ?>

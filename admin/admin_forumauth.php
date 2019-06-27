@@ -35,7 +35,7 @@ if (!empty($setmodules)) {
 $no_page_header = true;
 $phpbb_root_path = './../';
 
-require './pagestart.php';
+require_once './pagestart.php';
 
 //
 // Start program - define vars
@@ -299,10 +299,10 @@ if (empty($forum_id)) {
 	);
 }
 
-include './page_header_admin.php';
+require_once './page_header_admin.php';
 
 $template->pparse('body');
 
-include './page_footer_admin.php';
+require_once './page_footer_admin.php';
 
 ?>

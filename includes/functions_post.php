@@ -165,7 +165,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 
 	$pollOptionsCount = count($poll_options);
 
-	include $phpbb_root_path . 'includes/functions_search.php';
+    require_once $phpbb_root_path . 'includes/functions_search.php';
 
 	$current_time = time();
 
@@ -479,7 +479,7 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	global $userdata, $user_ip;
 
 	if ($mode !== 'poll_delete') {
-		include $phpbb_root_path . 'includes/functions_search.php';
+        require_once $phpbb_root_path . 'includes/functions_search.php';
 
 		dibi::delete(POSTS_TABLE)
             ->where('post_id = %i', $post_id)
@@ -698,7 +698,8 @@ function generate_smilies($mode, $page_id)
 		$gen_simple_header = true;
 
 		$page_title = $lang['Emoticons'];
-		include $phpbb_root_path . 'includes/page_header.php';
+
+        require_once $phpbb_root_path . 'includes/page_header.php';
 
         $template->setFileNames(['smiliesbody' => 'posting_smilies.tpl']);
     }
@@ -793,7 +794,7 @@ function generate_smilies($mode, $page_id)
     if ($mode === 'window') {
 		$template->pparse('smiliesbody');
 
-		include $phpbb_root_path . 'includes/page_tail.php';
+        require_once $phpbb_root_path . 'includes/page_tail.php';
 	}
 }
 
