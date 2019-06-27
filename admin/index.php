@@ -36,19 +36,18 @@ require './pagestart.php';
 // Generate relevant output
 //
 if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
-	$dir = @opendir('.');
+    $setmodules = 1;
 
-	$setmodules = 1;
+    $adminFiles = Finder::findFiles('admin_*.php')->from('./');
 
-    while ($file = @readdir($dir)) {
-        if (preg_match("/^admin_.*?\.php$/", $file)) {
-            include './' . $file;
-        }
+    /**
+     * @var SplFileInfo $adminFile
+     */
+    foreach ($adminFiles as $adminFile) {
+        require_once $adminFile->getFilename();
     }
 
-    @closedir($dir);
-
-	unset($setmodules);
+    unset($setmodules);
 
 	include './page_header_admin.php';
 
