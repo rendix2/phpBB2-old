@@ -1104,7 +1104,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
             ->as('ug')
             ->on('ug.group_id = g.group_id')
             ->where('ug.user_id = %i', $userdata['user_id'])
-            ->where('g.group_single_user <>', 1)
+            ->where('g.group_single_user <> %i', 1)
             ->orderBy('g.group_name')
             ->orderBy('ug.user_id')
             ->fetchAll();

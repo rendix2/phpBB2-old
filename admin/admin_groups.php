@@ -60,8 +60,8 @@ if (isset($_POST['edit']) || isset($_POST['new'])) {
 		//
 		$group_info = dibi::select('*')
 			->from(GROUPS_TABLE)
-			->where('group_single_user <> %i', 1)
 			->where('group_id = %i', $group_id)
+			->where('group_single_user <> %i', 1)
 			->fetch();
 
 		if (!$group_info) {
