@@ -328,26 +328,25 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 			//
 			$delete_sql = [];
 
-			foreach ($forum_auth_action as $forum_id => $action) {
-				if ($action === 'delete') {
-					$delete_sql[] = $forum_id;
-				} else {
-					if ($action === 'insert') {
-                        $update_acl_status[$forum_id]['auth_mod'] = isset($update_mod_status[$forum_id]) ? $update_mod_status[$forum_id] : 0;
-                        $update_acl_status[$forum_id]['forum_id'] = $forum_id;
-                        $update_acl_status[$forum_id]['group_id'] = $group_id;
+            foreach ($forum_auth_action as $forum_id => $action) {
+                if ($action === 'delete') {
+                    $delete_sql[] = $forum_id;
+                } elseif ($action === 'insert') {
+                    $update_acl_status[$forum_id]['auth_mod'] = isset($update_mod_status[$forum_id]) ? $update_mod_status[$forum_id] : 0;
+                    $update_acl_status[$forum_id]['forum_id'] = $forum_id;
+                    $update_acl_status[$forum_id]['group_id'] = $group_id;
 
-                        dibi::insert(AUTH_ACCESS_TABLE, $update_acl_status[$forum_id])->execute();
-					} else {
-                        $update_acl_status[$forum_id]['auth_mod'] = isset($update_mod_status[$forum_id]) ? $update_mod_status[$forum_id] : 0;
+                    dibi::insert(AUTH_ACCESS_TABLE, $update_acl_status[$forum_id])
+                        ->execute();
+                } else {
+                    $update_acl_status[$forum_id]['auth_mod'] = isset($update_mod_status[$forum_id]) ? $update_mod_status[$forum_id] : 0;
 
-					    dibi::update(AUTH_ACCESS_TABLE, $update_acl_status[$forum_id])
-                            ->where('group_id = %i', $group_id)
-                            ->where('forum_id = %i', $forum_id)
-                            ->execute();
-					}
-				}
-			}
+                    dibi::update(AUTH_ACCESS_TABLE, $update_acl_status[$forum_id])
+                        ->where('group_id = %i', $group_id)
+                        ->where('forum_id = %i', $forum_id)
+                        ->execute();
+                }
+            }
 
             if (count($delete_sql)) {
                 dibi::delete(AUTH_ACCESS_TABLE)
@@ -599,14 +598,11 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 					break;
 
 				case AUTH_ACL:
-					$auth_ug[$forum_id][$key] = !empty($auth_access_count[$forum_id]) ? Auth::auth_check_user(AUTH_ACL, $key,
-                        $auth_access[$forum_id], $is_admin) : 0;
+					$auth_ug[$forum_id][$key] = !empty($auth_access_count[$forum_id]) ? Auth::auth_check_user(AUTH_ACL, $key, $auth_access[$forum_id], $is_admin) : 0;
 					$auth_field_acl[$forum_id][$key] = $auth_ug[$forum_id][$key];
 
-                    if (isset($prev_acl_setting)) {
-                        if ($prev_acl_setting !== $auth_ug[$forum_id][$key] && empty($adv)) {
-                            $adv = 1;
-                        }
+                    if (isset($prev_acl_setting) && $prev_acl_setting !== $auth_ug[$forum_id][$key] && empty($adv)) {
+                        $adv = 1;
                     }
 
 					$prev_acl_setting = $auth_ug[$forum_id][$key];
@@ -823,7 +819,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 
     $template->assignVars(
         [
-            'L_USER_OR_GROUPNAME' => $mode === 'user' ? $lang['Username'] : $lang['Group_name'],
+            'L_USER_OR_GROUPNAME' => $mode === 'user' ? $lang['Username']          : $lang['Group_name'],
             'L_AUTH_TITLE'        => $mode === 'user' ? $lang['Auth_Control_User'] : $lang['Auth_Control_Group'],
             'L_AUTH_EXPLAIN'      => $mode === 'user' ? $lang['User_auth_explain'] : $lang['Group_auth_explain'],
 

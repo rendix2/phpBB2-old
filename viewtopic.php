@@ -731,7 +731,6 @@ if (!empty($forum_topic_data->topic_vote)) {
 			$view_result = 0;
 		}
 
-
         $poll_expired = $vote_info[0]->vote_length && ($vote_info[0]->vote_start + $vote_info[0]->vote_length < time());
 
         if ($user_voted || $view_result || $poll_expired || !$is_auth['auth_vote'] || $forum_topic_data->topic_status === TOPIC_LOCKED) {

@@ -184,7 +184,6 @@ function renumber_order($mode, $cat = 0)
 
 		$i += 10;
 	}
-
 }
 //
 // End function block
@@ -270,40 +269,40 @@ if (!empty($mode)) {
 			$statuslist = '<option value="' . FORUM_UNLOCKED . "\" $forumunlocked>" . $lang['Status_unlocked'] . "</option>\n";
 			$statuslist .= '<option value="' . FORUM_LOCKED . "\" $forumlocked>" . $lang['Status_locked'] . "</option>\n";
 
-        $template->setFileNames(['body' => 'admin/forum_edit_body.tpl']);
+            $s_hidden_fields = '<input type="hidden" name="mode" value="' . $newmode . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
 
-        $s_hidden_fields = '<input type="hidden" name="mode" value="' . $newmode .'" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
+            $template->setFileNames(['body' => 'admin/forum_edit_body.tpl']);
 
-        $template->assignVars(
-            [
-                'S_FORUM_ACTION'  => Session::appendSid('admin_forums.php'),
-                'S_HIDDEN_FIELDS' => $s_hidden_fields,
-                'S_SUBMIT_VALUE'  => $buttonvalue,
-                'S_CAT_LIST'      => $catlist,
-                'S_STATUS_LIST'   => $statuslist,
-                'S_PRUNE_ENABLED' => $prune_enabled,
+            $template->assignVars(
+                [
+                    'S_FORUM_ACTION'  => Session::appendSid('admin_forums.php'),
+                    'S_HIDDEN_FIELDS' => $s_hidden_fields,
+                    'S_SUBMIT_VALUE'  => $buttonvalue,
+                    'S_CAT_LIST'      => $catlist,
+                    'S_STATUS_LIST'   => $statuslist,
+                    'S_PRUNE_ENABLED' => $prune_enabled,
 
-                'L_FORUM_TITLE'       => $l_title,
-                'L_FORUM_EXPLAIN'     => $lang['Forum_edit_delete_explain'],
-                'L_FORUM_SETTINGS'    => $lang['Forum_settings'],
-                'L_FORUM_NAME'        => $lang['Forum_name'],
-                'L_CATEGORY'          => $lang['Category'],
-                'L_FORUM_DESCRIPTION' => $lang['Forum_desc'],
-                'L_FORUM_STATUS'      => $lang['Forum_status'],
-                'L_AUTO_PRUNE'        => $lang['Forum_pruning'],
-                'L_ENABLED'           => $lang['Enabled'],
-                'L_PRUNE_DAYS'        => $lang['prune_days'],
-                'L_PRUNE_FREQ'        => $lang['prune_freq'],
-                'L_DAYS'              => $lang['Days'],
+                    'L_FORUM_TITLE'       => $l_title,
+                    'L_FORUM_EXPLAIN'     => $lang['Forum_edit_delete_explain'],
+                    'L_FORUM_SETTINGS'    => $lang['Forum_settings'],
+                    'L_FORUM_NAME'        => $lang['Forum_name'],
+                    'L_CATEGORY'          => $lang['Category'],
+                    'L_FORUM_DESCRIPTION' => $lang['Forum_desc'],
+                    'L_FORUM_STATUS'      => $lang['Forum_status'],
+                    'L_AUTO_PRUNE'        => $lang['Forum_pruning'],
+                    'L_ENABLED'           => $lang['Enabled'],
+                    'L_PRUNE_DAYS'        => $lang['prune_days'],
+                    'L_PRUNE_FREQ'        => $lang['prune_freq'],
+                    'L_DAYS'              => $lang['Days'],
 
-                'PRUNE_DAYS'  => isset($pr_row['prune_days']) ? $pr_row->prune_days : 7,
-                'PRUNE_FREQ'  => isset($pr_row['prune_freq']) ? $pr_row->prune_freq : 1,
-                'FORUM_NAME'  => htmlspecialchars($forumname, ENT_QUOTES),
-                'DESCRIPTION' => htmlspecialchars($forumdesc, ENT_QUOTES)
-            ]
-        );
-        $template->pparse('body');
-			break;
+                    'PRUNE_DAYS'  => isset($pr_row['prune_days']) ? $pr_row->prune_days : 7,
+                    'PRUNE_FREQ'  => isset($pr_row['prune_freq']) ? $pr_row->prune_freq : 1,
+                    'FORUM_NAME'  => htmlspecialchars($forumname, ENT_QUOTES),
+                    'DESCRIPTION' => htmlspecialchars($forumdesc, ENT_QUOTES)
+                ]
+            );
+            $template->pparse('body');
+        break;
 
 		case 'createforum':
 			//

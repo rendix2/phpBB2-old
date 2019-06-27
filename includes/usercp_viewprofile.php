@@ -27,7 +27,15 @@ if (!defined('IN_PHPBB')) {
 	die('Hacking attempt');
 }
 
-if (empty($_GET[POST_USERS_URL]) || $_GET[POST_USERS_URL] === ANONYMOUS) {
+if (!isset($_GET[POST_USERS_URL])) {
+    message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
+}
+
+if (!is_numeric($_GET[POST_USERS_URL])) {
+    message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
+}
+
+if ($_GET[POST_USERS_URL] === ANONYMOUS) {
     message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
 }
 
@@ -80,8 +88,8 @@ $topicsPerDay = $profileData->user_topics / $memberdays;
 
 // Get the users percentage of total posts
 if ($profileData->user_posts !== 0) {
-    $total_posts = get_db_stat('postcount');
-    $percentagePosts = $total_posts ? min(100, ($profileData->user_posts / $total_posts) * 100) : 0;
+    $totalPosts      = get_db_stat('postcount');
+    $percentagePosts = $totalPosts ? min(100, ($profileData->user_posts / $totalPosts) * 100) : 0;
 } else {
     $percentagePosts = 0;
 }
@@ -95,6 +103,7 @@ if ($profileData->user_topics !== 0) {
 }
 
 $avatar_img = '';
+
 if ($profileData->user_avatar_type && $profileData->user_allowavatar) {
 	switch($profileData->user_avatar_type) {
 		case USER_AVATAR_UPLOAD:
@@ -172,6 +181,7 @@ $search = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $
 // Generate page
 //
 $page_title = $lang['Viewing_profile'];
+
 require_once $phpbb_root_path . 'includes/page_header.php';
 
 if (function_exists('get_html_translation_table')) {

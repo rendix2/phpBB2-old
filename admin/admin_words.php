@@ -188,7 +188,7 @@ if ($mode !== '') {
 		}
 	}
 } else {
-    $template->setFileNames(['body' => 'admin/words_list_body.tpl']);
+     $template->setFileNames(['body' => 'admin/words_list_body.tpl']);
 
      $words = dibi::select('*')
          ->from(WORDS_TABLE)

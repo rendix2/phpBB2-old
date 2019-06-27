@@ -102,8 +102,7 @@ function clean_words( $mode, &$entry, array &$stopwords, array &$synonyms)
 		foreach ($synonyms as &$synonym) {
 			list($replace_synonym, $match_synonym) = explode(' ', strtolower(trim($synonym)));
 
-			if ($mode === 'post' || ( $match_synonym !== 'not' && $match_synonym !== 'and' && $match_synonym !== 'or' )
-           ) {
+			if ($mode === 'post' || ( $match_synonym !== 'not' && $match_synonym !== 'and' && $match_synonym !== 'or' )) {
 				$entry =  str_replace(' ' . trim($match_synonym) . ' ', ' ' . trim($replace_synonym) . ' ', $entry);
 			}
 		}

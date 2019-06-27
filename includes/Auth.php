@@ -203,8 +203,7 @@ class Auth
                         break;
 
                     case AUTH_ACL:
-                        $auth_user[$key] = $userdata['session_logged_in'] ? self::auth_check_user(AUTH_ACL, $key,
-                            $u_access, $is_admin) : 0;
+                        $auth_user[$key] = $userdata['session_logged_in'] ? self::auth_check_user(AUTH_ACL, $key, $u_access, $is_admin) : 0;
                         $auth_user[$key . '_type'] = $lang['Auth_Users_granted_access'];
                         break;
 

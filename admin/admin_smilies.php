@@ -151,6 +151,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
 			for ($j = 2; $j < $smile_data_count; $j++) {
 				//
 				// Replace > and < with the proper html_entities for matching.
+                // TODO use htmlspecialchars()
 				//
 				$smile_data[$j] = str_replace('<', '&lt;', $smile_data[$j]);
 				$smile_data[$j] = str_replace('>', '&gt;', $smile_data[$j]);
@@ -176,7 +177,6 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
 
 				    dibi::insert(SMILIES_TABLE, $insert_data)->execute();
 				}
-
 			}
 		}
 

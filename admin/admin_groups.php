@@ -221,10 +221,11 @@ if (isset($_POST['edit']) || isset($_POST['new'])) {
 
 		message_die(GENERAL_MESSAGE, $message);
 	} else {
-		$group_type = isset($_POST['group_type']) ? (int)$_POST['group_type'] : GROUP_OPEN;
-		$group_name = isset($_POST['group_name']) ? trim($_POST['group_name']) : '';
+		$group_type        = isset($_POST['group_type'])        ? (int)$_POST['group_type']         : GROUP_OPEN;
+		$group_name        = isset($_POST['group_name'])        ? trim($_POST['group_name'])        : '';
 		$group_description = isset($_POST['group_description']) ? trim($_POST['group_description']) : '';
-		$group_moderator = isset($_POST['username']) ? $_POST['username'] : '';
+		$group_moderator   = isset($_POST['username'])          ? $_POST['username']                : '';
+
 		$delete_old_moderator = isset($_POST['delete_old_moderator']);
 
         if ($group_name === '') {
