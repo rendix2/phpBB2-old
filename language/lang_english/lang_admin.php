@@ -282,6 +282,7 @@ $lang['System_timezone'] = 'System Timezone';
 $lang['Enable_gzip'] = 'Enable GZip Compression';
 $lang['Enable_prune'] = 'Enable Forum Pruning';
 $lang['Enable_topic_review'] = 'Enable topic review';
+$lang['Enable_show_online'] = 'Enable show online users';
 $lang['Allow_HTML'] = 'Allow HTML';
 $lang['Allow_BBCode'] = 'Allow BBCode';
 $lang['Allowed_tags'] = 'Allowed HTML tags';

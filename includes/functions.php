@@ -11,7 +11,9 @@
  *
  ***************************************************************************/
 
+use Dibi\Row;
 use Nette\Caching\Cache;
+use Nette\Caching\IStorage;
 
 /***************************************************************************
  *
@@ -804,6 +806,170 @@ function get_formatted_filesize($value, $string_only = true, $allowed_units = fa
     }
 
     return $value  . ' ' . $unit_info['unit'];
+}
+
+/**
+ * TODO this need some improvement..... its very heavy
+ * TODO this doeas lots of work.. :( its need some decompose
+ *
+ * @param int|null $forum_id
+ * @param array    $userdata
+ * @param array    $board_config
+ * @param array    $theme
+ * @param array    $lang
+ * @param IStorage $storage
+ * @param Template $template
+ *
+ */
+function showOnline($forum_id, $userdata, array &$board_config, $theme, array $lang, IStorage $storage, Template $template)
+{
+    $loggedVisibleOnline = 0;
+    $loggedHiddenOnline  = 0;
+    $guestsOnline        = 0;
+
+    $onlineUserList = [];
+
+    $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
+
+    $time = new DateTime();
+    $time->setTimezone(new DateTimeZone($user_timezone));
+    $time->sub(new DateInterval('PT' . ONLINE_TIME_DIFF . 'S'));
+
+    $rows = dibi::select(['u.username', 'u.user_id', 'u.user_allow_viewonline', 'u.user_level', 's.session_logged_in', 's.session_ip'])
+        ->from(USERS_TABLE)
+        ->as('u')
+        ->innerJoin(SESSIONS_TABLE)
+        ->as('s')
+        ->on('u.user_id = s.session_user_id')
+        ->where('s.session_time >= %i', $time->getTimestamp());
+
+    if ($forum_id !== null) {
+        $rows->where('s.session_page = %i', $forum_id);
+    }
+
+    $rows = $rows->orderBy('u.username', dibi::ASC)
+        ->orderBy('s.session_ip', dibi::ASC)
+        ->fetchAll();
+
+    $prev_user_id = 0;
+    $prev_user_ip = $prev_session_ip = '';
+
+    foreach ($rows as $row) {
+        // User is logged in and therefor not a guest
+        if ($row->session_logged_in) {
+            // Skip multiple sessions for one user
+            if ($row->user_id !== $prev_user_id) {
+                $style_color = '';
+
+                // decide user colior
+                if ($row->user_level === ADMIN) {
+                    $row->username = '<b>' . $row->username . '</b>';
+                    $style_color = 'style="color:#' . $theme['fontcolor3'] . '"';
+                } elseif ($row->user_level === MOD) {
+                    $row->username = '<b>' . $row->username . '</b>';
+                    $style_color = 'style="color:#' . $theme['fontcolor2'] . '"';
+                }
+
+                if ($row->user_allow_viewonline) {
+                    $userOnlineLink = '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $row->user_id) . '"' . $style_color .'>' . $row->username . '</a>';
+                    $loggedVisibleOnline++;
+                } else {
+                    $userOnlineLink = '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $row->user_id) . '"' . $style_color .'><i>' . $row->username . '</i></a>';
+                    $loggedHiddenOnline++;
+                }
+
+                if ($row->user_allow_viewonline || $userdata['user_level'] === ADMIN) {
+                    $onlineUserList[] = $userOnlineLink;
+                }
+            }
+
+            $prev_user_id = $row->user_id;
+        } else {
+            // Skip multiple sessions for one user
+            if ($row->session_ip !== $prev_session_ip) {
+                $guestsOnline++;
+            }
+        }
+
+        $prev_session_ip = $row->session_ip;
+    }
+
+    $onlineUserListString = isset($forum_id) ? $lang['Browsing_forum'] : $lang['Registered_users'];
+    $onlineUserListString .= ' ';
+
+    if (empty($onlineUserList)) {
+        $onlineUserListString .= $lang['None'];
+    } else {
+        $onlineUserListString .= implode(', ', $onlineUserList);
+    }
+
+    $totalOnlineUsers = $loggedVisibleOnline + $loggedHiddenOnline + $guestsOnline;
+
+    // new record of online users
+    if ($totalOnlineUsers > $board_config['record_online_users']) {
+        $board_config['record_online_users'] = $totalOnlineUsers;
+        $board_config['record_online_date']  = time();
+
+        dibi::update(CONFIG_TABLE, ['config_value' => $totalOnlineUsers])
+            ->where('config_name = %s', 'record_online_users')
+            ->execute();
+
+        dibi::update(CONFIG_TABLE, ['config_value' => $board_config['record_online_date']])
+            ->where('config_name = %s', 'record_online_date')
+            ->execute();
+
+        $cache = new Cache($storage, CONFIG_TABLE);
+        $cache->remove(CONFIG_TABLE);
+    }
+
+    // online users
+    if ($totalOnlineUsers === 0) {
+        $l_t_user_s = $lang['Online_users_zero_total'];
+    } elseif ($totalOnlineUsers === 1) {
+        $l_t_user_s = $lang['Online_user_total'];
+    } else {
+        $l_t_user_s = $lang['Online_users_total'];
+    }
+
+    // registered users
+    if ($loggedVisibleOnline === 0) {
+        $l_r_user_s = $lang['Reg_users_zero_total'];
+    } elseif ($loggedVisibleOnline === 1) {
+        $l_r_user_s = $lang['Reg_user_total'];
+    } else {
+        $l_r_user_s = $lang['Reg_users_total'];
+    }
+
+    // registered hidden users
+    if ($loggedHiddenOnline === 0) {
+        $l_h_user_s = $lang['Hidden_users_zero_total'];
+    } elseif ($loggedHiddenOnline === 1) {
+        $l_h_user_s = $lang['Hidden_user_total'];
+    } else {
+        $l_h_user_s = $lang['Hidden_users_total'];
+    }
+
+    // guests users
+    if ($guestsOnline === 0) {
+        $l_g_user_s = $lang['Guest_users_zero_total'];
+    } elseif ($guestsOnline === 1) {
+        $l_g_user_s = $lang['Guest_user_total'];
+    } else {
+        $l_g_user_s = $lang['Guest_users_total'];
+    }
+
+    // finishing the online string
+    $l_online_users  = sprintf($l_t_user_s, $totalOnlineUsers);
+    $l_online_users .= sprintf($l_r_user_s, $loggedVisibleOnline);
+    $l_online_users .= sprintf($l_h_user_s, $loggedHiddenOnline);
+    $l_online_users .= sprintf($l_g_user_s, $guestsOnline);
+
+    $template->assignVars(
+        [
+            'TOTAL_USERS_ONLINE'  => $l_online_users,
+            'LOGGED_IN_USER_LIST' => $onlineUserListString,
+        ]
+    );
 }
 
 ?>

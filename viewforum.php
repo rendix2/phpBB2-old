@@ -395,7 +395,10 @@ $nav_links['up'] = [
 //
 // Dump out the page header and load viewforum template
 //
-define('SHOW_ONLINE', true);
+
+if ($board_config['show_online']) {
+    showOnline($forum_id, $userdata, $board_config, $theme, $lang, $storage, $template);
+}
 
 $page_title = $lang['View_forum'] . ' - ' . $forum->forum_name;
 

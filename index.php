@@ -270,7 +270,9 @@ $is_auth_array = Auth::authorize(AUTH_VIEW, AUTH_LIST_ALL, $userdata, $forum_dat
 //
 // Start output of page
 //
-define('SHOW_ONLINE', true);
+
+showOnline($forum_id, $userdata, $board_config, $theme, $lang, $storage, $template);
+
 $page_title = $lang['Index'];
 
 require_once $phpbb_root_path . 'includes/page_header.php';

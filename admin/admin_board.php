@@ -132,6 +132,9 @@ $prune_no  = !$new['prune_enable'] ? 'checked="checked"' : '';
 $topic_review_yes =  $new['topic_review'] ? 'checked="checked"' : '';
 $topic_review_no  = !$new['topic_review'] ? 'checked="checked"' : '';
 
+$show_online_yes =  $new['show_online'] ? 'checked="checked"' : '';
+$show_online_no  = !$new['show_online'] ? 'checked="checked"' : '';
+
 $smile_yes =  $new['allow_smilies'] ? 'checked="checked"' : '';
 $smile_no  = !$new['allow_smilies'] ? 'checked="checked"' : '';
 
@@ -285,6 +288,8 @@ $template->assignVars(
 
         'L_ENABLE_TOPIC_REVIEW' => $lang['Enable_topic_review'],
 
+        'L_ENABLE_SHOW_ONLINE' => $lang['Enable_show_online'],
+
         'L_ALLOW_HTML' => $lang['Allow_HTML'],
 
         'L_ALLOW_BBCODE' => $lang['Allow_BBCode'],
@@ -422,6 +427,9 @@ $template->assignVars(
 
         'TOPIC_REVIEW_YES' => $topic_review_yes,
         'TOPIC_REVIEW_NO'  => $topic_review_no,
+
+        'SHOW_ONLINE_YES' => $show_online_yes,
+        'SHOW_ONLINE_NO'  => $show_online_no,
 
         'HTML_TAGS' => $html_tags,
         'HTML_YES'  => $html_yes,

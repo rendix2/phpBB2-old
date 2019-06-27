@@ -290,8 +290,6 @@ $template->assignVars(
         'PAGE_TITLE'                  => $page_title,
         'LAST_VISIT_DATE'             => sprintf($lang['You_last_visit'], $s_last_visit),
         'CURRENT_TIME'                => sprintf($lang['Current_time'], create_date($board_config['default_dateformat'], time(), $board_config['board_timezone'])),
-        'TOTAL_USERS_ONLINE'          => $l_online_users,
-        'LOGGED_IN_USER_LIST'         => $onlineUserListString,
         'RECORD_USERS'                => sprintf($lang['Record_online_users'], $board_config['record_online_users'], create_date($board_config['default_dateformat'], $board_config['record_online_date'], $board_config['board_timezone'])),
         'PRIVATE_MESSAGE_INFO'        => $l_privmsgs_text,
         'PRIVATE_MESSAGE_INFO_UNREAD' => $l_privmsgs_text_unread,
