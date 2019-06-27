@@ -12,3 +12,7 @@ News:
 - we count users topics
 - optimized for(....) loops
 - added DB Maintenance mod
+- improved admin index (my own improved Advanced Admin Index Stats)
+- improved show size of files (from phpBB3)
+- using <label> tag for inputs
+- language select has fixed selected attribute
