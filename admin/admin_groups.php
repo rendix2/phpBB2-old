@@ -241,10 +241,11 @@ if (isset($_POST['edit']) || isset($_POST['new'])) {
 		}
 
 		if ($mode === 'editgroup') {
+			// TODO we dont need check group_single_user
 			$group_info = dibi::select('*')
 				->from(GROUPS_TABLE)
-				->where('group_single_user <> %i', 1)
 				->where('group_id = %i', $group_id)
+				->where('group_single_user <> %i', 1)
 				->fetch();
 
 			if (!$group_info) {

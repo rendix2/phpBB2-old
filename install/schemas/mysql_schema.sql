@@ -268,11 +268,11 @@ CREATE TABLE phpbb_search_results (
 # Table structure for table `phpbb_search_wordlist`
 #
 CREATE TABLE phpbb_search_wordlist (
-  word_text varchar(50) binary NOT NULL default '',
-  word_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-  word_common tinyint(1) unsigned NOT NULL default '0',
-  PRIMARY KEY (word_text),
-  KEY word_id (word_id)
+    word_id mediumint(8) UNSIGNED NOT NULL auto_increment,
+    word_text varchar(50) binary NOT NULL default '',
+    word_common tinyint(1) unsigned NOT NULL default '0',
+    PRIMARY KEY (word_id),
+    UNIQUE word_text(word_text)
 );
 
 # --------------------------------------------------------
@@ -590,3 +590,4 @@ CREATE TABLE phpbb_words (
 
 ALTER TABLE `phpbb_user_group` ADD PRIMARY KEY (`group_id`, `user_id`);
 ALTER TABLE `phpbb_users` ADD UNIQUE(`username`);
+ALTER TABLE phpbb_banlist ADD INDEX ban_userid ( ban_userid );

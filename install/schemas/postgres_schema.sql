@@ -262,9 +262,9 @@ CREATE TABLE phpbb_search_wordlist (
   word_id int4 DEFAULT nextval('phpbb_search_wordlist_id_seq'::text) NOT NULL,
   word_text varchar(50) NOT NULL DEFAULT '',
   word_common int2 NOT NULL DEFAULT '0',
-  CONSTRAINT phpbb_search_wordlist_pkey PRIMARY KEY (word_text)
+  CONSTRAINT phpbb_search_wordlist_pkey PRIMARY KEY (word_id)
 );
-CREATE  INDEX word_id_phpbb_search_wordlist_index ON phpbb_search_wordlist (word_id);
+CREATE  INDEX word_id_phpbb_search_wordlist_index ON phpbb_search_wordlist (word_text);
 
 
 /* --------------------------------------------------------
@@ -573,3 +573,4 @@ CREATE TABLE phpbb_words (
 
 ALTER TABLE `phpbb_user_group` ADD PRIMARY KEY (`group_id`, `user_id`);
 ALTER TABLE `phpbb_users` ADD UNIQUE(`username`);
+ALTER TABLE phpbb_banlist ADD INDEX ban_userid ( ban_userid );

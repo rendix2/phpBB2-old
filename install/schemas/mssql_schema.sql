@@ -729,6 +729,9 @@ new indexes
 
  CREATE  UNIQUE  INDEX [IX_user_name] ON [phpbb_users]([username]) WITH  IGNORE_DUP_KEY  ON [PRIMARY]
 
+GO
+
+CREATE  INDEX [IX_ban_userid] ON [phpbb_banlist]([ban_userid]) ON [PRIMARY]
 
 GO
 
