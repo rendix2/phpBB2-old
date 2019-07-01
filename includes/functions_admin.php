@@ -52,7 +52,7 @@ function make_forum_select($boxName, $ignoreForum = false, $selectForum = '')
         if ($isAuth[$forum->forum_id]['auth_read'] && $ignoreForum !== $forum->forum_id) {
             $selected = $selectForum === $forum->forum_id ? ' selected="selected"' : '';
 
-            $forumList .= '<option value="' . $forum->forum_id . '"' . $selected . '>' . $forum->forum_name . '</option>';
+            $forumList .= '<option value="' . $forum->forum_id . '"' . $selected . '>' . htmlspecialchars($forum->forum_name, ENT_QUOTES) . '</option>';
         }
     }
 

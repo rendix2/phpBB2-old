@@ -153,7 +153,7 @@ $groups = dibi::select(['group_id', 'group_name'])
 $select_list = '<select name = "' . POST_GROUPS_URL . '"><option value = "-1">' . $lang['All_users'] . '</option>';
 
 foreach ($groups as $group_id => $group_name) {
-    $select_list .= '<option value = "' . $group_id . '">' . $group_name . '</option>';
+    $select_list .= '<option value = "' . $group_id . '">' . htmlspecialchars($group_name, ENT_QUOTES) . '</option>';
 }
 
 $select_list .= '</select>';

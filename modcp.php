@@ -545,6 +545,9 @@ switch ($mode) {
 
         $posts = [];
 
+        /**
+         * TODO
+         */
 		if (isset($_POST['split_type_all']) || isset($_POST['split_type_beyond'])) {
 			$posts = $_POST['post_id_list'];
 		}
@@ -684,7 +687,7 @@ switch ($mode) {
                         'L_UNMARK_ALL'          => $lang['Unmark_all'],
                         'L_POST'                => $lang['Post'],
 
-                        'FORUM_NAME' => $forum_name,
+                        'FORUM_NAME' => htmlspecialchars($forum_name, ENT_QUOTES),
 
                         'U_VIEW_FORUM' => Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forum_id"),
 
@@ -905,7 +908,7 @@ switch ($mode) {
 
         $template->assignVars(
             [
-                'FORUM_NAME' => $forum_name,
+                'FORUM_NAME' => htmlspecialchars($forum_name, ENT_QUOTES),
 
                 'L_MOD_CP'         => $lang['Mod_CP'],
                 'L_MOD_CP_EXPLAIN' => $lang['Mod_CP_explain'],

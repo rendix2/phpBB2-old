@@ -43,7 +43,7 @@ if (isset($_POST['add_name'])) {
 		message_die(GENERAL_MESSAGE, $lang['Fields_empty']);
 	}
 
-	if (Validator::userName($disallowed_user, $lang, $userdata)) {
+	if (Validator::userName($disallowed_user, $lang, $userdata->toArray())) {
 		dibi::insert(DISALLOW_TABLE, ['disallow_username' => $disallowed_user])->execute();
 
 		$message = $lang['Disallow_successful'];

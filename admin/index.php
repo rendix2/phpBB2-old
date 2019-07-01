@@ -210,7 +210,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
 
     $boardRunningDays = new DateTime();
     $boardRunningDays->setTimezone($zone);
-    $boardRunningDays = $boardRunningDays->diff($boardStartDay)->d;
+    $boardRunningDays = $boardRunningDays->diff($boardStartDay)->days;
 
 	$postsPerDay  = sprintf('%.2f', $totalPosts / $boardRunningDays);
 	$topicsPerDay = sprintf('%.2f', $totalTopics / $boardRunningDays);

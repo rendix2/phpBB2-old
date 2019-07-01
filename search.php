@@ -925,7 +925,7 @@ if ($mode === 'searchuser') {
                 $template->assignBlockVars('searchresults',
                     [
                         'TOPIC_TITLE'   => $topic_title,
-                        'FORUM_NAME'    => $search_set->forum_name,
+                        'FORUM_NAME'    => htmlspecialchars($search_set->forum_name, ENT_QUOTES),
                         'POST_SUBJECT'  => $post_subject,
                         'POST_DATE'     => $post_date,
                         'POSTER_NAME'   => $poster,
@@ -1094,7 +1094,7 @@ if ($mode === 'searchuser') {
 
                 $template->assignBlockVars('searchresults',
                     [
-                        'FORUM_NAME'       => $search_set->forum_name,
+                        'FORUM_NAME'       => htmlspecialchars($search_set->forum_name, ENT_QUOTES),
                         'FORUM_ID'         => $forum_id,
                         'TOPIC_ID'         => $topic_id,
                         'FOLDER'           => $folder_image,

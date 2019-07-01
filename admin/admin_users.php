@@ -808,8 +808,8 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 		$rank_select_box = '<option value="0">' . $lang['No_assigned_rank'] . '</option>';
 
 		foreach ($ranks as $rank) {
-			$selected = $this_userdata['user_rank'] === $rank->rank_id ? ' selected="selected"' : '';
-			$rank_select_box .= '<option value="' . $rank->rank_id . '"' . $selected . '>' . $rank->rank_title . '</option>';
+			$selected = $this_userdata['user_rank'] === $rank->rank_id ? 'selected="selected"' : '';
+			$rank_select_box .= '<option value="' . $rank->rank_id . '" ' . $selected . '>' . htmlspecialchars($rank->rank_title, ENT_QUOTES) . '</option>';
 		}
 
         $template->setFileNames(['body' => 'admin/user_edit_body.tpl']);
