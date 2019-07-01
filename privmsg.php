@@ -170,11 +170,7 @@ if ($mode === 'newpm') {
         'u.user_from',
         'u.user_website',
         'u.user_email',
-        'u.user_icq',
-        'u.user_aim',
-        'u.user_yim',
         'u.user_regdate',
-        'u.user_msnm',
         'u.user_viewemail',
         'u.user_rank',
         'u.user_sig',
@@ -508,26 +504,6 @@ if ($mode === 'newpm') {
 	$www_img = $privmsg->user_website ? '<a href="' . $privmsg->user_website . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
 	$www = $privmsg->user_website ? '<a href="' . $privmsg->user_website . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
 
-    if (!empty($privmsg->user_icq)) {
-		$icq_status_img = '<a href="http://wwp.icq.com/' . $privmsg->user_icq . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $privmsg->user_icq . '&img=5" width="18" height="18" border="0" /></a>';
-		$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $privmsg->user_icq . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
-		$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $privmsg->user_icq . '">' . $lang['ICQ'] . '</a>';
-	} else {
-		$icq_status_img = '';
-		$icq_img = '';
-		$icq = '';
-	}
-
-	$aim_img = $privmsg->user_aim ? '<a href="aim:goim?screenname=' . htmlspecialchars($privmsg->user_aim, ENT_QUOTES) . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
-	$aim     = $privmsg->user_aim ? '<a href="aim:goim?screenname=' . htmlspecialchars($privmsg->user_aim, ENT_QUOTES) . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
-
-	$temp_url = Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$user_id_from");
-	$msn_img  = $privmsg->user_msnm ? '<a href="' . $temp_url . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
-	$msn      = $privmsg->user_msnm ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
-
-	$yim_img = $privmsg->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . htmlspecialchars($privmsg->user_yim, ENT_QUOTES) . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
-	$yim     = $privmsg->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . htmlspecialchars($privmsg->user_yim, ENT_QUOTES) . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
-
 	$temp_url   = Session::appendSid('search.php?search_author=' . urlencode($username_from) . '&amp;show_results=posts');
 	$search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $username_from) . '" title="' . sprintf($lang['Search_user_posts'], $username_from) . '" border="0" /></a>';
 	$search     = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $username_from) . '</a>';
@@ -628,19 +604,6 @@ if ($mode === 'newpm') {
 
             'WWW_IMG'        => $www_img,
             'WWW'            => $www,
-
-            'ICQ_STATUS_IMG' => $icq_status_img,
-            'ICQ_IMG'        => $icq_img,
-            'ICQ'            => $icq,
-
-            'AIM_IMG'        => $aim_img,
-            'AIM'            => $aim,
-
-            'MSN_IMG'        => $msn_img,
-            'MSN'            => $msn,
-
-            'YIM_IMG'        => $yim_img,
-            'YIM'            => $yim
         ]
     );
 

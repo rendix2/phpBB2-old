@@ -99,11 +99,6 @@ $lang['View_latest_post'] = 'View latest post';
 $lang['View_newest_post'] = 'View newest post';
 $lang['Page_of'] = 'Page <b>%d</b> of <b>%d</b>'; // Replaces with: Page 1 of 2 for example
 
-$lang['ICQ'] = 'ICQ Number';
-$lang['AIM'] = 'AIM Address';
-$lang['MSNM'] = 'MSN Messenger';
-$lang['YIM'] = 'Yahoo Messenger';
-
 $lang['Forum_Index'] = '%s Forum Index';  // eg. sitename Forum Index, %s can be removed if you prefer
 
 $lang['Post_new_topic'] = 'Post new topic';
@@ -275,7 +270,6 @@ $lang['Back_to_top'] = 'Back to top';
 
 $lang['Read_profile'] = 'View user\'s profile'; 
 $lang['Visit_website'] = 'Visit poster\'s website';
-$lang['ICQ_status'] = 'ICQ Status';
 $lang['Edit_delete_post'] = 'Edit/Delete this post';
 $lang['View_IP'] = 'View IP address of poster';
 $lang['Delete_post'] = 'Delete this post';

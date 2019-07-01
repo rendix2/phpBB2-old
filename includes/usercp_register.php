@@ -112,10 +112,6 @@ if (
     // doing the job but can still break HTML output ... have no choice, have
     // to use htmlspecialchars ... be prepared to be moaned at.
     $email        = !empty($_POST['email'])        ? trim($_POST['email'])        : '';
-    $icq          = !empty($_POST['icq'])          ? trim($_POST['icq'])          : '';
-    $aim          = !empty($_POST['aim'])          ? trim($_POST['aim'])          : '';
-    $msn          = !empty($_POST['msn'])          ? trim($_POST['msn'])          : '';
-    $yim          = !empty($_POST['yim'])          ? trim($_POST['yim'])          : '';
     $website      = !empty($_POST['website'])      ? trim($_POST['website'])      : '';
     $location     = !empty($_POST['location'])     ? trim($_POST['location'])     : '';
     $occupation   = !empty($_POST['occupation'])   ? trim($_POST['occupation'])   : '';
@@ -133,7 +129,7 @@ if (
 
 	// Run some validation on the optional fields. These are pass-by-ref, so they'll be changed to
 	// empty strings if they fail.
-	Validator::optionalFields($icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature);
+	Validator::optionalFields($website, $location, $occupation, $interests, $signature);
 
     $viewemail       = isset($_POST['viewemail'])   ? (bool)$_POST['hideonline']  : 0;
     $allowviewonline = isset($_POST['hideonline'])  ? (bool)!$_POST['hideonline'] : true;
@@ -206,11 +202,6 @@ if (
 		$cur_password = htmlspecialchars(stripslashes($cur_password));
 		$new_password = htmlspecialchars(stripslashes($new_password));
 		$password_confirm = htmlspecialchars(stripslashes($password_confirm));
-
-		$icq = stripslashes($icq);
-		$aim = stripslashes($aim);
-		$msn = stripslashes($msn);
-		$yim = stripslashes($yim);
 
 		$website = stripslashes($website);
 		$location = stripslashes($location);
@@ -450,7 +441,6 @@ if (isset($_POST['submit'])) {
 
             $update_data = [
                 'user_email'            => $email,
-                'user_icq'              => $icq,
                 'user_website'          => $website,
                 'user_occ'              => $occupation,
                 'user_from'             => $location,
@@ -458,9 +448,6 @@ if (isset($_POST['submit'])) {
                 'user_sig'              => $signature,
                 'user_sig_bbcode_uid'   => $signature_bbcode_uid,
                 'user_viewemail'        => $viewemail,
-                'user_aim'              => str_replace(' ', '+', $aim),
-                'user_yim'              => $yim,
-                'user_msnm'             => $msn,
                 'user_attachsig'        => $attachsig,
                 'user_allowsmile'       => $allowsmilies,
                 'user_allowhtml'        => $allowhtml,
@@ -563,7 +550,6 @@ if (isset($_POST['submit'])) {
                 'user_regdate' => time(),
                 'user_password' => $new_password,
                 'user_email' => $email,
-                'user_icq' => $icq,
                 'user_website' => $website,
                 'user_occ' =>  $occupation,
                 'user_from' => $location,
@@ -573,9 +559,6 @@ if (isset($_POST['submit'])) {
                 //'user_avatar' => null, // TODO $avatar_sql,
                 //'user_avatar_type' => null, // TODO $avatar_sql,
                 'user_viewemail' => $viewemail,
-                'user_aim' => str_replace(' ', '+', $aim), // TODO what is aim?
-                'user_yim' => $yim, // TODO what is yim?
-                'user_msnm' => $msn,
                 'user_attachsig' => $attachsig,
                 'user_allowsmile' => $allowsmilies,
                 'user_allowhtml' => $allowhtml,
@@ -662,10 +645,6 @@ if (isset($_POST['submit'])) {
                         'FAX_INFO'      => $board_config['coppa_fax'],
                         'MAIL_INFO'     => $board_config['coppa_mail'],
                         'EMAIL_ADDRESS' => $email,
-                        'ICQ'           => $icq,
-                        'AIM'           => $aim,
-                        'YIM'           => $yim,
-                        'MSN'           => $msn,
                         'WEB_SITE'      => $website,
                         'FROM'          => $location,
                         'OCC'           => $occupation,
@@ -733,11 +712,6 @@ if ($error) {
 	$new_password = '';
 	$password_confirm = '';
 
-	$icq = stripslashes($icq);
-	$aim = str_replace('+', ' ', stripslashes($aim));
-	$msn = stripslashes($msn);
-	$yim = stripslashes($yim);
-
 	$website = stripslashes($website);
 	$location = stripslashes($location);
 	$occupation = stripslashes($occupation);
@@ -754,11 +728,6 @@ if ($error) {
 	$cur_password = '';
 	$new_password = '';
 	$password_confirm = '';
-
-	$icq = $userdata['user_icq'];
-	$aim = str_replace('+', ' ', $userdata['user_aim']);
-	$msn = $userdata['user_msnm'];
-	$yim = $userdata['user_yim'];
 
 	$website = $userdata['user_website'];
 	$location = $userdata['user_from'];
@@ -809,7 +778,7 @@ if (isset($_POST['avatargallery']) && !$error) {
 
     $allowviewonline = !$allowviewonline;
 
-	display_avatar_gallery($mode, $avatar_category, $user_id, $email, $current_email, $coppa, $username, $email, $new_password, $cur_password, $password_confirm, $icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature, $viewemail, $notifypm, $popup_pm, $notifyreply, $attachsig, $allowhtml, $allowbbcode, $allowsmilies, $allowviewonline, $user_style, $user_lang, $user_timezone, $user_dateformat, $userdata['session_id']);
+	display_avatar_gallery($mode, $avatar_category, $user_id, $email, $current_email, $coppa, $username, $email, $new_password, $cur_password, $password_confirm, $website, $location, $occupation, $interests, $signature, $viewemail, $notifypm, $popup_pm, $notifyreply, $attachsig, $allowhtml, $allowbbcode, $allowsmilies, $allowviewonline, $user_style, $user_lang, $user_timezone, $user_dateformat, $userdata['session_id']);
 } else {
     if (!isset($coppa)) {
         $coppa = false;
@@ -936,10 +905,6 @@ if (isset($_POST['avatargallery']) && !$error) {
             'PASSWORD_CONFIRM' => isset($password_confirm) ? $password_confirm : '',
             'EMAIL'            => isset($email) ? $email : '',
             'CONFIRM_IMG'      => $confirm_image,
-            'YIM'              => htmlspecialchars($yim, ENT_QUOTES),
-            'ICQ'              => htmlspecialchars($icq, ENT_QUOTES),
-            'MSN'              => htmlspecialchars($msn, ENT_QUOTES),
-            'AIM'              => htmlspecialchars($aim, ENT_QUOTES),
             'OCCUPATION'       => htmlspecialchars($occupation, ENT_QUOTES),
             'INTERESTS'        => htmlspecialchars($interests, ENT_QUOTES),
             'LOCATION'         => htmlspecialchars($location, ENT_QUOTES),
@@ -994,11 +959,7 @@ if (isset($_POST['avatargallery']) && !$error) {
             'L_PASSWORD_CONFIRM_IF_CHANGED' => $mode === 'editprofile' ? $lang['password_confirm_if_changed'] : '',
             'L_SUBMIT'                      => $lang['Submit'],
             'L_RESET'                       => $lang['Reset'],
-            'L_ICQ_NUMBER'                  => $lang['ICQ'],
-            'L_MESSENGER'                   => $lang['MSNM'],
-            'L_YAHOO'                       => $lang['YIM'],
             'L_WEBSITE'                     => $lang['Website'],
-            'L_AIM'                         => $lang['AIM'],
             'L_LOCATION'                    => $lang['Location'],
             'L_OCCUPATION'                  => $lang['Occupation'],
             'L_BOARD_LANGUAGE'              => $lang['Board_lang'],

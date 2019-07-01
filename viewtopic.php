@@ -392,11 +392,7 @@ $columns = [
     'u.user_from',
     'u.user_website',
     'u.user_email',
-    'u.user_icq',
-    'u.user_aim',
-    'u.user_yim',
     'u.user_regdate',
-    'u.user_msnm',
     'u.user_viewemail',
     'u.user_rank',
     'u.user_sig',
@@ -932,26 +928,6 @@ foreach ($posts as $i => $post) {
 
 		$www_img = $post->user_website ? '<a href="' . $post->user_website . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
 		$www     = $post->user_website ? '<a href="' . $post->user_website . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
-
-        if (!empty($post->user_icq)) {
-			$icq_status_img = '<a href="http://wwp.icq.com/' . $post->user_icq . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $post->user_icq . '&img=5" width="18" height="18" border="0" /></a>';
-			$icq_img        = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $post->user_icq . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
-			$icq            =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $post->user_icq . '">' . $lang['ICQ'] . '</a>';
-		} else {
-			$icq_status_img = '';
-			$icq_img = '';
-			$icq = '';
-		}
-
-		$aim_img = $post->user_aim ? '<a href="aim:goim?screenname=' . htmlspecialchars($post->user_aim, ENT_QUOTES) . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
-		$aim = $post->user_aim ? '<a href="aim:goim?screenname=' . htmlspecialchars($post->user_aim, ENT_QUOTES) . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
-
-		$temp_url = Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$poster_id");
-		$msn_img = $post->user_msnm ? '<a href="' . $temp_url . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
-		$msn = $post->user_msnm ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
-
-		$yim_img = $post->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . htmlspecialchars($post->user_yim, ENT_QUOTES) . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
-		$yim = $post->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . htmlspecialchars($post->user_yim, ENT_QUOTES) . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
 	} else {
 		$profile_img = '';
 		$profile = '';
@@ -961,15 +937,6 @@ foreach ($posts as $i => $post) {
 		$email = '';
 		$www_img = '';
 		$www = '';
-		$icq_status_img = '';
-		$icq_img = '';
-		$icq = '';
-		$aim_img = '';
-		$aim = '';
-		$msn_img = '';
-		$msn = '';
-		$yim_img = '';
-		$yim = '';
 	}
 
 	$temp_url = Session::appendSid('posting.php?mode=quote&amp;' . POST_POST_URL . '=' . $post->post_id);
@@ -1155,19 +1122,6 @@ foreach ($posts as $i => $post) {
 
             'WWW_IMG' => $www_img,
             'WWW'     => $www,
-
-            'ICQ_STATUS_IMG' => $icq_status_img,
-            'ICQ_IMG'        => $icq_img,
-            'ICQ'            => $icq,
-
-            'AIM_IMG' => $aim_img,
-            'AIM'     => $aim,
-
-            'MSN_IMG' => $msn_img,
-            'MSN'     => $msn,
-
-            'YIM_IMG' => $yim_img,
-            'YIM'     => $yim,
 
             'EDIT_IMG' => $edit_img,
             'EDIT'     => $edit,

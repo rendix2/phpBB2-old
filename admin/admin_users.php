@@ -154,11 +154,6 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 		$password = !empty($_POST['password']) ? trim(strip_tags(htmlspecialchars($_POST['password'] ) )) : '';
 		$password_confirm = !empty($_POST['password_confirm']) ? trim(strip_tags(htmlspecialchars($_POST['password_confirm'] ) )) : '';
 
-        $icq = !empty($_POST['icq']) ? trim($_POST['icq']) : '';
-        $aim = !empty($_POST['aim']) ? trim($_POST['aim']) : '';
-        $msn = !empty($_POST['msn']) ? trim($_POST['msn']) : '';
-        $yim = !empty($_POST['yim']) ? trim($_POST['yim']) : '';
-
         $website    = !empty($_POST['website'])    ? trim($_POST['website'])    : '';
         $location   = !empty($_POST['location'])   ? trim($_POST['location'])   : '';
         $occupation = !empty($_POST['occupation']) ? trim($_POST['occupation']) : '';
@@ -166,7 +161,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 
         $signature = !empty($_POST['signature']) ? trim(str_replace('<br />', "\n", $_POST['signature'])) : '';
 
-		Validator::optionalFields($icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature);
+		Validator::optionalFields( $website, $location, $occupation, $interests, $signature);
 
 		$viewemail       = isset($_POST['viewemail'])   ? (bool)$_POST['viewemail']   : 0;
         $allowviewonline = isset($_POST['hideonline'])  ? (bool)$_POST['hideonline']  : true;
@@ -212,11 +207,6 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 			$email = stripslashes($email);
 			$password = '';
 			$password_confirm = '';
-
-			$icq = stripslashes($icq);
-			$aim = stripslashes($aim);
-			$msn = stripslashes($msn);
-			$yim = stripslashes($yim);
 
             $website    = stripslashes($website);
             $location   = stripslashes($location);
@@ -533,16 +523,12 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
         if (!$error) {
 		    $update_data = [
                 'user_email' => $email,
-                'user_icq'   => $icq,
                 'user_website' => $website,
                 'user_occ'     => $occupation,
                 'user_from'    => $location,
                 'user_interests' => $interests,
                 'user_sig'       => $signature,
                 'user_viewemail' => $viewemail,
-                'user_aim'       => $aim,
-                'user_yim'       => $yim,
-                'user_msnm'      => $msn,
                 'user_attachsig' => $attachsig,
                 'user_sig_bbcode_uid' => $signature_bbcode_uid,
                 'user_allowsmile' => $allowsmilies,
@@ -603,11 +589,6 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 			$password = '';
 			$password_confirm = '';
 
-			$icq = stripslashes($icq);
-			$aim = str_replace('+', ' ', stripslashes($aim));
-			$msn = stripslashes($msn);
-			$yim = stripslashes($yim);
-
             $website    = stripslashes($website);
             $location   = stripslashes($location);
             $occupation = stripslashes($occupation);
@@ -638,11 +619,6 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 		$email = $this_userdata->user_email;
 		$password = '';
 		$password_confirm = '';
-
-		$icq = $this_userdata->user_icq;
-		$aim = str_replace('+', ' ', $this_userdata->user_aim);
-		$msn = $this_userdata->user_msnm;
-		$yim = $this_userdata->user_yim;
 
 		$website = $this_userdata->user_website;
 		$location = $this_userdata->user_from;
@@ -758,10 +734,6 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 
 			$s_hidden_fields .= '<input type="hidden" name="username" value="' . str_replace('"', '&quot;', $username) . '" />';
 			$s_hidden_fields .= '<input type="hidden" name="email" value="' . str_replace('"', '&quot;', $email) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="icq" value="' . str_replace('"', '&quot;', $icq) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="aim" value="' . str_replace('"', '&quot;', $aim) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="msn" value="' . str_replace('"', '&quot;', $msn) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="yim" value="' . str_replace('"', '&quot;', $yim) . '" />';
 			$s_hidden_fields .= '<input type="hidden" name="website" value="' . str_replace('"', '&quot;', $website) . '" />';
 			$s_hidden_fields .= '<input type="hidden" name="location" value="' . str_replace('"', '&quot;', $location) . '" />';
 			$s_hidden_fields .= '<input type="hidden" name="occupation" value="' . str_replace('"', '&quot;', $occupation) . '" />';
@@ -852,10 +824,6 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 		    [
                 'USERNAME' => $username,
                 'EMAIL' => htmlspecialchars($email, ENT_QUOTES),
-                'YIM' => htmlspecialchars($yim, ENT_QUOTES),
-                'ICQ' => htmlspecialchars($icq, ENT_QUOTES),
-                'MSN' => htmlspecialchars($msn, ENT_QUOTES),
-                'AIM' => htmlspecialchars($aim, ENT_QUOTES),
                 'OCCUPATION' => htmlspecialchars($occupation, ENT_QUOTES),
                 'INTERESTS' => htmlspecialchars($interests, ENT_QUOTES),
                 'LOCATION' => htmlspecialchars($location, ENT_QUOTES),
@@ -901,11 +869,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
                 'L_PASSWORD_CONFIRM_IF_CHANGED' => $lang['password_confirm_if_changed'],
                 'L_SUBMIT' => $lang['Submit'],
                 'L_RESET' => $lang['Reset'],
-                'L_ICQ_NUMBER' => $lang['ICQ'],
-                'L_MESSENGER' => $lang['MSNM'],
-                'L_YAHOO' => $lang['YIM'],
                 'L_WEBSITE' => $lang['Website'],
-                'L_AIM' => $lang['AIM'],
                 'L_LOCATION' => $lang['Location'],
                 'L_OCCUPATION' => $lang['Occupation'],
                 'L_BOARD_LANGUAGE' => $lang['Board_lang'],

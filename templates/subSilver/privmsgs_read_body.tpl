@@ -47,21 +47,16 @@
 	  <td valign="top" colspan="3" class="row1"><span class="postbody">{MESSAGE}</span></td>
 	</tr>
 	<tr> 
-	  <td width="78%" height="28" valign="bottom" colspan="3" class="row1"> 
-		<table cellspacing="0" cellpadding="0" border="0" height="18">
-		  <tr> 
-			<td valign="middle" nowrap="nowrap">{PROFILE_IMG} {SEARCH_IMG} {PM_IMG} {EMAIL_IMG}
-			  {WWW_IMG} {AIM_IMG} {YIM_IMG} {MSN_IMG}</td><td>&nbsp;</td><td valign="top" nowrap="nowrap"><script language="JavaScript" type="text/javascript"><!-- 
-
-		if ( navigator.userAgent.toLowerCase().indexOf('mozilla') != -1 && navigator.userAgent.indexOf('5.') == -1 && navigator.userAgent.indexOf('6.') == -1 )
-			document.write('{ICQ_IMG}');
-		else
-			document.write('<div style="position:relative"><div style="position:absolute">{ICQ_IMG}</div><div style="position:absolute;left:3px">{ICQ_STATUS_IMG}</div></div>');
-		  
-		  //--></script><noscript>{ICQ_IMG}</noscript></td>
-		  </tr>
-		</table>
-	  </td>
+	  <td width="78%" height="28" valign="bottom" colspan="3" class="row1">
+		  <table cellspacing="0" cellpadding="0" border="0" height="18">
+			  <tr>
+				  <td valign="middle" nowrap="nowrap">
+					  {PROFILE_IMG} {SEARCH_IMG} {PM_IMG} {EMAIL_IMG} {WWW_IMG}
+				  </td>
+				  <td>&nbsp;</td>
+			  </tr>
+		  </table>
+		</td>
 	</tr>
 	<tr>
 	  <td class="catBottom" colspan="3" height="28" align="right"> {S_HIDDEN_FIELDS} 

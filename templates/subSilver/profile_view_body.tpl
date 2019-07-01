@@ -60,29 +60,6 @@
 		  <td valign="middle" nowrap="nowrap" align="right"><span class="gen">{L_PM}:</span></td>
 		  <td class="row1" valign="middle"><b><span class="gen">{PM_IMG}</span></b></td>
 		</tr>
-		<tr> 
-		  <td valign="middle" nowrap="nowrap" align="right"><span class="gen">{L_MESSENGER}:</span></td>
-		  <td class="row1" valign="middle"><span class="gen">{MSN}</span></td>
-		</tr>
-		<tr> 
-		  <td valign="middle" nowrap="nowrap" align="right"><span class="gen">{L_YAHOO}:</span></td>
-		  <td class="row1" valign="middle"><span class="gen">{YIM_IMG}</span></td>
-		</tr>
-		<tr> 
-		  <td valign="middle" nowrap="nowrap" align="right"><span class="gen">{L_AIM}:</span></td>
-		  <td class="row1" valign="middle"><span class="gen">{AIM_IMG}</span></td>
-		</tr>
-		<tr> 
-		  <td valign="middle" nowrap="nowrap" align="right"><span class="gen">{L_ICQ_NUMBER}:</span></td>
-		  <td class="row1"><script language="JavaScript" type="text/javascript"><!-- 
-
-		if ( navigator.userAgent.toLowerCase().indexOf('mozilla') != -1 && navigator.userAgent.indexOf('5.') == -1 && navigator.userAgent.indexOf('6.') == -1 )
-			document.write(' {ICQ_IMG}');
-		else
-			document.write('<table cellspacing="0" cellpadding="0" border="0"><tr><td nowrap="nowrap"><div style="position:relative;height:18px"><div style="position:absolute">{ICQ_IMG}</div><div style="position:absolute;left:3px;top:-1px">{ICQ_STATUS_IMG}</div></div></td></tr></table>');
-		  
-		  //--></script><noscript>{ICQ_IMG}</noscript></td>
-		</tr>
 	  </table>
 	</td>
   </tr>

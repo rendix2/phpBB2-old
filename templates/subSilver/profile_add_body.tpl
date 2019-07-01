@@ -119,46 +119,6 @@
 	</tr>
 	<tr>
 		<td class="row1">
-			<label for="icq">
-				<span class="gen">{L_ICQ_NUMBER}:</span>
-			</label>
-		</td>
-		<td class="row2">
-			<input type="text" name="icq" id="icq" class="post" style="width: 100px" size="10" maxlength="15" value="{ICQ}"/>
-		</td>
-	</tr>
-	<tr>
-		<td class="row1">
-			<label for="aim">
-				<span class="gen">{L_AIM}:</span>
-			</label>
-		</td>
-		<td class="row2">
-			<input type="text" class="post" style="width: 150px" name="aim" id="aim" size="20" maxlength="255" value="{AIM}"/>
-		</td>
-	</tr>
-	<tr>
-		<td class="row1">
-			<label for="msn">
-				<span class="gen">{L_MESSENGER}:</span>
-			</label>
-		</td>
-		<td class="row2">
-			<input type="text" class="post" style="width: 150px" name="msn" id="msn" size="20" maxlength="255" value="{MSN}"/>
-		</td>
-	</tr>
-	<tr>
-		<td class="row1">
-			<label for="yim">
-				<span class="gen">{L_YAHOO}:</span>
-			</label>
-		</td>
-		<td class="row2">
-			<input type="text" class="post" style="width: 150px" name="yim" id="yim" size="20" maxlength="255" value="{YIM}"/>
-		</td>
-	</tr>
-	<tr>
-		<td class="row1">
 			<label for="website">
 				<span class="gen">{L_WEBSITE}:</span>
 			</label>

@@ -154,25 +154,6 @@ if (!empty($profileData->user_viewemail) || $userdata['user_level'] === ADMIN) {
 $www_img = $profileData->user_website ? '<a href="' . $profileData->user_website . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '&nbsp;';
 $www     = $profileData->user_website ? '<a href="' . $profileData->user_website . '" target="_userwww">' . $profileData->user_website . '</a>' : '&nbsp;';
 
-if (!empty($profileData->user_icq)) {
-	$icq_status_img = '<a href="http://wwp.icq.com/' . $profileData->user_icq . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $profileData->user_icq . '&img=5" width="18" height="18" border="0" /></a>';
-	$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $profileData->user_icq . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
-	$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $profileData->user_icq . '">' . $lang['ICQ'] . '</a>';
-} else {
-	$icq_status_img = '&nbsp;';
-	$icq_img = '&nbsp;';
-	$icq = '&nbsp;';
-}
-
-$aim_img = $profileData->user_aim ? '<a href="aim:goim?screenname=' . htmlspecialchars($profileData->user_aim, ENT_QUOTES) . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '&nbsp;';
-$aim = $profileData->user_aim ? '<a href="aim:goim?screenname=' . htmlspecialchars($profileData->user_aim, ENT_QUOTES) . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '&nbsp;';
-
-$msn_img = $profileData->user_msnm ? htmlspecialchars($profileData->user_msnm, ENT_QUOTES) : '&nbsp;';
-$msn = $msn_img;
-
-$yim_img = $profileData->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . htmlspecialchars($profileData->user_yim, ENT_QUOTES) . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
-$yim = $profileData->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . htmlspecialchars($profileData->user_yim, ENT_QUOTES) . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
-
 $temp_url = Session::appendSid('search.php?search_author=' . urlencode($profileData->username) . '&amp;show_results=posts');
 $search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $profileData->username) . '" title="' . sprintf($lang['Search_user_posts'], $profileData->username) . '" border="0" /></a>';
 $search = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $profileData->username) . '</a>';
@@ -218,19 +199,6 @@ $template->assignVars(
         'WWW_IMG' => $www_img,
         'WWW' => $www,
 
-        'ICQ_STATUS_IMG' => $icq_status_img,
-        'ICQ_IMG' => $icq_img,
-        'ICQ' => $icq,
-
-        'AIM_IMG' => $aim_img,
-        'AIM' => $aim,
-
-        'MSN_IMG' => $msn_img,
-        'MSN' => $msn,
-
-        'YIM_IMG' => $yim_img,
-        'YIM' => $yim,
-
         'LOCATION' => $profileData->user_from ? htmlspecialchars($profileData->user_from, ENT_QUOTES) : '&nbsp;',
         'OCCUPATION' => $profileData->user_occ ? htmlspecialchars($profileData->user_occ, ENT_QUOTES) : '&nbsp;',
         'INTERESTS' => $profileData->user_interests ? htmlspecialchars($profileData->user_interests, ENT_QUOTES) : '&nbsp;',
@@ -249,10 +217,6 @@ $template->assignVars(
         'L_EMAIL_ADDRESS' => $lang['Email_address'],
         'L_EMAIL' => $lang['Email'],
         'L_PM' => $lang['Private_Message'],
-        'L_ICQ_NUMBER' => $lang['ICQ'],
-        'L_YAHOO' => $lang['YIM'],
-        'L_AIM' => $lang['AIM'],
-        'L_MESSENGER' => $lang['MSNM'],
         'L_WEBSITE' => $lang['Website'],
         'L_LOCATION' => $lang['Location'],
         'L_OCCUPATION' => $lang['Occupation'],

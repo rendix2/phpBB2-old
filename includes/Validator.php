@@ -123,10 +123,6 @@ class Validator
      * Does supplementary validation of optional profile fields. This expects common stuff like trim() and strip_tags()
      * to have already been run. Params are passed by-ref, so we can set them to the empty string if they fail.
      *
-     * @param string $icq
-     * @param string $aim
-     * @param string $msnm
-     * @param string $yim
      * @param string $website
      * @param string $location
      * @param string $occupation
@@ -134,28 +130,12 @@ class Validator
      * @param string $sig
      */
     public static function optionalFields(
-        &$icq,
-        &$aim,
-        &$msnm,
-        &$yim,
         &$website,
         &$location,
         &$occupation,
         &$interests,
         &$sig
     ) {
-        if (mb_strlen($aim) < 2) {
-            $aim = '';
-        }
-
-        if (mb_strlen($msnm) < 2) {
-            $msnm = '';
-        }
-
-        if (mb_strlen($yim) < 2) {
-            $yim = '';
-        }
-
         if (mb_strlen($location) < 2) {
             $location = '';
         }
@@ -170,11 +150,6 @@ class Validator
 
         if (mb_strlen($sig) < 2) {
             $sig = '';
-        }
-
-        // ICQ number has to be only numbers.
-        if (!preg_match('/^[0-9]+$/', $icq)) {
-            $icq = '';
         }
 
         // website has to start with http://, followed by something with length at least 3 that

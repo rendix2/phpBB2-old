@@ -102,10 +102,6 @@ $template->assignVars(
         'L_ORDER'              => $lang['Order'],
         'L_SORT'               => $lang['Sort'],
         'L_SUBMIT'             => $lang['Sort'],
-        'L_AIM'                => $lang['AIM'],
-        'L_YIM'                => $lang['YIM'],
-        'L_MSNM'               => $lang['MSNM'],
-        'L_ICQ'                => $lang['ICQ'],
         'L_JOINED'             => $lang['Joined'],
         'L_POSTS'              => $lang['Posts'],
         'L_TOPICS'              => $lang['Topics'],
@@ -127,10 +123,6 @@ $columns = [
     'user_from',
     'user_website',
     'user_email',
-    'user_icq',
-    'user_aim',
-    'user_yim',
-    'user_msnm',
     'user_avatar',
     'user_avatar_type',
     'user_allowavatar'
@@ -234,26 +226,6 @@ foreach ($users as $user) {
     $www_img = $user->user_website ? '<a href="' . $user->user_website . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
     $www = $user->user_website ? '<a href="' . $user->user_website . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
 
-    if (!empty($user->user_icq)) {
-        $icq_status_img = '<a href="http://wwp.icq.com/' . $user->user_icq . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $user->user_icq . '&img=5" width="18" height="18" border="0" /></a>';
-        $icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $user->user_icq . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
-        $icq = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $user->user_icq . '">' . $lang['ICQ'] . '</a>';
-    } else {
-        $icq_status_img = '';
-        $icq_img = '';
-        $icq = '';
-    }
-
-    $aim_img = $user->user_aim ? '<a href="aim:goim?screenname=' . $user->user_aim . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
-    $aim     = $user->user_aim ? '<a href="aim:goim?screenname=' . $user->user_aim . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
-
-    $temp_url = Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$user->user_id");
-    $msn_img  = $user->user_msnm ? '<a href="' . $temp_url . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
-    $msn      = $user->user_msnm ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
-
-    $yim_img = $user->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $user->user_yim . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
-    $yim     = $user->user_yim ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $user->user_yim . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
-
     $temp_url   = Session::appendSid('search.php?search_author=' . urlencode($user->username) . '&amp;show_results=posts');
     $search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $user->username) . '" title="' . sprintf($lang['Search_user_posts'], $user->username) . '" border="0" /></a>';
     $search     = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $user->username) . '</a>';
@@ -282,15 +254,6 @@ foreach ($users as $user) {
             'EMAIL' => $email,
             'WWW_IMG' => $www_img,
             'WWW' => $www,
-            'ICQ_STATUS_IMG' => $icq_status_img,
-            'ICQ_IMG' => $icq_img,
-            'ICQ' => $icq,
-            'AIM_IMG' => $aim_img,
-            'AIM' => $aim,
-            'MSN_IMG' => $msn_img,
-            'MSN' => $msn,
-            'YIM_IMG' => $yim_img,
-            'YIM' => $yim,
 
             'U_VIEWPROFILE' => Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$user->user_id")
         ]
