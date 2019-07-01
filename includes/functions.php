@@ -25,6 +25,11 @@ use Nette\Caching\IStorage;
  *
  ***************************************************************************/
 
+/**
+ * @param string $mode
+ *
+ * @return Row|false
+ */
 function get_db_stat($mode)
 {
     switch ($mode) {
@@ -94,10 +99,18 @@ function dss_rand()
 
 	return substr($val, 4, 16);
 }
-//
-// Get Userdata, $user can be username or user_id. If force_str is true, the username will be forced.
-//
-// TODO try to force use by user_id, NOT username
+
+/**
+ *
+ * Get Userdata, $user can be username or user_id. If force_str is true, the username will be forced.
+ *
+ * TODO try to force use by user_id, NOT username
+ *
+ * @param int  $user_id
+ * @param bool $force_str
+ *
+ * @return Row|false
+ */
 function get_userdata($user_id, $force_str = false)
 {
     if (!is_numeric($user_id) || $force_str) {
@@ -594,10 +607,10 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
         //
         // Load the Page Header
         //
-        if (!defined('IN_ADMIN')) {
-            require_once $phpbb_root_path . 'includes/page_header.php';
-        } else {
+        if (defined('IN_ADMIN')) {
             require_once $phpbb_root_path . 'admin/page_header_admin.php';
+        } else {
+            require_once $phpbb_root_path . 'includes/page_header.php';
         }
 	}
 
@@ -648,7 +661,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
     //
     if (DEBUG && ($msg_code === GENERAL_ERROR || $msg_code === CRITICAL_ERROR)) {
         if ($debug_text !== '') {
-            $msg_text = $msg_text . '<br /><br /><b><u>DEBUG MODE</u></b>' . $debug_text;
+            $msg_text .= $debug_text . '<br /><br /><b><u>DEBUG MODE</u></b>';
         }
     }
 
@@ -657,10 +670,10 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
             $msg_text = $lang[$msg_text];
         }
 
-        if (!defined('IN_ADMIN')) {
-            $template->setFileNames(['message_body' => 'message_body.tpl']);
-        } else {
+        if (defined('IN_ADMIN')) {
             $template->setFileNames(['message_body' => 'admin/admin_message_body.tpl']);
+        } else {
+            $template->setFileNames(['message_body' => 'message_body.tpl']);
         }
 
         $template->assignVars(
@@ -671,10 +684,10 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
         );
         $template->pparse('message_body');
 
-        if (!defined('IN_ADMIN')) {
-            require_once $phpbb_root_path . 'includes/page_tail.php';
-        } else {
+        if (defined('IN_ADMIN')) {
             require_once $phpbb_root_path . 'admin/page_footer_admin.php';
+        } else {
+            require_once $phpbb_root_path . 'includes/page_tail.php';
         }
     } else {
         echo "<html>\n<body>\n" . $msg_title . "\n<br /><br />\n" . $msg_text . "</body>\n</html>";

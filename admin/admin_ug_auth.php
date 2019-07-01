@@ -488,7 +488,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 			message_die(GENERAL_MESSAGE, $lang['No_such_user']);
 		}
 
-		$user_id = $this_userdata['user_id'];
+		$user_id = $this_userdata->user_id;
 	}
 
 	//

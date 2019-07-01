@@ -19,7 +19,7 @@
  *
  ***************************************************************************/
 
-function clean_words( $mode, &$entry, array &$stopwords, array &$synonyms)
+function clean_words($mode, &$entry, array &$stopwords, array &$synonyms)
 {
     static $drop_char_matches = [
         '^'  => ' ',

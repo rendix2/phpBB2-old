@@ -118,14 +118,14 @@ foreach ($rows as $row) {
                 $username = '<b style="color:#' . $theme['fontcolor2'] . '">' . $username . '</b>';
             }
 
-            if (!$row->user_allow_viewonline) {
+            if ($row->user_allow_viewonline) {
+                $view_online = true;
+                $registered_users++;
+            } else {
 				$view_online = $userdata['user_level'] === ADMIN;
 				$hidden_users++;
 
 				$username = '<i>' . $username . '</i>';
-			} else {
-				$view_online = true;
-				$registered_users++;
 			}
 
 			$which_counter = 'reg_counter';

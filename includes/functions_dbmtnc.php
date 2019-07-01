@@ -299,7 +299,7 @@ function check_condition($check)
                 return false; // Status unknown
             }
 
-            return !((isset($row->Type) && $row->Type === 'HEAP') || (isset($row->Engine) && ($row->Engine == 'HEAP' || $row->Engine === 'MEMORY')));
+            return !((isset($row->Type) && $row->Type === 'HEAP') || (isset($row->Engine) && ($row->Engine === 'HEAP' || $row->Engine === 'MEMORY')));
 			break;
 		case 3: // DB locked
            return (int)$board_config['board_disable'] === 1;
@@ -307,11 +307,7 @@ function check_condition($check)
 		case 4: // Search index in recreation
             if ($board_config['dbmtnc_rebuild_pos'] !== -1) {
 				// Rebuilding was interrupted - check for end position
-                if ($board_config['dbmtnc_rebuild_end'] >= $board_config['dbmtnc_rebuild_pos']) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return $board_config['dbmtnc_rebuild_end'] >= $board_config['dbmtnc_rebuild_pos'];
             } else {
                 // Rebuilding was not interrupted
                 return false;
@@ -588,7 +584,7 @@ function set_autoincrement($table, $column, $length, $unsigned = TRUE)
 
     $row = dibi::query('SHOW COLUMNS FROM %n LIKE %~like~', $table, $column)->fetch();
 
-    if (strpos($row['Extra'], 'auto_increment') !== FALSE) {
+    if (strpos($row->Extra, 'auto_increment') !== FALSE) {
         echo("<li>$table: " . $lang['Ai_message_no_update'] . "</li>\n");
     } else {
         echo("<li>$table: <b>" . $lang['Ai_message_update_table'] . "</b></li>\n");

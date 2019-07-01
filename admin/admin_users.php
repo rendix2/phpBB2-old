@@ -58,7 +58,9 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
     if (($mode === 'save' && isset($_POST['submit'])) || isset($_POST['avatargallery']) || isset($_POST['submitavatar']) || isset($_POST['cancelavatar'])) {
         $user_id = (int)$_POST['id'];
 
-        if (!($this_userdata = get_userdata($user_id))) {
+        $this_userdata = get_userdata($user_id);
+
+        if (!$this_userdata) {
             message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
         }
 
@@ -75,7 +77,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 
             $update_data = [
                 'poster_id'     => DELETED,
-                'post_username' => $this_userdata['username']
+                'post_username' => $this_userdata->username
             ];
 
             dibi::update(POSTS_TABLE, $update_data)
@@ -197,8 +199,8 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
         $user_avatar_size      = !empty($_FILES['avatar']['size'])          ? $_FILES['avatar']['size']       : 0;
         $user_avatar_filetype  = !empty($_FILES['avatar']['type'])          ? $_FILES['avatar']['type']       : '';
 
-        $user_avatar      = empty($user_avatar_loc) ? $this_userdata['user_avatar']      : '';
-        $user_avatar_type = empty($user_avatar_loc) ? $this_userdata['user_avatar_type'] : '';
+        $user_avatar      = empty($user_avatar_loc) ? $this_userdata->user_avatar      : '';
+        $user_avatar_type = empty($user_avatar_loc) ? $this_userdata->user_avatar_type : '';
 
         $user_status      = !empty($_POST['user_status'])      ? (int)$_POST['user_status']      : 0;
         $user_allowpm     = !empty($_POST['user_allowpm'])     ? (int)$_POST['user_allowpm']     : 0;
@@ -617,68 +619,65 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 		}
 	} elseif (!isset( $_POST['submit'] ) && $mode !== 'save' && !isset( $_POST['avatargallery'] ) && !isset( $_POST['submitavatar'] ) && !isset( $_POST['cancelavatar'] )) {
 		if (isset( $_GET[POST_USERS_URL]) || isset( $_POST[POST_USERS_URL])) {
-			$user_id = isset( $_POST[POST_USERS_URL]) ? (int)$_POST[POST_USERS_URL] : (int)$_GET[POST_USERS_URL];
-			$this_userdata = get_userdata($user_id);
+            $user_id = isset($_POST[POST_USERS_URL]) ? (int)$_POST[POST_USERS_URL] : (int)$_GET[POST_USERS_URL];
 
-			if (!$this_userdata) {
-				message_die(GENERAL_MESSAGE, $lang['No_user_id_specified'] );
-			}
+            $this_userdata = get_userdata($user_id);
 		} else {
 			$this_userdata = get_userdata($_POST['username'], true);
-
-			if (!$this_userdata) {
-				message_die(GENERAL_MESSAGE, $lang['No_user_id_specified'] );
-			}
 		}
+
+        if (!$this_userdata) {
+            message_die(GENERAL_MESSAGE, $lang['No_user_id_specified'] );
+        }
 
 		//
 		// Now parse and display it as a template
 		//
-		$user_id = $this_userdata['user_id'];
-		$username = $this_userdata['username'];
-		$email = $this_userdata['user_email'];
+		$user_id = $this_userdata->user_id;
+		$username = $this_userdata->username;
+		$email = $this_userdata->user_email;
 		$password = '';
 		$password_confirm = '';
 
-		$icq = $this_userdata['user_icq'];
-		$aim = str_replace('+', ' ', $this_userdata['user_aim'] );
-		$msn = $this_userdata['user_msnm'];
-		$yim = $this_userdata['user_yim'];
+		$icq = $this_userdata->user_icq;
+		$aim = str_replace('+', ' ', $this_userdata->user_aim);
+		$msn = $this_userdata->user_msnm;
+		$yim = $this_userdata->user_yim;
 
-		$website = $this_userdata['user_website'];
-		$location = $this_userdata['user_from'];
-		$occupation = $this_userdata['user_occ'];
-		$interests = $this_userdata['user_interests'];
+		$website = $this_userdata->user_website;
+		$location = $this_userdata->user_from;
+		$occupation = $this_userdata->user_occ;
+		$interests = $this_userdata->user_interests;
 
-		$signature = ($this_userdata['user_sig_bbcode_uid'] !== '') ? preg_replace('#:' . $this_userdata['user_sig_bbcode_uid'] . '#si', '', $this_userdata['user_sig']) : $this_userdata['user_sig'];
+		$signature = ($this_userdata->user_sig_bbcode_uid !== '') ? preg_replace('#:' . $this_userdata->user_sig_bbcode_uid . '#si', '', $this_userdata->user_sig) : $this_userdata->user_sig;
 		$signature = preg_replace($html_entities_match, $html_entities_replace, $signature);
 
-		$viewemail = $this_userdata['user_viewemail'];
-		$notifypm = $this_userdata['user_notify_pm'];
-		$popuppm = $this_userdata['user_popup_pm'];
-		$notifyreply = $this_userdata['user_notify'];
-		$attachsig = $this_userdata['user_attachsig'];
-		$allowhtml = $this_userdata['user_allowhtml'];
-		$allowbbcode = $this_userdata['user_allowbbcode'];
-		$allowsmilies = $this_userdata['user_allowsmile'];
-		$allowviewonline = $this_userdata['user_allow_viewonline'];
+		$viewemail = $this_userdata->user_viewemail;
+		$notifypm = $this_userdata->user_notify_pm;
+		$popuppm = $this_userdata->user_popup_pm;
+		$notifyreply = $this_userdata->user_notify;
+		$attachsig = $this_userdata->user_attachsig;
+		$allowhtml = $this_userdata->user_allowhtml;
+		$allowbbcode = $this_userdata->user_allowbbcode;
+		$allowsmilies = $this_userdata->user_allowsmile;
+		$allowviewonline = $this_userdata->user_allow_viewonline;
 
-		$user_avatar = $this_userdata['user_avatar'];
-		$user_avatar_type = $this_userdata['user_avatar_type'];
-		$user_style = $this_userdata['user_style'];
-		$user_lang = $this_userdata['user_lang'];
-		$user_timezone = $this_userdata['user_timezone'];
-		$user_dateformat = htmlspecialchars($this_userdata['user_dateformat']);
+		$user_avatar = $this_userdata->user_avatar;
+		$user_avatar_type = $this_userdata->user_avatar_type;
+		$user_style = $this_userdata->user_style;
+		$user_lang = $this_userdata->user_lang;
+		$user_timezone = $this_userdata->user_timezone;
+		$user_dateformat = htmlspecialchars($this_userdata->user_dateformat);
 		
-		$user_status = $this_userdata['user_active'];
-		$user_allowavatar = $this_userdata['user_allowavatar'];
-		$user_allowpm = $this_userdata['user_allow_pm'];
+		$user_status = $this_userdata->user_active;
+		$user_allowavatar = $this_userdata->user_allowavatar;
+		$user_allowpm = $this_userdata->user_allow_pm;
 		
 		$COPPA = false;
 
-		$html_status    = $this_userdata['user_allowhtml']   ? $lang['HTML_is_ON']     : $lang['HTML_is_OFF'];
-		$bbcode_status  = $this_userdata['user_allowbbcode'] ? $lang['BBCode_is_ON']   : $lang['BBCode_is_OFF'];
-		$smilies_status = $this_userdata['user_allowsmile']  ? $lang['Smilies_are_ON'] : $lang['Smilies_are_OFF'];
+		$html_status    = $this_userdata->user_allowhtml   ? $lang['HTML_is_ON']     : $lang['HTML_is_OFF'];
+		$bbcode_status  = $this_userdata->user_allowbbcode ? $lang['BBCode_is_ON']   : $lang['BBCode_is_OFF'];
+		$smilies_status = $this_userdata->user_allowsmile  ? $lang['Smilies_are_ON'] : $lang['Smilies_are_OFF'];
 	}
 
 	if (isset($_POST['avatargallery']) && !$error) {

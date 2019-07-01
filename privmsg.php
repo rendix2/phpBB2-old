@@ -996,22 +996,22 @@ if ($mode === 'newpm') {
 	//
 	// Toggles
 	//
-    if (!$board_config['allow_html']) {
-        $html_on = 0;
-    } else {
+    if ($board_config['allow_html']) {
         $html_on = $submit || $refresh ? !isset($_POST['disable_html']) : $userdata['user_allowhtml'];
+    } else {
+        $html_on = 0;
     }
 
-    if (!$board_config['allow_bbcode']) {
-        $bbcode_on = 0;
-    } else {
+    if ($board_config['allow_bbcode']) {
         $bbcode_on = $submit || $refresh ? !isset($_POST['disable_bbcode']) : $userdata['user_allowbbcode'];
+    } else {
+        $bbcode_on = 0;
     }
 
-    if (!$board_config['allow_smilies']) {
-        $smilies_on = 0;
-    } else {
+    if ($board_config['allow_smilies']) {
         $smilies_on = $submit || $refresh ? !isset($_POST['disable_smilies']) : $userdata['user_allowsmile'];
+    } else {
+        $smilies_on = 0;
     }
 
 	$attach_sig = $submit || $refresh ? isset($_POST['attach_sig']) : $userdata['user_attachsig'];
@@ -1478,7 +1478,7 @@ if ($mode === 'newpm') {
         }
 
         if ($attach_sig && $user_sig !== '') {
-            $preview_message = $preview_message . '<br /><br />_________________<br />' . $user_sig;
+            $preview_message .= $user_sig . '<br /><br />_________________<br />';
         }
 
         if (count($orig_word)) {

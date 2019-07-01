@@ -755,7 +755,7 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg !== '') {
         }
 
         if ($attach_sig && $user_sig !== '') {
-            $preview_message = $preview_message . '<br /><br />_________________<br />' . $user_sig;
+            $preview_message .= $user_sig . '<br /><br />_________________<br />';
         }
 
 		$preview_message = str_replace("\n", '<br />', $preview_message);

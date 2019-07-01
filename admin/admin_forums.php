@@ -57,10 +57,15 @@ if (isset($_POST[POST_MODE]) || isset($_GET[POST_MODE])) {
     $mode = '';
 }
 
-// ------------------
-// Begin function block
-//
-// TODO we need 'number' only in one cas!
+/**
+ *
+ * TODO we need 'number' only in one cas!
+ *
+ * @param $mode
+ * @param $id
+ *
+ * @return \Dibi\Row|false
+ */
 function get_info($mode, $id)
 {
 	switch($mode) {
@@ -96,6 +101,13 @@ function get_info($mode, $id)
 	return $res;
 }
 
+/**
+ * @param string $mode
+ * @param int    $id
+ * @param int    $select
+ *
+ * @return string
+ */
 function get_list($mode, $id, $select)
 {
 	switch($mode) {
@@ -115,7 +127,6 @@ function get_list($mode, $id, $select)
 			message_die(GENERAL_ERROR, 'Wrong mode for generating select list', '', __LINE__, __FILE__);
 			break;
 	}
-
 
     $res = dibi::select([$idfield, $namefield])
         ->from($table);
@@ -141,6 +152,12 @@ function get_list($mode, $id, $select)
 	return $cat_list;
 }
 
+/**
+ * @param string $mode
+ * @param int    $cat
+ *
+ * @throws \Dibi\Exception
+ */
 function renumber_order($mode, $cat = 0)
 {
 	switch($mode)
@@ -185,9 +202,6 @@ function renumber_order($mode, $cat = 0)
 		$i += 10;
 	}
 }
-//
-// End function block
-// ------------------
 
 //
 // Begin program proper
@@ -223,15 +237,15 @@ if (!empty($mode)) {
 
 				$row = get_info('forum', $forum_id);
 
-				$cat_id = $row['cat_id'];
-				$forumname = $row['forum_name'];
-				$forumdesc = $row['forum_desc'];
-				$forumstatus = $row['forum_status'];
+				$cat_id = $row->cat_id;
+				$forumname = $row->forum_name;
+				$forumdesc = $row->forum_desc;
+				$forumstatus = $row->forum_status;
 
 				//
 				// start forum prune stuff.
 				//
-                if ($row['prune_enable']) {
+                if ($row->prune_enable) {
 					$prune_enabled = 'checked="checked"';
 
 					$pr_row = dibi::select('*')
@@ -458,7 +472,7 @@ if (!empty($mode)) {
 			$cat_id = (int)$_GET[POST_CAT_URL];
 
 			$row = get_info('category', $cat_id);
-			$cat_title = $row['cat_title'];
+			$cat_title = $row->cat_title;
 
             $template->setFileNames(['body' => 'admin/category_edit_body.tpl']);
 
@@ -507,7 +521,7 @@ if (!empty($mode)) {
 			$newmode = 'movedelforum';
 
 			$foruminfo = get_info('forum', $forum_id);
-			$name = $foruminfo['forum_name'];
+			$name = $foruminfo->forum_name;
 
             $template->setFileNames(['body' => 'admin/forum_delete_body.tpl']);
 
@@ -647,10 +661,11 @@ if (!empty($mode)) {
 
 			$buttonvalue = $lang['Move_and_Delete'];
 			$newmode = 'movedelcat';
-			$catinfo = get_info('category', $cat_id);
-			$name = $catinfo['cat_title'];
 
-			if ($catinfo['number'] === 1) {
+			$catinfo = get_info('category', $cat_id);
+			$name = $catinfo->cat_title;
+
+			if ($catinfo->number === 1) {
                 $count = dibi::select('COUNT(*)')
                     ->select('total')
                     ->as(FORUMS_TABLE)
@@ -735,7 +750,7 @@ if (!empty($mode)) {
 
 			$forum_info = get_info('forum', $forum_id);
 
-			$cat_id = $forum_info['cat_id'];
+			$cat_id = $forum_info->cat_id;
 
             if ($move > 0) {
                 dibi::update(FORUMS_TABLE, ['forum_order%sql' => 'forum_order + ' . $move])
@@ -747,7 +762,7 @@ if (!empty($mode)) {
                     ->execute();
             }
 
-			renumber_order('forum', $forum_info['cat_id']);
+			renumber_order('forum', $forum_info->cat_id);
 			$show_index = true;
 
 			break;

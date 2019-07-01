@@ -341,7 +341,7 @@ switch($mode) {
 
 				if (!empty($_SERVER['SERVER_PROTOCOL']) || !empty($_ENV['SERVER_PROTOCOL'])) {
 					$protocol = !empty($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : $_ENV['SERVER_PROTOCOL'];
-					$secure_rec = ( strtolower(substr($protocol, 0 , 5)) == 'https' ) ? '1' : '0';
+					$secure_rec = ( strtolower(substr($protocol, 0 , 5)) === 'https' ) ? '1' : '0';
 				} else {
 					$secure_rec = '0';
 				}
@@ -379,10 +379,10 @@ switch($mode) {
 				<tr>
 					<td><b><?php echo $lang['secure']; ?></b></td>
 					<td><input type="radio" name="secure_select" value="0"<?php echo ( $secure_cur === $secure_rec ) ? ' checked="checked"' : '' ?> /></td>
-					<td><?php echo $lang[($secure_cur == '1') ? 'secure_yes' : 'secure_no' ]; ?></td>
+					<td><?php echo $lang[($secure_cur === '1') ? 'secure_yes' : 'secure_no' ]; ?></td>
 					<td>&nbsp;</td>
 					<td><input type="radio" name="secure_select" value="1"<?php echo ( $secure_cur !== $secure_rec ) ? ' checked="checked"' : '' ?> /></td>
-					<td><input type="radio" name="secure" value="1"<?php echo ( $secure_rec == '1' ) ? ' checked="checked"' : '' ?> /><?php echo $lang['secure_yes']; ?><input type="radio" name="secure" value="0"<?php echo ( $secure_rec == '0' ) ? ' checked="checked"' : '' ?> /><?php echo $lang['secure_no']; ?></td>
+					<td><input type="radio" name="secure" value="1"<?php echo ( $secure_rec === '1' ) ? ' checked="checked"' : '' ?> /><?php echo $lang['secure_yes']; ?><input type="radio" name="secure" value="0"<?php echo ( $secure_rec == '0' ) ? ' checked="checked"' : '' ?> /><?php echo $lang['secure_no']; ?></td>
 				</tr>
 				<tr>
 					<td><b><?php echo $lang['domain']; ?></b></td>
@@ -633,7 +633,7 @@ switch($mode) {
 						$row = dibi::query('REPAIR TABLE %n', $tablename)->fetch();
 
 						if ($row) {
-							if ($row['Msg_type'] == 'status') {
+							if ($row->Msg_type == 'status') {
 ?>
 		<li><?php echo "$tablename: " . $lang['Table_OK']?></li>
 <?php
@@ -642,14 +642,14 @@ switch($mode) {
 
 								$row2 = dibi::query('SHOW TABLE STATUS LIKE %~like~', $tablename)->fetch();
 
-								if ((isset($row2['Type']) && $row2['Type'] === 'HEAP') || (isset($row2['Engine']) && ($row2['Engine'] === 'HEAP' || $row2['Engine'] === 'MEMORY'))) {
+								if ((isset($row2->Type) && $row2->Type === 'HEAP') || (isset($row2->Engine) && ($row2->Engine === 'HEAP' || $row2->Engine === 'MEMORY'))) {
 									// Table is from HEAP-table type
 ?>
 		<li><?php echo "$tablename: " . $lang['Table_HEAP_info']?></li>
 <?php
 								} else {
 ?>
-		<li><?php echo "<b>$tablename:</b> " . htmlspecialchars($row['Msg_text'])?></li>
+		<li><?php echo "<b>$tablename:</b> " . htmlspecialchars($row->Msg_text)?></li>
 <?php
 								}
 							}
@@ -690,7 +690,7 @@ switch($mode) {
 				    ->fetch();
 
 				if ($row && $row->startdate > 0) {
-				    $default_config['board_startdate'] = $row['startdate'];
+				    $default_config['board_startdate'] = $row->startdate;
 				}
 
 				// Start the job				
@@ -997,7 +997,7 @@ switch($mode) {
 						    ->where('aa.auth_mod = %i', 1)
 						    ->fetch();
 
-						$new_state = ($row2) ? MOD : USER;
+						$new_state = $row2 ? MOD : USER;
 
 						dibi::update(USERS_TABLE, ['user_level' => $new_state])
 						    ->where('user_id = %i', $row['user_id'])

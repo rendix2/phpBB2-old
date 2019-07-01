@@ -276,9 +276,9 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
             'NUMBER_OF_MODERATORS'      => $totalModerators,
             'NUMBER_OF_ADMINISTRATORS'  => $totalAdministrators,
 
-            "PHPBB_VERSION" => '2' . $board_config['version'],
-            "PHP_VERSION"   => PHP_VERSION,
-            "MYSQL_VERSION" => $mysql_version,
+            'PHPBB_VERSION' => '2' . $board_config['version'],
+            'PHP_VERSION'   => PHP_VERSION,
+            'MYSQL_VERSION' => $mysql_version,
         ]
     );
 

@@ -87,8 +87,8 @@ $tracking_forums = isset($_COOKIE[$forum_cookie_name]) ? unserialize($_COOKIE[$f
 $total_posts     = get_db_stat('postcount');
 $total_users     = get_db_stat('usercount');
 $newest_userdata = get_db_stat('newestuser');
-$newest_user     = $newest_userdata['username'];
-$newest_uid      = $newest_userdata['user_id'];
+$newest_user     = $newest_userdata->username;
+$newest_uid      = $newest_userdata->user_id;
 
 if ($total_posts === 0) {
     $l_total_post_s = $lang['Posted_articles_zero_total'];

@@ -235,7 +235,7 @@ if (isset($_POST['edit']) || isset($_POST['new'])) {
         }
 
 		$this_userdata = get_userdata($group_moderator, true);
-		$group_moderator = $this_userdata['user_id'];
+		$group_moderator = $this_userdata->user_id;
 
 		if (!$group_moderator) {
 			message_die(GENERAL_MESSAGE, $lang['No_group_moderator']);

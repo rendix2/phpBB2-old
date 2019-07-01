@@ -26,6 +26,14 @@ if (!defined('IN_PHPBB')) {
 
 require_once $phpbb_root_path . 'includes/functions_search.php';
 
+/**
+ * @param int  $forum_id
+ * @param int  $prune_date timestamp
+ * @param bool $prune_all
+ *
+ * @return array
+ * @throws \Dibi\Exception
+ */
 function prune($forum_id, $prune_date, $prune_all = false)
 {
 	$topics = dibi::select('topic_id')
@@ -127,10 +135,14 @@ function prune($forum_id, $prune_date, $prune_all = false)
     return ['topics' => 0, 'posts' => 0];
 }
 
-//
-// Function auto_prune(), this function will read the configuration data from
-// the auto_prune table and call the prune function with the necessary info.
-//
+/**
+ * Function auto_prune(), this function will read the configuration data from
+ * the auto_prune table and call the prune function with the necessary info.
+ *
+ * @param int $forum_id
+ *
+ * @throws \Dibi\Exception
+ */
 function auto_prune($forum_id = 0)
 {
     global $userdata;

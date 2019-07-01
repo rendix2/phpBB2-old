@@ -716,7 +716,7 @@ if (isset($_POST['submit'])) {
 				}
 			}
 
-			$message = $message . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . Session::appendSid('index.php') . '">', '</a>');
+			$message .= sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>') . '<br /><br />';
 
 			message_die(GENERAL_MESSAGE, $message);
 		} // if mode == register

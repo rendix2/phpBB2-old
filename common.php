@@ -117,12 +117,10 @@ $panel->register($connection);
 //
 if (!empty($_SERVER['REMOTE_ADDR'])) {
     $client_ip = $_SERVER['REMOTE_ADDR'];
+} elseif (!empty($_ENV['REMOTE_ADDR'])) {
+    $client_ip = $_ENV['REMOTE_ADDR'];
 } else {
-    if (!empty($_ENV['REMOTE_ADDR'])) {
-        $client_ip = $_ENV['REMOTE_ADDR'];
-    } else {
-        $client_ip = getenv('REMOTE_ADDR');
-    }
+    $client_ip = getenv('REMOTE_ADDR');
 }
 
 $user_ip = encode_ip($client_ip);

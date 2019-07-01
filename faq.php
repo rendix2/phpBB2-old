@@ -41,19 +41,19 @@ $faq = [];
 // Load the appropriate faq file
 //
 if (isset($_GET[POST_MODE])) {
-	switch( $_GET[POST_MODE]) {
-		case 'bbcode':
-			$lang_file = 'lang_bbcode';
-			$l_title = $lang['BBCode_guide'];
-			break;
-		default:
-			$lang_file = 'lang_faq';
-			$l_title = $lang['FAQ'];
-			break;
-	}
+    switch ($_GET[POST_MODE]) {
+        case 'bbcode':
+            $lang_file = 'lang_bbcode';
+            $l_title = $lang['BBCode_guide'];
+            break;
+        default:
+            $lang_file = 'lang_faq';
+            $l_title = $lang['FAQ'];
+            break;
+    }
 } else {
-	$lang_file = 'lang_faq';
-	$l_title = $lang['FAQ'];
+    $lang_file = 'lang_faq';
+    $l_title = $lang['FAQ'];
 }
 
 require_once $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/' . $lang_file . '.php';

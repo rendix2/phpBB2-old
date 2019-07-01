@@ -65,9 +65,9 @@ function remove_comments(&$output)
 /**
  * remove_remarks will strip the sql comment lines out of an uploaded sql file
  *
- * @param $sql
+ * @param string $sql
  *
- * @return
+ * @return string
  */
 function remove_remarks($sql)
 {

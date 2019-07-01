@@ -542,13 +542,42 @@ switch ($mode) {
 	case 'delete':
 		$style_id = isset($_GET['style_id']) ? (int)$_GET['style_id'] : (int)$_POST['style_id'];
 		
-		if (!$confirm) {
+		if ($confirm) {
+			//
+			// The user has confirmed the delete. Remove the style, the style element
+			// names and update any users who might be using this style
+			//
+            $cache = new Cache($storage, THEMES_TABLE);
+            $key   = THEMES_TABLE . '_'. $style_id;
+
+            $cache->remove($key);
+
+            dibi::delete(THEMES_TABLE)
+                ->where('themes_id = %i', $style_id)
+                ->execute();
+
+			//
+			// There may not be any theme name data so don't throw an error
+			// if the SQL dosan't work
+			//
+            dibi::delete(THEMES_NAME_TABLE)
+                ->where('themes_id = %i', $style_id)
+                ->execute();
+
+            dibi::update(USERS_TABLE, ['user_style' => $board_config['default_style']])
+                ->where('user_style = %i', $style_id)
+                ->execute();
+
+			$message = $lang['Style_removed'] . '<br /><br />' . sprintf($lang['Click_return_styleadmin'], '<a href="' . Session::appendSid('admin_styles.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+
+			message_die(GENERAL_MESSAGE, $message);
+		} else {
 			if ($style_id === $board_config['default_style']) {
 				message_die(GENERAL_MESSAGE, $lang['Cannot_remove_style']);
 			}
-			
+
 			$hidden_fields = '<input type="hidden" name="mode" value="'.$mode.'" /><input type="hidden" name="style_id" value="'.$style_id.'" />';
-			
+
 			//
 			// Set template files
 			//
@@ -569,35 +598,6 @@ switch ($mode) {
 
             $template->pparse('confirm');
 
-		} else {
-			//
-			// The user has confirmed the delete. Remove the style, the style element
-			// names and update any users who might be using this style
-			//
-            $cache = new Cache($storage, THEMES_TABLE);
-            $key   = THEMES_TABLE . '_'. $style_id;
-
-            $cache->remove($key);
-
-            dibi::delete(THEMES_TABLE)
-                ->where('themes_id = %i', $style_id)
-                ->execute();
-			
-			//
-			// There may not be any theme name data so don't throw an error
-			// if the SQL dosan't work
-			//
-            dibi::delete(THEMES_NAME_TABLE)
-                ->where('themes_id = %i', $style_id)
-                ->execute();
-
-            dibi::update(USERS_TABLE, ['user_style' => $board_config['default_style']])
-                ->where('user_style = %i', $style_id)
-                ->execute();
-			
-			$message = $lang['Style_removed'] . '<br /><br />' . sprintf($lang['Click_return_styleadmin'], '<a href="' . Session::appendSid('admin_styles.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
-
-			message_die(GENERAL_MESSAGE, $message);
 		}
 		break;
 

@@ -244,7 +244,13 @@ $template->assignVars(
 //
 // Login box?
 //
-if (!$userdata['session_logged_in']) {
+if ($userdata['session_logged_in']) {
+    $template->assignBlockVars('switch_user_logged_in', []);
+
+    if (!empty($userdata['user_popup_pm'])) {
+        $template->assignBlockVars('switch_enable_pm_popup', []);
+    }
+} else {
     $template->assignBlockVars('switch_user_logged_out', []);
     //
     // Allow autologin?
@@ -252,12 +258,6 @@ if (!$userdata['session_logged_in']) {
     if (!isset($board_config['allow_autologin']) || $board_config['allow_autologin']) {
         $template->assignBlockVars('switch_allow_autologin', []);
         $template->assignBlockVars('switch_user_logged_out.switch_allow_autologin', []);
-    }
-} else {
-    $template->assignBlockVars('switch_user_logged_in', []);
-
-    if (!empty($userdata['user_popup_pm'])) {
-        $template->assignBlockVars('switch_enable_pm_popup', []);
     }
 }
 

@@ -104,9 +104,13 @@ class Template
         $this->uncompiled_code = null;
 	}
 
-	/**
-	 * Sets the template root directory for this Template object.
-	 */
+    /**
+     * Sets the template root directory for this Template object.
+     *
+     * @param string $dir
+     *
+     * @return bool
+     */
 	public function setRootDir($dir)
 	{
 		if (!is_dir($dir)) {
@@ -117,16 +121,16 @@ class Template
 		return true;
 	}
 
-	/**
-	 * Sets the template filenames for handles. $filename_array
-	 * should be a hash of handle => filename pairs.
-	 */
-	public function setFileNames($filename_array)
+    /**
+     * Sets the template filenames for handles. $filename_array
+     * should be a hash of handle => filename pairs.
+     *
+     * @param array $filename_array
+     *
+     * @return bool
+     */
+	public function setFileNames(array $filename_array)
 	{
-		if (!is_array($filename_array)) {
-			return false;
-		}
-
 		foreach ($filename_array as $handle => $filename) {
 			$this->files[$handle] = $this->makeFileName($filename);
 		}
@@ -420,14 +424,11 @@ class Template
 			else
 			{
 				// We have an ordinary line of code.
-				if (!$do_not_echo)
-				{
-					$code_lines[$i] = 'echo \'' . $code_lines[$i] . '\' . "\\n";';
-				}
-				else
-				{
-					$code_lines[$i] = '$' . $retvar . '.= \'' . $code_lines[$i] . '\' . "\\n";';
-				}
+                if ($do_not_echo) {
+                    $code_lines[$i] = '$' . $retvar . '.= \'' . $code_lines[$i] . '\' . "\\n";';
+                } else {
+                    $code_lines[$i] = 'echo \'' . $code_lines[$i] . '\' . "\\n";';
+                }
 			}
 		}
 

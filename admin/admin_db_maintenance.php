@@ -36,7 +36,7 @@ if (!empty($setmodules)) {
 //
 // Load default header
 //
-$phpbb_root_path = "./../";
+$phpbb_root_path = './../';
 $no_page_header = TRUE; // We do not send the page header right here to prevent problems with GZIP-compression
 
 require_once './pagestart.php';
@@ -72,20 +72,20 @@ foreach ($config_data as $value) {
 //
 // Get form-data if specified and override old settings
 //
-if (isset($_POST['mode']) && $_POST['mode'] == 'perform') {
+if (isset($_POST['mode']) && $_POST['mode'] === 'perform') {
     if (isset($_POST['confirm'])) {
         $mode_id  = 'perform';
-        $function = (isset($_POST['function'])) ? htmlspecialchars(trim($_POST['function'])) : '';
+        $function = isset($_POST['function']) ? htmlspecialchars(trim($_POST['function'])) : '';
     }
 }
 
 //
 // Switch of GZIP-compression when necessary and send the page header
 //
-if ($mode_id == 'start' || $mode_id == 'perform') {
+if ($mode_id === 'start' || $mode_id === 'perform') {
     $board_config['gzip_compress'] = false;
 }
-if ($function != 'perform_rebuild') // Don't send header when rebuilding the search index
+if ($function !== 'perform_rebuild') // Don't send header when rebuilding the search index
 {
     require_once './page_header_admin.php';
 }
@@ -99,13 +99,13 @@ if ($dbms !== 'mysql') {
 
 switch($mode_id) {
 	case 'start': // Show warning message if specified
-		if ($function == '') {
+		if ($function === '') {
 			message_die(GENERAL_ERROR, $lang['no_function_specified']);
 		}
 		$warning_message_defined = FALSE;
 
         foreach ($mtnc as $value) {
-            if (count($value) && $value[0] == $function) {
+            if (count($value) && $value[0] === $function) {
                 $warning_message = $value;
                 $warning_message_defined = true;
             }
@@ -113,7 +113,7 @@ switch($mode_id) {
 
         if (!$warning_message_defined) {
             message_die(GENERAL_ERROR, $lang['function_unknown']);
-        } elseif ($warning_message[3] != '') {
+        } elseif ($warning_message[3] !== '') {
 			$s_hidden_fields = '<input type="hidden" name="mode" value="perform" />';
 			$s_hidden_fields .= '<input type="hidden" name="function" value="' . $function . '" />';
 
@@ -131,12 +131,12 @@ switch($mode_id) {
                     'L_YES' => $lang['Yes'],
                     'L_NO'  => $lang['No'],
 
-                    'S_CONFIRM_ACTION' => Session::appendSid("admin_db_maintenance.php"),
+                    'S_CONFIRM_ACTION' => Session::appendSid('admin_db_maintenance.php'),
                     'S_HIDDEN_FIELDS'  => $s_hidden_fields
                 ]
             );
 
-            $template->pparse("body");
+            $template->pparse('body');
 			break;
 		}
 		//
@@ -154,7 +154,7 @@ switch($mode_id) {
 		// allowed.
 		@set_time_limit(120);
 		// Switch of buffering - not when rebuilding search index since we still need to add some headers 
-		if ($function != 'perform_rebuild') {
+		if ($function !== 'perform_rebuild') {
 			ob_end_flush();
 		}
 
@@ -243,7 +243,7 @@ switch($mode_id) {
                     [
                         'PHPBB_VERSION' => '2' . $board_config['version'],
                         'MOD_VERSION'   => DBMTNC_VERSION,
-                        'PHP_VERSION'   => phpversion(),
+                        'PHP_VERSION'   => PHP_VERSION,
                         'MYSQL_VERSION' => $mysql_version,
 
                         'L_DBMTNC_TITLE'             => $lang['DB_Maintenance'],
@@ -271,21 +271,21 @@ switch($mode_id) {
                     ]
                 );
 
-                $template->pparse("body");
+                $template->pparse('body');
 				break;
 			case 'config': // Configuration
                 if (isset($_POST['submit'])) {
-					$disallow_postcounter = (isset($_POST['disallow_postcounter'])) ? intval($_POST['disallow_postcounter']) : 0;
-					$disallow_rebuild = (isset($_POST['disallow_rebuild'])) ? intval($_POST['disallow_rebuild']) : 0;
-					$rebuildcfg_timelimit = (isset($_POST['rebuildcfg_timelimit']) && is_numeric($_POST['rebuildcfg_timelimit'])) ? intval($_POST['rebuildcfg_timelimit']) : 240;
-					$rebuildcfg_timeoverwrite = (isset($_POST['rebuildcfg_timeoverwrite']) && is_numeric($_POST['rebuildcfg_timeoverwrite'])) ? intval($_POST['rebuildcfg_timeoverwrite']) : 0;
-					$rebuildcfg_maxmemory = (isset($_POST['rebuildcfg_maxmemory']) && is_numeric($_POST['rebuildcfg_maxmemory'])) ? intval($_POST['rebuildcfg_maxmemory']) : 500;
-					$rebuildcfg_minposts = (isset($_POST['rebuildcfg_minposts']) && is_numeric($_POST['rebuildcfg_minposts'])) ? intval($_POST['rebuildcfg_minposts']) : 3;
-					$rebuildcfg_php3only = (isset($_POST['rebuildcfg_php3only'])) ? intval($_POST['rebuildcfg_php3only']) : 0;
-					$rebuildcfg_php4pps = (isset($_POST['rebuildcfg_php4pps']) && is_numeric($_POST['rebuildcfg_php4pps'])) ? intval($_POST['rebuildcfg_php4pps']) : 8;
-					$rebuildcfg_php3pps = (isset($_POST['rebuildcfg_php3pps']) && is_numeric($_POST['rebuildcfg_php3pps'])) ? intval($_POST['rebuildcfg_php3pps']) : 1;
-					$rebuild_pos = (isset($_POST['rebuild_pos']) && is_numeric($_POST['rebuild_pos'])) ? intval($_POST['rebuild_pos']) : -1;
-					$rebuild_end = (isset($_POST['rebuild_end']) && is_numeric($_POST['rebuild_end'])) ? intval($_POST['rebuild_end']) : 0;
+					$disallow_postcounter = isset($_POST['disallow_postcounter']) ? (int)$_POST['disallow_postcounter'] : 0;
+					$disallow_rebuild = isset($_POST['disallow_rebuild']) ? (int)$_POST['disallow_rebuild'] : 0;
+					$rebuildcfg_timelimit = (isset($_POST['rebuildcfg_timelimit']) && is_numeric($_POST['rebuildcfg_timelimit'])) ? (int)$_POST['rebuildcfg_timelimit'] : 240;
+					$rebuildcfg_timeoverwrite = (isset($_POST['rebuildcfg_timeoverwrite']) && is_numeric($_POST['rebuildcfg_timeoverwrite'])) ? (int)$_POST['rebuildcfg_timeoverwrite'] : 0;
+					$rebuildcfg_maxmemory = (isset($_POST['rebuildcfg_maxmemory']) && is_numeric($_POST['rebuildcfg_maxmemory'])) ? (int)$_POST['rebuildcfg_maxmemory'] : 500;
+					$rebuildcfg_minposts = (isset($_POST['rebuildcfg_minposts']) && is_numeric($_POST['rebuildcfg_minposts'])) ? (int)$_POST['rebuildcfg_minposts'] : 3;
+					$rebuildcfg_php3only = isset($_POST['rebuildcfg_php3only']) ? (int)$_POST['rebuildcfg_php3only'] : 0;
+					$rebuildcfg_php4pps = (isset($_POST['rebuildcfg_php4pps']) && is_numeric($_POST['rebuildcfg_php4pps'])) ? (int)$_POST['rebuildcfg_php4pps'] : 8;
+					$rebuildcfg_php3pps = (isset($_POST['rebuildcfg_php3pps']) && is_numeric($_POST['rebuildcfg_php3pps'])) ? (int)$_POST['rebuildcfg_php3pps'] : 1;
+					$rebuild_pos = (isset($_POST['rebuild_pos']) && is_numeric($_POST['rebuild_pos'])) ? (int)$_POST['rebuild_pos'] : -1;
+					$rebuild_end = (isset($_POST['rebuild_end']) && is_numeric($_POST['rebuild_end'])) ? (int)$_POST['rebuild_end'] : 0;
 
                     switch (CONFIG_LEVEL) {
                         case 3: // Current search config
@@ -325,7 +325,8 @@ switch($mode_id) {
                                 update_config('dbmtnc_disallow_postcounter', $disallow_postcounter);
                             }
                     }
-					$message = $lang['Dbmtnc_config_updated'] . "<br /><br />" . sprintf($lang['Click_return_dbmtnc_config'], "<a href=\"" . Session::appendSid("admin_db_maintenance.php?mode=start&function=config") . "\">", "</a>");
+					$message = $lang['Dbmtnc_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_dbmtnc_config'], '<a href="' . Session::appendSid('admin_db_maintenance.php?mode=start&function=config') . '">',
+                            '</a>');
 					message_die(GENERAL_MESSAGE, $message);
 				}
 
@@ -337,7 +338,7 @@ switch($mode_id) {
 
                 $template->assignVars(
                     [
-                        'S_CONFIG_ACTION' => Session::appendSid("admin_db_maintenance.php?mode=start&function=config"),
+                        'S_CONFIG_ACTION' => Session::appendSid('admin_db_maintenance.php?mode=start&function=config'),
 
                         'L_DBMTNC_TITLE'                    => $lang['DB_Maintenance'],
                         'L_DBMTNC_SUB_TITLE'                => $lang['Config_title'],
@@ -386,20 +387,20 @@ switch($mode_id) {
                         'L_SUBMIT' => $lang['Submit'],
                         'L_RESET'  => $lang['Reset'],
 
-                        'DISALLOW_POSTCOUNTER_YES' => ($board_config['dbmtnc_disallow_postcounter']) ? "checked=\"checked\"" : "",
-                        'DISALLOW_POSTCOUNTER_NO'  => (!$board_config['dbmtnc_disallow_postcounter']) ? "checked=\"checked\"" : "",
-                        'DISALLOW_REBUILD_YES'     => ($board_config['dbmtnc_disallow_rebuild']) ? "checked=\"checked\"" : "",
-                        'DISALLOW_REBUILD_NO'      => (!$board_config['dbmtnc_disallow_rebuild']) ? "checked=\"checked\"" : "",
-                        'REBUILDCFG_TIMELIMIT'     => intval($board_config['dbmtnc_rebuildcfg_timelimit']),
-                        'REBUILDCFG_MAXMEMORY'     => intval($board_config['dbmtnc_rebuildcfg_maxmemory']),
-                        'REBUILDCFG_TIMEOVERWRITE' => intval($board_config['dbmtnc_rebuildcfg_timeoverwrite']),
-                        'REBUILDCFG_MINPOSTS'      => intval($board_config['dbmtnc_rebuildcfg_minposts']),
-                        'REBUILDCFG_PHP3ONLY_YES'  => ($board_config['dbmtnc_rebuildcfg_php3only']) ? "checked=\"checked\"" : "",
-                        'REBUILDCFG_PHP3ONLY_NO'   => (!$board_config['dbmtnc_rebuildcfg_php3only']) ? "checked=\"checked\"" : "",
-                        'REBUILDCFG_PHP4PPS'       => intval($board_config['dbmtnc_rebuildcfg_php4pps']),
-                        'REBUILDCFG_PHP3PPS'       => intval($board_config['dbmtnc_rebuildcfg_php3pps']),
-                        'REBUILD_POS'              => intval($board_config['dbmtnc_rebuild_pos']),
-                        'REBUILD_END'              => intval($board_config['dbmtnc_rebuild_end'])
+                        'DISALLOW_POSTCOUNTER_YES' => $board_config['dbmtnc_disallow_postcounter'] ? 'checked="checked"' : '',
+                        'DISALLOW_POSTCOUNTER_NO'  => (!$board_config['dbmtnc_disallow_postcounter']) ? 'checked="checked"' : '',
+                        'DISALLOW_REBUILD_YES'     => $board_config['dbmtnc_disallow_rebuild'] ? 'checked="checked"' : '',
+                        'DISALLOW_REBUILD_NO'      => (!$board_config['dbmtnc_disallow_rebuild']) ? 'checked="checked"' : '',
+                        'REBUILDCFG_TIMELIMIT'     => (int)$board_config['dbmtnc_rebuildcfg_timelimit'],
+                        'REBUILDCFG_MAXMEMORY'     => (int)$board_config['dbmtnc_rebuildcfg_maxmemory'],
+                        'REBUILDCFG_TIMEOVERWRITE' => (int)$board_config['dbmtnc_rebuildcfg_timeoverwrite'],
+                        'REBUILDCFG_MINPOSTS'      => (int)$board_config['dbmtnc_rebuildcfg_minposts'],
+                        'REBUILDCFG_PHP3ONLY_YES'  => $board_config['dbmtnc_rebuildcfg_php3only'] ? 'checked="checked"' : '',
+                        'REBUILDCFG_PHP3ONLY_NO'   => (!$board_config['dbmtnc_rebuildcfg_php3only']) ? 'checked="checked"' : '',
+                        'REBUILDCFG_PHP4PPS'       => (int)$board_config['dbmtnc_rebuildcfg_php4pps'],
+                        'REBUILDCFG_PHP3PPS'       => (int)$board_config['dbmtnc_rebuildcfg_php3pps'],
+                        'REBUILD_POS'              => (int)$board_config['dbmtnc_rebuild_pos'],
+                        'REBUILD_END'              => (int)$board_config['dbmtnc_rebuild_end']
                     ]
                 );
 
@@ -411,14 +412,14 @@ switch($mode_id) {
                     $template->assignBlockVars('currentrebuild_settings', []);
                 }
 
-                $template->pparse("body");
+                $template->pparse('body');
 				break;
 			case 'check_user': // Check user tables
-				echo("<h1>" . $lang['Checking_user_tables'] . "</h1>\n");
+				echo('<h1>' . $lang['Checking_user_tables'] . "</h1>\n");
 				lock_db();
 
 				// Check for missing anonymous user
-				echo("<p class=\"gen\"><b>" . $lang['Checking_missing_anonymous'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Checking_missing_anonymous'] . "</b></p>\n");
 
 				$checkAnonymous = dibi::select('user_id')
 					->from(USERS_TABLE)
@@ -471,11 +472,11 @@ switch($mode_id) {
 
                     dibi::insert(USERS_TABLE, $insertData)->execute();
 
-                    echo("<p class=\"gen\">" . sprintf($lang['Anonymous_recreated'], $affected_rows) . "</p>\n");
+                    echo('<p class="gen">' . sprintf($lang['Anonymous_recreated'], $affected_rows) . "</p>\n");
                 }
 
 				// Update incorrect pending information: either a single user group with pending state or a group with pending state NULL
-				echo("<p class=\"gen\"><b>" . $lang['Checking_incorrect_pending_information'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Checking_incorrect_pending_information'] . "</b></p>\n");
 				$db_updated = FALSE;
 
 				// Update the cases where user_pending is null (there were some cases reported, so we just do it)
@@ -483,12 +484,12 @@ switch($mode_id) {
 					->where('user_pending IS NULL')
 					->execute(dibi::AFFECTED_ROWS);
 
-                if ($affected_rows == 1) {
+                if ($affected_rows === 1) {
                     $db_updated = true;
-                    echo("<p class=\"gen\">" . sprintf($lang['Updating_invalid_pendig_user'], $affected_rows) . "</p>\n");
+                    echo('<p class="gen">' . sprintf($lang['Updating_invalid_pendig_user'], $affected_rows) . "</p>\n");
                 } elseif ($affected_rows > 1) {
                     $db_updated = true;
-                    echo("<p class=\"gen\">" . sprintf($lang['Updating_invalid_pendig_users'], $affected_rows) . "</p>\n");
+                    echo('<p class="gen">' . sprintf($lang['Updating_invalid_pendig_users'], $affected_rows) . "</p>\n");
                 }
 
                 $result_array = dibi::select('g.group_id')
@@ -504,7 +505,7 @@ switch($mode_id) {
                 if (count($result_array)) {
                     $db_updated  = true;
                     $record_list = implode(',', $result_array);
-                    echo("<p class=\"gen\">" . $lang['Updating_pending_information'] . ": $record_list</p>\n");
+                    echo('<p class="gen">' . $lang['Updating_pending_information'] . ": $record_list</p>\n");
 
                     dibi::update(USER_GROUP_TABLE, ['user_pending' => 0])
                         ->where('user_pending = %i', 0)
@@ -517,7 +518,7 @@ switch($mode_id) {
                 }
 
                 // Checking for users without a single user group
-                echo("<p class=\"gen\"><b>" . $lang['Checking_missing_user_groups'] . "</b></p>\n");
+                echo('<p class="gen"><b>' . $lang['Checking_missing_user_groups'] . "</b></p>\n");
                 $db_updated = false;
 
                 $rows = dibi::select('u.user_id')
@@ -549,10 +550,10 @@ switch($mode_id) {
                 if (count($multiple_groups)) {
                     $db_updated = true;
                     $record_list = implode(',', $multiple_groups);
-                    echo("<p class=\"gen\">" . $lang['Found_multiple_SUG'] . ":</p>\n");
+                    echo('<p class="gen">' . $lang['Found_multiple_SUG'] . ":</p>\n");
                     echo("<font class=\"gen\"><ul>\n");
                     $list_open = true;
-                    echo("<li>" . $lang['Resolving_user_id'] . ": $record_list</li>\n");
+                    echo('<li>' . $lang['Resolving_user_id'] . ": $record_list</li>\n");
 
                     $result_array = dibi::select('g.group_id')
                         ->from(USERS_TABLE)
@@ -568,13 +569,13 @@ switch($mode_id) {
                         ->fetchPairs(null, 'group_id');
 
                     $record_list = implode(',', $result_array);
-                    echo("<li>" . $lang['Removing_groups'] . ": $record_list</li>\n");
+                    echo('<li>' . $lang['Removing_groups'] . ": $record_list</li>\n");
 
                     dibi::delete(GROUPS_TABLE)
                         ->where('group_id IN %in', $result_array)
                         ->execute();
 
-                    echo("<li>" . $lang['Removing_user_groups'] . ": $record_list</li>\n");
+                    echo('<li>' . $lang['Removing_user_groups'] . ": $record_list</li>\n");
                     dibi::delete(USER_GROUP_TABLE)
                         ->where('group_id IN %in', $result_array)
                         ->execute();
@@ -586,10 +587,10 @@ switch($mode_id) {
                 if (count($missing_groups)) {
 					$db_updated = TRUE;
 					$record_list = implode(',', $missing_groups);
-					echo("<p class=\"gen\">" . $lang['Recreating_SUG'] . ": $record_list</p>\n");
+					echo('<p class="gen">' . $lang['Recreating_SUG'] . ": $record_list</p>\n");
 
 					foreach ($missing_groups as $missingGroup) {
-						$group_name = ($missingGroup == ANONYMOUS) ? 'Anonymous' : '';
+						$group_name = ($missingGroup === ANONYMOUS) ? 'Anonymous' : '';
 
 						$insertData = [
 						    'group_type' => 1,
@@ -616,7 +617,7 @@ switch($mode_id) {
                 }
 
                 // Check for group moderators who do not exist
-                echo("<p class=\"gen\"><b>" . $lang['Checking_for_invalid_moderators'] . "</b></p>\n");
+                echo('<p class="gen"><b>' . $lang['Checking_for_invalid_moderators'] . "</b></p>\n");
 
                 $rows = dibi::select(['g.group_id', 'g.group_name'])
                     ->from(GROUPS_TABLE)
@@ -630,11 +631,11 @@ switch($mode_id) {
 
                 foreach ($rows as $row) {
                     if (!$list_open) {
-                        echo("<p class=\"gen\"><b>" . $lang['Updating_Moderator'] . ":</b></p>\n");
+                        echo('<p class="gen"><b>' . $lang['Updating_Moderator'] . ":</b></p>\n");
                         echo("<font class=\"gen\"><ul>\n");
                         $list_open = true;
                     }
-                    echo("<li>" . htmlspecialchars($row->group_name) . " (" . $row->group_id . ")</li>\n");
+                    echo('<li>' . htmlspecialchars($row->group_name) . ' (' . $row->group_id . ")</li>\n");
 
                     dibi::update(GROUPS_TABLE, ['group_moderator' => $userdata['user_id']])
                         ->where('group_id = %i', $row->group_id)
@@ -649,7 +650,7 @@ switch($mode_id) {
                 }
 
 				// Check for group moderators who are not member of the group they moderate
-                echo("<p class=\"gen\"><b>" . $lang['Checking_moderator_membership'] . "</b></p>\n");
+                echo('<p class="gen"><b>' . $lang['Checking_moderator_membership'] . "</b></p>\n");
                 $rows = dibi::select(['group_id', 'group_name', 'group_moderator'])
                     ->from(GROUPS_TABLE)
                     ->where('group_single_user = %i', 0)
@@ -664,11 +665,11 @@ switch($mode_id) {
 
                     if (!$row2) {// No record found
                         if (!$list_open) {
-                            echo("<p class=\"gen\"><b>" . $lang['Updating_mod_membership'] . ":</b></p>\n");
+                            echo('<p class="gen"><b>' . $lang['Updating_mod_membership'] . ":</b></p>\n");
                             echo("<font class=\"gen\"><ul>\n");
                             $list_open = true;
                         }
-                        echo("<li>" . htmlspecialchars($row->group_name) . " (" . $row->group_id . ") - " . $lang['Moderator_added'] . "</li>\n");
+                        echo('<li>' . htmlspecialchars($row->group_name) . ' (' . $row->group_id . ') - ' . $lang['Moderator_added'] . "</li>\n");
 
                         $insertData = [
                             'group_id'     => $row->group_id,
@@ -679,11 +680,11 @@ switch($mode_id) {
                         dibi::insert(USER_GROUP_TABLE, $insertData)->execute();
                     } elseif ($row2->user_pending === 1) { // Record found but moderator is pending
                         if (!$list_open) {
-                            echo("<p class=\"gen\"><b>" . $lang['Updating_mod_membership'] . ":</b></p>\n");
+                            echo('<p class="gen"><b>' . $lang['Updating_mod_membership'] . ":</b></p>\n");
                             echo("<font class=\"gen\"><ul>\n");
                             $list_open = true;
                         }
-                        echo("<li>" . htmlspecialchars($row->group_name) . " (" . $row->group_id . ") - " . $lang['Moderator_changed_pending'] . "</li>\n");
+                        echo('<li>' . htmlspecialchars($row->group_name) . ' (' . $row->group_id . ') - ' . $lang['Moderator_changed_pending'] . "</li>\n");
 
                         dibi::update(USER_GROUP_TABLE, ['user_pending' => 0])
                             ->where('group_id = %i', $row->group_id)
@@ -700,7 +701,7 @@ switch($mode_id) {
                 }
 
                 // Remove user-group data without a valid user
-                echo("<p class=\"gen\"><b>" . $lang['Remove_invalid_user_data'] . "</b></p>\n");
+                echo('<p class="gen"><b>' . $lang['Remove_invalid_user_data'] . "</b></p>\n");
 
                 $result_array = dibi::select('ug.user_id')
                     ->from(USER_GROUP_TABLE)
@@ -718,17 +719,17 @@ switch($mode_id) {
                         ->where('user_id IN %in', $result_array)
                         ->execute(dibi::AFFECTED_ROWS);
 
-                    if ($affected_rows == 1) {
-                        echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
+                    if ($affected_rows === 1) {
+                        echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
                     } elseif ($affected_rows > 1) {
-                        echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
+                        echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
                     }
                 } else {
                     echo($lang['Nothing_to_do']);
                 }
 
                 // Remove groups without any members
-                echo("<p class=\"gen\"><b>" . $lang['Remove_empty_groups'] . "</b></p>\n");
+                echo('<p class="gen"><b>' . $lang['Remove_empty_groups'] . "</b></p>\n");
                 // Since we alread added the moderators to the groups this will only include rests of single user groups. So we don't need to display more information
 
                 $result_array = dibi::select('g.group_id')
@@ -747,17 +748,17 @@ switch($mode_id) {
                         ->where('group_id IN %in', $result_array)
                         ->execute(dibi::AFFECTED_ROWS);
 
-                    if ($affected_rows == 1) {
-                        echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
+                    if ($affected_rows === 1) {
+                        echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
                     } elseif ($affected_rows > 1) {
-                        echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
+                        echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
                     }
                 } else {
                     echo($lang['Nothing_to_do']);
                 }
 
 				// Remove user-group data without a valid group
-				echo("<p class=\"gen\"><b>" . $lang['Remove_invalid_group_data'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Remove_invalid_group_data'] . "</b></p>\n");
 
                 $result_array = dibi::select('ug.group_id')
                     ->from(USER_GROUP_TABLE)
@@ -774,17 +775,17 @@ switch($mode_id) {
                         ->where('group_id IN %in', $result_array)
                         ->execute(dibi::AFFECTED_ROWS);
 
-                    if ($affected_rows == 1) {
-                        echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
+                    if ($affected_rows === 1) {
+                        echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
                     } elseif ($affected_rows > 1) {
-                        echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
+                        echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
                     }
                 } else {
                     echo($lang['Nothing_to_do']);
                 }
 
 				// Checking for invalid ranks
-				echo("<p class=\"gen\"><b>" . $lang['Checking_ranks'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Checking_ranks'] . "</b></p>\n");
 
                 $rows = dibi::select(['u.user_id', 'u.username'])
                     ->from(USERS_TABLE)
@@ -800,11 +801,11 @@ switch($mode_id) {
 
                 foreach ($rows as $row) {
                     if (!$list_open) {
-                        echo("<p class=\"gen\">" . $lang['Invalid_ranks_found'] . ":</p>\n");
+                        echo('<p class="gen">' . $lang['Invalid_ranks_found'] . ":</p>\n");
                         echo("<font class=\"gen\"><ul>\n");
                         $list_open = true;
                     }
-                    echo("<li>" . htmlspecialchars($row->username) . " (" . $row->user_id . ")</li>\n");
+                    echo('<li>' . htmlspecialchars($row->username) . ' (' . $row->user_id . ")</li>\n");
                     $result_array[] = $row->user_id;
                 }
 
@@ -814,7 +815,7 @@ switch($mode_id) {
                 }
 
                 if (count($result_array)) {
-                    echo("<p class=\"gen\">" . $lang['Removing_invalid_ranks'] . "</p>\n");
+                    echo('<p class="gen">' . $lang['Removing_invalid_ranks'] . "</p>\n");
                     $record_list = implode(',', $result_array);
 
                     dibi::update(USERS_TABLE, ['user_rank' => 0])
@@ -825,7 +826,7 @@ switch($mode_id) {
                 }
 
 				// Checking for invalid themes
-                echo("<p class=\"gen\"><b>" . $lang['Checking_themes'] . "</b></p>\n");
+                echo('<p class="gen"><b>' . $lang['Checking_themes'] . "</b></p>\n");
                 $rows = dibi::select('u.user_style')
                     ->from(USERS_TABLE)
                     ->as('u')
@@ -839,9 +840,9 @@ switch($mode_id) {
                 $result_array = [];
 
                 foreach ($rows as $row) {
-                    if ($row->user_style == '') {
+                    if ($row->user_style === '') {
                         // At least one style is NULL, so change these records
-                        echo("<p class=\"gen\">" . $lang['Updating_users_without_style'] . "</p>\n");
+                        echo('<p class="gen">' . $lang['Updating_users_without_style'] . "</p>\n");
 
                         dibi::update(USERS_TABLE, ['user_style' => 0])
                             ->where('user_style IS NULL')
@@ -865,7 +866,7 @@ switch($mode_id) {
 
                     // the default template is not available
                     if ($new_style === false) {
-                        echo("<p class=\"gen\">" . $lang['Default_theme_invalid'] . "</p>\n");
+                        echo('<p class="gen">' . $lang['Default_theme_invalid'] . "</p>\n");
 
                         $new_style = dibi::select('themes_id')
                             ->from(THEMES_TABLE)
@@ -875,11 +876,11 @@ switch($mode_id) {
                         // We never should get to this point. If both the board and the user style is invalid, I
                         // don't know how someone should get to this point
                         if ($new_style === false) {
-                            throw_error("Fatal theme error!");
+                            throw_error('Fatal theme error!');
                         }
                     }
 
-                    echo("<p class=\"gen\">" . sprintf($lang['Updating_themes'], $new_style) . "...</p>\n");
+                    echo('<p class="gen">' . sprintf($lang['Updating_themes'], $new_style) . "...</p>\n");
 
                     dibi::update(USERS_TABLE, ['user_style' => $new_style])
                         ->where('user_style IN %in', $result_array)
@@ -889,7 +890,7 @@ switch($mode_id) {
                 }
 
 				// Checking for invalid theme names data
-				echo("<p class=\"gen\"><b>" . $lang['Checking_theme_names'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Checking_theme_names'] . "</b></p>\n");
 
                 $result_array = dibi::select('tn.themes_id')
                     ->from(THEMES_NAME_TABLE)
@@ -901,24 +902,24 @@ switch($mode_id) {
                     ->fetchPairs(null, 'themes_id');
 
                 if (count($result_array)) {
-                    echo("<p class=\"gen\">" . $lang['Removing_invalid_theme_names'] . "</p>\n");
+                    echo('<p class="gen">' . $lang['Removing_invalid_theme_names'] . "</p>\n");
                     $record_list = implode(',', $result_array);
 
                     $affected_rows = dibi::delete(THEMES_NAME_TABLE)
                         ->where('themes_id IN %in', $result_array)
                         ->execute(dibi::AFFECTED_ROWS);
 
-                    if ($affected_rows == 1) {
-                        echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
+                    if ($affected_rows === 1) {
+                        echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
                     } elseif ($affected_rows > 1) {
-                        echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
+                        echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
                     }
                 } else {
                     echo($lang['Nothing_to_do']);
                 }
 
                 // Checking for invalid languages
-                echo("<p class=\"gen\"><b>" . $lang['Checking_languages'] . "</b></p>\n");
+                echo('<p class="gen"><b>' . $lang['Checking_languages'] . "</b></p>\n");
 
                 $tmp_array = dibi::select('user_lang')
                     ->from(USERS_TABLE)
@@ -949,22 +950,22 @@ switch($mode_id) {
                     if (file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $boardLanguage . '/lang_main.php'))) {
                         $default_lang = $boardLanguage;
                     } elseif (file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $userdata['user_lang'] . '/lang_main.php'))) {
-                        echo("<p class=\"gen\">" . $lang['Default_language_invalid'] . "</p>\n");
+                        echo('<p class="gen">' . $lang['Default_language_invalid'] . "</p>\n");
                         $default_lang = $userdata['user_lang'];
                     } elseif (file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_english/lang_main.php'))) {
-                        echo("<p class=\"gen\">" . $lang['Default_language_invalid'] . "</p>\n");
+                        echo('<p class="gen">' . $lang['Default_language_invalid'] . "</p>\n");
                         $default_lang = 'english';
                     } else {
-                        echo("<p class=\"gen\">" . $lang['English_language_invalid'] . "</p>\n");
+                        echo('<p class="gen">' . $lang['English_language_invalid'] . "</p>\n");
                         $default_lang = 'english';
                     }
 
-                    echo("<p class=\"gen\">" . $lang['Invalid_languages_found'] . ":</p>\n");
+                    echo('<p class="gen">' . $lang['Invalid_languages_found'] . ":</p>\n");
                     echo("<font class=\"gen\"><ul>\n");
                     $list_open = true;
 
                     foreach ($result_array as $value) {
-                        echo("<li>" . sprintf($lang['Changing_language'], $value, $default_lang) . "</li>\n");
+                        echo('<li>' . sprintf($lang['Changing_language'], $value, $default_lang) . "</li>\n");
 
                         dibi::update(USERS_TABLE, ['user_lang' => $default_lang])
                             ->where('user_lang = %s', $value)
@@ -979,7 +980,7 @@ switch($mode_id) {
                 }
 
                 // Remove ban data without a valid user
-                echo("<p class=\"gen\"><b>" . $lang['Remove_invalid_ban_data'] . "</b></p>\n");
+                echo('<p class="gen"><b>' . $lang['Remove_invalid_ban_data'] . "</b></p>\n");
 
                 $result_array = dibi::select('b.ban_userid')
                     ->from(BANLIST_TABLE)
@@ -999,18 +1000,18 @@ switch($mode_id) {
                         ->where('ban_userid IN %in', $result_array)
                         ->execute(dibi::AFFECTED_ROWS);
 
-                    if ($affected_rows == 1) {
-                        echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
+                    if ($affected_rows === 1) {
+                        echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
                     } elseif ($affected_rows > 1) {
-                        echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
+                        echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
                     }
                 } else {
                     echo($lang['Nothing_to_do']);
                 }
 
 				// Remove session key data without valid user
-                if ($phpbb_version[0] == 0 && $phpbb_version[1] >= 18) {
-                    echo("<p class=\"gen\"><b>" . $lang['Remove_invalid_session_keys'] . "</b></p>\n");
+                if ($phpbb_version[0] === 0 && $phpbb_version[1] >= 18) {
+                    echo('<p class="gen"><b>' . $lang['Remove_invalid_session_keys'] . "</b></p>\n");
 
                     $result_array = dibi::select('k.key_id')
                         ->from(SESSIONS_KEYS_TABLE)
@@ -1028,10 +1029,10 @@ switch($mode_id) {
                             ->where('key_id IN %in', $result_array)
                             ->execute(dibi::AFFECTED_ROWS);
 
-                        if ($affected_rows == 1) {
-                            echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
+                        if ($affected_rows === 1) {
+                            echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
                         } elseif ($affected_rows > 1) {
-                            echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
+                            echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
                         }
                     } else {
                         echo($lang['Nothing_to_do']);
@@ -1041,14 +1042,14 @@ switch($mode_id) {
                 lock_db(true);
 				break;
             case 'check_post': // Checks post data
-                echo("<h1>" . $lang['Checking_post_tables'] . "</h1>\n");
+                echo('<h1>' . $lang['Checking_post_tables'] . "</h1>\n");
                 $db_state = lock_db();
 
                 // Set a variable to check whether we should update the post data
                 $update_post_data = false;
 
                 // Check posts for invaild posters
-                echo("<p class=\"gen\"><b>" . $lang['Checking_invalid_posters'] . "</b></p>\n");
+                echo('<p class="gen"><b>' . $lang['Checking_invalid_posters'] . "</b></p>\n");
 
                 $result_array = dibi::select('p.post_id')
                     ->from(POSTS_TABLE)
@@ -1061,8 +1062,8 @@ switch($mode_id) {
 
                 if (count($result_array)) {
                     $record_list = implode(',', $result_array);
-                    echo("<p class=\"gen\">" . $lang['Invaliyd_poster_found'] . ": $record_list</p>\n");
-                    echo("<p class=\"gen\">" . $lang['Updating_posts'] . "</p>\n");
+                    echo('<p class="gen">' . $lang['Invaliyd_poster_found'] . ": $record_list</p>\n");
+                    echo('<p class="gen">' . $lang['Updating_posts'] . "</p>\n");
 
                     dibi::update(POSTS_TABLE, ['poster_id' => DELETED, 'post_username' => ''])
                         ->where('post_id IN %in', $result_array)
@@ -1072,7 +1073,7 @@ switch($mode_id) {
                 }
 
                 // Check topics for invaild posters
-                echo("<p class=\"gen\"><b>" . $lang['Checking_invalid_topic_posters'] . "</b></p>\n");
+                echo('<p class="gen"><b>' . $lang['Checking_invalid_topic_posters'] . "</b></p>\n");
 
                 $rows = dibi::select(['t.topic_id', 't.topic_poster'])
                     ->from(TOPICS_TABLE)
@@ -1085,12 +1086,12 @@ switch($mode_id) {
 
                 foreach ($rows as $row) {
                     if (!$list_open) {
-                        echo("<p class=\"gen\">" . $lang['Invalid_topic_poster_found'] . ":</p>\n");
+                        echo('<p class="gen">' . $lang['Invalid_topic_poster_found'] . ":</p>\n");
                         echo("<font class=\"gen\"><ul>\n");
                         $list_open = true;
                     }
                     $poster_id = get_poster($row->topic_id);
-                    echo("<li>" . sprintf($lang['Updating_topic'], $row->topic_id, $row->topic_poster, $poster_id) . "</li>\n");
+                    echo('<li>' . sprintf($lang['Updating_topic'], $row->topic_id, $row->topic_poster, $poster_id) . "</li>\n");
 
                     dibi::update(TOPICS_TABLE, ['topic_poster' => $poster_id])
                         ->where('topic_id = %i', $row->topic_id)
@@ -1105,7 +1106,7 @@ switch($mode_id) {
                 }
 
                 // Check for forums with invalid categories
-                echo("<p class=\"gen\"><b>" . $lang['Checking_invalid_forums'] . "</b></p>\n");
+                echo('<p class="gen"><b>' . $lang['Checking_invalid_forums'] . "</b></p>\n");
 
                 $result_array = [];
 
@@ -1120,11 +1121,11 @@ switch($mode_id) {
 
                 foreach ($rows as $row) {
                     if (!$list_open) {
-                        echo("<p class=\"gen\">" . $lang['Invalid_forums_found'] . ":</p>\n");
+                        echo('<p class="gen">' . $lang['Invalid_forums_found'] . ":</p>\n");
                         echo("<font class=\"gen\"><ul>\n");
                         $list_open = true;
                     }
-                    echo("<li>" . htmlspecialchars($row->forum_name) . " (" . $row->forum_id . ")</li>\n");
+                    echo('<li>' . htmlspecialchars($row->forum_name) . ' (' . $row->forum_id . ")</li>\n");
                     $result_array[] = $row->forum_id;
                 }
 
@@ -1135,7 +1136,7 @@ switch($mode_id) {
                 if (count($result_array)) {
                     $record_list = implode(',', $result_array);
                     $new_cat     = create_cat();
-                    echo("<p class=\"gen\">" . sprintf($lang['Setting_category'], $lang['New_cat_name']) . " </p>\n");
+                    echo('<p class="gen">' . sprintf($lang['Setting_category'], $lang['New_cat_name']) . " </p>\n");
 
                     dibi::update(FORUMS_TABLE, ['cat_id' => $new_cat])
                         ->where('forum_id IN %in', $result_array)
@@ -1145,7 +1146,7 @@ switch($mode_id) {
                 }
 
                 // Check for posts without a text
-                echo("<p class=\"gen\"><b>" . $lang['Checking_posts_wo_text'] . "</b></p>\n");
+                echo('<p class="gen"><b>' . $lang['Checking_posts_wo_text'] . "</b></p>\n");
 
                 $rows = dibi::select(['p.post_id', 't.topic_id', 't.topic_title', 'u.user_id', 'u.username'])
                     ->from(POSTS_TABLE)
@@ -1166,12 +1167,12 @@ switch($mode_id) {
 
                 foreach ($rows as $row) {
                     if (!$list_open) {
-                        echo("<p class=\"gen\">" . $lang['Posts_wo_text_found'] . ":</p>\n");
+                        echo('<p class="gen">' . $lang['Posts_wo_text_found'] . ":</p>\n");
                         echo("<font class=\"gen\"><ul>\n");
                         $list_open = true;
                     }
 
-                    echo("<li>" . sprintf($lang['Deleting_post_wo_text'], $row->post_id, htmlspecialchars($row->topic_title), $row->topic_id, htmlspecialchars($row->username), $row->user_id) . "</li>\n");
+                    echo('<li>' . sprintf($lang['Deleting_post_wo_text'], $row->post_id, htmlspecialchars($row->topic_title), $row->topic_id, htmlspecialchars($row->username), $row->user_id) . "</li>\n");
 
                     $result_array[] = $row->post_id;
                 }
@@ -1182,7 +1183,7 @@ switch($mode_id) {
                 }
                 if (count($result_array)) {
                     $record_list = implode(',', $result_array);
-                    echo("<p class=\"gen\">" . $lang['Deleting_Posts'] . " </p>\n");
+                    echo('<p class="gen">' . $lang['Deleting_Posts'] . " </p>\n");
 
                     dibi::delete(POSTS_TABLE)
                         ->where('post_id IN %in', $result_array)
@@ -1194,7 +1195,7 @@ switch($mode_id) {
                 }
 
                 // Check for topics without a post
-                echo("<p class=\"gen\"><b>" . $lang['Checking_topics_wo_post'] . "</b></p>\n");
+                echo('<p class="gen"><b>' . $lang['Checking_topics_wo_post'] . "</b></p>\n");
 
                 $rows = dibi::select(['t.topic_id', 't.topic_title'])
                     ->from(TOPICS_TABLE)
@@ -1210,11 +1211,11 @@ switch($mode_id) {
 
                 foreach ($rows as $row) {
                     if (!$list_open) {
-                        echo("<p class=\"gen\">" . $lang['Topics_wo_post_found'] . ":</p>\n");
+                        echo('<p class="gen">' . $lang['Topics_wo_post_found'] . ":</p>\n");
                         echo("<font class=\"gen\"><ul>\n");
                         $list_open = true;
                     }
-                    echo("<li>" . htmlspecialchars($row->topic_title) . " (" . $row->topic_id . ")</li>\n");
+                    echo('<li>' . htmlspecialchars($row->topic_title) . ' (' . $row->topic_id . ")</li>\n");
                     $result_array[] = $row->topic_id;
                 }
 
@@ -1225,7 +1226,7 @@ switch($mode_id) {
 
                 if (count($result_array)) {
                     $record_list = implode(',', $result_array);
-                    echo("<p class=\"gen\">" . $lang['Deleting_topics'] . " </p>\n");
+                    echo('<p class="gen">' . $lang['Deleting_topics'] . " </p>\n");
 
                     dibi::delete(TOPICS_TABLE)
                         ->where('topic_id IN %in', $result_array)
@@ -1237,7 +1238,7 @@ switch($mode_id) {
                 }
 
                 // Check for topics with invalid forum
-                echo("<p class=\"gen\"><b>" . $lang['Checking_invalid_topics'] . "</b></p>\n");
+                echo('<p class="gen"><b>' . $lang['Checking_invalid_topics'] . "</b></p>\n");
 
                 $rows = dibi::select(['t.topic_id', 't.topic_title'])
                     ->from(TOPICS_TABLE)
@@ -1252,11 +1253,11 @@ switch($mode_id) {
 
                 foreach ($rows as $row) {
                     if (!$list_open) {
-                        echo("<p class=\"gen\">" . $lang['Invalid_topics_found'] . ":</p>\n");
+                        echo('<p class="gen">' . $lang['Invalid_topics_found'] . ":</p>\n");
                         echo("<font class=\"gen\"><ul>\n");
                         $list_open = true;
                     }
-                    echo("<li>" . htmlspecialchars($row->topic_title) . " (" . $row->topic_id . ")</li>\n");
+                    echo('<li>' . htmlspecialchars($row->topic_title) . ' (' . $row->topic_id . ")</li>\n");
                     $result_array[] = $row->topic_id;
                 }
 
@@ -1267,7 +1268,7 @@ switch($mode_id) {
                 if (count($result_array)) {
                     $record_list = implode(',', $result_array);
                     $new_forum   = create_forum();
-                    echo("<p class=\"gen\">" . sprintf($lang['Setting_forum'], $lang['New_forum_name']) . " </p>\n");
+                    echo('<p class="gen">' . sprintf($lang['Setting_forum'], $lang['New_forum_name']) . " </p>\n");
 
                     dibi::update(TOPICS_TABLE, ['forum_id' => $new_forum])
                         ->where('topic_id IN %in', $result_array)
@@ -1284,7 +1285,7 @@ switch($mode_id) {
 				// Check for posts with invalid topic
                 // new and simplies logic
                 // we group posts by topic, its mooore simplier
-				echo("<p class=\"gen\"><b>" . $lang['Checking_invalid_posts'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Checking_invalid_posts'] . "</b></p>\n");
 
                 $rows = dibi::select(['p.post_id', 'p.topic_id'])
                     ->from(POSTS_TABLE)
@@ -1321,7 +1322,7 @@ switch($mode_id) {
                             throw_error("Couldn't get post information!");
                         }
 
-                        $topic_title = ($row2->post_subject == '') ? $lang['Restored_topic_name'] : $row2->post_subject;
+                        $topic_title = ($row2->post_subject === '') ? $lang['Restored_topic_name'] : $row2->post_subject;
 
                         // Get data from first post
                         $firstPost = dibi::select(['poster_id', 'post_time'])
@@ -1352,7 +1353,7 @@ switch($mode_id) {
                         $new_topic = dibi::insert(TOPICS_TABLE, $insertData)->execute(dibi::IDENTIFIER);
                         $current_topic = $new_topic;
 
-                        echo("<li>" . sprintf($lang['Setting_topic'], implode(', ', $posts), htmlspecialchars($topic_title), $new_topic, $lang['New_forum_name']) . " </li>\n");
+                        echo('<li>' . sprintf($lang['Setting_topic'], implode(', ', $posts), htmlspecialchars($topic_title), $new_topic, $lang['New_forum_name']) . " </li>\n");
 
                         dibi::update(POSTS_TABLE, ['forum_id' => $new_forum, 'topic_id' => $new_topic])
                             ->where('post_id IN %in', $result_array)
@@ -1369,7 +1370,7 @@ switch($mode_id) {
                 }
 
 				// Check for posts with invalid forum
-				echo("<p class=\"gen\"><b>" . $lang['Checking_invalid_forums_posts'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Checking_invalid_forums_posts'] . "</b></p>\n");
 
                 $rows = dibi::select(['p.post_id'])
                     ->select('p.forum_id')
@@ -1396,11 +1397,11 @@ switch($mode_id) {
 
                 foreach ($rows as $row) {
                     if (!$list_open) {
-                        echo("<p class=\"gen\">" . $lang['Invalid_forum_posts_found'] . ":</p>\n");
+                        echo('<p class="gen">' . $lang['Invalid_forum_posts_found'] . ":</p>\n");
                         echo("<font class=\"gen\"><ul>\n");
                         $list_open = true;
                     }
-                    echo("<li>" . sprintf($lang['Setting_post_forum'], $row->post_id, htmlspecialchars($row->p_forum_name), $row->p_forum_id, htmlspecialchars($row->t_forum_name), $row->t_forum_id) . "</li>\n");
+                    echo('<li>' . sprintf($lang['Setting_post_forum'], $row->post_id, htmlspecialchars($row->p_forum_name), $row->p_forum_id, htmlspecialchars($row->t_forum_name), $row->t_forum_id) . "</li>\n");
 
                     dibi::update(POSTS_TABLE, ['forum_id' => $row->t_forum_id])
                         ->where('post_id = %i', $row->post_id)
@@ -1416,7 +1417,7 @@ switch($mode_id) {
                 }
 
                 // Check for texts without a post
-                echo("<p class=\"gen\"><b>" . $lang['Checking_texts_wo_post'] . "</b></p>\n");
+                echo('<p class="gen"><b>' . $lang['Checking_texts_wo_post'] . "</b></p>\n");
 
                 $rows = dibi::select(['pt.post_id', 'pt.bbcode_uid', 'pt.post_text'])
                     ->from(POSTS_TEXT_TABLE)
@@ -1429,7 +1430,7 @@ switch($mode_id) {
 
 				foreach ($rows as $row) {
 					if (!$list_open) {
-						echo("<p class=\"gen\">" . $lang['Invalid_texts_found'] . ":</p>\n");
+						echo('<p class="gen">' . $lang['Invalid_texts_found'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
                         $list_open = true;
 						$new_forum = create_forum();
@@ -1437,8 +1438,8 @@ switch($mode_id) {
 						$enable_html = $board_config['allow_html'];
 						$enable_smilies = $board_config['allow_smilies'];
 					}
-					$enable_bbcode = ($board_config['allow_bbcode'] && $row->bbcode_uid != '') ? 1 : 0;
-					echo("<li>" . sprintf($lang['Recreating_post'], $row->post_id, $lang['New_topic_name'], $lang['New_forum_name'], substr(htmlspecialchars(strip_tags($row->post_text)), 0, 30)) . "</li>\n");
+					$enable_bbcode = ($board_config['allow_bbcode'] && $row->bbcode_uid !== '') ? 1 : 0;
+					echo('<li>' . sprintf($lang['Recreating_post'], $row->post_id, $lang['New_topic_name'], $lang['New_forum_name'], substr(htmlspecialchars(strip_tags($row->post_text)), 0, 30)) . "</li>\n");
 
 					$insertData = [
 					    'post_id' => $row->post_id,
@@ -1468,7 +1469,7 @@ switch($mode_id) {
                 }
 
 				// Check moved topics
-                echo("<p class=\"gen\"><b>" . $lang['Checking_moved_topics'] . "</b></p>\n");
+                echo('<p class="gen"><b>' . $lang['Checking_moved_topics'] . "</b></p>\n");
                 $db_updated = false;
 
                 $result_array = dibi::select('t.topic_id')
@@ -1483,19 +1484,19 @@ switch($mode_id) {
 
                 if (count($result_array)) {
                     $record_list = implode(',', $result_array);
-                    echo("<p class=\"gen\">" . $lang['Deleting_invalid_moved_topics'] . "</p>\n");
+                    echo('<p class="gen">' . $lang['Deleting_invalid_moved_topics'] . "</p>\n");
 
                     $affected_rows = dibi::delete(TOPICS_TABLE)
                         ->where('topic_id IN %in', $result_array)
                         ->where('topic_status = %i', TOPIC_MOVED)
                         ->execute(dibi::AFFECTED_ROWS);
 
-                    if ($affected_rows == 1) {
+                    if ($affected_rows === 1) {
                         $db_updated = true;
-                        echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
+                        echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
                     } elseif ($affected_rows > 1) {
                         $db_updated = true;
-                        echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
+                        echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
                     }
                 }
 				// Check for normal topics with move information
@@ -1504,16 +1505,16 @@ switch($mode_id) {
                     ->where('topic_status <> %i', TOPIC_MOVED)
                     ->execute(dibi::AFFECTED_ROWS);
 
-                if ($affected_rows == 1) {
-                    echo("<p class=\"gen\">" . sprintf($lang['Updating_invalid_moved_topic'], $affected_rows) . "</p>\n");
+                if ($affected_rows === 1) {
+                    echo('<p class="gen">' . sprintf($lang['Updating_invalid_moved_topic'], $affected_rows) . "</p>\n");
                 } elseif ($affected_rows > 1) {
-                    echo("<p class=\"gen\">" . sprintf($lang['Updating_invalid_moved_topics'], $affected_rows) . "</p>\n");
+                    echo('<p class="gen">' . sprintf($lang['Updating_invalid_moved_topics'], $affected_rows) . "</p>\n");
                 } elseif (!$db_updated) {
                     echo($lang['Nothing_to_do']);
                 }
 
                 // Checking for invalid prune settings
-                echo("<p class=\"gen\"><b>" . $lang['Checking_prune_settings'] . "</b></p>\n");
+                echo('<p class="gen"><b>' . $lang['Checking_prune_settings'] . "</b></p>\n");
                 $db_updated = false;
 
                 $result_array1 = dibi::select('p.forum_id')
@@ -1540,7 +1541,7 @@ switch($mode_id) {
                 $result_array = array_merge($result_array1, $result_array2);
 
                 if (count($result_array)) {
-                    echo("<p class=\"gen\">" . $lang['Removing_invalid_prune_settings'] . "</p>\n");
+                    echo('<p class="gen">' . $lang['Removing_invalid_prune_settings'] . "</p>\n");
                     $record_list = implode(',', $result_array);
                     $db_updated  = true;
 
@@ -1548,11 +1549,11 @@ switch($mode_id) {
                         ->where('forum_id IN %in', $result_array)
                         ->execute(dibi::AFFECTED_ROWS);
 
-                    if ($affected_rows == 1) {
-                        echo("<p class=\"gen\">" . sprintf($lang['Updating_invalid_moved_topic'],
+                    if ($affected_rows === 1) {
+                        echo('<p class="gen">' . sprintf($lang['Updating_invalid_moved_topic'],
                                 $affected_rows) . "</p>\n");
                     } elseif ($affected_rows > 1) {
-                        echo("<p class=\"gen\">" . sprintf($lang['Updating_invalid_moved_topics'],
+                        echo('<p class="gen">' . sprintf($lang['Updating_invalid_moved_topics'],
                                 $affected_rows) . "</p>\n");
                     }
                 }
@@ -1574,17 +1575,17 @@ switch($mode_id) {
                         ->where('forum_id IN %in', $result_array)
                         ->execute(dibi::AFFECTED_ROWS);
 
-                    if ($affected_rows == 1) {
-                        echo("<p class=\"gen\">" . sprintf($lang['Updating_invalid_prune_setting'], $affected_rows) . "</p>\n");
+                    if ($affected_rows === 1) {
+                        echo('<p class="gen">' . sprintf($lang['Updating_invalid_prune_setting'], $affected_rows) . "</p>\n");
                     } elseif ($affected_rows > 1) {
-                        echo("<p class=\"gen\">" . sprintf($lang['Updating_invalid_moved_settings'], $affected_rows) . "</p>\n");
+                        echo('<p class="gen">' . sprintf($lang['Updating_invalid_moved_settings'], $affected_rows) . "</p>\n");
                     }
                 } elseif (!$db_updated) {
                     echo($lang['Nothing_to_do']);
                 }
 
 				// Checking for invalid topic-watch data
-				echo("<p class=\"gen\"><b>" . $lang['Checking_topic_watch_data'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Checking_topic_watch_data'] . "</b></p>\n");
 
                 $user_array = dibi::select('tw.user_id')
                     ->from(TOPICS_WATCH_TABLE)
@@ -1624,17 +1625,17 @@ switch($mode_id) {
                             ->execute(dibi::AFFECTED_ROWS);
                     }
 
-                    if ($affected_rows == 1) {
-                        echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
+                    if ($affected_rows === 1) {
+                        echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
                     } elseif ($affected_rows > 1) {
-                        echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
+                        echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
                     }
                 } else {
                     echo($lang['Nothing_to_do']);
                 }
 
                 // Checking for invalid auth-access data
-                echo("<p class=\"gen\"><b>" . $lang['Checking_auth_access_data'] . "</b></p>\n");
+                echo('<p class="gen"><b>' . $lang['Checking_auth_access_data'] . "</b></p>\n");
 
                 $group_array = dibi::select('aa.group_id')
                     ->from(AUTH_ACCESS_TABLE)
@@ -1674,10 +1675,10 @@ switch($mode_id) {
                             ->execute(dibi::AFFECTED_ROWS);
                     }
 
-                    if ($affected_rows == 1) {
-                        echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
+                    if ($affected_rows === 1) {
+                        echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
                     } elseif ($affected_rows > 1) {
-                        echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
+                        echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
                     }
                 } else {
                     echo($lang['Nothing_to_do']);
@@ -1685,7 +1686,7 @@ switch($mode_id) {
 
 				// If post or topic data has been updated, we interrupt here and add a link to resync the data
                 if ($update_post_data) {
-                    echo("<p class=\"gen\"><a href=\"" . Session::appendSid("admin_db_maintenance.php?mode=perform&amp;function=synchronize_post_direct&amp;db_state=" . (($db_state) ? '1' : '0')) . "\">" . $lang['Must_synchronize'] . "</a></p>\n");
+                    echo('<p class="gen"><a href="' . Session::appendSid('admin_db_maintenance.php?mode=perform&amp;function=synchronize_post_direct&amp;db_state=' . ($db_state ? '1' : '0')) . '">' . $lang['Must_synchronize'] . "</a></p>\n");
                     // Send Information about processing time
                     echo('<p class="gensmall">' . sprintf($lang['Processing_time'], getmicrotime() - $timer) . '</p>');
                     require_once './page_footer_admin.php';
@@ -1695,11 +1696,11 @@ switch($mode_id) {
                 }
 				break;
 			case 'check_vote': // Check vote tables
-				echo("<h1>" . $lang['Checking_vote_tables'] . "</h1>\n");
+				echo('<h1>' . $lang['Checking_vote_tables'] . "</h1>\n");
 				lock_db();
 				
 				// Check for votes without a topic
-				echo("<p class=\"gen\"><b>" . $lang['Checking_votes_wo_topic'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Checking_votes_wo_topic'] . "</b></p>\n");
 
                 $rows = dibi::select(['v.vote_id', 'v.vote_text', 'v.vote_start', 'v.vote_length'])
                     ->from(VOTE_DESC_TABLE)
@@ -1714,13 +1715,13 @@ switch($mode_id) {
 
                 foreach ($rows as $row) {
                     if (!$list_open) {
-                        echo("<p class=\"gen\">" . $lang['Votes_wo_topic_found'] . ":</p>\n");
+                        echo('<p class="gen">' . $lang['Votes_wo_topic_found'] . ":</p>\n");
                         echo("<font class=\"gen\"><ul>\n");
                         $list_open = true;
                     }
                     $start_time = create_date($board_config['default_dateformat'], $row->vote_start, $board_config['board_timezone']);
-                    $end_time   = ($row->vote_length == 0) ? '-' : create_date($board_config['default_dateformat'], $row->vote_start + $row->vote_length, $board_config['board_timezone']);
-                    echo("<li>" . sprintf($lang['Invalid_vote'], htmlspecialchars($row->vote_text), $row->vote_id, $start_time, $end_time) . "</li>\n");
+                    $end_time   = ($row->vote_length === 0) ? '-' : create_date($board_config['default_dateformat'], $row->vote_start + $row->vote_length, $board_config['board_timezone']);
+                    echo('<li>' . sprintf($lang['Invalid_vote'], htmlspecialchars($row->vote_text), $row->vote_id, $start_time, $end_time) . "</li>\n");
                     $result_array[] = $row->vote_id;
                 }
 
@@ -1731,7 +1732,7 @@ switch($mode_id) {
 
 				if (count($result_array)) {
 					$record_list = implode(',', $result_array);
-					echo("<p class=\"gen\">" . $lang['Deleting_Votes'] . " </p>\n");
+					echo('<p class="gen">' . $lang['Deleting_Votes'] . " </p>\n");
 
 					dibi::delete(VOTE_DESC_TABLE)
 						->where('vote_id IN %in', $result_array)
@@ -1749,7 +1750,7 @@ switch($mode_id) {
 				}
 
 				// Check for votes without results
-				echo("<p class=\"gen\"><b>" . $lang['Checking_votes_wo_result'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Checking_votes_wo_result'] . "</b></p>\n");
 
 				$rows = dibi::select(['v.vote_id', 'v.vote_text', 'v.vote_start', 'v.vote_length'])
 					->from(VOTE_DESC_TABLE)
@@ -1764,14 +1765,14 @@ switch($mode_id) {
 
 				foreach ($rows as $row) {
 					if (!$list_open) {
-						echo("<p class=\"gen\">" . $lang['Votes_wo_result_found'] . ":</p>\n");
+						echo('<p class="gen">' . $lang['Votes_wo_result_found'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
 						$list_open = TRUE;
 					}
 					$start_time = create_date($board_config['default_dateformat'], $row->vote_start,
 					$board_config['board_timezone']);
-					$end_time = ( $row->vote_length == 0 ) ? '-' : create_date($board_config['default_dateformat'], $row->vote_start->vote_length, $board_config['board_timezone']);
-					echo("<li>" . sprintf($lang['Invalid_vote'], htmlspecialchars($row->vote_text), $row->vote_id, $start_time, $end_time) . "</li>\n");
+					$end_time = ( $row->vote_length === 0 ) ? '-' : create_date($board_config['default_dateformat'], $row->vote_start->vote_length, $board_config['board_timezone']);
+					echo('<li>' . sprintf($lang['Invalid_vote'], htmlspecialchars($row->vote_text), $row->vote_id, $start_time, $end_time) . "</li>\n");
 					$result_array[] = $row->vote_id;
 				}
 
@@ -1795,13 +1796,13 @@ switch($mode_id) {
                         ->where('vote_id IN %in', $result_array)
                         ->execute();
 
-                    echo("<p class=\"gen\">" . $lang['Deleting_Votes'] . " </p>\n");
+                    echo('<p class="gen">' . $lang['Deleting_Votes'] . " </p>\n");
                 } else {
                     echo($lang['Nothing_to_do']);
                 }
 
 				// Check vote data in topics
-				echo("<p class=\"gen\"><b>" . $lang['Checking_topics_vote_data'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Checking_topics_vote_data'] . "</b></p>\n");
 				$db_updated = FALSE;
 
 				$result_array = dibi::select('t.topic_id')
@@ -1816,18 +1817,18 @@ switch($mode_id) {
 
                 if (count($result_array)) {
                     $record_list = implode(',', $result_array);
-                    echo("<p class=\"gen\">" . $lang['Updating_topics_wo_vote'] . "</p>\n");
+                    echo('<p class="gen">' . $lang['Updating_topics_wo_vote'] . "</p>\n");
 
                     $affected_rows = dibi::update(TOPICS_TABLE, ['topic_vote' => 0])
                         ->where('topic_id IN %in', $result_array)
                         ->execute(dibi::AFFECTED_ROWS);
 
-                    if ($affected_rows == 1) {
+                    if ($affected_rows === 1) {
                         $db_updated = true;
-                        echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
+                        echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
                     } elseif ($affected_rows > 1) {
                         $db_updated = true;
-                        echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
+                        echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
                     }
                 }
 
@@ -1843,7 +1844,7 @@ switch($mode_id) {
 
                 if (count($result_array)) {
                     $record_list = implode(',', $result_array);
-                    echo("<p class=\"gen\">" . $lang['Updating_topics_w_vote'] . "</p>\n");
+                    echo('<p class="gen">' . $lang['Updating_topics_w_vote'] . "</p>\n");
 
                     $affected_rows = dibi::update(TOPICS_TABLE, ['topic_vote' => 1])
                         ->where('topic_id IN %in', $result_array)
@@ -1851,10 +1852,10 @@ switch($mode_id) {
 
                     if ($affected_rows == 1) {
                         $db_updated = true;
-                        echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
+                        echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
                     } elseif ($affected_rows > 1) {
                         $db_updated = true;
-                        echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
+                        echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
                     }
                 }
 
@@ -1863,7 +1864,7 @@ switch($mode_id) {
                 }
 
 				// Check for vote results without a vote
-                echo("<p class=\"gen\"><b>" . $lang['Checking_results_wo_vote'] . "</b></p>\n");
+                echo('<p class="gen"><b>' . $lang['Checking_results_wo_vote'] . "</b></p>\n");
                 $rows = dibi::select(['vr.vote_id', 'vr.vote_option_id', 'vr.vote_option_text', 'vr.vote_result'])
                     ->from(VOTE_RESULTS_TABLE)
                     ->as('vr')
@@ -1875,12 +1876,12 @@ switch($mode_id) {
 
                 foreach ($rows as $row) {
                     if (!$list_open) {
-                        echo("<p class=\"gen\">" . $lang['Results_wo_vote_found'] . ":</p>\n");
+                        echo('<p class="gen">' . $lang['Results_wo_vote_found'] . ":</p>\n");
                         echo("<font class=\"gen\"><ul>\n");
                         $list_open = true;
                     }
 
-                    echo("<li>" . sprintf($lang['Invalid_result'], htmlspecialchars($row->vote_option_text), $row->vote_result) . "</li>\n");
+                    echo('<li>' . sprintf($lang['Invalid_result'], htmlspecialchars($row->vote_option_text), $row->vote_result) . "</li>\n");
 
                     dibi::delete(VOTE_RESULTS_TABLE)
                         ->where('vote_id = %i', $row->vote_id)
@@ -1896,7 +1897,7 @@ switch($mode_id) {
                 }
 
 				// Checking for invalid voters data
-				echo("<p class=\"gen\"><b>" . $lang['Checking_voters_data'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Checking_voters_data'] . "</b></p>\n");
 
                 $user_array = dibi::select('vu.vote_user_id')
                     ->from(VOTE_USERS_TABLE)
@@ -1937,9 +1938,9 @@ switch($mode_id) {
                     }
 
                     if ($affected_rows == 1) {
-                        echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
+                        echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
                     } elseif ($affected_rows > 1) {
-                        echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
+                        echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
                     }
                 } else {
                     echo($lang['Nothing_to_do']);
@@ -1948,11 +1949,11 @@ switch($mode_id) {
 				lock_db(TRUE);
 				break;
 			case 'check_pm': // Check private messages
-				echo("<h1>" . $lang['Checking_pm_tables'] . "</h1>\n");
+				echo('<h1>' . $lang['Checking_pm_tables'] . "</h1>\n");
 				lock_db();
 
 				// Check for pms without a text
-				echo("<p class=\"gen\"><b>" . $lang['Checking_pms_wo_text'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Checking_pms_wo_text'] . "</b></p>\n");
 
                 $rows = dibi::select(['pm.privmsgs_id', 'pm.privmsgs_subject'])
                     ->select('uf.user_id')
@@ -1981,11 +1982,11 @@ switch($mode_id) {
 
                 foreach ($rows as $row) {
                     if (!$list_open) {
-                        echo("<p class=\"gen\">" . $lang['Pms_wo_text_found'] . ":</p>\n");
+                        echo('<p class="gen">' . $lang['Pms_wo_text_found'] . ":</p>\n");
                         echo("<font class=\"gen\"><ul>\n");
                         $list_open = true;
                     }
-                    echo("<li>" . sprintf($lang['Deleting_pn_wo_text'], $row->privmsgs_id, htmlspecialchars($row->privmsgs_subject), htmlspecialchars($row->from_username), $row->from_user_id, htmlspecialchars($row->to_username), $row->to_user_id) . "</li>\n");
+                    echo('<li>' . sprintf($lang['Deleting_pn_wo_text'], $row->privmsgs_id, htmlspecialchars($row->privmsgs_subject), htmlspecialchars($row->from_username), $row->from_user_id, htmlspecialchars($row->to_username), $row->to_user_id) . "</li>\n");
                     $result_array[] = $row->privmsgs_id;
                 }
 
@@ -1996,7 +1997,7 @@ switch($mode_id) {
 
                 if (count($result_array)) {
                     $record_list = implode(',', $result_array);
-                    echo("<p class=\"gen\">" . $lang['Deleting_Pms'] . " </p>\n");
+                    echo('<p class="gen">' . $lang['Deleting_Pms'] . " </p>\n");
 
                     dibi::delete(PRIVMSGS_TABLE)
                         ->where('privmsgs_id IN %in', $result_array)
@@ -2006,7 +2007,7 @@ switch($mode_id) {
                 }
 
                 // Check for texts without a private message
-				echo("<p class=\"gen\"><b>" . $lang['Checking_texts_wo_pm'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Checking_texts_wo_pm'] . "</b></p>\n");
 
 				$result_array = dibi::select('pmt.privmsgs_text_id')
 					->from(PRIVMSGS_TEXT_TABLE)
@@ -2018,7 +2019,7 @@ switch($mode_id) {
 					->fetchPairs(null, 'privmsgs_text_id');
 
                 if (count($result_array)) {
-                    echo("<p class=\"gen\">" . $lang['Deleting_pm_texts'] . "</p>\n");
+                    echo('<p class="gen">' . $lang['Deleting_pm_texts'] . "</p>\n");
                     $record_list = implode(',', $result_array);
 
                     $affected_rows = dibi::delete(PRIVMSGS_TEXT_TABLE)
@@ -2026,16 +2027,16 @@ switch($mode_id) {
                         ->execute(dibi::AFFECTED_ROWS);
 
                     if ($affected_rows == 1) {
-                        echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
+                        echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
                     } elseif ($affected_rows > 1) {
-                        echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
+                        echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
                     }
                 } else {
                     echo($lang['Nothing_to_do']);
                 }
 
 				// Check pms for invaild senders
-				echo("<p class=\"gen\"><b>" . $lang['Checking_invalid_pm_senders'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Checking_invalid_pm_senders'] . "</b></p>\n");
 
                 $result_array = dibi::select('pm.privmsgs_id')
                     ->from(PRIVMSGS_TABLE)
@@ -2048,8 +2049,8 @@ switch($mode_id) {
 
                 if (count($result_array)) {
                     $record_list = implode(',', $result_array);
-                    echo("<p class=\"gen\">" . $lang['Invalid_pm_senders_found'] . ": $record_list</p>\n");
-                    echo("<p class=\"gen\">" . $lang['Updating_pms'] . "</p>\n");
+                    echo('<p class="gen">' . $lang['Invalid_pm_senders_found'] . ": $record_list</p>\n");
+                    echo('<p class="gen">' . $lang['Updating_pms'] . "</p>\n");
 
                     dibi::update(PRIVMSGS_TABLE, ['privmsgs_from_userid' => DELETED])
                         ->where('privmsgs_id IN %in', $result_array)
@@ -2059,7 +2060,7 @@ switch($mode_id) {
                 }
 
 				// Check pms for invaild recipients
-				echo("<p class=\"gen\"><b>" . $lang['Checking_invalid_pm_recipients'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Checking_invalid_pm_recipients'] . "</b></p>\n");
 
                 $result_array = dibi::select('pm.privmsgs_id')
                     ->from(PRIVMSGS_TABLE)
@@ -2072,8 +2073,8 @@ switch($mode_id) {
 
                 if (count($result_array)) {
                     $record_list = implode(',', $result_array);
-                    echo("<p class=\"gen\">" . $lang['Invalid_pm_recipients_found'] . ": $record_list</p>\n");
-                    echo("<p class=\"gen\">" . $lang['Updating_pms'] . "</p>\n");
+                    echo('<p class="gen">' . $lang['Invalid_pm_recipients_found'] . ": $record_list</p>\n");
+                    echo('<p class="gen">' . $lang['Updating_pms'] . "</p>\n");
 
                     dibi::update(PRIVMSGS_TABLE, ['privmsgs_to_userid' => DELETED])
                         ->where('privmsgs_id IN %in', $result_array)
@@ -2097,7 +2098,7 @@ switch($mode_id) {
 				 ];
 
 				// Check for pns with deleted sender or recipient
-				echo("<p class=\"gen\"><b>" . $lang['Checking_pm_deleted_users'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Checking_pm_deleted_users'] . "</b></p>\n");
 
 				$result_array = dibi::select('privmsgs_id')
 					->from(PRIVMSGS_TABLE)
@@ -2106,8 +2107,8 @@ switch($mode_id) {
 
                 if (count($result_array)) {
                     $record_list = implode(',', $result_array);
-                    echo("<p class=\"gen\">" . $lang['Invalid_pm_users_found'] . ": $record_list</p>\n");
-                    echo("<p class=\"gen\">" . $lang['Deleting_pms'] . "</p>\n");
+                    echo('<p class="gen">' . $lang['Invalid_pm_users_found'] . ": $record_list</p>\n");
+                    echo('<p class="gen">' . $lang['Deleting_pms'] . "</p>\n");
 
                     dibi::delete(PRIVMSGS_TABLE)
                         ->where('privmsgs_id IN %in', $result_array)
@@ -2121,7 +2122,7 @@ switch($mode_id) {
                 }
 
 				// Updating new pm counter
-				echo("<p class=\"gen\"><b>" . $lang['Synchronize_new_pm_data'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Synchronize_new_pm_data'] . "</b></p>\n");
 
                 $rows = dibi::select(['u.user_id', 'u.username', 'u.user_new_privmsg'])
                     ->select('COUNT(pm.privmsgs_id)')
@@ -2143,11 +2144,11 @@ switch($mode_id) {
 
                     if ($row->new_counter !== $row->user_new_privmsg) {
                         if (!$list_open) {
-                            echo("<p class=\"gen\">" . $lang['Synchronizing_users'] . ":</p>\n");
+                            echo('<p class="gen">' . $lang['Synchronizing_users'] . ":</p>\n");
                             echo("<font class=\"gen\"><ul>\n");
                             $list_open = true;
                         }
-                        echo("<li>" . sprintf($lang['Synchronizing_user'], htmlspecialchars($row->username), $row->user_id)
+                        echo('<li>' . sprintf($lang['Synchronizing_user'], htmlspecialchars($row->username), $row->user_id)
                             . "</li>\n");
 
                         dibi::update(USERS_TABLE, ['user_new_privmsg' => $row->new_counter])
@@ -2172,11 +2173,11 @@ switch($mode_id) {
 
                 foreach ($rows as $row) {
                     if (!$list_open) {
-                        echo("<p class=\"gen\">" . $lang['Synchronizing_users'] . ":</p>\n");
+                        echo('<p class="gen">' . $lang['Synchronizing_users'] . ":</p>\n");
                         echo("<font class=\"gen\"><ul>\n");
                         $list_open = true;
                     }
-                    echo("<li>" . sprintf($lang['Synchronizing_user'], htmlspecialchars($row->username), $row->user_id) . "</li>\n");
+                    echo('<li>' . sprintf($lang['Synchronizing_user'], htmlspecialchars($row->username), $row->user_id) . "</li>\n");
 
                     dibi::update(USERS_TABLE, ['user_new_privmsg' => 0])
                         ->where('user_id = %i', $row->user_id)
@@ -2191,7 +2192,7 @@ switch($mode_id) {
                 }
 
                 // Updating unread pm counter
-                echo("<p class=\"gen\"><b>" . $lang['Synchronize_unread_pm_data'] . "</b></p>\n");
+                echo('<p class="gen"><b>' . $lang['Synchronize_unread_pm_data'] . "</b></p>\n");
 
                 $rows = dibi::select(['u.user_id', 'u.username', 'u.user_unread_privmsg'])
                     ->select('COUNT(pm.privmsgs_id)')
@@ -2211,11 +2212,11 @@ switch($mode_id) {
 
                     if ($row->new_counter !== $row->user_unread_privmsg) {
                         if (!$list_open) {
-                            echo("<p class=\"gen\">" . $lang['Synchronizing_users'] . ":</p>\n");
+                            echo('<p class="gen">' . $lang['Synchronizing_users'] . ":</p>\n");
                             echo("<font class=\"gen\"><ul>\n");
                             $list_open = true;
                         }
-                        echo("<li>" . sprintf($lang['Synchronizing_user'], htmlspecialchars($row->username), $row->user_id) . "</li>\n");
+                        echo('<li>' . sprintf($lang['Synchronizing_user'], htmlspecialchars($row->username), $row->user_id) . "</li>\n");
 
                         dibi::update(USERS_TABLE, ['user_unread_privmsg' => $row->new_counter])
                             ->where('user_id = %i', $row->user_id)
@@ -2239,11 +2240,11 @@ switch($mode_id) {
 
                 foreach ($rows as $row) {
                     if (!$list_open) {
-                        echo("<p class=\"gen\">" . $lang['Synchronizing_users'] . ":</p>\n");
+                        echo('<p class="gen">' . $lang['Synchronizing_users'] . ":</p>\n");
                         echo("<font class=\"gen\"><ul>\n");
                         $list_open = true;
                     }
-                    echo("<li>" . sprintf($lang['Synchronizing_user'], htmlspecialchars($row->username), $row->user_id) . "</li>\n");
+                    echo('<li>' . sprintf($lang['Synchronizing_user'], htmlspecialchars($row->username), $row->user_id) . "</li>\n");
 
                     dibi::update(USERS_TABLE, ['user_unread_privmsg' => 0])
                         ->where('user_id = %i', $row->user_id)
@@ -2260,27 +2261,27 @@ switch($mode_id) {
 				lock_db(TRUE);
 				break;
 			case 'check_config': // Check config table
-				echo("<h1>" . $lang['Checking_config_table'] . "</h1>\n");
+				echo('<h1>' . $lang['Checking_config_table'] . "</h1>\n");
 				lock_db();
 
-				echo("<p class=\"gen\"><b>" . $lang['Checking_config_entries'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Checking_config_entries'] . "</b></p>\n");
 
 				// Update config data to match current configuration
                 if (!empty($_SERVER['SERVER_PROTOCOL']) || !empty($_ENV['SERVER_PROTOCOL'])) {
-                    $protocol = (!empty($_SERVER['SERVER_PROTOCOL'])) ? $_SERVER['SERVER_PROTOCOL'] : $_ENV['SERVER_PROTOCOL'];
+                    $protocol = !empty($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : $_ENV['SERVER_PROTOCOL'];
                     if (strtolower(substr($protocol, 0, 5)) == 'https') {
                         $default_config['cookie_secure'] = '1';
                     }
                 }
 
 				if (!empty($_SERVER['SERVER_NAME']) || !empty($_ENV['SERVER_NAME'])) {
-					$default_config['server_name'] = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : $_ENV['SERVER_NAME'];
+					$default_config['server_name'] = !empty($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : $_ENV['SERVER_NAME'];
 				} else if (!empty($_SERVER['HTTP_HOST']) || !empty($_ENV['HTTP_HOST'])) {
-					$default_config['server_name'] = (!empty($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : $_ENV['HTTP_HOST'];
+					$default_config['server_name'] = !empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_ENV['HTTP_HOST'];
 				}
 
 				if (!empty($_SERVER['SERVER_PORT']) || !empty($_ENV['SERVER_PORT'])) {
-					$default_config['server_port'] = (!empty($_SERVER['SERVER_PORT'])) ? $_SERVER['SERVER_PORT'] : $_ENV['SERVER_PORT'];
+					$default_config['server_port'] = !empty($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : $_ENV['SERVER_PORT'];
 				}
 				$default_config['script_path'] = str_replace('admin', '', dirname($_SERVER['PHP_SELF']));
 
@@ -2304,7 +2305,7 @@ switch($mode_id) {
                     if (!$config) {
                         // entry does not exists
                         if (!$list_open) {
-                            echo("<p class=\"gen\">" . $lang['Restoring_config'] . ":</p>\n");
+                            echo('<p class="gen">' . $lang['Restoring_config'] . ":</p>\n");
                             echo("<font class=\"gen\"><ul>\n");
                             $list_open = true;
                         }
@@ -2328,11 +2329,11 @@ switch($mode_id) {
 				lock_db(TRUE);
 				break;
 			case 'check_search_wordmatch': // Check search word match data
-				echo("<h1>" . $lang['Checking_search_wordmatch_tables'] . "</h1>\n");
+				echo('<h1>' . $lang['Checking_search_wordmatch_tables'] . "</h1>\n");
 				lock_db();
 
 				// Checking for invalid search word match data
-				echo("<p class=\"gen\"><b>" . $lang['Checking_search_data'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Checking_search_data'] . "</b></p>\n");
 
                 $post_array = dibi::select('sm.post_id')
                     ->from(SEARCH_MATCH_TABLE)
@@ -2373,9 +2374,9 @@ switch($mode_id) {
                     }
 
                     if ($affected_rows == 1) {
-                        echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
+                        echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
                     } elseif ($affected_rows > 1) {
-                        echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
+                        echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
                     }
 				} else {
 					echo($lang['Nothing_to_do']);
@@ -2384,11 +2385,11 @@ switch($mode_id) {
 				lock_db(TRUE);
 				break;
 			case 'check_search_wordlist': // Check search word list data
-                echo("<h1>" . $lang['Checking_search_wordlist_tables'] . "</h1>\n");
+                echo('<h1>' . $lang['Checking_search_wordlist_tables'] . "</h1>\n");
                 lock_db();
 
                 // Checking for invalid search word list data
-                echo("<p class=\"gen\"><b>" . $lang['Checking_search_words'] . "</b></p>\n");
+                echo('<p class="gen"><b>' . $lang['Checking_search_words'] . "</b></p>\n");
 
                 $rows = dibi::select('sw.word_id')
                     ->from(SEARCH_WORD_TABLE)
@@ -2406,7 +2407,7 @@ switch($mode_id) {
                 foreach ($rows as $row) {
                     $result_array[] = $row->word_id;
                     if (count($result_array) >= 100) {
-                        echo("<p class=\"gen\">" . $lang['Removing_part_invalid_words'] . "...</p>\n");
+                        echo('<p class="gen">' . $lang['Removing_part_invalid_words'] . "...</p>\n");
                         $record_list = implode(',', $result_array);
 
                         $affected_rows += dibi::delete(SEARCH_WORD_TABLE)
@@ -2418,7 +2419,7 @@ switch($mode_id) {
                 }
 
                 if (count($result_array)) {
-                    echo("<p class=\"gen\">" . $lang['Removing_invalid_words'] . "</p>\n");
+                    echo('<p class="gen">' . $lang['Removing_invalid_words'] . "</p>\n");
                     $record_list = implode(',', $result_array);
 
                     $affected_rows += dibi::delete(SEARCH_WORD_TABLE)
@@ -2427,9 +2428,9 @@ switch($mode_id) {
                 }
 
                 if ($affected_rows == 1) {
-                    echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
+                    echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
                 } elseif ($affected_rows > 1) {
-                    echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
+                    echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
                 } else {
                     echo($lang['Nothing_to_do']);
                 }
@@ -2437,18 +2438,18 @@ switch($mode_id) {
 				lock_db(TRUE);
 				break;
 			case 'rebuild_search_index': // Rebuild Search Index
-				echo("<h1>" . $lang['Rebuilding_search_index'] . "</h1>\n");
+				echo('<h1>' . $lang['Rebuilding_search_index'] . "</h1>\n");
 				$db_state = lock_db();
 
 				// Clear Tables
-				echo("<p class=\"gen\"><b>" . $lang['Deleting_search_tables'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Deleting_search_tables'] . "</b></p>\n");
 
 				dibi::query('TRUNCATE TABLE %n', SEARCH_TABLE);
 				dibi::query('TRUNCATE TABLE %n', SEARCH_WORD_TABLE);
 				dibi::query('TRUNCATE TABLE %n', SEARCH_MATCH_TABLE);
 
 
-				echo("<p class=\"gen\">" . $lang['Done'] . "</p>\n");
+				echo('<p class="gen">' . $lang['Done'] . "</p>\n");
 
 				// TODO we should not need it
 				/*
@@ -2462,7 +2463,7 @@ switch($mode_id) {
                 echo("<p class=\"gen\">" . $lang['Done'] . "</p>\n");
 				*/
 
-                echo("<p class=\"gen\"><b>" . $lang['Preparing_config_data'] . "</b></p>\n");
+                echo('<p class="gen"><b>' . $lang['Preparing_config_data'] . "</b></p>\n");
                 // Set data for start position in config table
                 update_config('dbmtnc_rebuild_pos', '0');
                 // Get data for end position
@@ -2477,21 +2478,21 @@ switch($mode_id) {
                 }
 
 				// Set data for end position in config table
-				update_config('dbmtnc_rebuild_end', intval($row->max_post_id));
-				echo("<p class=\"gen\">" . $lang['Done'] . "</p>\n");
+				update_config('dbmtnc_rebuild_end', (int)$row->max_post_id);
+				echo('<p class="gen">' . $lang['Done'] . "</p>\n");
 
-				echo("<p class=\"gen\"><a href=\"" . Session::appendSid("admin_db_maintenance.php?mode=perform&amp;function=perform_rebuild&amp;db_state=" . (($db_state) ? '1' : '0')) . "\">" . $lang['Can_start_rebuilding'] . "</a><br><span class=\"gensmall\">" . $lang['Click_once_warning'] . "</span></p>\n");
+				echo('<p class="gen"><a href="' . Session::appendSid('admin_db_maintenance.php?mode=perform&amp;function=perform_rebuild&amp;db_state=' . ($db_state ? '1' : '0')) . '">' . $lang['Can_start_rebuilding'] . '</a><br><span class="gensmall">' . $lang['Click_once_warning'] . "</span></p>\n");
 				// Send Information about processing time
 				echo('<p class="gensmall">' . sprintf($lang['Processing_time'], getmicrotime() - $timer) . '</p>');
                 require_once './page_footer_admin.php';
 				exit;
 				break;
 			case 'proceed_rebuilding': // Proceed rebuilding search index
-				echo("<h1>" . $lang['Preparing_to_proceed'] . "</h1>\n");
+				echo('<h1>' . $lang['Preparing_to_proceed'] . "</h1>\n");
 				$db_state = lock_db();
 
                 // Clear Tables
-                echo("<p class=\"gen\"><b>" . $lang['Preparing_search_tables'] . "</b></p>\n");
+                echo('<p class="gen"><b>' . $lang['Preparing_search_tables'] . "</b></p>\n");
 
                 dibi::query('TRUNCATE TABLE %n', SEARCH_TABLE);
 
@@ -2500,9 +2501,9 @@ switch($mode_id) {
                     ->where('post_id <= %i', (int)$board_config['dbmtnc_rebuild_end'])
                     ->execute();
 
-                echo("<p class=\"gen\">" . $lang['Done'] . "</p>\n");
+                echo('<p class="gen">' . $lang['Done'] . "</p>\n");
 
-                echo("<p class=\"gen\"><a href=\"" . Session::appendSid("admin_db_maintenance.php?mode=perform&amp;function=perform_rebuild&amp;db_state=" . (($db_state) ? '1' : '0')) . "\">" . $lang['Can_start_rebuilding'] . "</a><br><span class=\"gensmall\">" . $lang['Click_once_warning'] . "</span></p>\n");
+                echo('<p class="gen"><a href="' . Session::appendSid('admin_db_maintenance.php?mode=perform&amp;function=perform_rebuild&amp;db_state=' . ($db_state ? '1' : '0')) . '">' . $lang['Can_start_rebuilding'] . '</a><br><span class="gensmall">' . $lang['Click_once_warning'] . "</span></p>\n");
                 // Send Information about processing time
                 echo('<p class="gensmall">' . sprintf($lang['Processing_time'], getmicrotime() - $timer) . '</p>');
                 require_once './page_footer_admin.php';
@@ -2510,11 +2511,11 @@ switch($mode_id) {
                 break;
 			case 'perform_rebuild': // Rebuild search index (perform part)
 				// ATTENTION: page_header not sent yet!
-				$db_state = ( isset($_GET['db_state']) ) ? intval( $_GET['db_state'] ) : 0;
+				$db_state = isset($_GET['db_state']) ? (int)$_GET['db_state'] : 0;
 				// Load functions
 				require_once $phpbb_root_path . 'includes/functions_search.php';
 				// Identify PHP version and time limit configuration
-                if (phpversion() >= '4.0.5' && ($board_config['dbmtnc_rebuildcfg_php3only'] == 0)) // Handle PHP beffore 4.0.5 as PHP 3 since array_search is not available
+                if (PHP_VERSION >= '4.0.5' && ($board_config['dbmtnc_rebuildcfg_php3only'] == 0)) // Handle PHP beffore 4.0.5 as PHP 3 since array_search is not available
                 {
                     $php_ver = 4;
                     // try to reset time limit
@@ -2537,15 +2538,15 @@ switch($mode_id) {
 				}
 
 				// Calculate posts to process
-				$posts_to_index = intval(($execution_time - 5) * (($php_ver == 4) ? $board_config['dbmtnc_rebuildcfg_php4pps'] : $board_config['dbmtnc_rebuildcfg_php3pps']));
+				$posts_to_index = (int)(($execution_time - 5) * (($php_ver == 4) ? $board_config['dbmtnc_rebuildcfg_php4pps'] : $board_config['dbmtnc_rebuildcfg_php3pps']));
 
 				if ($posts_to_index < $board_config['dbmtnc_rebuildcfg_minposts']) {
 					$posts_to_index = $board_config['dbmtnc_rebuildcfg_minposts'];
 				}
 
 				// Check whether a special limit was set
-                if (intval($board_config['dbmtnc_rebuildcfg_timeoverwrite']) != 0) {
-                    $posts_to_index = intval($board_config['dbmtnc_rebuildcfg_timeoverwrite']);
+                if ((int)$board_config['dbmtnc_rebuildcfg_timeoverwrite'] !== 0) {
+                    $posts_to_index = (int)$board_config['dbmtnc_rebuildcfg_timeoverwrite'];
                 }
 
 				// We have all data so get the post information
@@ -2564,7 +2565,7 @@ switch($mode_id) {
 					update_config('dbmtnc_rebuild_pos', '-1');
 					update_config('dbmtnc_rebuild_end', '0');
 					
-					echo("<p class=\"gen\">" . $lang['Indexing_finished'] . ".</p>\n");
+					echo('<p class="gen">' . $lang['Indexing_finished'] . ".</p>\n");
 
 					if ($db_state == 0) {
 						lock_db(TRUE, TRUE, TRUE);
@@ -2573,7 +2574,7 @@ switch($mode_id) {
 						echo('<p class="gen">' . $lang['Ignore_unlock_command'] . "</p>\n");
 					}
 
-					echo("<p class=\"gen\"><a href=\"" . Session::appendSid("admin_db_maintenance.php") . "\">" . $lang['Back_to_DB_Maintenance'] . "</a></p>\n");
+					echo('<p class="gen"><a href="' . Session::appendSid('admin_db_maintenance.php') . '">' . $lang['Back_to_DB_Maintenance'] . "</a></p>\n");
 					// Send Information about processing time
 					echo('<p class="gensmall">' . sprintf($lang['Processing_time'], getmicrotime() - $timer) . '</p>');
                     require_once './page_footer_admin.php';
@@ -2628,7 +2629,7 @@ switch($mode_id) {
 							$word_list = split_words(clean_words('post', $row->post_text, $empty_array, $empty_array));
 							foreach ($word_list as $word) {
 								// cutting of long words in functions_search.php seems not to work under some conditions - so check it again
-                                if ($word != '' && strlen($word) <= 20) {
+                                if ($word !== '' && strlen($word) <= 20) {
                                     $result_array[0][] = $last_post;
                                     $result_array[1][] = 0;
                                     $result_array[2][] = $word;
@@ -2638,7 +2639,7 @@ switch($mode_id) {
 							$word_list = split_words(clean_words('post', $row->post_subject, $empty_array, $empty_array));
                             foreach ($word_list as $word) {
 								// cutting of long words in functions_search.php seems not to work under some conditions - so check it again
-                                if ($word != '' && strlen($word) <= 20) {
+                                if ($word !== '' && strlen($word) <= 20) {
                                     $result_array[0][] = $last_post;
                                     $result_array[1][] = 1;
                                     $result_array[2][] = $word;
@@ -2711,8 +2712,8 @@ switch($mode_id) {
 					->where('post_id <= %i', $last_post)
 					->fetchSingle();
 				
-				echo("<p class=\"gen\">" . sprintf($lang['Indexing_progress'], $posts_indexed, $posts_total, ($posts_indexed / $posts_total) * 100, $last_post) . "</p>\n");
-				echo("<p class=\"gen\"><a href=\"" . Session::appendSid("admin_db_maintenance.php?mode=perform&amp;function=perform_rebuild&amp;db_state=$db_state") . "\">" . $lang['Click_or_wait_to_proceed'] . "</a><br><span class=\"gensmall\">" . $lang['Click_once_warning'] . "</span></p>\n");
+				echo('<p class="gen">' . sprintf($lang['Indexing_progress'], $posts_indexed, $posts_total, ($posts_indexed / $posts_total) * 100, $last_post) . "</p>\n");
+				echo('<p class="gen"><a href="' . Session::appendSid("admin_db_maintenance.php?mode=perform&amp;function=perform_rebuild&amp;db_state=$db_state") . '">' . $lang['Click_or_wait_to_proceed'] . '</a><br><span class="gensmall">' . $lang['Click_once_warning'] . "</span></p>\n");
 
 				// Send Information about processing time
 				echo('<p class="gensmall">' . sprintf($lang['Processing_time'], getmicrotime() - $timer) . '</p>');
@@ -2723,16 +2724,16 @@ switch($mode_id) {
 				break;
 			case 'synchronize_post': // Synchronize post data
 			case 'synchronize_post_direct': // Run directly
-				echo("<h1>" . $lang['Synchronize_posts'] . "</h1>\n");
+				echo('<h1>' . $lang['Synchronize_posts'] . "</h1>\n");
 
 				if ($function == 'synchronize_post_direct') {
-					$db_state = ( isset($_GET['db_state']) ) ? intval($_GET['db_state']) : 1;
+					$db_state = isset($_GET['db_state']) ? (int)$_GET['db_state'] : 1;
 				} else {
 					lock_db();
 				}
 
 				// Updating normal topics
-				echo("<p class=\"gen\"><b>" . $lang['Synchronize_topic_data'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Synchronize_topic_data'] . "</b></p>\n");
 
 				$rows = dibi::select(['t.topic_id', 't.topic_title', 't.topic_replies', 't.topic_first_post_id','t.topic_last_post_id'])
 					->select('Count(p.post_id) - 1')
@@ -2756,11 +2757,11 @@ switch($mode_id) {
 
 				foreach ($rows as $row) {
 					if (!$list_open) {
-						echo("<p class=\"gen\">" . $lang['Synchronizing_topics'] . ":</p>\n");
+						echo('<p class="gen">' . $lang['Synchronizing_topics'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
 						$list_open = TRUE;
 					}
-					echo("<li>" . sprintf($lang['Synchronizing_topic'], $row->topic_id, htmlspecialchars($row->topic_title)) . "</li>\n");
+					echo('<li>' . sprintf($lang['Synchronizing_topic'], $row->topic_id, htmlspecialchars($row->topic_title)) . "</li>\n");
 
 					$updateData = [
 						'topic_replies'       => $row->new_replies,
@@ -2781,7 +2782,7 @@ switch($mode_id) {
 				}
 
 				// Updating moved topics
-				echo("<p class=\"gen\"><b>" . $lang['Synchronize_moved_topic_data'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Synchronize_moved_topic_data'] . "</b></p>\n");
 
 				$rows = dibi::select(['topic_id', 'topic_title', 'topic_last_post_id', 'topic_moved_id'])
 					->from(TOPICS_TABLE)
@@ -2817,12 +2818,12 @@ switch($mode_id) {
 
 						if ($row3) {
 							if (!$list_open) {
-								echo("<p class=\"gen\">" . $lang['Synchronizing_moved_topics'] . ":</p>\n");
+								echo('<p class="gen">' . $lang['Synchronizing_moved_topics'] . ":</p>\n");
 								echo("<font class=\"gen\"><ul>\n");
 
 								$list_open = TRUE;
 							}
-							echo("<li>" . sprintf($lang['Synchronizing_moved_topic'], $row->topic_id, $row->topic_moved_id, htmlspecialchars($row->topic_title)) . "</li>\n");
+							echo('<li>' . sprintf($lang['Synchronizing_moved_topic'], $row->topic_id, $row->topic_moved_id, htmlspecialchars($row->topic_title)) . "</li>\n");
 
 							$updateData = [
 								'topic_replies' => $row2->topic_replies,
@@ -2835,7 +2836,7 @@ switch($mode_id) {
 								->execute();
 						}
 					} else {
-						throw_error(sprintf($lang['Inconsistencies_found'], "<a href=\"" . Session::appendSid("admin_db_maintenance.php?mode=perform&amp;function=check_post") . "\">", '</a>'));
+						throw_error(sprintf($lang['Inconsistencies_found'], '<a href="' . Session::appendSid('admin_db_maintenance.php?mode=perform&amp;function=check_post') . '">', '</a>'));
 					}
 				}
 
@@ -2847,7 +2848,7 @@ switch($mode_id) {
 				}
 
 				// Updating topic data of forums
-				echo("<p class=\"gen\"><b>" . $lang['Synchronize_forum_topic_data'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Synchronize_forum_topic_data'] . "</b></p>\n");
 
 				$rows = dibi::select(['f.forum_id', 'f.forum_name', 'f.forum_topics'])
 					->select('COUNT(t.topic_id)')
@@ -2865,11 +2866,11 @@ switch($mode_id) {
 
 				foreach ($rows as $row) {
 					if (!$list_open) {
-						echo("<p class=\"gen\">" . $lang['Synchronizing_forums'] . ":</p>\n");
+						echo('<p class="gen">' . $lang['Synchronizing_forums'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
 						$list_open = TRUE;
 					}
-					echo("<li>" . sprintf($lang['Synchronizing_forum'], $row->forum_id, htmlspecialchars($row->forum_name)) . "</li>\n");
+					echo('<li>' . sprintf($lang['Synchronizing_forum'], $row->forum_id, htmlspecialchars($row->forum_name)) . "</li>\n");
 
 					dibi::update(FORUMS_TABLE, ['forum_topics' => $row->new_topics])
 						->where('forum_id = %i', $row->forum_id)
@@ -2884,7 +2885,7 @@ switch($mode_id) {
 				}
 
 				// Updating forums without a topic
-				echo("<p class=\"gen\"><b>" . $lang['Synchronize_forum_data_wo_topic'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Synchronize_forum_data_wo_topic'] . "</b></p>\n");
 
 				$result_array = dibi::select('f.forum_id')
 					->from(FORUMS_TABLE)
@@ -2902,16 +2903,16 @@ switch($mode_id) {
 						->execute(dibi::AFFECTED_ROWS);
 
 					if ($affected_rows == 1) {
-						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
+						echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
 					} elseif ($affected_rows > 1) {
-						echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
+						echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
 					}
 				} elseif (!$db_updated) {
 					echo($lang['Nothing_to_do']);
 				}
 
 				// Updating post data of forums
-				echo("<p class=\"gen\"><b>" . $lang['Synchronize_forum_post_data'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Synchronize_forum_post_data'] . "</b></p>\n");
 
 				$rows = dibi::select(['f.forum_id', 'f.forum_name', 'f.forum_posts', 'f.forum_last_post_id'])
 					->select('COUNT(p.post_id)')
@@ -2933,11 +2934,11 @@ switch($mode_id) {
 
 				foreach ($rows as $row) {
 					if (!$list_open) {
-						echo("<p class=\"gen\">" . $lang['Synchronizing_forums'] . ":</p>\n");
+						echo('<p class="gen">' . $lang['Synchronizing_forums'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
                         $list_open = true;
 					}
-					echo("<li>" . sprintf($lang['Synchronizing_forum'], $row->forum_id, htmlspecialchars($row->forum_name)) . "</li>\n");
+					echo('<li>' . sprintf($lang['Synchronizing_forum'], $row->forum_id, htmlspecialchars($row->forum_name)) . "</li>\n");
 
 					dibi::update(FORUMS_TABLE, ['forum_posts' => $row->new_posts, 'forum_last_post_id' => $row->new_last_post_id])
 						->where('forum_id = %i', $row->forum_id)
@@ -2952,7 +2953,7 @@ switch($mode_id) {
 				}
 
 				// Updating forums without a post
-				echo("<p class=\"gen\"><b>" . $lang['Synchronize_forum_data_wo_post'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Synchronize_forum_data_wo_post'] . "</b></p>\n");
 
 				$result_array = dibi::select('f.forum_id')
 					->from(FORUMS_TABLE)
@@ -2972,9 +2973,9 @@ switch($mode_id) {
 						->execute(dibi::AFFECTED_ROWS);
 
 					if ($affected_rows == 1) {
-						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
+						echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
 					} elseif ($affected_rows > 1) {
-						echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
+						echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
 					}
 				} elseif (!$db_updated) {
 					echo($lang['Nothing_to_do']);
@@ -2993,13 +2994,13 @@ switch($mode_id) {
 
 				break;
 			case 'synchronize_user': // Synchronize post counter of users
-				echo("<h1>" . $lang['Synchronize_post_counters'] . "</h1>\n");
+				echo('<h1>' . $lang['Synchronize_post_counters'] . "</h1>\n");
 				lock_db();
 
 				// Updating new pm counter
 
 				// TODO ADD recount for topics counter!
-				echo("<p class=\"gen\"><b>" . $lang['Synchronize_user_post_counter'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Synchronize_user_post_counter'] . "</b></p>\n");
 
 				$rows = dibi::select(['u.user_id', 'u.username', 'u.user_posts'])
 					->select('COUNT(p.post_id)')
@@ -3022,12 +3023,12 @@ switch($mode_id) {
 
 					if ($row->new_counter !== $row->user_posts) {
 						if (!$list_open) {
-							echo("<p class=\"gen\">" . $lang['Synchronizing_users'] . ":</p>\n");
+							echo('<p class="gen">' . $lang['Synchronizing_users'] . ":</p>\n");
 							echo("<font class=\"gen\"><ul>\n");
 							$list_open = TRUE;
 						}
 
-						echo("<li>" . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row->username), $row->user_id, $row->user_posts, $row->new_counter) . "</li>\n");
+						echo('<li>' . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row->username), $row->user_id, $row->user_posts, $row->new_counter) . "</li>\n");
 
 						dibi::update(USERS_TABLE, ['user_posts' => $row->new_counter])
 							->where('user_id = %i', $row->user_id)
@@ -3051,11 +3052,11 @@ switch($mode_id) {
 
                 foreach ($rows as $row) {
                     if (!$list_open) {
-                        echo("<p class=\"gen\">" . $lang['Synchronizing_users'] . ":</p>\n");
+                        echo('<p class="gen">' . $lang['Synchronizing_users'] . ":</p>\n");
                         echo("<font class=\"gen\"><ul>\n");
                         $list_open = true;
                     }
-                    echo("<li>" . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row->username), $row->user_id, $row->user_posts, 0) . "</li>\n");
+                    echo('<li>' . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row->username), $row->user_id, $row->user_posts, 0) . "</li>\n");
 
                     dibi::update(USERS_TABLE, ['user_posts' => 0])
                         ->where('user_id = %i', $row->user_id)
@@ -3069,7 +3070,7 @@ switch($mode_id) {
                     echo($lang['Nothing_to_do']);
                 }
 
-                echo("<p class=\"gen\"><b>" . $lang['Synchronize_user_topic_counter'] . "</b></p>\n");
+                echo('<p class="gen"><b>' . $lang['Synchronize_user_topic_counter'] . "</b></p>\n");
 
                 $rows = dibi::select(['u.user_id', 'u.username', 'u.user_topics'])
                     ->select('COUNT(t.topic_id)')
@@ -3092,12 +3093,12 @@ switch($mode_id) {
 
                     if ($row->new_counter !== $row->user_topics) {
                         if (!$list_open) {
-                            echo("<p class=\"gen\">" . $lang['Synchronizing_users'] . ":</p>\n");
+                            echo('<p class="gen">' . $lang['Synchronizing_users'] . ":</p>\n");
                             echo("<font class=\"gen\"><ul>\n");
                             $list_open = TRUE;
                         }
 
-                        echo("<li>" . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row->username), $row->user_id, $row->user_topics, $row->new_counter) . "</li>\n");
+                        echo('<li>' . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row->username), $row->user_id, $row->user_topics, $row->new_counter) . "</li>\n");
 
                         dibi::update(USERS_TABLE, ['user_topics' => $row->new_counter])
                             ->where('user_id = %i', $row->user_id)
@@ -3121,11 +3122,11 @@ switch($mode_id) {
 
                 foreach ($rows as $row) {
                     if (!$list_open) {
-                        echo("<p class=\"gen\">" . $lang['Synchronizing_users'] . ":</p>\n");
+                        echo('<p class="gen">' . $lang['Synchronizing_users'] . ":</p>\n");
                         echo("<font class=\"gen\"><ul>\n");
                         $list_open = true;
                     }
-                    echo("<li>" . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row->username), $row->user_id, $row->user_topics, 0) . "</li>\n");
+                    echo('<li>' . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row->username), $row->user_id, $row->user_topics, 0) . "</li>\n");
 
                     dibi::update(USERS_TABLE, ['user_topics' => 0])
                         ->where('user_id = %i', $row->user_id)
@@ -3142,11 +3143,11 @@ switch($mode_id) {
                 lock_db(true);
 				break;
 			case 'synchronize_mod_state': // Synchronize moderator status
-				echo("<h1>" . $lang['Synchronize_moderators'] . "</h1>\n");
+				echo('<h1>' . $lang['Synchronize_moderators'] . "</h1>\n");
 				lock_db();
 
 				// Getting moderator data
-				echo("<p class=\"gen\"><b>" . $lang['Getting_moderators'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Getting_moderators'] . "</b></p>\n");
 
 				$result_array = dibi::select('ug.user_id')
 					->from(USER_GROUP_TABLE)
@@ -3164,10 +3165,10 @@ switch($mode_id) {
                 } else {
                     $moderator_list = '0';
                 }
-				echo("<p class=\"gen\">" . $lang['Done'] . "</p>\n");
+				echo('<p class="gen">' . $lang['Done'] . "</p>\n");
 
 				// Checking non moderators
-				echo("<p class=\"gen\"><b>" . $lang['Checking_non_moderators'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Checking_non_moderators'] . "</b></p>\n");
 
 				$rows = dibi::select(['user_id', 'username'])
 					->from(USERS_TABLE)
@@ -3177,11 +3178,11 @@ switch($mode_id) {
 
 				foreach ($rows as $row) {
 					if (!$list_open) {
-						echo("<p class=\"gen\">" . $lang['Updating_mod_state'] . ":</p>\n");
+						echo('<p class="gen">' . $lang['Updating_mod_state'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
 						$list_open = TRUE;
 					}
-					echo("<li>" . sprintf($lang['Changing_moderator_status'], htmlspecialchars($row->username), $row->user_id) . "</li>\n");
+					echo('<li>' . sprintf($lang['Changing_moderator_status'], htmlspecialchars($row->username), $row->user_id) . "</li>\n");
 
 					dibi::update(USERS_TABLE, ['user_level' => USER])
 						->where('user_id = %i', $row->user_id)
@@ -3196,7 +3197,7 @@ switch($mode_id) {
                 }
 
 				// Checking moderators
-				echo("<p class=\"gen\"><b>" . $lang['Checking_moderators'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Checking_moderators'] . "</b></p>\n");
 
 				$rows = dibi::select(['user_id', 'username'])
 					->from(USERS_TABLE)
@@ -3206,11 +3207,11 @@ switch($mode_id) {
 
 				foreach ($rows as $row) {
 					if (!$list_open) {
-						echo("<p class=\"gen\">" . $lang['Updating_mod_state'] . ":</p>\n");
+						echo('<p class="gen">' . $lang['Updating_mod_state'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
 						$list_open = TRUE;
 					}
-					echo("<li>" . sprintf($lang['Changing_moderator_status'], htmlspecialchars($row->username), $row->user_id) . "</li>\n");
+					echo('<li>' . sprintf($lang['Changing_moderator_status'], htmlspecialchars($row->username), $row->user_id) . "</li>\n");
 
 					dibi::update(USERS_TABLE, ['user_level' => MOD])
 						->where('user_id = %i', $row->user_id)
@@ -3227,69 +3228,69 @@ switch($mode_id) {
 				lock_db(TRUE);
 				break;
 			case 'reset_date': // Reset dates
-				echo("<h1>" . $lang['Resetting_future_post_dates'] . "</h1>\n");
+				echo('<h1>' . $lang['Resetting_future_post_dates'] . "</h1>\n");
 				lock_db();
 
 				// Set a variable with the current time
 				$time = time();
 
 				// Checking post table
-				echo("<p class=\"gen\"><b>" . $lang['Checking_post_dates'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Checking_post_dates'] . "</b></p>\n");
 
 				$affected_rows = dibi::update(POSTS_TABLE, ['post_time' => $time])
 					->where('post_time > %i', $time)
 					->execute(dibi::AFFECTED_ROWS);
 
                 if ($affected_rows == 1) {
-                    echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
+                    echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
                 } elseif ($affected_rows > 1) {
-                    echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
+                    echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
                 } else {
                     echo($lang['Nothing_to_do']);
                 }
 
 				// Checking private messages table
-				echo("<p class=\"gen\"><b>" . $lang['Checking_pm_dates'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Checking_pm_dates'] . "</b></p>\n");
 
 				$affected_rows = dibi::update(PRIVMSGS_TABLE, ['privmsgs_date' => $time])
 					->where('privmsgs_date > %i', $time)
 					->execute(dibi::AFFECTED_ROWS);
 
                 if ($affected_rows == 1) {
-                    echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
+                    echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
                 } elseif ($affected_rows > 1) {
-                    echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
+                    echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
                 } else {
                     echo($lang['Nothing_to_do']);
                 }
 
 				// Checking user table (last e-mail)
-				echo("<p class=\"gen\"><b>" . $lang['Checking_email_dates'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Checking_email_dates'] . "</b></p>\n");
 
 				$affected_rows = dibi::update(USERS_TABLE, ['user_emailtime' => $time])
 					->where('user_emailtime > %i', $time)
 					->execute(dibi::AFFECTED_ROWS);
 
                 if ($affected_rows == 1) {
-                    echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
+                    echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
                 } elseif ($affected_rows > 1) {
-                    echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
+                    echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
                 } else {
                     echo($lang['Nothing_to_do']);
                 }
 
 				// Checking user table (last login attempt)
                 if ($phpbb_version[0] == 0 && $phpbb_version[1] >= 19) {
-					echo("<p class=\"gen\"><b>" . $lang['Checking_login_dates'] . "</b></p>\n");
+					echo('<p class="gen"><b>' . $lang['Checking_login_dates'] . "</b></p>\n");
 
 					$affected_rows = dibi::update(USERS_TABLE, ['user_last_login_try' => $time])
 						->where('user_last_login_try > %i', $time)
 						->execute(dibi::AFFECTED_ROWS);
 
 					if ($affected_rows == 1) {
-						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
+						echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
 					} elseif ($affected_rows > 1) {
-						echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
+						echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
 					} else {
 						echo($lang['Nothing_to_do']);
 					}
@@ -3297,7 +3298,7 @@ switch($mode_id) {
 
 				// Checking search table (search time)
                 if ($phpbb_version[0] == 0 && $phpbb_version[1] >= 20) {
-                    echo("<p class=\"gen\"><b>" . $lang['Checking_search_dates'] . "</b></p>\n");
+                    echo('<p class="gen"><b>' . $lang['Checking_search_dates'] . "</b></p>\n");
 
 
 					$affected_rows = dibi::delete(SEARCH_TABLE)
@@ -3305,9 +3306,9 @@ switch($mode_id) {
 						->execute(dibi::AFFECTED_ROWS);
 
 					if ($affected_rows == 1) {
-						echo("<p class=\"gen\">" . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
+						echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
 					} elseif ($affected_rows > 1) {
-						echo("<p class=\"gen\">" . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
+						echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
 					} else {
 						echo($lang['Nothing_to_do']);
 					}
@@ -3316,19 +3317,19 @@ switch($mode_id) {
 				lock_db(TRUE);
 				break;
 			case 'reset_sessions': // Reset sessions
-				echo("<h1>" . $lang['Resetting_sessions'] . "</h1>\n");
+				echo('<h1>' . $lang['Resetting_sessions'] . "</h1>\n");
 				lock_db();
 
 				// Deleting tables
-				echo("<p class=\"gen\"><b>" . $lang['Deleting_session_tables'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Deleting_session_tables'] . "</b></p>\n");
 
 				dibi::query('TRUNCATE TABLE %n', SESSIONS_TABLE);
 				dibi::query('TRUNCATE TABLE %n', SEARCH_TABLE);
 
-				echo("<p class=\"gen\">" . $lang['Done'] . "</p>\n");
+				echo('<p class="gen">' . $lang['Done'] . "</p>\n");
 
 				// Restore session data of current user to prevent getting thrown out of the admin panel
-				echo("<p class=\"gen\"><b>" . $lang['Restoring_session'] . "</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Restoring_session'] . "</b></p>\n");
 				// Set Variables
 				$insertData = [
 					'session_id' => $userdata['session_id'],
@@ -3343,15 +3344,15 @@ switch($mode_id) {
 
 				dibi::insert(SESSIONS_TABLE, $insertData)->execute();
 
-				echo("<p class=\"gen\">" . $lang['Done'] . "</p>\n");
+				echo('<p class="gen">' . $lang['Done'] . "</p>\n");
 
 				lock_db(TRUE);
 				break;
 			case 'check_db': // Check database
-				echo("<h1>" . $lang['Checking_db'] . "</h1>\n");
+				echo('<h1>' . $lang['Checking_db'] . "</h1>\n");
 
 				lock_db();
-				echo("<p class=\"gen\"><b>" . $lang['Checking_tables'] . ":</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Checking_tables'] . ":</b></p>\n");
 				echo("<font class=\"gen\"><ul>\n");
 				$list_open = TRUE;
 
@@ -3385,11 +3386,11 @@ switch($mode_id) {
 
 				break;
 			case 'repair_db': // Repair database
-				echo("<h1>" . $lang['Repairing_db'] . "</h1>\n");
+				echo('<h1>' . $lang['Repairing_db'] . "</h1>\n");
 
 				lock_db();
 
-				echo("<p class=\"gen\"><b>" . $lang['Repairing_tables'] . ":</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Repairing_tables'] . ":</b></p>\n");
 				echo("<font class=\"gen\"><ul>\n");
 
 				$list_open = TRUE;
@@ -3420,11 +3421,11 @@ switch($mode_id) {
                 lock_db(true);
 				break;
 			case 'optimize_db': // Optimize database
-				echo("<h1>" . $lang['Optimizing_db'] . "</h1>\n");
+				echo('<h1>' . $lang['Optimizing_db'] . "</h1>\n");
 
 				lock_db();
 				$old_stat = get_table_statistic();
-				echo("<p class=\"gen\"><b>" . $lang['Optimizing_tables'] . ":</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Optimizing_tables'] . ":</b></p>\n");
 				echo("<font class=\"gen\"><ul>\n");
                 $list_open = true;
 
@@ -3455,13 +3456,13 @@ switch($mode_id) {
 				$new_stat = get_table_statistic();
 				$reduction_absolute = $old_stat['core']['size'] - $new_stat['core']['size'];
 				$reduction_percent = ($reduction_absolute / $old_stat['core']['size']) * 100;
-				echo("<p class=\"gen\">" . sprintf($lang['Optimization_statistic'], get_formatted_filesize($old_stat['core']['size']), get_formatted_filesize($new_stat['core']['size']), get_formatted_filesize(abs($reduction_absolute)), $reduction_percent) . "</b></p>\n");
+				echo('<p class="gen">' . sprintf($lang['Optimization_statistic'], get_formatted_filesize($old_stat['core']['size']), get_formatted_filesize($new_stat['core']['size']), get_formatted_filesize(abs($reduction_absolute)), $reduction_percent) . "</b></p>\n");
 				lock_db(TRUE);
 				break;
 			case 'reset_auto_increment': // Reset autoincrement values
-				echo("<h1>" . $lang['Reset_ai'] . "</h1>\n");
+				echo('<h1>' . $lang['Reset_ai'] . "</h1>\n");
 				lock_db();
-				echo("<p class=\"gen\"><b>" . $lang['Reset_ai'] . "...</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Reset_ai'] . "...</b></p>\n");
 				echo("<font class=\"gen\"><ul>\n");
 
 				set_autoincrement(BANLIST_TABLE, 'ban_id', 8);
@@ -3485,11 +3486,11 @@ switch($mode_id) {
 				lock_db(TRUE);
 				break;
 			case 'heap_convert': // Convert session table to HEAP
-				echo("<h1>" . $lang['Reset_ai'] . "</h1>\n");
+				echo('<h1>' . $lang['Reset_ai'] . "</h1>\n");
 
 				lock_db();
 
-				echo("<p class=\"gen\"><b>" . $lang['Converting_heap'] . "...</b></p>\n");
+				echo('<p class="gen"><b>' . $lang['Converting_heap'] . "...</b></p>\n");
 
 				// First check for current table size
 				$sessionCount = dibi::select('Count(*)')
@@ -3520,13 +3521,13 @@ switch($mode_id) {
 				lock_db(TRUE);
 				break;
 			case 'unlock_db': // Unlock the database
-				echo("<h1>" . $lang['Unlocking_db'] . "</h1>\n");
+				echo('<h1>' . $lang['Unlocking_db'] . "</h1>\n");
 				lock_db(TRUE, TRUE, TRUE);
 				break;
 			default:
-				echo("<p class=\"gen\">" . $lang['function_unknown'] . "</p>\n");
+				echo('<p class="gen">' . $lang['function_unknown'] . "</p>\n");
 		}
-		echo("<p class=\"gen\"><a href=\"" . Session::appendSid("admin_db_maintenance.php") . "\">" . $lang['Back_to_DB_Maintenance'] . "</a></p>\n");
+		echo('<p class="gen"><a href="' . Session::appendSid('admin_db_maintenance.php') . '">' . $lang['Back_to_DB_Maintenance'] . "</a></p>\n");
 		// Send Information about processing time
 		echo('<p class="gensmall">' . sprintf($lang['Processing_time'], getmicrotime() - $timer) . '</p>');
 		ob_start();
@@ -3534,16 +3535,16 @@ switch($mode_id) {
 	default:
         $template->setFileNames(
             [
-                "body" => "admin/dbmtnc_list_body.tpl"
+                'body' => 'admin/dbmtnc_list_body.tpl'
             ]
         );
 
         $template->assignVars(
             [
-                "L_DBMTNC_TITLE"         => $lang['DB_Maintenance'],
-                "L_DBMTNC_TEXT"          => $lang['DB_Maintenance_Description'],
-                "L_FUNCTION"             => $lang['Function'],
-                "L_FUNCTION_DESCRIPTION" => $lang['Function_Description']
+                'L_DBMTNC_TITLE'         => $lang['DB_Maintenance'],
+                'L_DBMTNC_TEXT'          => $lang['DB_Maintenance_Description'],
+                'L_FUNCTION'             => $lang['Function'],
+                'L_FUNCTION_DESCRIPTION' => $lang['Function_Description']
             ]
         );
 
@@ -3560,14 +3561,14 @@ switch($mode_id) {
                             'FUNCTION_NAME'        => $value[1],
                             'FUNCTION_DESCRIPTION' => $value[2],
 
-                            'U_FUNCTION_URL' => Session::appendSid("admin_db_maintenance.php?mode=start&function=" . $value[0])
+                            'U_FUNCTION_URL' => Session::appendSid('admin_db_maintenance.php?mode=start&function=' . $value[0])
                         ]
                     );
                 }
 			}
 		}
 
-        $template->pparse("body");
+        $template->pparse('body');
 		break;
 }
 

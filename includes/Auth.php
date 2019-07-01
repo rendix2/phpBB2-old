@@ -3,7 +3,7 @@
 /**
  * Class Auth
  *
- * @author Tomáš Babický tomas.babicky@websta.de
+ * @author rendix2
  */
 class Auth
 {

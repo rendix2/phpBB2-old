@@ -53,7 +53,7 @@ if (isset($_POST['submit'])) {
             message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
         }
 
-        $user_list[] = $this_userdata['user_id'];
+        $user_list[] = $this_userdata->user_id;
     }
 
 	$ip_list = [];

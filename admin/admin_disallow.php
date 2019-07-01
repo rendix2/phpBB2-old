@@ -43,12 +43,12 @@ if (isset($_POST['add_name'])) {
 		message_die(GENERAL_MESSAGE, $lang['Fields_empty']);
 	}
 
-	if (!Validator::userName($disallowed_user, $lang, $userdata)) {
-		$message = $lang['Disallowed_already'];
-	} else {
+	if (Validator::userName($disallowed_user, $lang, $userdata)) {
 		dibi::insert(DISALLOW_TABLE, ['disallow_username' => $disallowed_user])->execute();
 
 		$message = $lang['Disallow_successful'];
+	} else {
+		$message = $lang['Disallowed_already'];
 	}
 
 	$message .= '<br /><br />' . sprintf($lang['Click_return_disallowadmin'], '<a href="' . Session::appendSid('admin_disallow.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');

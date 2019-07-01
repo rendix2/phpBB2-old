@@ -11,6 +11,8 @@
  *
  ***************************************************************************/
 
+use Nette\Caching\Cache;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -468,7 +470,7 @@ if ($resync) {
         ->fetchSingle();
 }
 
-$cache = new \Nette\Caching\Cache($storage, RANKS_TABLE);
+$cache = new Cache($storage, RANKS_TABLE);
 $key   = RANKS_TABLE . '_ordered_by_rank_special_rank_min';
 
 $cachedRanks = $cache->load($key);
