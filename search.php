@@ -125,17 +125,6 @@ if ($mode === 'searchuser') {
     //
     // This handles the simple windowed user search functions called from various other scripts
     //
-
-    if (isset($_POST[CSRF::TOKEN_NAME])) {
-        CSRF::validatePost();
-    } elseif (isset($_GET[CSRF::TOKEN_NAME])) {
-        CSRF::validateGet();
-    } else {
-        message_die(GENERAL_MESSAGE, $lang['Session_invalid']);
-
-        CSRF::resetSession();
-    }
-
     if (isset($_POST['search_username'])) {
         username_search($_POST['search_username']);
     } else {
@@ -146,8 +135,6 @@ if ($mode === 'searchuser') {
 } elseif ($search_keywords !== '' || $search_author !== '' || $search_id) {
     $split_search = [];
     $search_results = '';
-
-    CSRF::validatePost();
 
 	//
 	// Search ID Limiter, decrease this value if you experience further timeout problems with searching forums
@@ -1188,7 +1175,7 @@ $list_cat = [];
 // this is in some functions file now
 foreach ($result as $row) {
     if ($is_auth_ary[$row->forum_id]['auth_read']) {
-        $s_forums .= '<option value="' . $row->forum_id . '">' . $row->forum_name . '</option>';
+        $s_forums .= '<option value="' . $row->forum_id . '">' . htmlspecialchars($row->forum_name, ENT_QUOTES) . '</option>';
 
         if (empty($list_cat[$row->cat_id])) {
             $list_cat[$row->cat_id] = $row->cat_title;
@@ -1205,7 +1192,7 @@ if (count($list_cat)) {
 	$s_categories = '<option value="-1">' . $lang['All_available'] . '</option>';
 
 	foreach ($list_cat as $cat_id => $cat_title) {
-        $s_categories .= '<option value="' . $cat_id . '">' . $cat_title . '</option>';
+        $s_categories .= '<option value="' . $cat_id . '">' . htmlspecialchars($cat_title, ENT_QUOTES) . '</option>';
     }
 } else {
 	message_die(GENERAL_MESSAGE, $lang['No_searchable_forums']);

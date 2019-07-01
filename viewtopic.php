@@ -638,7 +638,7 @@ $pagination = ( $highlight !== '' ) ? generate_pagination('viewtopic.php?' . POS
 $template->assignVars(
     [
         'FORUM_ID'    => $forum_id,
-        'FORUM_NAME'  => $forum_name,
+        'FORUM_NAME'  => htmlspecialchars($forum_name, ENT_QUOTES),
         'TOPIC_ID'    => $topic_id,
         'TOPIC_TITLE' => $topic_title,
         'PAGINATION'  => $pagination,

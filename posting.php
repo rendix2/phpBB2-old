@@ -984,7 +984,7 @@ make_jumpbox('viewforum.php');
 
 $template->assignVars(
     [
-        'FORUM_NAME'     => $forum_name,
+        'FORUM_NAME'     => htmlspecialchars($forum_name, ENT_QUOTES),
         'L_POST_A'       => $page_title,
         'L_POST_SUBJECT' => $lang['Post_subject'],
 
