@@ -688,7 +688,7 @@ function smiley_sort($a, $b)
     $strlen_a = mb_strlen($a->code);
     $strlen_b = mb_strlen($b->code);
 
-    if (strlen($strlen_a) === $strlen_b) {
+    if ($strlen_a === $strlen_b) {
         return 0;
     }
 
