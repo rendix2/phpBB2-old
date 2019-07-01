@@ -588,6 +588,54 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
         init_userprefs($userdata);
     }
 
+    switch ($msg_code) {
+        case GENERAL_MESSAGE:
+            $page_title = $lang['Information'];
+
+            if ($msg_title === '') {
+                $msg_title = $lang['Information'];
+            }
+            break;
+
+        case CRITICAL_MESSAGE:
+            $page_title = $lang['Critical_Information'];
+
+            if ($msg_title === '') {
+                $msg_title = $lang['Critical_Information'];
+            }
+            break;
+
+        case GENERAL_ERROR:
+            $page_title = $lang['An_error_occured'];
+
+            if ($msg_text === '') {
+                $msg_text = $lang['An_error_occured'];
+            }
+
+            if ($msg_title === '') {
+                $msg_title = $lang['General_Error'];
+            }
+            break;
+
+        case CRITICAL_ERROR:
+            $page_title = $lang['A_critical_error'];
+
+            //
+            // Critical errors mean we cannot rely on _ANY_ DB information being
+            // available so we're going to dump out a simple echo'd statement
+            //
+            require_once $phpbb_root_path . 'language/lang_english/lang_main.php';
+
+            if ($msg_text === '') {
+                $msg_text = $lang['A_critical_error'];
+            }
+
+            if ($msg_title === '') {
+                $msg_title = 'phpBB : <b>' . $lang['Critical_Error'] . '</b>';
+            }
+            break;
+    }
+
 	//
 	// If the header hasn't been output then do it
 	//
@@ -612,46 +660,6 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
         } else {
             require_once $phpbb_root_path . 'includes/page_header.php';
         }
-	}
-
-    switch ($msg_code) {
-        case GENERAL_MESSAGE:
-            if ($msg_title === '') {
-                $msg_title = $lang['Information'];
-            }
-            break;
-
-        case CRITICAL_MESSAGE:
-            if ($msg_title === '') {
-                $msg_title = $lang['Critical_Information'];
-            }
-            break;
-
-        case GENERAL_ERROR:
-            if ($msg_text === '') {
-                $msg_text = $lang['An_error_occured'];
-            }
-
-            if ($msg_title === '') {
-                $msg_title = $lang['General_Error'];
-            }
-            break;
-
-        case CRITICAL_ERROR:
-            //
-            // Critical errors mean we cannot rely on _ANY_ DB information being
-            // available so we're going to dump out a simple echo'd statement
-            //
-            require_once $phpbb_root_path . 'language/lang_english/lang_main.php';
-
-            if ($msg_text === '') {
-                $msg_text = $lang['A_critical_error'];
-            }
-
-            if ($msg_title === '') {
-                $msg_title = 'phpBB : <b>' . $lang['Critical_Error'] . '</b>';
-            }
-            break;
 	}
 
 	//
