@@ -81,7 +81,7 @@ $regdate->setTimezone($zone);
 $regdate->setTimestamp($profileData->user_regdate);
 
 $memberdays = new DateTime('now', $zone);
-$memberdays = $memberdays->diff($regdate)->d;
+$memberdays = $memberdays->diff($regdate)->days;
 
 $postsPerDay  = $profileData->user_posts / $memberdays;
 $topicsPerDay = $profileData->user_topics / $memberdays;
