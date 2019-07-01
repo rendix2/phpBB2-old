@@ -619,6 +619,7 @@ if ($is_auth['auth_mod']) {
 // Topic watch information
 //
 $s_watching_topic = '';
+$s_watching_topic_img = '';
 if ($can_watch_topic) {
 	if ($is_watching_topic) {
 		$s_watching_topic = '<a href="viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic&amp;start=$start&amp;sid=" . $userdata['session_id'] . '">' . $lang['Stop_watching_topic'] . '</a>';
