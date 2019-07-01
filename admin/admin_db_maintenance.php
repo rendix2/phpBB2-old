@@ -53,7 +53,8 @@ $timer = getmicrotime();
 if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_dbmtnc.php'))) {
     $board_config['default_lang'] = 'english';
 }
-include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_dbmtnc.php');
+
+require_once $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_dbmtnc.php';
 
 //
 // Set up variables and constants
@@ -1687,7 +1688,7 @@ switch($mode_id) {
                     echo("<p class=\"gen\"><a href=\"" . Session::appendSid("admin_db_maintenance.php?mode=perform&amp;function=synchronize_post_direct&amp;db_state=" . (($db_state) ? '1' : '0')) . "\">" . $lang['Must_synchronize'] . "</a></p>\n");
                     // Send Information about processing time
                     echo('<p class="gensmall">' . sprintf($lang['Processing_time'], getmicrotime() - $timer) . '</p>');
-                    include('./page_footer_admin.php');
+                    require_once './page_footer_admin.php';
                     exit;
                 } else {
                     lock_db(true);
@@ -2482,7 +2483,7 @@ switch($mode_id) {
 				echo("<p class=\"gen\"><a href=\"" . Session::appendSid("admin_db_maintenance.php?mode=perform&amp;function=perform_rebuild&amp;db_state=" . (($db_state) ? '1' : '0')) . "\">" . $lang['Can_start_rebuilding'] . "</a><br><span class=\"gensmall\">" . $lang['Click_once_warning'] . "</span></p>\n");
 				// Send Information about processing time
 				echo('<p class="gensmall">' . sprintf($lang['Processing_time'], getmicrotime() - $timer) . '</p>');
-				include('./page_footer_admin.php');
+                require_once './page_footer_admin.php';
 				exit;
 				break;
 			case 'proceed_rebuilding': // Proceed rebuilding search index
@@ -2504,14 +2505,14 @@ switch($mode_id) {
                 echo("<p class=\"gen\"><a href=\"" . Session::appendSid("admin_db_maintenance.php?mode=perform&amp;function=perform_rebuild&amp;db_state=" . (($db_state) ? '1' : '0')) . "\">" . $lang['Can_start_rebuilding'] . "</a><br><span class=\"gensmall\">" . $lang['Click_once_warning'] . "</span></p>\n");
                 // Send Information about processing time
                 echo('<p class="gensmall">' . sprintf($lang['Processing_time'], getmicrotime() - $timer) . '</p>');
-                include('./page_footer_admin.php');
+                require_once './page_footer_admin.php';
                 exit;
                 break;
 			case 'perform_rebuild': // Rebuild search index (perform part)
 				// ATTENTION: page_header not sent yet!
 				$db_state = ( isset($_GET['db_state']) ) ? intval( $_GET['db_state'] ) : 0;
 				// Load functions
-				include($phpbb_root_path . 'includes/functions_search.php');
+				require_once $phpbb_root_path . 'includes/functions_search.php';
 				// Identify PHP version and time limit configuration
                 if (phpversion() >= '4.0.5' && ($board_config['dbmtnc_rebuildcfg_php3only'] == 0)) // Handle PHP beffore 4.0.5 as PHP 3 since array_search is not available
                 {
@@ -2558,7 +2559,8 @@ switch($mode_id) {
 
 				// Get first record
                 if (!count($rows)) {// Yeah! we reached the end of the posts - finish actions and exit
-					include('./page_header_admin.php');
+                    require_once './page_header_admin.php';
+
 					update_config('dbmtnc_rebuild_pos', '-1');
 					update_config('dbmtnc_rebuild_end', '0');
 					
@@ -2574,7 +2576,7 @@ switch($mode_id) {
 					echo("<p class=\"gen\"><a href=\"" . Session::appendSid("admin_db_maintenance.php") . "\">" . $lang['Back_to_DB_Maintenance'] . "</a></p>\n");
 					// Send Information about processing time
 					echo('<p class="gensmall">' . sprintf($lang['Processing_time'], getmicrotime() - $timer) . '</p>');
-					include('./page_footer_admin.php');
+                    require_once './page_footer_admin.php';
 					exit;
 				}
 
@@ -2692,7 +2694,7 @@ switch($mode_id) {
                     ]
                 );
 
-                include('./page_header_admin.php');
+                require_once './page_header_admin.php';
 
 				ob_end_flush();
 				// Get Statistics
@@ -2715,7 +2717,7 @@ switch($mode_id) {
 				// Send Information about processing time
 				echo('<p class="gensmall">' . sprintf($lang['Processing_time'], getmicrotime() - $timer) . '</p>');
 
-				include('./page_footer_admin.php');
+                require_once './page_footer_admin.php';
 
 				exit;
 				break;
@@ -3569,5 +3571,5 @@ switch($mode_id) {
 		break;
 }
 
-include('./page_footer_admin.php');
+require_once './page_footer_admin.php';
 ?>
