@@ -16,4 +16,4 @@ News:
 - improved show size of files (from phpBB3)
 - using <label> tag for inputs
 - language select has fixed selected attribute
-- remove icq, aim, msnm, yim
+- removed icq, aim, msnm, yim
