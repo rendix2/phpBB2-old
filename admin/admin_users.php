@@ -11,6 +11,8 @@
  *
  ***************************************************************************/
 
+use Nette\Utils\Finder;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -662,47 +664,51 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 
             $template->setFileNames(['body' => 'admin/user_avatar_gallery.tpl']);
 
-            $dir = @opendir('../' . $board_config['avatar_gallery_path']);
+            $directories = Finder::findDirectories()->from('../' .$board_config['avatar_gallery_path']);
 
-			$avatar_images = [];
-			while ($file = @readdir($dir)) {
-				if ($file !== '.' && $file !== '..' && !is_file(phpbb_realpath('./../' . $board_config['avatar_gallery_path'] . '/' . $file)) && !is_link(phpbb_realpath('./../' . $board_config['avatar_gallery_path'] . '/' . $file))) {
-					$sub_dir = @opendir('../' . $board_config['avatar_gallery_path'] . '/' . $file);
+            $avatar_images = [];
+            $firstDir = '';
 
-					$avatar_row_count = 0;
-					$avatar_col_count = 0;
+            /**
+             * @var SplFileInfo $directory
+             */
+            foreach ($directories as $directory) {
+                $files = Finder::findFiles('*.gif', '*.png', '*.jpg', '*.jpeg')->from($directory->getRealPath());
 
-					while ($sub_file = @readdir($sub_dir)) {
-						if (preg_match("/(\.gif$|\.png$|\.jpg)$/is", $sub_file)) {
-							$avatar_images[$file][$avatar_row_count][$avatar_col_count] = $sub_file;
+                $avatar_row_count = 0;
+                $avatar_col_count = 0;
 
-							$avatar_col_count++;
+                /**
+                 * @var SplFileInfo $file
+                 */
+                foreach ($files as $file) {
+                    if (!$firstDir) {
+                        $firstDir = $directory->getFilename();
+                    }
 
-							if ($avatar_col_count === 5) {
-								$avatar_row_count++;
-								$avatar_col_count = 0;
-							}
-						}
-					}
-				}
-			}
-	
-			@closedir($dir);
+                    $avatar_images[$directory->getFilename()][$avatar_row_count][$avatar_col_count] = $file->getFilename();
+                    $avatar_name[$directory->getFilename()][$avatar_row_count][$avatar_col_count]   = ucfirst(str_replace('_', ' ', preg_replace('/^(.*)\..*$/', '\1', $file->getFilename() . '.' . $file->getExtension())));
+
+                    $avatar_col_count++;
+
+                    if ($avatar_col_count === 5) {
+                        $avatar_row_count++;
+                        $avatar_col_count = 0;
+                    }
+                }
+            }
 
 			if (isset($_POST['avatarcategory'])) {
 				$category = htmlspecialchars($_POST['avatarcategory']);
 			} else {
-				list($category, ) = each($avatar_images);
+                $category = $firstDir;
 			}
-
-			@reset($avatar_images);
 
 			$s_categories = '';
 
 			foreach ($avatar_images as $key => $value) {
 				$selected = $key === $category ? 'selected="selected"' : '';
 
-				// TODO
 				if (count($avatar_images[$key])) {
 					$s_categories .= '<option value="' . $key . '"' . $selected . '>' . ucfirst($key) . '</option>';
 				}
