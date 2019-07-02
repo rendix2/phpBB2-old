@@ -9,6 +9,9 @@
  *   part of DB Maintenance Mod 1.3.8
  ***************************************************************************/
 
+use Nette\Caching\Cache;
+use Nette\Utils\Finder;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -95,14 +98,15 @@ if ($lg === '') {
 	$dir = opendir($phpbb_root_path . $dirname);
 	$lang_list = [];
 
-	while ( $file = readdir($dir) )	{
-		if (preg_match('#^lang_#i', $file) && !is_file(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file)) && !is_link(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file)) && is_file(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file . '/lang_dbmtnc.php'))){
-			$filename = trim(str_replace('lang_', '', $file));
-			$lang_list[] = $filename;
-		}
-	}
 
-	closedir($dir);
+	$files = Finder::findDirectories('^lang_')->from($phpbb_root_path . $dirname);
+
+	/**
+    * @var SplFileInfo $file
+    */
+	foreach ($files as $file) {
+	    $lang_list[] = trim(str_replace('lang_', '', $file->getFilename()));
+	}
 
 	if (count($lang_list) === 1) {
 		$lg = $lang_list[0];
@@ -711,7 +715,7 @@ switch($mode) {
 					}
 				}
 
-				$cache = new \Nette\Caching\Cache($storage, CONFIG_TABLE);
+				$cache = new Cache($storage, CONFIG_TABLE);
                 $cache->remove(CONFIG_TABLE);
 ?>
 	</ul>
@@ -754,7 +758,7 @@ switch($mode) {
 				        ->execute();
 				}
 
-                $cache = new \Nette\Caching\Cache($storage, CONFIG_TABLE);
+                $cache = new Cache($storage, CONFIG_TABLE);
                 $cache->remove(CONFIG_TABLE);
 
 				success_message($lang['rpd_success']);
@@ -778,7 +782,7 @@ switch($mode) {
 				->where('config_name = %s', 'cookie_path')
 				->execute();
 
-				$cache = new \Nette\Caching\Cache($storage, CONFIG_TABLE);
+				$cache = new Cache($storage, CONFIG_TABLE);
                 $cache->remove(CONFIG_TABLE);
 
 				success_message($lang['rcd_success']);
@@ -799,7 +803,7 @@ switch($mode) {
 				        ->where('config_name = %s', 'default_lang')
 				        ->execute();
 
-				    $cache = new \Nette\Caching\Cache($storage, CONFIG_TABLE);
+				    $cache = new Cache($storage, CONFIG_TABLE);
                     $cache->remove(CONFIG_TABLE);
 
 					success_message($lang['rld_success']);
@@ -891,7 +895,7 @@ switch($mode) {
 				    ->where('config_name = %s', 'default_style')
 				    ->execute();
 
-				    $cache = new \Nette\Caching\Cache($storage, CONFIG_TABLE);
+				    $cache = new Cache($storage, CONFIG_TABLE);
                     $cache->remove(CONFIG_TABLE);
 
 					success_message($lang['rtd_success']);
@@ -904,7 +908,7 @@ switch($mode) {
 				->where('config_name = %s', 'gzip_compress')
 				->execute();
 
-				$cache = new \Nette\Caching\Cache($storage, CONFIG_TABLE);
+				$cache = new Cache($storage, CONFIG_TABLE);
                 $cache->remove(CONFIG_TABLE);
 
 				success_message($lang['dgc_success']);

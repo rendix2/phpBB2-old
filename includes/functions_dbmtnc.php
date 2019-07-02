@@ -10,6 +10,7 @@
  ***************************************************************************/
 
 use Nette\Caching\Cache;
+use Nette\Utils\Finder;
 
 /***************************************************************************
  *
@@ -625,34 +626,35 @@ function erc_throw_error($msg_text = '', $err_line = '', $err_file = '')
 function language_select($default, $select_name = 'language', $file_to_check = 'main', $dirname= 'language')
 {
 	global $phpbb_root_path, $lang;
-
-	$dir = opendir($phpbb_root_path . $dirname);
-
+;
     $lg = [];
 
-    while ($file = readdir($dir)) {
-		if (preg_match('#^lang_#i', $file) && !is_file(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file)) && !is_link(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file)) && is_file(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file . '/lang_' . $file_to_check . '.php')) ) {
-			$filename = trim(str_replace('lang_', '', $file));
-			$displayname = preg_replace('/^(.*?)_(.*)$/', "\\1 [ \\2 ]", $filename);
-			$displayname = preg_replace("/\[(.*?)_(.*)\]/", "[ \\1 - \\2 ]", $displayname);
-			$lg[$displayname] = $filename;
-		}
-	}
+    $files = Finder::findDirectories('^lang_')->from($phpbb_root_path . $dirname);
 
-	closedir($dir);
+    /**
+     * @var SplFileInfo $file
+     */
+    foreach ($files as $file) {
+        if (is_file(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file->getFilename() . '/lang_' . $file_to_check . '.php'))) {
+            $filename = trim(str_replace('lang_', '', $file->getFilename()));
+            $displayName = preg_replace('/^(.*?)_(.*)$/', "\\1 [ \\2 ]", $filename);
+            $displayName = preg_replace("/\[(.*?)_(.*)\]/", "[ \\1 - \\2 ]", $displayName);
+            $lg[$displayName] = $filename;
+        }
+    }
 
 	@asort($lg);
-	@reset($lg);
 
     if (count($lg)) {
-		$lang_select = '<select name="' . $select_name . '">';
+		$options = '';
 
-		foreach ($lg as $displayname => $filename) {
-			$selected = ( strtolower($default) === strtolower($filename) ) ? ' selected="selected"' : '';
-			$lang_select .= '<option value="' . $filename . '"' . $selected . '>' . ucwords($displayname) . '</option>';
+		foreach ($lg as $displayName => $filename) {
+			$selected = ( mb_strtolower($default) === mb_strtolower($filename) ) ? 'selected="selected"' : '';
+
+            $options .= '<option value="' . $filename . '" ' . $selected . '>' . ucwords($displayName) . '</option>';
 		}
 
-		$lang_select .= '</select>';
+        $lang_select = '<select name="' . $select_name . '">' . $options . '</select>';
 	} else {
 		$lang_select = $lang['No_selectable_language'];
 	}
