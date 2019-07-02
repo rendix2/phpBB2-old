@@ -626,7 +626,7 @@ function erc_throw_error($msg_text = '', $err_line = '', $err_file = '')
 function language_select($default, $select_name = 'language', $file_to_check = 'main', $dirname= 'language')
 {
 	global $phpbb_root_path, $lang;
-;
+
     $lg = [];
 
     $files = Finder::findDirectories('^lang_')->from($phpbb_root_path . $dirname);
