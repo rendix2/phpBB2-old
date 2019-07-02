@@ -102,7 +102,7 @@ if (
     require_once $phpbb_root_path . 'includes/functions_post.php';
 
     if ($mode === 'editprofile') {
-        CSRF::validatePost();
+        //CSRF::validatePost();
 
 		$user_id = (int)$_POST['user_id'];
 		$current_email = trim(htmlspecialchars($_POST['current_email']));
@@ -778,7 +778,7 @@ if (isset($_POST['avatargallery']) && !$error) {
 
     $allowviewonline = !$allowviewonline;
 
-	display_avatar_gallery($mode, $avatar_category, $user_id, $email, $current_email, $coppa, $username, $email, $new_password, $cur_password, $password_confirm, $website, $location, $occupation, $interests, $signature, $viewemail, $notifypm, $popup_pm, $notifyreply, $attachsig, $allowhtml, $allowbbcode, $allowsmilies, $allowviewonline, $user_style, $user_lang, $user_timezone, $user_dateformat, $userdata['session_id']);
+	display_avatar_gallery($mode, $avatar_category, $user_id, $email, $current_email, $coppa, $username, $email, $new_password, $cur_password, $password_confirm, $website, $location, $occupation, $interests, $signature, $viewemail, $notifypm, $popup_pm, $notifyreply, $attachsig, $allowhtml, $allowbbcode, $allowsmilies, $allowviewonline, $user_style, $user_lang, $user_timezone, $user_dateformat, $userdata['session_id'], false, $template, $user_active, $allow_avatar, $allow_pm);
 } else {
     if (!isset($coppa)) {
         $coppa = false;

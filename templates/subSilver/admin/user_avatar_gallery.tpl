@@ -14,7 +14,7 @@
 		  <span class="genmed">
 			  <label for="avatarcategory">{L_CATEGORY}:</label>&nbsp;
 
-			  <select name="avatarcategory" id="avatarcategory">{S_OPTIONS_CATEGORIES}</select>&nbsp;
+			  {S_CATEGORY_SELECT}&nbsp;
 			  <input type="submit" class="liteoption" value="{L_GO}" name="avatargallery"/></span>
 		</td>
 	</tr>

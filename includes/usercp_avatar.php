@@ -289,17 +289,17 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 	}
 }
 
-function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current_email, &$coppa, &$username, &$email, &$new_password, &$cur_password, &$password_confirm, &$website, &$location, &$occupation, &$interests, &$signature, &$viewemail, &$notifypm, &$popup_pm, &$notifyreply, &$attachsig, &$allowhtml, &$allowbbcode, &$allowsmilies, &$hideonline, &$style, &$language, &$timezone, &$dateformat, &$session_id)
+function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current_email, &$coppa, &$username, &$email, &$new_password, &$cur_password, &$password_confirm, &$website, &$location, &$occupation, &$interests, &$signature, &$viewemail, &$notifypm, &$popup_pm, &$notifyreply, &$attachsig, &$allowhtml, &$allowbbcode, &$allowsmilies, &$hideonline, &$style, &$language, &$timezone, &$dateformat, &$session_id, $isAdmin, Template $template, $user_status = null, $allow_avatar = null, $allow_pm = null, $user_rank = null)
 {
-    /**
-     * @var Template $template
-     */
-    global $template;
 	global $board_config, $lang;
 
 	$avatar_images = [];
 
-	$directories = Finder::findDirectories()->from($board_config['avatar_gallery_path']);
+	if ($isAdmin) {
+        $directories = Finder::findDirectories()->from('../' .$board_config['avatar_gallery_path']);
+    } else {
+        $directories = Finder::findDirectories()->from($board_config['avatar_gallery_path']);
+    }
 
 	$firstDir = '';
 
@@ -334,21 +334,29 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 
 	@ksort($avatar_images);
 
+    /*
 	if (empty($category)) {
 		$category = $firstDir;
 	}
+    */
 
-	$s_categories = '<select name="avatarcategory">';
+    if (isset($_POST['avatarcategory'])) {
+        $category = htmlspecialchars($_POST['avatarcategory']);
+    } else {
+        $category = $firstDir;
+    }
+
+	$options = '';
 
 	foreach ($avatar_images as $key => $value) {
 		$selected = $key === $category ? ' selected="selected"' : '';
 
 		if (count($avatar_images[$key])) {
-			$s_categories .= '<option value="' . $key . '"' . $selected . '>' . ucfirst($key) . '</option>';
+            $options .= '<option value="' . $key . '"' . $selected . '>' . ucfirst($key) . '</option>';
 		}
 	}
 
-	$s_categories .= '</select>';
+    $s_categories = '<select name="avatarcategory" id="avatarcategory">' . $options . '</select>';
 
 	$s_colspan = 0;
 
@@ -358,9 +366,16 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 		$s_colspan = max($s_colspan, count($avatar_image));
 
 		foreach ($avatar_image as $j =>  $avatar_image_value) {
+		    if ($isAdmin) {
+                $path = '../' . $board_config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_image_value;
+            } else {
+                $path = $board_config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_image_value;
+            }
+
+
             $template->assignBlockVars('avatar_row.avatar_column',
                 [
-                    'AVATAR_IMAGE' => $board_config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_image_value,
+                    'AVATAR_IMAGE' => $path,
                     'AVATAR_NAME'  => $avatar_name[$category][$i][$j]
                 ]
             );
@@ -399,10 +414,29 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
         'style',
         'language',
         'timezone',
-        'dateformat'
+        'dateformat',
+        'user_status',
+        'user_rank',
     ];
 
-    $s_hidden_vars = '<input type="hidden" name="sid" value="' . $session_id . '" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="avatarcatname" value="' . $category . '" />';
+    $s_hidden_vars = '';
+
+    if ($isAdmin) {
+        $s_hidden_vars .= '<input type="hidden" name="mode" value="edit" />';
+        $s_hidden_vars .= '<input type="hidden" name="coppa" value="' . $coppa . '" />';
+        $s_hidden_vars .= '<input type="hidden" name="id" value="' . $user_id . '" />';
+        $s_hidden_vars .= '<input type="hidden" name="user_allowavatar" value="' . $allow_avatar . '" />';
+        $s_hidden_vars .= '<input type="hidden" name="user_allowpm" value="' . $allow_pm . '" />';
+        $s_hidden_vars .= '<input type="hidden" name="popup_pm" value="' . $popup_pm . '" />';
+        $s_hidden_vars .= '<input type="hidden" name="user_rank" value="' . $user_rank . '" />';
+    } else {
+        $s_hidden_vars .= '<input type="hidden" name="sid" value="' . $session_id . '" />';
+    }
+
+    $s_hidden_vars .= '<input type="hidden" name="agreed" value="true" />';
+    $s_hidden_vars .= '<input type="hidden" name="avatarcatname" value="' . $category . '" />';
+    $s_hidden_vars .= '<input type="hidden" name="user_active" value="' . $user_status . '" />';
+    $s_hidden_vars .= CSRF::getInputHtml();
 
 	foreach ($params as $param) {
 		$s_hidden_vars .= '<input type="hidden" name="' . $param . '" value="' . str_replace('"', '&quot;', $$param) . '" />';
@@ -410,6 +444,10 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 
     $template->assignVars(
         [
+            'L_USER_TITLE'     => $lang['User_admin'],
+            'L_USER_EXPLAIN'   => $lang['User_admin_explain'],
+            'L_GO'             => $lang['Go'],
+
             'L_AVATAR_GALLERY' => $lang['Avatar_gallery'],
             'L_SELECT_AVATAR'  => $lang['Select_avatar'],
             'L_RETURN_PROFILE' => $lang['Return_profile'],
@@ -417,10 +455,25 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 
             'S_CATEGORY_SELECT' => $s_categories,
             'S_COLSPAN'         => $s_colspan,
-            'S_PROFILE_ACTION'  => Session::appendSid("profile.php?mode=$mode"),
-            'S_HIDDEN_FIELDS'   => $s_hidden_vars
+            'S_HIDDEN_FIELDS'   => $s_hidden_vars,
+
+            'F_LOGIN_FORM_TOKEN' => CSRF::getInputHtml(),
         ]
     );
+
+	if ($isAdmin) {
+        $template->assignVars(
+            [
+                'S_PROFILE_ACTION' => Session::appendSid("admin_users.php?mode=$mode")
+            ]
+        );
+    } else {
+        $template->assignVars(
+            [
+                'S_PROFILE_ACTION' => Session::appendSid("profile.php?mode=$mode"),
+            ]
+        );
+    }
 }
 
 ?>

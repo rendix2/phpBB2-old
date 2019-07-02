@@ -575,7 +575,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
                 Session::resetKeys($user_id, $user_ip);
             }
 
-            $message .= $lang['Admin_user_updated'];
+            $message = $lang['Admin_user_updated'];
 			$message .= '<br /><br />' . sprintf($lang['Click_return_useradmin'], '<a href="' . Session::appendSid('admin_users.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
@@ -661,125 +661,13 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 	if (isset($_POST['avatargallery']) && !$error) {
 		if (!$error) {
 			$user_id = (int)$_POST['id'];
+            $allowviewonline = !$allowviewonline;
 
             $template->setFileNames(['body' => 'admin/user_avatar_gallery.tpl']);
 
-            $directories = Finder::findDirectories()->from('../' .$board_config['avatar_gallery_path']);
+            require_once $phpbb_root_path . 'includes' . DIRECTORY_SEPARATOR . 'usercp_avatar.php';
 
-            $avatar_images = [];
-            $firstDir = '';
-
-            /**
-             * @var SplFileInfo $directory
-             */
-            foreach ($directories as $directory) {
-                $files = Finder::findFiles('*.gif', '*.png', '*.jpg', '*.jpeg')->from($directory->getRealPath());
-
-                $avatar_row_count = 0;
-                $avatar_col_count = 0;
-
-                /**
-                 * @var SplFileInfo $file
-                 */
-                foreach ($files as $file) {
-                    if (!$firstDir) {
-                        $firstDir = $directory->getFilename();
-                    }
-
-                    $avatar_images[$directory->getFilename()][$avatar_row_count][$avatar_col_count] = $file->getFilename();
-                    $avatar_name[$directory->getFilename()][$avatar_row_count][$avatar_col_count]   = ucfirst(str_replace('_', ' ', preg_replace('/^(.*)\..*$/', '\1', $file->getFilename() . '.' . $file->getExtension())));
-
-                    $avatar_col_count++;
-
-                    if ($avatar_col_count === 5) {
-                        $avatar_row_count++;
-                        $avatar_col_count = 0;
-                    }
-                }
-            }
-
-			if (isset($_POST['avatarcategory'])) {
-				$category = htmlspecialchars($_POST['avatarcategory']);
-			} else {
-                $category = $firstDir;
-			}
-
-			$s_categories = '';
-
-			foreach ($avatar_images as $key => $value) {
-				$selected = $key === $category ? 'selected="selected"' : '';
-
-				if (count($avatar_images[$key])) {
-					$s_categories .= '<option value="' . $key . '"' . $selected . '>' . ucfirst($key) . '</option>';
-				}
-			}
-
-			$s_colspan = 0;
-			foreach ($avatar_images[$category] as $avatar_image) {
-                $template->assignBlockVars('avatar_row', []);
-
-                $s_colspan = max($s_colspan, count($avatar_image));
-
-				foreach ($avatar_image as $avatar_image_value) {
-                    $template->assignBlockVars('avatar_row.avatar_column', [
-                            'AVATAR_IMAGE' => '../' . $board_config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_image_value
-                        ]
-                    );
-
-                    $template->assignBlockVars('avatar_row.avatar_option_column', [
-                            'S_OPTIONS_AVATAR' => $avatar_image_value
-                        ]
-                    );
-                }
-			}
-
-			$coppa = ( ( !$_POST['coppa'] && !$_GET['coppa'] ) || $mode === 'register') ? 0 : true;
-
-			$s_hidden_fields = '<input type="hidden" name="mode" value="edit" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" /><input type="hidden" name="avatarcatname" value="' . $category . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="id" value="' . $user_id . '" />';
-
-			$s_hidden_fields .= '<input type="hidden" name="username" value="' . str_replace('"', '&quot;', $username) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="email" value="' . str_replace('"', '&quot;', $email) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="website" value="' . str_replace('"', '&quot;', $website) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="location" value="' . str_replace('"', '&quot;', $location) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="occupation" value="' . str_replace('"', '&quot;', $occupation) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="interests" value="' . str_replace('"', '&quot;', $interests) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="signature" value="' . str_replace('"', '&quot;', $signature) . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="viewemail" value="' . $viewemail . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="notifypm" value="' . $notifypm . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="popup_pm" value="' . $popuppm . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="notifyreply" value="' . $notifyreply . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="attachsig" value="' . $attachsig . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="allowhtml" value="' . $allowhtml . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="allowbbcode" value="' . $allowbbcode . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="allowsmilies" value="' . $allowsmilies . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="hideonline" value="' . !$allowviewonline . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="style" value="' . $user_style . '" />'; 
-			$s_hidden_fields .= '<input type="hidden" name="language" value="' . $user_lang . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="timezone" value="' . $user_timezone . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="dateformat" value="' . str_replace('"', '&quot;', $user_dateformat) . '" />';
-
-			$s_hidden_fields .= '<input type="hidden" name="user_status" value="' . $user_status . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="user_allowpm" value="' . $user_allowpm . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="user_allowavatar" value="' . $user_allowavatar . '" />';
-			$s_hidden_fields .= '<input type="hidden" name="user_rank" value="' . $user_rank . '" />';
-
-            $template->assignVars(
-                [
-                    'L_USER_TITLE'     => $lang['User_admin'],
-                    'L_USER_EXPLAIN'   => $lang['User_admin_explain'],
-                    'L_AVATAR_GALLERY' => $lang['Avatar_gallery'],
-                    'L_SELECT_AVATAR'  => $lang['Select_avatar'],
-                    'L_RETURN_PROFILE' => $lang['Return_profile'],
-                    'L_CATEGORY'       => $lang['Select_category'],
-                    'L_GO'             => $lang['Go'],
-
-                    'S_OPTIONS_CATEGORIES' => $s_categories,
-                    'S_COLSPAN'            => $s_colspan,
-                    'S_PROFILE_ACTION'     => Session::appendSid("admin_users.php?mode=$mode"),
-                    'S_HIDDEN_FIELDS'      => $s_hidden_fields
-                ]
-            );
+            display_avatar_gallery($mode, $_POST['avatargallery'], $user_id, $email, $current_email, $coppa, $username, $email, $new_password, $cur_password, $password_confirm, $website, $location, $occupation, $interests, $signature, $viewemail, $notifypm, $popuppm, $notifyreply, $attachsig, $allowhtml, $allowbbcode, $allowsmilies, $allowviewonline, $user_style, $user_lang, $user_timezone, $user_dateformat, $userdata['session_id'], true, $template, $user_status, $user_allowavatar, $user_allowpm, $user_rank);
         }
     } else {
 		$s_hidden_fields = '<input type="hidden" name="mode" value="save" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';
@@ -935,7 +823,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
             ]
 		);
 
-        if (file_exists(@phpbb_realpath('./../' . $board_config['avatar_path'])) && ($board_config['allow_avatar_upload'] === true)) {
+        if (file_exists(@phpbb_realpath('./../' . $board_config['avatar_path'])) && ($board_config['allow_avatar_upload'] === '1')) {
             if ($form_enctype !== '') {
                 $template->assignBlockVars('avatar_local_upload', []);
             }
@@ -943,11 +831,11 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
             $template->assignBlockVars('avatar_remote_upload', []);
         }
 
-        if (file_exists(@phpbb_realpath('./../' . $board_config['avatar_gallery_path'])) && ($board_config['allow_avatar_local'] === true)) {
+        if (file_exists(@phpbb_realpath('./../' . $board_config['avatar_gallery_path'])) && ($board_config['allow_avatar_local'] === '1')) {
             $template->assignBlockVars('avatar_local_gallery', []);
         }
 
-        if ($board_config['allow_avatar_remote'] === true) {
+        if ($board_config['allow_avatar_remote'] === '1') {
             $template->assignBlockVars('avatar_remote_link', []);
         }
     }
