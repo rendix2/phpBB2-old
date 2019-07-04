@@ -17,3 +17,14 @@ News:
 - using <label> tag for inputs
 - language select has fixed selected attribute
 - removed icq, aim, msnm, yim
+  
+Conventions for template:  
+- L_ is a language variable
+- S_ is something system related
+- U_ is an URL
+
+For permissions (acl) it's like this:
+- u_ for user permissions
+- m_ for moderator permissions
+- a_ for admin permissions
+- f_ for forum specific permissions
