@@ -67,8 +67,8 @@ $mode_types = [
 $select_sort_mode = '<select name="mode">';
 
 foreach ($mode_types as $mode_type_key => $mode_types_value) {
-	$selected = $mode === $mode_type_key ? ' selected="selected"' : '';
-	$select_sort_mode .= '<option value="' . $mode_type_key . '"' . $selected . '>' . $mode_types_value . '</option>';
+	$selected = $mode === $mode_type_key ? 'selected="selected"' : '';
+	$select_sort_mode .= '<option value="' . $mode_type_key . '" ' . $selected . '>' . $mode_types_value . '</option>';
 }
 
 $select_sort_mode .= '</select>';
@@ -104,7 +104,7 @@ $template->assignVars(
         'L_SUBMIT'             => $lang['Sort'],
         'L_JOINED'             => $lang['Joined'],
         'L_POSTS'              => $lang['Posts'],
-        'L_TOPICS'              => $lang['Topics'],
+        'L_TOPICS'             => $lang['Topics'],
         'L_PM'                 => $lang['Private_Message'],
 
         'S_MODE_SELECT'  => $select_sort_mode,
@@ -181,14 +181,8 @@ switch ($mode) {
 
 $users = $users->fetchAll();
 
-$i = 0;
-
-foreach ($users as $user) {
+foreach ($users as $i => $user) {
     $from = !empty($user->user_from) ? htmlspecialchars($user->user_from, ENT_QUOTES) : '&nbsp;';
-    $joined = create_date($lang['DATE_FORMAT'], $user->user_regdate, $board_config['board_timezone']);
-    $posts = $user->user_posts ? $user->user_posts : 0;
-    $topics = $user->user_topics ? $user->user_topics : 0;
-
     $poster_avatar = '';
 
     if ($user->user_avatar_type && $user->user_id !== ANONYMOUS && $user->user_allowavatar) {
@@ -240,9 +234,9 @@ foreach ($users as $user) {
             'ROW_CLASS' => $row_class,
             'USERNAME' => $user->username,
             'FROM' => $from,
-            'JOINED' => $joined,
-            'POSTS' => $posts,
-            'TOPICS' => $topics,
+            'JOINED' => create_date($lang['DATE_FORMAT'], $user->user_regdate, $board_config['board_timezone']),
+            'POSTS' => $user->user_posts ? $user->user_posts : 0,
+            'TOPICS' => $user->user_topics ? $user->user_topics : 0,
             'AVATAR_IMG' => $poster_avatar,
             'PROFILE_IMG' => $profile_img,
             'PROFILE' => $profile,
@@ -258,10 +252,7 @@ foreach ($users as $user) {
             'U_VIEWPROFILE' => Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$user->user_id")
         ]
     );
-
-    $i++;
 }
-
 
 if ($mode !== 'topten' || $board_config['members_per_page'] < 10) {
     $total_members = dibi::select('COUNT(*) - 1')

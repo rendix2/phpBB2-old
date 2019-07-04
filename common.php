@@ -74,16 +74,17 @@ $lang = [];
 $nav_links = [];
 $dss_seeded = false;
 $gen_simple_header = false;
+$dir_sep = DIRECTORY_SEPARATOR;
 
 require_once $phpbb_root_path . 'config.php';
 
 if (!defined('PHPBB_INSTALLED')) {
-	header('Location: ' . $phpbb_root_path . 'install/install.php');
+    header('Location: ' . $phpbb_root_path . 'install' . $dir_sep . 'install.php');
 	exit;
 }
 
-require_once $phpbb_root_path . 'includes/constants.php';
-require_once $phpbb_root_path . 'includes/functions.php';
+require_once $phpbb_root_path . 'includes' . $dir_sep . 'constants.php';
+require_once $phpbb_root_path . 'includes' . $dir_sep . 'functions.php';
 
 // now we connect to database via dibi!
 $connection = dibi::connect([
@@ -131,7 +132,7 @@ $user_ip = encode_ip($client_ip);
 // basic forum information is not available
 //
 
-$storage = new Nette\Caching\Storages\FileStorage(__DIR__ . '/temp');
+$storage = new Nette\Caching\Storages\FileStorage(__DIR__ . $dir_sep . 'temp');
 $cache   = new Cache($storage, CONFIG_TABLE);
 
 $boardConfigCached = $cache->load(CONFIG_TABLE);

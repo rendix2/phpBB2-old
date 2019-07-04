@@ -601,8 +601,6 @@ if ($totalBaseTopics) {
         }
 
 		$last_post_url = '<a href="' . Session::appendSid('viewtopic.php?' . POST_POST_URL . '=' . $topic->topic_last_post_id) . '#' . $topic->topic_last_post_id . '"><img src="' . $images['icon_latest_reply'] . '" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" border="0" /></a>';
-
-		$views = $topic->topic_views;
 		
 		$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
 		$row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
@@ -620,7 +618,7 @@ if ($totalBaseTopics) {
                 'NEWEST_POST_IMG'  => $newest_post_img,
                 'TOPIC_TITLE'      => $topic_title,
                 'TOPIC_TYPE'       => $topic_type,
-                'VIEWS'            => $views,
+                'VIEWS'            => $topic->topic_views,
                 'FIRST_POST_TIME'  => $first_post_time,
                 'LAST_POST_TIME'   => $last_post_time,
                 'LAST_POST_AUTHOR' => $last_post_author,

@@ -706,14 +706,7 @@ switch ($mode) {
 				$count_orig_word = count($orig_word);
 
 				foreach ($posts as $post) {
-					$post_id   = $post->post_id;
-					$poster_id = $post->poster_id;
-					$poster    = $post->username;
-
-					$post_date = create_date($board_config['default_dateformat'], $post->post_time, $board_config['board_timezone']);
-
-					$bbcode_uid   = $post->bbcode_uid;
-					$message      = $post->post_text;
+					$message = $post->post_text;
 					$post_subject = $post->post_subject !== '' ? $post->post_subject : $topic_title;
 
 					//
@@ -724,8 +717,8 @@ switch ($mode) {
                         $message = preg_replace('#(<)([\/]?.*?)(>)#is', '&lt;\\2&gt;', $message);
                     }
 
-                    if ($bbcode_uid !== '') {
-						$message = $board_config['allow_bbcode'] ? bbencode_second_pass($message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
+                    if ($post->bbcode_uid !== '') {
+						$message = $board_config['allow_bbcode'] ? bbencode_second_pass($message, $post->bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
 					}
 
                     if ($count_orig_word) {
@@ -744,17 +737,17 @@ switch ($mode) {
 					$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
 					$row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
-					$checkbox = $i > 0 ? '<input type="checkbox" name="post_id_list[]" value="' . $post_id . '" />' : '&nbsp;';
+					$checkbox = $i > 0 ? '<input type="checkbox" name="post_id_list[]" value="' . $post->post_id . '" />' : '&nbsp;';
 
                     $template->assignBlockVars('postrow',
                         [
                             'ROW_COLOR'    => '#' . $row_color,
                             'ROW_CLASS'    => $row_class,
-                            'POSTER_NAME'  => $poster,
-                            'POST_DATE'    => $post_date,
+                            'POSTER_NAME'  => $post->username,
+                            'POST_DATE'    => create_date($board_config['default_dateformat'], $post->post_time, $board_config['board_timezone']),
                             'POST_SUBJECT' => $post_subject,
                             'MESSAGE'      => $message,
-                            'POST_ID'      => $post_id,
+                            'POST_ID'      => $post->post_id,
 
                             'S_SPLIT_CHECKBOX' => $checkbox
                         ]
@@ -883,6 +876,12 @@ switch ($mode) {
             $row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
             $row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
+            if ($id === ANONYMOUS) {
+                $profile = 'modcp.php?mode=ip&amp;' . POST_POST_URL . '=' . $post_id . '&amp;' . POST_TOPIC_URL . '=' . $topic_id . '&amp;sid=' . $userdata['session_id'];
+            } else {
+                $profile = Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$id");
+            }
+
             $template->assignBlockVars('userrow',
                 [
                     'ROW_COLOR'      => '#' . $row_color,
@@ -891,7 +890,7 @@ switch ($mode) {
                     'POSTS'          => $row->postings . ' ' . (($row->postings === 1) ? $lang['Post'] : $lang['Posts']),
                     'L_SEARCH_POSTS' => sprintf($lang['Search_user_posts'], $username),
 
-                    'U_PROFILE'     => $id === ANONYMOUS ? 'modcp.php?mode=ip&amp;' . POST_POST_URL . '=' . $post_id . '&amp;' . POST_TOPIC_URL . '=' . $topic_id . '&amp;sid=' . $userdata['session_id'] : Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$id"),
+                    'U_PROFILE'     => $profile,
                     'U_SEARCHPOSTS' => Session::appendSid('search.php?search_author=' . (($id === ANONYMOUS) ? 'Anonymous' : urlencode($username)) . '&amp;show_results=topics')
                 ]
             );
@@ -999,7 +998,6 @@ switch ($mode) {
             }
 
 			$u_view_topic  = 'modcp.php?mode=split&amp;' . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'];
-			$topic_replies = $row->topic_replies;
 
 			$last_post_time = create_date($board_config['default_dateformat'], $row->post_time, $board_config['board_timezone']);
 
@@ -1010,7 +1008,7 @@ switch ($mode) {
                     'TOPIC_FOLDER_IMG' => $folder_img,
                     'TOPIC_TYPE'       => $topic_type,
                     'TOPIC_TITLE'      => $topic_title,
-                    'REPLIES'          => $topic_replies,
+                    'REPLIES'          => $row->topic_replies,
                     'LAST_POST_TIME'   => $last_post_time,
                     'TOPIC_ID'         => $topic_id,
 

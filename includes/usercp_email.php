@@ -49,10 +49,6 @@ if (!$user) {
     message_die(GENERAL_MESSAGE, $lang['User_not_exist']);
 }
 
-$username   = $user->username;
-$user_email = $user->user_email;
-$user_lang  = $user->user_lang;
-
 if ($user->user_viewemail || $userdata['user_level'] === ADMIN) {
     if (time() - $userdata['user_emailtime'] < $board_config['flood_interval']) {
         message_die(GENERAL_MESSAGE, $lang['Flood_email_limit']);
@@ -62,14 +58,14 @@ if ($user->user_viewemail || $userdata['user_level'] === ADMIN) {
         $error = false;
 
         if (empty($_POST['subject'])) {
-            $error     = true;
+            $error = true;
             $error_msg = !empty($error_msg) ? $error_msg . '<br />' . $lang['Empty_subject_email'] : $lang['Empty_subject_email'];
         } else {
             $subject = trim(stripslashes($_POST['subject']));
         }
 
         if (empty($_POST['message'])) {
-            $error     = true;
+            $error = true;
             $error_msg = !empty($error_msg) ? $error_msg . '<br />' . $lang['Empty_message_email'] : $lang['Empty_message_email'];
         } else {
             $message = trim(stripslashes($_POST['message']));
@@ -94,8 +90,8 @@ if ($user->user_viewemail || $userdata['user_level'] === ADMIN) {
             $email_headers .= 'X-AntiAbuse: Username - ' . $userdata['username'] . "\n";
             $email_headers .= 'X-AntiAbuse: User IP - ' . decode_ip($user_ip) . "\n";
 
-            $emailer->use_template('profile_send_email', $user_lang);
-            $emailer->setEmailAddress($user_email);
+            $emailer->use_template('profile_send_email', $user->user_lang);
+            $emailer->setEmailAddress($user->user_email);
             $emailer->setSubject($subject);
             $emailer->addExtraHeaders($email_headers);
 
@@ -104,7 +100,7 @@ if ($user->user_viewemail || $userdata['user_level'] === ADMIN) {
                     'SITENAME'      => $board_config['sitename'],
                     'BOARD_EMAIL'   => $board_config['board_email'],
                     'FROM_USERNAME' => $userdata['username'],
-                    'TO_USERNAME'   => $username,
+                    'TO_USERNAME'   => $user->username,
                     'MESSAGE'       => $message
                 ]
             );
@@ -123,7 +119,7 @@ if ($user->user_viewemail || $userdata['user_level'] === ADMIN) {
                         'SITENAME'      => $board_config['sitename'],
                         'BOARD_EMAIL'   => $board_config['board_email'],
                         'FROM_USERNAME' => $userdata['username'],
-                        'TO_USERNAME'   => $username,
+                        'TO_USERNAME'   => $user->username,
                         'MESSAGE'       => $message
                     ]
                 );
@@ -157,7 +153,7 @@ if ($user->user_viewemail || $userdata['user_level'] === ADMIN) {
 
     $template->assignVars(
         [
-            'USERNAME' => $username,
+            'USERNAME' => $user->username,
 
             'S_HIDDEN_FIELDS' => '',
             'S_POST_ACTION'   => Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL . "=$user_id"),
