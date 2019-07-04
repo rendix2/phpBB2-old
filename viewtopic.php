@@ -886,14 +886,14 @@ foreach ($posts as $i => $post) {
 	elseif ($post->user_rank) {
 	    foreach ($ranks as $rank) {
 	        if ($post->user_rank === $rank->rank_id && $rank->rank_special) {
-	            $poster_rank = $rank->rank_title;
+	            $poster_rank = htmlspecialchars($rank->rank_title, ENT_QUOTES);
 	            $rank_image = $rank->rank_image ? '<img src="' . $rank->rank_image . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
             }
         }
 	} else {
 		foreach ($ranks as $rank) {
 		    if ($post->user_posts >= $rank->rank_min && !$rank->rank_special) {
-		        $poster_rank = $rank->rank_title;
+                $poster_rank = htmlspecialchars($rank->rank_title, ENT_QUOTES);
 		        $rank_image = $rank->rank_image ? '<img src="' . $rank->rank_image . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
             }
         }
