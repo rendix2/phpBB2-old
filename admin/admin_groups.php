@@ -25,6 +25,7 @@ define('IN_PHPBB', 1);
 if (!empty($setmodules)) {
     $filename = basename(__FILE__);
     $module['Groups']['Manage'] = $filename;
+	$module['Groups']['Add_new'] = $filename . '?mode=new';
 
     return;
 }
