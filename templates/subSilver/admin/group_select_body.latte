@@ -1,0 +1,32 @@
+<h1>{$L_GROUP_TITLE}</h1>
+
+<p>{$L_GROUP_EXPLAIN}</p>
+
+<table cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
+     <thead>
+         <tr>
+             <th class="thHead">{$L_GROUP_ID}</th>
+             <th class="thHead">{$L_GROUP_NAME}</th>
+             <th class="thHead">{$L_GROUP_DESCRIPTION}</th>
+             <th class="thHead">{$L_GROUP_STATUS}</th>
+         </tr>
+     </thead>
+{foreach $D_GROUPS as $group}
+    <tr>
+        <td class="{$iterator->isEven() ? row1 : row2}">
+            <a href="admin_groups.php?{$C_GROUP_ID}={$group->group_id}&{$S_SID}&edit=1">{$group->group_id}</a>
+        </td>
+        <td class="{$iterator->isEven() ? row1 : row2}">{$group->group_name}</td>
+        <td class="{$iterator->isEven() ? row1 : row2}">{$group->group_description}</td>
+        <td class="{$iterator->isEven() ? row1 : row2}">
+            {if $group->group_type === $C_OPEN}
+                {$L_OPEN}
+            {elseif $group->group_type === $C_CLOSED}
+                {$L_CLOSED}
+            {elseif $group->group_type === $C_HIDDEN}
+                {$L_HIDDEN}
+            {/if}
+        </td>
+    </tr>
+{/foreach}
+</table>

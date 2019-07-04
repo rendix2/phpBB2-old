@@ -477,6 +477,7 @@ $lang['Added_new_group'] = 'The new group was successfully created';
 $lang['Deleted_group'] = 'The group was successfully deleted';
 $lang['New_group'] = 'Create new group';
 $lang['Edit_group'] = 'Edit group';
+$lang['group_id'] = 'Group ID';
 $lang['group_name'] = 'Group name';
 $lang['group_description'] = 'Group description';
 $lang['group_moderator'] = 'Group moderator';

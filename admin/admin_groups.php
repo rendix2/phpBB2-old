@@ -11,6 +11,8 @@
  *
  ***************************************************************************/
 
+use Latte\Engine;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -48,13 +50,13 @@ if (isset($_POST[POST_MODE]) || isset($_GET[POST_MODE])) {
     $mode = '';
 }
 
-if (isset($_POST['edit']) || isset($_POST['new'])) {
+if (isset($_GET['edit']) || isset($_POST['new'])) {
 	//
 	// Ok they are editing a group or creating a new group
 	//
 	$template->setFileNames(['body' => 'admin/group_edit_body.tpl']);
 
-	if (isset($_POST['edit'])) {
+	if (isset($_GET['edit'])) {
 		//
 		// They're editing. Grab the vars.
 		//
@@ -319,6 +321,43 @@ if (isset($_POST['edit']) || isset($_POST['new'])) {
 		}
 	}
 } else {
+
+
+	$groups = dibi::select('*')->from(GROUPS_TABLE)
+		->where('group_single_user <> %i', 1)
+		->fetchAll();
+
+	$parameters = [
+		'L_GROUP_TITLE'   => $lang['Group_administration'],
+		'L_GROUP_EXPLAIN' => $lang['Group_admin_explain'],
+
+		'L_GROUP_ID' => $lang['group_id'],
+		'L_GROUP_NAME' => $lang['group_name'],
+		'L_GROUP_DESCRIPTION' => $lang['group_description'],
+		'L_GROUP_STATUS' => $lang['group_status'],
+
+		'C_OPEN' => GROUP_OPEN,
+		'C_CLOSED' => GROUP_CLOSED,
+		'C_HIDDEN' => GROUP_HIDDEN,
+
+		'C_GROUP_ID' => POST_GROUPS_URL,
+
+		'L_OPEN' => $lang['group_open'],
+		'L_CLOSED' => $lang['group_closed'],
+		'L_HIDDEN' => $lang['group_hidden'],
+
+		'S_SID' => $SID,
+
+		'D_GROUPS' => $groups
+	];
+
+	$latte = new Latte\Engine;
+	$latte->setTempDirectory(__DIR__ . '/../temp');
+
+	$latte->render(__DIR__ . '/../templates/subSilver/admin/group_select_body.latte', $parameters);
+
+	/*
+
 	// TODO there will be list of groups, no select
 	$template->setFileNames(['body' => 'admin/group_select_body.tpl']);
 
@@ -340,6 +379,7 @@ if (isset($_POST['edit']) || isset($_POST['new'])) {
     $template->assignBlockVars('select_box', []);
 
     $template->pparse('body');
+	*/
 }
 
 require_once './page_footer_admin.php';

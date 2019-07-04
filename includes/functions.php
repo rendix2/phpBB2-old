@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 use Dibi\Row;
+use Latte\Engine;
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
 
