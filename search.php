@@ -470,6 +470,7 @@ if ($mode === 'searchuser') {
                                 ->where($auth_sql);
                         }
 
+                        // TODO this query we can optimize
                         if ($search_author !== '') {
                             $search_ids->from(USERS_TABLE)
                                 ->as('u')
