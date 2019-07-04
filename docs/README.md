@@ -22,6 +22,9 @@ Conventions for template:
 - L_ is a language variable
 - S_ is something system related
 - U_ is an URL
+- C_ is constants
+- D_ is database data
+- F_ is form
 
 For permissions (acl) it's like this:
 - u_ for user permissions

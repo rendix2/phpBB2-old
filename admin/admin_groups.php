@@ -271,6 +271,11 @@ if ($mode === '') {
 		->fetchAll();
 
 	$parameters = [
+        'C_OPEN'     => GROUP_OPEN,
+        'C_CLOSED'   => GROUP_CLOSED,
+        'C_HIDDEN'   => GROUP_HIDDEN,
+        'C_GROUP_ID' => POST_GROUPS_URL,
+
 		'L_GROUP_TITLE'   => $lang['Group_administration'],
 		'L_GROUP_EXPLAIN' => $lang['Group_admin_explain'],
 
@@ -281,16 +286,11 @@ if ($mode === '') {
 		'L_GROUP_MODERATOR' => $lang['group_moderator'],
 		'L_GROUP_DELETE' => $lang['group_delete'],
 		'L_GROUP_NEW' => $lang['New_group'],
+        'L_GROUP_PERMISSIONS' => $lang['Permissions'],
 
-		'C_OPEN' => GROUP_OPEN,
-		'C_CLOSED' => GROUP_CLOSED,
-		'C_HIDDEN' => GROUP_HIDDEN,
-
-		'C_GROUP_ID' => POST_GROUPS_URL,
-
-		'L_OPEN' => $lang['group_open'],
-		'L_CLOSED' => $lang['group_closed'],
-		'L_HIDDEN' => $lang['group_hidden'],
+        'L_OPEN'   => $lang['group_open'],
+        'L_CLOSED' => $lang['group_closed'],
+        'L_HIDDEN' => $lang['group_hidden'],
 
 		'S_SID' => $SID,
 
