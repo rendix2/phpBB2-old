@@ -2,6 +2,8 @@
 
 <p>{$L_GROUP_EXPLAIN}</p>
 
+<a href="admin_groups.php?{$S_SID}&mode=new">{$L_GROUP_NEW}</a>
+
 <table cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
      <thead>
          <tr>
@@ -9,12 +11,14 @@
              <th class="thHead">{$L_GROUP_NAME}</th>
              <th class="thHead">{$L_GROUP_DESCRIPTION}</th>
              <th class="thHead">{$L_GROUP_STATUS}</th>
+             <th class="thHead">{$L_GROUP_MODERATOR}</th>
+             <th class="thHead"></th>
          </tr>
      </thead>
 {foreach $D_GROUPS as $group}
     <tr>
         <td class="{$iterator->isEven() ? row1 : row2}">
-            <a href="admin_groups.php?{$C_GROUP_ID}={$group->group_id}&{$S_SID}&edit=1">{$group->group_id}</a>
+            <a href="admin_groups.php?{$C_GROUP_ID}={$group->group_id}&{$S_SID}&mode=edit">{$group->group_id}</a>
         </td>
         <td class="{$iterator->isEven() ? row1 : row2}">{$group->group_name}</td>
         <td class="{$iterator->isEven() ? row1 : row2}">{$group->group_description}</td>
@@ -26,6 +30,10 @@
             {elseif $group->group_type === $C_HIDDEN}
                 {$L_HIDDEN}
             {/if}
+        </td>
+        <td class="{$iterator->isEven() ? row1 : row2}">{$group->username}</td>
+        <td class="{$iterator->isEven() ? row1 : row2}">
+            <a href="admin_groups.php?{$C_GROUP_ID}={$group->group_id}&{$S_SID}&mode=delete">{$L_GROUP_DELETE}</a>
         </td>
     </tr>
 {/foreach}

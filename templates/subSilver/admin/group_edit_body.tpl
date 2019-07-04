@@ -58,16 +58,6 @@
 			<input type="checkbox" name="delete_old_moderator" id="delete_old_moderator" value="1">{L_YES}
 		</td>
 	</tr>
-	<tr>
-		<td class="row1" width="38%">
-			<label for="group_delete">
-				<span class="gen">{L_GROUP_DELETE}:</span>
-		  	</label>
-	  	</td>
-	  	<td class="row2" width="62%">
-			<input type="checkbox" name="group_delete" id="group_delete" value="1">{L_GROUP_DELETE_CHECK}
-		</td>
-	</tr>
 	<!-- END group_edit -->
 	<tr> 
 	  <td class="catBottom" colspan="2" align="center"><span class="cattitle">

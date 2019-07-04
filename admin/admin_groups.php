@@ -11,8 +11,6 @@
  *
  ***************************************************************************/
 
-use Latte\Engine;
-
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -50,13 +48,116 @@ if (isset($_POST[POST_MODE]) || isset($_GET[POST_MODE])) {
     $mode = '';
 }
 
-if (isset($_GET['edit']) || isset($_POST['new'])) {
+//
+// Ok, they are submitting a group, let's save the data based on if it's new or editing
+//
+if (isset($_POST['group_update'])) {
+	$group_type        = isset($_POST['group_type'])        ? (int)$_POST['group_type']         : GROUP_OPEN;
+	$group_name        = isset($_POST['group_name'])        ? trim($_POST['group_name'])        : '';
+	$group_description = isset($_POST['group_description']) ? trim($_POST['group_description']) : '';
+	$group_moderator   = isset($_POST['username'])          ? $_POST['username']                : '';
+
+	$delete_old_moderator = isset($_POST['delete_old_moderator']);
+
+	if ($group_name === '') {
+		message_die(GENERAL_MESSAGE, $lang['No_group_name']);
+	} elseif ($group_moderator === '') {
+		message_die(GENERAL_MESSAGE, $lang['No_group_moderator']);
+	}
+
+	$this_userdata   = get_userdata($group_moderator, true);
+	$group_moderator = $this_userdata->user_id;
+
+	if (!$group_moderator) {
+		message_die(GENERAL_MESSAGE, $lang['No_group_moderator']);
+	}
+
+	if ($mode === 'edit') {
+		// TODO we dont need check group_single_user
+		$group_info = dibi::select('*')
+			->from(GROUPS_TABLE)
+			->where('group_id = %i', $group_id)
+			->where('group_single_user <> %i', 1)
+			->fetch();
+
+		if (!$group_info) {
+			message_die(GENERAL_MESSAGE, $lang['Group_not_exist']);
+		}
+
+		if ($group_info->group_moderator !== $group_moderator) {
+			if ($delete_old_moderator) {
+				dibi::delete(USER_GROUP_TABLE)
+					->where('user_id = %i', $group_info->group_moderator)
+					->where('group_id = %i', $group_id)
+					->execute();
+			}
+
+			$moderator = dibi::select('user_id')
+				->from(USER_GROUP_TABLE)
+				->where('user_id = %i', $group_moderator)
+				->where('group_id = %i', $group_id)
+				->fetch();
+
+			if (!$moderator) {
+				$moderator_insert_data = [
+					'group_id'     => $group_id,
+					'user_id'      => $group_moderator,
+					'user_pending' => 0
+				];
+
+				dibi::insert(USER_GROUP_TABLE, $moderator_insert_data)->execute();
+			}
+		}
+
+		$group_update_data = [
+			'group_type'        => $group_type,
+			'group_name'        => $group_name,
+			'group_description' => $group_description,
+			'group_moderator'   => $group_moderator
+		];
+
+		dibi::update(GROUPS_TABLE, $group_update_data)
+			->where('group_id = %i', $group_id)
+			->execute();
+
+		$message = $lang['Updated_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . Session::appendSid('admin_groups.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+
+		message_die(GENERAL_MESSAGE, $message);
+	} elseif ($mode === 'new') {
+		$group_insert_data = [
+			'group_type'        => $group_type,
+			'group_name'        => $group_name,
+			'group_description' => $group_description,
+			'group_moderator'   => $group_moderator,
+			'group_single_user' => 0
+		];
+
+		$new_group_id = dibi::insert(GROUPS_TABLE, $group_insert_data)->execute(dibi::IDENTIFIER);
+
+		$user_group_insert_data = [
+			'group_id' => $new_group_id,
+			'user_id'  => $group_moderator,
+			'user_pending' => 0
+		];
+
+		dibi::insert(USER_GROUP_TABLE, $user_group_insert_data)->execute();
+
+		$message = $lang['Added_new_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . Session::appendSid('admin_groups.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+
+		message_die(GENERAL_MESSAGE, $message);
+	} else {
+		message_die(GENERAL_MESSAGE, $lang['No_group_action']);
+	}
+}
+
+// add or edit view
+if ($mode === 'edit' || $mode === 'new') {
 	//
 	// Ok they are editing a group or creating a new group
 	//
 	$template->setFileNames(['body' => 'admin/group_edit_body.tpl']);
 
-	if (isset($_GET['edit'])) {
+	if ($mode === 'edit') {
 		//
 		// They're editing. Grab the vars.
 		//
@@ -70,55 +171,55 @@ if (isset($_GET['edit']) || isset($_POST['new'])) {
 			message_die(GENERAL_MESSAGE, $lang['Group_not_exist']);
 		}
 
-		$mode = 'editgroup';
+		$moderatorName = '';
+
+		if ($group_info->group_moderator === $userdata['user_id']) {
+			$moderatorName = $userdata['username'];
+		} else {
+			$moderator = dibi::select(['user_id', 'username'])
+				->from(USERS_TABLE)
+				->where('user_id = %i', $group_info->group_moderator)
+				->fetch();
+
+			if (!$moderator) {
+				message_die(GENERAL_ERROR, 'Could not obtain user info for moderator list');
+			}
+
+			$moderatorName = $moderator->username;
+		}
+
+		$template->assignVars(
+			[
+				'GROUP_NAME'        => htmlspecialchars($group_info->group_name, ENT_QUOTES),
+				'GROUP_DESCRIPTION' => htmlspecialchars($group_info->group_description, ENT_QUOTES),
+				'GROUP_MODERATOR'   => htmlspecialchars($moderatorName, ENT_QUOTES),
+			]
+		);
+
 		$template->assignBlockVars('group_edit', []);
-	} elseif (isset($_POST['new'])) {
-		$group_info = [
-			'group_name'        => '',
-			'group_description' => '',
-			'group_moderator'   => '',
-			'group_type'        => GROUP_OPEN
-		];
+	} elseif ($mode === 'new') {
+		$group_info = ['group_type' => GROUP_OPEN];
 
 		$group_open = ' checked="checked"';
 
-		$mode = 'newgroup';
-	}
-
-	//
-	// Ok, now we know everything about them, let's show the page.
-	//
-	if ($group_info['group_moderator'] !== '') {
-
-	    // TODO i can be moderator!
-        //check this situation => i dont need query
-
-	    $moderator = dibi::select(['user_id', 'username'])
-            ->from(USERS_TABLE)
-            ->where('user_id = %i', $group_info['group_moderator'])
-            ->fetch();
-
-	    if (!$moderator) {
-            message_die(GENERAL_ERROR, 'Could not obtain user info for moderator list');
-        }
-
-		$group_moderator = $moderator->username;
-	} else {
-		$group_moderator = '';
+		$template->assignVars(
+			[
+				'GROUP_NAME'        => '',
+				'GROUP_DESCRIPTION' => '',
+				'GROUP_MODERATOR'   => '',
+			]
+		);
 	}
 
 	$group_open   = $group_info['group_type'] === GROUP_OPEN   ? ' checked="checked"' : '';
 	$group_closed = $group_info['group_type'] === GROUP_CLOSED ? ' checked="checked"' : '';
 	$group_hidden = $group_info['group_type'] === GROUP_HIDDEN ? ' checked="checked"' : '';
 
-	$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
+	$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" />';
+	$s_hidden_fields .= '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
 
 	$template->assignVars(
 		[
-            'GROUP_NAME'        => htmlspecialchars($group_info->group_name, ENT_QUOTES),
-            'GROUP_DESCRIPTION' => htmlspecialchars($group_info->group_description, ENT_QUOTES),
-            'GROUP_MODERATOR'   => $group_moderator,
-
             'L_GROUP_TITLE'        => $lang['Group_administration'],
             'L_GROUP_EDIT_DELETE'  => isset($_POST['new']) ? $lang['New_group'] : $lang['Edit_group'],
             'L_GROUP_NAME'         => $lang['group_name'],
@@ -155,176 +256,17 @@ if (isset($_GET['edit']) || isset($_POST['new'])) {
 	);
 
 	$template->pparse('body');
+}
 
-} elseif (isset($_POST['group_update'])) {
-	//
-	// Ok, they are submitting a group, let's save the data based on if it's new or editing
-	//
-	if (isset($_POST['group_delete'])) {
-		//
-		// Reset User Moderator Level
-		//
-        $auth_mod = dibi::select('auth_mod')
-            ->from(AUTH_ACCESS_TABLE)
-            ->where('group_id = %i', $group_id)
-            ->fetchSingle();
-
-		if ((int)$auth_mod === 1) {
-			// Yes, get the assigned users and update their Permission if they are no longer moderator of one of the forums
-			$users = dibi::select('user_id')
-                ->from(USER_GROUP_TABLE)
-                ->where('group_id = %i', $group_id)
-                ->fetchAll();
-
-			// TODO improve first query and join USER_TABLE and check if user is MOD or not!
-            // dont check it in update query
-			foreach ($users as $user) {
-			    $group_ids = dibi::select('g.group_id')
-                    ->from(AUTH_ACCESS_TABLE)
-                    ->as('a')
-                    ->from(GROUPS_TABLE)
-                    ->as('g')
-                    ->from(USER_GROUP_TABLE)
-                    ->as('ug')
-                    ->where('a.auth_mod = %i', 1)
-                    ->where('g.group_id = a.group_id')
-                    ->where('a.group_id = ug.group_id')
-                    ->where('g.group_id = ug.group_id')
-                    ->where('ug.user_id = %i',(int)$user->user_id)
-                    ->where('ug.group_id <> %i', $group_id)
-                    ->fetchAll();
-
-				if (count($group_ids) === 0) {
-					dibi::update(USERS_TABLE, ['user_level' => USER])
-                        ->where('user_level = %i', MOD)
-                        ->where('user_id = %i', (int)$user->user_id)
-                        ->execute();
-				}
-			}
-		}
-
-		//
-		// Delete Group
-		//
-
-		dibi::delete(GROUPS_TABLE)
-            ->where('group_id = %i', $group_id)
-            ->execute();
-
-		dibi::delete(USER_GROUP_TABLE)
-            ->where('group_id = %i', $group_id)
-            ->execute();
-
-		dibi::delete(AUTH_ACCESS_TABLE)
-            ->where('group_id = %i', $group_id)
-            ->execute();
-
-		$message = $lang['Deleted_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . Session::appendSid('admin_groups.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
-
-		message_die(GENERAL_MESSAGE, $message);
-	} else {
-		$group_type        = isset($_POST['group_type'])        ? (int)$_POST['group_type']         : GROUP_OPEN;
-		$group_name        = isset($_POST['group_name'])        ? trim($_POST['group_name'])        : '';
-		$group_description = isset($_POST['group_description']) ? trim($_POST['group_description']) : '';
-		$group_moderator   = isset($_POST['username'])          ? $_POST['username']                : '';
-
-		$delete_old_moderator = isset($_POST['delete_old_moderator']);
-
-        if ($group_name === '') {
-            message_die(GENERAL_MESSAGE, $lang['No_group_name']);
-        } elseif ($group_moderator === '') {
-            message_die(GENERAL_MESSAGE, $lang['No_group_moderator']);
-        }
-
-		$this_userdata = get_userdata($group_moderator, true);
-		$group_moderator = $this_userdata->user_id;
-
-		if (!$group_moderator) {
-			message_die(GENERAL_MESSAGE, $lang['No_group_moderator']);
-		}
-
-		if ($mode === 'editgroup') {
-			// TODO we dont need check group_single_user
-			$group_info = dibi::select('*')
-				->from(GROUPS_TABLE)
-				->where('group_id = %i', $group_id)
-				->where('group_single_user <> %i', 1)
-				->fetch();
-
-			if (!$group_info) {
-				message_die(GENERAL_MESSAGE, $lang['Group_not_exist']);
-			}
-
-			if ($group_info->group_moderator !== $group_moderator) {
-                if ($delete_old_moderator) {
-                    dibi::delete(USER_GROUP_TABLE)
-                        ->where('user_id = %i', $group_info->group_moderator)
-                        ->where('group_id = %i', $group_id)
-                        ->execute();
-                }
-
-				$moderator = dibi::select('user_id')
-					->from(USER_GROUP_TABLE)
-					->where('user_id = %i', $group_moderator)
-					->where('group_id = %i', $group_id)
-					->fetch();
-
-				if (!$moderator) {
-					$moderator_insert_data = [
-						'group_id'     => $group_id,
-						'user_id'      => $group_moderator,
-						'user_pending' => 0
-					];
-
-					dibi::insert(USER_GROUP_TABLE, $moderator_insert_data)->execute();
-				}
-			}
-
-			$group_update_data = [
-				'group_type'        => $group_type,
-				'group_name'        => $group_name,
-				'group_description' => $group_description,
-				'group_moderator'   => $group_moderator
-			];
-
-			dibi::update(GROUPS_TABLE, $group_update_data)
-				->where('group_id = %i', $group_id)
-				->execute();
-
-			$message = $lang['Updated_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . Session::appendSid('admin_groups.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
-
-			message_die(GENERAL_MESSAGE, $message);
-		} elseif ($mode === 'newgroup') {
-			$group_insert_data = [
-				'group_type'        => $group_type,
-				'group_name'        => $group_name,
-				'group_description' => $group_description,
-				'group_moderator'   => $group_moderator,
-				'group_single_user' => 0
-			];
-
-			$new_group_id = dibi::insert(GROUPS_TABLE, $group_insert_data)->execute(dibi::IDENTIFIER);
-
-			$user_group_insert_data = [
-				'group_id' => $new_group_id,
-				'user_id'  => $group_moderator,
-				'user_pending' => 0
-			];
-
-			dibi::insert(USER_GROUP_TABLE, $user_group_insert_data)->execute();
-
-			$message = $lang['Added_new_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . Session::appendSid('admin_groups.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
-
-			message_die(GENERAL_MESSAGE, $message);
-		} else {
-			message_die(GENERAL_MESSAGE, $lang['No_group_action']);
-		}
-	}
-} else {
-
-
-	$groups = dibi::select('*')->from(GROUPS_TABLE)
-		->where('group_single_user <> %i', 1)
+// list
+if ($mode === '') {
+	$groups = dibi::select('*')
+		->from(GROUPS_TABLE)
+		->as('g')
+		->innerJoin(USERS_TABLE)
+		->as('u')
+		->on('g.group_moderator = u.user_id')
+		->where('g.group_single_user <> %i', 1)
 		->fetchAll();
 
 	$parameters = [
@@ -335,6 +277,9 @@ if (isset($_GET['edit']) || isset($_POST['new'])) {
 		'L_GROUP_NAME' => $lang['group_name'],
 		'L_GROUP_DESCRIPTION' => $lang['group_description'],
 		'L_GROUP_STATUS' => $lang['group_status'],
+		'L_GROUP_MODERATOR' => $lang['group_moderator'],
+		'L_GROUP_DELETE' => $lang['group_delete'],
+		'L_GROUP_NEW' => $lang['New_group'],
 
 		'C_OPEN' => GROUP_OPEN,
 		'C_CLOSED' => GROUP_CLOSED,
@@ -351,35 +296,73 @@ if (isset($_GET['edit']) || isset($_POST['new'])) {
 		'D_GROUPS' => $groups
 	];
 
-	$latte = new Latte\Engine;
-	$latte->setTempDirectory(__DIR__ . '/../temp');
+	$latte = new LatteFactory($storage, $userdata);
 
-	$latte->render(__DIR__ . '/../templates/subSilver/admin/group_select_body.latte', $parameters);
+	$latte->render('admin/group_select_body.latte', $parameters);
+}
 
-	/*
+// delete
+if ($mode === 'delete') {
+	//
+	// Reset User Moderator Level
+	//
+	$auth_mod = dibi::select('auth_mod')
+		->from(AUTH_ACCESS_TABLE)
+		->where('group_id = %i', $group_id)
+		->fetchSingle();
 
-	// TODO there will be list of groups, no select
-	$template->setFileNames(['body' => 'admin/group_select_body.tpl']);
+	if ((int)$auth_mod === 1) {
+		// Yes, get the assigned users and update their Permission if they are no longer moderator of one of the forums
+		$users = dibi::select('user_id')
+			->from(USER_GROUP_TABLE)
+			->where('group_id = %i', $group_id)
+			->fetchAll();
 
-    $template->assignVars(
-        [
-            'L_GROUP_TITLE'   => $lang['Group_administration'],
-            'L_GROUP_EXPLAIN' => $lang['Group_admin_explain'],
-            'L_GROUP_SELECT'  => $lang['Select_group'],
+		// TODO improve first query and join USER_TABLE and check if user is MOD or not!
+		// dont check it in update query
+		foreach ($users as $user) {
+			$group_ids = dibi::select('g.group_id')
+				->from(AUTH_ACCESS_TABLE)
+				->as('a')
+				->from(GROUPS_TABLE)
+				->as('g')
+				->from(USER_GROUP_TABLE)
+				->as('ug')
+				->where('a.auth_mod = %i', 1)
+				->where('g.group_id = a.group_id')
+				->where('a.group_id = ug.group_id')
+				->where('g.group_id = ug.group_id')
+				->where('ug.user_id = %i',(int)$user->user_id)
+				->where('ug.group_id <> %i', $group_id)
+				->fetchAll();
 
-            'L_LOOK_UP' => $lang['Look_up_group'],
+			if (count($group_ids) === 0) {
+				dibi::update(USERS_TABLE, ['user_level' => USER])
+					->where('user_level = %i', MOD)
+					->where('user_id = %i', (int)$user->user_id)
+					->execute();
+			}
+		}
+	}
 
-            'L_CREATE_NEW_GROUP' => $lang['New_group'],
+	//
+	// Delete Group
+	//
+	dibi::delete(GROUPS_TABLE)
+		->where('group_id = %i', $group_id)
+		->execute();
 
-            'S_GROUP_ACTION' => Session::appendSid('admin_groups.php'),
-            'S_GROUP_SELECT' => Select::groups()
-        ]
-    );
+	dibi::delete(USER_GROUP_TABLE)
+		->where('group_id = %i', $group_id)
+		->execute();
 
-    $template->assignBlockVars('select_box', []);
+	dibi::delete(AUTH_ACCESS_TABLE)
+		->where('group_id = %i', $group_id)
+		->execute();
 
-    $template->pparse('body');
-	*/
+	$message = $lang['Deleted_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . Session::appendSid('admin_groups.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+
+	message_die(GENERAL_MESSAGE, $message);
 }
 
 require_once './page_footer_admin.php';
