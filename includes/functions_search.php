@@ -357,7 +357,7 @@ function username_search($search_match)
 
 		if (count($userNames)) {
 		    foreach ($userNames as $userName) {
-                $userNamesList .= '<option value="' . $userName . '">' . $userName . '</option>';
+                $userNamesList .= '<option value="' . $userName . '">' . htmlspecialchars($userName, ENT_QUOTES) . '</option>';
             }
         } else {
             $userNamesList .= '<option value="-1">' . $lang['No_match']. '</option>';

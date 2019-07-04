@@ -105,7 +105,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
 		//
 		// The user has already selected a smile_pak file.. Import it.
 		//
-		if (!empty($clear_current) ) {
+		if (!empty($clear_current)) {
 		    // TODO really without where???!
 
             $cache = new Cache($storage, SMILIES_TABLE);

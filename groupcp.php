@@ -56,7 +56,7 @@ function generate_user_info(&$row, $date_format, $group_mod, &$from, &$posts, &$
 		}
 	}
 
-	if (!empty($row->user_viewemail) || $group_mod ) {
+	if (!empty($row->user_viewemail) || $group_mod) {
 		$email_uri = $board_config['board_email_form'] ? Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL .'=' . $row->user_id) : 'mailto:' . $row->user_email;
 
 		$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
@@ -186,7 +186,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
         message_die(GENERAL_MESSAGE, $lang['No_groups_exist']);
     }
 
-    if ($row[0]->group_type === GROUP_OPEN) {
+    if ($rows[0]->group_type === GROUP_OPEN) {
         foreach ($rows as $row) {
             if ($userdata['user_id'] === $row->user_id) {
                 $template->assignVars(
@@ -598,7 +598,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 						$emailer->setFrom($board_config['board_email']);
 						$emailer->setReplyTo($board_config['board_email']);
 
-						foreach($bcc_list as $bcc_value) {
+						foreach ($bcc_list as $bcc_value) {
 							$emailer->addBcc($bcc_value);
 						}
 
@@ -1078,7 +1078,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 
     foreach ($group_rows as $group_row) {
         if ($group_row->group_type !== GROUP_HIDDEN || $userdata['user_level'] === ADMIN) {
-            $s_group_list_opt .= '<option value="' . $group_row->group_id . '">' . $group_row->group_name . '</option>';
+            $s_group_list_opt .= '<option value="' . $group_row->group_id . '">' . htmlspecialchars($group_row->group_name, ENT_QUOTES) . '</option>';
         }
     }
 	$s_group_list = '<select name="' . POST_GROUPS_URL . '">' . $s_group_list_opt . '</select>';

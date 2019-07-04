@@ -10,7 +10,6 @@
  *
  ***************************************************************************/
 
-use Nette\Loaders\RobotLoader;
 use Nette\Utils\Finder;
 
 /***************************************************************************
@@ -548,7 +547,7 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['up
 
 	foreach ($available_dbms as $dbms_name => $details) {
         $selected    = ($dbms_name === $dbms) ? 'selected="selected"' : '';
-        $dbms_select .= '<option value="' . $dbms_name . '">' . $details['LABEL'] . '</option>';
+        $dbms_select .= '<option value="' . $dbms_name . '">' . htmlspecialchars($details['LABEL'], ENT_QUOTES) . '</option>';
     }
 
 	$dbms_select .= '</select>';

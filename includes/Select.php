@@ -169,9 +169,9 @@ class Select
         $styleValues = '';
 
         foreach ($themes as $themes_id => $style_name) {
-            $selected = ( $themes_id === $default_style ) ? 'selected="selected"' : '';
+            $selected = $themes_id === $default_style ? 'selected="selected"' : '';
 
-            $styleValues .= '<option value="' . $themes_id . '" ' . $selected . '>' . $style_name . '</option>';
+            $styleValues .= '<option value="' . $themes_id . '" ' . $selected . '>' . htmlspecialchars($style_name, ENT_QUOTES) . '</option>';
         }
 
         return'<select name="' . $select_name . '" id="' . $select_name . '">' . $styleValues . '</select>';
@@ -207,9 +207,9 @@ class Select
          */
         foreach ($templateDirs as $templateDir) {
             if ($templateDir->getFilename() === $defaultTheme) {
-                $templateOptions .= '<option value="' . $templateDir->getFilename() . '" selected="selected">' . $templateDir->getFilename() . "</option>\n";
+                $templateOptions .= '<option value="' . $templateDir->getFilename() . '" selected="selected">' . htmlspecialchars($templateDir->getFilename(), ENT_QUOTES) . "</option>\n";
             } else {
-                $templateOptions .= '<option value="' . $templateDir->getFilename() . '">' . $templateDir->getFilename() . "</option>\n";
+                $templateOptions .= '<option value="' . $templateDir->getFilename() . '">' . htmlspecialchars($templateDir->getFilename(), ENT_QUOTES) . "</option>\n";
             }
         }
 
@@ -249,7 +249,7 @@ class Select
 
         foreach ($resultLanguages as $displayName => $filename) {
             $selected = $default === strtolower($filename) ? 'selected="selected"' : '';
-            $langValues .= '<option value="' . $filename . '" ' . $selected . '>' . ucwords($displayName) . '</option>';
+            $langValues .= '<option value="' . $filename . '" ' . $selected . '>' . htmlspecialchars(ucwords($displayName), ENT_QUOTES) . '</option>';
         }
 
         return '<select name="' . $select_name . '" id="' . $select_name . '"">' . $langValues . '</select>';

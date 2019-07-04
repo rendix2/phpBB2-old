@@ -240,7 +240,7 @@ if (empty($forum_id)) {
 
         foreach ($simple_auth_types as $key => $simple_auth_type) {
 			$selected = $matched_type === $key ? ' selected="selected"' : '';
-			$simple_auth .= '<option value="' . $key . '"' . $selected . '>' . $simple_auth_type . '</option>';
+			$simple_auth .= '<option value="' . $key . '"' . $selected . '>' . htmlspecialchars($simple_auth_type, ENT_QUOTES) . '</option>';
 		}
 
 		$simple_auth .= '</select>';

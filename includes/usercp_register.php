@@ -78,7 +78,7 @@ $error = false;
 $error_msg = '';
 $page_title = $mode === 'editprofile' ? $lang['Edit_profile'] : $lang['Register'];
 
-if ($mode === 'register' && !isset($_POST['agreed']) && !isset($_GET['agreed']) ) {
+if ($mode === 'register' && !isset($_POST['agreed']) && !isset($_GET['agreed'])) {
     require_once $phpbb_root_path . 'includes/page_header.php';
 
 	show_coppa();

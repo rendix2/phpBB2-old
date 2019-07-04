@@ -62,6 +62,7 @@ if (isset($_POST['submit'])) {
 		$ip_list_temp = explode(',', $_POST['ban_ip']);
 
 		foreach ($ip_list_temp as $i => $ip_value_tmp) {
+		    // used for ip ranges
 			if (preg_match('/^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})[ ]*\-[ ]*([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/', trim($ip_value_tmp), $ip_range_explode)) {
 				//
 				// Don't ask about all this, just don't ask ... !
@@ -115,7 +116,7 @@ if (isset($_POST['submit'])) {
 
 					$ip_1_counter++;
 				}
-			} elseif (preg_match('/^([\w\-_]\.?){2,}$/is', trim($ip_value_tmp))) {
+			} elseif (preg_match('/^([\w\-_]\.?){2,}$/is', trim($ip_value_tmp))) { // list of ips
 				$ips = gethostbynamel(trim($ip_value_tmp));
 
                 foreach ($ips as $ip) {
@@ -123,7 +124,7 @@ if (isset($_POST['submit'])) {
                         $ip_list[] = encode_ip($ip);
                     }
                 }
-			} elseif (preg_match('/^([0-9]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})$/', trim($ip_value_tmp))) {
+			} elseif (preg_match('/^([0-9]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})$/', trim($ip_value_tmp))) { // one ip
 				$ip_list[] = encode_ip(str_replace('*', '255', trim($ip_value_tmp)));
 			}
 		}
@@ -295,7 +296,7 @@ if (isset($_POST['submit'])) {
         ->innerJoin(USERS_TABLE)
         ->as('u')
         ->on('u.user_id = b.ban_userid')
-        ->where('b.ban_userid <> 0')
+        ->where('b.ban_userid <> %i', 0)
         ->where('u.user_id <> %i', ANONYMOUS)
         ->orderBy('u.user_id', dibi::ASC)
         ->fetchAll();
@@ -303,7 +304,7 @@ if (isset($_POST['submit'])) {
 	$select_userlist = '';
 
 	foreach ($user_list as $user_item) {
-		$select_userlist .= '<option value="' . $user_item->ban_id . '">' . $user_item->username . '</option>';
+		$select_userlist .= '<option value="' . $user_item->ban_id . '">' . htmlspecialchars($user_item->username, ENT_QUOTES) . '</option>';
 	}
 
 	if ($select_userlist === '') {

@@ -349,10 +349,10 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 	$options = '';
 
 	foreach ($avatar_images as $key => $value) {
-		$selected = $key === $category ? ' selected="selected"' : '';
+		$selected = $key === $category ? 'selected="selected"' : '';
 
 		if (count($avatar_images[$key])) {
-            $options .= '<option value="' . $key . '"' . $selected . '>' . ucfirst($key) . '</option>';
+            $options .= '<option value="' . $key . '" ' . $selected . '>' . htmlspecialchars(ucfirst($key), ENT_QUOTES) . '</option>';
 		}
 	}
 
@@ -371,7 +371,6 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
             } else {
                 $path = $board_config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_image_value;
             }
-
 
             $template->assignBlockVars('avatar_row.avatar_column',
                 [

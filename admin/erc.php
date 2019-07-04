@@ -9,8 +9,7 @@
  *   part of DB Maintenance Mod 1.3.8
  ***************************************************************************/
 
-use Nette\Caching\Cache;
-use Nette\Utils\Finder;
+use Nette\Caching\Cache;use Nette\Utils\Finder;
 
 /***************************************************************************
  *
@@ -550,7 +549,7 @@ switch($mode) {
 				$dbms_select = '<select name="new_dbms">';
 
 				foreach ($available_dbms as $dbms_name => $details) {
-					$dbms_select .= '<option value="' . $dbms_name . '">' . $details['LABEL'] . '</option>';
+					$dbms_select .= '<option value="' . $dbms_name . '">' . htmlspecialchars($details['LABEL'], ENT_QUOTES) .'</option>';
 				}
 
 				$dbms_select .= '</select>';

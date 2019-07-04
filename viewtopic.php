@@ -335,7 +335,7 @@ if ($userdata['session_logged_in']) {
 $time = null;
 
 if (!empty($_POST['postdays']) || !empty($_GET['postdays'])) {
-	$post_days =  !empty($_POST['postdays']) ? (int)$_POST['postdays'] : (int)$_GET['postdays'];
+	$post_days = !empty($_POST['postdays']) ? (int)$_POST['postdays'] : (int)$_GET['postdays'];
 
     $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
 
@@ -486,9 +486,11 @@ if ($cachedRanks !== null) {
 //
 // Define censored word matches
 //
-    $orig_word = [];
+$orig_word        = [];
 $replacement_word = [];
+
 obtain_word_list($orig_word, $replacement_word);
+
 $count_orig_word = count($orig_word);
 
 //

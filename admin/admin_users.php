@@ -11,8 +11,6 @@
  *
  ***************************************************************************/
 
-use Nette\Utils\Finder;
-
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -678,7 +676,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 		}
 
 		if ($user_avatar_type) {
-			switch( $user_avatar_type ) {
+            switch ($user_avatar_type) {
 				case USER_AVATAR_UPLOAD:
 					$avatar = '<img src="../' . $board_config['avatar_path'] . '/' . $user_avatar . '" alt="" />';
 					break;

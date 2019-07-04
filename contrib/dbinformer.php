@@ -156,7 +156,7 @@ h3 {font-size:12pt;color:blue}
 /* loop through the dbms, with the correct one selected (hopefully!) */ 
 foreach ($available_dbms as $var => $param) {
     $selected = ($dbms == $var) ? ' selected="selected"' : ''; 
-    echo '<option value="' . $var . '"' . $selected . '>' . $param . '</option>'; 
+    echo '<option value="' . $var . '"' . $selected . '>' . htmlspecialchars($param, ENT_QUOTES) . '</option>';
 } 
 ?> 
 </select></td> 
