@@ -597,7 +597,7 @@ if ($mode === 'searchuser') {
             $row = dibi::select('search_array')
                 ->from(SEARCH_TABLE)
                 ->where('search_id = %i', $search_id)
-                ->where('session_id %s', $userdata['session_id'])
+                ->where('session_id = %s', $userdata['session_id'])
                 ->fetch();
 
             $search_data = unserialize($row->search_array);
@@ -612,11 +612,15 @@ if ($mode === 'searchuser') {
 		}
 	}
 
+    bdump($search_ids, '$search_ids');
+
 	//
 	// Look up data ...
 	//
     if ($search_results !== '') {
         if ($show_results === 'posts') {
+            bdump('A');
+
             $columns = [
                 'pt.post_text',
                 'pt.bbcode_uid',
@@ -1121,6 +1125,10 @@ if ($mode === 'searchuser') {
 		}
 
 		$base_url = "search.php?search_id=$search_id";
+
+		if ($search_author) {
+            $base_url = 'search.php?search_author='.$search_author.'&show_results='. $show_results;
+        }
 
         $template->assignVars(
             [

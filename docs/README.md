@@ -18,6 +18,7 @@ News:
 - language select has fixed selected attribute
 - removed icq, aim, msnm, yim
 - improved groups management in admin
+- fixed pagination in author search
   
 Conventions for template:  
 - L_ is a language variable
