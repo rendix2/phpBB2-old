@@ -612,15 +612,11 @@ if ($mode === 'searchuser') {
 		}
 	}
 
-    bdump($search_ids, '$search_ids');
-
 	//
 	// Look up data ...
 	//
     if ($search_results !== '') {
         if ($show_results === 'posts') {
-            bdump('A');
-
             $columns = [
                 'pt.post_text',
                 'pt.bbcode_uid',
@@ -1126,6 +1122,7 @@ if ($mode === 'searchuser') {
 
 		$base_url = "search.php?search_id=$search_id";
 
+		// fixed bug for not working pagination for search author
 		if ($search_author) {
             $base_url = 'search.php?search_author='.$search_author.'&show_results='. $show_results;
         }
