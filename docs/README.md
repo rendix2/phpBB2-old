@@ -17,6 +17,7 @@ News:
 - using <label> tag for inputs
 - language select has fixed selected attribute
 - removed icq, aim, msnm, yim
+- improved groups management in admin
   
 Conventions for template:  
 - L_ is a language variable
