@@ -854,12 +854,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
             ]
         );
     } else {
-        $groups = dibi::select(['group_id', 'group_name'])
-            ->from(GROUPS_TABLE)
-            ->where('group_single_user <> %i', 1)
-            ->fetchPairs('group_id', 'group_name');
-
-        $template->assignVars(['S_AUTH_SELECT' => Select::groups($groups)]);
+        $template->assignVars(['S_AUTH_SELECT' => Select::groups()]);
     }
 
     $s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" />';

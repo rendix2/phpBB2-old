@@ -111,12 +111,17 @@ class Select
     }
 
     /**
-     * @param array $groups
      *
      * @return string
      */
-    public static function groups(array $groups)
+    public static function groups()
     {
+        $groups = dibi::select(['group_id', 'group_name'])
+            ->from(GROUPS_TABLE)
+            ->where('group_single_user <> %i', 1)
+            ->orderBy('group_name')
+            ->fetchPairs('group_id', 'group_name');
+
         $groupValues = '';
 
         foreach ($groups as $group_id => $group_name) {

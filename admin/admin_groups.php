@@ -319,25 +319,7 @@ if (isset($_POST['edit']) || isset($_POST['new'])) {
 		}
 	}
 } else {
-	$groups = dibi::select(['group_id', 'group_name'])
-		->from(GROUPS_TABLE)
-		->where('group_single_user <> %i', 1)
-		->orderBy('group_name')
-		->fetchPairs('group_id', 'group_name');
-
-	$group_count = count($groups);
-	$select_list = '';
-
-	if ($group_count) {
-		$select_list .= '<select name="' . POST_GROUPS_URL . '">';
-
-		foreach ($groups as $group_id => $group_name) {
-			$select_list .= '<option value="' . $group_id . '">' . htmlspecialchars($group_name, ENT_QUOTES) . '</option>';
-		}
-
-		$select_list .= '</select>';
-	}
-
+	// TODO there will be list of groups, no select
 	$template->setFileNames(['body' => 'admin/group_select_body.tpl']);
 
     $template->assignVars(
@@ -351,15 +333,11 @@ if (isset($_POST['edit']) || isset($_POST['new'])) {
             'L_CREATE_NEW_GROUP' => $lang['New_group'],
 
             'S_GROUP_ACTION' => Session::appendSid('admin_groups.php'),
-            'S_GROUP_SELECT' => $select_list
+            'S_GROUP_SELECT' => Select::groups()
         ]
     );
 
-    // TODO!!!!
-    // it was if ($select_list != '') {
-    if ($group_count) {
-        $template->assignBlockVars('select_box', []);
-    }
+    $template->assignBlockVars('select_box', []);
 
     $template->pparse('body');
 }
