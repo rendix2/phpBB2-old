@@ -824,7 +824,8 @@ $template->assignVars(
         'L_MOVE_UP'         => $lang['Move_up'],
         'L_MOVE_DOWN'       => $lang['Move_down'],
         'L_RESYNC'          => $lang['Resync'],
-        'L_PERMISSIONS'     => $lang['Permissions']
+        'L_PERMISSIONS'     => $lang['Permissions'],
+        'L_FORUM_PRUNE'     => $lang['Forum_Prune'],
     ]
 );
 
@@ -920,7 +921,8 @@ if ($category_count) {
                         'U_FORUM_MOVE_UP'     => Session::appendSid('admin_forums.php?mode=forum_order&amp;move=-15&amp;' . POST_FORUM_URL . "=$forum_id"),
                         'U_FORUM_MOVE_DOWN'   => Session::appendSid('admin_forums.php?mode=forum_order&amp;move=15&amp;' . POST_FORUM_URL . "=$forum_id"),
                         'U_FORUM_RESYNC'      => Session::appendSid('admin_forums.php?mode=forum_sync&amp;' . POST_FORUM_URL . "=$forum_id"),
-                        'U_FORUM_PERMISSIONS' => Session::appendSid('admin_forumauth.php?' . POST_FORUM_URL . "=$forum_id")
+                        'U_FORUM_PERMISSIONS' => Session::appendSid('admin_forumauth.php?' . POST_FORUM_URL . "=$forum_id"),
+                        'U_FORUM_PRUNE'       => Session::appendSid('admin_forum_prune.php?' . POST_FORUM_URL . "=$forum_id")
                     ]
                 );
 

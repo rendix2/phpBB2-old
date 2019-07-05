@@ -52,6 +52,9 @@
 			<span class="gen">
 				<a href="{catrow.forumrow.U_FORUM_PERMISSIONS}">{L_PERMISSIONS}</a>
 			</span>
+			<span class="gen">
+				<a href="{catrow.forumrow.U_FORUM_PRUNE}">{L_FORUM_PRUNE}</a>
+			</span>
 		</td>
 	</tr>
 	<!-- END forumrow -->
