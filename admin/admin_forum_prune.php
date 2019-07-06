@@ -120,7 +120,7 @@ if (isset($_POST['doprune'])) {
 	// If they haven't selected a forum for pruning yet then
 	// display a select box to use for pruning.
 	//
-	if (empty($_POST[POST_FORUM_URL]) && empty($_GET[POST_FORUM_URL])) {
+	if (!isset($_POST[POST_FORUM_URL]) && !isset($_GET[POST_FORUM_URL])) {
 		//
 		// Output a selection table if no forum id has been specified.
 		//
