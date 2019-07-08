@@ -264,7 +264,7 @@ if ($mode === '') {
 	$groups = dibi::select('*')
 		->from(GROUPS_TABLE)
 		->as('g')
-		->innerJoin(USERS_TABLE)
+		->leftJoin(USERS_TABLE)
 		->as('u')
 		->on('g.group_moderator = u.user_id')
 		->where('g.group_single_user <> %i', 1)
