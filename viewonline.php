@@ -22,7 +22,8 @@
 
 define('IN_PHPBB', true);
 
-$phpbb_root_path = './';
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep;
 
 require_once $phpbb_root_path . 'common.php';
 
@@ -40,7 +41,7 @@ init_userprefs($userdata);
 //
 $page_title = $lang['Who_is_Online'];
 
-require_once $phpbb_root_path . 'includes/page_header.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
 
 $template->setFileNames(
     [
@@ -255,6 +256,6 @@ if ($guest_users === 0) {
 
 $template->pparse('body');
 
-require_once $phpbb_root_path . 'includes/page_tail.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
 
 ?>

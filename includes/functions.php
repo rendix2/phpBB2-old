@@ -12,7 +12,6 @@
  ***************************************************************************/
 
 use Dibi\Row;
-use Latte\Engine;
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
 
@@ -232,6 +231,7 @@ function init_userprefs($userdata)
 	global $storage;
 
     $default_lang = '';
+    $sep = DIRECTORY_SEPARATOR;
 
     if ($userdata['user_id'] !== ANONYMOUS) {
         if (!empty($userdata['user_lang'])) {
@@ -249,7 +249,7 @@ function init_userprefs($userdata)
         $default_lang = ltrim(basename(rtrim($board_config['default_lang'])), "'");
     }
 
-	if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $default_lang . '/lang_main.php'))) {
+    if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $default_lang . $sep . 'lang_main.php'))) {
 		if ($userdata['user_id'] !== ANONYMOUS) {
 			// For logged in users, try the board default language next
 			$default_lang = ltrim(basename(rtrim($board_config['default_lang'])), "'");
@@ -260,7 +260,7 @@ function init_userprefs($userdata)
 			$default_lang = 'english';
 		}
 
-        if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $default_lang . '/lang_main.php'))) {
+        if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $default_lang . $sep . 'lang_main.php'))) {
             message_die(CRITICAL_ERROR, 'Could not locate valid language pack');
         }
 	}
@@ -284,14 +284,14 @@ function init_userprefs($userdata)
 
 	$board_config['default_lang'] = $default_lang;
 
-    require_once $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.php';
+    require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'lang_main.php';
 
 	if (defined('IN_ADMIN')) {
-		if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.php'))) {
+        if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'lang_admin.php'))) {
 			$board_config['default_lang'] = 'english';
 		}
 
-        require_once $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.php';
+        require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'lang_admin.php';
 	}
 
 	//
@@ -336,6 +336,8 @@ function setup_style($style)
 	global $board_config, $template, $images, $phpbb_root_path;
 	global $storage;
 
+	$sep = DIRECTORY_SEPARATOR;
+
 	$cache = new Cache($storage, THEMES_TABLE);
 
 	$key = THEMES_TABLE . '_'. (int)$style;
@@ -371,20 +373,20 @@ function setup_style($style)
         }
 	}
 
-	$template_path = 'templates/' ;
+    $template_path = 'templates' . $sep;
 	$template_name = $theme->template_name;
 
 	$template = new Template($phpbb_root_path . $template_path . $template_name);
 
 	if ($template) {
 		$current_template_path = $template_path . $template_name;
-		@require_once $phpbb_root_path . $template_path . $template_name . '/' . $template_name . '.cfg';
+        @require_once $phpbb_root_path . $template_path . $template_name . $sep . $template_name . '.cfg';
 
 		if (!defined('TEMPLATE_CONFIG')) {
 			message_die(CRITICAL_ERROR, "Could not open $template_name template config file", '', __LINE__, __FILE__);
 		}
 
-		$img_lang = file_exists(@phpbb_realpath($phpbb_root_path . $current_template_path . '/images/lang_' . $board_config['default_lang'])) ? $board_config['default_lang'] : 'english';
+        $img_lang = file_exists(@phpbb_realpath($phpbb_root_path . $current_template_path . $sep . 'images' . $sep . 'lang_' . $board_config['default_lang'])) ? $board_config['default_lang'] : 'english';
 
 		foreach ($images as $key => $value) {
 			if (!is_array($value)) {
@@ -566,6 +568,8 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 	global $db, $template, $board_config, $theme, $lang, $phpbb_root_path, $nav_links, $gen_simple_header, $images;
 	global $userdata, $user_ip, $session_length;
 
+	$sep = DIRECTORY_SEPARATOR;
+
     if (defined('HAS_DIED')) {
         die("message_die() was called multiple times. This isn't supposed to happen. Was message_die() used in page_tail.php?");
     }
@@ -625,8 +629,8 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
             // Critical errors mean we cannot rely on _ANY_ DB information being
             // available so we're going to dump out a simple echo'd statement
             //
-            require_once $phpbb_root_path . 'language/lang_english/lang_main.php';
 
+            require_once $phpbb_root_path . 'language' . $sep . 'lang_english' . $sep . 'lang_main.php';
             if ($msg_text === '') {
                 $msg_text = $lang['A_critical_error'];
             }
@@ -643,9 +647,9 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
     if (!defined('HEADER_INC') && $msg_code !== CRITICAL_ERROR) {
         if (empty($lang)) {
             if (!empty($board_config['default_lang'])) {
-                require_once $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.php';
+                require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'lang_main.php';
             } else {
-                require_once $phpbb_root_path . 'language/lang_english/lang_main.php';
+                require_once $phpbb_root_path . 'language' . $sep . 'lang_english' . $sep . 'lang_main.php';
             }
         }
 
@@ -657,9 +661,9 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
         // Load the Page Header
         //
         if (defined('IN_ADMIN')) {
-            require_once $phpbb_root_path . 'admin/page_header_admin.php';
+            require_once $phpbb_root_path . 'admin' . $sep . 'page_header_admin.php';
         } else {
-            require_once $phpbb_root_path . 'includes/page_header.php';
+            require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
         }
 	}
 
@@ -694,9 +698,9 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
         $template->pparse('message_body');
 
         if (defined('IN_ADMIN')) {
-            require_once $phpbb_root_path . 'admin/page_footer_admin.php';
+            require_once $phpbb_root_path . 'admin' . $sep . 'page_footer_admin.php';
         } else {
-            require_once $phpbb_root_path . 'includes/page_tail.php';
+            require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
         }
     } else {
         echo "<html>\n<body>\n" . $msg_title . "\n<br /><br />\n" . $msg_text . "</body>\n</html>";

@@ -22,7 +22,8 @@
 
 define('IN_PHPBB', true);
 
-$phpbb_root_path = './';
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep;
 
 require_once $phpbb_root_path . 'common.php';
 
@@ -275,7 +276,7 @@ showOnline(null, $userdata, $board_config, $theme, $lang, $storage, $template);
 
 $page_title = $lang['Index'];
 
-require_once $phpbb_root_path . 'includes/page_header.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
 
 $template->setFileNames(['body' => 'index_body.tpl']);
 
@@ -446,6 +447,6 @@ foreach ($categories as $i => $category) {
 //
 $template->pparse('body');
 
-require_once $phpbb_root_path . 'includes/page_tail.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
 
 ?>

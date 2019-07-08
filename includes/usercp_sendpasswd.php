@@ -25,6 +25,8 @@ if (!defined('IN_PHPBB')) {
     die('Hacking attempt');
 }
 
+$sep = DIRECTORY_SEPARATOR;
+
 if (isset($_POST['submit'])) {
     CSRF::validatePost();
 
@@ -96,7 +98,7 @@ if (isset($_POST['submit'])) {
 //
 // Output basic page
 //
-require_once $phpbb_root_path . 'includes/page_header.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
 
 $template->setFileNames(['body' => 'profile_send_pass.tpl']);
 make_jumpbox('viewforum.php');
@@ -121,6 +123,6 @@ $template->assignVars(
 
 $template->pparse('body');
 
-require_once $phpbb_root_path . 'includes/page_tail.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
 
 ?>

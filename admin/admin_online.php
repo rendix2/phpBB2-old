@@ -11,9 +11,10 @@ if (!empty($setmodules)) {
 //
 // Let's set the root dir for phpBB
 //
-$phpbb_root_path = './../';
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep . '..' . $sep;
 
-require_once './pagestart.php';
+require_once '.' . $sep . 'pagestart.php';
 
 $template->setFileNames(['body' => 'admin/user_online.tpl']);
 
@@ -128,4 +129,4 @@ if (count($guestUsers)) {
 
 $template->pparse('body');
 
-require_once './page_footer_admin.php';
+require_once '.' . $sep . 'page_footer_admin.php';

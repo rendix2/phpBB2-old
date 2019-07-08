@@ -342,8 +342,8 @@ function username_search($search_match)
 	global $gen_simple_header;
 
 	$gen_simple_header = true;
-
 	$userNamesList = '';
+	$sep = DIRECTORY_SEPARATOR;
 
     if (!empty($search_match)) {
 		$username_search = preg_replace('/\*/', '%', phpbb_clean_username($search_match));
@@ -366,7 +366,7 @@ function username_search($search_match)
 
 	$page_title = $lang['Search'];
 
-    require_once $phpbb_root_path . 'includes/page_header.php';
+    require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
 
     $template->setFileNames(['search_user_body' => 'search_username.tpl']);
 
@@ -394,7 +394,7 @@ function username_search($search_match)
 
 	$template->pparse('search_user_body');
 
-    require_once $phpbb_root_path . 'includes/page_tail.php';
+    require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
 }
 
 ?>

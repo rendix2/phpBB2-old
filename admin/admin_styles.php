@@ -40,14 +40,15 @@ if (!empty($setmodules)) {
 //
 // Check if the user has cancled a confirmation message.
 //
-$phpbb_root_path = './../';
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep . '..' . $sep;
 
 $confirm = isset($_POST['confirm']);
 $cancel  = isset($_POST['cancel']);
 
 $no_page_header = !empty($_POST['send_file']) || !empty($_POST['send_file']) || $cancel;
 
-require_once './pagestart.php';
+require_once '.' . $sep . 'pagestart.php';
 
 if ($cancel) {
     redirect('admin/' . Session::appendSid('admin_styles.php', true));
@@ -66,7 +67,7 @@ switch ($mode) {
 		$style_name = isset($_GET['style']) ? urldecode($_GET['style']) : $_POST['style'];
 	
 		if (isset($install_to)) {
-            require_once $phpbb_root_path. 'templates/' . basename($install_to) . '/theme_info.cfg';
+            require_once $phpbb_root_path. 'templates' . $sep . basename($install_to) . $sep . 'theme_info.cfg';
 
 			$template_names = $$install_to;
 
@@ -641,7 +642,7 @@ switch ($mode) {
 }
 
 if (empty($_POST['send_file'])) {
-    require_once './page_footer_admin.php';
+    require_once '.' . $sep . 'page_footer_admin.php';
 }
 
 ?>

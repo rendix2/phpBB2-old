@@ -12,7 +12,6 @@
  ***************************************************************************/
 
 use Nette\Caching\Cache;
-use Nette\Caching\Storages\FileStorage;
 
 define('IN_PHPBB', 1);
 
@@ -25,9 +24,10 @@ if (!empty($setmodules)) {
 //
 // Let's set the root dir for phpBB
 //
-$phpbb_root_path = './../';
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep . '..' . $sep;
 
-require_once './pagestart.php';
+require_once '.' . $sep . 'pagestart.php';
 
 //
 // Pull all config data
@@ -492,6 +492,6 @@ $template->assignVars(
 
 $template->pparse('body');
 
-require_once './page_footer_admin.php';
+require_once '.' . $sep . 'page_footer_admin.php';
 
 ?>

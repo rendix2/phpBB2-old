@@ -32,9 +32,10 @@ if (!empty($setmodules)) {
 // Load default header
 //
 $no_page_header = true;
-$phpbb_root_path = './../';
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep . '..' . $sep;
 
-require_once './pagestart.php';
+require_once '.' . $sep . 'pagestart.php';
 
 //
 // Increase maximum execution time in case of a lot of users, but don't complain about it if it isn't
@@ -161,7 +162,7 @@ $select_list .= '</select>';
 //
 // Generate page
 //
-require_once './page_header_admin.php';
+require_once '.' . $sep . 'page_header_admin.php';
 
 $template->setFileNames(['body' => 'admin/user_email_body.tpl']);
 
@@ -186,6 +187,6 @@ $template->assignVars(
 
 $template->pparse('body');
 
-require_once './page_footer_admin.php';
+require_once '.' . $sep . 'page_footer_admin.php';
 
 ?>

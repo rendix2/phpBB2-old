@@ -38,7 +38,8 @@ if (!empty($setmodules)) {
 	return;
 }
 
-$phpbb_root_path = './../';
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep . '..' . $sep;
 
 $cancel = isset($_POST['cancel']);
 $no_page_header = $cancel;
@@ -50,7 +51,7 @@ if ((!empty($_GET['export_pack']) && $_GET['export_pack'] === 'send') || (!empty
 	$no_page_header = true;
 }
 
-require_once './pagestart.php';
+require_once '.' . $sep . 'pagestart.php';
 
 if ($cancel) {
 	redirect('admin/' . Session::appendSid('admin_smilies.php', true));
@@ -571,6 +572,6 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
 //
 // Page Footer
 //
-require_once './page_footer_admin.php';
+require_once '.' . $sep . 'page_footer_admin.php';
 
 ?>

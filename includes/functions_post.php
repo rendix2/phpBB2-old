@@ -165,7 +165,9 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 
 	$pollOptionsCount = count($poll_options);
 
-    require_once $phpbb_root_path . 'includes/functions_search.php';
+	$sep = DIRECTORY_SEPARATOR;
+
+    require_once $phpbb_root_path . 'includes' . $sep . 'functions_search.php';
 
 	$current_time = time();
 
@@ -478,8 +480,10 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	global $board_config, $lang, $phpbb_root_path;
 	global $userdata, $user_ip;
 
+	$sep = DIRECTORY_SEPARATOR;
+
 	if ($mode !== 'poll_delete') {
-        require_once $phpbb_root_path . 'includes/functions_search.php';
+        require_once $phpbb_root_path . 'includes' . $sep . 'functions_search.php';
 
 		dibi::delete(POSTS_TABLE)
             ->where('post_id = %i', $post_id)
@@ -690,6 +694,7 @@ function generate_smilies($mode, $page_id)
 	$inline_columns = 4;
 	$inline_rows = 5;
 	$window_columns = 8;
+	$sep = DIRECTORY_SEPARATOR;
 
 	if ($mode === 'window') {
 		$userdata = Session::pageStart($user_ip, $page_id);
@@ -699,7 +704,7 @@ function generate_smilies($mode, $page_id)
 
 		$page_title = $lang['Emoticons'];
 
-        require_once $phpbb_root_path . 'includes/page_header.php';
+        require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
 
         $template->setFileNames(['smiliesbody' => 'posting_smilies.tpl']);
     }
@@ -751,7 +756,7 @@ function generate_smilies($mode, $page_id)
                 $template->assignBlockVars('smilies_row.smilies_col',
                     [
                         'SMILEY_CODE' => $data['code'],
-                        'SMILEY_IMG'  => $board_config['smilies_path'] . '/' . $smile_url,
+                        'SMILEY_IMG'  => $board_config['smilies_path'] . $sep . $smile_url,
                         'SMILEY_DESC' => $data['emoticon']
                     ]
                 );
@@ -794,7 +799,7 @@ function generate_smilies($mode, $page_id)
     if ($mode === 'window') {
 		$template->pparse('smiliesbody');
 
-        require_once $phpbb_root_path . 'includes/page_tail.php';
+        require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
 	}
 }
 

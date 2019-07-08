@@ -21,7 +21,9 @@
  ***************************************************************************/
 
 define('IN_PHPBB', true);
-$phpbb_root_path = './';
+
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep;
 
 require_once $phpbb_root_path . 'common.php';
 
@@ -159,8 +161,8 @@ $tracking_forums = isset($_COOKIE[$forum_cookie_name]) ? unserialize($_COOKIE[$f
 // Do the forum Prune
 //
 if ($is_auth['auth_mod'] && $board_config['prune_enable'] && $forum->prune_next < time() && $forum->prune_enable) {
-    require_once $phpbb_root_path . 'includes/prune.php';
-    require_once $phpbb_root_path . 'includes/functions_admin.php';
+    require_once $phpbb_root_path . 'includes' . $sep . 'prune.php';
+    require_once $phpbb_root_path . 'includes' . $sep . 'functions_admin.php';
 
     auto_prune($forum_id);
 }
@@ -402,7 +404,7 @@ if ($board_config['show_online']) {
 
 $page_title = $lang['View_forum'] . ' - ' . $forum->forum_name;
 
-require_once $phpbb_root_path . 'includes/page_header.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
 
 $template->setFileNames(['body' => 'viewforum_body.tpl']);
 make_jumpbox('viewforum.php');
@@ -660,6 +662,6 @@ $template->pparse('body');
 //
 // Page footer
 //
-require_once $phpbb_root_path . 'includes/page_tail.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
 
 ?>

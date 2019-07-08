@@ -21,10 +21,11 @@ use Nette\Caching\Cache;use Nette\Utils\Finder;
  ***************************************************************************/
 
 define('IN_PHPBB', 1);
-$phpbb_root_path = './../';
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep . '..' . $sep;
 
 require_once $phpbb_root_path . 'common.php';
-require_once $phpbb_root_path . 'includes/functions_dbmtnc.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'functions_dbmtnc.php';
 
 //
 // addslashes to vars if magic_quotes_gpc is off
@@ -81,9 +82,9 @@ if ($mode === 'download') {
 if (isset($_POST['lg']) || isset($_GET['lg'])) {
 	$lg = isset($_POST['lg']) ? htmlspecialchars($_POST['lg']) : htmlspecialchars($_GET['lg']);
 
-	if (file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $lg . '/lang_dbmtnc.php'))) {
-		require_once $phpbb_root_path . 'language/lang_' . $lg . '/lang_dbmtnc.php';
-		require_once $phpbb_root_path . 'language/lang_' . $lg . '/lang_main.php';
+	if (file_exists(@phpbb_realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $lg . $sep . 'lang_dbmtnc.php'))) {
+		require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $lg . $sep . 'lang_dbmtnc.php';
+		require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $lg .  $sep . 'lang_main.php';
 	} else {
 		$lg = '';
 	}
@@ -109,12 +110,12 @@ if ($lg === '') {
 
 	if (count($lang_list) === 1) {
 		$lg = $lang_list[0];
-		require_once $phpbb_root_path . 'language/lang_' . $lg . '/lang_dbmtnc.php';
-		require_once $phpbb_root_path . 'language/lang_' . $lg . '/lang_main.php';
+		require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $lg . $sep . 'lang_dbmtnc.php';
+		require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $lg . $sep . 'lang_main.php';
 	} else { // Try to load english language
-		if (file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_english/lang_dbmtnc.php'))) {
-			require_once $phpbb_root_path . 'language/lang_english/lang_dbmtnc.php';
-			require_once $phpbb_root_path . 'language/lang_english/lang_main.php';
+		if (file_exists(@phpbb_realpath($phpbb_root_path . 'language' . $sep . 'lang_english' . $sep . 'lang_dbmtnc.php'))) {
+			require_once $phpbb_root_path . 'language' . $sep . 'lang_english' . $sep . 'lang_dbmtnc.php';
+			require_once $phpbb_root_path . 'language' . $sep . 'lang_english' . $sep . 'lang_main.php';
 			$mode = 'select_lang';
 		} else {
 			$lang['Forum_Home'] = 'Forum Home';

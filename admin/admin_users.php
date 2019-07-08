@@ -29,11 +29,12 @@ if (!empty($setmodules)) {
 	return;
 }
 
-$phpbb_root_path = './../';
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep . '..' . $sep;
 
-require_once './pagestart.php';
-require_once $phpbb_root_path . 'includes/bbcode.php';
-require_once $phpbb_root_path . 'includes/functions_post.php';
+require_once '.' . $sep . 'pagestart.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'bbcode.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'functions_post.php';
 
 $html_entities_match   = ['#<#', '#>#'];
 $html_entities_replace = ['&lt;', '&gt;'];
@@ -225,7 +226,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 	}
 
     if (isset($_POST['submit'])) {
-        require_once $phpbb_root_path . 'includes/usercp_avatar.php';
+        require_once $phpbb_root_path . 'includes' . $sep . 'usercp_avatar.php';
 
         $error = false;
 
@@ -663,7 +664,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 
             $template->setFileNames(['body' => 'admin/user_avatar_gallery.tpl']);
 
-            require_once $phpbb_root_path . 'includes' . DIRECTORY_SEPARATOR . 'usercp_avatar.php';
+            require_once $phpbb_root_path . 'includes' . $sep . 'usercp_avatar.php';
 
             display_avatar_gallery($mode, $_POST['avatargallery'], $user_id, $email, $current_email, $coppa, $username, $email, $new_password, $cur_password, $password_confirm, $website, $location, $occupation, $interests, $signature, $viewemail, $notifypm, $popuppm, $notifyreply, $attachsig, $allowhtml, $allowbbcode, $allowsmilies, $allowviewonline, $user_style, $user_lang, $user_timezone, $user_dateformat, $userdata['session_id'], true, $template, $user_status, $user_allowavatar, $user_allowpm, $user_rank);
         }
@@ -865,6 +866,6 @@ else
 
 }
 
-require_once './page_footer_admin.php';
+require_once '.' . $sep . 'page_footer_admin.php';
 
 ?>

@@ -22,7 +22,8 @@
 
 define('IN_PHPBB', true);
 
-$phpbb_root_path = './';
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep;
 
 require_once $phpbb_root_path . 'common.php';
 
@@ -314,7 +315,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 
 		$page_title = $lang['Group_Control_Panel'];
 
-        require_once $phpbb_root_path . 'includes/page_header.php';
+        require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
 
         $template->setFileNames(['confirm' => 'confirm_body.tpl']);
 
@@ -331,7 +332,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 
         $template->pparse('confirm');
 
-        require_once $phpbb_root_path . 'includes/page_tail.php';
+        require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
 	}
 
 } elseif ($group_id) {
@@ -769,7 +770,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 
 	$page_title = $lang['Group_Control_Panel'];
 
-    require_once $phpbb_root_path . 'includes/page_header.php';
+    require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
 
 	//
 	// Load templates
@@ -1138,6 +1139,6 @@ if (isset($_POST['groupstatus']) && $group_id) {
 	}
 }
 
-require_once $phpbb_root_path . 'includes/page_tail.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
 
 ?>

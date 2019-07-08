@@ -21,7 +21,9 @@
  ***************************************************************************/
 
 define('IN_PHPBB', true);
-$phpbb_root_path = './';
+
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep;
 
 require_once $phpbb_root_path . 'common.php';
 
@@ -56,7 +58,7 @@ if (isset($_GET[POST_MODE])) {
     $l_title = $lang['FAQ'];
 }
 
-require_once $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/' . $lang_file . '.php';
+require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . $lang_file . '.php';
 
 //
 // Pull the array data from the lang pack
@@ -90,7 +92,7 @@ for ($i = 0; $i < $faq_count; $i++) {
 //
 $page_title = $l_title;
 
-require_once $phpbb_root_path . 'includes/page_header.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
 
 $template->setFileNames(['body' => 'faq_body.tpl']);
 make_jumpbox('viewforum.php');
@@ -141,6 +143,6 @@ for ($i = 0; $i < $faq_block_count; $i++) {
 
 $template->pparse('body');
 
-require_once $phpbb_root_path . 'includes/page_tail.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
 
 ?>

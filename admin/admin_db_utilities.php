@@ -49,9 +49,10 @@ if (!empty($setmodules)) {
 // Load default header
 //
 $no_page_header = true;
-$phpbb_root_path = './../';
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep . '..' . $sep;
 
-require_once './pagestart.php';
+require_once '.' . $sep . 'pagestart.php';
 require_once $phpbb_root_path . 'includes/sql_parse.php';
 
 //
@@ -79,8 +80,8 @@ if (isset($_GET['perform']) || isset($_POST['perform'])) {
 				$dbpasswd
 			);
 
-			$dir_separator = DIRECTORY_SEPARATOR;
-			$backup_file_name = $phpbb_root_path . $dir_separator . 'temp' . $dir_separator .'phpbb_db_backup.sql';
+			$sep = DIRECTORY_SEPARATOR;
+			$backup_file_name = $phpbb_root_path . $sep . 'temp' . $sep .'phpbb_db_backup.sql';
 
 			$dumper->start($backup_file_name);
 
@@ -116,7 +117,7 @@ if (isset($_GET['perform']) || isset($_POST['perform'])) {
 					message_die(GENERAL_ERROR, $lang['Restore_Error_uploading']);
 				}
 
-				require_once './page_header_admin.php';
+				require_once '.' . $sep . 'page_header_admin.php';
 
 				$template->setFileNames(['body' => 'admin/admin_message_body.tpl']);
 
@@ -134,7 +135,7 @@ if (isset($_GET['perform']) || isset($_POST['perform'])) {
 				//
 				// Define Template files...
 				//
-				require_once './page_header_admin.php';
+				require_once '.' . $sep . 'page_header_admin.php';
 
 				$template->setFileNames(['body' => 'admin/db_utils_restore_body.tpl']);
 
@@ -157,6 +158,6 @@ if (isset($_GET['perform']) || isset($_POST['perform'])) {
 	}
 }
 
-require_once './page_footer_admin.php';
+require_once '.' . $sep . 'page_footer_admin.php';
 
 ?>
