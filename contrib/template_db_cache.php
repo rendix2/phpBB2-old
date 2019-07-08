@@ -306,10 +306,12 @@ class Template
 	 */
 	public function makeFileName($filename)
 	{
+	    $sep = DIRECTORY_SEPARATOR;
+
 		// Check if it's an absolute or relative path.
 		if (substr($filename, 0, 1) !== '/')
 		{
-			$filename = $this->root . '/' . $filename;
+            $filename = $this->root . $sep . $filename;
 		}
 
 		if (!file_exists($filename))

@@ -219,7 +219,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 			$user_dateformat = stripslashes($user_dateformat);
 
             if (!isset($_POST['cancelavatar'])) {
-				$user_avatar = $user_avatar_category . '/' . $user_avatar_local;
+				$user_avatar = $user_avatar_category . $sep . $user_avatar_local;
 				$user_avatar_type = USER_AVATAR_GALLERY;
 			}
 		}
@@ -301,8 +301,10 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 
 		if (isset($_POST['avatardel'])) {
 			if ($this_userdata['user_avatar_type'] === USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] !== '') {
-				if (@file_exists(@phpbb_realpath('./../' . $board_config['avatar_path'] . '/' . $this_userdata['user_avatar']))) {
-					@unlink('./../' . $board_config['avatar_path'] . '/' . $this_userdata['user_avatar']);
+                $path = $phpbb_root_path . $board_config['avatar_path'] . $sep . $this_userdata['user_avatar'];
+
+				if (@file_exists(@phpbb_realpath($path))) {
+                    @unlink($path);
 				}
 			}
 
@@ -360,11 +362,13 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 								$avatar_filename = $user_id . $imgtype;
 
 								if ($this_userdata['user_avatar_type'] === USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] !== '') {
-									if (@file_exists(@phpbb_realpath('./../' . $board_config['avatar_path'] . '/' . $this_userdata['user_avatar']))) {
-										@unlink('./../' . $board_config['avatar_path'] . '/' . $this_userdata['user_avatar']);
+                                    $path = $phpbb_root_path . $board_config['avatar_path'] . $sep . $this_userdata['user_avatar'];
+
+									if (@file_exists(@phpbb_realpath($path))) {
+										@unlink($path);
 									}
 								}
-								@copy($user_avatar_loc, './../' . $board_config['avatar_path'] . "/$avatar_filename");
+                                @copy($user_avatar_loc, $phpbb_root_path . $board_config['avatar_path'] . $sep . $avatar_filename);
 
                                 $avatar_sql[] = ['user_avatar' => $avatar_filename, 'user_avatar_type' => USER_AVATAR_UPLOAD];
 							} else {
@@ -454,11 +458,15 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 
 										if ($this_userdata['user_avatar_type'] === USER_AVATAR_UPLOAD &&
                                             $this_userdata['user_avatar'] !== '') {
-											if (file_exists(@phpbb_realpath('./../' . $board_config['avatar_path'] . '/' . $this_userdata['user_avatar']))) {
-												@unlink('./../' . $board_config['avatar_path'] . '/' . $this_userdata['user_avatar']);
+
+										    $path = $phpbb_root_path . $board_config['avatar_path'] . $sep . $this_userdata['user_avatar'];
+
+
+											if (file_exists(@phpbb_realpath($path))) {
+												@unlink($path);
 											}
 										}
-										@copy($tmp_filename, './../' . $board_config['avatar_path'] . "/$avatar_filename");
+                                        @copy($tmp_filename, $phpbb_root_path . $board_config['avatar_path'] . $sep . $avatar_filename);
 										@unlink($tmp_filename);
 
                                         $avatar_sql = ['user_avatar' => $avatar_filename, 'user_avatar_type' => USER_AVATAR_UPLOAD];
@@ -822,7 +830,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
             ]
 		);
 
-        if (file_exists(@phpbb_realpath('./../' . $board_config['avatar_path'])) && ($board_config['allow_avatar_upload'] === '1')) {
+        if (file_exists(@phpbb_realpath($phpbb_root_path . $board_config['avatar_path'])) && ($board_config['allow_avatar_upload'] === '1')) {
             if ($form_enctype !== '') {
                 $template->assignBlockVars('avatar_local_upload', []);
             }
@@ -830,7 +838,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
             $template->assignBlockVars('avatar_remote_upload', []);
         }
 
-        if (file_exists(@phpbb_realpath('./../' . $board_config['avatar_gallery_path'])) && ($board_config['allow_avatar_local'] === '1')) {
+        if (file_exists(@phpbb_realpath($phpbb_root_path . $board_config['avatar_gallery_path'])) && ($board_config['allow_avatar_local'] === '1')) {
             $template->assignBlockVars('avatar_local_gallery', []);
         }
 

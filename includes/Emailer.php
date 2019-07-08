@@ -191,6 +191,8 @@ class Emailer
 	{
 		global $board_config, $phpbb_root_path;
 
+		$sep = DIRECTORY_SEPARATOR;
+
 		if (trim($template_file) === '') {
 			message_die(GENERAL_ERROR, 'No template file set', '', __LINE__, __FILE__);
 		}
@@ -200,10 +202,10 @@ class Emailer
 		}
 
 		if (empty($this->tpl_msg[$template_lang . $template_file])) {
-			$tpl_file = $phpbb_root_path . 'language/lang_' . $template_lang . '/email/' . $template_file . '.tpl';
+            $tpl_file = $phpbb_root_path . 'language' . $sep . 'lang_' . $template_lang . $sep . 'email' . $sep . $template_file . '.tpl';
 
 			if (!@file_exists(@phpbb_realpath($tpl_file))) {
-				$tpl_file = $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/email/' . $template_file . '.tpl';
+                $tpl_file = $phpbb_root_path . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'email' . $sep . $template_file . '.tpl';
 
 				if (!@file_exists(@phpbb_realpath($tpl_file)))
 				{

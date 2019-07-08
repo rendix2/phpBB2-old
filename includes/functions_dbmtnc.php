@@ -151,6 +151,9 @@ $default_config = [
     'dbmtnc_disallow_postcounter'     => '0',
     'dbmtnc_disallow_rebuild'         => '0',
 ];
+
+$sep = DIRECTORY_SEPARATOR;
+
 // append data added in later versions
 if (isset($board_config) && isset($board_config['version'])) {
     $phpbb_version = explode('.', substr($board_config['version'], 1));
@@ -230,7 +233,7 @@ function throw_error($msg_text = '', $err_line = '', $err_file = '')
 	//
 	echo('<p class="gen"><a href="' . Session::appendSid("admin_db_maintenance.php") . '">' . $lang['Back_to_DB_Maintenance'] . "</a></p>\n");
 
-    require_once './page_footer_admin.php';
+    require_once '.' . $sep . 'page_footer_admin.php';
 	exit;
 }
 
@@ -627,6 +630,8 @@ function language_select($default, $select_name = 'language', $file_to_check = '
 {
 	global $phpbb_root_path, $lang;
 
+	$sep = DIRECTORY_SEPARATOR;
+
     $lg = [];
 
     $files = Finder::findDirectories('^lang_')->from($phpbb_root_path . $dirname);
@@ -635,7 +640,7 @@ function language_select($default, $select_name = 'language', $file_to_check = '
      * @var SplFileInfo $file
      */
     foreach ($files as $file) {
-        if (is_file(@phpbb_realpath($phpbb_root_path . $dirname . '/' . $file->getFilename() . '/lang_' . $file_to_check . '.php'))) {
+        if (is_file(@phpbb_realpath($phpbb_root_path . $dirname . $sep . $file->getFilename() . $sep . 'lang_' . $file_to_check . '.php'))) {
             $filename = trim(str_replace('lang_', '', $file->getFilename()));
             $displayName = preg_replace('/^(.*?)_(.*)$/', "\\1 [ \\2 ]", $filename);
             $displayName = preg_replace("/\[(.*?)_(.*)\]/", "[ \\1 - \\2 ]", $displayName);

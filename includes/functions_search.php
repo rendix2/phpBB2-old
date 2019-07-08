@@ -128,8 +128,10 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 {
 	global $phpbb_root_path, $board_config, $lang, $dbms;
 
-	$stopword_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/search_stopwords.txt');
-	$synonym_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/search_synonyms.txt');
+	$sep = DIRECTORY_SEPARATOR;
+
+    $stopword_array = @file($phpbb_root_path . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'search_stopwords.txt');
+    $synonym_array = @file($phpbb_root_path . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'search_synonyms.txt');
 
 	$search_raw_words = [];
 	$search_raw_words['text'] = split_words(clean_words('post', $post_text, $stopword_array, $synonym_array));

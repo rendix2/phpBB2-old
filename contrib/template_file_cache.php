@@ -118,17 +118,19 @@ class Template {
 			return false;
 		}
 
+        $sep = DIRECTORY_SEPARATOR;
+
 		$this->root = phpbb_realpath($dir);
 		$this->cachedir = phpbb_realpath($phpbb_root_path . $this->cache_root) . substr($dir, strrpos($dir, '/')) . '/';
 
-		if (!file_exists($this->cachedir . 'admin/'))
+        if (!file_exists($this->cachedir . 'admin' . $sep))
 		{
 			@umask(0);
 			if (!file_exists($this->cachedir))
 			{
 				mkdir($this->cachedir);
 			}
-			mkdir($this->cachedir . 'admin/');
+            mkdir($this->cachedir . 'admin' . $sep);
 		}
 
 		return true;
@@ -313,10 +315,12 @@ class Template {
 	 */
 	public function makeFileName($filename)
 	{
+	    $sep = DIRECTORY_SEPARATOR;
+
 		// Check if it's an absolute or relative path.
 		if (substr($filename, 0, 1) !== '/')
 		{
-			$filename = phpbb_realpath($this->root . '/' . $filename);
+            $filename = phpbb_realpath($this->root . $sep . $filename);
 		}
 
 		if (!file_exists($filename))

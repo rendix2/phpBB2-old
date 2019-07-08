@@ -215,7 +215,7 @@ if (
 		$user_dateformat = stripslashes($user_dateformat);
 
         if (!isset($_POST['cancelavatar'])) {
-			$user_avatar = $user_avatar_category . '/' . $user_avatar_local;
+			$user_avatar = $user_avatar_category . $sep . $user_avatar_local;
 			$user_avatar_type = USER_AVATAR_GALLERY;
 		}
 	}

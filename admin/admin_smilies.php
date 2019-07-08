@@ -82,7 +82,7 @@ $smiley_paks = [];
  * @var SplFileInfo $smile
  */
 foreach ($smilies as $smile) {
-    $img_size = @getimagesize($phpbb_root_path . $board_config['smilies_path'] . '/' . $smile->getFilename());
+    $img_size = @getimagesize($phpbb_root_path . $board_config['smilies_path'] . $sep . $smile->getFilename());
 
     if ($img_size[0] && $img_size[1]) {
         $smiley_images[] = $smile->getFilename();
@@ -131,7 +131,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
             }
 		}
 
-		$fcontents = @file($phpbb_root_path . $board_config['smilies_path'] . '/'. $smile_pak);
+        $fcontents = @file($phpbb_root_path . $board_config['smilies_path'] . $sep . $smile_pak);
 
 		if (empty($fcontents)) {
 			message_die(GENERAL_ERROR, "Couldn't read smiley pak file", '', __LINE__, __FILE__);
@@ -277,7 +277,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
             'L_SUBMIT'         => $lang['Submit'],
             'L_RESET'          => $lang['Reset'],
 
-            'SMILEY_IMG' => $phpbb_root_path . $board_config['smilies_path'] . '/' . $smiley_images[0],
+            'SMILEY_IMG' => $phpbb_root_path . $board_config['smilies_path'] . $sep . $smiley_images[0],
 
             'S_SMILEY_ACTION'    => Session::appendSid('admin_smilies.php'),
             'S_HIDDEN_FIELDS'    => $s_hidden_fields,
@@ -385,7 +385,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
                     'L_SUBMIT'         => $lang['Submit'],
                     'L_RESET'          => $lang['Reset'],
 
-                    'SMILEY_IMG' => $phpbb_root_path . $board_config['smilies_path'] . '/' . $smiley_edit_img,
+                    'SMILEY_IMG' => $phpbb_root_path . $board_config['smilies_path'] . $sep . $smiley_edit_img,
 
                     'S_SMILEY_ACTION'    => Session::appendSid('admin_smilies.php'),
                     'S_HIDDEN_FIELDS'    => $s_hidden_fields,
@@ -553,7 +553,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
             'ROW_COLOR' => '#' . $row_color,
             'ROW_CLASS' => $row_class,
 
-            'SMILEY_IMG' => $phpbb_root_path . $board_config['smilies_path'] . '/' . $smiley->smile_url,
+            'SMILEY_IMG' => $phpbb_root_path . $board_config['smilies_path'] . $sep . $smiley->smile_url,
             'CODE'       => $smiley->code,
             'EMOT'       => $smiley->emoticon,
 

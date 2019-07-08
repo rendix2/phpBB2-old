@@ -139,6 +139,8 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 	$width = $height = 0;
 	$type = '';
 
+	$sep = DIRECTORY_SEPARATOR;
+
 	if ($avatar_mode === 'remote' && preg_match('/^(http:\/\/)?([\w\-\.]+)\:?([0-9]*)\/([^ \?&=\#\"\n\r\t<]*?(\.(jpg|jpeg|gif|png)))$/', $avatar_filename, $url_ary)) {
         if (empty($url_ary[4])) {
 			$error = true;
@@ -179,7 +181,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 		if (!$error && $avatar_filesize > 0 && $avatar_filesize < $board_config['avatar_filesize']) {
 			$avatar_data = substr($avatar_data, mb_strlen($avatar_data) - $avatar_filesize, $avatar_filesize);
 
-			$tmp_path = './' . $board_config['avatar_path'] . '/tmp';
+            $tmp_path = '.' . $sep . $board_config['avatar_path'] . $sep . 'tmp';
 			$tmp_filename = tempnam($tmp_path, uniqid(rand()) . '-');
 
 			$fptr = @fopen($tmp_filename, 'wb');
@@ -261,7 +263,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 		}
 
 		if ($avatar_mode === 'remote') {
-			@copy($tmp_filename, './' . $board_config['avatar_path'] . "/$new_filename");
+            @copy($tmp_filename, '.' . $sep . $board_config['avatar_path'] . $sep . $new_filename);
 			@unlink($tmp_filename);
 		} else {
             if (@ini_get('open_basedir') !== '') {
@@ -277,10 +279,10 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
             if (!is_uploaded_file($avatar_filename)) {
 				message_die(GENERAL_ERROR, 'Unable to upload file', '', __LINE__, __FILE__);
 			}
-			$move_file($avatar_filename, './' . $board_config['avatar_path'] . "/$new_filename");
+			$move_file($avatar_filename, '.' . $sep . $board_config['avatar_path'] . $sep . $new_filename);
 		}
 
-		@chmod('./' . $board_config['avatar_path'] . "/$new_filename", 0777);
+		@chmod('.' . $sep . $board_config['avatar_path'] . $sep . $new_filename, 0777);
 
 		return ['user_avatar' => $new_filename, 'user_avatar_type' => USER_AVATAR_UPLOAD];
 	} else {

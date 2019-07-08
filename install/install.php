@@ -21,6 +21,8 @@ use Nette\Utils\Finder;
  *
  ***************************************************************************/
 
+$sep = DIRECTORY_SEPARATOR;
+
 // ---------
 // FUNCTIONS
 //
@@ -143,6 +145,8 @@ function guess_lang()
 {
 	global $phpbb_root_path, $_SERVER;
 
+	$sep = DIRECTORY_SEPARATOR;
+
 	// The order here _is_ important, at least for major_minor
 	// matches. Don't go moving these around without checking with
 	// me first - psoTFX
@@ -203,7 +207,7 @@ function guess_lang()
 		foreach ($accept_languages as $accept_language) {
 			foreach ($match_lang as $lang => $match) {
 				if (preg_match('#' . $match . '#i', trim($accept_language))) {
-					if (file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $lang))) {
+                    if (file_exists(@phpbb_realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $lang))) {
 						return $lang;
 					}
 				}
@@ -225,27 +229,27 @@ error_reporting  (E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninit
 define('IN_PHPBB', true);
 // Uncomment the following line to completely disable the ftp option...
 // define('NO_FTP', true);
-$phpbb_root_path = './../';
+$phpbb_root_path = '.' . $sep . '..' . $sep;
 
 // Initialise some basic arrays
 $userdata = [];
 $lang = [];
 $error = false;
 
-require_once $phpbb_root_path . 'vendor/autoload.php';
+require_once $phpbb_root_path . 'vendor' . $sep . 'autoload.php';
 
 $loader = new Nette\Loaders\RobotLoader;
 
 // Add directories for RobotLoader to index
-$loader->addDirectory(__DIR__ . '/includes');
+$loader->addDirectory(__DIR__ . $sep . 'includes');
 
 // And set caching to the 'temp' directory
-$loader->setTempDirectory(__DIR__ . '/temp');
+$loader->setTempDirectory(__DIR__ . $sep . 'temp');
 $loader->register(); // Run the RobotLoader
 
 // Include some required functions
-require_once $phpbb_root_path.'includes/constants.php';
-require_once $phpbb_root_path.'includes/functions.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'constants.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'functions.php';
 
 // Define schema info
 $available_dbms_temp = [
@@ -371,8 +375,8 @@ if (defined('PHPBB_INSTALLED')) {
 }
 
 // Import language file, setup template ...
-require_once $phpbb_root_path.'language/lang_' . $language . '/lang_main.php';
-require_once $phpbb_root_path.'language/lang_' . $language . '/lang_admin.php';
+require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $language . $sep . 'lang_main.php';
+require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $language . $sep . 'lang_admin.php';
 
 // Ok for the time being I'm commenting this out whilst I'm working on
 // better integration of the install with upgrade as per Bart's request
@@ -666,8 +670,8 @@ else
 
     $connection->connect();
 
-	$dbms_schema = 'schemas/' . $available_dbms[$dbms]['SCHEMA'] . '_schema.sql';
-	$dbms_basic = 'schemas/' . $available_dbms[$dbms]['SCHEMA'] . '_basic.sql';
+    $dbms_schema = 'schemas' . $sep . $available_dbms[$dbms]['SCHEMA'] . '_schema.sql';
+    $dbms_basic = 'schemas' . $sep . $available_dbms[$dbms]['SCHEMA'] . '_basic.sql';
 
 	$remove_remarks = $available_dbms[$dbms]['COMMENTS'];
 	$delimiter = $available_dbms[$dbms]['DELIM']; 
@@ -677,7 +681,7 @@ else
 		if ($upgrade !== 1) {
 			if ($dbms !== 'msaccess') {
 				// Load in the sql parser
-                require_once $phpbb_root_path.'includes/sql_parse.php';
+                require_once $phpbb_root_path . 'includes' . $sep . 'sql_parse.php';
 
 				// Ok we have the db info go ahead and read in the relevant schema
 				// and work on building the table.. probably ought to provide some

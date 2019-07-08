@@ -39,7 +39,7 @@ require_once '.' . $sep . 'pagestart.php';
 if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
     $setmodules = 1;
 
-    $adminFiles = Finder::findFiles('admin_*.php')->from('./');
+    $adminFiles = Finder::findFiles('admin_*.php')->from('.' . $sep);
 
     /**
      * @var SplFileInfo $adminFile
