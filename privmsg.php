@@ -264,22 +264,49 @@ if ($mode === 'newpm') {
 	// a copy in the posters sent box
 	//
 	if (($privmsg->privmsgs_type === PRIVMSGS_NEW_MAIL || $privmsg->privmsgs_type === PRIVMSGS_UNREAD_MAIL) && $folder === 'inbox') {
-		// Update appropriate counter
-		switch ($privmsg->privmsgs_type) {
-			case PRIVMSGS_NEW_MAIL:
-			    dibi::update(USERS_TABLE, ['user_new_privmsg%sql' => 'user_new_privmsg - 1'])
+	    // Update appropriate counter
+        switch ($privmsg->privmsgs_type) {
+            case PRIVMSGS_NEW_MAIL:
+                $countUnread = dibi::select('COUNT(*)')
+                    ->as('count')
+                    ->from(PRIVMSGS_TABLE)
+                    ->where('privmsgs_to_userid = %i', $userdata['user_id'])
+                    ->where('privmsgs_type = %i', PRIVMSGS_NEW_MAIL)
+                    ->fetchSingle();
+
+                $countUnread--;
+
+                if ($countUnread < 0) {
+                    $countUnread = 0;
+                }
+
+                dibi::update(USERS_TABLE, ['user_new_privmsg' => 'user_new_privmsg - 1'])
                     ->where('user_id = %i', $userdata['user_id'])
                     ->execute();
-				break;
-			case PRIVMSGS_UNREAD_MAIL:
-                dibi::update(USERS_TABLE, ['user_unread_privmsg%sql' => 'user_unread_privmsg - 1'])
+                break;
+            case PRIVMSGS_UNREAD_MAIL:
+                $countUnread = dibi::select('COUNT(*)')
+                    ->as('count')
+                    ->from(PRIVMSGS_TABLE)
+                    ->where('privmsgs_to_userid = %i', $userdata['user_id'])
+                    ->where('privmsgs_type = %i', PRIVMSGS_UNREAD_MAIL)
+                    ->fetchSingle();
+
+                $countUnread--;
+
+                if ($countUnread < 0) {
+                    $countUnread = 0;
+                }
+
+                dibi::update(USERS_TABLE, ['user_unread_privmsg%sql' => $countUnread])
                     ->where('user_id = %i', $userdata['user_id'])
                     ->execute();
-				break;
-		}
+                break;
+        }
 
 		dibi::update(PRIVMSGS_TABLE, ['privmsgs_type' => PRIVMSGS_READ_MAIL])
-            ->where('privmsgs_id = %i', $privmsg->privmsgs_id);
+            ->where('privmsgs_id = %i', $privmsg->privmsgs_id)
+            ->execute();
 
         $sent_info = dibi::select('COUNT(privmsgs_id)')
             ->as('sent_items')
