@@ -775,6 +775,10 @@ $lang['Version_of_board'] = 'Version of <a href="http://www.phpbb.com">phpbb</a>
 $lang['Version_of_PHP'] = 'Version of <a href="http://www.php.net/">PHP</a>';
 $lang['Version_of_MySQL'] = 'Version of <a href="http://www.mysql.com/">MySQL</a>';
 
+$lang['User_id'] = 'User ID';
+$lang['Group_users'] = 'Group users';
+$lang['Delete_group_member'] = 'The member of group was successfully removed';
+
 //
 // That's all Folks!
 // -------------------------------------------------

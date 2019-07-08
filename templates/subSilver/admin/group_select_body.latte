@@ -14,6 +14,7 @@
              <th class="thHead">{$L_GROUP_MODERATOR}</th>
              <th class="thHead">{$L_GROUP_PERMISSIONS}</th>
              <th class="thHead"></th>
+             <th class="thHead"></th>
          </tr>
      </thead>
 {foreach $D_GROUPS as $group}
@@ -38,6 +39,9 @@
         </td>
         <td class="{$iterator->isEven() ? row1 : row2}">
             <a href="admin_groups.php?{$C_GROUP_ID}={$group->group_id}&{$S_SID}&mode=delete">{$L_GROUP_DELETE}</a>
+        </td>
+        <td class="{$iterator->isEven() ? row1 : row2}">
+            <a href="admin_groups.php?{$C_GROUP_ID}={$group->group_id}&{$S_SID}&mode=users">{$L_GROUP_USERS}</a>
         </td>
     </tr>
 {/foreach}
