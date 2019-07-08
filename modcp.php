@@ -29,11 +29,13 @@
  */
 
 define('IN_PHPBB', true);
-$phpbb_root_path = './';
+
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep;
 
 require_once $phpbb_root_path . 'common.php';
-require_once $phpbb_root_path . 'includes/bbcode.php';
-require_once $phpbb_root_path . 'includes/functions_admin.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'bbcode.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'functions_admin.php';
 
 //
 // Obtain initial var settings
@@ -183,14 +185,14 @@ switch ($mode) {
 
 		$page_title = $lang['Mod_CP'];
 
-        require_once $phpbb_root_path . 'includes/page_header.php';
+        require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
 
         if ($confirm) {
             if (empty($_POST['topic_id_list']) && empty($topic_id)) {
                 message_die(GENERAL_MESSAGE, $lang['None_selected']);
             }
 
-            require_once $phpbb_root_path . 'includes/functions_search.php';
+            require_once $phpbb_root_path . 'includes' . $sep . 'functions_search.php';
 
             $topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topic_id];
 
@@ -334,14 +336,14 @@ switch ($mode) {
 
             $template->pparse('confirm');
 
-            require_once $phpbb_root_path . 'includes/page_tail.php';
+            require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
 		}
 		break;
 
 	case 'move':
 		$page_title = $lang['Mod_CP'];
 
-        require_once $phpbb_root_path . 'includes/page_header.php';
+        require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
 
         if ($confirm) {
             if (empty($_POST['topic_id_list']) && empty($topic_id)) {
@@ -355,7 +357,7 @@ switch ($mode) {
                 ->from(FORUMS_TABLE)
                 ->where('forum_id = %i', $new_forum_id)
                 ->fetchSingle();
-			
+
 			if (!$check_forum_id) {
 				message_die(GENERAL_MESSAGE, 'New forum does not exist');
 			}
@@ -465,7 +467,7 @@ switch ($mode) {
 
             $template->pparse('movetopic');
 
-            require_once $phpbb_root_path . 'includes/page_tail.php';
+            require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
 		}
 		break;
 
@@ -541,7 +543,7 @@ switch ($mode) {
 	case 'split':
 		$page_title = $lang['Mod_CP'];
 
-        require_once $phpbb_root_path . 'includes/page_header.php';
+        require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
 
         $posts = [];
 
@@ -596,7 +598,7 @@ switch ($mode) {
                     ->from(FORUMS_TABLE)
                     ->where('forum_id = %i', $new_forum_id)
                     ->fetchSingle();
-			
+
 				if (!$check_forum_id) {
 					message_die(GENERAL_MESSAGE, 'New forum does not exist');
 				}
@@ -733,7 +735,7 @@ switch ($mode) {
 					}
 
 					$message = str_replace("\n", '<br />', $message);
-					
+
 					$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
 					$row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
@@ -762,7 +764,7 @@ switch ($mode) {
 	case 'ip':
 		$page_title = $lang['Mod_CP'];
 
-        require_once $phpbb_root_path . 'includes/page_header.php';
+        require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
 
 		$rdns_ip_num = isset($_GET['rdns']) ? $_GET['rdns'] : '';
 
@@ -903,7 +905,7 @@ switch ($mode) {
 	default:
 		$page_title = $lang['Mod_CP'];
 
-        require_once $phpbb_root_path . 'includes/page_header.php';
+        require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
 
         $template->assignVars(
             [
@@ -1029,6 +1031,6 @@ switch ($mode) {
 		break;
 }
 
-require_once $phpbb_root_path . 'includes/page_tail.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
 
 ?>

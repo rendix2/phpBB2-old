@@ -41,6 +41,8 @@ if (!defined('IN_PHPBB')) {
 $unhtml_specialchars_match   = ['#&gt;#', '#&lt;#', '#&quot;#', '#&amp;#'];
 $unhtml_specialchars_replace = ['>', '<', '"', '&'];
 
+$sep = DIRECTORY_SEPARATOR;
+
 // ---------------------------------------
 // Load agreement template since user has not yet
 // agreed to registration conditions/coppa
@@ -79,11 +81,11 @@ $error_msg = '';
 $page_title = $mode === 'editprofile' ? $lang['Edit_profile'] : $lang['Register'];
 
 if ($mode === 'register' && !isset($_POST['agreed']) && !isset($_GET['agreed'])) {
-    require_once $phpbb_root_path . 'includes/page_header.php';
+    require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
 
 	show_coppa();
 
-    require_once $phpbb_root_path . 'includes/page_tail.php';
+    require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
 }
 
 $coppa = empty($_POST['coppa']) && empty($_GET['coppa']) ? 0 : true;
@@ -98,8 +100,8 @@ if (
 	isset($_POST['cancelavatar']) ||
 	$mode === 'register'
 ) {
-    require_once $phpbb_root_path . 'includes/bbcode.php';
-    require_once $phpbb_root_path . 'includes/functions_post.php';
+    require_once $phpbb_root_path . 'includes' . $sep . 'bbcode.php';
+    require_once $phpbb_root_path . 'includes' . $sep . 'functions_post.php';
 
     if ($mode === 'editprofile') {
         //CSRF::validatePost();
@@ -232,7 +234,7 @@ if ($mode === 'register' && ($userdata['session_logged_in'] || $username === $us
 // Did the user submit? In this case build a query to update the users profile in the DB
 //
 if (isset($_POST['submit'])) {
-    require_once $phpbb_root_path . 'includes/usercp_avatar.php';
+    require_once $phpbb_root_path . 'includes' . $sep . 'usercp_avatar.php';
 
 	// session id check
 	if ($sid === '' || $sid !== $userdata['session_id']) {
@@ -758,7 +760,7 @@ if ($error) {
 //
 // Default pages
 //
-require_once $phpbb_root_path . 'includes/page_header.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
 
 make_jumpbox('viewforum.php');
 
@@ -770,7 +772,7 @@ if ($mode === 'editprofile') {
 }
 
 if (isset($_POST['avatargallery']) && !$error) {
-    require_once $phpbb_root_path . 'includes/usercp_avatar.php';
+    require_once $phpbb_root_path . 'includes' . $sep . 'usercp_avatar.php';
 
 	$avatar_category = !empty($_POST['avatarcategory']) ? htmlspecialchars($_POST['avatarcategory']) : '';
 
@@ -1025,7 +1027,7 @@ if (isset($_POST['avatargallery']) && !$error) {
         if ($userdata['user_allowavatar'] && ($board_config['allow_avatar_upload'] || $board_config['allow_avatar_local'] || $board_config['allow_avatar_remote'])) {
 			$template->assignBlockVars('switch_avatar_block', [] );
 
-            if ($board_config['allow_avatar_upload'] && file_exists(@phpbb_realpath('./' . $board_config['avatar_path']))) {
+            if ($board_config['allow_avatar_upload'] && file_exists(@phpbb_realpath('.' . $sep . $board_config['avatar_path']))) {
                 if ($form_enctype !== '') {
                     $template->assignBlockVars('switch_avatar_block.switch_avatar_local_upload', []);
                 }
@@ -1037,7 +1039,7 @@ if (isset($_POST['avatargallery']) && !$error) {
                 $template->assignBlockVars('switch_avatar_block.switch_avatar_remote_link', []);
             }
 
-            if ($board_config['allow_avatar_local'] && file_exists(@phpbb_realpath('./' . $board_config['avatar_gallery_path']))) {
+            if ($board_config['allow_avatar_local'] && file_exists(@phpbb_realpath('.' . $sep . $board_config['avatar_gallery_path']))) {
                 $template->assignBlockVars('switch_avatar_block.switch_avatar_local_gallery', []);
             }
 		}
@@ -1046,6 +1048,6 @@ if (isset($_POST['avatargallery']) && !$error) {
 
 $template->pparse('body');
 
-require_once $phpbb_root_path . 'includes/page_tail.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
 
 ?>

@@ -49,6 +49,8 @@ if (!$user) {
     message_die(GENERAL_MESSAGE, $lang['User_not_exist']);
 }
 
+$sep = DIRECTORY_SEPARATOR;
+
 if ($user->user_viewemail || $userdata['user_level'] === ADMIN) {
     if (time() - $userdata['user_emailtime'] < $board_config['flood_interval']) {
         message_die(GENERAL_MESSAGE, $lang['Flood_email_limit']);
@@ -139,7 +141,7 @@ if ($user->user_viewemail || $userdata['user_level'] === ADMIN) {
         }
     }
 
-    require_once $phpbb_root_path . 'includes/page_header.php';
+    require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
 
     $template->setFileNames(['body' => 'profile_send_email.tpl']);
 
@@ -174,7 +176,7 @@ if ($user->user_viewemail || $userdata['user_level'] === ADMIN) {
 
     $template->pparse('body');
 
-    require_once $phpbb_root_path . 'includes/page_tail.php';
+    require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
 } else {
     message_die(GENERAL_MESSAGE, $lang['User_prevent_email']);
 }

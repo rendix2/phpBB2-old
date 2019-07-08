@@ -21,7 +21,9 @@
  ***************************************************************************/
 
 define('IN_PHPBB', true);
-$phpbb_root_path = './';
+
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep;
 
 require_once $phpbb_root_path . 'common.php';
 
@@ -73,7 +75,7 @@ if (isset($_GET[POST_MODE]) || isset($_POST[POST_MODE])) {
 
     switch ($mode) {
         case 'viewprofile':
-            require_once $phpbb_root_path . 'includes/usercp_viewprofile.php';
+            require_once $phpbb_root_path . 'includes'.$sep.'usercp_viewprofile.php';
             break;
 
             // yes both!
@@ -84,7 +86,7 @@ if (isset($_GET[POST_MODE]) || isset($_POST[POST_MODE])) {
                 redirect(Session::appendSid('login.php?redirect=profile.php&mode=editprofile', true));
             }
 
-        require_once $phpbb_root_path . 'includes/usercp_register.php';
+        require_once $phpbb_root_path . 'includes' . $sep . 'usercp_register.php';
 
             break;
 
@@ -94,22 +96,22 @@ if (isset($_GET[POST_MODE]) || isset($_POST[POST_MODE])) {
                 exit;
             }
 
-            require_once $phpbb_root_path . 'includes/usercp_confirm.php';
+            require_once $phpbb_root_path . 'includes' . $sep . 'usercp_confirm.php';
 
             break;
 
         case 'sendpassword':
-            require_once $phpbb_root_path . 'includes/usercp_sendpasswd.php';
+            require_once $phpbb_root_path . 'includes' . $sep . 'usercp_sendpasswd.php';
 
             break;
 
         case 'activate':
-            require_once $phpbb_root_path . 'includes/usercp_activate.php';
+            require_once $phpbb_root_path . 'includes' . $sep . 'usercp_activate.php';
 
             break;
 
         case 'email':
-            require_once $phpbb_root_path . 'includes/usercp_email.php';
+            require_once $phpbb_root_path . 'includes' . $sep . 'usercp_email.php';
             break;
         default:
             message_die(GENERAL_MESSAGE, 'Unknown mode.');

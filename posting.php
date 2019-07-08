@@ -21,11 +21,13 @@
  ***************************************************************************/
 
 define('IN_PHPBB', true);
-$phpbb_root_path = './';
+
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep;
 
 require_once $phpbb_root_path . 'common.php';
-require_once $phpbb_root_path . 'includes/bbcode.php';
-require_once $phpbb_root_path . 'includes/functions_post.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'bbcode.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'functions_post.php';
 
 //
 // Check and set various parameters
@@ -108,7 +110,7 @@ $topic_type = in_array($topic_type, [POST_NORMAL, POST_STICKY, POST_ANNOUNCE], t
 // that review ...
 //
 if ($mode === 'topicreview' && (int)$board_config['topic_review'] === 1) {
-    require_once $phpbb_root_path . 'includes/topic_review.php';
+    require_once $phpbb_root_path . 'includes' . $sep . 'topic_review.php';
 
     topic_review($topic_id, false);
     exit;
@@ -512,7 +514,7 @@ if (($delete || $poll_delete || $mode === 'delete') && !$confirm) {
 	//
 	// Output confirmation page
 	//
-    require_once $phpbb_root_path . 'includes/page_header.php';
+    require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
 
     $template->setFileNames(['confirm_body' => 'confirm_body.tpl']);
 
@@ -531,7 +533,7 @@ if (($delete || $poll_delete || $mode === 'delete') && !$confirm) {
 
     $template->pparse('confirm_body');
 
-    require_once $phpbb_root_path . 'includes/page_tail.php';
+    require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
 } elseif ($mode === 'vote') {
     //
     // Vote in a poll
@@ -971,7 +973,7 @@ generate_smilies('inline', PAGE_POSTING);
 //
 // Include page header
 //
-require_once $phpbb_root_path . 'includes/page_header.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
 
 $template->setFileNames(
     [
@@ -1125,7 +1127,7 @@ if (($mode === 'newtopic' || ($mode === 'editpost' && $post_data['edit_poll'])) 
 // Topic review
 //
 if ($mode === 'reply' && $is_auth['auth_read'] && (int)$board_config['topic_review'] === 1) {
-    require_once $phpbb_root_path . 'includes/topic_review.php';
+    require_once $phpbb_root_path . 'includes' . $sep . 'topic_review.php';
 
     topic_review($topic_id, true);
 
@@ -1135,6 +1137,6 @@ if ($mode === 'reply' && $is_auth['auth_read'] && (int)$board_config['topic_revi
 
 $template->pparse('body');
 
-require_once $phpbb_root_path . 'includes/page_tail.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
 
 ?>

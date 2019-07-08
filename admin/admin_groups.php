@@ -33,9 +33,10 @@ if (!empty($setmodules)) {
 //
 // Load default header
 //
-$phpbb_root_path = './../';
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep . '..' . $sep;
 
-require_once './pagestart.php';
+require_once '.' . $sep . 'pagestart.php';
 
 if (isset($_POST[POST_GROUPS_URL]) || isset($_GET[POST_GROUPS_URL])) {
     $group_id = isset($_POST[POST_GROUPS_URL]) ? (int)$_POST[POST_GROUPS_URL] : (int)$_GET[POST_GROUPS_URL];
@@ -259,12 +260,69 @@ if ($mode === 'edit' || $mode === 'new') {
 	$template->pparse('body');
 }
 
-// list
+// shows users of group
+if ($mode === 'users') {
+	$group = dibi::select('*')
+		->from(GROUPS_TABLE)
+		->where('group_id = %i', $group_id)
+		->fetch();
+
+	if (!$group) {
+		message_die(GENERAL_MESSAGE, $lang['Group_not_exist']);
+	}
+
+	$users = dibi::select('u.*, ug.user_pending')
+		->from(USER_GROUP_TABLE)
+		->as('ug')
+		->innerJoin(USERS_TABLE)
+		->as('u')
+		->on('ug.user_id =  u.user_id')
+		->where('ug.group_id = %i', $group_id)
+		->fetchAll();
+
+	$latte = new LatteFactory($storage, $userdata);
+
+	$parameters = [
+		'C_USER_ID' => POST_USERS_URL,
+		'C_GROUP_ID' => POST_GROUPS_URL,
+
+		'D_USERS' => $users,
+
+		'L_GROUP_TITLE'   => $lang['Group_administration'],
+
+		'L_USER_ID' => $lang['User_id'],
+		'L_USER_NAME' => $lang['Username'],
+		'L_POSTS' => $lang['Number_posts'],
+		'L_TOPICS' => $lang['Number_topics'],
+		'L_DELETE' => $lang['Delete'],
+
+		'S_SID' => $SID,
+		'S_GROUP_ID' => $group_id,
+		'S_GROUP_NAME' => $group->group_name
+
+	];
+
+	$latte->render('admin/group_users.latte', $parameters);
+}
+
+// delete user from group
+if ($mode === 'deleteUser') {
+	dibi::delete(USER_GROUP_TABLE)
+		->where('user_id = %i', $_GET[POST_USERS_URL])
+		->where('group_id = %i', $group_id)
+		->execute();
+
+	$message = $lang['Delete_group_member'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . Session::appendSid('admin_groups.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+
+	message_die(GENERAL_MESSAGE, $message);
+}
+
+// list of groups
 if ($mode === '') {
 	$groups = dibi::select('*')
 		->from(GROUPS_TABLE)
 		->as('g')
-		->innerJoin(USERS_TABLE)
+		->leftJoin(USERS_TABLE)
 		->as('u')
 		->on('g.group_moderator = u.user_id')
 		->where('g.group_single_user <> %i', 1)
@@ -275,6 +333,8 @@ if ($mode === '') {
         'C_CLOSED'   => GROUP_CLOSED,
         'C_HIDDEN'   => GROUP_HIDDEN,
         'C_GROUP_ID' => POST_GROUPS_URL,
+
+		'D_GROUPS' => $groups,
 
 		'L_GROUP_TITLE'   => $lang['Group_administration'],
 		'L_GROUP_EXPLAIN' => $lang['Group_admin_explain'],
@@ -287,14 +347,13 @@ if ($mode === '') {
 		'L_GROUP_DELETE' => $lang['group_delete'],
 		'L_GROUP_NEW' => $lang['New_group'],
         'L_GROUP_PERMISSIONS' => $lang['Permissions'],
+        'L_GROUP_USERS' => $lang['Group_users'],
 
         'L_OPEN'   => $lang['group_open'],
         'L_CLOSED' => $lang['group_closed'],
         'L_HIDDEN' => $lang['group_hidden'],
 
 		'S_SID' => $SID,
-
-		'D_GROUPS' => $groups
 	];
 
 	$latte = new LatteFactory($storage, $userdata);
@@ -366,6 +425,6 @@ if ($mode === 'delete') {
 	message_die(GENERAL_MESSAGE, $message);
 }
 
-require_once './page_footer_admin.php';
+require_once '.' . $sep . 'page_footer_admin.php';
 
 ?>

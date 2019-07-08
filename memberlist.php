@@ -20,7 +20,9 @@
  ***************************************************************************/
 
 define('IN_PHPBB', true);
-$phpbb_root_path = './';
+
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep;
 
 require_once $phpbb_root_path . 'common.php';
 
@@ -87,7 +89,7 @@ $select_sort_order .= '</select>';
 //
 $page_title = $lang['Memberlist'];
 
-require_once $phpbb_root_path . 'includes/page_header.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
 
 $template->setFileNames(['body' => 'memberlist_body.tpl']);
 
@@ -279,6 +281,6 @@ $template->assignVars(
 
 $template->pparse('body');
 
-require_once $phpbb_root_path . 'includes/page_tail.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
 
 ?>

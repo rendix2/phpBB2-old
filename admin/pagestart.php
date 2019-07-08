@@ -28,7 +28,7 @@ define('IN_ADMIN', true);
 
 // require files
 require_once $phpbb_root_path . 'common.php';
-require_once $phpbb_root_path . 'includes/functions_admin.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'functions_admin.php';
 
 //
 // Start session management
@@ -56,7 +56,7 @@ if (!$userdata['session_admin']) {
 if (empty($no_page_header)) {
     // Not including the pageheader can be neccesarry if META tags are
     // needed in the calling script.
-    require_once './page_header_admin.php';
+    require_once '.' . $sep . 'page_header_admin.php';
 }
 
 ?>

@@ -36,11 +36,12 @@ if (!empty($setmodules)) {
 //
 // Load default header
 //
-$phpbb_root_path = './../';
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep . '..' . $sep;
 $no_page_header = TRUE; // We do not send the page header right here to prevent problems with GZIP-compression
 
-require_once './pagestart.php';
-require_once $phpbb_root_path . 'includes/functions_dbmtnc.php';
+require_once '.' . $sep . 'pagestart.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'functions_dbmtnc.php';
 
 //
 // Set up timer
@@ -50,11 +51,11 @@ $timer = getmicrotime();
 //
 // Get language file for this mod
 //
-if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_dbmtnc.php'))) {
+if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language'.$sep.'lang_' . $board_config['default_lang'] . $sep .'lang_dbmtnc.php'))) {
     $board_config['default_lang'] = 'english';
 }
 
-require_once $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_dbmtnc.php';
+require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'lang_dbmtnc.php';
 
 //
 // Set up variables and constants
@@ -87,7 +88,7 @@ if ($mode_id === 'start' || $mode_id === 'perform') {
 }
 if ($function !== 'perform_rebuild') // Don't send header when rebuilding the search index
 {
-    require_once './page_header_admin.php';
+    require_once '.' . $sep . 'page_header_admin.php';
 }
 
 //
@@ -926,7 +927,7 @@ switch($mode_id) {
                 $result_array = [];
 
                 foreach ($tmp_array as $userLang) {
-                    if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $userLang . '/lang_main.php'))) {
+                    if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $userLang . $sep . 'lang_main.php'))) {
                         $result_array[] = $userLang;
                     }
                 }
@@ -943,12 +944,12 @@ switch($mode_id) {
                     }
 
                     // Getting default language
-                    if (file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $boardLanguage . '/lang_main.php'))) {
+                    if (file_exists(@phpbb_realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $boardLanguage . $sep . 'lang_main.php'))) {
                         $default_lang = $boardLanguage;
-                    } elseif (file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $userdata['user_lang'] . '/lang_main.php'))) {
+                    } elseif (file_exists(@phpbb_realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $userdata['user_lang'] . $sep . 'lang_main.php'))) {
                         echo('<p class="gen">' . $lang['Default_language_invalid'] . "</p>\n");
                         $default_lang = $userdata['user_lang'];
-                    } elseif (file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_english/lang_main.php'))) {
+                    } elseif (file_exists(@phpbb_realpath($phpbb_root_path . 'language' . $sep . 'lang_english' . $sep . 'lang_main.php'))) {
                         echo('<p class="gen">' . $lang['Default_language_invalid'] . "</p>\n");
                         $default_lang = 'english';
                     } else {
@@ -1685,7 +1686,7 @@ switch($mode_id) {
                     echo('<p class="gen"><a href="' . Session::appendSid('admin_db_maintenance.php?mode=perform&amp;function=synchronize_post_direct&amp;db_state=' . ($db_state ? '1' : '0')) . '">' . $lang['Must_synchronize'] . "</a></p>\n");
                     // Send Information about processing time
                     echo('<p class="gensmall">' . sprintf($lang['Processing_time'], getmicrotime() - $timer) . '</p>');
-                    require_once './page_footer_admin.php';
+                    require_once '.' . $sep . 'page_footer_admin.php';
                     exit;
                 } else {
                     lock_db(true);
@@ -2480,7 +2481,7 @@ switch($mode_id) {
 				echo('<p class="gen"><a href="' . Session::appendSid('admin_db_maintenance.php?mode=perform&amp;function=perform_rebuild&amp;db_state=' . ($db_state ? '1' : '0')) . '">' . $lang['Can_start_rebuilding'] . '</a><br><span class="gensmall">' . $lang['Click_once_warning'] . "</span></p>\n");
 				// Send Information about processing time
 				echo('<p class="gensmall">' . sprintf($lang['Processing_time'], getmicrotime() - $timer) . '</p>');
-                require_once './page_footer_admin.php';
+                require_once '.' . $sep . 'page_footer_admin.php';
 				exit;
 				break;
 			case 'proceed_rebuilding': // Proceed rebuilding search index
@@ -2502,14 +2503,14 @@ switch($mode_id) {
                 echo('<p class="gen"><a href="' . Session::appendSid('admin_db_maintenance.php?mode=perform&amp;function=perform_rebuild&amp;db_state=' . ($db_state ? '1' : '0')) . '">' . $lang['Can_start_rebuilding'] . '</a><br><span class="gensmall">' . $lang['Click_once_warning'] . "</span></p>\n");
                 // Send Information about processing time
                 echo('<p class="gensmall">' . sprintf($lang['Processing_time'], getmicrotime() - $timer) . '</p>');
-                require_once './page_footer_admin.php';
+                require_once '.' . $sep . 'page_footer_admin.php';
                 exit;
                 break;
 			case 'perform_rebuild': // Rebuild search index (perform part)
 				// ATTENTION: page_header not sent yet!
 				$db_state = isset($_GET['db_state']) ? (int)$_GET['db_state'] : 0;
 				// Load functions
-				require_once $phpbb_root_path . 'includes/functions_search.php';
+                require_once $phpbb_root_path . 'includes' . $sep . 'functions_search.php';
 				// Identify PHP version and time limit configuration
                 if (PHP_VERSION >= '4.0.5' && ($board_config['dbmtnc_rebuildcfg_php3only'] == 0)) // Handle PHP beffore 4.0.5 as PHP 3 since array_search is not available
                 {
@@ -2556,7 +2557,7 @@ switch($mode_id) {
 
 				// Get first record
                 if (!count($rows)) {// Yeah! we reached the end of the posts - finish actions and exit
-                    require_once './page_header_admin.php';
+                    require_once '.' . $sep . 'page_header_admin.php';
 
 					update_config('dbmtnc_rebuild_pos', '-1');
 					update_config('dbmtnc_rebuild_end', '0');
@@ -2573,7 +2574,7 @@ switch($mode_id) {
 					echo('<p class="gen"><a href="' . Session::appendSid('admin_db_maintenance.php') . '">' . $lang['Back_to_DB_Maintenance'] . "</a></p>\n");
 					// Send Information about processing time
 					echo('<p class="gensmall">' . sprintf($lang['Processing_time'], getmicrotime() - $timer) . '</p>');
-                    require_once './page_footer_admin.php';
+                    require_once '.' . $sep . 'page_footer_admin.php';
 					exit;
 				}
 
@@ -2691,7 +2692,7 @@ switch($mode_id) {
                     ]
                 );
 
-                require_once './page_header_admin.php';
+                require_once '.' . $sep . 'page_header_admin.php';
 
 				ob_end_flush();
 				// Get Statistics
@@ -2714,7 +2715,7 @@ switch($mode_id) {
 				// Send Information about processing time
 				echo('<p class="gensmall">' . sprintf($lang['Processing_time'], getmicrotime() - $timer) . '</p>');
 
-                require_once './page_footer_admin.php';
+                require_once '.' . $sep . 'page_footer_admin.php';
 
 				exit;
 				break;
@@ -3568,5 +3569,5 @@ switch($mode_id) {
 		break;
 }
 
-require_once './page_footer_admin.php';
+require_once '.' . $sep . 'page_footer_admin.php';
 ?>

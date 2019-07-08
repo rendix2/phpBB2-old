@@ -32,9 +32,10 @@ if (!empty($setmodules)) {
 //
 // Include required files and check permissions
 //
-$phpbb_root_path = './../';
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep . '..' . $sep;
 
-require_once './pagestart.php';
+require_once '.' . $sep . 'pagestart.php';
 
 if (isset($_POST['add_name'])) {
 	$disallowed_user = isset($_POST['disallowed_user']) ? trim($_POST['disallowed_user']) : trim($_GET['disallowed_user']);
@@ -107,6 +108,6 @@ $template->assignVars(
 
 $template->pparse('body');
 
-require_once './page_footer_admin.php';
+require_once '.' . $sep . 'page_footer_admin.php';
 
 ?>

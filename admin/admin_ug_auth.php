@@ -34,10 +34,10 @@ if (!empty($setmodules)) {
 // Load default header
 //
 $no_page_header = true;
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep . '..' . $sep;
 
-$phpbb_root_path = './../';
-
-require_once './pagestart.php';
+require_once '.' . $sep . 'pagestart.php';
 
 if (!empty($_POST[POST_MODE]) || !empty($_GET[POST_MODE])) {
     $mode = !empty($_POST[POST_MODE]) ? $_POST[POST_MODE] : $_GET[POST_MODE];
@@ -783,7 +783,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
     //
     // Dump in the page header ...
 	//
-    require_once './page_header_admin.php';
+    require_once '.' . $sep . 'page_header_admin.php';
 
     $template->setFileNames(['body' => 'admin/auth_ug_body.tpl']);
 
@@ -841,7 +841,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 	//
 	// Select a user/group
 	//
-    require_once './page_header_admin.php';
+    require_once '.' . $sep . 'page_header_admin.php';
 
     $template->setFileNames(['body' => ($mode === 'user') ? 'admin/user_select_body.tpl' : 'admin/auth_select_body.tpl']);
 
@@ -876,6 +876,6 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 
 $template->pparse('body');
 
-require_once './page_footer_admin.php';
+require_once '.' . $sep . 'page_footer_admin.php';
 
 ?>

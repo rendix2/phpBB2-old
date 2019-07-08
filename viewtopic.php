@@ -23,10 +23,12 @@ use Nette\Caching\Cache;
  ***************************************************************************/
 
 define('IN_PHPBB', true);
-$phpbb_root_path = './';
+
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . DIRECTORY_SEPARATOR;
 
 require_once $phpbb_root_path . 'common.php';
-require_once $phpbb_root_path . 'includes/bbcode.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'bbcode.php';
 
 //
 // Start initial var setup
@@ -433,7 +435,7 @@ $posts = $posts
 $total_posts = count($posts);
 
 if (!$total_posts) {
-    require_once $phpbb_root_path . 'includes/functions_admin.php';
+    require_once $phpbb_root_path . 'includes' . $sep . 'functions_admin.php';
 
     sync('topic', $topic_id);
 
@@ -455,7 +457,7 @@ if ($forum_topic_data->topic_replies + 1 < $start + $total_posts)  {
 } 
 
 if ($resync) {
-    require_once $phpbb_root_path . 'includes/functions_admin.php';
+    require_once $phpbb_root_path . 'includes' . $sep . 'functions_admin.php';
 
     sync('topic', $topic_id);
 
@@ -588,7 +590,7 @@ make_jumpbox('viewforum.php', $forum_id);
 //
 $page_title = $lang['View_topic'] .' - ' . $topic_title;
 
-require_once $phpbb_root_path . 'includes/page_header.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
 
 //
 // User authorisation levels output
@@ -1147,6 +1149,6 @@ foreach ($posts as $i => $post) {
 
 $template->pparse('body');
 
-require_once $phpbb_root_path . 'includes/page_tail.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
 
 ?>

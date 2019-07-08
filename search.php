@@ -21,11 +21,13 @@
  ***************************************************************************/
 
 define('IN_PHPBB', true);
-$phpbb_root_path = './';
+
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep;
 
 require_once $phpbb_root_path . 'common.php';
-require_once $phpbb_root_path . 'includes/bbcode.php';
-require_once $phpbb_root_path . 'includes/functions_search.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'bbcode.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'functions_search.php';
 
 //
 // Start session management
@@ -731,7 +733,7 @@ if ($mode === 'searchuser') {
 		//
 		$page_title = $lang['Search'];
 
-        require_once $phpbb_root_path . 'includes/page_header.php';
+        require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
 
         if ($show_results === 'posts') {
             $template->setFileNames(['body' => 'search_results_posts.tpl']);
@@ -1150,7 +1152,7 @@ if ($mode === 'searchuser') {
 
         $template->pparse('body');
 
-        require_once $phpbb_root_path . 'includes/page_tail.php';
+        require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
 	} else {
 		message_die(GENERAL_MESSAGE, $lang['No_search_match']);
 	}
@@ -1262,7 +1264,7 @@ foreach ($previous_days as $previous_day_key => $previous_days_value) {
 //
 $page_title = $lang['Search'];
 
-require_once $phpbb_root_path . 'includes/page_header.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
 
 $template->setFileNames(['body' => 'search_body.tpl']);
 make_jumpbox('viewforum.php');
@@ -1303,6 +1305,6 @@ $template->assignVars(
 
 $template->pparse('body');
 
-require_once $phpbb_root_path . 'includes/page_tail.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
 
 ?>

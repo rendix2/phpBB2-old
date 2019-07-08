@@ -2,6 +2,8 @@
 
 use Dibi\Bridges\Tracy\Panel;
 use Nette\Caching\Cache;
+use Nette\Caching\Storages\FileStorage;
+use Nette\Loaders\RobotLoader;
 use Tracy\Debugger;
 
 /***************************************************************************
@@ -50,15 +52,17 @@ if (isset($_SESSION) && !is_array($_SESSION)) {
 	die('Hacking attempt');
 }
 
-require_once $phpbb_root_path . 'vendor/autoload.php';
+$sep = DIRECTORY_SEPARATOR;
 
-$loader = new Nette\Loaders\RobotLoader;
+require_once $phpbb_root_path . 'vendor' . $sep . 'autoload.php';
+
+$loader = new RobotLoader();
 
 // Add directories for RobotLoader to index
-$loader->addDirectory(__DIR__ . '/includes');
+$loader->addDirectory(__DIR__ . $sep . 'includes');
 
 // And set caching to the 'temp' directory
-$loader->setTempDirectory(__DIR__ . '/temp');
+$loader->setTempDirectory(__DIR__ . $sep . 'temp');
 $loader->register(); // Run the RobotLoader
 
 //
@@ -74,17 +78,16 @@ $lang = [];
 $nav_links = [];
 $dss_seeded = false;
 $gen_simple_header = false;
-$dir_sep = DIRECTORY_SEPARATOR;
 
 require_once $phpbb_root_path . 'config.php';
 
 if (!defined('PHPBB_INSTALLED')) {
-    header('Location: ' . $phpbb_root_path . 'install' . $dir_sep . 'install.php');
+    header('Location: ' . $phpbb_root_path . 'install' . $sep . 'install.php');
 	exit;
 }
 
-require_once $phpbb_root_path . 'includes' . $dir_sep . 'constants.php';
-require_once $phpbb_root_path . 'includes' . $dir_sep . 'functions.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'constants.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'functions.php';
 
 // now we connect to database via dibi!
 $connection = dibi::connect([
@@ -132,7 +135,7 @@ $user_ip = encode_ip($client_ip);
 // basic forum information is not available
 //
 
-$storage = new Nette\Caching\Storages\FileStorage(__DIR__ . $dir_sep . 'temp');
+$storage = new FileStorage(__DIR__ . $sep . 'temp');
 $cache   = new Cache($storage, CONFIG_TABLE);
 
 $boardConfigCached = $cache->load(CONFIG_TABLE);

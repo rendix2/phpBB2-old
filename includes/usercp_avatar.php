@@ -65,12 +65,14 @@ function user_avatar_delete($avatar_type, $avatar_file)
 {
 	global $board_config, $userdata;
 
+	$sep = DIRECTORY_SEPARATOR;
+
 	$avatar_file = basename($avatar_file);
 
-	$fileExists = @file_exists(@phpbb_realpath('./' . $board_config['avatar_path'] . '/' . $avatar_file));
+    $fileExists = @file_exists(@phpbb_realpath('.' . $sep . $board_config['avatar_path'] . $sep . $avatar_file));
 
     if ($avatar_type === USER_AVATAR_UPLOAD && $avatar_file !== '' && $fileExists) {
-        @unlink('./' . $board_config['avatar_path'] . '/' . $avatar_file);
+        @unlink('.' . $sep . $board_config['avatar_path'] . $sep . $avatar_file);
     }
 
 	return ['user_avatar' => '', 'user_avatar_type' => USER_AVATAR_NONE];
@@ -91,6 +93,8 @@ function user_avatar_gallery($mode, &$error, &$error_msg, $avatarFileName, $avat
 	$avatarFileName = ltrim(basename($avatarFileName), "'");
 	$avatarCategory = ltrim(basename($avatarCategory), "'");
 
+    $sep = DIRECTORY_SEPARATOR;
+
     if (!preg_match('/(\.gif$|\.png$|\.jpg|\.jpeg)$/is', $avatarFileName)) {
         return [];
     }
@@ -99,11 +103,11 @@ function user_avatar_gallery($mode, &$error, &$error_msg, $avatarFileName, $avat
         return [];
     }
 
-    $filePath   = $board_config['avatar_gallery_path'] . '/' . $avatarCategory . '/' . $avatarFileName;
+    $filePath   = $board_config['avatar_gallery_path'] . $sep . $avatarCategory . $sep . $avatarFileName;
     $fileExists = file_exists(@phpbb_realpath($filePath));
 
     if ($fileExists && $mode === 'editprofile') {
-        return ['user_avatar' => $avatarCategory . '/' . $avatarFileName, 'user_avatar_type' => USER_AVATAR_GALLERY];
+        return ['user_avatar' => $avatarCategory . $sep . $avatarFileName, 'user_avatar_type' => USER_AVATAR_GALLERY];
     } else {
         return [];
     }
@@ -295,8 +299,10 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 
 	$avatar_images = [];
 
+	$sep = DIRECTORY_SEPARATOR;
+
 	if ($isAdmin) {
-        $directories = Finder::findDirectories()->from('../' .$board_config['avatar_gallery_path']);
+        $directories = Finder::findDirectories()->from('..' . $sep . $board_config['avatar_gallery_path']);
     } else {
         $directories = Finder::findDirectories()->from($board_config['avatar_gallery_path']);
     }
@@ -367,9 +373,9 @@ function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current
 
 		foreach ($avatar_image as $j =>  $avatar_image_value) {
 		    if ($isAdmin) {
-                $path = '../' . $board_config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_image_value;
+                $path = '..' . $sep . $board_config['avatar_gallery_path'] . $sep . $category . $sep . $avatar_image_value;
             } else {
-                $path = $board_config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_image_value;
+                $path = $board_config['avatar_gallery_path'] . $sep . $category . $sep . $avatar_image_value;
             }
 
             $template->assignBlockVars('avatar_row.avatar_column',

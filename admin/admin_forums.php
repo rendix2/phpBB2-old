@@ -30,9 +30,10 @@ if (!empty($setmodules)) {
 //
 // Load default header
 //
-$phpbb_root_path = './../';
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep . '..' . $sep;
 
-require_once './pagestart.php';
+require_once '.' . $sep . 'pagestart.php';
 
 $forum_auth_ary = [
     'auth_view'       => AUTH_ALL,
@@ -581,7 +582,7 @@ if (!empty($mode)) {
                         ->execute();
                 }
 
-                require_once $phpbb_root_path . 'includes/prune.php';
+                require_once $phpbb_root_path . 'includes' . $sep . 'prune.php';
 				prune($from_id, 0, true); // Delete everything from forum
 			} else {
 			    $forums_exists = dibi::select('*')
@@ -801,7 +802,7 @@ if (!empty($mode)) {
 	}
 
     if ($show_index !== true) {
-        require_once './page_footer_admin.php';
+        require_once '.' . $sep . 'page_footer_admin.php';
 		exit;
 	}
 }
@@ -946,6 +947,6 @@ if ($category_count) {
 
 $template->pparse('body');
 
-require_once './page_footer_admin.php';
+require_once '.' . $sep . 'page_footer_admin.php';
 
 ?>

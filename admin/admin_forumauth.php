@@ -33,9 +33,10 @@ if (!empty($setmodules)) {
 // Load default header
 //
 $no_page_header = true;
-$phpbb_root_path = './../';
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep . '..' . $sep;
 
-require_once './pagestart.php';
+require_once '.' . $sep . 'pagestart.php';
 
 //
 // Start program - define vars
@@ -299,10 +300,10 @@ if (empty($forum_id)) {
 	);
 }
 
-require_once './page_header_admin.php';
+require_once '.' . $sep . 'page_header_admin.php';
 
 $template->pparse('body');
 
-require_once './page_footer_admin.php';
+require_once '.' . $sep . 'page_footer_admin.php';
 
 ?>

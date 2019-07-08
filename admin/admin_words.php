@@ -33,12 +33,13 @@ define('IN_PHPBB', 1);
 //
 // Load default header
 //
-$phpbb_root_path = './../';
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep . '..' . $sep;
 
 $cancel = isset($_POST['cancel']);
 $no_page_header = $cancel;
 
-require_once './pagestart.php';
+require_once '.' . $sep . 'pagestart.php';
 
 if ($cancel) {
     redirect('admin/' . Session::appendSid('admin_words.php', true));
@@ -104,7 +105,7 @@ if ($mode !== '') {
 
         $template->pparse('body');
 
-        require_once './page_footer_admin.php';
+        require_once '.' . $sep . 'page_footer_admin.php';
 	} elseif ($mode === 'save') {
 		$word_id     = isset($_POST['id'])          ? (int)$_POST['id'] : 0;
 		$word        = isset($_POST['word'])        ? trim($_POST['word']) : '';
@@ -233,6 +234,6 @@ if ($mode !== '') {
 
 $template->pparse('body');
 
-require_once './page_footer_admin.php';
+require_once '.' . $sep . 'page_footer_admin.php';
 
 ?>

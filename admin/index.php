@@ -28,9 +28,10 @@ define('IN_PHPBB', 1);
 // Load default header
 //
 $no_page_header = true;
-$phpbb_root_path = './../';
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep . '..' . $sep;
 
-require_once './pagestart.php';
+require_once '.' . $sep . 'pagestart.php';
 
 //
 // Generate relevant output
@@ -49,7 +50,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
 
     unset($setmodules);
 
-    require_once  './page_header_admin.php';
+    require_once  '.' . $sep . 'page_header_admin.php';
 
     $template->setFileNames(['body' => 'admin/index_navigate.tpl']);
 
@@ -96,10 +97,10 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
 
 	$template->pparse('body');
 
-    require_once './page_footer_admin.php';
+    require_once '.' . $sep . 'page_footer_admin.php';
 } elseif (isset($_GET['pane']) && $_GET['pane'] === 'right') {
 
-    require_once './page_header_admin.php';
+    require_once '.' . $sep . 'page_header_admin.php';
 
     $template->setFileNames(['body' => 'admin/index_body.tpl']);
 
@@ -284,7 +285,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
 
     $template->pparse('body');
 
-    require_once './page_footer_admin.php';
+    require_once '.' . $sep . 'page_footer_admin.php';
 } else {
 	//
 	// Generate frameset

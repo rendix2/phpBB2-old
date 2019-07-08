@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 use Nette\Caching\Cache;
+use Nette\Utils\Finder;
 
 /***************************************************************************
  *
@@ -39,14 +40,15 @@ if (!empty($setmodules)) {
 //
 // Check if the user has cancled a confirmation message.
 //
-$phpbb_root_path = './../';
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep . '..' . $sep;
 
 $confirm = isset($_POST['confirm']);
 $cancel  = isset($_POST['cancel']);
 
 $no_page_header = !empty($_POST['send_file']) || !empty($_POST['send_file']) || $cancel;
 
-require_once './pagestart.php';
+require_once '.' . $sep . 'pagestart.php';
 
 if ($cancel) {
     redirect('admin/' . Session::appendSid('admin_styles.php', true));
@@ -65,7 +67,7 @@ switch ($mode) {
 		$style_name = isset($_GET['style']) ? urldecode($_GET['style']) : $_POST['style'];
 	
 		if (isset($install_to)) {
-            require_once $phpbb_root_path. 'templates/' . basename($install_to) . '/theme_info.cfg';
+            require_once $phpbb_root_path. 'templates' . $sep . basename($install_to) . $sep . 'theme_info.cfg';
 
 			$template_names = $$install_to;
 
@@ -85,66 +87,61 @@ switch ($mode) {
 
 			message_die(GENERAL_MESSAGE, $message);
 		} else {
-			$installable_themes = [];
-			
-			if ($dir = @opendir($phpbb_root_path. 'templates/')) {
-				while ($sub_dir = @readdir($dir)) {
-					if (!is_file(phpbb_realpath($phpbb_root_path . 'templates/' .$sub_dir)) && !is_link(phpbb_realpath($phpbb_root_path . 'templates/' .$sub_dir)) && $sub_dir !== '.' && $sub_dir !== '..' && $sub_dir !== 'CVS') {
-						if (@file_exists(@phpbb_realpath($phpbb_root_path. 'templates/' . $sub_dir . '/theme_info.cfg'))) {
-                            require_once $phpbb_root_path. 'templates/' . $sub_dir . '/theme_info.cfg';
-							$countSubDirs = count($$sub_dir);
-							
-							for ($i = 0; $i < $countSubDirs; $i++) {
-								$working_data = $$sub_dir;
-								
-								$style_name = $working_data[$i]['style_name'];
+			$installableThemes = [];
 
-								$theme_check = dibi::select('themes_id')
-                                    ->from(THEMES_TABLE)
-                                    ->where('style_name = %s', $style_name)
-                                    ->fetch();
+			$sep = DIRECTORY_SEPARATOR;
 
-								if (!$theme_check) {
-									$installable_themes[] = $working_data[$i];
-								}
-							}
-						}
-					}
-				}
+            $newTemplates = Finder::findDirectories('*')
+                ->exclude('CVS')
+                ->in($phpbb_root_path . 'templates' . $sep);
 
-                $template->setFileNames(['body' => 'admin/styles_addnew_body.tpl']);
+            /**
+             * @var SplFileInfo $newTemplate
+             */
+            foreach ($newTemplates as $newTemplate) {
+                if (file_exists($newTemplate->getRealPath() . $sep . 'theme_info.cfg')) {
+                    require_once $newTemplate->getRealPath() . $sep . 'theme_info.cfg';
 
-                $template->assignVars(
-                    [
-                        'L_STYLES_TITLE'    => $lang['Styles_admin'],
-                        'L_STYLES_ADD_TEXT' => $lang['Styles_addnew_explain'],
-                        'L_STYLE'           => $lang['Style'],
-                        'L_TEMPLATE'        => $lang['Template'],
-                        'L_INSTALL'         => $lang['Install'],
-                        'L_ACTION'          => $lang['Action']
-                    ]
-                );
+                    $templateCheck = dibi::select('themes_id')
+                        ->from(THEMES_TABLE)
+                        ->where('style_name = %s', $newTemplate->getFilename())
+                        ->fetch();
 
-                foreach ($installable_themes as $installable_theme) {
-					$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-					$row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+                    if (!$templateCheck) {
+                        $name = $newTemplate->getFilename();
 
-                    $template->assignBlockVars('styles',
-                        [
-                            'ROW_CLASS'     => $row_class,
-                            'ROW_COLOR'     => '#' . $row_color,
-                            'STYLE_NAME'    => $installable_theme['style_name'],
-                            'TEMPLATE_NAME' => $installable_theme['template_name'],
-
-                            'U_STYLES_INSTALL' => Session::appendSid('admin_styles.php?mode=addnew&amp;style=' . urlencode($installable_theme['style_name']) . '&amp;install_to=' . urlencode($installable_theme['template_name']))
-                        ]
-                    );
-
+                        $installableThemes[] = $$name;
+                    }
                 }
-				$template->pparse('body');
-					
-			}
-			closedir($dir);
+            }
+
+            $template->setFileNames(['body' => 'admin/styles_addnew_body.tpl']);
+
+            $template->assignVars([
+                    'L_STYLES_TITLE'    => $lang['Styles_admin'],
+                    'L_STYLES_ADD_TEXT' => $lang['Styles_addnew_explain'],
+                    'L_STYLE'           => $lang['Style'],
+                    'L_TEMPLATE'        => $lang['Template'],
+                    'L_INSTALL'         => $lang['Install'],
+                    'L_ACTION'          => $lang['Action']
+                ]);
+
+            foreach ($installableThemes as $installableTheme) {
+                $row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+                $row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+
+                $template->assignBlockVars('styles', [
+                    'ROW_CLASS'     => $row_class,
+                    'ROW_COLOR'     => '#' . $row_color,
+                    'STYLE_NAME'    => $installableTheme['style_name'],
+                    'TEMPLATE_NAME' => $installableTheme['template_name'],
+
+                    'U_STYLES_INSTALL' => Session::appendSid('admin_styles.php?mode=addnew&amp;style=' . urlencode($installableTheme['style_name']) . '&amp;install_to=' . urlencode($installableTheme['template_name']))
+                    ]);
+
+            }
+            $template->pparse('body');
+
 		}
 		break;
 	
@@ -645,7 +642,7 @@ switch ($mode) {
 }
 
 if (empty($_POST['send_file'])) {
-    require_once './page_footer_admin.php';
+    require_once '.' . $sep . 'page_footer_admin.php';
 }
 
 ?>
