@@ -38,10 +38,10 @@
             <a href="admin_ug_auth.php?{$C_GROUP_ID}={$group->group_id}&{$S_SID}&mode=group">{$L_GROUP_PERMISSIONS}</a>
         </td>
         <td class="{$iterator->isEven() ? row1 : row2}">
-            <a href="admin_groups.php?{$C_GROUP_ID}={$group->group_id}&{$S_SID}&mode=delete">{$L_GROUP_DELETE}</a>
+            <a href="admin_groups.php?{$C_GROUP_ID}={$group->group_id}&{$S_SID}&mode=users">{$L_GROUP_USERS}</a>
         </td>
         <td class="{$iterator->isEven() ? row1 : row2}">
-            <a href="admin_groups.php?{$C_GROUP_ID}={$group->group_id}&{$S_SID}&mode=users">{$L_GROUP_USERS}</a>
+            <a href="admin_groups.php?{$C_GROUP_ID}={$group->group_id}&{$S_SID}&mode=delete">{$L_GROUP_DELETE}</a>
         </td>
     </tr>
 {/foreach}
