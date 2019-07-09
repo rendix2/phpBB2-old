@@ -1060,15 +1060,11 @@ foreach ($posts as $i => $post) {
 		$message = str_replace('\"', '"', substr(@preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "@preg_replace(\$orig_word, \$replacement_word, '\\0')", '>' . $message . '<'), 1, -1));
 	}
 
-	//
-	// Replace newlines (we use this rather than nl2br because
-	// till recently it wasn't XHTML compliant)
-	//
     if ($user_sig !== '') {
-		$user_sig = '<br />_________________<br />' . str_replace("\n", "\n<br />\n", $user_sig);
+		$user_sig = '<br />_________________<br />' . nl2br($user_sig);
 	}
 
-	$message = str_replace("\n", "\n<br />\n", $message);
+	$message = nl2br($message);
 
 	//
 	// Editing information

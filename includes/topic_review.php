@@ -183,7 +183,7 @@ function topic_review($topic_id, $is_inline_review)
                 $post->post_text = smilies_pass($post->post_text);
             }
 
-            $post->post_text = str_replace("\n", '<br />', $post->post_text);
+            $post->post_text = nl2br($post->post_text);
 
 			//
 			// Again this will be handled by the templating

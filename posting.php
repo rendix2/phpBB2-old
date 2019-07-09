@@ -760,7 +760,7 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg !== '') {
             $preview_message .= $user_sig . '<br /><br />_________________<br />';
         }
 
-		$preview_message = str_replace("\n", '<br />', $preview_message);
+		$preview_message = nl2br($preview_message);
 
         $template->setFileNames(['preview' => 'posting_preview.tpl']);
 

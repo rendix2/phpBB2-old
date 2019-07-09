@@ -888,8 +888,7 @@ if ($mode === 'searchuser') {
 						$message = smilies_pass($message);
 					}
 
-					$message = str_replace("\n", '<br />', $message);
-
+					$message = nl2br($message);
 				}
 
 				$poster = $search_set->user_id !== ANONYMOUS ? '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $search_set->user_id) . '">' : '';

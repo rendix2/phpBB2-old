@@ -734,7 +734,7 @@ switch ($mode) {
 						$message = smilies_pass($message);
 					}
 
-					$message = str_replace("\n", '<br />', $message);
+					$message = nl2br($message);
 
 					$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
 					$row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];

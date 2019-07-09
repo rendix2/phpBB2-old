@@ -596,7 +596,7 @@ if ($mode === 'newpm') {
         $private_message = smilies_pass($private_message);
     }
 
-	$private_message = str_replace("\n", '<br />', $private_message);
+	$private_message = nl2br($private_message);
 
 	//
 	// Dump it to the templating engine
@@ -1484,7 +1484,7 @@ if ($mode === 'newpm') {
         }
 
 		$preview_message = make_clickable($preview_message);
-		$preview_message = str_replace("\n", '<br />', $preview_message);
+		$preview_message = nl2br($preview_message);
 
 		$s_hidden_fields = '<input type="hidden" name="folder" value="' . $folder . '" />';
 		$s_hidden_fields .= '<input type="hidden" name="mode" value="' . $mode . '" />';
