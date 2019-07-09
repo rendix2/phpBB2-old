@@ -580,7 +580,7 @@ if ($mode === 'newpm') {
 	$private_message = make_clickable($private_message);
 
 	if ($privmsg->privmsgs_attach_sig && $user_sig !== '') {
-		$private_message .= '<br /><br />_________________<br />' . make_clickable($user_sig);
+		$private_message .= $board_config['signature_delimiter'] . make_clickable($user_sig);
 	}
 
 	$orig_word = [];
@@ -1469,7 +1469,7 @@ if ($mode === 'newpm') {
         }
 
         if ($attach_sig && $user_sig !== '') {
-            $preview_message .= $user_sig . '<br /><br />_________________<br />';
+            $preview_message .= $user_sig . $board_config['signature_delimiter'];
         }
 
         if (count($orig_word)) {

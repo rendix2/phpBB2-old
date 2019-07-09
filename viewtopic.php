@@ -1061,7 +1061,7 @@ foreach ($posts as $i => $post) {
 	}
 
     if ($user_sig !== '') {
-		$user_sig = '<br />_________________<br />' . nl2br($user_sig);
+		$user_sig = $board_config['signature_delimiter'] . nl2br($user_sig);
 	}
 
 	$message = nl2br($message);

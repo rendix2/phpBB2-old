@@ -294,6 +294,7 @@ $lang['Allow_sig'] = 'Allow Signatures';
 $lang['Max_sig_length'] = 'Maximum signature length';
 $lang['Max_sig_length_explain'] = 'Maximum number of characters in user signatures';
 $lang['Allow_name_change'] = 'Allow Username changes';
+$lang['Signature_delimiter'] = 'Signature delimiter';
 
 $lang['Avatar_settings'] = 'Avatar Settings';
 $lang['Allow_local'] = 'Enable gallery avatars';

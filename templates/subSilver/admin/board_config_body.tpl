@@ -516,6 +516,15 @@
         </tr>
 
         <tr>
+            <td class="row1">
+                <label for="signature_delimiter">{L_SIGNATURE_DELIMITER}</label>
+            </td>
+            <td class="row2">
+                <textarea type="radio" name="signature_delimiter" id="signature_delimiter" maxlength="255" rows="3" cols="40">{SIGNATURE_DELIMITER} </textarea>
+            </td>
+        </tr>
+
+        <tr>
             <th class="thHead" colspan="2">{L_AVATAR_SETTINGS}</th>
         </tr>
 

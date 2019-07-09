@@ -144,6 +144,8 @@ $sig_no  = !$new['allow_sig'] ? 'checked="checked"' : '';
 $namechange_yes =  $new['allow_namechange'] ? 'checked="checked"' : '';
 $namechange_no  = !$new['allow_namechange'] ? 'checked="checked"' : '';
 
+$signatureDelimiter = $new['signature_delimiter'];
+
 $avatars_local_yes =  $new['allow_avatar_local'] ? 'checked="checked"' : '';
 $avatars_local_no  = !$new['allow_avatar_local'] ? 'checked="checked"' : '';
 
@@ -311,6 +313,8 @@ $template->assignVars(
         'L_AVATAR_SETTINGS'   => $lang['Avatar_settings'],
         'L_ALLOW_LOCAL'       => $lang['Allow_local'],
 
+        'L_SIGNATURE_DELIMITER' => $lang['Signature_delimiter'],
+
         'L_ALLOW_REMOTE'         => $lang['Allow_remote'],
         'L_ALLOW_REMOTE_EXPLAIN' => $lang['Allow_remote_explain'],
 
@@ -448,6 +452,8 @@ $template->assignVars(
 
         'NAMECHANGE_YES' => $namechange_yes,
         'NAMECHANGE_NO'  => $namechange_no,
+
+        'SIGNATURE_DELIMITER' => $signatureDelimiter,
 
         'AVATARS_LOCAL_YES' => $avatars_local_yes,
         'AVATARS_LOCAL_NO'  => $avatars_local_no,

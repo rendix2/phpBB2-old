@@ -75,6 +75,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '.0.23')
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('rand_seed', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('topic_review', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('show_online', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('signature_delimiter', '<br /><br />_________________<br />');
 
 
 # -- Categories

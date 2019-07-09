@@ -757,7 +757,7 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg !== '') {
         }
 
         if ($attach_sig && $user_sig !== '') {
-            $preview_message .= $user_sig . '<br /><br />_________________<br />';
+            $preview_message .= $user_sig . $board_config['signature_delimiter'];
         }
 
 		$preview_message = nl2br($preview_message);
