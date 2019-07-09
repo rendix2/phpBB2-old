@@ -131,22 +131,7 @@ if (isset($_GET['view']) && empty($_GET[POST_POST_URL])) {
 // page the post is on and the correct display of viewtopic)
 //
 
-if (!$post_id) {
-    $columns = ['t.topic_id', 't.topic_title', 't.topic_status', 't.topic_replies', 't.topic_time', 't.topic_type',
-                't.topic_vote', 't.topic_last_post_id', 'f.forum_name', 'f.forum_status', 'f.forum_id', 'f.auth_view',
-                'f.auth_read', 'f.auth_post', 'f.auth_reply', 'f.auth_edit', 'f.auth_delete', 'f.auth_sticky',
-                'f.auth_announce', 'f.auth_pollcreate', 'f.auth_vote', 'f.auth_attachments'
-                ];
-
-    $forum_topic_data = dibi::select($columns)
-        ->from(TOPICS_TABLE)
-        ->as('t')
-        ->innerJoin(FORUMS_TABLE)
-        ->as('f')
-        ->on('f.forum_id = t.forum_id')
-        ->where('t.topic_id = %i', $topic_id)
-        ->fetch();
-} else {
+if ($post_id) {
     $columns = ['t.topic_id', 't.topic_title', 't.topic_status', 't.topic_replies', 't.topic_time', 't.topic_type',
                 't.topic_vote', 't.topic_last_post_id', 'f.forum_name', 'f.forum_status', 'f.forum_id', 'f.auth_view',
                 'f.auth_read', 'f.auth_post', 'f.auth_reply', 'f.auth_edit', 'f.auth_delete', 'f.auth_sticky',
@@ -193,6 +178,21 @@ if (!$post_id) {
         ->groupBy('f.auth_vote')
         ->groupBy('f.auth_attachments')
         ->orderBy('p.post_id', dibi::ASC)
+        ->fetch();
+} else {
+    $columns = ['t.topic_id', 't.topic_title', 't.topic_status', 't.topic_replies', 't.topic_time', 't.topic_type',
+                't.topic_vote', 't.topic_last_post_id', 'f.forum_name', 'f.forum_status', 'f.forum_id', 'f.auth_view',
+                'f.auth_read', 'f.auth_post', 'f.auth_reply', 'f.auth_edit', 'f.auth_delete', 'f.auth_sticky',
+                'f.auth_announce', 'f.auth_pollcreate', 'f.auth_vote', 'f.auth_attachments'
+    ];
+
+    $forum_topic_data = dibi::select($columns)
+        ->from(TOPICS_TABLE)
+        ->as('t')
+        ->innerJoin(FORUMS_TABLE)
+        ->as('f')
+        ->on('f.forum_id = t.forum_id')
+        ->where('t.topic_id = %i', $topic_id)
         ->fetch();
 }
 
