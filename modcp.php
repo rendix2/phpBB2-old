@@ -196,13 +196,13 @@ switch ($mode) {
 
             $topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topic_id];
 
-			$topic_ids = dibi::select('topic_id')
+			$topicIds = dibi::select('topic_id')
                 ->from(TOPICS_TABLE)
                 ->where('topic_id IN %in', $topics)
                 ->where('forum_id = %i', $forum_id)
                 ->fetchPairs(null, 'topic_id');
 
-			if (!count($topic_ids)) {
+			if (!count($topicIds)) {
 				message_die(GENERAL_MESSAGE, $lang['None_selected']);
 			}
 
@@ -210,7 +210,7 @@ switch ($mode) {
                 ->select('COUNT(topic_id)')
                 ->as('topics')
                 ->from(TOPICS_TABLE)
-                ->where('topic_id IN %in', $topics)
+                ->where('topic_id IN %in', $topicIds)
                 ->where('forum_id = %i', $forum_id)
                 ->groupBy('topic_poster')
                 ->fetchAll();
@@ -225,7 +225,7 @@ switch ($mode) {
                 ->select('COUNT(post_id)')
                 ->as('posts')
                 ->from(POSTS_TABLE)
-                ->where('topic_id IN %in', $topic_ids)
+                ->where('topic_id IN %in', $topicIds)
                 ->groupBy('poster_id')
                 ->fetchAll();
 
@@ -237,7 +237,7 @@ switch ($mode) {
 
             $post_ids = dibi::select('post_id')
                 ->from(POSTS_TABLE)
-                ->where('topic_id IN %in', $topic_ids)
+                ->where('topic_id IN %in', $topicIds)
                 ->fetchPairs(null, 'post_id');
 
 			//
@@ -245,7 +245,7 @@ switch ($mode) {
 			//
 
             dibi::delete(TOPICS_TABLE)
-                ->where('topic_id IN %in OR topic_moved_id IN %in', $topic_ids, $topic_ids)
+                ->where('topic_id IN %in OR topic_moved_id IN %in', $topicIds, $topicIds)
                 ->execute();
 
             if (count($post_ids)) {
@@ -262,7 +262,7 @@ switch ($mode) {
 
             $votes = dibi::select('vote_id')
                 ->from(VOTE_DESC_TABLE)
-                ->where('topic_id IN %in', $topic_ids)
+                ->where('topic_id IN %in', $topicIds)
                 ->fetchPairs(null, 'vote_id');
 
             if (count($votes)) {
@@ -280,7 +280,7 @@ switch ($mode) {
             }
 
             dibi::delete(TOPICS_WATCH_TABLE)
-                ->where('topic_id IN %in', $topic_ids)
+                ->where('topic_id IN %in', $topicIds)
                 ->execute();
 
 			sync('forum', $forum_id);
