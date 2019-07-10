@@ -31,11 +31,6 @@ if (!defined('IN_PHPBB') )
 	die('Hacking attempt');
 }
 
-/**
- * enable working with session.... it was STILL MISSING
- */
-session_start();
-
 //
 error_reporting  (E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
 
@@ -64,6 +59,11 @@ $loader->addDirectory(__DIR__ . $sep . 'includes');
 // And set caching to the 'temp' directory
 $loader->setTempDirectory(__DIR__ . $sep . 'temp');
 $loader->register(); // Run the RobotLoader
+
+/**
+ * enable working with session.... it was STILL MISSING
+ */
+session_start();
 
 //
 // Define some basic configuration arrays this also prevents
