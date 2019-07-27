@@ -113,27 +113,6 @@ if ($userdata['session_logged_in'] && empty($gen_simple_header)) {
 	$s_privmsg_new = 0;
 }
 
-//
-// Generate HTML required for Mozilla Navigation bar
-//
-if (!isset($nav_links)) {
-	$nav_links = [];
-}
-
-$nav_links_html = '';
-$nav_link_proto = '<link rel="%s" href="%s" title="%s" />' . "\n";
-
-foreach ($nav_links as $nav_item => $nav_array) {
-	if (!empty($nav_array['url'])) {
-		$nav_links_html .= sprintf($nav_link_proto, $nav_item, Session::appendSid($nav_array['url']), $nav_array['title']);
-	} else {
-		// We have a nested array, used for items like <link rel='chapter'> that can occur more than once.
-		foreach ($nav_array as $nested_array) {
-			$nav_links_html .= sprintf($nav_link_proto, $nav_item, $nested_array['url'], $nested_array['title']);
-		}
-	}
-}
-
 // Format Timezone. We are unable to use array_pop here, because of PHP3 compatibility
 $l_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
 //
@@ -236,8 +215,6 @@ $template->assignVars(
         'T_SPAN_CLASS1'     => $theme['span_class1'],
         'T_SPAN_CLASS2'     => $theme['span_class2'],
         'T_SPAN_CLASS3'     => $theme['span_class3'],
-
-        'NAV_LINKS' => $nav_links_html
     ]
 );
 

@@ -532,22 +532,6 @@ $view_forum_url      = Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=
 $view_prev_topic_url = Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;view=previous");
 $view_next_topic_url = Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;view=next");
 
-//
-// Mozilla navigation bar
-//
-$nav_links['prev'] = [
-    'url'   => $view_prev_topic_url,
-    'title' => $lang['View_previous_topic']
-];
-$nav_links['next'] = [
-    'url'   => $view_next_topic_url,
-    'title' => $lang['View_next_topic']
-];
-$nav_links['up']   = [
-    'url'   => $view_forum_url,
-    'title' => $forum_name
-];
-
 $reply_img = $forum_topic_data->forum_status === FORUM_LOCKED || $forum_topic_data->topic_status === TOPIC_LOCKED ? $images['reply_locked'] : $images['reply_new'];
 $reply_alt = $forum_topic_data->forum_status === FORUM_LOCKED || $forum_topic_data->topic_status === TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['Reply_to_topic'];
 

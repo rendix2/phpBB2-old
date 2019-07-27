@@ -139,7 +139,7 @@ function make_jumpbox($action, $match_forum_id = 0)
      * @var Template $template
      */
 	global $template;
-	global $userdata, $lang, $nav_links, $SID;
+	global $userdata, $lang, $SID;
 
 //	$is_auth = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
 
@@ -177,15 +177,6 @@ function make_jumpbox($action, $match_forum_id = 0)
 //					{
 						$selected = $forum->forum_id === $match_forum_id ? 'selected="selected"' : '';
 						$boxstring_forums .=  '<option value="' . $forum->forum_id . '"' . $selected . '>' . htmlspecialchars($forum->forum_name, ENT_QUOTES) . '</option>';
-
-						//
-						// Add an array to $nav_links for the Mozilla navigation bar.
-						// 'chapter' and 'forum' can create multiple items, therefore we are using a nested array.
-						//
-						$nav_links['chapter forum'][$forum->forum_id] = array (
-                            'url'   => Session::appendSid('viewforum.php?' . POST_FORUM_URL . '=' . $forum->forum_id),
-                            'title' => $forum->forum_name
-						);
 					}
 				}
 
@@ -227,7 +218,6 @@ function init_userprefs($userdata)
 {
 	global $board_config, $theme, $images;
 	global $template, $lang, $phpbb_root_path;
-	global $nav_links;
 	global $storage;
 
     $default_lang = '';
@@ -306,29 +296,6 @@ function init_userprefs($userdata)
 	}
 
 	$theme = setup_style($board_config['default_style']);
-
-	//
-	// Mozilla navigation bar
-	// Default items that should be valid on all pages.
-	// Defined here to correctly assign the Language Variables
-	// and be able to change the variables within code.
-	//
-    $nav_links['top'] = [
-        'url' => Session::appendSid($phpbb_root_path . 'index.php'),
-        'title' => sprintf($lang['Forum_Index'], $board_config['sitename'])
-    ];
-    $nav_links['search'] = [
-        'url' => Session::appendSid($phpbb_root_path . 'search.php'),
-        'title' => $lang['Search']
-    ];
-    $nav_links['help'] = [
-        'url' => Session::appendSid($phpbb_root_path . 'faq.php'),
-        'title' => $lang['FAQ']
-    ];
-    $nav_links['author'] = [
-        'url' => Session::appendSid($phpbb_root_path . 'memberlist.php'),
-        'title' => $lang['Memberlist']
-    ];
 }
 
 function setup_style($style)
@@ -565,7 +532,7 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 //
 function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '', $err_file = '')
 {
-	global $db, $template, $board_config, $theme, $lang, $phpbb_root_path, $nav_links, $gen_simple_header, $images;
+	global $db, $template, $board_config, $theme, $lang, $phpbb_root_path, $gen_simple_header, $images;
 	global $userdata, $user_ip, $session_length;
 
 	$sep = DIRECTORY_SEPARATOR;

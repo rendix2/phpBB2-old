@@ -75,7 +75,6 @@ $userdata = [];
 $theme = [];
 $images = [];
 $lang = [];
-$nav_links = [];
 $dss_seeded = false;
 $gen_simple_header = false;
 

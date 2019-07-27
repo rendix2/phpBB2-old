@@ -387,14 +387,6 @@ if ($is_auth['auth_mod']) {
 }
 
 //
-// Mozilla navigation bar
-//
-$nav_links['up'] = [
-    'url'   => Session::appendSid('index.php'),
-    'title' => sprintf($lang['Forum_Index'], $board_config['sitename'])
-];
-
-//
 // Dump out the page header and load viewforum template
 //
 
