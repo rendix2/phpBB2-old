@@ -176,7 +176,7 @@ $template->assignVars(
     [
         'USERNAME' => $profileData->username,
         'JOINED' => create_date($lang['DATE_FORMAT'], $profileData->user_regdate, $board_config['board_timezone']),
-        'POSTER_RANK' => $poster_rank,
+        'POSTER_RANK' => htmlspecialchars($poster_rank, ENT_QUOTES),
         'RANK_IMAGE' => $rank_image,
 
         'POSTS' => $profileData->user_posts,
