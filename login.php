@@ -168,9 +168,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
             message_die(GENERAL_ERROR, 'Invalid_session');
         }
 
-        if ($userdata['session_logged_in']) {
-            Session::end($userdata['session_id'], $userdata['user_id']);
-        }
+        Session::end($userdata['session_id'], $userdata['user_id']);
 
         if (!empty($_POST['redirect']) || !empty($_GET['redirect'])) {
             $url = !empty($_POST['redirect']) ? htmlspecialchars($_POST['redirect']) : htmlspecialchars($_GET['redirect']);
