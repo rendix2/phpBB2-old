@@ -16,14 +16,20 @@ class Session
      * @param int    $user_id
      * @param string $user_ip
      * @param int    $page_id
-     * @param int    $auto_create
-     * @param int    $enable_autologin
-     * @param int    $admin
+     * @param bool   $auto_create
+     * @param bool   $enable_autologin
+     * @param bool   $admin
      *
      * @return array
      */
-    public static function begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_autologin = 0, $admin = 0)
-    {
+    public static function begin(
+        $user_id,
+        $user_ip,
+        $page_id,
+        $auto_create = false,
+        $enable_autologin = false,
+        $admin = false
+    ) {
         global $board_config;
         global $SID;
 
@@ -85,7 +91,7 @@ class Session
 
                 $userdata = $userdata->toArray();
 
-                $enable_autologin = $login = 1;
+                $enable_autologin = $login = true;
             } elseif (!$auto_create) {
                 $sessiondata['autologinid'] = '';
                 $sessiondata['userid'] = $user_id;
@@ -103,7 +109,7 @@ class Session
                 // we need it as array, no object.. :(
                 $userdata = $userdata->toArray();
 
-                $login = 1;
+                $login = true;
             }
         }
 
@@ -117,7 +123,7 @@ class Session
         if (!count($userdata) || !is_array($userdata) || !$userdata) {
             $sessiondata['autologinid'] = '';
             $sessiondata['userid'] = $user_id = ANONYMOUS;
-            $enable_autologin = $login = 0;
+            $enable_autologin = $login = false;
 
             $userdata = dibi::select('*')
                 ->from(USERS_TABLE)
@@ -408,14 +414,14 @@ class Session
         // If we reach here then no (valid) session exists. So we'll create a new one,
         // using the cookie user_id if available to pull basic user prefs.
         //
-        $user_id = isset($sessiondata['userid']) ? (int)$sessiondata['userid'] : ANONYMOUS;
+        $user_id  = isset($sessiondata['userid']) ? (int)$sessiondata['userid'] : ANONYMOUS;
+        $userdata = self::begin($user_id, $user_ip, $thispage_id, true);
 
-        if (!($userdata = self::begin($user_id, $user_ip, $thispage_id, true))) {
+        if (!$userdata) {
             message_die(CRITICAL_ERROR, 'Error creating user session');
         }
 
         return $userdata;
-
     }
 
     /**
