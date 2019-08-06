@@ -30,14 +30,20 @@
  */
 
 class Template {
+
     /**
-     * @var string $classname
+     * @var string $className
      */
-    private $classname;
+    private $className;
 
     /**
      * variable that holds all the data we'll be substituting into
      * the compiled templates.
+     * ...
+     * This will end up being a multi-dimensional array like this:
+     * $this->_tpldata[block.][iteration#][child.][iteration#][child2.][iteration#][variablename] == value
+     * if it's a root-level variable, it'll be like this:
+     * $this->_tpldata[.][0][varname] == value
      *
      * @var array $_tpldata
      */
@@ -45,6 +51,7 @@ class Template {
 
     /**
      * Hash of filenames for each template handle.
+     *
      * @var array $files
      */
     private $files;
@@ -57,23 +64,33 @@ class Template {
     /**
      * Root template directory.
      *
-     * @var  $root
+     * @var string $root
      */
     private $root;
 
     /**
      * this will hash handle names to the compiled code for that handle.
      *
-     * @var array $compiled_code
+     * @var array $compiledCode
      */
-    private $compiled_code;
+    private $compiledCode;
 
     /**
      * This will hold the uncompiled code for that handle.
      *
-     * @var array $uncompiled_code
+     * @var array $uncompiledCode
      */
-    private $uncompiled_code;
+    private $uncompiledCode;
+
+    /**
+     * @var array $filename
+     */
+    private $filename;
+
+    /**
+     * @var string $cacheDir
+     */
+    private $cacheDir;
 
     /**
      * Constructor. Simply sets the root dir and init other vars
@@ -84,12 +101,12 @@ class Template {
     {
         $this->setRootDir($root);
 
-        $this->cache_root = 'cache/';
-        $this->classname = 'Template';
-        $this->_tpldata = [];
-        $this->files = [];
-        $this->compiled_code = [];
-        $this->uncompiled_code = [];
+        $this->cache_root     = 'cache/';
+        $this->className      = 'Template';
+        $this->_tpldata       = [];
+        $this->files          = [];
+        $this->compiledCode   = [];
+        $this->uncompiledCode = [];
     }
 
     /**
@@ -98,64 +115,62 @@ class Template {
      */
     public function __destruct()
     {
-        $this->classname = null;
-        $this->_tpldata = null;
-        $this->files = null;
-        $this->root = null;
-        $this->compiled_code = null;
-        $this->uncompiled_code = null;
+        $this->className      = null;
+        $this->_tpldata       = null;
+        $this->files          = null;
+        $this->root           = null;
+        $this->compiledCode   = null;
+        $this->uncompiledCode = null;
+        $this->filename       = null;
+        $this->cacheDir       = null;
     }
 
-	/**
-	 * Sets the template root directory for this Template object.
-	 */
+    /**
+     * Sets the template root directory for this Template object.
+     *
+     * @param string $dir
+     *
+     * @return bool
+     */
 	public function setRootDir($dir)
 	{
 		global $phpbb_root_path;
 
-		if (is_file($dir) || is_link($dir))
-		{
+		if (is_file($dir) || is_link($dir)) {
 			return false;
 		}
 
         $sep = DIRECTORY_SEPARATOR;
 
-		$this->root = phpbb_realpath($dir);
-		$this->cachedir = phpbb_realpath($phpbb_root_path . $this->cache_root) . substr($dir, strrpos($dir, '/')) . '/';
+		$this->root     = phpbb_realpath($dir);
+		$this->cacheDir = phpbb_realpath($phpbb_root_path . $this->cache_root) . substr($dir, strrpos($dir, '/')) . '/';
 
-        if (!file_exists($this->cachedir . 'admin' . $sep))
-		{
+        if (!file_exists($this->cacheDir . 'admin' . $sep)) {
 			@umask(0);
-			if (!file_exists($this->cachedir))
-			{
-				mkdir($this->cachedir);
+
+			if (!file_exists($this->cacheDir)) {
+				mkdir($this->cacheDir);
 			}
-            mkdir($this->cachedir . 'admin' . $sep);
+
+            mkdir($this->cacheDir . 'admin' . $sep);
 		}
 
 		return true;
 	}
 
-	/**
-	 * Sets the template filenames for handles. $filename_array
-	 * should be a hash of handle => filename pairs.
-	 */
-	public function setFileNames($filename_array)
+    /**
+     * Sets the template filenames for handles. $filename_array
+     * should be a hash of handle => filename pairs.
+     *
+     * @param array $filename_array
+     */
+	public function setFileNames(array $filename_array)
 	{
-		if (!is_array($filename_array)) {
-			return false;
-		}
-
-		$template_names = '';
-
 		foreach ($filename_array as $handle => $filename) {
 			$this->filename[$handle] = $filename;
 			$this->files[$handle] = $this->makeFileName($filename);
 		}
-
-		return true;
 	}
-
 
 	/**
 	 * Load the file for the handle, compile the file,
@@ -164,37 +179,32 @@ class Template {
 	 */
 	public function pparse($handle)
 	{
-		$cache_file = $this->cachedir . $this->filename[$handle] . '.php';
+		$cache_file = $this->cacheDir . $this->filename[$handle] . '.php';
 
-		if (@filemtime($cache_file) === @filemtime($this->files[$handle]))
-		{
+		if (@filemtime($cache_file) === @filemtime($this->files[$handle])) {
 			$_str = '';
 
             require_once $cache_file;
 
-			if ($_str !== '')
-			{
+			if ($_str !== '') {
 				echo $_str;
 			}
-		}
-		else 
-		{
-			if (!$this->loadFile($handle))
-			{
+		} else {
+			if (!$this->loadFile($handle)) {
 				die("Template->pparse(): Couldn't load template file for handle $handle");
 			}
 
 			// Actually compile the code now.
-			$this->compiled_code[$handle] = $this->compile($this->uncompiled_code[$handle]);
+            $this->compiledCode[$handle] = $this->compile($this->uncompiledCode[$handle]);
 
 			$fp = fopen($cache_file, 'wb+');
-			fwrite ($fp, '<?php' . "\n" . $this->compiled_code[$handle] . "\n?" . '>');
+			fwrite ($fp, '<?php' . "\n" . $this->compiledCode[$handle] . "\n?" . '>');
 			fclose($fp);
 
 			touch($cache_file, filemtime($this->files[$handle]));
 			@chmod($cache_file, 0777);
 
-			eval($this->compiled_code[$handle]);
+			eval($this->compiledCode[$handle]);
 		}
 	
 		return true;
@@ -210,22 +220,18 @@ class Template {
 	 */
 	public function assignVarFromHandle($varname, $handle)
 	{
-		$cache_file = $this->cachedir . $this->filename[$handle] . '.php';
+		$cache_file = $this->cacheDir . $this->filename[$handle] . '.php';
 
-		if (@filemtime($cache_file) === @filemtime($this->files[$handle]))
-		{
+		if (@filemtime($cache_file) === @filemtime($this->files[$handle])) {
 			$_str = '';
 
 			require_once $cache_file;
-		}
-		else 
-		{
-			if (!$this->loadFile($handle))
-			{
+		} else {
+			if (!$this->loadFile($handle)) {
 				die("Template->pparse(): Couldn't load template file for handle $handle");
 			}
 
-			$code = $this->compile($this->uncompiled_code[$handle], true, '_str');
+			$code = $this->compile($this->uncompiledCode[$handle], true, '_str');
 
 			$fp = fopen($cache_file, 'wb+');
 			fwrite ($fp, '<?php' . "\n" . $code . "\n?" . '>');
@@ -238,7 +244,6 @@ class Template {
 			$_str = '';
 			// evaluate the variable assignment.
 			eval($code);
-		
 		}
 
 		// assign the value of the generated variable to the given varname.
@@ -254,15 +259,13 @@ class Template {
 	 */
 	public function assignBlockVars($blockname, $vararray)
 	{
-		if (false !== strpos($blockname, '.'))
-		{
+		if (false !== strpos($blockname, '.')) {
 			// Nested block.
 			$blocks = explode('.', $blockname);
 			$blockcount = count($blocks) - 1;
+			$str = &$this->_tpldata;
 
-			$str = &$this->_tpldata; 
-			for ($i = 0; $i < $blockcount; $i++) 
-			{
+			for ($i = 0; $i < $blockcount; $i++) {
 				$str = &$str[$blocks[$i]]; 
 				$str = &$str[count($str) - 1]; 
 			} 
@@ -271,9 +274,7 @@ class Template {
 			// We're adding a new iteration to this block with the given
 			// variable assignments.
 			$str[$blocks[$blockcount]][] = $vararray;
-		}
-		else
-		{
+		} else {
 			// Top-level block.
 			// Add a new iteration to this block with the variable assignments
 			// we were given.
@@ -307,7 +308,6 @@ class Template {
 		return true;
 	}
 
-
 	/**
 	 * Generates a full path+filename for the given filename, which can either
 	 * be an absolute name, or a name relative to the rootdir for this Template
@@ -318,19 +318,16 @@ class Template {
 	    $sep = DIRECTORY_SEPARATOR;
 
 		// Check if it's an absolute or relative path.
-		if (substr($filename, 0, 1) !== '/')
-		{
+		if (substr($filename, 0, 1) !== '/') {
             $filename = phpbb_realpath($this->root . $sep . $filename);
 		}
 
-		if (!file_exists($filename))
-		{
+		if (!file_exists($filename)) {
 			die("Template->makeFileName(): Error - file $filename does not exist");
 		}
 
 		return $filename;
 	}
-
 
 	/**
 	 * If not already done, load the file for the given handle and populate
@@ -339,31 +336,26 @@ class Template {
     public function loadFile($handle)
 	{
 		// If the file for this handle is already loaded and compiled, do nothing.
-		if (!empty($this->uncompiled_code[$handle]))
-		{
+		if (!empty($this->uncompiledCode[$handle])) {
 			return true;
 		}
 
 		// If we don't have a file assigned to this handle, die.
-		if (!isset($this->files[$handle]))
-		{
+		if (!isset($this->files[$handle])) {
 			die("Template->loadFile(): No file specified for handle $handle");
 		}
 
 		$filename = $this->files[$handle];
-
 		$str = implode('', @file($filename));
-		if (empty($str))
-		{
+
+		if (empty($str)) {
 			die("Template->loadFile(): File $filename for handle $handle is empty");
 		}
 
-		$this->uncompiled_code[$handle] = $str;
+        $this->uncompiledCode[$handle] = $str;
 
 		return true;
 	}
-
-
 
 	/**
 	 * Compiles the given string of code, and returns
@@ -386,8 +378,8 @@ class Template {
 		$varrefs = [];
 		preg_match_all('#\{(([a-z0-9\-_]+?\.)+?)([a-z0-9\-_]+?)\}#is', $code, $varrefs);
 		$varcount = count($varrefs[1]);
-		for ($i = 0; $i < $varcount; $i++)
-		{
+
+		for ($i = 0; $i < $varcount; $i++) {
 			$namespace = $varrefs[1][$i];
 			$varname = $varrefs[3][$i];
 			$new = $this->generateBlockVarRef($namespace, $varname, $concat);
@@ -407,37 +399,36 @@ class Template {
 
 		// Second: prepend echo ', append ' . "\n"; to each line.
 		$line_count = count($code_lines);
-		for ($i = 0; $i < $line_count; $i++)
-		{
+
+		for ($i = 0; $i < $line_count; $i++) {
 			$code_lines[$i] = rtrim($code_lines[$i]);
-			if (preg_match('#<!-- BEGIN (.*?) -->#', $code_lines[$i], $m))
-			{
+
+			if (preg_match('#<!-- BEGIN (.*?) -->#', $code_lines[$i], $m)) {
 				$n[0] = $m[0];
 				$n[1] = $m[1];
 
 				// Added: dougk_ff7-Keeps templates from bombing if begin is on the same line as end.. I think. :)
-				if (preg_match('#<!-- END (.*?) -->#', $code_lines[$i], $n))
-				{
+				if (preg_match('#<!-- END (.*?) -->#', $code_lines[$i], $n)) {
 					$block_nesting_level++;
 					$block_names[$block_nesting_level] = $m[1];
-					if ($block_nesting_level < 2)
-					{
+
+					if ($block_nesting_level < 2) {
 						// Block is not nested.
 						$code_lines[$i] = '$_' . $a[1] . '_count = (isset($this->_tpldata[\'' . $n[1] . '\'])) ?  count($this->_tpldata[\'' . $n[1] . '\']) : 0;';
 						$code_lines[$i] .= 'for ($_' . $n[1] . '_i = 0; $_' . $n[1] . '_i < $_' . $n[1] . '_count; $_' . $n[1] . '_i++)';
 						$code_lines[$i] .= '{';
-					}
-					else
-					{
+					} else {
 						// This block is nested.
-
 						// Generate a namespace string for this block.
 						$namespace = substr(implode('.', $block_names), 0, -1);
+
 						// strip leading period from root level..
 						$namespace = substr($namespace, 2);
+
 						// Get a reference to the data array for this block that depends on the
 						// current indices of all parent blocks.
 						$varref = $this->generateBlockDataRef($namespace, false);
+
 						// Create the for loop code to iterate over this block.
 						$code_lines[$i] = '$_' . $a[1] . '_count = (isset(' . $varref . ')) ? count(' . $varref . ') : 0;';
 						$code_lines[$i] .= 'for ($_' . $n[1] . '_i = 0; $_' . $n[1] . '_i < $_' . $n[1] . '_count; $_' . $n[1] . '_i++)';
@@ -450,63 +441,55 @@ class Template {
 					$code_lines[$i] .= '} // END ' . $n[1];
 					$m[0] = $n[0];
 					$m[1] = $n[1];
-				}
-				else
-				{
+				} else {
 					// We have the start of a block.
 					$block_nesting_level++;
 					$block_names[$block_nesting_level] = $m[1];
-					if ($block_nesting_level < 2)
-					{
+
+					if ($block_nesting_level < 2) {
 						// Block is not nested.
 						$code_lines[$i] = '$_' . $m[1] . '_count = (isset($this->_tpldata[\'' . $m[1] . '\'])) ? count($this->_tpldata[\'' . $m[1] . '\']) : 0;';
 						$code_lines[$i] .= 'for ($_' . $m[1] . '_i = 0; $_' . $m[1] . '_i < $_' . $m[1] . '_count; $_' . $m[1] . '_i++)';
 						$code_lines[$i] .= '{';
-					}
-					else
-					{
+					} else {
 						// This block is nested.
 
 						// Generate a namespace string for this block.
 						$namespace = implode('.', $block_names);
+
 						// strip leading period from root level..
 						$namespace = substr($namespace, 2);
+
 						// Get a reference to the data array for this block that depends on the
 						// current indices of all parent blocks.
 						$varref = $this->generateBlockDataRef($namespace, false);
+
 						// Create the for loop code to iterate over this block.
 						$code_lines[$i] = '$_' . $m[1] . '_count = (isset(' . $varref . ')) ? count(' . $varref . ') : 0;';
 						$code_lines[$i] .= 'for ($_' . $m[1] . '_i = 0; $_' . $m[1] . '_i < $_' . $m[1] . '_count; $_' . $m[1] . '_i++)';
 						$code_lines[$i] .= '{';
 					}
 				}
-			}
-			elseif (preg_match('#<!-- END (.*?) -->#', $code_lines[$i], $m))
-			{
+			} elseif (preg_match('#<!-- END (.*?) -->#', $code_lines[$i], $m)) {
 				// We have the end of a block.
 				unset($block_names[$block_nesting_level]);
 				$block_nesting_level--;
 				$code_lines[$i] = '} // END ' . $m[1];
-			}
-			else
-			{
+			} else {
 				// We have an ordinary line of code.
-				if (!$do_not_echo)
-				{
-					$code_lines[$i] = "echo '" . $code_lines[$i] . "\n';\n";
-				}
-				else
-				{
-					$code_lines[$i] = '$' . $retvar . ".= '" . $code_lines[$i] . "\n';\n"; 
+				if ($do_not_echo) {
+                    $code_lines[$i] = '$' . $retvar . ".= '" . $code_lines[$i] . "\n';\n";
+				} else {
+                    $code_lines[$i] = "echo '" . $code_lines[$i] . "\n';\n";
 				}
 			}
 		}
 
 		// Bring it back into a single string of lines of code.
 		$code = implode("\n", $code_lines);
+
 		return $code;
 	}
-
 
 	/**
 	 * Generates a reference to the given variable inside the given (possibly nested)
@@ -522,17 +505,14 @@ class Template {
 
 		// Get a reference to the data block for this namespace.
 		$varref = $this->generateBlockDataRef($namespace, true);
-		// Prepend the necessary code to stick this in an echo line.
 
+		// Prepend the necessary code to stick this in an echo line.
 		// Append the variable reference.
 		$varref .= "['$varname']";
-
 		$varref = "' $concat ((isset($varref)) ? $varref : '') $concat '";
 
 		return $varref;
-
 	}
-
 
 	/**
 	 * Generates a reference to the array of data values for the given
@@ -548,21 +528,20 @@ class Template {
 		$blocks = explode('.', $blockname);
 		$blockcount = count($blocks) - 1;
 		$varref = '$this->_tpldata';
+
 		// Build up the string with everything but the last child.
-		for ($i = 0; $i < $blockcount; $i++)
-		{
+		for ($i = 0; $i < $blockcount; $i++) {
 			$varref .= "['" . $blocks[$i] . "'][\$_" . $blocks[$i] . '_i]';
 		}
+
 		// Add the block reference for the last child.
 		$varref .= "['" . $blocks[$blockcount] . "']";
-		// Add the iterator for the last child if requried.
-		if ($include_last_iterator)
-		{
+
+		// Add the iterator for the last child if required.
+		if ($include_last_iterator) {
 			$varref .= '[$_' . $blocks[$blockcount] . '_i]';
 		}
 
 		return $varref;
 	}
 }
-
-?>
