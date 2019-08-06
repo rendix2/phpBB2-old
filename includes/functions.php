@@ -11,6 +11,7 @@
  *
  ***************************************************************************/
 
+use Dibi\Exception;
 use Dibi\Row;
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
@@ -813,6 +814,7 @@ function get_formatted_filesize($value, $string_only = true, $allowed_units = fa
  * @param IStorage $storage
  * @param Template $template
  *
+ * @throws Exception
  */
 function showOnline($forum_id, $userdata, array &$board_config, $theme, array $lang, IStorage $storage, Template $template)
 {
@@ -963,6 +965,21 @@ function showOnline($forum_id, $userdata, array &$board_config, $theme, array $l
             'LOGGED_IN_USER_LIST' => $onlineUserListString,
         ]
     );
+}
+
+/**
+ * @param array  $boardConfig
+ * @param string $scriptName
+ *
+ * @return string
+ */
+function getServerUrl(array $boardConfig, $scriptName)
+{
+    $server_name = trim($boardConfig['server_name']);
+    $server_protocol = $boardConfig['cookie_secure'] ? 'https://' : 'http://';
+    $server_port = $boardConfig['server_port'] !== 80 ? ':' . trim($boardConfig['server_port']) . '/' : '/';
+
+    return $server_protocol . $server_name . $server_port . $scriptName;
 }
 
 ?>

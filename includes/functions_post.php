@@ -804,9 +804,12 @@ function generate_smilies($mode, $page_id)
 }
 
 /**
-* Called from within prepare_message to clean included HTML tags if HTML is
-* turned on for that post
-* @param array $tag Matching text from the message to parse
+ * Called from within prepare_message to clean included HTML tags if HTML is
+ * turned on for that post
+ *
+ * @param array $tag Matching text from the message to parse
+ *
+ * @return string
 */
 function clean_html($tag)
 {

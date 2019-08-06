@@ -231,7 +231,9 @@ function throw_error($msg_text = '', $err_line = '', $err_file = '')
 	//
 	// Include Tail and exit
 	//
-	echo('<p class="gen"><a href="' . Session::appendSid("admin_db_maintenance.php") . '">' . $lang['Back_to_DB_Maintenance'] . "</a></p>\n");
+	echo('<p class="gen"><a href="' . Session::appendSid('admin_db_maintenance.php') . '">' . $lang['Back_to_DB_Maintenance'] . "</a></p>\n");
+
+	$sep = DIRECTORY_SEPARATOR;
 
     require_once '.' . $sep . 'page_footer_admin.php';
 	exit;

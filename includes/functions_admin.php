@@ -61,9 +61,15 @@ function make_forum_select($boxName, $ignoreForum = false, $selectForum = '')
 	return $forumList;
 }
 
-//
-// Synchronise functions for forums/topics
-//
+/**
+ * Synchronise functions for forums/topics
+ *
+ * @param string $type
+ * @param bool   $id
+ *
+ * @return bool
+ * @throws \Dibi\Exception
+ */
 function sync($type, $id = false)
 {
     switch ($type) {

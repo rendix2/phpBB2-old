@@ -10,6 +10,8 @@
  *
  ***************************************************************************/
 
+use Dibi\Row;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -65,7 +67,7 @@ if (isset($_POST[POST_MODE]) || isset($_GET[POST_MODE])) {
  * @param $mode
  * @param $id
  *
- * @return \Dibi\Row|false
+ * @return Row|false
  */
 function get_info($mode, $id)
 {

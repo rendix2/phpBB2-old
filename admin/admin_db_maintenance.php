@@ -9,6 +9,8 @@
  *   part of DB Maintenance Mod 1.3.8
  ***************************************************************************/
 
+use Nette\Caching\Cache;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -2313,7 +2315,7 @@ switch($mode_id) {
                     }
                 }
 
-                $cache = new \Nette\Caching\Cache($storage, CONFIG_TABLE);
+                $cache = new Cache($storage, CONFIG_TABLE);
                 $cache->remove(CONFIG_TABLE);
 
                 if ($list_open) {
