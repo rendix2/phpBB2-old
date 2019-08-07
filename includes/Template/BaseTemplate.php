@@ -143,7 +143,7 @@ abstract class BaseTemplate
      * It's ready to be inserted into an "echo" line in one of the templates.
      * NOTE: expects a trailing "." on the namespace.
      */
-    protected function generateBlockVarRef($namespace, $varname)
+    protected function generateBlockVarRef($namespace, $varname, $concat = null)
     {
         // Strip the trailing period.
         $namespace = substr($namespace, 0, -1);

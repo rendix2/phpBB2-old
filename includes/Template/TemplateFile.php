@@ -436,7 +436,7 @@ class TemplateFile extends BaseTemplate {
 	/**
 	 * @inheritDoc
 	 */
-	protected function generateBlockVarRef($namespace, $varname, $concat)
+	protected function generateBlockVarRef($namespace, $varname, $concat = null)
 	{
 		// Strip the trailing period.
 		$namespace = substr($namespace, 0, -1);
