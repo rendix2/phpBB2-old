@@ -336,7 +336,7 @@ function remove_search_post(array $post_ids)
 function username_search($search_match)
 {
     /**
-     * @var Template $template
+     * @var BaseTemplate $template
      */
     global $template;
 

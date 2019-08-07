@@ -682,7 +682,7 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 function generate_smilies($mode, $page_id)
 {
     /**
-     * @var Template $template
+     * @var BaseTemplate $template
      */
     global $template;
 

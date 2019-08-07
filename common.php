@@ -57,7 +57,7 @@ $loader = new RobotLoader();
 $loader->addDirectory(__DIR__ . $sep . 'includes');
 
 // And set caching to the 'temp' directory
-$loader->setTempDirectory(__DIR__ . $sep . 'temp');
+$loader->setTempDirectory(__DIR__ . $sep . 'temp' . $sep . 'cache' . $sep . 'Nette.RobotLoader');
 $loader->register(); // Run the RobotLoader
 
 /**

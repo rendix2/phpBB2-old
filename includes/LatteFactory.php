@@ -47,7 +47,7 @@ class LatteFactory
 
         $this->path = __DIR__ . $sep . '..' . $sep;
 
-        $this->latte->setTempDirectory($this->path .'temp');
+        $this->latte->setTempDirectory($this->path . 'temp' . $sep . 'cache' . $sep . 'Latte.Latte');
         $this->storage = $storage;
     }
 

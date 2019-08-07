@@ -520,7 +520,23 @@
                 <label for="signature_delimiter">{L_SIGNATURE_DELIMITER}</label>
             </td>
             <td class="row2">
-                <textarea type="radio" name="signature_delimiter" id="signature_delimiter" maxlength="255" rows="3" cols="40">{SIGNATURE_DELIMITER} </textarea>
+                <textarea name="signature_delimiter" id="signature_delimiter" maxlength="255" rows="3" cols="40">{SIGNATURE_DELIMITER} </textarea>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="row1">
+                <label for="template_engine">{L_TEMPLATE_ENGINE}</label>
+            </td>
+            <td class="row2">
+                <input type="radio" name="template_engine" id="template_engine_0" value="0" {TEMPLATE_ENGINE_STANDARD} />
+                <label for="template_engine_0">{L_TEMPLATE_ENGINE_STANDARD}</label>
+
+                <input type="radio" name="template_engine" id="template_engine_1" value="1" {TEMPLATE_ENGINE_FILE} />
+                <label for="template_engine_1">{L_TEMPLATE_ENGINE_FILE}</label>
+
+                <input type="radio" name="template_engine" id="template_engine_2" value="2" {TEMPLATE_ENGINE_DATABASE} />
+                <label for="template_engine_2">{L_TEMPLATE_ENGINE_DATABASE}</label>
             </td>
         </tr>
 

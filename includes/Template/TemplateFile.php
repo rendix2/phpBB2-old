@@ -10,6 +10,8 @@
  *
  ***************************************************************************/
 
+use Nette\Utils\FileSystem;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -27,60 +29,14 @@
  * Updated 9th June 2003 - psoTFX
  * Backported various aspects of 2.2 template class
  *
+ * This class caches in files
  */
-
-class Template {
-
-    /**
-     * @var string $className
-     */
-    private $className;
+class TemplateFile extends BaseTemplate {
 
     /**
-     * variable that holds all the data we'll be substituting into
-     * the compiled templates.
-     * ...
-     * This will end up being a multi-dimensional array like this:
-     * $this->_tpldata[block.][iteration#][child.][iteration#][child2.][iteration#][variablename] == value
-     * if it's a root-level variable, it'll be like this:
-     * $this->_tpldata[.][0][varname] == value
-     *
-     * @var array $_tpldata
+     * @var string $cacheRoot
      */
-    private $_tpldata;
-
-    /**
-     * Hash of filenames for each template handle.
-     *
-     * @var array $files
-     */
-    private $files;
-
-    /**
-     * @var string $cache_root
-     */
-    var $cache_root;
-
-    /**
-     * Root template directory.
-     *
-     * @var string $root
-     */
-    private $root;
-
-    /**
-     * this will hash handle names to the compiled code for that handle.
-     *
-     * @var array $compiledCode
-     */
-    private $compiledCode;
-
-    /**
-     * This will hold the uncompiled code for that handle.
-     *
-     * @var array $uncompiledCode
-     */
-    private $uncompiledCode;
+    private $cacheRoot;
 
     /**
      * @var array $filename
@@ -99,14 +55,12 @@ class Template {
      */
     public function __construct($root = '.')
     {
-        $this->setRootDir($root);
+        $sep = DIRECTORY_SEPARATOR;
 
-        $this->cache_root     = 'cache/';
-        $this->className      = 'Template';
-        $this->_tpldata       = [];
-        $this->files          = [];
-        $this->compiledCode   = [];
-        $this->uncompiledCode = [];
+        $this->cacheRoot = 'temp' . $sep . 'templates' . $sep;
+        $this->className = 'TemplateFile';
+
+        parent::__construct($root);
     }
 
     /**
@@ -115,14 +69,11 @@ class Template {
      */
     public function __destruct()
     {
-        $this->className      = null;
-        $this->_tpldata       = null;
-        $this->files          = null;
-        $this->root           = null;
-        $this->compiledCode   = null;
-        $this->uncompiledCode = null;
-        $this->filename       = null;
-        $this->cacheDir       = null;
+        parent::__destruct();
+
+        $this->cacheDir  = null;
+        $this->cacheRoot = null;
+        $this->filename  = null;
     }
 
     /**
@@ -141,18 +92,35 @@ class Template {
 		}
 
         $sep = DIRECTORY_SEPARATOR;
+		$realCacheRootPath = phpbb_realpath($phpbb_root_path . $this->cacheRoot);
+
+		// check if exists cache root dir
+		if (!file_exists($phpbb_root_path . $this->cacheRoot)) {
+            @umask(0);
+		    FileSystem::createDir($phpbb_root_path . $this->cacheRoot);
+
+		    // recount path
+            $realCacheRootPath = phpbb_realpath($phpbb_root_path . $this->cacheRoot);
+        }
+
+		// last key in $dirs is template name
+		$dirs = explode($sep, $dir);
+		$dirsCount = count($dirs);
 
 		$this->root     = phpbb_realpath($dir);
-		$this->cacheDir = phpbb_realpath($phpbb_root_path . $this->cache_root) . substr($dir, strrpos($dir, '/')) . '/';
+        $this->cacheDir = $realCacheRootPath . $sep . $dirs[$dirsCount - 1] . $sep;
 
+		// check if exists template cache dir
+		if (!file_exists($this->cacheDir)) {
+            @umask(0);
+		    FileSystem::createDir($this->cacheDir);
+        }
+
+		// check if exists admin dir in template cache dir
         if (!file_exists($this->cacheDir . 'admin' . $sep)) {
 			@umask(0);
 
-			if (!file_exists($this->cacheDir)) {
-				mkdir($this->cacheDir);
-			}
-
-            mkdir($this->cacheDir . 'admin' . $sep);
+			FileSystem::createDir($this->cacheDir . 'admin' . $sep);
 		}
 
 		return true;
@@ -257,11 +225,11 @@ class Template {
 	 * variable assignments. Note that this should only be called once per block
 	 * iteration.
 	 */
-	public function assignBlockVars($blockname, $vararray)
+	public function assignBlockVars($blockName, $vararray)
 	{
-		if (false !== strpos($blockname, '.')) {
+		if (false !== strpos($blockName, '.')) {
 			// Nested block.
-			$blocks = explode('.', $blockname);
+			$blocks = explode('.', $blockName);
 			$blockcount = count($blocks) - 1;
 			$str = &$this->_tpldata;
 
@@ -278,32 +246,8 @@ class Template {
 			// Top-level block.
 			// Add a new iteration to this block with the variable assignments
 			// we were given.
-			$this->_tpldata[$blockname][] = $vararray;
+            $this->_tpldata[$blockName][] = $vararray;
 		}
-
-		return true;
-	}
-
-	/**
-	 * Root-level variable assignment. Adds to current assignments, overriding
-	 * any existing variable assignment with the same name.
-	 */
-	public function assignVars($vararray)
-	{
-        foreach ($vararray as $key => $val) {
-			$this->_tpldata['.'][0][$key] = $val;
-		}
-
-		return true;
-	}
-
-	/**
-	 * Root-level variable assignment. Adds to current assignments, overriding
-	 * any existing variable assignment with the same name.
-	 */
-	public function assignVar($varname, $varval)
-	{
-		$this->_tpldata['.'][0][$varname] = $varval;
 
 		return true;
 	}
@@ -486,19 +430,13 @@ class Template {
 		}
 
 		// Bring it back into a single string of lines of code.
-		$code = implode("\n", $code_lines);
-
-		return $code;
+		return implode("\n", $code_lines);
 	}
 
 	/**
-	 * Generates a reference to the given variable inside the given (possibly nested)
-	 * block namespace. This is a string of the form:
-	 * ' . $this->_tpldata['parent'][$_parent_i]['$child1'][$_child1_i]['$child2'][$_child2_i]...['varname'] . '
-	 * It's ready to be inserted into an "echo" line in one of the templates.
-	 * NOTE: expects a trailing "." on the namespace.
+	 * @inheritDoc
 	 */
-	private function generateBlockVarRef($namespace, $varname, $concat)
+	protected function generateBlockVarRef($namespace, $varname, $concat)
 	{
 		// Strip the trailing period.
 		$namespace = substr($namespace, 0, -1);
@@ -514,34 +452,29 @@ class Template {
 		return $varref;
 	}
 
-	/**
-	 * Generates a reference to the array of data values for the given
-	 * (possibly nested) block namespace. This is a string of the form:
-	 * $this->_tpldata['parent'][$_parent_i]['$child1'][$_child1_i]['$child2'][$_child2_i]...['$childN']
-	 *
-	 * If $include_last_iterator is true, then [$_childN_i] will be appended to the form shown above.
-	 * NOTE: does not expect a trailing "." on the blockname.
-	 */
-	private function generateBlockDataRef($blockname, $include_last_iterator)
+    /**
+     * @inheritDoc
+     */
+	protected function generateBlockDataRef($blockname, $include_last_iterator)
 	{
 		// Get an array of the blocks involved.
 		$blocks = explode('.', $blockname);
-		$blockcount = count($blocks) - 1;
-		$varref = '$this->_tpldata';
+		$blockCount = count($blocks) - 1;
+		$varRef = '$this->_tpldata';
 
 		// Build up the string with everything but the last child.
-		for ($i = 0; $i < $blockcount; $i++) {
-			$varref .= "['" . $blocks[$i] . "'][\$_" . $blocks[$i] . '_i]';
+		for ($i = 0; $i < $blockCount; $i++) {
+			$varRef .= "['" . $blocks[$i] . "'][\$_" . $blocks[$i] . '_i]';
 		}
 
 		// Add the block reference for the last child.
-		$varref .= "['" . $blocks[$blockcount] . "']";
+		$varRef .= "['" . $blocks[$blockCount] . "']";
 
 		// Add the iterator for the last child if required.
 		if ($include_last_iterator) {
-			$varref .= '[$_' . $blocks[$blockcount] . '_i]';
+			$varRef .= '[$_' . $blocks[$blockCount] . '_i]';
 		}
 
-		return $varref;
+		return $varRef;
 	}
 }

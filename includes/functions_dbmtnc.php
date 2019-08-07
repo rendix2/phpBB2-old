@@ -43,6 +43,7 @@ $tables = [
     'sessions',
     'sessions_keys',
     'smilies',
+    'template_cache',
     'themes',
     'themes_name',
     'topics',

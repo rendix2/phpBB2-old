@@ -561,6 +561,15 @@ CREATE TABLE phpbb_words (
    CONSTRAINT phpbb_words_pkey PRIMARY KEY (word_id)
 );
 
+CREATE TABLE phpbb_template_cache (
+    template_name char(255) NOT NULL default '',
+    template_handle char(50) NOT NULL default '',
+    template_cached int(11) NOT NULL default '0',
+    template_echo tinyint(1) NOT NULL default '1',
+    template_compile text NOT NULL,
+    CONSTRAINT phpbb_template_cache PRIMARY KEY (template_name)
+);
+
 /* -------------------------------------------
 
     new indexes

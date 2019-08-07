@@ -50,7 +50,7 @@ $sep = DIRECTORY_SEPARATOR;
 function show_coppa()
 {
     /**
-     * @var Template $template
+     * @var BaseTemplate $template
      */
     global $template;
 

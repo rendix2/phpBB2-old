@@ -44,7 +44,7 @@ $bbcode_tpl = null;
 function load_bbcode_template()
 {
     /**
-     * @var Template $template
+     * @var BaseTemplate $template
      */
 	global $template;
 	$tpl_filename = $template->makeFileName('bbcode.tpl');

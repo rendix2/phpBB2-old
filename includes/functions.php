@@ -137,7 +137,7 @@ function get_userdata($user_id, $force_str = false)
 function make_jumpbox($action, $match_forum_id = 0)
 {
     /**
-     * @var Template $template
+     * @var BaseTemplate $template
      */
 	global $template;
 	global $userdata, $lang, $SID;
@@ -343,8 +343,18 @@ function setup_style($style)
 
     $template_path = 'templates' . $sep;
 	$template_name = $theme->template_name;
+	$templateRootPath = $phpbb_root_path . $template_path . $template_name;
 
-	$template = new Template($phpbb_root_path . $template_path . $template_name);
+	// decide which template engine we will use
+	if ($board_config['template_engine'] === '0') {
+        $template = new TemplateStandard($templateRootPath);
+    } elseif ($board_config['template_engine'] === '1') {
+        $template = new TemplateFile($templateRootPath);
+    } elseif ($board_config['template_engine'] === '2') {
+        $template = new TemplateDatabase($templateRootPath);
+    } else {
+        $template = new TemplateStandard($templateRootPath);
+    }
 
 	if ($template) {
 		$current_template_path = $template_path . $template_name;
@@ -806,17 +816,17 @@ function get_formatted_filesize($value, $string_only = true, $allowed_units = fa
  * TODO this need some improvement..... its very heavy
  * TODO this doeas lots of work.. :( its need some decompose
  *
- * @param int|null $forum_id
- * @param array    $userdata
- * @param array    $board_config
- * @param array    $theme
- * @param array    $lang
- * @param IStorage $storage
- * @param Template $template
+ * @param int|null     $forum_id
+ * @param array        $userdata
+ * @param array        $board_config
+ * @param array        $theme
+ * @param array        $lang
+ * @param IStorage     $storage
+ * @param BaseTemplate $template
  *
  * @throws Exception
  */
-function showOnline($forum_id, $userdata, array &$board_config, $theme, array $lang, IStorage $storage, Template $template)
+function showOnline($forum_id, $userdata, array &$board_config, $theme, array $lang, IStorage $storage, BaseTemplate $template)
 {
     $loggedVisibleOnline = 0;
     $loggedHiddenOnline  = 0;

@@ -295,7 +295,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 	}
 }
 
-function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current_email, &$coppa, &$username, &$email, &$new_password, &$cur_password, &$password_confirm, &$website, &$location, &$occupation, &$interests, &$signature, &$viewemail, &$notifypm, &$popup_pm, &$notifyreply, &$attachsig, &$allowhtml, &$allowbbcode, &$allowsmilies, &$hideonline, &$style, &$language, &$timezone, &$dateformat, &$session_id, $isAdmin, Template $template, $user_status = null, $allow_avatar = null, $allow_pm = null, $user_rank = null)
+function display_avatar_gallery($mode, &$category, &$user_id, &$email, &$current_email, &$coppa, &$username, &$email, &$new_password, &$cur_password, &$password_confirm, &$website, &$location, &$occupation, &$interests, &$signature, &$viewemail, &$notifypm, &$popup_pm, &$notifyreply, &$attachsig, &$allowhtml, &$allowbbcode, &$allowsmilies, &$hideonline, &$style, &$language, &$timezone, &$dateformat, &$session_id, $isAdmin, BaseTemplate $template, $user_status = null, $allow_avatar = null, $allow_pm = null, $user_rank = null)
 {
 	global $board_config, $lang;
 

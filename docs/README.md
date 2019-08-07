@@ -19,6 +19,7 @@ News:
 - removed icq, aim, msnm, yim
 - improved groups management in admin
 - fixed pagination in author search
+- admin can select template engine
   
 Conventions for template:  
 - L_ is a language variable

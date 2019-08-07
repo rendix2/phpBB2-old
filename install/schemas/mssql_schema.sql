@@ -404,6 +404,16 @@ CREATE TABLE [phpbb_words] (
 ) ON [PRIMARY]
 GO
 
+CREATE TABLE [phpbb_template_cache] (
+    [template_name] [char] (255) NOT NULL,
+    [template_handle] [char] (50) NOT NULL,
+    [template_cached] [int] (11) NOT NULL,
+    [template_echo] [smallint] (1) NOT NULL,
+    [template_compile] [text] NOT NULL,
+    ON [PRIMARY]
+)
+GO
+
 ALTER TABLE [phpbb_banlist] WITH NOCHECK ADD
 	CONSTRAINT [PK_phpbb_banlist] PRIMARY KEY  CLUSTERED
 	(
@@ -544,6 +554,13 @@ ALTER TABLE [phpbb_words] WITH NOCHECK ADD
 	)  ON [PRIMARY]
 GO
 
+ALTER TABLE [phpbb_template_cache] WITH NOCHECK ADD
+    CONSTRAINT [phpbb_template_cache] PRIMARY KEY  CLUSTERED
+    (
+    [template_name]
+    )  ON [PRIMARY]
+GO
+
 ALTER TABLE [phpbb_auth_access] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_auth_access_auth_view] DEFAULT (0) FOR [auth_view],
 	CONSTRAINT [DF_phpbb_auth_access_auth_read] DEFAULT (0) FOR [auth_read],
@@ -634,6 +651,13 @@ ALTER TABLE [phpbb_users] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_users_user_avatar_type] DEFAULT (0) FOR [user_avatar_type]
 GO
 
+ALTER TABLE [phpbb_template_cache] WITH NOCHECK ADD
+    CONSTRAINT [DF_template_name] DEFAULT ('') FOR [template_name],
+    CONSTRAINT [DF_template_handle] DEFAULT ('') FOR [template_handle],
+    CONSTRAINT [DF_template_cached] DEFAULT (0) FOR [template_cached],
+    CONSTRAINT [DF_template_echo] DEFAULT (1) FOR [template_echo],
+GO
+
  CREATE  INDEX [IX_phpbb_auth_access] ON [phpbb_auth_access]([group_id], [forum_id]) ON [PRIMARY]
 GO
 
@@ -710,6 +734,9 @@ GO
 GO
 
  CREATE  INDEX [IX_phpbb_vote_voters] ON [phpbb_vote_voters]([vote_id]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [IX_template_name] ON [phpbb_template_cache]([template_name]) ON [PRIMARY]
 GO
 
 /* -------------------------------------------

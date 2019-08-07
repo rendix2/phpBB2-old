@@ -146,6 +146,10 @@ $namechange_no  = !$new['allow_namechange'] ? 'checked="checked"' : '';
 
 $signatureDelimiter = $new['signature_delimiter'];
 
+$templateEngineStandard = $new['template_engine'] === '0' ? 'checked="checked"' : '';
+$templateEngineFile     = $new['template_engine'] === '1' ? 'checked="checked"' : '';
+$templateEngineDatabase = $new['template_engine'] === '2' ? 'checked="checked"' : '';
+
 $avatars_local_yes =  $new['allow_avatar_local'] ? 'checked="checked"' : '';
 $avatars_local_no  = !$new['allow_avatar_local'] ? 'checked="checked"' : '';
 
@@ -315,6 +319,11 @@ $template->assignVars(
 
         'L_SIGNATURE_DELIMITER' => $lang['Signature_delimiter'],
 
+        'L_TEMPLATE_ENGINE' => $lang['Template_engine'],
+        'L_TEMPLATE_ENGINE_STANDARD' => $lang['Template_engine_standard'],
+        'L_TEMPLATE_ENGINE_FILE' => $lang['Template_engine_file'],
+        'L_TEMPLATE_ENGINE_DATABASE' => $lang['Template_engine_database'],
+
         'L_ALLOW_REMOTE'         => $lang['Allow_remote'],
         'L_ALLOW_REMOTE_EXPLAIN' => $lang['Allow_remote_explain'],
 
@@ -454,6 +463,10 @@ $template->assignVars(
         'NAMECHANGE_NO'  => $namechange_no,
 
         'SIGNATURE_DELIMITER' => $signatureDelimiter,
+
+        'TEMPLATE_ENGINE_STANDARD' => $templateEngineStandard,
+        'TEMPLATE_ENGINE_FILE' => $templateEngineFile,
+        'TEMPLATE_ENGINE_DATABASE' => $templateEngineDatabase,
 
         'AVATARS_LOCAL_YES' => $avatars_local_yes,
         'AVATARS_LOCAL_NO'  => $avatars_local_no,

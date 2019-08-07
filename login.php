@@ -21,10 +21,10 @@
  ***************************************************************************/
 
 /**
- * @param Template $template
- * @param array    $lang
+ * @param BaseTemplate $template
+ * @param array        $lang
  */
-function loginFailed(Template $template, array $lang)
+function loginFailed(BaseTemplate $template, array $lang)
 {
     $redirect = !empty($_POST['redirect']) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : '';
     $redirect = str_replace('?', '&', $redirect);
