@@ -29,8 +29,7 @@ require_once $phpbb_root_path . 'common.php';
 //
 // Start session management
 //
-$userdata = Session::pageStart($user_ip, PAGE_VIEWMEMBERS);
-init_userprefs($userdata);
+$userdata = init_userprefs(PAGE_VIEW_MEMBERS);
 //
 // End session management
 //

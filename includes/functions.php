@@ -215,14 +215,17 @@ function make_jumpbox($action, $match_forum_id = 0)
 
 //
 // Initialise user settings on page load
-function init_userprefs($userdata)
+function init_userprefs($pageId)
 {
 	global $board_config, $theme, $images;
 	global $template, $lang, $phpbb_root_path;
 	global $storage;
+	global $user_ip;
 
     $default_lang = '';
     $sep = DIRECTORY_SEPARATOR;
+
+    $userdata = Session::pageStart($user_ip, $pageId);
 
     if ($userdata['user_id'] !== ANONYMOUS) {
         if (!empty($userdata['user_lang'])) {
@@ -288,15 +291,17 @@ function init_userprefs($userdata)
 	//
 	// Set up style
 	//
-	if (!$board_config['override_user_style']) {
-		if ($userdata['user_id'] !== ANONYMOUS && $userdata['user_style'] > 0) {
-			if ($theme = setup_style($userdata['user_style'])) {
-				return;
-			}
-		}
-	}
+	if (!$board_config['override_user_style'] && $userdata['user_id'] !== ANONYMOUS && $userdata['user_style'] > 0) {
+        $theme = setup_style($userdata['user_style']);
+
+        if ($theme) {
+            return $userdata;
+        }
+    }
 
 	$theme = setup_style($board_config['default_style']);
+
+	return $userdata;
 }
 
 function setup_style($style)
@@ -567,8 +572,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
     }
 
     if (empty($userdata) && ($msg_code === GENERAL_MESSAGE || $msg_code === GENERAL_ERROR)) {
-        $userdata = Session::pageStart($user_ip, PAGE_INDEX);
-        init_userprefs($userdata);
+        $userdata = init_userprefs(PAGE_INDEX);
     }
 
     switch ($msg_code) {

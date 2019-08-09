@@ -30,8 +30,8 @@ require_once $phpbb_root_path . 'common.php';
 //
 // Start session management
 //
-$userdata = Session::pageStart($user_ip, PAGE_INDEX);
-init_userprefs($userdata);
+
+$userdata = init_userprefs(PAGE_INDEX);
 //
 // End session management
 //
@@ -276,7 +276,8 @@ showOnline(null, $userdata, $board_config, $theme, $lang, $storage, $template);
 
 $page_title = $lang['Index'];
 
-require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
+//require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
+PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
 
 $template->setFileNames(['body' => 'index_body.tpl']);
 

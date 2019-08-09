@@ -697,8 +697,7 @@ function generate_smilies($mode, $page_id)
 	$sep = DIRECTORY_SEPARATOR;
 
 	if ($mode === 'window') {
-		$userdata = Session::pageStart($user_ip, $page_id);
-		init_userprefs($userdata);
+        $userdata = init_userprefs($page_id);
 
 		$gen_simple_header = true;
 

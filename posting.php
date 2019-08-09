@@ -124,8 +124,7 @@ if ($mode === 'smilies') {
 //
 // Start session management
 //
-$userdata = Session::pageStart($user_ip, PAGE_POSTING);
-init_userprefs($userdata);
+$userdata = init_userprefs(PAGE_POSTING);
 //
 // End session management
 //

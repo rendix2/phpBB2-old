@@ -61,8 +61,7 @@ require_once $phpbb_root_path . 'common.php';
 //
 // Set page ID for session management
 //
-$userdata = Session::pageStart($user_ip, PAGE_LOGIN);
-init_userprefs($userdata);
+$userdata = init_userprefs(PAGE_LOGIN);
 //
 // End session management
 //

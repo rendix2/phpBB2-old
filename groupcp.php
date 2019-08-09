@@ -88,8 +88,7 @@ function generate_user_info(&$row, $date_format, $group_mod, &$from, &$posts, &$
 //
 // Start session management
 //
-$userdata = Session::pageStart($user_ip, PAGE_GROUPCP);
-init_userprefs($userdata);
+$userdata = init_userprefs(PAGE_GROUPCP);
 //
 // End session management
 //

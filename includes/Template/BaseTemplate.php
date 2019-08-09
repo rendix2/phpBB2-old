@@ -100,6 +100,10 @@ abstract class BaseTemplate
         return true;
     }
 
+    abstract public function pparse($handle);
+
+    abstract public function setFileNames(array $filename_array);
+
     /**
      * Block-level variable assignment. Adds a new block iteration with the given
      * variable assignments. Note that this should only be called once per block

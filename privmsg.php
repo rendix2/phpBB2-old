@@ -71,8 +71,7 @@ if (isset($_POST['folder']) || isset($_GET['folder'])) {
 //
 // Start session management
 //
-$userdata = Session::pageStart($user_ip, PAGE_PRIVMSGS);
-init_userprefs($userdata);
+$userdata = init_userprefs(PAGE_PRIVMSGS);
 //
 // End session management
 //

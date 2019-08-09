@@ -205,8 +205,7 @@ $forum_id = (int)$forum_topic_data->forum_id;
 //
 // Start session management
 //
-$userdata = Session::pageStart($user_ip, $forum_id);
-init_userprefs($userdata);
+$userdata = init_userprefs($forum_id);
 //
 // End session management
 //

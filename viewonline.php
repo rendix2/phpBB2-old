@@ -30,8 +30,7 @@ require_once $phpbb_root_path . 'common.php';
 //
 // Start session management
 //
-$userdata = Session::pageStart($user_ip, PAGE_VIEWONLINE);
-init_userprefs($userdata);
+$userdata = init_userprefs(PAGE_VIEW_ONLINE);
 //
 // End session management
 //
@@ -170,11 +169,11 @@ foreach ($rows as $row) {
 					$location = $lang['Viewing_profile'];
 					$location_url = 'index.php';
 					break;
-				case PAGE_VIEWONLINE:
+				case PAGE_VIEW_ONLINE:
 					$location = $lang['Viewing_online'];
 					$location_url = 'viewonline.php';
 					break;
-				case PAGE_VIEWMEMBERS:
+				case PAGE_VIEW_MEMBERS:
 					$location = $lang['Viewing_member_list'];
 					$location_url = 'memberlist.php';
 					break;

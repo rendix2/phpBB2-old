@@ -80,8 +80,7 @@ function topic_review($topic_id, $is_inline_review)
 		//
 		// Start session management
 		//
-		$userdata = Session::pageStart($user_ip, $forum->forum_id);
-		init_userprefs($userdata);
+        $userdata = init_userprefs($forum->forum_id);
 		//
 		// End session management
 		//

@@ -33,8 +33,7 @@ require_once $phpbb_root_path . 'includes' . $sep . 'functions_admin.php';
 //
 // Start session management
 //
-$userdata = Session::pageStart($user_ip, PAGE_ADMIN_INDEX);
-init_userprefs($userdata);
+$userdata = init_userprefs(PAGE_ADMIN_INDEX);
 //
 // End session management
 //

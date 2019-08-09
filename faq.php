@@ -30,8 +30,7 @@ require_once $phpbb_root_path . 'common.php';
 //
 // Start session management
 //
-$userdata = Session::pageStart($user_ip, PAGE_FAQ);
-init_userprefs($userdata);
+$userdata = init_userprefs(PAGE_FAQ);
 //
 // End session management
 //

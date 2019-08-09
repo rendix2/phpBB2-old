@@ -300,9 +300,9 @@ function getForumLocation($sessionPage, array $lang)
             return $lang['Searching_forums'];
         case PAGE_PROFILE:
             return $lang['Viewing_profile'];
-        case PAGE_VIEWONLINE:
+        case PAGE_VIEW_ONLINE:
             return $lang['Viewing_online'];
-        case PAGE_VIEWMEMBERS:
+        case PAGE_VIEW_MEMBERS:
             return $lang['Viewing_member_list'];
         case PAGE_PRIVMSGS:
             return $lang['Viewing_priv_msgs'];

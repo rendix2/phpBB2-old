@@ -32,8 +32,7 @@ require_once $phpbb_root_path . 'includes' . $sep . 'functions_search.php';
 //
 // Start session management
 //
-$userdata = Session::pageStart($user_ip, PAGE_SEARCH);
-init_userprefs($userdata);
+$userdata = init_userprefs(PAGE_SEARCH);
 //
 // End session management
 //
