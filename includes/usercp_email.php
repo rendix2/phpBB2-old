@@ -141,7 +141,7 @@ if ($user->user_viewemail || $userdata['user_level'] === ADMIN) {
         }
     }
 
-    require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
+    PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
 
     $template->setFileNames(['body' => 'profile_send_email.tpl']);
 
@@ -176,7 +176,7 @@ if ($user->user_viewemail || $userdata['user_level'] === ADMIN) {
 
     $template->pparse('body');
 
-    require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
+    PageHelper::footer($template, $userdata, $lang, $gen_simple_header);
 } else {
     message_die(GENERAL_MESSAGE, $lang['User_prevent_email']);
 }

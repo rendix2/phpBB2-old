@@ -70,7 +70,7 @@ if (isset($_GET[POST_MODE]) || isset($_POST[POST_MODE])) {
 
     switch ($mode) {
         case 'viewprofile':
-            require_once $phpbb_root_path . 'includes'.$sep.'usercp_viewprofile.php';
+            require_once $phpbb_root_path . 'includes' . $sep . 'usercp_viewprofile.php';
             break;
 
             // yes both!

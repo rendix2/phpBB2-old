@@ -513,7 +513,7 @@ if (($delete || $poll_delete || $mode === 'delete') && !$confirm) {
 	//
 	// Output confirmation page
 	//
-    require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
+    PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
 
     $template->setFileNames(['confirm_body' => 'confirm_body.tpl']);
 
@@ -532,7 +532,7 @@ if (($delete || $poll_delete || $mode === 'delete') && !$confirm) {
 
     $template->pparse('confirm_body');
 
-    require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
+    PageHelper::footer($template, $userdata, $lang, $gen_simple_header);
 } elseif ($mode === 'vote') {
     //
     // Vote in a poll
@@ -972,7 +972,7 @@ generate_smilies('inline', PAGE_POSTING);
 //
 // Include page header
 //
-require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
+PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
 
 $template->setFileNames(
     [
@@ -1136,6 +1136,6 @@ if ($mode === 'reply' && $is_auth['auth_read'] && (int)$board_config['topic_revi
 
 $template->pparse('body');
 
-require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
+PageHelper::footer($template, $userdata, $lang, $gen_simple_header);
 
 ?>

@@ -703,7 +703,7 @@ function generate_smilies($mode, $page_id)
 
 		$page_title = $lang['Emoticons'];
 
-        require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
+        PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
 
         $template->setFileNames(['smiliesbody' => 'posting_smilies.tpl']);
     }
@@ -798,7 +798,7 @@ function generate_smilies($mode, $page_id)
     if ($mode === 'window') {
 		$template->pparse('smiliesbody');
 
-        require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
+        PageHelper::footer($template, $userdata, $lang, $gen_simple_header);
 	}
 }
 

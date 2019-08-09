@@ -342,6 +342,7 @@ function username_search($search_match)
 
 	global $board_config, $lang, $images, $theme, $phpbb_root_path;
 	global $gen_simple_header;
+	global $userdata;
 
 	$gen_simple_header = true;
 	$userNamesList = '';
@@ -368,7 +369,7 @@ function username_search($search_match)
 
 	$page_title = $lang['Search'];
 
-    require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
+    PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
 
     $template->setFileNames(['search_user_body' => 'search_username.tpl']);
 
@@ -396,7 +397,7 @@ function username_search($search_match)
 
 	$template->pparse('search_user_body');
 
-    require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
+    PageHelper::footer($template, $userdata, $lang, $gen_simple_header);
 }
 
 ?>

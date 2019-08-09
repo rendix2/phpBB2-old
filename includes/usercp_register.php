@@ -81,11 +81,11 @@ $error_msg = '';
 $page_title = $mode === 'editprofile' ? $lang['Edit_profile'] : $lang['Register'];
 
 if ($mode === 'register' && !isset($_POST['agreed']) && !isset($_GET['agreed'])) {
-    require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
+    PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
 
 	show_coppa();
 
-    require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
+    PageHelper::footer($template, $userdata, $lang, $gen_simple_header);
 }
 
 $coppa = empty($_POST['coppa']) && empty($_GET['coppa']) ? 0 : true;
@@ -760,7 +760,7 @@ if ($error) {
 //
 // Default pages
 //
-require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
+PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
 
 make_jumpbox('viewforum.php');
 
@@ -1048,6 +1048,6 @@ if (isset($_POST['avatargallery']) && !$error) {
 
 $template->pparse('body');
 
-require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
+PageHelper::footer($template, $userdata, $lang, $gen_simple_header);
 
 ?>

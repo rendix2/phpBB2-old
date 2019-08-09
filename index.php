@@ -276,7 +276,6 @@ showOnline(null, $userdata, $board_config, $theme, $lang, $storage, $template);
 
 $page_title = $lang['Index'];
 
-//require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
 PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
 
 $template->setFileNames(['body' => 'index_body.tpl']);
@@ -448,6 +447,6 @@ foreach ($categories as $i => $category) {
 //
 $template->pparse('body');
 
-require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
+PageHelper::footer($template, $userdata, $lang, $gen_simple_header);
 
 ?>

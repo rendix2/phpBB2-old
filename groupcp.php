@@ -310,7 +310,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 
 		$page_title = $lang['Group_Control_Panel'];
 
-        require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
+        PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
 
         $template->setFileNames(['confirm' => 'confirm_body.tpl']);
 
@@ -327,7 +327,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 
         $template->pparse('confirm');
 
-        require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
+        PageHelper::footer($template, $userdata, $lang, $gen_simple_header);
 	}
 
 } elseif ($group_id) {
@@ -765,7 +765,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 
 	$page_title = $lang['Group_Control_Panel'];
 
-    require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
+    PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
 
 	//
 	// Load templates
@@ -1085,7 +1085,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 		//
 		$page_title = $lang['Group_Control_Panel'];
 
-        require_once $phpbb_root_path . 'includes/page_header.php';
+        PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
 
         $template->setFileNames(['user' => 'groupcp_user_body.tpl']);
         make_jumpbox('viewforum.php');
@@ -1134,6 +1134,6 @@ if (isset($_POST['groupstatus']) && $group_id) {
 	}
 }
 
-require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
+PageHelper::footer($template, $userdata, $lang, $gen_simple_header);
 
 ?>

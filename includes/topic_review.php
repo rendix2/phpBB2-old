@@ -115,7 +115,7 @@ function topic_review($topic_id, $is_inline_review)
 
 		$page_title = $lang['Topic_review'] . ' - ' . $forum->topic_title;
 
-        require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
+        PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
 
         $template->setFileNames(['reviewbody' => 'posting_topic_review.tpl']);
     }
@@ -223,7 +223,7 @@ function topic_review($topic_id, $is_inline_review)
     if (!$is_inline_review) {
         $template->pparse('reviewbody');
 
-        require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
+        PageHelper::footer($template, $userdata, $lang, $gen_simple_header);
     }
 }
 

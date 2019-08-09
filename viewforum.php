@@ -395,7 +395,7 @@ if ($board_config['show_online']) {
 
 $page_title = $lang['View_forum'] . ' - ' . $forum->forum_name;
 
-require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
+PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
 
 $template->setFileNames(['body' => 'viewforum_body.tpl']);
 make_jumpbox('viewforum.php');
@@ -653,6 +653,6 @@ $template->pparse('body');
 //
 // Page footer
 //
-require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
+PageHelper::footer($template, $userdata, $lang, $gen_simple_header);
 
 ?>

@@ -184,7 +184,7 @@ switch ($mode) {
 
 		$page_title = $lang['Mod_CP'];
 
-        require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
+        PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
 
         if ($confirm) {
             if (empty($_POST['topic_id_list']) && empty($topic_id)) {
@@ -335,14 +335,14 @@ switch ($mode) {
 
             $template->pparse('confirm');
 
-            require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
+            PageHelper::footer($template, $userdata, $lang, $gen_simple_header);
 		}
 		break;
 
 	case 'move':
 		$page_title = $lang['Mod_CP'];
 
-        require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
+        PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
 
         if ($confirm) {
             if (empty($_POST['topic_id_list']) && empty($topic_id)) {
@@ -466,7 +466,7 @@ switch ($mode) {
 
             $template->pparse('movetopic');
 
-            require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
+            PageHelper::footer($template, $userdata, $lang, $gen_simple_header);
 		}
 		break;
 
@@ -542,7 +542,7 @@ switch ($mode) {
 	case 'split':
 		$page_title = $lang['Mod_CP'];
 
-        require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
+        PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
 
         $posts = [];
 
@@ -763,7 +763,7 @@ switch ($mode) {
 	case 'ip':
 		$page_title = $lang['Mod_CP'];
 
-        require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
+        PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
 
 		$rdns_ip_num = isset($_GET['rdns']) ? $_GET['rdns'] : '';
 
@@ -904,7 +904,7 @@ switch ($mode) {
 	default:
 		$page_title = $lang['Mod_CP'];
 
-        require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
+        PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
 
         $template->assignVars(
             [
@@ -1030,6 +1030,6 @@ switch ($mode) {
 		break;
 }
 
-require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
+PageHelper::footer($template, $userdata, $lang, $gen_simple_header);
 
 ?>

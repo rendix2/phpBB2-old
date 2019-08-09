@@ -2,12 +2,10 @@
 
 use Dibi\Row;
 
-if (!defined('IN_PHPBB')) {
-    die('Hacking attempt');
-}
-
 /**
  * Class PageHelper
+ *
+ * replacement of page_header.php and page_tail.php files
  *
  * @author rendix2
  */
@@ -253,7 +251,7 @@ class PageHelper
         $template->pparse('overall_header');
     }
 
-    public static function footer(BaseTemplate $template,array $userdata, array $lang, $gen_simple_header)
+    public static function footer(BaseTemplate $template, $userdata, array $lang, $gen_simple_header)
     {
         //
         // Show the overall footer.

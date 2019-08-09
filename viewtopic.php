@@ -573,7 +573,7 @@ make_jumpbox('viewforum.php', $forum_id);
 //
 $page_title = $lang['View_topic'] .' - ' . $topic_title;
 
-require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
+PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
 
 //
 // User authorisation levels output
@@ -1128,6 +1128,6 @@ foreach ($posts as $i => $post) {
 
 $template->pparse('body');
 
-require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
+PageHelper::footer($template, $userdata, $lang, $gen_simple_header);
 
 ?>

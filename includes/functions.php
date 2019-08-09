@@ -554,7 +554,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 	$sep = DIRECTORY_SEPARATOR;
 
     if (defined('HAS_DIED')) {
-        die("message_die() was called multiple times. This isn't supposed to happen. Was message_die() used in page_tail.php?");
+        die("message_die() was called multiple times. This isn't supposed to happen. Was message_die() used in PageHelper.php?");
     }
 	
 	define('HAS_DIED', 1);
@@ -645,7 +645,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
         if (defined('IN_ADMIN')) {
             require_once $phpbb_root_path . 'admin' . $sep . 'page_header_admin.php';
         } else {
-            require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
+            PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
         }
 	}
 
@@ -682,7 +682,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
         if (defined('IN_ADMIN')) {
             require_once $phpbb_root_path . 'admin' . $sep . 'page_footer_admin.php';
         } else {
-            require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
+            PageHelper::footer($template, $userdata, $lang, $gen_simple_header);
         }
     } else {
         echo "<html>\n<body>\n" . $msg_title . "\n<br /><br />\n" . $msg_text . "</body>\n</html>";

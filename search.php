@@ -732,7 +732,7 @@ if ($mode === 'searchuser') {
 		//
 		$page_title = $lang['Search'];
 
-        require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
+        PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
 
         if ($show_results === 'posts') {
             $template->setFileNames(['body' => 'search_results_posts.tpl']);
@@ -1150,7 +1150,7 @@ if ($mode === 'searchuser') {
 
         $template->pparse('body');
 
-        require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
+        PageHelper::footer($template, $userdata, $lang, $gen_simple_header);
 	} else {
 		message_die(GENERAL_MESSAGE, $lang['No_search_match']);
 	}
@@ -1262,7 +1262,7 @@ foreach ($previous_days as $previous_day_key => $previous_days_value) {
 //
 $page_title = $lang['Search'];
 
-require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
+PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
 
 $template->setFileNames(['body' => 'search_body.tpl']);
 make_jumpbox('viewforum.php');
@@ -1303,6 +1303,6 @@ $template->assignVars(
 
 $template->pparse('body');
 
-require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
+PageHelper::footer($template, $userdata, $lang, $gen_simple_header);
 
 ?>

@@ -188,7 +188,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 	if (!$userdata['session_logged_in'] || (isset($_GET['admin']) && $userdata['session_logged_in'] && $userdata['user_level'] === ADMIN)) {
 		$page_title = $lang['Login'];
 
-        require_once $phpbb_root_path . 'includes' . $sep . 'page_header.php';
+        PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
 
         $template->setFileNames(['body' => 'login_body.tpl']);
 
@@ -243,7 +243,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 
         $template->pparse('body');
 
-        require_once $phpbb_root_path . 'includes' . $sep . 'page_tail.php';
+        PageHelper::footer($template, $userdata, $lang, $gen_simple_header);
     } else {
         redirect(Session::appendSid('index.php', true));
     }
