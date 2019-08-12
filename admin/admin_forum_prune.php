@@ -89,7 +89,8 @@ if (isset($_POST['doprune'])) {
     $template->setFileNames(['body' => 'admin/forum_prune_result_body.tpl']);
 
     foreach ($forums as $forum) {
-        $prune_result = prune($forum->forum_id, $prune_date->getTimestamp());
+        $prune_result = PruneClass::PruneClass($forum->forum_id, $prune_date->getTimestamp());
+
         sync('forum', $forum->forum_id);
 
         $row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
