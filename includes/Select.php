@@ -37,7 +37,7 @@ class Select
      */
     public static function postDays(array $lang, $post_days)
     {
-        $previous_days = [
+        $previousDays = [
             0   => $lang['All_Posts'],
             1   => $lang['1_Day'],
             7   => $lang['7_Days'],
@@ -50,7 +50,7 @@ class Select
 
         $postDayValues = '';
 
-        foreach ($previous_days as $previous_day_key => $previous_days_value) {
+        foreach ($previousDays as $previous_day_key => $previous_days_value) {
             $selected = $post_days === $previous_day_key ? 'selected="selected"' : '';
 
             $postDayValues .= '<option value="' . $previous_day_key . '" ' . $selected . '>' . $previous_days_value . '</option>';
@@ -67,7 +67,7 @@ class Select
      */
     public static function topicDays(array $lang, $topic_days)
     {
-        $previous_days = [
+        $previousDays = [
             0   => $lang['All_Posts'],
             1   => $lang['1_Day'],
             7   => $lang['7_Days'],
@@ -80,7 +80,7 @@ class Select
 
         $topicDaysValue = '';
 
-        foreach ($previous_days as $previous_day_key => $previous_day_value) {
+        foreach ($previousDays as $previous_day_key => $previous_day_value) {
             $selected = $topic_days === $previous_day_key ? 'selected="selected"' : '';
 
             $topicDaysValue .= '<option value="' . $previous_day_key . '" ' . $selected . '>' . $previous_day_value . '</option>';
@@ -124,8 +124,8 @@ class Select
 
         $groupValues = '';
 
-        foreach ($groups as $group_id => $group_name) {
-            $groupValues .= '<option value="' . $group_id . '">' . htmlspecialchars($group_name, ENT_QUOTES) . '</option>';
+        foreach ($groups as $groupId => $groupName) {
+            $groupValues .= '<option value="' . $groupId . '">' . htmlspecialchars($groupName, ENT_QUOTES) . '</option>';
         }
 
         return '<select name="' . POST_GROUPS_URL . '" id="' . POST_GROUPS_URL . '">' . $groupValues . '</select>';
@@ -153,13 +153,13 @@ class Select
     /**
      * Pick a template/theme combo,
      *
-     * @param string $default_style
-     * @param string $select_name
+     * @param string $defaultStyle
+     * @param string $selectName
      * @param string $dirname
      *
      * @return string
      */
-    public static function style($default_style, $select_name = 'style', $dirname = 'templates')
+    public static function style($defaultStyle, $selectName = 'style', $dirname = 'templates')
     {
         $themes = dibi::select(['themes_id', 'style_name'])
             ->from(THEMES_TABLE)
@@ -173,13 +173,13 @@ class Select
 
         $styleValues = '';
 
-        foreach ($themes as $themes_id => $style_name) {
-            $selected = $themes_id === $default_style ? 'selected="selected"' : '';
+        foreach ($themes as $themesId => $themeName) {
+            $selected = $themesId === $defaultStyle ? 'selected="selected"' : '';
 
-            $styleValues .= '<option value="' . $themes_id . '" ' . $selected . '>' . htmlspecialchars($style_name, ENT_QUOTES) . '</option>';
+            $styleValues .= '<option value="' . $themesId . '" ' . $selected . '>' . htmlspecialchars($themeName, ENT_QUOTES) . '</option>';
         }
 
-        return'<select name="' . $select_name . '" id="' . $select_name . '">' . $styleValues . '</select>';
+        return'<select name="' . $selectName . '" id="' . $selectName . '">' . $styleValues . '</select>';
     }
 
     /**
@@ -226,11 +226,11 @@ class Select
      *
      * @param string $phpbb_root_path
      * @param string $default
-     * @param string $select_name
+     * @param string $selectName
      *
      * @return string
      */
-    public static function language($phpbb_root_path, $default, $select_name = 'language')
+    public static function language($phpbb_root_path, $default, $selectName = 'language')
     {
         $resultLanguages = [];
         $languages = Finder::findDirectories('lang_*')->in($phpbb_root_path . 'language');
@@ -254,10 +254,11 @@ class Select
 
         foreach ($resultLanguages as $displayName => $filename) {
             $selected = $default === strtolower($filename) ? 'selected="selected"' : '';
+
             $langValues .= '<option value="' . $filename . '" ' . $selected . '>' . htmlspecialchars(ucwords($displayName), ENT_QUOTES) . '</option>';
         }
 
-        return '<select name="' . $select_name . '" id="' . $select_name . '"">' . $langValues . '</select>';
+        return '<select name="' . $selectName . '" id="' . $selectName . '"">' . $langValues . '</select>';
     }
 
 }

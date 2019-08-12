@@ -13,53 +13,53 @@ class Session
      * Adds/updates a new session to the database for the given userid.
      * Returns the new session ID on success.
      *
-     * @param int    $user_id
-     * @param string $user_ip
-     * @param int    $page_id
-     * @param bool   $auto_create
-     * @param bool   $enable_autologin
-     * @param bool   $admin
+     * @param int    $userId
+     * @param string $userIp
+     * @param int    $pageId
+     * @param bool   $autoCreate
+     * @param bool   $enableAutoLogin
+     * @param bool   $isAdmin
      *
      * @return array
      */
     public static function begin(
-        $user_id,
-        $user_ip,
-        $page_id,
-        $auto_create = false,
-        $enable_autologin = false,
-        $admin = false
+        $userId,
+        $userIp,
+        $pageId,
+        $autoCreate = false,
+        $enableAutoLogin = false,
+        $isAdmin = false
     ) {
         global $board_config;
         global $SID;
 
-        $cookiename = $board_config['cookie_name'];
-        $cookiepath = $board_config['cookie_path'];
-        $cookiedomain = $board_config['cookie_domain'];
-        $cookiesecure = $board_config['cookie_secure'];
+        $cookieName = $board_config['cookie_name'];
+        $cookiePath = $board_config['cookie_path'];
+        $cookieDomain = $board_config['cookie_domain'];
+        $cookieSecure = $board_config['cookie_secure'];
 
-        $data_cookie_name = $cookiename . '_data';
-        $sid_cookie_name  = $cookiename . '_sid';
+        $dataCookieName = $cookieName . '_data';
+        $sidCookieName  = $cookieName . '_sid';
 
-        if (isset($_COOKIE[$sid_cookie_name]) || isset($_COOKIE[$data_cookie_name])) {
-            $session_id  = isset($_COOKIE[$sid_cookie_name])  ? $_COOKIE[$sid_cookie_name] : '';
-            $sessiondata = isset($_COOKIE[$data_cookie_name]) ? unserialize(stripslashes($_COOKIE[$data_cookie_name])) : [];
-            $sessionmethod = SESSION_METHOD_COOKIE;
+        if (isset($_COOKIE[$sidCookieName]) || isset($_COOKIE[$dataCookieName])) {
+            $sessionId  = isset($_COOKIE[$sidCookieName])  ? $_COOKIE[$sidCookieName] : '';
+            $sessionData = isset($_COOKIE[$dataCookieName]) ? unserialize(stripslashes($_COOKIE[$dataCookieName])) : [];
+            $sessionMethod = SESSION_METHOD_COOKIE;
         } else {
-            $sessiondata = [];
-            $session_id = isset($_GET['sid']) ? $_GET['sid'] : '';
-            $sessionmethod = SESSION_METHOD_GET;
+            $sessionData = [];
+            $sessionId = isset($_GET['sid']) ? $_GET['sid'] : '';
+            $sessionMethod = SESSION_METHOD_GET;
         }
 
         //
-        if (!preg_match('/^[A-Za-z0-9]*$/', $session_id))  {
-            $session_id = '';
+        if (!preg_match('/^[A-Za-z0-9]*$/', $sessionId))  {
+            $sessionId = '';
         }
 
-        $page_id = (int) $page_id;
+        $pageId = (int) $pageId;
 
-        $last_visit = 0;
-        $current_time = time();
+        $lastVisit = 0;
+        $currentTime = time();
 
         //
         // Are auto-logins allowed?
@@ -67,47 +67,47 @@ class Session
         // (same behaviour as old 2.0.x session code)
         //
         if (isset($board_config['allow_autologin']) && !$board_config['allow_autologin']) {
-            $enable_autologin = $sessiondata['autologinid'] = false;
+            $enableAutoLogin = $sessionData['autologinid'] = false;
         }
 
         //
         // First off attempt to join with the autologin value if we have one
         // If not, just use the user_id value
         //
-        $userdata = [];
+        $userData = [];
 
-        if ($user_id !== ANONYMOUS) {
-            if (isset($sessiondata['autologinid']) && (string) $sessiondata['autologinid'] !== '' && $user_id) {
-                $userdata = dibi::select('u.*')
+        if ($userId !== ANONYMOUS) {
+            if (isset($sessionData['autologinid']) && (string) $sessionData['autologinid'] !== '' && $userId) {
+                $userData = dibi::select('u.*')
                     ->from(USERS_TABLE)
                     ->as('u')
                     ->innerJoin(SESSIONS_KEYS_TABLE)
                     ->as('k')
                     ->on('k.user_id = u.user_id')
-                    ->where('u.user_id = %i', (int) $user_id)
+                    ->where('u.user_id = %i', (int) $userId)
                     ->where('u.user_active = %i', 1)
-                    ->where('k.key_id = %s', hash('sha512',$sessiondata['autologinid']))
+                    ->where('k.key_id = %s', hash('sha512',$sessionData['autologinid']))
                     ->fetch();
 
-                $userdata = $userdata->toArray();
+                $userData = $userData->toArray();
 
-                $enable_autologin = $login = true;
-            } elseif (!$auto_create) {
-                $sessiondata['autologinid'] = '';
-                $sessiondata['userid'] = $user_id;
+                $enableAutoLogin = $login = true;
+            } elseif (!$autoCreate) {
+                $sessionData['autologinid'] = '';
+                $sessionData['userid'] = $userId;
 
-                $userdata = dibi::select('*')
+                $userData = dibi::select('*')
                     ->from(USERS_TABLE)
-                    ->where('user_id = %i', (int) $user_id)
+                    ->where('user_id = %i', (int) $userId)
                     ->where('user_active = %i', 1)
                     ->fetch();
 
-                if (!$userdata) {
+                if (!$userData) {
                     message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch');
                 }
 
                 // we need it as array, no object.. :(
-                $userdata = $userdata->toArray();
+                $userData = $userData->toArray();
 
                 $login = true;
             }
@@ -120,17 +120,17 @@ class Session
         // * User does not exist
         // * User is inactive
         //
-        if (!count($userdata) || !is_array($userdata) || !$userdata) {
-            $sessiondata['autologinid'] = '';
-            $sessiondata['userid'] = $user_id = ANONYMOUS;
-            $enable_autologin = $login = false;
+        if (!count($userData) || !is_array($userData) || !$userData) {
+            $sessionData['autologinid'] = '';
+            $sessionData['userid']      = $userId = ANONYMOUS;
+            $enableAutoLogin            = $login = false;
 
-            $userdata = dibi::select('*')
+            $userData = dibi::select('*')
                 ->from(USERS_TABLE)
-                ->where('user_id = %i', $user_id)
+                ->where('user_id = %i', $userId)
                 ->fetch();
 
-            if (!$userdata) {
+            if (!$userData) {
                 message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch');
             }
         }
@@ -138,7 +138,7 @@ class Session
         //
         // Initial ban check against user id, IP and email address
         //
-        preg_match('/(..)(..)(..)(..)/', $user_ip, $user_ip_parts);
+        preg_match('/(..)(..)(..)(..)/', $userIp, $user_ip_parts);
 
         $ban_ip_array = [
             $user_ip_parts[1] . $user_ip_parts[2] . $user_ip_parts[3] . $user_ip_parts[4],
@@ -148,16 +148,16 @@ class Session
         ];
 
         // check if banned :)
-        if ($user_id !== ANONYMOUS) {
-            $ban_email = $userdata['user_email'];
-            $ban_email2 = substr( $userdata['user_email'], strpos($userdata['user_email'], '@'));
+        if ($userId !== ANONYMOUS) {
+            $ban_email = $userData['user_email'];
+            $ban_email2 = substr( $userData['user_email'], strpos($userData['user_email'], '@'));
 
             $ban_info = dibi::select(['ban_ip', 'ban_userid', 'ban_email'])
                 ->from(BANLIST_TABLE)
                 ->where(
                     'ban_ip IN %in OR ban_userid = %i OR ban_email LIKE %~like~ OR ban_email LIKE %~like~',
                     $ban_ip_array,
-                    $user_id,
+                    $userId,
                     $ban_email,
                     $ban_email2
                 )->fetch();
@@ -167,7 +167,7 @@ class Session
                 ->where(
                     'ban_ip IN %in OR ban_userid = %i',
                     $ban_ip_array,
-                    $user_id
+                    $userId
                 )->fetch();
         }
 
@@ -178,114 +178,114 @@ class Session
         //
         // Create or update the session
         //
-        $update_data = [
-            'session_user_id' => $user_id,
-            'session_start' => $current_time,
-            'session_time' => $current_time,
-            'session_page' => $page_id,
+        $updateData = [
+            'session_user_id' => $userId,
+            'session_start' => $currentTime,
+            'session_time' => $currentTime,
+            'session_page' => $pageId,
             'session_logged_in' => $login,
-            'session_admin' => $admin
+            'session_admin' => $isAdmin
         ];
 
-        $result = dibi::update(SESSIONS_TABLE, $update_data)
-            ->where('session_id = %s', $session_id)
-            ->where('session_ip = %s', $user_ip)
+        $result = dibi::update(SESSIONS_TABLE, $updateData)
+            ->where('session_id = %s', $sessionId)
+            ->where('session_ip = %s', $userIp)
             ->execute();
 
         if (!$result || !dibi::getAffectedRows()) {
-            $session_id = md5(dss_rand());
+            $sessionId = md5(dss_rand());
 
-            $insert_data = [
-                'session_id' => $session_id,
-                'session_user_id' => $user_id,
-                'session_start' => $current_time,
-                'session_time' => $current_time,
-                'session_ip' => $user_ip,
-                'session_page' => $page_id,
+            $insertData = [
+                'session_id' => $sessionId,
+                'session_user_id' => $userId,
+                'session_start' => $currentTime,
+                'session_time' => $currentTime,
+                'session_ip' => $userIp,
+                'session_page' => $pageId,
                 'session_logged_in' => $login,
-                'session_admin' => $admin
+                'session_admin' => $isAdmin
             ];
 
-            dibi::insert(SESSIONS_TABLE, $insert_data)->execute();
+            dibi::insert(SESSIONS_TABLE, $insertData)->execute();
         }
 
-        if ($user_id !== ANONYMOUS) {
-            $last_visit = ( $userdata['user_session_time'] > 0 ) ? $userdata['user_session_time'] : $current_time;
+        if ($userId !== ANONYMOUS) {
+            $lastVisit = ( $userData['user_session_time'] > 0 ) ? $userData['user_session_time'] : $currentTime;
 
-            if (!$admin) {
-                $update_data = [
-                    'user_session_time' => $current_time,
-                    'user_session_page' => $page_id,
-                    'user_lastvisit'    => $last_visit
+            if (!$isAdmin) {
+                $updateData = [
+                    'user_session_time' => $currentTime,
+                    'user_session_page' => $pageId,
+                    'user_lastvisit'    => $lastVisit
                 ];
 
-                dibi::update(USERS_TABLE, $update_data)
-                    ->where('user_id = %i', $user_id)
+                dibi::update(USERS_TABLE, $updateData)
+                    ->where('user_id = %i', $userId)
                     ->execute();
             }
 
-            $userdata['user_lastvisit'] = $last_visit;
+            $userData['user_lastvisit'] = $lastVisit;
 
             //
             // Regenerate the auto-login key
             //
-            if ($enable_autologin) {
+            if ($enableAutoLogin) {
                 $auto_login_key = dss_rand() . dss_rand();
 
-                if (isset($sessiondata['autologinid']) && (string) $sessiondata['autologinid'] !== '') {
-                    $update_data = [
-                        'last_ip' =>  $user_ip,
+                if (isset($sessionData['autologinid']) && (string) $sessionData['autologinid'] !== '') {
+                    $updateData = [
+                        'last_ip' =>  $userIp,
                         'key_id' => hash('sha512',$auto_login_key),
-                        'last_login' => $current_time
+                        'last_login' => $currentTime
                     ];
 
-                    dibi::update(SESSIONS_KEYS_TABLE, $update_data)
-                        ->where('key_id = %s', hash('sha512', $sessiondata['autologinid']))
+                    dibi::update(SESSIONS_KEYS_TABLE, $updateData)
+                        ->where('key_id = %s', hash('sha512', $sessionData['autologinid']))
                         ->execute();
                 } else {
-                    $insert_data = [
+                    $insertData = [
                         'key_id'     => hash('sha512', $auto_login_key),
-                        'user_id'    => $user_id,
-                        'last_ip'    => $user_ip,
-                        'last_login' => $current_time
+                        'user_id'    => $userId,
+                        'last_ip'    => $userIp,
+                        'last_login' => $currentTime
                     ];
 
-                    dibi::insert(SESSIONS_KEYS_TABLE, $insert_data)->execute();
+                    dibi::insert(SESSIONS_KEYS_TABLE, $insertData)->execute();
                 }
 
-                $sessiondata['autologinid'] = $auto_login_key;
+                $sessionData['autologinid'] = $auto_login_key;
                 unset($auto_login_key);
             } else {
-                $sessiondata['autologinid'] = '';
+                $sessionData['autologinid'] = '';
             }
 
             //		$sessiondata['autologinid'] = (!$admin) ? (( $enable_autologin && $sessionmethod == SESSION_METHOD_COOKIE ) ? $auto_login_key : '') : $sessiondata['autologinid'];
-            $sessiondata['userid'] = $user_id;
+            $sessionData['userid'] = $userId;
         }
 
-        $userdata['session_id'] = $session_id;
-        $userdata['session_ip'] = $user_ip;
-        $userdata['session_user_id'] = $user_id;
-        $userdata['session_logged_in'] = $login;
-        $userdata['session_page'] = $page_id;
-        $userdata['session_start'] = $current_time;
-        $userdata['session_time'] = $current_time;
-        $userdata['session_admin'] = $admin;
-        $userdata['session_key'] = $sessiondata['autologinid'];
+        $userData['session_id'] = $sessionId;
+        $userData['session_ip'] = $userIp;
+        $userData['session_user_id'] = $userId;
+        $userData['session_logged_in'] = $login;
+        $userData['session_page'] = $pageId;
+        $userData['session_start'] = $currentTime;
+        $userData['session_time'] = $currentTime;
+        $userData['session_admin'] = $isAdmin;
+        $userData['session_key'] = $sessionData['autologinid'];
 
-        $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
+        $userTimezone = isset($userData['user_timezone']) ? $userData['user_timezone'] : $board_config['board_timezone'];
 
-        $expire_date = new DateTime();
-        $expire_date->setTimestamp($current_time);
-        $expire_date->setTimezone(new DateTimeZone($user_timezone));
-        $expire_date->add(new DateInterval('P1Y'));
+        $expireDate = new DateTime();
+        $expireDate->setTimestamp($currentTime);
+        $expireDate->setTimezone(new DateTimeZone($userTimezone));
+        $expireDate->add(new DateInterval('P1Y'));
 
-        setcookie($data_cookie_name, serialize($sessiondata), $expire_date->getTimestamp(), $cookiepath, $cookiedomain, $cookiesecure);
-        setcookie($sid_cookie_name, $session_id, 0, $cookiepath, $cookiedomain, $cookiesecure);
+        setcookie($dataCookieName, serialize($sessionData), $expireDate->getTimestamp(), $cookiePath, $cookieDomain, $cookieSecure);
+        setcookie($sidCookieName, $sessionId, 0, $cookiePath, $cookieDomain, $cookieSecure);
 
-        $SID = 'sid=' . $session_id;
+        $SID = 'sid=' . $sessionId;
 
-        return $userdata;
+        return $userData;
     }
 
     /**
@@ -293,119 +293,119 @@ class Session
      * sessions at each page refresh
      *
      * @param $user_ip
-     * @param $thispage_id
+     * @param $thisPageId
      *
      * @return array
      */
-    public static function pageStart($user_ip, $thispage_id)
+    public static function pageStart($user_ip, $thisPageId)
     {
         global $lang, $board_config;
         global $SID;
 
-        $cookiename = $board_config['cookie_name'];
-        $cookiepath = $board_config['cookie_path'];
-        $cookiedomain = $board_config['cookie_domain'];
-        $cookiesecure = $board_config['cookie_secure'];
+        $cookieName = $board_config['cookie_name'];
+        $cookiePath = $board_config['cookie_path'];
+        $cookieDomain = $board_config['cookie_domain'];
+        $cookieSecure = $board_config['cookie_secure'];
 
-        $data_cookie_name = $cookiename . '_data';
-        $sid_cookie_name  = $cookiename . '_sid';
+        $dataCookieName = $cookieName . '_data';
+        $sidCookieName  = $cookieName . '_sid';
 
         $current_time = time();
-        unset($userdata);
+        unset($userData);
 
-        if (isset($_COOKIE[$sid_cookie_name]) || isset($_COOKIE[$data_cookie_name])) {
-            $sessiondata = isset( $_COOKIE[$data_cookie_name] ) ? unserialize(stripslashes($_COOKIE[$data_cookie_name])) : [];
-            $session_id = isset( $_COOKIE[$sid_cookie_name] ) ? $_COOKIE[$sid_cookie_name] : '';
-            $sessionmethod = SESSION_METHOD_COOKIE;
+        if (isset($_COOKIE[$sidCookieName]) || isset($_COOKIE[$dataCookieName])) {
+            $sessionData = isset($_COOKIE[$dataCookieName]) ? unserialize(stripslashes($_COOKIE[$dataCookieName])) : [];
+            $sessionId = isset($_COOKIE[$sidCookieName]) ? $_COOKIE[$sidCookieName] : '';
+            $sessionMethod = SESSION_METHOD_COOKIE;
         } else {
-            $sessiondata = [];
-            $session_id = isset($_GET['sid']) ? $_GET['sid'] : '';
-            $sessionmethod = SESSION_METHOD_GET;
+            $sessionData = [];
+            $sessionId = isset($_GET['sid']) ? $_GET['sid'] : '';
+            $sessionMethod = SESSION_METHOD_GET;
         }
 
         //
-        if (!preg_match('/^[A-Za-z0-9]*$/', $session_id)) {
-            $session_id = '';
+        if (!preg_match('/^[A-Za-z0-9]*$/', $sessionId)) {
+            $sessionId = '';
         }
 
-        $thispage_id = (int) $thispage_id;
+        $thisPageId = (int) $thisPageId;
 
         //
         // Does a session exist?
         //
-        if (!empty($session_id)) {
+        if (!empty($sessionId)) {
             //
             // session_id exists so go ahead and attempt to grab all
             // data in preparation
             //
-            $userdata = dibi::select('u.*, s.*')
+            $userData = dibi::select('u.*, s.*')
                 ->from(SESSIONS_TABLE)
                 ->as('s')
                 ->innerJoin(USERS_TABLE)
                 ->as('u')
                 ->on('u.user_id = s.session_user_id')
-                ->where('session_id = %s', $session_id)
+                ->where('session_id = %s', $sessionId)
                 ->fetch();
 
             //
             // Did the session exist in the DB?
             //
-            if (isset($userdata['user_id'])) {
+            if (isset($userData['user_id'])) {
                 //
                 // Do not check IP assuming equivalence, if IPv4 we'll check only first 24
                 // bits ... I've been told (by vHiker) this should alleviate problems with
                 // load balanced et al proxies while retaining some reliance on IP security.
                 //
-                $ip_check_s = substr($userdata['session_ip'], 0, 6);
+                $ip_check_s = substr($userData['session_ip'], 0, 6);
                 $ip_check_u = substr($user_ip, 0, 6);
 
                 if ($ip_check_s === $ip_check_u) {
-                    $SID = $sessionmethod === SESSION_METHOD_GET || defined('IN_ADMIN') ? 'sid=' . $session_id : '';
+                    $SID = $sessionMethod === SESSION_METHOD_GET || defined('IN_ADMIN') ? 'sid=' . $sessionId : '';
 
                     //
                     // Only update session DB a minute or so after last update
                     //
-                    if ($current_time - $userdata['session_time'] > 60) {
+                    if ($current_time - $userData['session_time'] > 60) {
                         // A little trick to reset session_admin on session re-usage
 
                         $update_data = [
                             'session_time' => $current_time,
-                            'session_page' => $thispage_id
+                            'session_page' => $thisPageId
                         ];
 
-                        if (!defined('IN_ADMIN') && $current_time - $userdata['session_time'] > ($board_config['session_length']+60)) {
+                        if (!defined('IN_ADMIN') && $current_time - $userData['session_time'] > ($board_config['session_length']+60)) {
                             $update_data['session_admin'] = 0;
                         }
 
                         dibi::update(SESSIONS_TABLE, $update_data)
-                            ->where('session_id = %s', $userdata['session_id'])
+                            ->where('session_id = %s', $userData['session_id'])
                             ->execute();
 
-                        if ($userdata['user_id'] !== ANONYMOUS) {
-                            dibi::update(USERS_TABLE, ['user_session_time' => $current_time, 'user_session_page' => $thispage_id])
-                                ->where('user_id = %i', $userdata['user_id'])
+                        if ($userData['user_id'] !== ANONYMOUS) {
+                            dibi::update(USERS_TABLE, ['user_session_time' => $current_time, 'user_session_page' => $thisPageId])
+                                ->where('user_id = %i', $userData['user_id'])
                                 ->execute();
                         }
 
-                        self::clean($userdata['session_id']);
+                        self::clean($userData['session_id']);
 
-                        $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
+                        $user_timezone = isset($userData['user_timezone']) ? $userData['user_timezone'] : $board_config['board_timezone'];
 
                         $expire_date = new DateTime();
                         $expire_date->setTimestamp($current_time);
                         $expire_date->setTimezone(new DateTimeZone($user_timezone));
                         $expire_date->add(new DateInterval('P1Y'));
 
-                        setcookie($data_cookie_name, serialize($sessiondata), $expire_date->getTimestamp(), $cookiepath, $cookiedomain, $cookiesecure);
-                        setcookie($sid_cookie_name, $session_id, 0, $cookiepath, $cookiedomain, $cookiesecure);
+                        setcookie($dataCookieName, serialize($sessionData), $expire_date->getTimestamp(), $cookiePath, $cookieDomain, $cookieSecure);
+                        setcookie($sidCookieName, $sessionId, 0, $cookiePath, $cookieDomain, $cookieSecure);
                     }
 
                     // Add the session_key to the userdata array if it is set
-                    if (isset($sessiondata['autologinid']) && $sessiondata['autologinid'] !== '') {
-                        $userdata['session_key'] = $sessiondata['autologinid'];
+                    if (isset($sessionData['autologinid']) && $sessionData['autologinid'] !== '') {
+                        $userData['session_key'] = $sessionData['autologinid'];
                     }
 
-                    return $userdata;
+                    return $userData;
                 }
             }
         }
@@ -414,14 +414,14 @@ class Session
         // If we reach here then no (valid) session exists. So we'll create a new one,
         // using the cookie user_id if available to pull basic user prefs.
         //
-        $user_id  = isset($sessiondata['userid']) ? (int)$sessiondata['userid'] : ANONYMOUS;
-        $userdata = self::begin($user_id, $user_ip, $thispage_id, true);
+        $user_id  = isset($sessionData['userid']) ? (int)$sessionData['userid'] : ANONYMOUS;
+        $userData = self::begin($user_id, $user_ip, $thisPageId, true);
 
-        if (!$userdata) {
+        if (!$userData) {
             message_die(CRITICAL_ERROR, 'Error creating user session');
         }
 
-        return $userdata;
+        return $userData;
     }
 
     /**
@@ -429,27 +429,27 @@ class Session
      * It will delete the entry in the sessions table for this session,
      * remove the corresponding auto-login key and reset the cookies
      *
-     * @param string $session_id
-     * @param int $user_id
+     * @param string $sessionId
+     * @param int    $userId
      *
      * @return bool|void
+     * @throws \Dibi\Exception
      */
-    public static function end($session_id, $user_id)
+    public static function end($sessionId, $userId)
     {
-        global $lang, $board_config, $userdata;
-        global $SID;
+        global $board_config, $userdata;
 
-        $cookiename = $board_config['cookie_name'];
-        $cookiepath = $board_config['cookie_path'];
-        $cookiedomain = $board_config['cookie_domain'];
+        $cookieName = $board_config['cookie_name'];
+        $cookiePath = $board_config['cookie_path'];
+        $cookieDomain = $board_config['cookie_domain'];
         $cookiesecure = $board_config['cookie_secure'];
 
-        $data_cookie_name = $cookiename . '_data';
-        $sid_cookie_name  = $cookiename . '_sid';
+        $dataCookieName = $cookieName . '_data';
+        $sidCookieName  = $cookieName . '_sid';
 
-        $current_time = time();
+        $currentTime = time();
 
-        if (!preg_match('/^[A-Za-z0-9]*$/', $session_id)) {
+        if (!preg_match('/^[A-Za-z0-9]*$/', $sessionId)) {
             return;
         }
 
@@ -458,19 +458,19 @@ class Session
         //
 
         dibi::delete(SESSIONS_TABLE)
-            ->where('session_id = %s', $session_id)
-            ->where('session_user_id = %i', $user_id)
+            ->where('session_id = %s', $sessionId)
+            ->where('session_user_id = %i', $userId)
             ->execute();
 
         //
         // Remove this auto-login entry (if applicable)
         //
         if (isset($userdata['session_key']) && $userdata['session_key'] !== '') {
-            $autologin_key = hash('sha512', $userdata['session_key']);
+            $autoLoginKey = hash('sha512', $userdata['session_key']);
 
             dibi::delete(SESSIONS_KEYS_TABLE)
-                ->where('user_id = %i',(int) $user_id)
-                ->where('key_id = %s', $autologin_key)
+                ->where('user_id = %i',(int) $userId)
+                ->where('key_id = %s', $autoLoginKey)
                 ->execute();
         }
 
@@ -487,15 +487,15 @@ class Session
             message_die(CRITICAL_ERROR, 'Error obtaining user details');
         }
 
-        $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
+        $userTimezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
 
-        $expire_date = new DateTime();
-        $expire_date->setTimestamp($current_time);
-        $expire_date->setTimezone(new DateTimeZone($user_timezone));
-        $expire_date->sub(new DateInterval('P1Y'));
+        $expireDate = new DateTime();
+        $expireDate->setTimestamp($currentTime);
+        $expireDate->setTimezone(new DateTimeZone($userTimezone));
+        $expireDate->sub(new DateInterval('P1Y'));
 
-        setcookie($data_cookie_name, '', $expire_date->getTimestamp(), $cookiepath, $cookiedomain, $cookiesecure);
-        setcookie($sid_cookie_name, '', $expire_date->getTimestamp(), $cookiepath, $cookiedomain, $cookiesecure);
+        setcookie($dataCookieName, '', $expireDate->getTimestamp(), $cookiePath, $cookieDomain, $cookiesecure);
+        setcookie($sidCookieName, '', $expireDate->getTimestamp(), $cookiePath, $cookieDomain, $cookiesecure);
 
         return true;
     }
@@ -506,6 +506,7 @@ class Session
      * @param string $session_id
      *
      * @return bool
+     * @throws \Dibi\Exception
      */
     public static function clean($session_id)
     {
@@ -515,10 +516,10 @@ class Session
         //
         // Delete expired sessions
         //
-        $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
+        $userTimezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
 
         $time = new DateTime();
-        $time->setTimezone(new DateTimeZone($user_timezone));
+        $time->setTimezone(new DateTimeZone($userTimezone));
         $time->sub(new DateInterval('PT' . $board_config['session_length'] . 'S'));
 
         dibi::delete(SESSIONS_TABLE)
@@ -532,10 +533,10 @@ class Session
         // (same behaviour as old 2.0.x session code)
         //
         if (!empty($board_config['max_autologin_time']) && $board_config['max_autologin_time'] > 0) {
-            $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
+            $userTimezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
 
             $time = new DateTime();
-            $time->setTimezone(new DateTimeZone($user_timezone));
+            $time->setTimezone(new DateTimeZone($userTimezone));
             $time->sub(new DateInterval('P' . (int)$board_config['max_autologin_time'] . 'D'));
 
             dibi::delete(SESSIONS_KEYS_TABLE)
@@ -550,43 +551,43 @@ class Session
      * Reset all login keys for the specified user
      * Called on password changes
      *
-     * @param int    $user_id
-     * @param string $user_ip
+     * @param int    $userId
+     * @param string $userIp
      *
+     * @throws \Dibi\Exception
      */
-    public static function resetKeys($user_id, $user_ip)
+    public static function resetKeys($userId, $userIp)
     {
         global $userdata, $board_config;
 
-        $key_sql = $user_id === $userdata['user_id'] && !empty($userdata['session_key']);
+        $key_sql = $userId === $userdata['user_id'] && !empty($userdata['session_key']);
 
-        $delete_session_keys = dibi::delete(SESSIONS_KEYS_TABLE)
-            ->where('user_id = %i', $user_id);
-
-        if ($key_sql) {
-            $delete_session_keys->where('key_id != %s', hash('sha512', $userdata['session_key']));
-        }
-
-        $delete_session_keys->execute();
-
-        $delete_session = dibi::delete(SESSIONS_TABLE)
-            ->where('session_user_id = %i', $user_id);
-
-        if ($user_id === $userdata['user_id']) {
-            $delete_session->where('session_id <> %s', $userdata['session_id']);
-        }
-
-        $delete_session->execute();
+        $deleteSessionKeys = dibi::delete(SESSIONS_KEYS_TABLE)
+            ->where('user_id = %i', $userId);
 
         if ($key_sql) {
-            $auto_login_key = dss_rand() . dss_rand();
+            $deleteSessionKeys->where('key_id != %s', hash('sha512', $userdata['session_key']));
+        }
 
-            $current_time = time();
+        $deleteSessionKeys->execute();
+
+        $deleteSession = dibi::delete(SESSIONS_TABLE)
+            ->where('session_user_id = %i', $userId);
+
+        if ($userId === $userdata['user_id']) {
+            $deleteSession->where('session_id <> %s', $userdata['session_id']);
+        }
+
+        $deleteSession->execute();
+
+        if ($key_sql) {
+            $autoLoginKey = dss_rand() . dss_rand();
+            $currentTime = time();
 
             $update_data = [
-                'last_ip' => $user_ip,
-                'key_id' => hash('sha512', $auto_login_key),
-                'last_login' => $current_time
+                'last_ip' => $userIp,
+                'key_id' => hash('sha512', $autoLoginKey),
+                'last_login' => $currentTime
             ];
 
             dibi::update(SESSIONS_KEYS_TABLE, $update_data)
@@ -594,25 +595,25 @@ class Session
                 ->execute();
 
             // And now rebuild the cookie
-            $sessiondata['userid'] = $user_id;
-            $sessiondata['autologinid'] = $auto_login_key;
-            $cookiename = $board_config['cookie_name'];
-            $cookiepath = $board_config['cookie_path'];
-            $cookiedomain = $board_config['cookie_domain'];
-            $cookiesecure = $board_config['cookie_secure'];
+            $sessionData['userid'] = $userId;
+            $sessionData['autologinid'] = $autoLoginKey;
+            $cookieName = $board_config['cookie_name'];
+            $cookiePath = $board_config['cookie_path'];
+            $cookieDomain = $board_config['cookie_domain'];
+            $cookieSecure = $board_config['cookie_secure'];
 
-            $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
+            $userTimezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
 
-            $expire_date = new DateTime();
-            $expire_date->setTimestamp($current_time);
-            $expire_date->setTimezone(new DateTimeZone($user_timezone));
-            $expire_date->add(new DateInterval('P1Y'));
+            $expireDate = new DateTime();
+            $expireDate->setTimestamp($currentTime);
+            $expireDate->setTimezone(new DateTimeZone($userTimezone));
+            $expireDate->add(new DateInterval('P1Y'));
 
-            setcookie($cookiename . '_data', serialize($sessiondata), $expire_date->getTimestamp(), $cookiepath, $cookiedomain, $cookiesecure);
+            setcookie($cookieName . '_data', serialize($sessionData), $expireDate->getTimestamp(), $cookiePath, $cookieDomain, $cookieSecure);
 
-            $userdata['session_key'] = $auto_login_key;
-            unset($sessiondata);
-            unset($auto_login_key);
+            $userdata['session_key'] = $autoLoginKey;
+            unset($sessionData);
+            unset($autoLoginKey);
         }
     }
 
