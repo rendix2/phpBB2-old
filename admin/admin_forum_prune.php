@@ -35,7 +35,6 @@ $sep = DIRECTORY_SEPARATOR;
 $phpbb_root_path = '.' . $sep . '..' . $sep;
 
 require_once '.' . $sep . 'pagestart.php';
-require_once $phpbb_root_path . 'includes' . $sep . 'prune.php';
 
 //
 // Get the forum ID for pruning

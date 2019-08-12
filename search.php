@@ -27,7 +27,6 @@ $phpbb_root_path = '.' . $sep;
 
 require_once $phpbb_root_path . 'common.php';
 require_once $phpbb_root_path . 'includes' . $sep . 'bbcode.php';
-require_once $phpbb_root_path . 'includes' . $sep . 'functions_search.php';
 
 //
 // Start session management
@@ -127,9 +126,9 @@ if ($mode === 'searchuser') {
     // This handles the simple windowed user search functions called from various other scripts
     //
     if (isset($_POST['search_username'])) {
-        username_search($_POST['search_username']);
+        SearchHelper::usernameSearch($_POST['search_username']);
     } else {
-        username_search('');
+        SearchHelper::usernameSearch('');
     }
 
     exit;
@@ -231,7 +230,7 @@ if ($mode === 'searchuser') {
 
 			$split_search = [];
 			$stripped_keywords = stripslashes($search_keywords);
-			$split_search = ( !strstr($multibyte_charset, $lang['ENCODING']) ) ?  split_words(clean_words('search', $stripped_keywords, $stopword_array, $synonym_array), 'search') : explode(' ', $search_keywords);
+			$split_search = ( !strstr($multibyte_charset, $lang['ENCODING']) ) ?  SearchHelper::splitWords(SearchHelper::cleanWords('search', $stripped_keywords, $stopword_array, $synonym_array), 'search') : explode(' ', $search_keywords);
 			unset($stripped_keywords);
 
 			$word_count = 0;

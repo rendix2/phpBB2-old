@@ -2511,8 +2511,7 @@ switch($mode_id) {
 			case 'perform_rebuild': // Rebuild search index (perform part)
 				// ATTENTION: page_header not sent yet!
 				$db_state = isset($_GET['db_state']) ? (int)$_GET['db_state'] : 0;
-				// Load functions
-                require_once $phpbb_root_path . 'includes' . $sep . 'functions_search.php';
+
 				// Identify PHP version and time limit configuration
                 if (PHP_VERSION >= '4.0.5' && ($board_config['dbmtnc_rebuildcfg_php3only'] == 0)) // Handle PHP beffore 4.0.5 as PHP 3 since array_search is not available
                 {
@@ -2585,7 +2584,7 @@ switch($mode_id) {
 				// TODO we use native phpBB functions add_search_words()
                 foreach ($rows as $row) {
                     $last_post = $row->post_id;
-                    add_search_words('single', $row->post_id, stripslashes($row->post_text), stripslashes($row->post_subject));
+                    SearchHelper::addSearchWords('single', $row->post_id, stripslashes($row->post_text), stripslashes($row->post_subject));
                 }
 
 /*

@@ -191,8 +191,6 @@ switch ($mode) {
                 message_die(GENERAL_MESSAGE, $lang['None_selected']);
             }
 
-            require_once $phpbb_root_path . 'includes' . $sep . 'functions_search.php';
-
             $topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topic_id];
 
 			$topicIds = dibi::select('topic_id')
@@ -256,7 +254,7 @@ switch ($mode) {
                     ->where('post_id IN %in', $post_ids)
                     ->execute();
 
-                remove_search_post($post_ids);
+                SearchHelper::removeSearchPost($post_ids);
             }
 
             $votes = dibi::select('vote_id')

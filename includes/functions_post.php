@@ -167,8 +167,6 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 
 	$sep = DIRECTORY_SEPARATOR;
 
-    require_once $phpbb_root_path . 'includes' . $sep . 'functions_search.php';
-
 	$current_time = time();
 
 	if ($mode === 'newtopic' || $mode === 'reply' || $mode === 'editpost') {
@@ -193,7 +191,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	}
 
 	if ($mode === 'editpost') {
-		remove_search_post([$post_id]);
+        SearchHelper::removeSearchPost([$post_id]);
 	}
 
 	if ($mode === 'newtopic' || ($mode === 'editpost' && $post_data['first_post'])) {
@@ -280,7 +278,7 @@ function submit_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
         dibi::insert(POSTS_TEXT_TABLE, $insert_data)->execute();
     }
 
-	add_search_words('single', $post_id, stripslashes($post_message), stripslashes($post_subject));
+	SearchHelper::addSearchWords('single', $post_id, stripslashes($post_message), stripslashes($post_subject));
 
 	//
 	// Add poll
@@ -483,8 +481,6 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
 	$sep = DIRECTORY_SEPARATOR;
 
 	if ($mode !== 'poll_delete') {
-        require_once $phpbb_root_path . 'includes' . $sep . 'functions_search.php';
-
 		dibi::delete(POSTS_TABLE)
             ->where('post_id = %i', $post_id)
             ->execute();
@@ -507,7 +503,7 @@ function delete_post($mode, &$post_data, &$message, &$meta, &$forum_id, &$topic_
                 ->execute();
         }
 
-		remove_search_post([$post_id]);
+        SearchHelper::removeSearchPost([$post_id]);
 	}
 
 	if ($mode === 'poll_delete' || ($mode === 'delete' && $post_data['first_post'] && $post_data['last_post']) && $post_data['has_poll'] && $post_data['edit_poll']) {

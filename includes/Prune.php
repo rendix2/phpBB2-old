@@ -1,9 +1,5 @@
 <?php
 
-// VERY SAD
-// TODO LOOK
-require_once $phpbb_root_path . 'includes/functions_search.php';
-
 /**
  * Class Prune
  *
@@ -111,7 +107,7 @@ class Prune
                     ->where('post_id IN %in', $postIds)
                     ->execute(dibi::AFFECTED_ROWS);
 
-                remove_search_post($postIds);
+                SearchHelper::removeSearchPost($postIds);
 
                 return ['topics' => $prunedTopics, 'posts' => $prunedPosts];
             }

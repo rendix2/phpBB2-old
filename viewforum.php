@@ -160,7 +160,6 @@ $tracking_forums = isset($_COOKIE[$forum_cookie_name]) ? unserialize($_COOKIE[$f
 // Do the forum Prune
 //
 if ($is_auth['auth_mod'] && $board_config['prune_enable'] && $forum->prune_next < time() && $forum->prune_enable) {
-    require_once $phpbb_root_path . 'includes' . $sep . 'prune.php';
     require_once $phpbb_root_path . 'includes' . $sep . 'functions_admin.php';
 
     Prune::autoPrune($forum_id);

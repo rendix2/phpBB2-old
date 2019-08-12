@@ -584,7 +584,6 @@ if (!empty($mode)) {
                         ->execute();
                 }
 
-                require_once $phpbb_root_path . 'includes' . $sep . 'prune.php';
 				Prune::run($from_id, 0, true); // Delete everything from forum
 			} else {
 			    $forums_exists = dibi::select('*')
