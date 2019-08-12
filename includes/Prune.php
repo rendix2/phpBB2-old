@@ -158,7 +158,7 @@ class Prune
             $nextPrune->add(new DateInterval('P' . $prune->prune_freq . 'D'))
                 ->getTimestamp();
 
-            self::Prune($forumId, $pruneDate);
+            self::run($forumId, $pruneDate);
             sync('forum', $forumId);
 
             dibi::update(FORUMS_TABLE, ['prune_next' => $nextPrune])
