@@ -9,17 +9,17 @@ require_once $phpbb_root_path . 'includes/functions_search.php';
  *
  * @author rendix2
  */
-class PruneClass
+class Prune
 {
     /**
-     * @param int  $forum_id
-     * @param int  $prune_date timestamp
-     * @param bool $prune_all
+     * @param int  $forumId
+     * @param int  $pruneDate timestamp
+     * @param bool $pruneAll
      *
      * @return array
      * @throws \Dibi\Exception
      */
-    public static function PruneClass($forum_id, $prune_date, $prune_all = false)
+    public static function run($forumId, $pruneDate, $pruneAll = false)
     {
         $topics = dibi::select('topic_id')
             ->from(TOPICS_TABLE)
@@ -33,51 +33,51 @@ class PruneClass
         //
         // Those without polls and announcements ... unless told otherwise!
         //
-        $topic_query = dibi::select('t.topic_id')
+        $topicQuery = dibi::select('t.topic_id')
             ->from(POSTS_TABLE)
             ->as('p')
             ->innerJoin(TOPICS_TABLE)
             ->as('t')
             ->on('p.post_id = t.topic_last_post_id')
-            ->where('t.forum_id = %i', $forum_id);
+            ->where('t.forum_id = %i', $forumId);
 
-        if (!$prune_all) {
-            $topic_query->where('t.topic_vote = %i', 0)
+        if (!$pruneAll) {
+            $topicQuery->where('t.topic_vote = %i', 0)
                 ->where('t.topic_type <> %i', POST_ANNOUNCE);
         }
 
-        if ($prune_date) {
-            $topic_query->where('p.post_time < %i', $prune_date);
+        if ($pruneDate) {
+            $topicQuery->where('p.post_time < %i', $pruneDate);
         }
 
-        $topic_data = $topic_query->fetchPairs(null, 'topic_id');
+        $topicData = $topicQuery->fetchPairs(null, 'topic_id');
 
-        if (count($topic_data)) {
-            $post_ids = dibi::select('post_id')
+        if (count($topicData)) {
+            $postIds = dibi::select('post_id')
                 ->from(POSTS_TABLE)
-                ->where('forum_id = %i', $forum_id)
-                ->where('topic_id IN %in', $topic_data)
+                ->where('forum_id = %i', $forumId)
+                ->where('topic_id IN %in', $topicData)
                 ->fetchPairs(null, 'post_id');
 
-            if (count($post_ids)) {
-                $user_ids = dibi::select('poster_id')
+            if (count($postIds)) {
+                $userIds = dibi::select('poster_id')
                     ->from(POSTS_TABLE)
-                    ->where('post_id IN %in', $post_ids)
+                    ->where('post_id IN %in', $postIds)
                     ->fetchPairs(null, 'user_id');
 
-                $user_counts = [];
+                $userCounts = [];
 
-                foreach ($user_ids as $user_id) {
-                    if (isset($user_counts[$user_id])) {
-                        $user_counts[$user_id]++;
+                foreach ($userIds as $userId) {
+                    if (isset($userCounts[$userId])) {
+                        $userCounts[$userId]++;
                     } else {
-                        $user_counts[$user_id] = 1;
+                        $userCounts[$userId] = 1;
                     }
                 }
 
-                foreach ($user_counts as $user_id => $user_count) {
-                    dibi::update(USERS_TABLE, ['user_posts%sql' => 'user_posts - ' . $user_count])
-                        ->where('user_id = %i', $user_id)
+                foreach ($userCounts as $userId => $userCount) {
+                    dibi::update(USERS_TABLE, ['user_posts%sql' => 'user_posts - ' . $userCount])
+                        ->where('user_id = %i', $userId)
                         ->execute();
                 }
 
@@ -85,7 +85,7 @@ class PruneClass
                     ->select('COUNT(topic_id)')
                     ->as('topics')
                     ->from(TOPICS_TABLE)
-                    ->where('topic_id IN %in', $topic_data)
+                    ->where('topic_id IN %in', $topicData)
                     ->groupBy('topic_poster')
                     ->fetchAll();
 
@@ -96,24 +96,24 @@ class PruneClass
                 }
 
                 dibi::delete(TOPICS_WATCH_TABLE)
-                    ->where('topic_id IN %in', $topic_data)
+                    ->where('topic_id IN %in', $topicData)
                     ->execute();
 
-                $pruned_topics = dibi::delete(TOPICS_TABLE)
-                    ->where('topic_id IN %in', $topic_data)
+                $prunedTopics = dibi::delete(TOPICS_TABLE)
+                    ->where('topic_id IN %in', $topicData)
                     ->execute(dibi::AFFECTED_ROWS);
 
-                $pruned_posts = dibi::delete(POSTS_TABLE)
-                    ->where('post_id IN %in', $post_ids)
+                $prunedPosts = dibi::delete(POSTS_TABLE)
+                    ->where('post_id IN %in', $postIds)
                     ->execute(dibi::AFFECTED_ROWS);
 
                 dibi::delete(POSTS_TEXT_TABLE)
-                    ->where('post_id IN %in', $post_ids)
+                    ->where('post_id IN %in', $postIds)
                     ->execute(dibi::AFFECTED_ROWS);
 
-                remove_search_post($post_ids);
+                remove_search_post($postIds);
 
-                return ['topics' => $pruned_topics, 'posts' => $pruned_posts];
+                return ['topics' => $prunedTopics, 'posts' => $prunedPosts];
             }
         }
 
@@ -124,44 +124,45 @@ class PruneClass
      * Function auto_prune(), this function will read the configuration data from
      * the auto_prune table and call the prune function with the necessary info.
      *
-     * @param int $forum_id
+     * @param int $forumId
      *
+     * @return bool
      * @throws \Dibi\Exception
      */
-    public static function auto_prune($forum_id = 0)
+    public static function autoPrune($forumId = 0)
     {
         global $userdata;
         global $board_config;
 
         $prune = dibi::select('*')
             ->from(PRUNE_TABLE)
-            ->where('forum_id = %i', $forum_id)
+            ->where('forum_id = %i', $forumId)
             ->fetch();
 
         if (!$prune) {
-            return;
+            return false;
         }
 
         if ($prune->prune_freq && $prune->prune_days) {
             $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
 
-            $time_zone = new DateTimeZone($user_timezone);
+            $timeZone = new DateTimeZone($user_timezone);
 
-            $prune_date = new DateTime();
-            $prune_date->setTimezone($time_zone);
-            $prune_date->sub(new DateInterval('P' . $prune->prune_days . 'D'))
+            $pruneDate = new DateTime();
+            $pruneDate->setTimezone($timeZone);
+            $pruneDate->sub(new DateInterval('P' . $prune->prune_days . 'D'))
                 ->getTimestamp();
 
-            $next_prune = new DateTime();
-            $next_prune->setTimezone($time_zone);
-            $next_prune->add(new DateInterval('P' . $prune->prune_freq . 'D'))
+            $nextPrune = new DateTime();
+            $nextPrune->setTimezone($timeZone);
+            $nextPrune->add(new DateInterval('P' . $prune->prune_freq . 'D'))
                 ->getTimestamp();
 
-            self::PruneClass($forum_id, $prune_date);
-            sync('forum', $forum_id);
+            self::Prune($forumId, $pruneDate);
+            sync('forum', $forumId);
 
-            dibi::update(FORUMS_TABLE, ['prune_next' => $next_prune])
-                ->where('forum_id = %i', $forum_id)
+            dibi::update(FORUMS_TABLE, ['prune_next' => $nextPrune])
+                ->where('forum_id = %i', $forumId)
                 ->execute();
         }
     }

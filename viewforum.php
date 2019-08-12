@@ -163,7 +163,7 @@ if ($is_auth['auth_mod'] && $board_config['prune_enable'] && $forum->prune_next 
     require_once $phpbb_root_path . 'includes' . $sep . 'prune.php';
     require_once $phpbb_root_path . 'includes' . $sep . 'functions_admin.php';
 
-    PruneClass::auto_prune($forum_id);
+    Prune::autoPrune($forum_id);
 }
 //
 // End of forum prune
