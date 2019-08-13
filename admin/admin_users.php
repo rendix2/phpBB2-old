@@ -226,8 +226,6 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 	}
 
     if (isset($_POST['submit'])) {
-        require_once $phpbb_root_path . 'includes' . $sep . 'usercp_avatar.php';
-
         $error = false;
 
         $username_sql = [];
@@ -672,9 +670,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 
             $template->setFileNames(['body' => 'admin/user_avatar_gallery.tpl']);
 
-            require_once $phpbb_root_path . 'includes' . $sep . 'usercp_avatar.php';
-
-            display_avatar_gallery($mode, $_POST['avatargallery'], $user_id, $email, $current_email, $coppa, $username, $email, $new_password, $cur_password, $password_confirm, $website, $location, $occupation, $interests, $signature, $viewemail, $notifypm, $popuppm, $notifyreply, $attachsig, $allowhtml, $allowbbcode, $allowsmilies, $allowviewonline, $user_style, $user_lang, $user_timezone, $user_dateformat, $userdata['session_id'], true, $template, $user_status, $user_allowavatar, $user_allowpm, $user_rank);
+            AvatarHelper::displayAvatarGallery($mode, $_POST['avatargallery'], $user_id, $email, $current_email, $coppa, $username, $new_password, $cur_password, $password_confirm, $website, $location, $occupation, $interests, $signature, $viewemail, $notifypm, $popuppm, $notifyreply, $attachsig, $allowhtml, $allowbbcode, $allowsmilies, $allowviewonline, $user_style, $user_lang, $user_timezone, $user_dateformat, $userdata['session_id'], true, $template, $user_status, $user_allowavatar, $user_allowpm, $user_rank);
         }
     } else {
 		$s_hidden_fields = '<input type="hidden" name="mode" value="save" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';

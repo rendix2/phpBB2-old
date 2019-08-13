@@ -234,8 +234,6 @@ if ($mode === 'register' && ($userdata['session_logged_in'] || $username === $us
 // Did the user submit? In this case build a query to update the users profile in the DB
 //
 if (isset($_POST['submit'])) {
-    require_once $phpbb_root_path . 'includes' . $sep . 'usercp_avatar.php';
-
 	// session id check
 	if ($sid === '' || $sid !== $userdata['session_id']) {
 		$error = true;
@@ -397,11 +395,11 @@ if (isset($_POST['submit'])) {
 	$avatar_data = [];
 
 	if (isset($_POST['avatardel']) && $mode === 'editprofile') {
-		$avatar_data = user_avatar_delete($userdata['user_avatar_type'], $userdata['user_avatar']);
+		$avatar_data = AvatarHelper::userAvatarDelete($userdata['user_avatar_type'], $userdata['user_avatar']);
 	} elseif (( !empty($user_avatar_upload) || !empty($user_avatar_name) ) && $board_config['allow_avatar_upload']) {
 		if (!empty($user_avatar_upload)) {
 			$avatar_mode = empty($user_avatar_name) ? 'remote' : 'local';
-			$avatar_data = user_avatar_upload($mode, $avatar_mode, $userdata['user_avatar'], $userdata['user_avatar_type'], $error, $error_msg, $user_avatar_upload, $user_avatar_name, $user_avatar_size, $user_avatar_filetype);
+			$avatar_data = AvatarHelper::userAvatarUpload($mode, $avatar_mode, $userdata['user_avatar'], $userdata['user_avatar_type'], $error, $error_msg, $user_avatar_upload, $user_avatar_name, $user_avatar_size, $user_avatar_filetype);
 		} elseif (!empty($user_avatar_name)) {
 			$l_avatar_size = sprintf($lang['Avatar_filesize'], round($board_config['avatar_filesize'] / 1024));
 
@@ -409,11 +407,11 @@ if (isset($_POST['submit'])) {
 			$error_msg .= ( !empty($error_msg) ? '<br />' : '' ) . $l_avatar_size;
 		}
 	} elseif ($user_avatar_remoteurl !== '' && $board_config['allow_avatar_remote']) {
-		user_avatar_delete($userdata['user_avatar_type'], $userdata['user_avatar']);
-		$avatar_data = user_avatar_url($mode, $error, $error_msg, $user_avatar_remoteurl);
+        AvatarHelper::userAvatarDelete($userdata['user_avatar_type'], $userdata['user_avatar']);
+		$avatar_data = AvatarHelper::userAvatarUrl($mode, $error, $error_msg, $user_avatar_remoteurl);
 	} elseif ($user_avatar_local !== '' && $board_config['allow_avatar_local']) {
-		user_avatar_delete($userdata['user_avatar_type'], $userdata['user_avatar']);
-		$avatar_data = user_avatar_gallery($mode, $error, $error_msg, $user_avatar_local, $user_avatar_category);
+        AvatarHelper::userAvatarDelete($userdata['user_avatar_type'], $userdata['user_avatar']);
+		$avatar_data = AvatarHelper::userAvatarGallery($mode, $error, $error_msg, $user_avatar_local, $user_avatar_category);
 	}
 
 	if (!$error) {
@@ -772,15 +770,13 @@ if ($mode === 'editprofile') {
 }
 
 if (isset($_POST['avatargallery']) && !$error) {
-    require_once $phpbb_root_path . 'includes' . $sep . 'usercp_avatar.php';
-
 	$avatar_category = !empty($_POST['avatarcategory']) ? htmlspecialchars($_POST['avatarcategory']) : '';
 
     $template->setFileNames(['body' => 'profile_avatar_gallery.tpl']);
 
     $allowviewonline = !$allowviewonline;
 
-	display_avatar_gallery($mode, $avatar_category, $user_id, $email, $current_email, $coppa, $username, $email, $new_password, $cur_password, $password_confirm, $website, $location, $occupation, $interests, $signature, $viewemail, $notifypm, $popup_pm, $notifyreply, $attachsig, $allowhtml, $allowbbcode, $allowsmilies, $allowviewonline, $user_style, $user_lang, $user_timezone, $user_dateformat, $userdata['session_id'], false, $template, $user_active, $allow_avatar, $allow_pm);
+	AvatarHelper::displayAvatarGallery($mode, $avatar_category, $user_id, $email, $current_email, $coppa, $username,$new_password, $cur_password, $password_confirm, $website, $location, $occupation, $interests, $signature, $viewemail, $notifypm, $popup_pm, $notifyreply, $attachsig, $allowhtml, $allowbbcode, $allowsmilies, $allowviewonline, $user_style, $user_lang, $user_timezone, $user_dateformat, $userdata['session_id'], false, $template, $user_active, $allow_avatar, $allow_pm);
 } else {
     if (!isset($coppa)) {
         $coppa = false;

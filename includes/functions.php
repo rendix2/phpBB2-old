@@ -144,7 +144,7 @@ function make_jumpbox($action, $match_forum_id = 0)
 
 //	$is_auth = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
 
-    $boxstring = '';
+    $jumpBox = '';
 
     $categories = dibi::select(['c.cat_id', 'c.cat_title', 'c.cat_order'])
         ->from(CATEGORIES_TABLE)
@@ -165,7 +165,7 @@ function make_jumpbox($action, $match_forum_id = 0)
             ->orderBy('forum_order')
             ->fetchAll();
 
-		$boxstring = '<select name="' . POST_FORUM_URL . '" onchange="if (this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $lang['Select_forum'] . '</option>';
+		$jumpBox = '<select name="' . POST_FORUM_URL . '" onchange="if (this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $lang['Select_forum'] . '</option>';
 
         if (count($forums)) {
             foreach ($categories as $category) {
@@ -182,20 +182,20 @@ function make_jumpbox($action, $match_forum_id = 0)
 				}
 
                 if ($boxstring_forums !== '') {
-                    $boxstring .= '<optgroup label="'.$category->cat_title .'">' . $boxstring_forums . '</optgroup>';
+                    $jumpBox .= '<optgroup label="'.$category->cat_title .'">' . $boxstring_forums . '</optgroup>';
 				}
 			}
 		}
 
-		$boxstring .= '</select>';
+		$jumpBox .= '</select>';
 	} else {
-		$boxstring .= '<select name="' . POST_FORUM_URL . '" onchange="if (this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"></select>';
+		$jumpBox .= '<select name="' . POST_FORUM_URL . '" onchange="if (this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"></select>';
 	}
 
 	// Let the jumpbox work again in sites having additional session id checks.
 //	if (!empty($SID) )
 //	{
-		$boxstring .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
+		$jumpBox .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 //	}
 
     $template->setFileNames(['jumpbox' => 'jumpbox.tpl']);
@@ -206,7 +206,7 @@ function make_jumpbox($action, $match_forum_id = 0)
             'L_JUMP_TO'      => $lang['Jump_to'],
             'L_SELECT_FORUM' => $lang['Select_forum'],
 
-            'S_JUMPBOX_SELECT' => $boxstring,
+            'S_JUMPBOX_SELECT' => $jumpBox,
             'S_JUMPBOX_ACTION' => Session::appendSid($action)
         ]
     );
@@ -225,26 +225,26 @@ function init_userprefs($pageId)
     $default_lang = '';
     $sep = DIRECTORY_SEPARATOR;
 
-    $userdata = Session::pageStart($user_ip, $pageId);
+    $userData = Session::pageStart($user_ip, $pageId);
 
-    if ($userdata['user_id'] !== ANONYMOUS) {
-        if (!empty($userdata['user_lang'])) {
-            $default_lang = ltrim(basename(rtrim($userdata['user_lang'])), "'");
+    if ($userData['user_id'] !== ANONYMOUS) {
+        if (!empty($userData['user_lang'])) {
+            $default_lang = ltrim(basename(rtrim($userData['user_lang'])), "'");
         }
 
-        if (!empty($userdata['user_dateformat'])) {
-            $board_config['default_dateformat'] = $userdata['user_dateformat'];
+        if (!empty($userData['user_dateformat'])) {
+            $board_config['default_dateformat'] = $userData['user_dateformat'];
         }
 
-        if (isset($userdata['user_timezone'])) {
-            $board_config['board_timezone'] = $userdata['user_timezone'];
+        if (isset($userData['user_timezone'])) {
+            $board_config['board_timezone'] = $userData['user_timezone'];
         }
     } else {
         $default_lang = ltrim(basename(rtrim($board_config['default_lang'])), "'");
     }
 
     if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $default_lang . $sep . 'lang_main.php'))) {
-		if ($userdata['user_id'] !== ANONYMOUS) {
+		if ($userData['user_id'] !== ANONYMOUS) {
 			// For logged in users, try the board default language next
 			$default_lang = ltrim(basename(rtrim($board_config['default_lang'])), "'");
 		} else {
@@ -261,13 +261,13 @@ function init_userprefs($pageId)
 
 	// If we've had to change the value in any way then let's write it back to the database
 	// before we go any further since it means there is something wrong with it
-	if ($userdata['user_id'] !== ANONYMOUS && $userdata['user_lang'] !== $default_lang) {
+	if ($userData['user_id'] !== ANONYMOUS && $userData['user_lang'] !== $default_lang) {
 	    dibi::update(USERS_TABLE, ['user_lang' => $default_lang])
-            ->where('user_lang = %s', $userdata['user_lang'])
+            ->where('user_lang = %s', $userData['user_lang'])
             ->execute();
 
-		$userdata['user_lang'] = $default_lang;
-	} elseif ($userdata['user_id'] === ANONYMOUS && $board_config['default_lang'] !== $default_lang) {
+		$userData['user_lang'] = $default_lang;
+	} elseif ($userData['user_id'] === ANONYMOUS && $board_config['default_lang'] !== $default_lang) {
         dibi::update(CONFIG_TABLE, ['config_value' => $default_lang])
             ->where('config_name = %s', 'default_lang')
             ->execute();
@@ -291,20 +291,20 @@ function init_userprefs($pageId)
 	//
 	// Set up style
 	//
-	if (!$board_config['override_user_style'] && $userdata['user_id'] !== ANONYMOUS && $userdata['user_style'] > 0) {
-        $theme = setup_style($userdata['user_style']);
+	if (!$board_config['override_user_style'] && $userData['user_id'] !== ANONYMOUS && $userData['user_style'] > 0) {
+        $theme = setupStyle($userData['user_style']);
 
         if ($theme) {
-            return $userdata;
+            return $userData;
         }
     }
 
-	$theme = setup_style($board_config['default_style']);
+	$theme = setupStyle($board_config['default_style']);
 
-	return $userdata;
+	return $userData;
 }
 
-function setup_style($style)
+function setupStyle($style)
 {
 	global $board_config, $template, $images, $phpbb_root_path;
 	global $storage;
@@ -346,9 +346,9 @@ function setup_style($style)
         }
 	}
 
-    $template_path = 'templates' . $sep;
-	$template_name = $theme->template_name;
-	$templateRootPath = $phpbb_root_path . $template_path . $template_name;
+    $templatePath = 'templates' . $sep;
+	$templateName = $theme->template_name;
+	$templateRootPath = $phpbb_root_path . $templatePath . $templateName;
 
 	// decide which template engine we will use
 	if ($board_config['template_engine'] === '0') {
@@ -362,18 +362,18 @@ function setup_style($style)
     }
 
 	if ($template) {
-		$current_template_path = $template_path . $template_name;
-        @require_once $phpbb_root_path . $template_path . $template_name . $sep . $template_name . '.cfg';
+		$currentTemplatePath = $templatePath . $templateName;
+        @require_once $phpbb_root_path . $templatePath . $templateName . $sep . $templateName . '.cfg';
 
 		if (!defined('TEMPLATE_CONFIG')) {
-			message_die(CRITICAL_ERROR, "Could not open $template_name template config file", '', __LINE__, __FILE__);
+			message_die(CRITICAL_ERROR, "Could not open $templateName template config file", '', __LINE__, __FILE__);
 		}
 
-        $img_lang = file_exists(@phpbb_realpath($phpbb_root_path . $current_template_path . $sep . 'images' . $sep . 'lang_' . $board_config['default_lang'])) ? $board_config['default_lang'] : 'english';
+        $imgLang = file_exists(@phpbb_realpath($phpbb_root_path . $currentTemplatePath . $sep . 'images' . $sep . 'lang_' . $board_config['default_lang'])) ? $board_config['default_lang'] : 'english';
 
 		foreach ($images as $key => $value) {
 			if (!is_array($value)) {
-				$images[$key] = str_replace('{LANG}', 'lang_' . $img_lang, $value);
+				$images[$key] = str_replace('{LANG}', 'lang_' . $imgLang, $value);
 			}
 		}
 	}
@@ -466,8 +466,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 				}
 			}
 		}
-	}
-	else {
+	} else {
 		for ($i = 1; $i < $total_pages + 1; $i++) {
 			$page_string .= $i === $on_page ? '<b>' . $i . '</b>' : '<a href="' . Session::appendSid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
@@ -636,7 +635,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
         }
 
         if (empty($template) || empty($theme)) {
-            $theme = setup_style($board_config['default_style']);
+            $theme = setupStyle($board_config['default_style']);
         }
 
         //
@@ -713,27 +712,26 @@ function redirect($url)
 
 	dibi::disconnect();
 
-	if (false !== strpos(urldecode($url), "\n") || false !== strpos(urldecode($url), "\r") || false !== strpos(urldecode($url),
-            ';url')) {
+	if (false !== strpos(urldecode($url), "\n") || false !== strpos(urldecode($url), "\r") || false !== strpos(urldecode($url), ';url')) {
 		message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
 	}
 
-	$server_protocol = $board_config['cookie_secure'] ? 'https://' : 'http://';
-	$server_name = preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['server_name']));
-	$server_port = ($board_config['server_port'] !== 80) ? ':' . trim($board_config['server_port']) : '';
-	$script_name = preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['script_path']));
-	$script_name = ($script_name === '') ? $script_name : '/' . $script_name;
+	$serverProtocol = $board_config['cookie_secure'] ? 'https://' : 'http://';
+	$serverName = preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['server_name']));
+	$serverPort = $board_config['server_port'] !== 80 ? ':' . trim($board_config['server_port']) : '';
+	$scriptName = preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['script_path']));
+	$scriptName = $scriptName === '' ? $scriptName : '/' . $scriptName;
 	$url = preg_replace('#^\/?(.*?)\/?$#', '/\1', trim($url));
 
 	// Redirect via an HTML form for PITA webservers
 	if (@preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE'))) {
-		header('Refresh: 0; URL=' . $server_protocol . $server_name . $server_port . $script_name . $url);
-		echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><meta http-equiv="refresh" content="0; url=' . $server_protocol . $server_name . $server_port . $script_name . $url . '"><title>Redirect</title></head><body><div align="center">If your browser does not support meta redirection please click <a href="' . $server_protocol . $server_name . $server_port . $script_name . $url . '">HERE</a> to be redirected</div></body></html>';
+		header('Refresh: 0; URL=' . $serverProtocol . $serverName . $serverPort . $scriptName . $url);
+		echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><meta http-equiv="refresh" content="0; url=' . $serverProtocol . $serverName . $serverPort . $scriptName . $url . '"><title>Redirect</title></head><body><div align="center">If your browser does not support meta redirection please click <a href="' . $serverProtocol . $serverName . $serverPort . $scriptName . $url . '">HERE</a> to be redirected</div></body></html>';
 		exit;
 	}
 
 	// Behave as per HTTP/1.1 spec for others
-	header('Location: ' . $server_protocol . $server_name . $server_port . $script_name . $url);
+	header('Location: ' . $serverProtocol . $serverName . $serverPort . $scriptName . $url);
 	exit;
 }
 

@@ -835,7 +835,6 @@ function clean_html($tag)
 			preg_match_all('/[\W]*?(\w+)[\W]*?=[\W]*?(["\'])((?:(?!\2).)*)\2/', $tag[2], $test);
 			$countTestZero = count($test[0]);
 
-
 			for ($i = 0; $i < $countTestZero; $i++) {
 				if (preg_match($disallowed_attributes, $test[1][$i])) {
 					continue;
