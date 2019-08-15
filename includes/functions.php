@@ -362,6 +362,7 @@ function setupStyle($style)
     }
 
 	if ($template) {
+	    // LOOK this variable is used in required cfg file! if you change it, you have to change it in that file!!!!
 		$currentTemplatePath = $templatePath . $templateName;
         @require_once $phpbb_root_path . $templatePath . $templateName . $sep . $templateName . '.cfg';
 
