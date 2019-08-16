@@ -93,9 +93,6 @@ $timezone_select = Select::timezone($new['board_timezone'], 'board_timezone');
 $disable_board_yes =  $new['board_disable'] ? 'checked="checked"' : '';
 $disable_board_no  = !$new['board_disable'] ? 'checked="checked"' : '';
 
-$cookie_secure_yes =  $new['cookie_secure'] ? 'checked="checked"' : '';
-$cookie_secure_no  = !$new['cookie_secure'] ? 'checked="checked"' : '';
-
 $html_tags = $new['allow_html_tags'];
 
 $override_user_style_yes = $new['override_user_style'] ? 'checked="checked"' : '';
@@ -175,9 +172,6 @@ $template->assignVars(
     [
         'S_CONFIG_ACTION' => Session::appendSid('admin_board.php'),
 
-        'S_COOKIE_SECURE_ENABLED'  => $cookie_secure_yes,
-        'S_COOKIE_SECURE_DISABLED' => $cookie_secure_no,
-
         'S_DISABLE_BOARD_YES' => $disable_board_yes,
         'S_DISABLE_BOARD_NO'  => $disable_board_no,
 
@@ -230,9 +224,6 @@ $template->assignVars(
         'L_COOKIE_DOMAIN' => $lang['Cookie_domain'],
         'L_COOKIE_NAME'   => $lang['Cookie_name'],
         'L_COOKIE_PATH'   => $lang['Cookie_path'],
-
-        'L_COOKIE_SECURE'         => $lang['Cookie_secure'],
-        'L_COOKIE_SECURE_EXPLAIN' => $lang['Cookie_secure_explain'],
 
         'L_SESSION_LENGTH' => $lang['Session_length'],
 

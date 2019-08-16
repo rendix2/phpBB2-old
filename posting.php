@@ -664,7 +664,14 @@ if (($delete || $pollDelete || $mode === 'delete') && !$confirm) {
 
             $trackingTopics[$topicId] = time();
 
-			setcookie($topicCookieName, serialize($trackingTopics), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+			setcookie(
+			    $topicCookieName,
+                serialize($trackingTopics),
+                0,
+                $board_config['cookie_path'],
+                $board_config['cookie_domain'],
+                isConnectionsSecure()
+            );
 		}
 
         $template->assignVars(

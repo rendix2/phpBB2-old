@@ -995,4 +995,12 @@ function getServerUrl(array $boardConfig, $scriptName)
     return $server_protocol . $server_name . $server_port . $scriptName;
 }
 
+/**
+ * @return bool
+ */
+function isConnectionsSecure()
+{
+    return isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+}
+
 ?>

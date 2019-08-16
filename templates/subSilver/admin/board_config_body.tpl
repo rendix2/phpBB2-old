@@ -353,17 +353,6 @@
         </tr>
 
         <tr>
-            <td class="row1">{L_COOKIE_SECURE}<br/><span class="gensmall">{L_COOKIE_SECURE_EXPLAIN}</span></td>
-            <td class="row2">
-                <input type="radio" name="cookie_secure" id="cookie_secure_1" value="0" {S_COOKIE_SECURE_DISABLED} />
-                <label for="cookie_secure_1">{L_DISABLED}</label>
-
-                <input type="radio" name="cookie_secure" id="cookie_secure_0" value="1" {S_COOKIE_SECURE_ENABLED} />
-                <label for="cookie_secure_0">{L_ENABLED}</label>
-            </td>
-        </tr>
-
-        <tr>
             <td class="row1">
                 <label for="session_length">{L_SESSION_LENGTH}</label>
             </td>

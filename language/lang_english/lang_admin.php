@@ -341,8 +341,6 @@ $lang['Cookie_settings_explain'] = 'These details define how cookies are sent to
 $lang['Cookie_domain'] = 'Cookie domain';
 $lang['Cookie_name'] = 'Cookie name';
 $lang['Cookie_path'] = 'Cookie path';
-$lang['Cookie_secure'] = 'Cookie secure';
-$lang['Cookie_secure_explain'] = 'If your server is running via SSL, set this to enabled, else leave as disabled';
 $lang['Session_length'] = 'Session length [ seconds ]';
 
 // Visual Confirmation

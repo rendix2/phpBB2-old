@@ -60,7 +60,7 @@ if ($markRead === 'forums') {
             0,
             $board_config['cookie_path'],
             $board_config['cookie_domain'],
-            $board_config['cookie_secure']
+            isConnectionsSecure()
         );
     }
 

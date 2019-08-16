@@ -36,7 +36,7 @@ class Session
         $cookieName = $board_config['cookie_name'];
         $cookiePath = $board_config['cookie_path'];
         $cookieDomain = $board_config['cookie_domain'];
-        $cookieSecure = $board_config['cookie_secure'];
+        $cookieSecure = isConnectionsSecure();
 
         $dataCookieName = $cookieName . '_data';
         $sidCookieName  = $cookieName . '_sid';
@@ -280,8 +280,23 @@ class Session
         $expireDate->setTimezone(new DateTimeZone($userTimezone));
         $expireDate->add(new DateInterval('P1Y'));
 
-        setcookie($dataCookieName, serialize($sessionData), $expireDate->getTimestamp(), $cookiePath, $cookieDomain, $cookieSecure);
-        setcookie($sidCookieName, $sessionId, 0, $cookiePath, $cookieDomain, $cookieSecure);
+        setcookie(
+            $dataCookieName,
+            serialize($sessionData),
+            $expireDate->getTimestamp(),
+            $cookiePath,
+            $cookieDomain,
+            $cookieSecure
+        );
+
+        setcookie(
+            $sidCookieName,
+            $sessionId,
+            0,
+            $cookiePath,
+            $cookieDomain,
+            $cookieSecure
+        );
 
         $SID = 'sid=' . $sessionId;
 
@@ -305,7 +320,7 @@ class Session
         $cookieName = $board_config['cookie_name'];
         $cookiePath = $board_config['cookie_path'];
         $cookieDomain = $board_config['cookie_domain'];
-        $cookieSecure = $board_config['cookie_secure'];
+        $cookieSecure = isConnectionsSecure();
 
         $dataCookieName = $cookieName . '_data';
         $sidCookieName  = $cookieName . '_sid';
@@ -396,8 +411,23 @@ class Session
                         $expireDate->setTimezone(new DateTimeZone($userZimezone));
                         $expireDate->add(new DateInterval('P1Y'));
 
-                        setcookie($dataCookieName, serialize($sessionData), $expireDate->getTimestamp(), $cookiePath, $cookieDomain, $cookieSecure);
-                        setcookie($sidCookieName, $sessionId, 0, $cookiePath, $cookieDomain, $cookieSecure);
+                        setcookie(
+                            $dataCookieName,
+                            serialize($sessionData),
+                            $expireDate->getTimestamp(),
+                            $cookiePath,
+                            $cookieDomain,
+                            $cookieSecure
+                        );
+
+                        setcookie(
+                            $sidCookieName,
+                            $sessionId,
+                            0,
+                            $cookiePath,
+                            $cookieDomain,
+                            $cookieSecure
+                        );
                     }
 
                     // Add the session_key to the userdata array if it is set
@@ -442,7 +472,7 @@ class Session
         $cookieName = $board_config['cookie_name'];
         $cookiePath = $board_config['cookie_path'];
         $cookieDomain = $board_config['cookie_domain'];
-        $cookiesecure = $board_config['cookie_secure'];
+        $cookieSecure = isConnectionsSecure();
 
         $dataCookieName = $cookieName . '_data';
         $sidCookieName  = $cookieName . '_sid';
@@ -494,8 +524,23 @@ class Session
         $expireDate->setTimezone(new DateTimeZone($userTimezone));
         $expireDate->sub(new DateInterval('P1Y'));
 
-        setcookie($dataCookieName, '', $expireDate->getTimestamp(), $cookiePath, $cookieDomain, $cookiesecure);
-        setcookie($sidCookieName, '', $expireDate->getTimestamp(), $cookiePath, $cookieDomain, $cookiesecure);
+        setcookie(
+            $dataCookieName,
+            '',
+            $expireDate->getTimestamp(),
+            $cookiePath,
+            $cookieDomain,
+            $cookieSecure
+        );
+
+        setcookie(
+            $sidCookieName,
+            '',
+            $expireDate->getTimestamp(),
+            $cookiePath,
+            $cookieDomain,
+            $cookieSecure
+        );
 
         return true;
     }
@@ -600,7 +645,7 @@ class Session
             $cookieName = $board_config['cookie_name'];
             $cookiePath = $board_config['cookie_path'];
             $cookieDomain = $board_config['cookie_domain'];
-            $cookieSecure = $board_config['cookie_secure'];
+            $cookieSecure = isConnectionsSecure();
 
             $userTimezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
 
@@ -609,7 +654,14 @@ class Session
             $expireDate->setTimezone(new DateTimeZone($userTimezone));
             $expireDate->add(new DateInterval('P1Y'));
 
-            setcookie($cookieName . '_data', serialize($sessionData), $expireDate->getTimestamp(), $cookiePath, $cookieDomain, $cookieSecure);
+            setcookie(
+                $cookieName . '_data',
+                serialize($sessionData),
+                $expireDate->getTimestamp(),
+                $cookiePath,
+                $cookieDomain,
+                $cookieSecure
+            );
 
             $userdata['session_key'] = $autoLoginKey;
             unset($sessionData);
