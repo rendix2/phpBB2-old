@@ -44,17 +44,17 @@ if (isset($_GET[POST_MODE]) || isset($_POST[POST_MODE])) {
 }
 
 if (isset($_POST['order'])) {
-    $sort_order = $_POST['order'] === 'ASC' ? 'ASC' : 'DESC';
+    $sortOrder = $_POST['order'] === 'ASC' ? 'ASC' : 'DESC';
 } elseif (isset($_GET['order'])) {
-    $sort_order = $_GET['order'] === 'ASC' ? 'ASC' : 'DESC';
+    $sortOrder = $_GET['order'] === 'ASC' ? 'ASC' : 'DESC';
 } else {
-    $sort_order = 'ASC';
+    $sortOrder = 'ASC';
 }
 
 //
 // Memberlist sorting
 //
-$mode_types = [
+$modeTypes = [
     'joined'   => $lang['Sort_Joined'],
     'username' => $lang['Sort_Username'],
     'location' => $lang['Sort_Location'],
@@ -65,30 +65,29 @@ $mode_types = [
     'topten'   => $lang['Sort_Top_Ten']
 ];
 
-$select_sort_mode = '<select name="mode">';
+$selectSortModeValues= '';
 
-foreach ($mode_types as $mode_type_key => $mode_types_value) {
-	$selected = $mode === $mode_type_key ? 'selected="selected"' : '';
-	$select_sort_mode .= '<option value="' . $mode_type_key . '" ' . $selected . '>' . $mode_types_value . '</option>';
+foreach ($modeTypes as $key => $value) {
+	$selected       = $mode === $key ? 'selected="selected"' : '';
+    $selectSortModeValues .= '<option value="' . $key . '" ' . $selected . '>' . $value . '</option>';
 }
 
-$select_sort_mode .= '</select>';
-$select_sort_order = '<select name="order">';
+$selectSortMode  = '<select name="mode">' . $selectSortModeValues . '</select>';
 
-if ($sort_order === 'ASC') {
-	$select_sort_order .= '<option value="ASC" selected="selected">' . $lang['Sort_Ascending'] . '</option><option value="DESC">' . $lang['Sort_Descending'] . '</option>';
+$selectSortOrderValues = '';
+
+if ($sortOrder === 'ASC') {
+    $selectSortOrderValues .= '<option value="ASC" selected="selected">' . $lang['Sort_Ascending'] . '</option><option value="DESC">' . $lang['Sort_Descending'] . '</option>';
 } else {
-	$select_sort_order .= '<option value="ASC">' . $lang['Sort_Ascending'] . '</option><option value="DESC" selected="selected">' . $lang['Sort_Descending'] . '</option>';
+    $selectSortOrderValues .= '<option value="ASC">' . $lang['Sort_Ascending'] . '</option><option value="DESC" selected="selected">' . $lang['Sort_Descending'] . '</option>';
 }
 
-$select_sort_order .= '</select>';
+$selectSortOrder = '<select name="order">' . $selectSortOrderValues . '</select>';
 
 //
 // Generate page
 //
-$page_title = $lang['Memberlist'];
-
-PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $lang['Memberlist'], $gen_simple_header);
 
 $template->setFileNames(['body' => 'memberlist_body.tpl']);
 
@@ -108,8 +107,8 @@ $template->assignVars(
         'L_TOPICS'             => $lang['Topics'],
         'L_PM'                 => $lang['Private_Message'],
 
-        'S_MODE_SELECT'  => $select_sort_mode,
-        'S_ORDER_SELECT' => $select_sort_order,
+        'S_MODE_SELECT'  => $selectSortMode,
+        'S_ORDER_SELECT' => $selectSortOrder,
         'S_MODE_ACTION'  => Session::appendSid('memberlist.php')
     ]
 );
@@ -135,46 +134,46 @@ $users = dibi::select($columns)
 
 switch ($mode) {
     case 'joined':
-        $users->orderBy('user_regdate', $sort_order)
+        $users->orderBy('user_regdate', $sortOrder)
         ->limit($board_config['members_per_page'])
         ->offset($start);
         break;
     case 'username':
-        $users->orderBy('username', $sort_order)
+        $users->orderBy('username', $sortOrder)
             ->limit($board_config['members_per_page'])
             ->offset($start);
         break;
     case 'location':
-        $users->orderBy('user_from', $sort_order)
+        $users->orderBy('user_from', $sortOrder)
             ->limit($board_config['members_per_page'])
             ->offset($start);
         break;
     case 'posts':
-        $users->orderBy('user_posts', $sort_order)
+        $users->orderBy('user_posts', $sortOrder)
             ->limit($board_config['members_per_page'])
             ->offset($start);
         break;
     case 'topics':
-        $users->orderBy('user_topics', $sort_order)
+        $users->orderBy('user_topics', $sortOrder)
             ->limit($board_config['members_per_page'])
             ->offset($start);
         break;
     case 'email':
-        $users->orderBy('user_email', $sort_order)
+        $users->orderBy('user_email', $sortOrder)
             ->limit($board_config['members_per_page'])
             ->offset($start);
         break;
     case 'website':
-        $users->orderBy('user_website', $sort_order)
+        $users->orderBy('user_website', $sortOrder)
             ->limit($board_config['members_per_page'])
             ->offset($start);
         break;
     case 'topten':
-        $users->orderBy('user_posts', $sort_order)
+        $users->orderBy('user_posts', $sortOrder)
             ->limit($board_config['members_per_page']);
         break;
     default:
-        $users->orderBy('user_regdate', $sort_order)
+        $users->orderBy('user_regdate', $sortOrder)
             ->limit($board_config['members_per_page'])
             ->offset($start);
         break;
@@ -183,71 +182,70 @@ switch ($mode) {
 $users = $users->fetchAll();
 
 foreach ($users as $i => $user) {
-    $from = !empty($user->user_from) ? htmlspecialchars($user->user_from, ENT_QUOTES) : '&nbsp;';
-    $poster_avatar = '';
+    $from         = !empty($user->user_from) ? htmlspecialchars($user->user_from, ENT_QUOTES) : '&nbsp;';
+    $posterAvatar = '';
 
     if ($user->user_avatar_type && $user->user_id !== ANONYMOUS && $user->user_allowavatar) {
         switch ($user->user_avatar_type) {
             case USER_AVATAR_UPLOAD:
-                $poster_avatar = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $user->user_avatar . '" alt="" border="0" />' : '';
+                $posterAvatar = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $user->user_avatar . '" alt="" border="0" />' : '';
                 break;
             case USER_AVATAR_REMOTE:
-                $poster_avatar = $board_config['allow_avatar_remote'] ? '<img src="' . $user->user_avatar . '" alt="" border="0" />' : '';
+                $posterAvatar = $board_config['allow_avatar_remote'] ? '<img src="' . $user->user_avatar . '" alt="" border="0" />' : '';
                 break;
             case USER_AVATAR_GALLERY:
-                $poster_avatar = $board_config['allow_avatar_local'] ? '<img src="' . $board_config['avatar_gallery_path'] . '/' . $user->user_avatar . '" alt="" border="0" />' : '';
+                $posterAvatar = $board_config['allow_avatar_local'] ? '<img src="' . $board_config['avatar_gallery_path'] . '/' . $user->user_avatar . '" alt="" border="0" />' : '';
                 break;
         }
     }
 
     if (!empty($user->user_viewemail) || $userdata['user_level'] === ADMIN) {
-        $email_uri = $board_config['board_email_form'] ? Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL . '=' . $user->user_id) : 'mailto:' . $user->user_email;
-
-        $email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
-        $email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
+        $emailUrl    = $board_config['board_email_form'] ? Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL . '=' . $user->user_id) : 'mailto:' . $user->user_email;
+        $emailImage = '<a href="' . $emailUrl . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
+        $email      = '<a href="' . $emailUrl . '">' . $lang['Send_email'] . '</a>';
     } else {
-        $email_img = '&nbsp;';
-        $email = '&nbsp;';
+        $emailImage = '&nbsp;';
+        $email      = '&nbsp;';
     }
 
-    $temp_url = Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$user->user_id");
-    $profile_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_profile'] . '" alt="' . $lang['Read_profile'] . '" title="' . $lang['Read_profile'] . '" border="0" /></a>';
-    $profile = '<a href="' . $temp_url . '">' . $lang['Read_profile'] . '</a>';
+    $profileUrl   = Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$user->user_id");
+    $profileImage = '<a href="' . $profileUrl . '"><img src="' . $images['icon_profile'] . '" alt="' . $lang['Read_profile'] . '" title="' . $lang['Read_profile'] . '" border="0" /></a>';
+    $profile      = '<a href="' . $profileUrl . '">' . $lang['Read_profile'] . '</a>';
 
-    $temp_url = Session::appendSid('privmsg.php?mode=post&amp;' . POST_USERS_URL . "=$user->user_id");
-    $pm_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
-    $pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
+    $pmUrl   = Session::appendSid('privmsg.php?mode=post&amp;' . POST_USERS_URL . "=$user->user_id");
+    $pmImage = '<a href="' . $pmUrl . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
+    $pm      = '<a href="' . $pmUrl . '">' . $lang['Send_private_message'] . '</a>';
 
-    $www_img = $user->user_website ? '<a href="' . $user->user_website . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
-    $www = $user->user_website ? '<a href="' . $user->user_website . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
+    $wwwImage = $user->user_website ? '<a href="' . $user->user_website . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
+    $www      = $user->user_website ? '<a href="' . $user->user_website . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
 
-    $temp_url   = Session::appendSid('search.php?search_author=' . urlencode($user->username) . '&amp;show_results=posts');
-    $search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $user->username) . '" title="' . sprintf($lang['Search_user_posts'], $user->username) . '" border="0" /></a>';
-    $search     = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $user->username) . '</a>';
+    $searchUrl   = Session::appendSid('search.php?search_author=' . urlencode($user->username) . '&amp;show_results=posts');
+    $searchImage = '<a href="' . $searchUrl . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $user->username) . '" title="' . sprintf($lang['Search_user_posts'], $user->username) . '" border="0" /></a>';
+    $search      = '<a href="' . $searchUrl . '">' . sprintf($lang['Search_user_posts'], $user->username) . '</a>';
 
-    $row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-    $row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+    $rowColor = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+    $rowClass = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
     $template->assignBlockVars('memberrow',
         [
             'ROW_NUMBER' => $i + ($start + 1),
-            'ROW_COLOR' => '#' . $row_color,
-            'ROW_CLASS' => $row_class,
+            'ROW_COLOR' => '#' . $rowColor,
+            'ROW_CLASS' => $rowClass,
             'USERNAME' => $user->username,
             'FROM' => $from,
             'JOINED' => create_date($lang['DATE_FORMAT'], $user->user_regdate, $board_config['board_timezone']),
             'POSTS' => $user->user_posts ? $user->user_posts : 0,
             'TOPICS' => $user->user_topics ? $user->user_topics : 0,
-            'AVATAR_IMG' => $poster_avatar,
-            'PROFILE_IMG' => $profile_img,
+            'AVATAR_IMG' => $posterAvatar,
+            'PROFILE_IMG' => $profileImage,
             'PROFILE' => $profile,
-            'SEARCH_IMG' => $search_img,
+            'SEARCH_IMG' => $searchImage,
             'SEARCH' => $search,
-            'PM_IMG' => $pm_img,
+            'PM_IMG' => $pmImage,
             'PM' => $pm,
-            'EMAIL_IMG' => $email_img,
+            'EMAIL_IMG' => $emailImage,
             'EMAIL' => $email,
-            'WWW_IMG' => $www_img,
+            'WWW_IMG' => $wwwImage,
             'WWW' => $www,
 
             'U_VIEWPROFILE' => Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$user->user_id")
@@ -262,7 +260,7 @@ if ($mode !== 'topten' || $board_config['members_per_page'] < 10) {
         ->fetchSingle();
 
     if ($total_members) {
-        $pagination = generate_pagination("memberlist.php?mode=$mode&amp;order=$sort_order", $total_members, $board_config['members_per_page'], $start) . '&nbsp;';
+        $pagination = generate_pagination("memberlist.php?mode=$mode&amp;order=$sortOrder", $total_members, $board_config['members_per_page'], $start) . '&nbsp;';
     }
 } else {
     $pagination = '&nbsp;';

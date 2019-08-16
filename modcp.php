@@ -41,21 +41,21 @@ require_once $phpbb_root_path . 'includes' . $sep . 'functions_admin.php';
 // Obtain initial var settings
 //
 if (isset($_GET[POST_FORUM_URL]) || isset($_POST[POST_FORUM_URL])) {
-    $forum_id = isset($_POST[POST_FORUM_URL]) ? (int)$_POST[POST_FORUM_URL] : (int)$_GET[POST_FORUM_URL];
+    $forumId = isset($_POST[POST_FORUM_URL]) ? (int)$_POST[POST_FORUM_URL] : (int)$_GET[POST_FORUM_URL];
 } else {
-    $forum_id = '';
+    $forumId = '';
 }
 
 if (isset($_GET[POST_POST_URL]) || isset($_POST[POST_POST_URL])) {
-    $post_id = isset($_POST[POST_POST_URL]) ? (int)$_POST[POST_POST_URL] : (int)$_GET[POST_POST_URL];
+    $postId = isset($_POST[POST_POST_URL]) ? (int)$_POST[POST_POST_URL] : (int)$_GET[POST_POST_URL];
 } else {
-    $post_id = '';
+    $postId = '';
 }
 
 if (isset($_GET[POST_TOPIC_URL]) || isset($_POST[POST_TOPIC_URL])) {
-    $topic_id = isset($_POST[POST_TOPIC_URL]) ? (int)$_POST[POST_TOPIC_URL] : (int)$_GET[POST_TOPIC_URL];
+    $topicId = isset($_POST[POST_TOPIC_URL]) ? (int)$_POST[POST_TOPIC_URL] : (int)$_GET[POST_TOPIC_URL];
 } else {
-    $topic_id = '';
+    $topicId = '';
 }
 
 $confirm = $_POST['confirm'] ? true : 0;
@@ -98,14 +98,14 @@ if (!empty($_POST['sid']) || !empty($_GET['sid'])) {
 //
 // Obtain relevant data
 //
-if (!empty($topic_id)) {
+if (!empty($topicId)) {
     $topic_row = dibi::select(['f.forum_id','f.forum_name', 'f.forum_topics'])
         ->from(TOPICS_TABLE)
         ->as('t')
         ->innerJoin(FORUMS_TABLE)
         ->as('f')
         ->on('f.forum_id = t.forum_id')
-        ->where('t.topic_id = %i', $topic_id)
+        ->where('t.topic_id = %i', $topicId)
         ->fetch();
 
     if (!$topic_row) {
@@ -113,21 +113,21 @@ if (!empty($topic_id)) {
     }
 
     // todo oh why? :O if 0 than 1? :D
-	$forum_topics = $topic_row->forum_topics === 0 ? 1 : $topic_row->forum_topics;
-	$forum_id     = $topic_row->forum_id;
-	$forum_name   = $topic_row->forum_name;
-} elseif (!empty($forum_id)) {
+	$forumTopics = $topic_row->forum_topics === 0 ? 1 : $topic_row->forum_topics;
+	$forumId     = $topic_row->forum_id;
+	$forumName   = $topic_row->forum_name;
+} elseif (!empty($forumId)) {
     $topic_row = dibi::select(['forum_name', 'forum_topics'])
         ->from(FORUMS_TABLE)
-        ->where('forum_id = %i', $forum_id)
+        ->where('forum_id = %i', $forumId)
         ->fetch();
 
     if (!$topic_row) {
         message_die(GENERAL_MESSAGE, 'Forum_not_exist');
     }
 
-	$forum_topics = $topic_row->forum_topics === 0 ? 1 : $topic_row->forum_topics;
-	$forum_name   = $topic_row->forum_name;
+	$forumTopics = $topic_row->forum_topics === 0 ? 1 : $topic_row->forum_topics;
+	$forumName   = $topic_row->forum_name;
 } else {
 	message_die(GENERAL_MESSAGE, 'Forum_not_exist');
 }
@@ -135,7 +135,7 @@ if (!empty($topic_id)) {
 //
 // Start session management
 //
-$userdata = init_userprefs($forum_id);
+$userdata = init_userprefs($forumId);
 //
 // End session management
 //
@@ -150,10 +150,10 @@ if ($sid === '' || $sid !== $userdata['session_id']) {
 // If they did not, forward them to the last page they were on
 //
 if (isset($_POST['cancel'])) {
-    if ($topic_id) {
-        $redirect = 'viewtopic.php?' . POST_TOPIC_URL . "=$topic_id";
-    } elseif ($forum_id) {
-        $redirect = 'viewforum.php?' . POST_FORUM_URL . "=$forum_id";
+    if ($topicId) {
+        $redirect = 'viewtopic.php?' . POST_TOPIC_URL . "=$topicId";
+    } elseif ($forumId) {
+        $redirect = 'viewforum.php?' . POST_FORUM_URL . "=$forumId";
     } else {
         $redirect = 'index.php';
     }
@@ -164,7 +164,7 @@ if (isset($_POST['cancel'])) {
 //
 // Start auth check
 //
-$is_auth = Auth::authorize(AUTH_ALL, $forum_id, $userdata);
+$is_auth = Auth::authorize(AUTH_ALL, $forumId, $userdata);
 
 if (!$is_auth['auth_mod']) {
 	message_die(GENERAL_MESSAGE, $lang['Not_Moderator'], $lang['Not_Authorised']);
@@ -182,21 +182,19 @@ switch ($mode) {
             message_die(GENERAL_MESSAGE, sprintf($lang['Sorry_auth_delete'], $is_auth['auth_delete_type']));
         }
 
-		$page_title = $lang['Mod_CP'];
-
-        PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+        PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $lang['Mod_CP'], $gen_simple_header);
 
         if ($confirm) {
-            if (empty($_POST['topic_id_list']) && empty($topic_id)) {
+            if (empty($_POST['topic_id_list']) && empty($topicId)) {
                 message_die(GENERAL_MESSAGE, $lang['None_selected']);
             }
 
-            $topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topic_id];
+            $topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topicId];
 
 			$topicIds = dibi::select('topic_id')
                 ->from(TOPICS_TABLE)
                 ->where('topic_id IN %in', $topics)
-                ->where('forum_id = %i', $forum_id)
+                ->where('forum_id = %i', $forumId)
                 ->fetchPairs(null, 'topic_id');
 
 			if (!count($topicIds)) {
@@ -208,7 +206,7 @@ switch ($mode) {
                 ->as('topics')
                 ->from(TOPICS_TABLE)
                 ->where('topic_id IN %in', $topicIds)
-                ->where('forum_id = %i', $forum_id)
+                ->where('forum_id = %i', $forumId)
                 ->groupBy('topic_poster')
                 ->fetchAll();
 
@@ -232,7 +230,7 @@ switch ($mode) {
                     ->execute();
             }
 
-            $post_ids = dibi::select('post_id')
+            $postIds = dibi::select('post_id')
                 ->from(POSTS_TABLE)
                 ->where('topic_id IN %in', $topicIds)
                 ->fetchPairs(null, 'post_id');
@@ -245,16 +243,16 @@ switch ($mode) {
                 ->where('topic_id IN %in OR topic_moved_id IN %in', $topicIds, $topicIds)
                 ->execute();
 
-            if (count($post_ids)) {
+            if (count($postIds)) {
                 dibi::delete(POSTS_TABLE)
-                    ->where('post_id IN %in', $post_ids)
+                    ->where('post_id IN %in', $postIds)
                     ->execute();
 
                 dibi::delete(POSTS_TEXT_TABLE)
-                    ->where('post_id IN %in', $post_ids)
+                    ->where('post_id IN %in', $postIds)
                     ->execute();
 
-                SearchHelper::removeSearchPost($post_ids);
+                SearchHelper::removeSearchPost($postIds);
             }
 
             $votes = dibi::select('vote_id')
@@ -280,37 +278,37 @@ switch ($mode) {
                 ->where('topic_id IN %in', $topicIds)
                 ->execute();
 
-			sync('forum', $forum_id);
+			sync('forum', $forumId);
 
-            if (!empty($topic_id)) {
-                $redirect_page = 'viewforum.php?' . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'];
-                $l_redirect    = sprintf($lang['Click_return_forum'], '<a href="' . $redirect_page . '">', '</a>');
+            if (!empty($topicId)) {
+                $redirectPage = 'viewforum.php?' . POST_FORUM_URL . "=$forumId&amp;sid=" . $userdata['session_id'];
+                $l_redirect   = sprintf($lang['Click_return_forum'], '<a href="' . $redirectPage . '">', '</a>');
             } else {
-                $redirect_page = 'modcp.php?' . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'];
-                $l_redirect    = sprintf($lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
+                $redirectPage = 'modcp.php?' . POST_FORUM_URL . "=$forumId&amp;sid=" . $userdata['session_id'];
+                $l_redirect   = sprintf($lang['Click_return_modcp'], '<a href="' . $redirectPage . '">', '</a>');
             }
 
             $template->assignVars(
                 [
-                    'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">'
+                    'META' => '<meta http-equiv="refresh" content="3;url=' . $redirectPage . '">'
                 ]
             );
 
             message_die(GENERAL_MESSAGE, $lang['Topics_Removed'] . '<br /><br />' . $l_redirect);
 		} else {
 			// Not confirmed, show confirmation message
-            if (empty($_POST['topic_id_list']) && empty($topic_id)) {
+            if (empty($_POST['topic_id_list']) && empty($topicId)) {
                 message_die(GENERAL_MESSAGE, $lang['None_selected']);
 			}
 
-			$hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
+			$hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forumId . '" />';
 
             if (isset($_POST['topic_id_list'])) {
 				foreach ($_POST['topic_id_list'] as $topic) {
 					$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . (int)$topic . '" />';
 				}
 			} else {
-				$hidden_fields .= '<input type="hidden" name="' . POST_TOPIC_URL . '" value="' . $topic_id . '" />';
+				$hidden_fields .= '<input type="hidden" name="' . POST_TOPIC_URL . '" value="' . $topicId . '" />';
 			}
 
 			//
@@ -338,17 +336,15 @@ switch ($mode) {
 		break;
 
 	case 'move':
-		$page_title = $lang['Mod_CP'];
-
-        PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+        PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $lang['Mod_CP'], $gen_simple_header);
 
         if ($confirm) {
-            if (empty($_POST['topic_id_list']) && empty($topic_id)) {
+            if (empty($_POST['topic_id_list']) && empty($topicId)) {
                 message_die(GENERAL_MESSAGE, $lang['None_selected']);
             }
 
 			$new_forum_id = (int)$_POST['new_forum'];
-			$old_forum_id = $forum_id;
+			$old_forum_id = $forumId;
 
 			$check_forum_id = dibi::select('forum_id')
                 ->from(FORUMS_TABLE)
@@ -360,7 +356,7 @@ switch ($mode) {
 			}
 
             if ($new_forum_id !== $old_forum_id) {
-                $topics_ids = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topic_id];
+                $topics_ids = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topicId];
 
 				$topics = dibi::select('*')
                     ->from(TOPICS_TABLE)
@@ -409,43 +405,38 @@ switch ($mode) {
 				$message = $lang['No_Topics_Moved'] . '<br /><br />';
 			}
 
-            if (!empty($topic_id)) {
-				$redirect_page = 'viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'];
-				$message .= sprintf($lang['Click_return_topic'], '<a href="' . $redirect_page . '">', '</a>');
+            if (!empty($topicId)) {
+				$redirectPage = 'viewtopic.php?' . POST_TOPIC_URL . "=$topicId&amp;sid=" . $userdata['session_id'];
+				$message      .= sprintf($lang['Click_return_topic'], '<a href="' . $redirectPage . '">', '</a>');
 			} else {
-				$redirect_page = 'modcp.php?' . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'];
-				$message .= sprintf($lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
+				$redirectPage = 'modcp.php?' . POST_FORUM_URL . "=$forumId&amp;sid=" . $userdata['session_id'];
+				$message      .= sprintf($lang['Click_return_modcp'], '<a href="' . $redirectPage . '">', '</a>');
 			}
 
 			$message .= '<br><br>' . sprintf($lang['Click_return_forum'], '<a href="' . 'viewforum.php?' . POST_FORUM_URL . "=$old_forum_id&amp;sid=" . $userdata['session_id'] . '">', '</a>') . '<br /><br />';
 
-            $template->assignVars(['META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">']);
+            $template->assignVars(['META' => '<meta http-equiv="refresh" content="3;url=' . $redirectPage . '">']);
 
             message_die(GENERAL_MESSAGE, $message);
 		} else {
-            if (empty($_POST['topic_id_list']) && empty($topic_id)) {
+            if (empty($_POST['topic_id_list']) && empty($topicId)) {
                 message_die(GENERAL_MESSAGE, $lang['None_selected']);
             }
 
-			$hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
+			$hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forumId . '" />';
 
             if (isset($_POST['topic_id_list'])) {
 				foreach ($_POST['topic_id_list'] as $topic) {
 					$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . (int)$topic . '" />';
 				}
 			} else {
-				$hidden_fields .= '<input type="hidden" name="' . POST_TOPIC_URL . '" value="' . $topic_id . '" />';
+				$hidden_fields .= '<input type="hidden" name="' . POST_TOPIC_URL . '" value="' . $topicId . '" />';
 			}
 
 			//
 			// Set template files
 			//
-            $template->setFileNames(
-                [
-                    'movetopic' => 'modcp_move.tpl'
-                ]
-            );
-
+            $template->setFileNames(['movetopic' => 'modcp_move.tpl']);
             $template->assignVars(
                 [
                     'MESSAGE_TITLE' => $lang['Confirm'],
@@ -456,7 +447,7 @@ switch ($mode) {
                     'L_YES'           => $lang['Yes'],
                     'L_NO'            => $lang['No'],
 
-                    'S_FORUM_SELECT'  => make_forum_select('new_forum', $forum_id),
+                    'S_FORUM_SELECT'  => make_forum_select('new_forum', $forumId),
                     'S_MODCP_ACTION'  => Session::appendSid('modcp.php'),
                     'S_HIDDEN_FIELDS' => $hidden_fields
                 ]
@@ -469,67 +460,67 @@ switch ($mode) {
 		break;
 
 	case 'lock':
-        if (empty($_POST['topic_id_list']) && empty($topic_id)) {
+        if (empty($_POST['topic_id_list']) && empty($topicId)) {
             message_die(GENERAL_MESSAGE, $lang['None_selected']);
         }
 
-        $topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topic_id];
+        $topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topicId];
 
         // TODO there is no check if ids exists
 		dibi::update(TOPICS_TABLE, ['topic_status' => TOPIC_LOCKED])
             ->where('topic_id IN %in', $topics)
-            ->where('forum_id = %i', $forum_id)
+            ->where('forum_id = %i', $forumId)
             ->where('topic_moved_id = %i', 0)
             ->execute();
 
-        if (!empty($topic_id)) {
-			$redirect_page = 'viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'];
-			$message = sprintf($lang['Click_return_topic'], '<a href="' . $redirect_page . '">', '</a>');
+        if (!empty($topicId)) {
+			$redirectPage = 'viewtopic.php?' . POST_TOPIC_URL . "=$topicId&amp;sid=" . $userdata['session_id'];
+			$message      = sprintf($lang['Click_return_topic'], '<a href="' . $redirectPage . '">', '</a>');
 		} else {
-			$redirect_page = 'modcp.php?' . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'];
-			$message = sprintf($lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
+			$redirectPage = 'modcp.php?' . POST_FORUM_URL . "=$forumId&amp;sid=" . $userdata['session_id'];
+			$message      = sprintf($lang['Click_return_modcp'], '<a href="' . $redirectPage . '">', '</a>');
 		}
 
-		$message .= '<br><br>' . sprintf($lang['Click_return_forum'], '<a href="' . 'viewforum.php?' . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'] . '">', '</a>') . '<br /><br />';
+		$message .= '<br><br>' . sprintf($lang['Click_return_forum'], '<a href="' . 'viewforum.php?' . POST_FORUM_URL . "=$forumId&amp;sid=" . $userdata['session_id'] . '">', '</a>') . '<br /><br />';
 
-        $template->assignVars(['META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">']);
+        $template->assignVars(['META' => '<meta http-equiv="refresh" content="3;url=' . $redirectPage . '">']);
 
         message_die(GENERAL_MESSAGE, $lang['Topics_Locked'] . '<br /><br />' . $message);
 
 		break;
 
 	case 'unlock':
-        if (empty($_POST['topic_id_list']) && empty($topic_id)) {
+        if (empty($_POST['topic_id_list']) && empty($topicId)) {
 			message_die(GENERAL_MESSAGE, $lang['None_selected']);
 		}
 
-        $topics_ids = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topic_id];
+        $topics_ids = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topicId];
 
         $topics = dibi::select('topic_id')
             ->from(TOPICS_TABLE)
             ->where('topic_id IN %in', $topics_ids)
-            ->where('forum_id = %i', $forum_id)
+            ->where('forum_id = %i', $forumId)
             ->fetchPairs(null, 'topic_id');
 
         dibi::update(TOPICS_TABLE, ['topic_status' => TOPIC_UNLOCKED])
             ->where('topic_id IN %in', $topics)
-            ->where('forum_id = %i', $forum_id)
+            ->where('forum_id = %i', $forumId)
             ->where('topic_moved_id = %i', 0)
             ->execute();
 
-        if (!empty($topic_id)) {
-			$redirect_page = 'viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'];
-			$message = sprintf($lang['Click_return_topic'], '<a href="' . $redirect_page . '">', '</a>');
+        if (!empty($topicId)) {
+			$redirectPage = 'viewtopic.php?' . POST_TOPIC_URL . "=$topicId&amp;sid=" . $userdata['session_id'];
+			$message      = sprintf($lang['Click_return_topic'], '<a href="' . $redirectPage . '">', '</a>');
 		} else {
-			$redirect_page = 'modcp.php?' . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'];
-			$message = sprintf($lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
+			$redirectPage = 'modcp.php?' . POST_FORUM_URL . "=$forumId&amp;sid=" . $userdata['session_id'];
+			$message      = sprintf($lang['Click_return_modcp'], '<a href="' . $redirectPage . '">', '</a>');
 		}
 
-		$message .= '<br><br>' . sprintf($lang['Click_return_forum'], '<a href="' . 'viewforum.php?' . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'] . '">', '</a>') . '<br /><br />';
+		$message .= '<br><br>' . sprintf($lang['Click_return_forum'], '<a href="' . 'viewforum.php?' . POST_FORUM_URL . "=$forumId&amp;sid=" . $userdata['session_id'] . '">', '</a>') . '<br /><br />';
 
         $template->assignVars(
             [
-                'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">'
+                'META' => '<meta http-equiv="refresh" content="3;url=' . $redirectPage . '">'
             ]
         );
 
@@ -552,26 +543,26 @@ switch ($mode) {
 		}
 
 		if (count($posts)) {
-		    $post_ids = dibi::select('post_id')
+		    $postIds = dibi::select('post_id')
                 ->from(POSTS_TABLE)
                 ->where('post_id IN %in', $posts)
-                ->where('forum_id = %i', $forum_id)
+                ->where('forum_id = %i', $forumId)
                 ->fetchPairs(null, 'post_id');
 
-			if (!count($post_ids)) {
+			if (!count($postIds)) {
 				message_die(GENERAL_MESSAGE, $lang['None_selected']);
 			}
 
 			// TODO!!!!!!!!
 			$posts = dibi::select(['post_id', 'poster_id', 'topic_id', 'post_time'])
                 ->from(POSTS_TABLE)
-                ->where('post_id IN %in', $post_ids)
+                ->where('post_id IN %in', $postIds)
                 ->orderBy('post_time', dibi::ASC)
                 ->fetchAll();
 
 			if ($posts) {
 				$first_poster = $posts[0]->poster_id;
-				$topic_id     = $posts[0]->topic_id;
+				$topicId      = $posts[0]->topic_id;
 				$post_time    = $posts[0]->post_time;
 
 				$user_ids_sql = [];
@@ -615,14 +606,14 @@ switch ($mode) {
 				// have moved, over to watching the new topic
 
                 dibi::update(TOPICS_WATCH_TABLE, ['topic_id' => $new_topic_id])
-                    ->where('topic_id = %i', $topic_id)
+                    ->where('topic_id = %i', $topicId)
                     ->where('user_id IN %in', $user_ids_sql)
                     ->execute();
 
                 if (!empty($_POST['split_type_beyond'])) {
                     dibi::update(POSTS_TABLE, ['topic_id' => $new_topic_id, 'forum_id' => $new_forum_id])
                         ->where('post_time >= %i', $post_time)
-                        ->where('topic_id = %i', $topic_id)
+                        ->where('topic_id = %i', $topicId)
                         ->execute();
                 } else {
                     dibi::update(POSTS_TABLE, ['topic_id' => $new_topic_id, 'forum_id' => $new_forum_id])
@@ -631,17 +622,17 @@ switch ($mode) {
                 }
 
 				sync('topic', $new_topic_id);
-				sync('topic', $topic_id);
+				sync('topic', $topicId);
 				sync('forum', $new_forum_id);
-				sync('forum', $forum_id);
+				sync('forum', $forumId);
 
                 $template->assignVars(
                     [
-                        'META' => '<meta http-equiv="refresh" content="3;url=' . 'viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'] . '">'
+                        'META' => '<meta http-equiv="refresh" content="3;url=' . 'viewtopic.php?' . POST_TOPIC_URL . "=$topicId&amp;sid=" . $userdata['session_id'] . '">'
                     ]
                 );
 
-                $message = $lang['Topic_split'] . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . 'viewtopic.php?' . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'] . '">', '</a>');
+                $message = $lang['Topic_split'] . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . 'viewtopic.php?' . POST_TOPIC_URL . "=$topicId&amp;sid=" . $userdata['session_id'] . '">', '</a>');
 				message_die(GENERAL_MESSAGE, $message);
 			}
 		} else {
@@ -659,13 +650,13 @@ switch ($mode) {
                 ->innerJoin(POSTS_TEXT_TABLE)
                 ->as('pt')
                 ->on('p.post_id = pt.post_id')
-                ->where('p.topic_id = %i', $topic_id)
+                ->where('p.topic_id = %i', $topicId)
                 ->orderBy('p.post_time', dibi::ASC)
                 ->fetchAll();
 
             $total_posts = count($posts);
 
-			$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" /><input type="hidden" name="' . POST_TOPIC_URL . '" value="' . $topic_id . '" /><input type="hidden" name="mode" value="split" />';
+			$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forumId . '" /><input type="hidden" name="' . POST_TOPIC_URL . '" value="' . $topicId . '" /><input type="hidden" name="mode" value="split" />';
 
 			if ($total_posts) {
                 $template->assignVars(
@@ -686,13 +677,13 @@ switch ($mode) {
                         'L_UNMARK_ALL'          => $lang['Unmark_all'],
                         'L_POST'                => $lang['Post'],
 
-                        'FORUM_NAME' => htmlspecialchars($forum_name, ENT_QUOTES),
+                        'FORUM_NAME' => htmlspecialchars($forumName, ENT_QUOTES),
 
-                        'U_VIEW_FORUM' => Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forum_id"),
+                        'U_VIEW_FORUM' => Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forumId"),
 
                         'S_SPLIT_ACTION'  => Session::appendSid('modcp.php'),
                         'S_HIDDEN_FIELDS' => $s_hidden_fields,
-                        'S_FORUM_SELECT'  => make_forum_select('new_forum_id', false, $forum_id)
+                        'S_FORUM_SELECT'  => make_forum_select('new_forum_id', false, $forumId)
                     ]
                 );
 
@@ -765,7 +756,7 @@ switch ($mode) {
 
 		$rdns_ip_num = isset($_GET['rdns']) ? $_GET['rdns'] : '';
 
-        if (!$post_id) {
+        if (!$postId) {
 			message_die(GENERAL_MESSAGE, $lang['No_such_post']);
 		}
 
@@ -776,8 +767,8 @@ switch ($mode) {
 
         $post = dibi::select(['poster_ip', 'poster_id'])
             ->from(POSTS_TABLE)
-            ->where('post_id = %i', $post_id)
-            ->where('forum_id = %i', $forum_id)
+            ->where('post_id = %i', $postId)
+            ->where('forum_id = %i', $forumId)
             ->fetch();
 
         if (!$post) {
@@ -785,7 +776,7 @@ switch ($mode) {
         }
 
 		$ip_this_post = decode_ip($post->poster_ip);
-		$ip_this_post = ( $rdns_ip_num === $ip_this_post ) ? htmlspecialchars(gethostbyaddr($ip_this_post)) : $ip_this_post;
+		$ip_this_post = $rdns_ip_num === $ip_this_post ? htmlspecialchars(gethostbyaddr($ip_this_post)) : $ip_this_post;
 
 		$poster_id = $post->poster_id;
 
@@ -802,7 +793,7 @@ switch ($mode) {
 
                 'IP' => $ip_this_post,
 
-                'U_LOOKUP_IP' => 'modcp.php?mode=ip&amp;' . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=$ip_this_post&amp;sid=" . $userdata['session_id']
+                'U_LOOKUP_IP' => 'modcp.php?mode=ip&amp;' . POST_POST_URL . "=$postId&amp;" . POST_TOPIC_URL . "=$topicId&amp;rdns=$ip_this_post&amp;sid=" . $userdata['session_id']
             ]
         );
 
@@ -843,7 +834,7 @@ switch ($mode) {
                     'IP'        => $ip,
                     'POSTS'     => $row->postings . ' ' . $row->postings === 1 ? $lang['Post'] : $lang['Posts'],
 
-                    'U_LOOKUP_IP' => 'modcp.php?mode=ip&amp;' . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=" . $row->poster_ip . '&amp;sid=' . $userdata['session_id']
+                    'U_LOOKUP_IP' => 'modcp.php?mode=ip&amp;' . POST_POST_URL . "=$postId&amp;" . POST_TOPIC_URL . "=$topicId&amp;rdns=" . $row->poster_ip . '&amp;sid=' . $userdata['session_id']
                 ]
             );
         }
@@ -876,7 +867,7 @@ switch ($mode) {
             $row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
             if ($id === ANONYMOUS) {
-                $profile = 'modcp.php?mode=ip&amp;' . POST_POST_URL . '=' . $post_id . '&amp;' . POST_TOPIC_URL . '=' . $topic_id . '&amp;sid=' . $userdata['session_id'];
+                $profile = 'modcp.php?mode=ip&amp;' . POST_POST_URL . '=' . $postId . '&amp;' . POST_TOPIC_URL . '=' . $topicId . '&amp;sid=' . $userdata['session_id'];
             } else {
                 $profile = Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$id");
             }
@@ -906,7 +897,7 @@ switch ($mode) {
 
         $template->assignVars(
             [
-                'FORUM_NAME' => htmlspecialchars($forum_name, ENT_QUOTES),
+                'FORUM_NAME' => htmlspecialchars($forumName, ENT_QUOTES),
 
                 'L_MOD_CP'         => $lang['Mod_CP'],
                 'L_MOD_CP_EXPLAIN' => $lang['Mod_CP_explain'],
@@ -919,8 +910,8 @@ switch ($mode) {
                 'L_REPLIES'        => $lang['Replies'],
                 'L_LASTPOST'       => $lang['Last_Post'],
 
-                'U_VIEW_FORUM'    => Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forum_id"),
-                'S_HIDDEN_FIELDS' => '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />',
+                'U_VIEW_FORUM'    => Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forumId"),
+                'S_HIDDEN_FIELDS' => '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forumId . '" />',
                 'S_MODCP_ACTION'  => Session::appendSid('modcp.php')
             ]
         );
@@ -946,7 +937,7 @@ switch ($mode) {
             ->innerJoin(POSTS_TABLE)
             ->as('p')
             ->on('p.post_id = t.topic_last_post_id')
-            ->where('t.forum_id = %i', $forum_id)
+            ->where('t.forum_id = %i', $forumId)
             ->orderBy('t.topic_type', dibi::DESC)
             ->orderBy('p.post_time', dibi::DESC)
             ->limit($board_config['topics_per_page'])
@@ -972,7 +963,7 @@ switch ($mode) {
                 }
             }
 
-			$topic_id     = $row->topic_id;
+			$topicId      = $row->topic_id;
 			$topic_type   = $row->topic_type;
 			$topic_status = $row->topic_status;
 
@@ -996,7 +987,7 @@ switch ($mode) {
                 $topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
             }
 
-			$u_view_topic  = 'modcp.php?mode=split&amp;' . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'];
+			$u_view_topic  = 'modcp.php?mode=split&amp;' . POST_TOPIC_URL . "=$topicId&amp;sid=" . $userdata['session_id'];
 
 			$last_post_time = create_date($board_config['default_dateformat'], $row->post_time, $board_config['board_timezone']);
 
@@ -1009,7 +1000,7 @@ switch ($mode) {
                     'TOPIC_TITLE'      => $topic_title,
                     'REPLIES'          => $row->topic_replies,
                     'LAST_POST_TIME'   => $last_post_time,
-                    'TOPIC_ID'         => $topic_id,
+                    'TOPIC_ID'         => $topicId,
 
                     'L_TOPIC_FOLDER_ALT' => $folder_alt
                 ]
@@ -1017,8 +1008,8 @@ switch ($mode) {
         }
 
         $template->assignVars([
-            'PAGINATION'  => generate_pagination('modcp.php?' . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'], $forum_topics, $board_config['topics_per_page'], $start),
-            'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $board_config['topics_per_page']) + 1, ceil($forum_topics / $board_config['topics_per_page'])),
+            'PAGINATION'  => generate_pagination('modcp.php?' . POST_FORUM_URL . "=$forumId&amp;sid=" . $userdata['session_id'], $forumTopics, $board_config['topics_per_page'], $start),
+            'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $board_config['topics_per_page']) + 1, ceil($forumTopics / $board_config['topics_per_page'])),
 
             'L_GOTO_PAGE' => $lang['Goto_page']
             ]);

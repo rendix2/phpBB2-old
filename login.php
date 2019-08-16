@@ -148,12 +148,12 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
             } elseif ($row->user_active) { // Only store a failed login attempt for an active user - inactive users can't login even with a correct password
                 // Save login tries and last login
                 if ($row->user_id !== ANONYMOUS) {
-                    $update_data = [
+                    $updatData = [
                         'user_login_tries%sql' => 'user_login_tries + 1',
                         'user_last_login_try' => time()
                     ];
 
-                    dibi::update(USERS_TABLE, $update_data)
+                    dibi::update(USERS_TABLE, $updatData)
                         ->where('user_id = %i', $row->user_id)
                         ->execute();
                 }
@@ -192,37 +192,37 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 
         $template->setFileNames(['body' => 'login_body.tpl']);
 
-        $forward_page = '';
+        $forwardPage = '';
 
         if (isset($_POST['redirect']) || isset($_GET['redirect'])) {
-            $forward_to = $_SERVER['QUERY_STRING'];
+            $forwardTo = $_SERVER['QUERY_STRING'];
 
-            if (preg_match("/^redirect=([a-z0-9\.#\/\?&=\+\-_]+)/si", $forward_to, $forward_matches)) {
-                $forward_to = !empty($forward_matches[3]) ? $forward_matches[3] : $forward_matches[1];
-                $forward_match = explode('&', $forward_to);
-                $count_forward_match = count($forward_match);
+            if (preg_match("/^redirect=([a-z0-9\.#\/\?&=\+\-_]+)/si", $forwardTo, $forward_matches)) {
+                $forwardTo         = !empty($forward_matches[3]) ? $forward_matches[3] : $forward_matches[1];
+                $forwardMatch      = explode('&', $forwardTo);
+                $countForwardMatch = count($forwardMatch);
 
-                if ($count_forward_match > 1) {
-                    for ($i = 1; $i < $count_forward_match; $i++) {
-                        if (!preg_match('/sid=/', $forward_match[$i])) {
-                            if ($forward_page !== '') {
-                                $forward_page .= '&';
+                if ($countForwardMatch > 1) {
+                    for ($i = 1; $i < $countForwardMatch; $i++) {
+                        if (!preg_match('/sid=/', $forwardMatch[$i])) {
+                            if ($forwardPage !== '') {
+                                $forwardPage .= '&';
                             }
 
-                            $forward_page .= $forward_match[$i];
+                            $forwardPage .= $forwardMatch[$i];
                         }
                     }
 
-                    $forward_page = $forward_match[0] . '?' . $forward_page;
+                    $forwardPage = $forwardMatch[0] . '?' . $forwardPage;
                 } else {
-                    $forward_page = $forward_match[0];
+                    $forwardPage = $forwardMatch[0];
                 }
             }
         }
 
         $username = $userdata['user_id'] !== ANONYMOUS ? $userdata['username'] : '';
 
-        $s_hidden_fields = '<input type="hidden" name="redirect" value="' . $forward_page . '" />';
+        $s_hidden_fields = '<input type="hidden" name="redirect" value="' . $forwardPage . '" />';
         $s_hidden_fields .= isset($_GET['admin']) ? '<input type="hidden" name="admin" value="1" />' : '';
 
         make_jumpbox('viewforum.php');

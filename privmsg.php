@@ -1052,11 +1052,11 @@ if ($mode === 'newpm') {
         }
 
         if (!empty($_POST['username'])) {
-            $to_username = phpbb_clean_username($_POST['username']);
+            $toUserName = phpbb_clean_username($_POST['username']);
 
             $to_userdata = dibi::select(['user_id', 'user_notify_pm', 'user_email', 'user_lang', 'user_active'])
                 ->from(USERS_TABLE)
-                ->where('username = %s', $to_username)
+                ->where('username = %s', $toUserName)
                 ->fetch();
 
             if (!$to_userdata) {
@@ -1226,7 +1226,7 @@ if ($mode === 'newpm') {
 
                 $emailer->assignVars(
                     [
-                        'USERNAME'  => stripslashes($to_username),
+                        'USERNAME'  => stripslashes($toUserName),
                         'SITENAME'  => $board_config['sitename'],
                         'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
 
@@ -1255,7 +1255,7 @@ if ($mode === 'newpm') {
 		// passed to the script, process it a little, do some checks
 		// where neccessary, etc.
 		//
-		$to_username     = isset($_POST['username']) ? trim(htmlspecialchars(stripslashes($_POST['username']))) : '';
+		$toUserName      = isset($_POST['username']) ? trim(htmlspecialchars(stripslashes($_POST['username']))) : '';
 		$privmsg_subject = isset($_POST['subject']) ? trim(stripslashes($_POST['subject']))   : '';
 
 		$privmsg_message = isset($_POST['message']) ? trim($_POST['message']) : '';
@@ -1312,7 +1312,7 @@ if ($mode === 'newpm') {
                     ->fetch();
 
                 if ($user_check) {
-                    $to_username = $user_check->username;
+                    $toUserName = $user_check->username;
                 } else {
                     $error     = true;
                     $error_msg = $lang['No_such_user'];
@@ -1364,8 +1364,8 @@ if ($mode === 'newpm') {
                 $user_sig = '';
             }
 
-			$to_username = $privmsg->username;
-			$to_userid = $privmsg->user_id;
+			$toUserName = $privmsg->username;
+			$to_userid  = $privmsg->user_id;
 
         } elseif ($mode === 'reply' || $mode === 'quote') {
             $columns = [
@@ -1400,8 +1400,8 @@ if ($mode === 'newpm') {
 			$privmsg_subject = ( ( !preg_match('/^Re:/', $privmsg->privmsgs_subject) ) ? 'Re: ' : '' ) . $privmsg->privmsgs_subject;
 			$privmsg_subject = preg_replace($orig_word, $replacement_word, $privmsg_subject);
 
-			$to_username = $privmsg->username;
-			$to_userid   = $privmsg->user_id;
+			$toUserName = $privmsg->username;
+			$to_userid  = $privmsg->user_id;
 
             if ($mode === 'quote') {
 				$privmsg_message = $privmsg->privmsgs_text;
@@ -1414,12 +1414,12 @@ if ($mode === 'newpm') {
 				
 				$msg_date = create_date($board_config['default_dateformat'], $privmsg->privmsgs_date, $board_config['board_timezone']);
 
-				$privmsg_message = '[quote="' . $to_username . '"]' . $privmsg_message . '[/quote]';
+				$privmsg_message = '[quote="' . $toUserName . '"]' . $privmsg_message . '[/quote]';
 
 				$mode = 'reply';
 			}
 		} else {
-			$privmsg_subject = $privmsg_message = $to_username = '';
+			$privmsg_subject = $privmsg_message = $toUserName = '';
 		}
 	}
 
@@ -1447,7 +1447,7 @@ if ($mode === 'newpm') {
 			$bbcode_uid = make_bbcode_uid();
 		}
 
-		$preview_message = stripslashes(prepare_message($privmsg_message, $html_on, $bbcode_on, $smilies_on, $bbcode_uid));
+		$previewMessage  = stripslashes(prepare_message($privmsg_message, $html_on, $bbcode_on, $smilies_on, $bbcode_uid));
 		$privmsg_message = stripslashes(preg_replace($html_entities_match, $html_entities_replace, $privmsg_message));
 
         //
@@ -1464,26 +1464,26 @@ if ($mode === 'newpm') {
         }
 
         if ($bbcode_on) {
-            $preview_message = bbencode_second_pass($preview_message, $bbcode_uid);
+            $previewMessage = bbencode_second_pass($previewMessage, $bbcode_uid);
         }
 
         if ($attach_sig && $user_sig !== '') {
-            $preview_message .= $user_sig . $board_config['signature_delimiter'];
+            $previewMessage .= $user_sig . $board_config['signature_delimiter'];
         }
 
         if (count($orig_word)) {
-            $preview_subject = preg_replace($orig_word, $replacement_word, $privmsg_subject);
-            $preview_message = preg_replace($orig_word, $replacement_word, $preview_message);
+            $previewSubject = preg_replace($orig_word, $replacement_word, $privmsg_subject);
+            $previewMessage = preg_replace($orig_word, $replacement_word, $previewMessage);
         } else {
-            $preview_subject = $privmsg_subject;
+            $previewSubject = $privmsg_subject;
         }
 
         if ($smilies_on) {
-            $preview_message = smilies_pass($preview_message);
+            $previewMessage = smilies_pass($previewMessage);
         }
 
-		$preview_message = make_clickable($preview_message);
-		$preview_message = nl2br($preview_message);
+		$previewMessage = make_clickable($previewMessage);
+		$previewMessage = nl2br($previewMessage);
 
 		$s_hidden_fields = '<input type="hidden" name="folder" value="' . $folder . '" />';
 		$s_hidden_fields .= '<input type="hidden" name="mode" value="' . $mode . '" />';
@@ -1496,12 +1496,12 @@ if ($mode === 'newpm') {
 
         $template->assignVars(
             [
-                'TOPIC_TITLE'  => $preview_subject,
-                'POST_SUBJECT' => $preview_subject,
-                'MESSAGE_TO'   => $to_username,
+                'TOPIC_TITLE'  => $previewSubject,
+                'POST_SUBJECT' => $previewSubject,
+                'MESSAGE_TO'   => $toUserName,
                 'MESSAGE_FROM' => $userdata['username'],
                 'POST_DATE'    => create_date($board_config['default_dateformat'], time(), $board_config['board_timezone']),
-                'MESSAGE'      => $preview_message,
+                'MESSAGE'      => $previewMessage,
 
                 'S_HIDDEN_FIELDS' => $s_hidden_fields,
 
@@ -1522,6 +1522,7 @@ if ($mode === 'newpm') {
 	//
     if ($error) {
         $privmsg_message = htmlspecialchars($privmsg_message);
+
         $template->setFileNames(['reg_header' => 'error_body.tpl']);
         $template->assignVars(['ERROR_MESSAGE' => $error_msg]);
         $template->assignVarFromHandle('ERROR_BOX', 'reg_header');
@@ -1608,7 +1609,7 @@ if ($mode === 'newpm') {
 	$template->assignVars(
 	    [
             'SUBJECT' => $privmsg_subject,
-            'USERNAME' => $to_username,
+            'USERNAME' => $toUserName,
             'MESSAGE' => $privmsg_message,
             'HTML_STATUS' => $html_status,
             'SMILIES_STATUS' => $smilies_status,

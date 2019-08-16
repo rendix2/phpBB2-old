@@ -48,7 +48,7 @@ if (isset($_POST['submit'])) {
     }
 
     $user_actkey   = gen_rand_string(true);
-    $key_len       = 54 - mb_strlen($server_url);
+    $key_len       = 54 - mb_strlen($serverUrl);
     $key_len       = $key_len > 6 ? $key_len : 6;
     $user_actkey   = substr($user_actkey, 0, $key_len);
     $user_password = gen_rand_string(false);
@@ -78,7 +78,7 @@ if (isset($_POST['submit'])) {
             'PASSWORD'  => $user_password,
             'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
 
-            'U_ACTIVATE' => $server_url . '?mode=activate&' . POST_USERS_URL . '=' . $user->user_id . '&act_key=' . $user_actkey
+            'U_ACTIVATE' => $serverUrl . '?mode=activate&' . POST_USERS_URL . '=' . $user->user_id . '&act_key=' . $user_actkey
         ]
     );
     $emailer->send();

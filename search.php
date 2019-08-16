@@ -352,7 +352,7 @@ if ($mode === 'searchuser') {
 
             $auth_sql = "f.forum_id = $search_forum";
         } else {
-            $is_auth_ary = Auth::authorize(AUTH_READ, AUTH_LIST_ALL, $userdata);
+            $is_auth = Auth::authorize(AUTH_READ, AUTH_LIST_ALL, $userdata);
 
             if ($search_cat !== -1) {
                 $auth_sql = "f.cat_id = $search_cat";
@@ -360,7 +360,7 @@ if ($mode === 'searchuser') {
 
             $ignore_forum_sql = '';
 
-            foreach ($is_auth_ary as $key => $value) {
+            foreach ($is_auth as $key => $value) {
                 if (!$value['auth_read']) {
                     $ignore_forum_sql .= (($ignore_forum_sql !== '') ? ', ' : '') . $key;
                 }
@@ -904,10 +904,10 @@ if ($mode === 'searchuser') {
 				$poster .= $search_set->user_id !== ANONYMOUS ? '</a>' : '';
 
                 if ($userdata['session_logged_in'] && $search_set->post_time > $userdata['user_lastvisit']) {
-                    if (!empty($tracking_topics[$topic_id]) && !empty($tracking_forums[$forum_id])) {
-                        $topic_last_read = $tracking_topics[$topic_id] > $tracking_forums[$forum_id] ? $tracking_topics[$topic_id] : $tracking_forums[$forum_id];
-                    } elseif (!empty($tracking_topics[$topic_id]) || !empty($tracking_forums[$forum_id])) {
-                        $topic_last_read = !empty($tracking_topics[$topic_id]) ? $tracking_topics[$topic_id] : $tracking_forums[$forum_id];
+                    if (!empty($trackingTopics[$topic_id]) && !empty($trackingForums[$forum_id])) {
+                        $topic_last_read = $trackingTopics[$topic_id] > $trackingForums[$forum_id] ? $trackingTopics[$topic_id] : $trackingForums[$forum_id];
+                    } elseif (!empty($trackingTopics[$topic_id]) || !empty($trackingForums[$forum_id])) {
+                        $topic_last_read = !empty($trackingTopics[$topic_id]) ? $trackingTopics[$topic_id] : $trackingForums[$forum_id];
                     }
 
                     if ($search_set->post_time > $topic_last_read) {
@@ -1018,15 +1018,15 @@ if ($mode === 'searchuser') {
 					}
 
                     if ($userdata['session_logged_in'] && $search_set->post_time > $userdata['user_lastvisit']) {
-                        if (!empty($tracking_topics) || !empty($tracking_forums) || isset($_COOKIE[$forum_all_cookie_name])) {
+                        if (!empty($trackingTopics) || !empty($trackingForums) || isset($_COOKIE[$forum_all_cookie_name])) {
 
                             $unread_topics = true;
 
-                            if (!empty($tracking_topics[$topic_id]) && $tracking_topics[$topic_id] > $search_set->post_time) {
+                            if (!empty($trackingTopics[$topic_id]) && $trackingTopics[$topic_id] > $search_set->post_time) {
                                 $unread_topics = false;
                             }
 
-                            if (!empty($tracking_forums[$forum_id]) && $tracking_forums[$forum_id] > $search_set->post_time) {
+                            if (!empty($trackingForums[$forum_id]) && $trackingForums[$forum_id] > $search_set->post_time) {
                                 $unread_topics = false;
                             }
 
@@ -1170,7 +1170,7 @@ $result = dibi::select(['c.cat_title', 'c.cat_id', 'f.forum_name', 'f.forum_id']
     ->orderBy('f.forum_order')
     ->fetchAll();
 
-$is_auth_ary = Auth::authorize(AUTH_READ, AUTH_LIST_ALL, $userdata);
+$is_auth = Auth::authorize(AUTH_READ, AUTH_LIST_ALL, $userdata);
 
 $s_forums = '';
 $list_cat = [];
@@ -1179,7 +1179,7 @@ $list_cat = [];
 // TODO use Select.php class
 // this is in some functions file now
 foreach ($result as $row) {
-    if ($is_auth_ary[$row->forum_id]['auth_read']) {
+    if ($is_auth[$row->forum_id]['auth_read']) {
         $s_forums .= '<option value="' . $row->forum_id . '">' . htmlspecialchars($row->forum_name, ENT_QUOTES) . '</option>';
 
         if (empty($list_cat[$row->cat_id])) {

@@ -36,26 +36,26 @@ $userdata = init_userprefs(PAGE_INDEX);
 // End session management
 //
 
-$view_category = isset($_GET[POST_CAT_URL]) ? $_GET[POST_CAT_URL] : -1;
+$categoryId = isset($_GET[POST_CAT_URL]) ? $_GET[POST_CAT_URL] : -1;
 
 if (isset($_GET['mark']) || isset($_POST['mark'])) {
-    $mark_read = isset($_POST['mark']) ? $_POST['mark'] : $_GET['mark'];
+    $markRead = isset($_POST['mark']) ? $_POST['mark'] : $_GET['mark'];
 } else {
-    $mark_read = '';
+    $markRead = '';
 }
 
 // define cookie names
-$topic_cookie_name = $board_config['cookie_name'] . '_t';
-$forum_cookie_name = $board_config['cookie_name'] . '_f';
-$forum_all_cookie_name = $board_config['cookie_name'] . '_f_all';
+$topicCookieName    = $board_config['cookie_name'] . '_t';
+$forumCookieName    = $board_config['cookie_name'] . '_f';
+$forumAllCookieName = $board_config['cookie_name'] . '_f_all';
 
 //
 // Handle marking posts
 //
-if ($mark_read === 'forums') {
+if ($markRead === 'forums') {
     if ($userdata['session_logged_in']) {
         setcookie(
-            $forum_all_cookie_name,
+            $forumAllCookieName,
             time(),
             0,
             $board_config['cookie_path'],
@@ -78,30 +78,30 @@ if ($mark_read === 'forums') {
 // End handle marking posts
 //
 
-$tracking_topics = isset($_COOKIE[$topic_cookie_name]) ? unserialize($_COOKIE[$topic_cookie_name]) : [];
-$tracking_forums = isset($_COOKIE[$forum_cookie_name]) ? unserialize($_COOKIE[$forum_cookie_name]) : [];
+$trackingTopics = isset($_COOKIE[$topicCookieName]) ? unserialize($_COOKIE[$topicCookieName]) : [];
+$trackingForums = isset($_COOKIE[$forumCookieName]) ? unserialize($_COOKIE[$forumCookieName]) : [];
 
 //
 // If you don't use these stats on your index you may want to consider
 // removing them
 //
-$total_posts     = get_db_stat('postcount');
-$total_users     = get_db_stat('usercount');
-$newest_userdata = get_db_stat('newestuser');
-$newest_user     = $newest_userdata->username;
-$newest_uid      = $newest_userdata->user_id;
+$totalPosts     = get_db_stat('postcount');
+$totalUsers     = get_db_stat('usercount');
+$newestUserData = get_db_stat('newestuser');
+$newestUser     = $newestUserData->username;
+$newestUserId   = $newestUserData->user_id;
 
-if ($total_posts === 0) {
+if ($totalPosts === 0) {
     $l_total_post_s = $lang['Posted_articles_zero_total'];
-} elseif ($total_posts === 1) {
+} elseif ($totalPosts === 1) {
     $l_total_post_s = $lang['Posted_article_total'];
 } else {
     $l_total_post_s = $lang['Posted_articles_total'];
 }
 
-if ($total_users === 0) {
+if ($totalUsers === 0) {
     $l_total_user_s = $lang['Registered_users_zero_total'];
-} elseif ($total_users === 1) {
+} elseif ($totalUsers === 1) {
     $l_total_user_s = $lang['Registered_user_total'];
 } else {
     $l_total_user_s = $lang['Registered_users_total'];
@@ -140,11 +140,11 @@ switch ($dbms) {
 					)
 					ORDER BY cat_id, forum_order';
 
-        $forum_data = dibi::query($sql)->fetchAll();
+        $forums = dibi::query($sql)->fetchAll();
         break;
 
     case 'oracle':
-        $forum_data = dibi::select('f.*, p.post_time, p.post_username, u.username, u.user_id')
+        $forums = dibi::select('f.*, p.post_time, p.post_username, u.username, u.user_id')
             ->from(FORUMS_TABLE)
             ->as('f')
             ->innerJoin(POSTS_TABLE)
@@ -160,7 +160,7 @@ switch ($dbms) {
 
     default:
         // there was left join
-        $forum_data = dibi::select('f.*, p.post_time, p.post_username, u.username, u.user_id')
+        $forums = dibi::select('f.*, p.post_time, p.post_username, u.username, u.user_id')
             ->from(FORUMS_TABLE)
             ->as('f')
             ->leftJoin(POSTS_TABLE)
@@ -175,9 +175,9 @@ switch ($dbms) {
         break;
 }
 
-$total_forums = count($forum_data);
+$totalForums = count($forums);
 
-if (!$total_forums) {
+if (!$totalForums) {
     message_die(GENERAL_MESSAGE, $lang['No_forums']);
 }
 
@@ -201,10 +201,10 @@ if ($userdata['session_logged_in']) {
         ->where('t.topic_moved_id = %i', 0)
         ->fetchAll();
 
-    $new_topic_data = [];
+    $newTopicData = [];
 
-    foreach ($new_topic_tmp_data as $topic_data) {
-        $new_topic_data[$topic_data->forum_id][$topic_data->topic_id] = $topic_data->post_time;
+    foreach ($new_topic_tmp_data as $topic) {
+        $newTopicData[$topic->forum_id][$topic->topic_id] = $topic->post_time;
     }
 }
 
@@ -213,7 +213,7 @@ if ($userdata['session_logged_in']) {
 // First users, then groups ... broken into two queries
 //
 
-$forum_moderators_data = dibi::select('aa.forum_id, u.user_id, u.username')
+$forumModeratorsData = dibi::select('aa.forum_id, u.user_id, u.username')
     ->from(AUTH_ACCESS_TABLE)
     ->as('aa')
     ->innerJoin(USER_GROUP_TABLE)
@@ -234,13 +234,13 @@ $forum_moderators_data = dibi::select('aa.forum_id, u.user_id, u.username')
     ->orderBy('u.user_id')
     ->fetchAll();
 
-$forum_moderators = [];
+$forumModerators = [];
 
-foreach ($forum_moderators_data as $row) {
-    $forum_moderators[$row->forum_id][] = '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $row->user_id) . '">' . $row->username . '</a>';
+foreach ($forumModeratorsData as $row) {
+    $forumModerators[$row->forum_id][] = '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $row->user_id) . '">' . $row->username . '</a>';
 }
 
-$forum_moderators_data = dibi::select('aa.forum_id, g.group_id, g.group_name')
+$forumModeratorsData = dibi::select('aa.forum_id, g.group_id, g.group_name')
     ->from(AUTH_ACCESS_TABLE)
     ->as('aa')
     ->innerJoin(USER_GROUP_TABLE)
@@ -259,14 +259,14 @@ $forum_moderators_data = dibi::select('aa.forum_id, g.group_id, g.group_name')
     ->orderBy('g.group_id')
     ->fetchAll();
 
-foreach ($forum_moderators_data as $row) {
-    $forum_moderators[$row->forum_id][] = '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . '=' . $row->group_id) . '">' . htmlspecialchars($row->group_name, ENT_QUOTES) . '</a>';
+foreach ($forumModeratorsData as $row) {
+    $forumModerators[$row->forum_id][] = '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . '=' . $row->group_id) . '">' . htmlspecialchars($row->group_name, ENT_QUOTES) . '</a>';
 }
 
 //
 // Find which forums are visible for this user
 //
-$is_auth_array = Auth::authorize(AUTH_VIEW, AUTH_LIST_ALL, $userdata, $forum_data);
+$is_auth = Auth::authorize(AUTH_VIEW, AUTH_LIST_ALL, $userdata, $forums);
 
 //
 // Start output of page
@@ -274,17 +274,15 @@ $is_auth_array = Auth::authorize(AUTH_VIEW, AUTH_LIST_ALL, $userdata, $forum_dat
 
 showOnline(null, $userdata, $board_config, $theme, $lang, $storage, $template);
 
-$page_title = $lang['Index'];
-
-PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $lang['Index'], $gen_simple_header);
 
 $template->setFileNames(['body' => 'index_body.tpl']);
 
 $template->assignVars(
     [
-        'TOTAL_POSTS' => sprintf($l_total_post_s, $total_posts),
-        'TOTAL_USERS' => sprintf($l_total_user_s, $total_users),
-        'NEWEST_USER' => sprintf($lang['Newest_user'], '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$newest_uid") . '">', $newest_user, '</a>'),
+        'TOTAL_POSTS' => sprintf($l_total_post_s, $totalPosts),
+        'TOTAL_USERS' => sprintf($l_total_user_s, $totalUsers),
+        'NEWEST_USER' => sprintf($lang['Newest_user'], '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$newestUserId") . '">', $newestUser, '</a>'),
 
         'FORUM_IMG'        => $images['forum'],
         'FORUM_NEW_IMG'    => $images['forum_new'],
@@ -315,11 +313,11 @@ $template->assignVars(
 //
 // Let's decide which categories we should display
 //
-$display_categories = [];
+$displayCategories = [];
 
-foreach ($forum_data as $forum) {
-    if ($is_auth_array[$forum->forum_id]['auth_view']) {
-        $display_categories[$forum->cat_id] = true;
+foreach ($forums as $forum) {
+    if ($is_auth[$forum->forum_id]['auth_view']) {
+        $displayCategories[$forum->cat_id] = true;
     }
 }
 
@@ -328,110 +326,111 @@ foreach ($forum_data as $forum) {
 //
 
 foreach ($categories as $i => $category) {
-    $cat_id = $category->cat_id;
+    $catId = $category->cat_id;
 
     //
     // Yes, we should, so first dump out the category
     // title, then, if appropriate the forum list
     //
-    if (isset($display_categories[$cat_id]) && $display_categories[$cat_id]) {
+    if (isset($displayCategories[$catId]) && $displayCategories[$catId]) {
         $template->assignBlockVars('catrow', [
-                'CAT_ID'    => $cat_id,
+                'CAT_ID'    => $catId,
                 'CAT_DESC'  => htmlspecialchars($category->cat_title, ENT_QUOTES),
-                'U_VIEWCAT' => Session::appendSid('index.php?' . POST_CAT_URL . "=$cat_id")
-            ]);
+                'U_VIEWCAT' => Session::appendSid('index.php?' . POST_CAT_URL . "=$catId")
+            ]
+        );
 
-        if ($view_category === $cat_id || $view_category === -1) {
-            foreach ($forum_data as $forum) {
-                if ($forum->cat_id === $cat_id) {
-                    $forum_id = $forum->forum_id;
+        if ($categoryId === $catId || $categoryId === -1) {
+            foreach ($forums as $forum) {
+                if ($forum->cat_id === $catId) {
+                    $forumId = $forum->forum_id;
 
-                    if ($is_auth_array[$forum_id]['auth_view']) {
+                    if ($is_auth[$forumId]['auth_view']) {
                         if ($forum->forum_status === FORUM_LOCKED) {
                             $folder_image = $images['forum_locked'];
-                            $folder_alt   = $lang['Forum_locked'];
+                            $folderAlt    = $lang['Forum_locked'];
                         } else {
-                            $unread_topics = false;
+                            $unreadTopics = false;
 
-                            if ($userdata['session_logged_in'] && isset($new_topic_data[$forum_id])) {
-                                $forum_last_post_time = 0;
+                            if ($userdata['session_logged_in'] && isset($newTopicData[$forumId])) {
+                                $forumLastPostTime = 0;
 
-                                foreach ($new_topic_data[$forum_id] as $check_topic_id => $check_post_time) {
-                                    if (empty($tracking_topics[$check_topic_id])) {
-                                        $unread_topics        = true;
-                                        $forum_last_post_time = max($check_post_time, $forum_last_post_time);
+                                foreach ($newTopicData[$forumId] as $check_topic_id => $check_post_time) {
+                                    if (empty($trackingTopics[$check_topic_id])) {
+                                        $unreadTopics      = true;
+                                        $forumLastPostTime = max($check_post_time, $forumLastPostTime);
                                     } else {
-                                        if ($tracking_topics[$check_topic_id] < $check_post_time) {
-                                            $unread_topics        = true;
-                                            $forum_last_post_time = max($check_post_time, $forum_last_post_time);
+                                        if ($trackingTopics[$check_topic_id] < $check_post_time) {
+                                            $unreadTopics      = true;
+                                            $forumLastPostTime = max($check_post_time, $forumLastPostTime);
                                         }
                                     }
                                 }
 
-                                if (isset($tracking_forums[$forum_id]) && $tracking_forums[$forum_id] > $forum_last_post_time) {
-                                    $unread_topics = false;
+                                if (isset($trackingForums[$forumId]) && $trackingForums[$forumId] > $forumLastPostTime) {
+                                    $unreadTopics = false;
                                 }
 
-                                if (isset($_COOKIE[$forum_all_cookie_name]) && $_COOKIE[$forum_all_cookie_name] > $forum_last_post_time) {
-                                    $unread_topics = false;
+                                if (isset($_COOKIE[$forumAllCookieName]) && $_COOKIE[$forumAllCookieName] > $forumLastPostTime) {
+                                    $unreadTopics = false;
                                 }
                             }
 
-                            $folder_image = $unread_topics ? $images['forum_new'] : $images['forum'];
-                            $folder_alt   = $unread_topics ? $lang['New_posts']   : $lang['No_new_posts'];
+                            $folder_image = $unreadTopics ? $images['forum_new'] : $images['forum'];
+                            $folderAlt    = $unreadTopics ? $lang['New_posts']   : $lang['No_new_posts'];
                         }
 
                         $posts  = $forum->forum_posts;
                         $topics = $forum->forum_topics;
 
                         if ($forum->forum_last_post_id) {
-                            $last_post_time = create_date($board_config['default_dateformat'], $forum->post_time, $board_config['board_timezone']);
+                            $lastPostTime = create_date($board_config['default_dateformat'], $forum->post_time, $board_config['board_timezone']);
 
-                            $last_post = $last_post_time . '<br />';
+                            $lastPost = $lastPostTime . '<br />';
 
                             if ($forum->user_id === ANONYMOUS) {
                                 if ($forum->post_username !== '') {
-                                    $last_post .= $forum->post_username . ' ';
+                                    $lastPost .= $forum->post_username . ' ';
                                 } else {
-                                    $last_post .= $lang['Guest'];
+                                    $lastPost .= $lang['Guest'];
                                 }
                             } else {
-                                $last_post .= '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $forum->user_id) . '">' . $forum->username . '</a> ';
+                                $lastPost .= '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $forum->user_id) . '">' . $forum->username . '</a> ';
                             }
 
-                            $last_post .= '<a href="' . Session::appendSid('viewtopic.php?' . POST_POST_URL . '=' . $forum->forum_last_post_id) . '#' . $forum->forum_last_post_id . '"><img src="' . $images['icon_latest_reply'] . '" border="0" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" /></a>';
+                            $lastPost .= '<a href="' . Session::appendSid('viewtopic.php?' . POST_POST_URL . '=' . $forum->forum_last_post_id) . '#' . $forum->forum_last_post_id . '"><img src="' . $images['icon_latest_reply'] . '" border="0" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" /></a>';
                         } else {
-                            $last_post = $lang['No_Posts'];
+                            $lastPost = $lang['No_Posts'];
                         }
 
-                        $moderators_forum_count = isset($forum_moderators[$forum_id]) ? count($forum_moderators[$forum_id]) : 0;
+                        $moderators_forum_count = isset($forumModerators[$forumId]) ? count($forumModerators[$forumId]) : 0;
 
                         if ($moderators_forum_count > 0) {
-                            $l_moderators   = $moderators_forum_count === 1 ? $lang['Moderator'] : $lang['Moderators'];
-                            $moderator_list = implode(', ', $forum_moderators[$forum_id]);
+                            $l_moderators  = $moderators_forum_count === 1 ? $lang['Moderator'] : $lang['Moderators'];
+                            $moderatorList = implode(', ', $forumModerators[$forumId]);
                         } else {
-                            $l_moderators   = '&nbsp;';
-                            $moderator_list = '&nbsp;';
+                            $l_moderators  = '&nbsp;';
+                            $moderatorList = '&nbsp;';
                         }
 
-                        $row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-                        $row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+                        $rowColor = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+                        $rowClass = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
                         $catRowData = [
-                            'ROW_COLOR'        => '#' . $row_color,
-                            'ROW_CLASS'        => $row_class,
+                            'ROW_COLOR'        => '#' . $rowColor,
+                            'ROW_CLASS'        => $rowClass,
                             'FORUM_FOLDER_IMG' => $folder_image,
                             'FORUM_NAME'       => htmlspecialchars($forum->forum_name, ENT_QUOTES),
                             'FORUM_DESC'       => htmlspecialchars($forum->forum_desc, ENT_QUOTES),
                             'POSTS'            => $forum->forum_posts,
                             'TOPICS'           => $forum->forum_topics,
-                            'LAST_POST'        => $last_post,
-                            'MODERATORS'       => $moderator_list,
+                            'LAST_POST'        => $lastPost,
+                            'MODERATORS'       => $moderatorList,
 
                             'L_MODERATOR'        => $l_moderators,
-                            'L_FORUM_FOLDER_ALT' => $folder_alt,
+                            'L_FORUM_FOLDER_ALT' => $folderAlt,
 
-                            'U_VIEWFORUM' => Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forum_id")
+                            'U_VIEWFORUM' => Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forumId")
                         ];
 
                         $template->assignBlockVars('catrow.forumrow', $catRowData);

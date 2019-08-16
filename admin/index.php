@@ -77,15 +77,15 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
 		$rowCount = 0;
 
 		foreach ($action_array as $action => $file) {
-			$row_color = !($rowCount%2) ? $theme['td_color1'] : $theme['td_color2'];
-			$row_class = !($rowCount%2) ? $theme['td_class1'] : $theme['td_class2'];
+			$rowColor = !($rowCount%2) ? $theme['td_color1'] : $theme['td_color2'];
+			$rowClass = !($rowCount%2) ? $theme['td_class1'] : $theme['td_class2'];
 
 			$action = !empty($lang[$action]) ? $lang[$action] : str_replace('_', ' ', $action);
 
             $template->assignBlockVars('catrow.modulerow',
                 [
-                    'ROW_COLOR' => '#' . $row_color,
-                    'ROW_CLASS' => $row_class,
+                    'ROW_COLOR' => '#' . $rowColor,
+                    'ROW_CLASS' => $rowClass,
 
                     'ADMIN_MODULE'   => $action,
                     'U_ADMIN_MODULE' => Session::appendSid($file)
@@ -199,11 +199,11 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
 
     $totalActiveUsers = $totalUsers - $totalUnactiveUsers;
 
-	$start_date = create_date($board_config['default_dateformat'], $board_config['board_startdate'], $board_config['board_timezone']);
+	$startDate = create_date($board_config['default_dateformat'], $board_config['board_startdate'], $board_config['board_timezone']);
 
-    $user_timezone = isset($profileData['user_timezone']) ? $profileData['user_timezone'] : $board_config['board_timezone'];
+    $userTimeZone = isset($profileData['user_timezone']) ? $profileData['user_timezone'] : $board_config['board_timezone'];
 
-    $zone = new DateTimeZone($user_timezone);
+    $zone = new DateTimeZone($userTimeZone);
 
     $boardStartDay = new DateTime();
     $boardStartDay->setTimezone($zone);
@@ -252,7 +252,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
 
     $template->assignVars(
         [
-            'START_DATE' => $start_date,
+            'START_DATE' => $startDate,
 
             'POSTS_PER_DAY'  => $postsPerDay,
             'TOPICS_PER_DAY' => $topicsPerDay,

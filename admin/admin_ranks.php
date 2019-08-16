@@ -68,59 +68,59 @@ if ($mode !== '') {
 		//
 		// They want to add a new rank, show the form.
 		//
-		$rank_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+		$rankId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 		
 		$s_hidden_fields = '';
 		
 		if ($mode === 'edit') {
-			if (empty($rank_id)) {
+			if (empty($rankId)) {
 				message_die(GENERAL_MESSAGE, $lang['Must_select_rank']);
 			}
 
-			$rank_info = dibi::select('*')
+			$rankInfo = dibi::select('*')
 				->from(RANKS_TABLE)
-				->where('rank_id = %i', $rank_id)
+				->where('rank_id = %i', $rankId)
 				->fetch();
 
-			if (!$rank_info) {
+			if (!$rankInfo) {
 				message_die(GENERAL_ERROR, "Couldn't obtain rank data");
 			}
 
-			$s_hidden_fields .= '<input type="hidden" name="id" value="' . $rank_id . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="id" value="' . $rankId . '" />';
 		} else {
-			$rank_info['rank_special'] = 0;
+			$rankInfo['rank_special'] = 0;
 		}
 
 		$s_hidden_fields .= '<input type="hidden" name="mode" value="save" />';
 
-		$rank_is_special     =  $rank_info->rank_special ? 'checked="checked"' : '';
-		$rank_is_not_special = !$rank_info->rank_special ? 'checked="checked"' : '';
+		$rankIsSpecial    =  $rankInfo->rank_special ? 'checked="checked"' : '';
+		$rankIsNotSpecial = !$rankInfo->rank_special ? 'checked="checked"' : '';
 
 		$template->setFileNames(['body' => 'admin/ranks_edit_body.tpl']);
 
 		$template->assignVars(
 			[
-                'RANK'             => $rank_info->rank_title,
-                'SPECIAL_RANK'     => $rank_is_special,
-                'NOT_SPECIAL_RANK' => $rank_is_not_special,
-                'MINIMUM'          => $rank_is_special ? '' : $rank_info->rank_min,
-                'IMAGE'            => $rank_info->rank_image,
-                'IMAGE_DISPLAY'    => $rank_info->rank_image !== '' ? '<img src="../' . $rank_info->rank_image . '" />' : '',
+				'RANK'             => $rankInfo->rank_title,
+				'SPECIAL_RANK'     => $rankIsSpecial,
+				'NOT_SPECIAL_RANK' => $rankIsNotSpecial,
+				'MINIMUM'          => $rankIsSpecial ? '' : $rankInfo->rank_min,
+				'IMAGE'            => $rankInfo->rank_image,
+				'IMAGE_DISPLAY'    => $rankInfo->rank_image !== '' ? '<img src="../' . $rankInfo->rank_image . '" />' : '',
 
-                'L_RANKS_TITLE'        => $lang['Ranks_title'],
-                'L_RANKS_TEXT'         => $lang['Ranks_explain'],
-                'L_RANK_TITLE'         => $lang['Rank_title'],
-                'L_RANK_SPECIAL'       => $lang['Rank_special'],
-                'L_RANK_MINIMUM'       => $lang['Rank_minimum'],
-                'L_RANK_IMAGE'         => $lang['Rank_image'],
-                'L_RANK_IMAGE_EXPLAIN' => $lang['Rank_image_explain'],
-                'L_SUBMIT'             => $lang['Submit'],
-                'L_RESET'              => $lang['Reset'],
-                'L_YES'                => $lang['Yes'],
-                'L_NO'                 => $lang['No'],
+				'L_RANKS_TITLE'        => $lang['Ranks_title'],
+				'L_RANKS_TEXT'         => $lang['Ranks_explain'],
+				'L_RANK_TITLE'         => $lang['Rank_title'],
+				'L_RANK_SPECIAL'       => $lang['Rank_special'],
+				'L_RANK_MINIMUM'       => $lang['Rank_minimum'],
+				'L_RANK_IMAGE'         => $lang['Rank_image'],
+				'L_RANK_IMAGE_EXPLAIN' => $lang['Rank_image_explain'],
+				'L_SUBMIT'             => $lang['Submit'],
+				'L_RESET'              => $lang['Reset'],
+				'L_YES'                => $lang['Yes'],
+				'L_NO'                 => $lang['No'],
 
-                'S_RANK_ACTION'   => Session::appendSid('admin_ranks.php'),
-                'S_HIDDEN_FIELDS' => $s_hidden_fields
+				'S_RANK_ACTION'   => Session::appendSid('admin_ranks.php'),
+				'S_HIDDEN_FIELDS' => $s_hidden_fields
 			]
 		);
 	} elseif ($mode === 'save') {
@@ -128,28 +128,28 @@ if ($mode !== '') {
 		// Ok, they sent us our info, let's update it.
 		//
 
-		$rank_id    = isset($_POST['id'])         ? (int)$_POST['id']          : 0;
-		$rank_title = isset($_POST['title'])      ? trim($_POST['title'])      : '';
-		$min_posts  = isset($_POST['min_posts'])  ? (int)$_POST['min_posts']   : -1;
-		$rank_image = isset($_POST['rank_image']) ? trim($_POST['rank_image']) : '';
+		$rankId    = isset($_POST['id'])         ? (int)$_POST['id']          : 0;
+		$rankTitle = isset($_POST['title'])      ? trim($_POST['title'])      : '';
+		$minPosts  = isset($_POST['min_posts'])  ? (int)$_POST['min_posts']   : -1;
+		$rankImage = isset($_POST['rank_image']) ? trim($_POST['rank_image']) : '';
 
-		$special_rank = $_POST['special_rank'] === '1';
+		$specialRank = $_POST['special_rank'] === '1';
 
-		if ($rank_title === '') {
+		if ($rankTitle === '') {
 			message_die(GENERAL_MESSAGE, $lang['Must_select_rank']);
 		}
 
-		if ($special_rank === 1) {
-			$max_posts = -1;
-			$min_posts = -1;
+		if ($specialRank === 1) {
+			$maxPosts = -1;
+			$minPosts = -1;
 		}
 
 		//
 		// The rank image has to be a jpg, gif or png
 		//
-		if ($rank_image !== '') {
-			if (!preg_match("/(\.gif|\.png|\.jpg)$/is", $rank_image)) {
-				$rank_image = '';
+		if ($rankImage !== '') {
+			if (!preg_match("/(\.gif|\.png|\.jpg)$/is", $rankImage)) {
+				$rankImage = '';
 			}
 		}
 
@@ -158,34 +158,34 @@ if ($mode !== '') {
 
 		$cache->remove($key);
 
-		if ($rank_id) {
-			if (!$special_rank) {
+		if ($rankId) {
+			if (!$specialRank) {
 				dibi::update(USERS_TABLE, ['user_rank' => 0])
-					->where('user_rank = %i', $rank_id)
+					->where('user_rank = %i', $rankId)
 					->execute();
 			}
 
-			$update_data = [
-				'rank_title' => $rank_title,
-				'rank_special' => $special_rank,
-				'rank_min' => $min_posts,
-				'rank_image' => $rank_image
+			$updateData = [
+				'rank_title' => $rankTitle,
+				'rank_special' => $specialRank,
+				'rank_min' => $minPosts,
+				'rank_image' => $rankImage
 			];
 
-			dibi::update(RANKS_TABLE, $update_data)
-				->where('rank_id = %i', $rank_id)
+			dibi::update(RANKS_TABLE, $updateData)
+				->where('rank_id = %i', $rankId)
 				->execute();
 
 			$message = $lang['Rank_updated'];
 		} else {
-			$insert_data = [
-				'rank_title' => $rank_title,
-				'rank_special' => $special_rank,
-				'rank_min' => $min_posts,
-				'rank_image' => $rank_image
+			$insertData = [
+				'rank_title' => $rankTitle,
+				'rank_special' => $specialRank,
+				'rank_min' => $minPosts,
+				'rank_image' => $rankImage
 			];
 
-			dibi::insert(RANKS_TABLE, $insert_data)->execute();
+			dibi::insert(RANKS_TABLE, $insertData)->execute();
 
 			$message = $lang['Rank_added'];
 		}
@@ -200,25 +200,25 @@ if ($mode !== '') {
 		//
 		
 		if (isset($_POST['id']) || isset($_GET['id'])) {
-			$rank_id = isset($_POST['id']) ? (int)$_POST['id'] : (int)$_GET['id'];
+			$rankId = isset($_POST['id']) ? (int)$_POST['id'] : (int)$_GET['id'];
 		} else {
-			$rank_id = 0;
+			$rankId = 0;
 		}
 
 		$confirm = isset($_POST['confirm']);
 		
-		if ($rank_id && $confirm) {
+		if ($rankId && $confirm) {
 			$cache = new Cache($storage, RANKS_TABLE);
 			$key   = RANKS_TABLE . '_ordered_by_rank_special_rank_min';
 
 			$cache->remove($key);
 
 			dibi::delete(RANKS_TABLE)
-				->where('rank_id = %i', $rank_id)
+				->where('rank_id = %i', $rankId)
 				->execute();
 
 			$result = dibi::update(USERS_TABLE, ['user_rank' => 0])
-				->where('user_rank = %i', $rank_id)
+				->where('user_rank = %i', $rankId)
 				->execute();
 
 			if (!$result) {
@@ -229,11 +229,11 @@ if ($mode !== '') {
 
 			message_die(GENERAL_MESSAGE, $message);
 
-		} elseif ($rank_id && !$confirm) {
+		} elseif ($rankId && !$confirm) {
 			// Present the confirmation screen to the user
 			$template->setFileNames(['body' => 'admin/confirm_body.tpl']);
 
-			$hidden_fields = '<input type="hidden" name="mode" value="delete" /><input type="hidden" name="id" value="' . $rank_id . '" />';
+			$hidden_fields = '<input type="hidden" name="mode" value="delete" /><input type="hidden" name="id" value="' . $rankId . '" />';
 
 			$template->assignVars(
 				[
@@ -287,29 +287,29 @@ $template->assignVars(
 );
 
 foreach ($ranks as $i => $rank) {
-	$special_rank = $rank->rank_special;
-	$rank_id = $rank->rank_id;
-	$rank_min = $rank->rank_min;
+	$specialRank = $rank->rank_special;
+	$rankId      = $rank->rank_id;
+	$rankMin     = $rank->rank_min;
 	
-	if ($special_rank === 1) {
-		$rank_min = $rank_max = '-';
+	if ($specialRank === 1) {
+		$rankMin = $rankMax = '-';
 	}
 
-	$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-	$row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+	$rowColor = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+	$rowClass = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
-	$rank_is_special = $special_rank ? $lang['Yes'] : $lang['No'];
+	$rankIsSpecial = $specialRank ? $lang['Yes'] : $lang['No'];
 
 	$template->assignBlockVars('ranks',
 		[
-            'ROW_COLOR'    => '#' . $row_color,
-            'ROW_CLASS'    => $row_class,
-            'RANK'         => htmlspecialchars($rank->rank_title, ENT_QUOTES),
-            'SPECIAL_RANK' => $rank_is_special,
-            'RANK_MIN'     => $rank_min,
+			'ROW_COLOR'    => '#' . $rowColor,
+			'ROW_CLASS'    => $rowClass,
+			'RANK'         => htmlspecialchars($rank->rank_title, ENT_QUOTES),
+			'SPECIAL_RANK' => $rankIsSpecial,
+			'RANK_MIN'     => $rankMin,
 
-            'U_RANK_EDIT'   => Session::appendSid("admin_ranks.php?mode=edit&amp;id=$rank_id"),
-            'U_RANK_DELETE' => Session::appendSid("admin_ranks.php?mode=delete&amp;id=$rank_id")
+			'U_RANK_EDIT'   => Session::appendSid("admin_ranks.php?mode=edit&amp;id=$rankId"),
+			'U_RANK_DELETE' => Session::appendSid("admin_ranks.php?mode=delete&amp;id=$rankId")
 		]
 	);
 }

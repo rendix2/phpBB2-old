@@ -29,15 +29,33 @@ require_once $phpbb_root_path . 'common.php';
 
 // -------------------------
 //
-function generate_user_info(&$row, $date_format, $group_mod, &$from, &$posts, &$topics, &$joined, &$poster_avatar, &$profile_img, &$profile, &$search_img, &$search, &$pm_img, &$pm, &$email_img, &$email, &$www_img, &$www)
-{
+function generate_user_info(
+    &$row,
+    $dateFormat,
+    $group_mod,
+    &$from,
+    &$posts,
+    &$topics,
+    &$joined,
+    &$posterAvatar,
+    &$profileImage,
+    &$profile,
+    &$searchImage,
+    &$search,
+    &$pmImage,
+    &$pm,
+    &$emailImage,
+    &$email,
+    &$wwwImage,
+    &$www
+) {
 	global $lang, $images, $board_config;
 
 	$from = !empty($row->user_from) ? htmlspecialchars($row->user_from, ENT_QUOTES) : '&nbsp;';
-	$joined = create_date($date_format, $row->user_regdate, $board_config['board_timezone']);
+	$joined = create_date($dateFormat, $row->user_regdate, $board_config['board_timezone']);
 	$posts = $row->user_posts ? $row->user_posts : 0;
 	$topics = $row->user_topics ? $row->user_topics : 0;
-	$poster_avatar = '';
+	$posterAvatar = '';
 
     /**
      * TODO this never be true
@@ -46,41 +64,41 @@ function generate_user_info(&$row, $date_format, $group_mod, &$from, &$posts, &$
 	if ($row->user_avatar_type && $row->user_id !== ANONYMOUS && $row->user_allowavatar) {
 		switch( $row->user_avatar_type) {
 			case USER_AVATAR_UPLOAD:
-				$poster_avatar = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $row->user_avatar . '" alt="" border="0" />' : '';
+				$posterAvatar = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $row->user_avatar . '" alt="" border="0" />' : '';
 				break;
 			case USER_AVATAR_REMOTE:
-				$poster_avatar = $board_config['allow_avatar_remote'] ? '<img src="' . $row->user_avatar . '" alt="" border="0" />' : '';
+				$posterAvatar = $board_config['allow_avatar_remote'] ? '<img src="' . $row->user_avatar . '" alt="" border="0" />' : '';
 				break;
 			case USER_AVATAR_GALLERY:
-				$poster_avatar = $board_config['allow_avatar_local'] ? '<img src="' . $board_config['avatar_gallery_path'] . '/' . $row->user_avatar . '" alt="" border="0" />' : '';
+				$posterAvatar = $board_config['allow_avatar_local'] ? '<img src="' . $board_config['avatar_gallery_path'] . '/' . $row->user_avatar . '" alt="" border="0" />' : '';
 				break;
 		}
 	}
 
 	if (!empty($row->user_viewemail) || $group_mod) {
-		$email_uri = $board_config['board_email_form'] ? Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL .'=' . $row->user_id) : 'mailto:' . $row->user_email;
+		$emailUri = $board_config['board_email_form'] ? Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL .'=' . $row->user_id) : 'mailto:' . $row->user_email;
 
-		$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
-		$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
+		$emailImage = '<a href="' . $emailUri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
+		$email = '<a href="' . $emailUri . '">' . $lang['Send_email'] . '</a>';
 	}  else {
-		$email_img = '&nbsp;';
+		$emailImage = '&nbsp;';
 		$email = '&nbsp;';
 	}
 
-	$temp_url = Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $row->user_id);
-	$profile_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_profile'] . '" alt="' . $lang['Read_profile'] . '" title="' . $lang['Read_profile'] . '" border="0" /></a>';
-	$profile = '<a href="' . $temp_url . '">' . $lang['Read_profile'] . '</a>';
+	$tempUrl = Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $row->user_id);
+	$profileImage = '<a href="' . $tempUrl . '"><img src="' . $images['icon_profile'] . '" alt="' . $lang['Read_profile'] . '" title="' . $lang['Read_profile'] . '" border="0" /></a>';
+	$profile = '<a href="' . $tempUrl . '">' . $lang['Read_profile'] . '</a>';
 
-	$temp_url = Session::appendSid('privmsg.php?mode=post&amp;' . POST_USERS_URL . '=' . $row->user_id);
-	$pm_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
-	$pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
+	$tempUrl = Session::appendSid('privmsg.php?mode=post&amp;' . POST_USERS_URL . '=' . $row->user_id);
+	$pmImage = '<a href="' . $tempUrl . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
+	$pm = '<a href="' . $tempUrl . '">' . $lang['Send_private_message'] . '</a>';
 
-	$www_img = $row->user_website ? '<a href="' . $row->user_website . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
+	$wwwImage = $row->user_website ? '<a href="' . $row->user_website . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
 	$www = $row->user_website ? '<a href="' . $row->user_website . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
 
-	$temp_url = Session::appendSid('search.php?search_author=' . urlencode($row->username) . '&amp;show_results=posts');
-	$search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $row->username) . '" title="' . sprintf($lang['Search_user_posts'], $row->username) . '" border="0" /></a>';
-	$search = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $row->username) . '</a>';
+	$tempUrl = Session::appendSid('search.php?search_author=' . urlencode($row->username) . '&amp;show_results=posts');
+	$searchImage = '<a href="' . $tempUrl . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $row->username) . '" title="' . sprintf($lang['Search_user_posts'], $row->username) . '" border="0" /></a>';
+	$search = '<a href="' . $tempUrl . '">' . sprintf($lang['Search_user_posts'], $row->username) . '</a>';
 }
 //
 // --------------------------
@@ -93,14 +111,14 @@ $userdata = init_userprefs(PAGE_GROUPCP);
 // End session management
 //
 
-$script_name = preg_replace('/^\/?(.*?)\/?$/', "\\1", trim($board_config['script_path']));
-$script_name = $script_name !== '' ? $script_name . '/groupcp.php' : 'groupcp.php';
-$server_url = getServerUrl($board_config, $script_name);
+$scriptName = preg_replace('/^\/?(.*?)\/?$/', "\\1", trim($board_config['script_path']));
+$scriptName = $scriptName !== '' ? $scriptName . '/groupcp.php' : 'groupcp.php';
+$serverUrl  = getServerUrl($board_config, $scriptName);
 
 if (isset($_GET[POST_GROUPS_URL]) || isset($_POST[POST_GROUPS_URL])) {
-    $group_id = isset($_POST[POST_GROUPS_URL]) ? (int)$_POST[POST_GROUPS_URL] : (int)$_GET[POST_GROUPS_URL];
+    $groupId = isset($_POST[POST_GROUPS_URL]) ? (int)$_POST[POST_GROUPS_URL] : (int)$_GET[POST_GROUPS_URL];
 } else {
-    $group_id = '';
+    $groupId = '';
 }
 
 if (isset($_POST[POST_MODE]) || isset($_GET[POST_MODE])) {
@@ -119,16 +137,16 @@ $start = $start < 0 ? 0 : $start;
 //
 // Default var values
 //
-$is_moderator = false;
+$isModerator = false;
 
-if (isset($_POST['groupstatus']) && $group_id) {
+if (isset($_POST['groupstatus']) && $groupId) {
     if (!$userdata['session_logged_in']) {
-        redirect(Session::appendSid('login.php?redirect=groupcp.php&' . POST_GROUPS_URL . "=$group_id", true));
+        redirect(Session::appendSid('login.php?redirect=groupcp.php&' . POST_GROUPS_URL . "=$groupId", true));
     }
 
     $group_moderator = dibi::select('group_moderator')
         ->from(GROUPS_TABLE)
-        ->where('group_id = %i', $group_id)
+        ->where('group_id = %i', $groupId)
         ->fetchSingle();
 
     if ($group_moderator !== $userdata['user_id'] && $userdata['user_level'] !== ADMIN) {
@@ -138,32 +156,32 @@ if (isset($_POST['groupstatus']) && $group_id) {
             ]
         );
 
-        $message = $lang['Not_group_moderator'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
+        $message = $lang['Not_group_moderator'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
 		message_die(GENERAL_MESSAGE, $message);
 	}
 
 	dibi::update(GROUPS_TABLE, ['group_type' => (int)$_POST['group_type'] ])
-        ->where('group_id = %i', $group_id)
+        ->where('group_id = %i', $groupId)
         ->execute();
 
     $template->assignVars(
         [
-            'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$group_id") . '">'
+            'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">'
         ]
     );
 
-    $message = $lang['Group_type_updated'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
+    $message = $lang['Group_type_updated'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
 	message_die(GENERAL_MESSAGE, $message);
 
-} elseif (isset($_POST['joingroup']) && $group_id) {
+} elseif (isset($_POST['joingroup']) && $groupId) {
 	//
 	// First, joining a group
 	// If the user isn't logged in redirect them to login
 	//
     if (!$userdata['session_logged_in']) {
-        redirect(Session::appendSid('login.php?redirect=groupcp.php&' . POST_GROUPS_URL . "=$group_id", true));
+        redirect(Session::appendSid('login.php?redirect=groupcp.php&' . POST_GROUPS_URL . "=$groupId", true));
     } elseif ($sid !== $userdata['session_id']) {
         message_die(GENERAL_ERROR, $lang['Session_invalid']);
     }
@@ -174,7 +192,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
         ->from(GROUPS_TABLE)
         ->as('g')
         ->on('ug.group_id = g.group_id')
-        ->where('g.group_id = %i', $group_id)
+        ->where('g.group_id = %i', $groupId)
         ->where('g.group_type <> %i', GROUP_HIDDEN)
         ->fetchAll();
 
@@ -191,7 +209,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
                     ]
                 );
 
-                $message = $lang['Already_member_group'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
+                $message = $lang['Already_member_group'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
                 message_die(GENERAL_MESSAGE, $message);
             }
@@ -203,13 +221,13 @@ if (isset($_POST['groupstatus']) && $group_id) {
             ]
         );
 
-        $message = $lang['This_closed_group'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
+        $message = $lang['This_closed_group'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
         message_die(GENERAL_MESSAGE, $message);
     }
 
 	$insert_data = [
-	   'group_id' => $group_id,
+        'group_id' => $groupId,
         'user_id' => $userdata['user_id'],
         'user_pending' => 1
     ];
@@ -222,7 +240,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
         ->innerJoin(GROUPS_TABLE)
         ->as('g')
         ->on('u.user_id = g.group_moderator ')
-        ->where('g.group_id = %i', $group_id)
+        ->where('g.group_id = %i', $groupId)
         ->fetch();
 
 	$emailer = new Emailer($board_config['smtp_delivery']);
@@ -240,7 +258,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
             'GROUP_MODERATOR' => $moderator->username,
             'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
 
-            'U_GROUPCP' => $server_url . '?' . POST_GROUPS_URL . "=$group_id&validate=true"
+            'U_GROUPCP' => $serverUrl . '?' . POST_GROUPS_URL . "=$groupId&validate=true"
         ]
 	);
 	$emailer->send();
@@ -252,10 +270,10 @@ if (isset($_POST['groupstatus']) && $group_id) {
         ]
     );
 
-    $message = $lang['Group_joined'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
+    $message = $lang['Group_joined'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
 	message_die(GENERAL_MESSAGE, $message);
-} elseif (isset($_POST['unsub']) || isset($_POST['unsubpending']) && $group_id) {
+} elseif (isset($_POST['unsub']) || isset($_POST['unsubpending']) && $groupId) {
 	//
 	// Second, unsubscribing from a group
 	// Check for confirmation of unsub.
@@ -263,7 +281,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
     if ($cancel) {
         redirect(Session::appendSid('groupcp.php', true));
     } elseif (!$userdata['session_logged_in']) {
-        redirect(Session::appendSid('login.php?redirect=groupcp.php&' . POST_GROUPS_URL . "=$group_id", true));
+        redirect(Session::appendSid('login.php?redirect=groupcp.php&' . POST_GROUPS_URL . "=$groupId", true));
     } elseif ($sid !== $userdata['session_id']) {
         message_die(GENERAL_ERROR, $lang['Session_invalid']);
     }
@@ -271,7 +289,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 	if ($confirm) {
 	    dibi::delete(USER_GROUP_TABLE)
             ->where('user_id = %i', $userdata['user_id'])
-            ->where('group_id = %i', $group_id)
+            ->where('group_id = %i', $groupId)
             ->execute();
 
         if ($userdata['user_level'] !== ADMIN && $userdata['user_level'] === MOD) {
@@ -299,18 +317,16 @@ if (isset($_POST['groupstatus']) && $group_id) {
             ]
         );
 
-        $message = $lang['Unsub_success'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
+        $message = $lang['Unsub_success'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
 		message_die(GENERAL_MESSAGE, $message);
 	} else {
 		$unsub_msg = isset($_POST['unsub']) ? $lang['Confirm_unsub'] : $lang['Confirm_unsub_pending'];
 
-		$s_hidden_fields = '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" /><input type="hidden" name="unsub" value="1" />';
+		$s_hidden_fields = '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $groupId . '" /><input type="hidden" name="unsub" value="1" />';
 		$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
-		$page_title = $lang['Group_Control_Panel'];
-
-        PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+        PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $lang['Group_Control_Panel'], $gen_simple_header);
 
         $template->setFileNames(['confirm' => 'confirm_body.tpl']);
 
@@ -330,14 +346,14 @@ if (isset($_POST['groupstatus']) && $group_id) {
         PageHelper::footer($template, $userdata, $lang, $gen_simple_header);
 	}
 
-} elseif ($group_id) {
+} elseif ($groupId) {
 	//
 	// Did the group moderator get here through an email?
 	// If so, check to see if they are logged in.
 	//
     if (isset($_GET['validate'])) {
         if (!$userdata['session_logged_in']) {
-            redirect(Session::appendSid('login.php?redirect=groupcp.php&' . POST_GROUPS_URL . "=$group_id", true));
+            redirect(Session::appendSid('login.php?redirect=groupcp.php&' . POST_GROUPS_URL . "=$groupId", true));
         }
     }
 
@@ -346,7 +362,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 	//
 	switch($dbms) {
 		case 'postgresql':
-            $group_info = dibi::query('SELECT g.group_moderator, g.group_type, aa.auth_mod 
+            $groupInfo = dibi::query('SELECT g.group_moderator, g.group_type, aa.auth_mod 
 				FROM " . GROUPS_TABLE . " g, " . AUTH_ACCESS_TABLE . " aa 
 				WHERE g.group_id = %i
 					AND aa.group_id = g.group_id 
@@ -360,41 +376,41 @@ if (isset($_POST['groupstatus']) && $group_id) {
 							WHERE aa.group_id = g.group_id  
 						)
 					)
-				ORDER BY auth_mod DESC', $group_id, $group_id)
+				ORDER BY auth_mod DESC', $groupId, $groupId)
                 ->fetch();
 			break;
 
 		case 'oracle':
-            $group_info = dibi::select(['g.group_moderator', 'g.group_type', 'aa.auth_mod'])
+            $groupInfo = dibi::select(['g.group_moderator', 'g.group_type', 'aa.auth_mod'])
                 ->from(GROUPS_TABLE)
                 ->as('g')
                 ->innerJoin(AUTH_ACCESS_TABLE)
                 ->as('aa')
                 ->on('aa.group_id (+) = g.group_id')
-                ->where('g.group_id = %i', $group_id)
+                ->where('g.group_id = %i', $groupId)
                 ->orderBy('aa.auth_mod', dibi::DESC)
                 ->fetch();
 			break;
 
 		default:
 		    // there was left join
-            $group_info = dibi::select(['g.group_moderator', 'g.group_type', 'aa.auth_mod'])
+            $groupInfo = dibi::select(['g.group_moderator', 'g.group_type', 'aa.auth_mod'])
                 ->from(GROUPS_TABLE)
                 ->as('g')
                 ->innerJoin(AUTH_ACCESS_TABLE)
                 ->as('aa')
                 ->on('aa.group_id = g.group_id')
-                ->where('g.group_id = %i', $group_id)
+                ->where('g.group_id = %i', $groupId)
                 ->orderBy('aa.auth_mod', dibi::DESC)
                 ->fetch();
 			break;
 	}
 
-    if ($group_info) {
-		$group_moderator = $group_info->group_moderator;
+    if ($groupInfo) {
+		$group_moderator = $groupInfo->group_moderator;
 
         if ($group_moderator === $userdata['user_id'] || $userdata['user_level'] === ADMIN) {
-            $is_moderator = true;
+            $isModerator = true;
         }
 			
 		//
@@ -402,12 +418,12 @@ if (isset($_POST['groupstatus']) && $group_id) {
         //
         if (!empty($_POST['add']) || !empty($_POST['remove']) || isset($_POST['approve']) || isset($_POST['deny'])) {
             if (!$userdata['session_logged_in']) {
-                redirect(Session::appendSid('login.php?redirect=groupcp.php&' . POST_GROUPS_URL . "=$group_id", true));
+                redirect(Session::appendSid('login.php?redirect=groupcp.php&' . POST_GROUPS_URL . "=$groupId", true));
             } elseif ($sid !== $userdata['session_id']) {
                 message_die(GENERAL_ERROR, $lang['Session_invalid']);
             }
 
-            if (!$is_moderator) {
+            if (!$isModerator) {
                 $template->assignVars(
                     [
                         'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('index.php') . '">'
@@ -430,11 +446,11 @@ if (isset($_POST['groupstatus']) && $group_id) {
                 if (!$row) {
                     $template->assignVars(
                         [
-                            'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$group_id") . '">'
+                            'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">'
                         ]
                     );
 
-                    $message = $lang['Could_not_add_user'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
+                    $message = $lang['Could_not_add_user'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
 					message_die(GENERAL_MESSAGE, $message);
 				}
@@ -442,11 +458,11 @@ if (isset($_POST['groupstatus']) && $group_id) {
                 if ($row->user_id === ANONYMOUS) {
                     $template->assignVars(
                         [
-                            'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$group_id") . '">'
+                            'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">'
 
                         ]);
 
-                    $message = $lang['Could_not_anon_user'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
+                    $message = $lang['Could_not_anon_user'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
 					message_die(GENERAL_MESSAGE, $message);
 				}
@@ -458,29 +474,29 @@ if (isset($_POST['groupstatus']) && $group_id) {
                     ->as('u')
                     ->on('ug.user_id = u.user_id')
                     ->where('u.user_id = %i', $row->user_id)
-                    ->where('ug.group_id = %i', $group_id)
+                    ->where('ug.group_id = %i', $groupId)
                     ->fetch();
 
 				if ($member) {
                     $template->assignVars(
                         [
-                            'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$group_id") . '">'
+                            'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">'
                         ]
                     );
 
-                    $message = $lang['User_is_member_group'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$group_id") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
+                    $message = $lang['User_is_member_group'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
                     message_die(GENERAL_MESSAGE, $message);
                 } else {
 				    $insert_data = [
-				        'user_id' => $row->user_id,
-                        'group_id' =>$group_id,
+                        'user_id' => $row->user_id,
+                        'group_id' =>$groupId,
                         'user_pending' => 0
                     ];
 
 				    dibi::insert(USER_GROUP_TABLE, $insert_data)->execute();
 
-                    if ($row->user_level !== ADMIN && $row->user_level !== MOD && $group_info->auth_mod) {
+                    if ($row->user_level !== ADMIN && $row->user_level !== MOD && $groupInfo->auth_mod) {
                         dibi::update(USERS_TABLE, ['user_level' => MOD])
                             ->where('user_id = %i', $row->user_id)
                             ->execute();
@@ -490,13 +506,13 @@ if (isset($_POST['groupstatus']) && $group_id) {
 					// Get the group name
 					// Email the user and tell them they're in the group
 					//
-                    $group_name =  dibi::select('group_name')
+                    $groupName =  dibi::select('group_name')
                         ->from(GROUPS_TABLE)
-                        ->where('group_id = %i', $group_id)
+                        ->where('group_id = %i', $groupId)
                         ->fetchSingle();
 
 					// TODO group not exists
-                    if (!$group_name) {
+                    if (!$groupName) {
                         message_die(GENERAL_ERROR, 'Could not get group information');
                     }
 
@@ -512,10 +528,10 @@ if (isset($_POST['groupstatus']) && $group_id) {
                     $emailer->assignVars(
                         [
                             'SITENAME'   => $board_config['sitename'],
-                            'GROUP_NAME' => $group_name,
+                            'GROUP_NAME' => $groupName,
                             'EMAIL_SIG'  => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
 
-                            'U_GROUPCP' => $server_url . '?' . POST_GROUPS_URL . "=$group_id"
+                            'U_GROUPCP' => $serverUrl . '?' . POST_GROUPS_URL . "=$groupId"
                         ]
                     );
                     $emailer->send();
@@ -526,7 +542,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 					$members = isset($_POST['approve']) || isset($_POST['deny']) ? $_POST['pending_members'] : $_POST['members'];
 
                     if (isset($_POST['approve'])) {
-                        if ($group_info->auth_mod) {
+                        if ($groupInfo->auth_mod) {
 						    dibi::update(USERS_TABLE, ['user_level' => MOD])
                                 ->where('user_id IN %in', $members)
                                 ->where('user_level NOT IN %in', [MOD, ADMIN])
@@ -535,11 +551,11 @@ if (isset($_POST['groupstatus']) && $group_id) {
 
 						dibi::update(USER_GROUP_TABLE, ['user_pending' => 0])
                             ->where('user_id IN %in', $members)
-                            ->where('group_id = %i', $group_id)
+                            ->where('group_id = %i', $groupId)
                             ->execute();
 
                     } elseif (isset($_POST['deny']) || isset($_POST['remove'])) {
-                        if ($group_info->auth_mod) {
+                        if ($groupInfo->auth_mod) {
                             $user_ids = dibi::select(['ug.user_id'])
                                 ->from(AUTH_ACCESS_TABLE)
                                 ->as('aa')
@@ -564,7 +580,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 
 						dibi::delete(USER_GROUP_TABLE)
                             ->where('user_id IN %in', $members)
-                            ->where('group_id = %i', $group_id)
+                            ->where('group_id = %i', $groupId)
                             ->execute();
 					}
 
@@ -580,12 +596,12 @@ if (isset($_POST['groupstatus']) && $group_id) {
 						//
 						// Get the group name
 						//
-						$group_name = dibi::select('group_name')
+						$groupName = dibi::select('group_name')
                             ->from(GROUPS_TABLE)
-                            ->where('group_id = %i', $group_id)
+                            ->where('group_id = %i', $groupId)
                             ->fetchSingle();
 
-						if ($group_name === false) {
+						if ($groupName === false) {
 							message_die(GENERAL_ERROR, 'Could not get group information');
 						}
 
@@ -604,10 +620,10 @@ if (isset($_POST['groupstatus']) && $group_id) {
                         $emailer->assignVars(
                             [
                                 'SITENAME'   => $board_config['sitename'],
-                                'GROUP_NAME' => $group_name,
+                                'GROUP_NAME' => $groupName,
                                 'EMAIL_SIG'  => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
 
-                                'U_GROUPCP' => $server_url . '?' . POST_GROUPS_URL . "=$group_id"
+                                'U_GROUPCP' => $serverUrl . '?' . POST_GROUPS_URL . "=$groupId"
                             ]
                         );
                         $emailer->send();
@@ -626,13 +642,13 @@ if (isset($_POST['groupstatus']) && $group_id) {
 	//
 	// Get group details
 	//
-    $group_info = dibi::select('*')
+    $groupInfo = dibi::select('*')
         ->from(GROUPS_TABLE)
-        ->where('group_id = %i', $group_id)
+        ->where('group_id = %i', $groupId)
         ->where('group_single_user = %i', 0)
         ->fetch();
 
-    if (!$group_info) {
+    if (!$groupInfo) {
         message_die(GENERAL_MESSAGE, $lang['Group_not_exist']);
     }
 
@@ -653,7 +669,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
     //
     $group_moderator = dibi::select($columns)
         ->from(USERS_TABLE)
-        ->where('user_id = %i', $group_info->group_moderator)
+        ->where('user_id = %i', $groupInfo->group_moderator)
         ->fetch();
 
     $columns = [
@@ -671,19 +687,19 @@ if (isset($_POST['groupstatus']) && $group_id) {
     //
     // Get user information for this group
     //
-    $group_members = dibi::select($columns)
+    $groupMembers = dibi::select($columns)
         ->from(USERS_TABLE)
         ->as('u')
         ->innerJoin(USER_GROUP_TABLE)
         ->as('ug')
         ->on('u.user_id = ug.user_id')
-        ->where('ug.group_id = %i', $group_id)
+        ->where('ug.group_id = %i', $groupId)
         ->where('ug.user_pending = %i', 0)
         ->where('ug.user_id <> %i', $group_moderator->user_id)
         ->orderBy('u.username')
         ->fetchAll();
 
-    $members_count = count($group_members);
+    $membersCount = count($groupMembers);
 
 	$columns = [
 	    'u.username',
@@ -706,66 +722,64 @@ if (isset($_POST['groupstatus']) && $group_id) {
         ->innerJoin(USERS_TABLE)
         ->as('u')
         ->on('u.user_id = ug.user_id')
-        ->where('g.group_id = %i', $group_id)
+        ->where('g.group_id = %i', $groupId)
         ->where('ug.user_pending = %i', 1)
         ->orderBy('u.username')
         ->fetchAll();
 
     $modgroup_pending_count = count($modgroup_pending_list);
 
-	$is_group_member = 0;
+	$isGroupMember = 0;
 
-    foreach ($group_members as $group_member) {
-        if ($group_member->user_id === $userdata['user_id'] && $userdata['session_logged_in']) {
-            $is_group_member = true;
+    foreach ($groupMembers as $groupMember) {
+        if ($groupMember->user_id === $userdata['user_id'] && $userdata['session_logged_in']) {
+            $isGroupMember = true;
         }
     }
 
-	$is_group_pending_member = 0;
+	$isGroupPendingMember = 0;
 
     foreach ($modgroup_pending_list as $modgroup_pending_value) {
         if ($modgroup_pending_value->user_id === $userdata['user_id'] && $userdata['session_logged_in']) {
-            $is_group_pending_member = true;
+            $isGroupPendingMember = true;
         }
     }
 
     if ($userdata['user_level'] === ADMIN) {
-        $is_moderator = true;
+        $isModerator = true;
     }
 
-    if ($userdata['user_id'] === $group_info->group_moderator) {
-        $is_moderator = true;
+    if ($userdata['user_id'] === $groupInfo->group_moderator) {
+        $isModerator = true;
 
         $group_details = $lang['Are_group_moderator'];
 
-        $s_hidden_fields = '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
-    } elseif ($is_group_member || $is_group_pending_member) {
+        $s_hidden_fields = '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $groupId . '" />';
+    } elseif ($isGroupMember || $isGroupPendingMember) {
         $template->assignBlockVars('switch_unsubscribe_group_input', []);
 
-        $group_details = $is_group_pending_member ? $lang['Pending_this_group'] : $lang['Member_this_group'];
+        $group_details = $isGroupPendingMember ? $lang['Pending_this_group'] : $lang['Member_this_group'];
 
-        $s_hidden_fields = '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
+        $s_hidden_fields = '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $groupId . '" />';
     } elseif ($userdata['user_id'] === ANONYMOUS) {
         $group_details   = $lang['Login_to_join'];
         $s_hidden_fields = '';
     } else {
-        if ($group_info->group_type === GROUP_OPEN) {
+        if ($groupInfo->group_type === GROUP_OPEN) {
             $template->assignBlockVars('switch_subscribe_group_input', []);
 
             $group_details   = $lang['This_open_group'];
-            $s_hidden_fields = '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
-        } elseif ($group_info->group_type === GROUP_CLOSED) {
+            $s_hidden_fields = '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $groupId . '" />';
+        } elseif ($groupInfo->group_type === GROUP_CLOSED) {
             $group_details   = $lang['This_closed_group'];
             $s_hidden_fields = '';
-        } elseif ($group_info->group_type === GROUP_HIDDEN) {
+        } elseif ($groupInfo->group_type === GROUP_HIDDEN) {
             $group_details   = $lang['This_hidden_group'];
             $s_hidden_fields = '';
         }
     }
 
-	$page_title = $lang['Group_Control_Panel'];
-
-    PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+    PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $lang['Group_Control_Panel'], $gen_simple_header);
 
 	//
 	// Load templates
@@ -779,7 +793,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 	$username = $group_moderator->username;
 	$user_id = $group_moderator->user_id;
 
-	generate_user_info($group_moderator, $board_config['default_dateformat'], $is_moderator, $from, $posts, $topics, $joined, $poster_avatar, $profile_img, $profile, $search_img, $search, $pm_img, $pm, $email_img, $email, $www_img, $www);
+	generate_user_info($group_moderator, $board_config['default_dateformat'], $isModerator, $from, $posts, $topics, $joined, $poster_avatar, $profileImage, $profile, $searchImage, $search, $pmImage, $pm, $emailImage, $email, $wwwImage, $www);
 
 	$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
@@ -815,8 +829,8 @@ if (isset($_POST['groupstatus']) && $group_id) {
             'L_ADD_MEMBER' => $lang['Add_member'],
             'L_FIND_USERNAME' => $lang['Find_username'],
 
-            'GROUP_NAME' => htmlspecialchars($group_info->group_name, ENT_QUOTES),
-            'GROUP_DESC' => htmlspecialchars($group_info->group_description, ENT_QUOTES),
+            'GROUP_NAME' => htmlspecialchars($groupInfo->group_name, ENT_QUOTES),
+            'GROUP_DESC' => htmlspecialchars($groupInfo->group_description, ENT_QUOTES),
             'GROUP_DETAILS' => $group_details,
 
             'MOD_ROW_COLOR' => '#' . $theme['td_color1'],
@@ -830,19 +844,19 @@ if (isset($_POST['groupstatus']) && $group_id) {
 
             'MOD_AVATAR_IMG' => $poster_avatar,
 
-            'MOD_PROFILE_IMG' => $profile_img,
+            'MOD_PROFILE_IMG' => $profileImage,
             'MOD_PROFILE' => $profile,
 
-            'MOD_SEARCH_IMG' => $search_img,
+            'MOD_SEARCH_IMG' => $searchImage,
             'MOD_SEARCH' => $search,
 
-            'MOD_PM_IMG' => $pm_img,
+            'MOD_PM_IMG' => $pmImage,
             'MOD_PM' => $pm,
 
-            'MOD_EMAIL_IMG' => $email_img,
+            'MOD_EMAIL_IMG' => $emailImage,
             'MOD_EMAIL' => $email,
 
-            'MOD_WWW_IMG' => $www_img,
+            'MOD_WWW_IMG' => $wwwImage,
             'MOD_WWW' => $www,
 
             'U_MOD_VIEWPROFILE' => Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$user_id"),
@@ -851,9 +865,9 @@ if (isset($_POST['groupstatus']) && $group_id) {
             'S_GROUP_OPEN_TYPE' => GROUP_OPEN,
             'S_GROUP_CLOSED_TYPE' => GROUP_CLOSED,
             'S_GROUP_HIDDEN_TYPE' => GROUP_HIDDEN,
-            'S_GROUP_OPEN_CHECKED' => $group_info->group_type === GROUP_OPEN ? ' checked="checked"' : '',
-            'S_GROUP_CLOSED_CHECKED' => $group_info->group_type === GROUP_CLOSED ? ' checked="checked"' : '',
-            'S_GROUP_HIDDEN_CHECKED' => $group_info->group_type === GROUP_HIDDEN ? ' checked="checked"' : '',
+            'S_GROUP_OPEN_CHECKED' => $groupInfo->group_type === GROUP_OPEN ? ' checked="checked"' : '',
+            'S_GROUP_CLOSED_CHECKED' => $groupInfo->group_type === GROUP_CLOSED ? ' checked="checked"' : '',
+            'S_GROUP_HIDDEN_CHECKED' => $groupInfo->group_type === GROUP_HIDDEN ? ' checked="checked"' : '',
 
             'S_HIDDEN_FIELDS' => $s_hidden_fields,
 
@@ -862,29 +876,29 @@ if (isset($_POST['groupstatus']) && $group_id) {
              */
             //'S_MODE_SELECT' => $select_sort_mode,
             //'S_ORDER_SELECT' => $select_sort_order,
-            'S_GROUPCP_ACTION' => Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$group_id")]
+            'S_GROUPCP_ACTION' => Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId")]
 	);
 
 	//
 	// Dump out the remaining users
 	//
 
-    $min = min($board_config['group_members_per_page'] + $start, $members_count);
+    $min = min($board_config['group_members_per_page'] + $start, $membersCount);
 
     for ($i = $start; $i < $min; $i++) {
-		$username = $group_members[$i]['username'];
-		$user_id = $group_members[$i]['user_id'];
+		$username = $groupMembers[$i]['username'];
+		$user_id = $groupMembers[$i]['user_id'];
 
-		generate_user_info($group_members[$i], $board_config['default_dateformat'], $is_moderator, $from, $posts, $topics, $joined, $poster_avatar, $profile_img, $profile, $search_img, $search, $pm_img, $pm, $email_img, $email, $www_img, $www);
+		generate_user_info($groupMembers[$i], $board_config['default_dateformat'], $isModerator, $from, $posts, $topics, $joined, $poster_avatar, $profileImage, $profile, $searchImage, $search, $pmImage, $pm, $emailImage, $email, $wwwImage, $www);
 
-		if ($group_info->group_type !== GROUP_HIDDEN || $is_group_member || $is_moderator) {
-			$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-			$row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+		if ($groupInfo->group_type !== GROUP_HIDDEN || $isGroupMember || $isModerator) {
+			$rowColor = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+			$rowClass = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
             $template->assignBlockVars('member_row',
                 [
-                    'ROW_COLOR'      => '#' . $row_color,
-                    'ROW_CLASS'      => $row_class,
+                    'ROW_COLOR'      => '#' . $rowColor,
+                    'ROW_CLASS'      => $rowClass,
                     'USERNAME'       => $username,
                     'FROM'           => $from,
                     'JOINED'         => $joined,
@@ -892,28 +906,28 @@ if (isset($_POST['groupstatus']) && $group_id) {
                     'TOPICS'         => $topics,
                     'USER_ID'        => $user_id,
                     'AVATAR_IMG'     => $poster_avatar,
-                    'PROFILE_IMG'    => $profile_img,
+                    'PROFILE_IMG'    => $profileImage,
                     'PROFILE'        => $profile,
-                    'SEARCH_IMG'     => $search_img,
+                    'SEARCH_IMG'     => $searchImage,
                     'SEARCH'         => $search,
-                    'PM_IMG'         => $pm_img,
+                    'PM_IMG'         => $pmImage,
                     'PM'             => $pm,
-                    'EMAIL_IMG'      => $email_img,
+                    'EMAIL_IMG'      => $emailImage,
                     'EMAIL'          => $email,
-                    'WWW_IMG'        => $www_img,
+                    'WWW_IMG'        => $wwwImage,
                     'WWW'            => $www,
 
                     'U_VIEWPROFILE' => Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$user_id")
                 ]
             );
 
-            if ($is_moderator) {
+            if ($isModerator) {
                 $template->assignBlockVars('member_row.switch_mod_option', []);
             }
 		}
 	}
 
-    if (!$members_count) {
+    if (!$membersCount) {
         //
         // No group members
         //
@@ -925,18 +939,18 @@ if (isset($_POST['groupstatus']) && $group_id) {
         );
     }
 
-    $current_page = $members_count ? ceil($members_count / $board_config['group_members_per_page']) : 1;
+    $currentPage = $membersCount ? ceil($membersCount / $board_config['group_members_per_page']) : 1;
 
     $template->assignVars(
         [
-            'PAGINATION'  => generate_pagination('groupcp.php?' . POST_GROUPS_URL . "=$group_id", $members_count, $board_config['group_members_per_page'], $start),
-            'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $board_config['group_members_per_page']) + 1, $current_page),
+            'PAGINATION'  => generate_pagination('groupcp.php?' . POST_GROUPS_URL . "=$groupId", $membersCount, $board_config['group_members_per_page'], $start),
+            'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $board_config['group_members_per_page']) + 1, $currentPage),
 
             'L_GOTO_PAGE' => $lang['Goto_page']
         ]
     );
 
-    if ($group_info->group_type === GROUP_HIDDEN && !$is_group_member && !$is_moderator) {
+    if ($groupInfo->group_type === GROUP_HIDDEN && !$isGroupMember && !$isModerator) {
 		//
 		// No group members
 		//
@@ -952,7 +966,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 	// We've displayed the members who belong to the group, now we 
 	// do that pending memebers... 
 	//
-    if ($is_moderator) {
+    if ($isModerator) {
 		//
 		// Users pending in ONLY THIS GROUP (which is moderated by this user)
 		//
@@ -961,32 +975,51 @@ if (isset($_POST['groupstatus']) && $group_id) {
 				$username = $modgroup_pending_value->username;
 				$user_id = $modgroup_pending_value->user_id;
 
-				generate_user_info($modgroup_pending_value, $board_config['default_dateformat'], $is_moderator, $from, $posts, $topics, $joined, $poster_avatar, $profile_img, $profile, $search_img, $search, $pm_img, $pm, $email_img, $email, $www_img, $www);
+				generate_user_info(
+				    $modgroup_pending_value,
+                    $board_config['default_dateformat'],
+                    $isModerator,
+                    $from,
+                    $posts,
+                    $topics,
+                    $joined,
+                    $poster_avatar,
+                    $profileImage,
+                    $profile,
+                    $searchImage,
+                    $search,
+                    $pmImage,
+                    $pm,
+                    $emailImage,
+                    $email,
+                    $wwwImage,
+                    $www
+                );
 
-				$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-				$row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+				$rowColor = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+				$rowClass = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
 				$user_select = '<input type="checkbox" name="member[]" value="' . $user_id . '">';
 
                 $template->assignBlockVars('pending_members_row',
                     [
-                        'ROW_CLASS'      => $row_class,
-                        'ROW_COLOR'      => '#' . $row_color,
+                        'ROW_CLASS'      => $rowClass,
+                        'ROW_COLOR'      => '#' . $rowColor,
                         'USERNAME'       => $username,
                         'FROM'           => $from,
                         'JOINED'         => $joined,
                         'POSTS'          => $posts,
                         'USER_ID'        => $user_id,
                         'AVATAR_IMG'     => $poster_avatar,
-                        'PROFILE_IMG'    => $profile_img,
+                        'PROFILE_IMG'    => $profileImage,
                         'PROFILE'        => $profile,
-                        'SEARCH_IMG'     => $search_img,
+                        'SEARCH_IMG'     => $searchImage,
                         'SEARCH'         => $search,
-                        'PM_IMG'         => $pm_img,
+                        'PM_IMG'         => $pmImage,
                         'PM'             => $pm,
-                        'EMAIL_IMG'      => $email_img,
+                        'EMAIL_IMG'      => $emailImage,
                         'EMAIL'          => $email,
-                        'WWW_IMG'        => $www_img,
+                        'WWW_IMG'        => $wwwImage,
                         'WWW'            => $www,
 
                         'U_VIEWPROFILE' => Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$user_id")
@@ -1009,7 +1042,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 		}
 	}
 
-    if ($is_moderator) {
+    if ($isModerator) {
         $template->assignBlockVars('switch_mod_option', []);
         $template->assignBlockVars('switch_add_member', []);
     }
@@ -1022,7 +1055,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 	// Select all group that the user is a member of or where the user has
 	// a pending membership.
 	//
-	$in_group = [];
+	$inGroup = [];
 
     if ($userdata['session_logged_in']) {
 	    $rows = dibi::select(['g.group_id', 'g.group_name', 'g.group_type', 'ug.user_pending'])
@@ -1037,12 +1070,12 @@ if (isset($_POST['groupstatus']) && $group_id) {
             ->orderBy('ug.user_id')
             ->fetchAll();
 
-        $in_group = [];
-        $s_member_groups_opt = '';
+        $inGroup              = [];
+        $s_member_groups_opt  = '';
         $s_pending_groups_opt = '';
 
         foreach ($rows as $row) {
-            $in_group[] = $row->group_id;
+            $inGroup[] = $row->group_id;
 
             if ($row->user_pending) {
                 $s_pending_groups_opt .= '<option value="' . $row->group_id . '">' . htmlspecialchars($row->group_name, ENT_QUOTES) . '</option>';
@@ -1058,23 +1091,22 @@ if (isset($_POST['groupstatus']) && $group_id) {
 	//
 	// Select all other groups i.e. groups that this user is not a member of
 	//
-
-    $group_rows = dibi::select(['group_id', 'group_name', 'group_type'])
+    $groups = dibi::select(['group_id', 'group_name', 'group_type'])
         ->from(GROUPS_TABLE)
         ->where('group_single_user <> %i', 1);
 
-    if (count($in_group)) {
-        $group_rows->where('group_id NOT IN %in', $in_group);
+    if (count($inGroup)) {
+        $groups->where('group_id NOT IN %in', $inGroup);
     }
 
-    $group_rows = $group_rows->orderBy('group_name')
+    $groups = $groups->orderBy('group_name')
         ->fetchAll();
 
 	$s_group_list_opt = '';
 
-    foreach ($group_rows as $group_row) {
-        if ($group_row->group_type !== GROUP_HIDDEN || $userdata['user_level'] === ADMIN) {
-            $s_group_list_opt .= '<option value="' . $group_row->group_id . '">' . htmlspecialchars($group_row->group_name, ENT_QUOTES) . '</option>';
+    foreach ($groups as $group) {
+        if ($group->group_type !== GROUP_HIDDEN || $userdata['user_level'] === ADMIN) {
+            $s_group_list_opt .= '<option value="' . $group->group_id . '">' . htmlspecialchars($group->group_name, ENT_QUOTES) . '</option>';
         }
     }
 	$s_group_list = '<select name="' . POST_GROUPS_URL . '">' . $s_group_list_opt . '</select>';
@@ -1083,9 +1115,7 @@ if (isset($_POST['groupstatus']) && $group_id) {
 		//
 		// Load and process templates
 		//
-		$page_title = $lang['Group_Control_Panel'];
-
-        PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+        PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $lang['Group_Control_Panel'], $gen_simple_header);
 
         $template->setFileNames(['user' => 'groupcp_user_body.tpl']);
         make_jumpbox('viewforum.php');

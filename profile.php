@@ -45,9 +45,9 @@ if (!empty($_POST['sid']) || !empty($_GET['sid'])) {
 //
 // Set default email variables
 //
-$script_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['script_path']));
-$script_name = $script_name !== '' ? $script_name . '/profile.php' : 'profile.php';
-$server_url = getServerUrl($board_config, $script_name);
+$scriptName = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['script_path']));
+$scriptName = $scriptName !== '' ? $scriptName . '/profile.php' : 'profile.php';
+$serverUrl  = getServerUrl($board_config, $scriptName);
 
 // -----------------------
 // Page specific functions

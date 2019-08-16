@@ -38,9 +38,7 @@ $userdata = init_userprefs(PAGE_VIEW_ONLINE);
 //
 // Output page header and load viewonline template
 //
-$page_title = $lang['Who_is_Online'];
-
-PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $lang['Who_is_Online'], $gen_simple_header);
 
 $template->setFileNames(
     [
@@ -62,24 +60,24 @@ $template->assignVars(
 //
 // Forum info
 //
-$forum_data = dibi::select(['forum_id', 'forum_name'])
+$forums = dibi::select(['forum_id', 'forum_name'])
     ->from(FORUMS_TABLE)
     ->fetchPairs('forum_id', 'forum_name');
 
 //
 // Get auth data
 //
-$is_auth_ary = Auth::authorize(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
+$is_auth = Auth::authorize(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
 
 //
 // Get user list
 //
 $columns = ['u.user_id', 'u.username', 'u.user_allow_viewonline', 'u.user_level', 's.session_logged_in', 's.session_time', 's.session_page', 's.session_ip'];
 
-$user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
+$userTimeZone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
 
 $time = new DateTime();
-$time->setTimezone(new DateTimeZone($user_timezone));
+$time->setTimezone(new DateTimeZone($userTimeZone));
 $time->sub(new DateInterval('PT' . ONLINE_TIME_DIFF . 'S'));
 
 $rows = dibi::select($columns)
@@ -93,146 +91,146 @@ $rows = dibi::select($columns)
     ->orderBy('s.session_ip', dibi::ASC)
     ->fetchAll();
 
-$guest_users = 0;
-$registered_users = 0;
-$hidden_users = 0;
+$guestUsers      = 0;
+$registeredUsers = 0;
+$hiddenUsers     = 0;
 
-$reg_counter = 0;
-$guest_counter = 0;
-$prev_user = 0;
-$prev_ip = '';
+$regCounter     = 0;
+$guestCounter   = 0;
+$previousUserId = 0;
+$previousIp     = '';
 
 foreach ($rows as $row) {
-	$view_online = false;
+	$viewOnline = false;
 
     if ($row->session_logged_in) {
-		$user_id = $row->user_id;
+		$userId = $row->user_id;
 
-        if ($user_id !== $prev_user) {
-			$username = $row->username;
+        if ($userId !== $previousUserId) {
+			$userName = $row->username;
 
-            $style_color = '';
+            $styleColor = '';
             if ($row->user_level === ADMIN) {
-                $username = '<b style="color:#' . $theme['fontcolor3'] . '">' . $username . '</b>';
+                $userName = '<b style="color:#' . $theme['fontcolor3'] . '">' . $userName . '</b>';
             } elseif ($row->user_level === MOD) {
-                $username = '<b style="color:#' . $theme['fontcolor2'] . '">' . $username . '</b>';
+                $userName = '<b style="color:#' . $theme['fontcolor2'] . '">' . $userName . '</b>';
             }
 
             if ($row->user_allow_viewonline) {
-                $view_online = true;
-                $registered_users++;
+                $viewOnline = true;
+                $registeredUsers++;
             } else {
-				$view_online = $userdata['user_level'] === ADMIN;
-				$hidden_users++;
+				$viewOnline = $userdata['user_level'] === ADMIN;
+				$hiddenUsers++;
 
-				$username = '<i>' . $username . '</i>';
+				$userName = '<i>' . $userName . '</i>';
 			}
 
-			$which_counter = 'reg_counter';
-			$which_row = 'reg_user_row';
-			$prev_user = $user_id;
+			$whichCounter   = 'reg_counter';
+			$whichRow       = 'reg_user_row';
+			$previousUserId = $userId;
 		}
 	}
 	else {
-        if ($row->session_ip !== $prev_ip) {
-			$username = $lang['Guest'];
-			$view_online = true;
-			$guest_users++;
+        if ($row->session_ip !== $previousIp) {
+			$userName   = $lang['Guest'];
+			$viewOnline = true;
+			$guestUsers++;
 	
-			$which_counter = 'guest_counter';
-			$which_row = 'guest_user_row';
+			$whichCounter = 'guest_counter';
+			$whichRow     = 'guest_user_row';
 		}
 	}
 
-	$prev_ip = $row->session_ip;
+	$previousIp = $row->session_ip;
 
-    if ($view_online) {
-        if ($row->session_page < 1 || !$is_auth_ary[$row->session_page]['auth_view']) {
+    if ($viewOnline) {
+        if ($row->session_page < 1 || !$is_auth[$row->session_page]['auth_view']) {
             switch ($row->session_page) {
 				case PAGE_INDEX:
-					$location = $lang['Forum_index'];
-					$location_url = 'index.php';
+					$location    = $lang['Forum_index'];
+					$locationUrl = 'index.php';
 					break;
 				case PAGE_POSTING:
-					$location = $lang['Posting_message'];
-					$location_url = 'index.pphp';
+					$location    = $lang['Posting_message'];
+					$locationUrl = 'index.pphp';
 					break;
 				case PAGE_LOGIN:
-					$location = $lang['Logging_on'];
-					$location_url = 'index.php';
+					$location    = $lang['Logging_on'];
+					$locationUrl = 'index.php';
 					break;
 				case PAGE_SEARCH:
-					$location = $lang['Searching_forums'];
-					$location_url = 'search.php';
+					$location    = $lang['Searching_forums'];
+					$locationUrl = 'search.php';
 					break;
 				case PAGE_PROFILE:
-					$location = $lang['Viewing_profile'];
-					$location_url = 'index.php';
+					$location    = $lang['Viewing_profile'];
+					$locationUrl = 'index.php';
 					break;
 				case PAGE_VIEW_ONLINE:
-					$location = $lang['Viewing_online'];
-					$location_url = 'viewonline.php';
+					$location    = $lang['Viewing_online'];
+					$locationUrl = 'viewonline.php';
 					break;
 				case PAGE_VIEW_MEMBERS:
-					$location = $lang['Viewing_member_list'];
-					$location_url = 'memberlist.php';
+					$location    = $lang['Viewing_member_list'];
+					$locationUrl = 'memberlist.php';
 					break;
 				case PAGE_PRIVMSGS:
-					$location = $lang['Viewing_priv_msgs'];
-					$location_url = 'privmsg.php';
+					$location    = $lang['Viewing_priv_msgs'];
+					$locationUrl = 'privmsg.php';
 					break;
 				case PAGE_FAQ:
-					$location = $lang['Viewing_FAQ'];
-					$location_url = 'faq.php';
+					$location    = $lang['Viewing_FAQ'];
+					$locationUrl = 'faq.php';
 					break;
 				default:
-					$location = $lang['Forum_index'];
-					$location_url = 'index.php';
+					$location    = $lang['Forum_index'];
+					$locationUrl = 'index.php';
 			}
 		} else {
-			$location_url = Session::appendSid('viewforum.php?' . POST_FORUM_URL . '=' . $row->session_page);
-			$location = $forum_data[$row->session_page];
+			$locationUrl = Session::appendSid('viewforum.php?' . POST_FORUM_URL . '=' . $row->session_page);
+			$location    = $forums[$row->session_page];
 		}
 
-		$row_color = ( $$which_counter % 2 ) ? $theme['td_color1'] : $theme['td_color2'];
-		$row_class = ( $$which_counter % 2 ) ? $theme['td_class1'] : $theme['td_class2'];
+		$rowColor = ( $$whichCounter % 2 ) ? $theme['td_color1'] : $theme['td_color2'];
+		$rowClass = ( $$whichCounter % 2 ) ? $theme['td_class1'] : $theme['td_class2'];
 
-        $template->assignBlockVars((string)$which_row,
+        $template->assignBlockVars((string)$whichRow,
             [
-                'ROW_COLOR'      => '#' . $row_color,
-                'ROW_CLASS'      => $row_class,
-                'USERNAME'       => $username,
+                'ROW_COLOR'      => '#' . $rowColor,
+                'ROW_CLASS'      => $rowClass,
+                'USERNAME'       => $userName,
                 'LASTUPDATE'     => create_date($board_config['default_dateformat'], $row->session_time, $board_config['board_timezone']),
                 'FORUM_LOCATION' => $location,
 
-                'U_USER_PROFILE'   => Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $user_id),
-                'U_FORUM_LOCATION' => Session::appendSid($location_url)
+                'U_USER_PROFILE'   => Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $userId),
+                'U_FORUM_LOCATION' => Session::appendSid($locationUrl)
             ]
         );
 
-        $$which_counter++;
+        $$whichCounter++;
 	}
 }
 
-if ($registered_users === 0) {
+if ($registeredUsers === 0) {
     $l_r_user_s = $lang['Reg_users_zero_online'];
-} elseif ($registered_users === 1) {
+} elseif ($registeredUsers === 1) {
     $l_r_user_s = $lang['Reg_user_online'];
 } else {
     $l_r_user_s = $lang['Reg_users_online'];
 }
 
-if ($hidden_users === 0) {
+if ($hiddenUsers === 0) {
     $l_h_user_s = $lang['Hidden_users_zero_online'];
-} elseif ($hidden_users === 1) {
+} elseif ($hiddenUsers === 1) {
     $l_h_user_s = $lang['Hidden_user_online'];
 } else {
     $l_h_user_s = $lang['Hidden_users_online'];
 }
 
-if ($guest_users === 0) {
+if ($guestUsers === 0) {
     $l_g_user_s = $lang['Guest_users_zero_online'];
-} elseif ($guest_users === 1) {
+} elseif ($guestUsers === 1) {
     $l_g_user_s = $lang['Guest_user_online'];
 } else {
     $l_g_user_s = $lang['Guest_users_online'];
@@ -240,16 +238,16 @@ if ($guest_users === 0) {
 
 $template->assignVars(
     [
-        'TOTAL_REGISTERED_USERS_ONLINE' => sprintf($l_r_user_s, $registered_users) . sprintf($l_h_user_s, $hidden_users),
-        'TOTAL_GUEST_USERS_ONLINE'      => sprintf($l_g_user_s, $guest_users)
+        'TOTAL_REGISTERED_USERS_ONLINE' => sprintf($l_r_user_s, $registeredUsers) . sprintf($l_h_user_s, $hiddenUsers),
+        'TOTAL_GUEST_USERS_ONLINE'      => sprintf($l_g_user_s, $guestUsers)
     ]
 );
 
-if ($registered_users + $hidden_users === 0) {
+if ($registeredUsers + $hiddenUsers === 0) {
     $template->assignVars(['L_NO_REGISTERED_USERS_BROWSING' => $lang['No_users_browsing']]);
 }
 
-if ($guest_users === 0) {
+if ($guestUsers === 0) {
     $template->assignVars(['L_NO_GUESTS_BROWSING' => $lang['No_users_browsing']]);
 }
 
