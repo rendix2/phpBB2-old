@@ -11,11 +11,11 @@ class Select
 {
     /**
      * @param string $default
-     * @param string $select_name
+     * @param string $selectName
      *
      * @return string
      */
-    public static function timezone($default, $select_name = 'timezone')
+    public static function timezone($default, $selectName = 'timezone')
     {
         $timeZones = DateTimeZone::listIdentifiers();
 
@@ -26,7 +26,7 @@ class Select
             $timeZoneValues .= '<option value="' . $timeZone . '" ' . $selected . '>' . $timeZone . '</option>';
         }
 
-        return '<select name="' . $select_name . '" id="' . $select_name . '">' . $timeZoneValues . '</select>';
+        return '<select name="' . $selectName . '" id="' . $selectName . '">' . $timeZoneValues . '</select>';
     }
 
     /**

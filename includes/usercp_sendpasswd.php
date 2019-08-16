@@ -47,18 +47,18 @@ if (isset($_POST['submit'])) {
         message_die(GENERAL_MESSAGE, $lang['No_send_account_inactive']);
     }
 
-    $user_actkey   = gen_rand_string(true);
-    $key_len       = 54 - mb_strlen($serverUrl);
-    $key_len       = $key_len > 6 ? $key_len : 6;
-    $user_actkey   = substr($user_actkey, 0, $key_len);
-    $user_password = gen_rand_string(false);
+    $userActivationKey = gen_rand_string(true);
+    $keyLength         = 54 - mb_strlen($serverUrl); // TODO $serverUrl does not exist!
+    $keyLength         = $keyLength > 6 ? $keyLength : 6;
+    $userActivationKey = substr($userActivationKey, 0, $keyLength);
+    $userPassword      = gen_rand_string(false);
 
-    $update_data = [
-        'user_newpasswd' => password_hash($user_password, PASSWORD_BCRYPT),
-        'user_actkey'    => $user_actkey
+    $updateData = [
+        'user_newpasswd' => password_hash($userPassword, PASSWORD_BCRYPT),
+        'user_actkey'    => $userActivationKey
     ];
 
-    dibi::update(USERS_TABLE, $update_data)
+    dibi::update(USERS_TABLE, $updateData)
         ->where('user_id = %i', $user->user_id)
         ->execute();
 
@@ -67,7 +67,7 @@ if (isset($_POST['submit'])) {
     $emailer->setFrom($board_config['board_email']);
     $emailer->setReplyTo($board_config['board_email']);
 
-    $emailer->use_template('user_activate_passwd', $user->user_lang);
+    $emailer->useTemplate('user_activate_passwd', $user->user_lang);
     $emailer->setEmailAddress($user->user_email);
     $emailer->setSubject($lang['New_password_activation']);
 
@@ -75,10 +75,10 @@ if (isset($_POST['submit'])) {
         [
             'SITENAME'  => $board_config['sitename'],
             'USERNAME'  => $user->username,
-            'PASSWORD'  => $user_password,
+            'PASSWORD'  => $userPassword,
             'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
 
-            'U_ACTIVATE' => $serverUrl . '?mode=activate&' . POST_USERS_URL . '=' . $user->user_id . '&act_key=' . $user_actkey
+            'U_ACTIVATE' => $serverUrl . '?mode=activate&' . POST_USERS_URL . '=' . $user->user_id . '&act_key=' . $userActivationKey
         ]
     );
     $emailer->send();

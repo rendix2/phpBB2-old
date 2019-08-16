@@ -248,7 +248,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
 	$emailer->setFrom($board_config['board_email']);
 	$emailer->setReplyTo($board_config['board_email']);
 
-	$emailer->use_template('group_request', $moderator->user_lang);
+	$emailer->useTemplate('group_request', $moderator->user_lang);
 	$emailer->setEmailAddress($moderator->user_email);
 	$emailer->setSubject($lang['Group_request']);
 
@@ -521,7 +521,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
 					$emailer->setFrom($board_config['board_email']);
 					$emailer->setReplyTo($board_config['board_email']);
 
-					$emailer->use_template('group_added', $row->user_lang);
+					$emailer->useTemplate('group_added', $row->user_lang);
 					$emailer->setEmailAddress($row->user_email);
 					$emailer->setSubject($lang['Group_added']);
 
@@ -614,7 +614,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
 							$emailer->addBcc($bcc_value);
 						}
 
-						$emailer->use_template('group_approved');
+						$emailer->useTemplate('group_approved');
 						$emailer->setSubject($lang['Group_approved']);
 
                         $emailer->assignVars(

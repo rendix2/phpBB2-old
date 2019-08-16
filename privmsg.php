@@ -27,7 +27,6 @@ $phpbb_root_path = '.' . $sep;
 
 require_once $phpbb_root_path . 'common.php';
 require_once $phpbb_root_path . 'includes' . $sep . 'bbcode.php';
-require_once $phpbb_root_path . 'includes' . $sep . 'functions_post.php';
 
 //
 // Is PM disabled?
@@ -35,9 +34,6 @@ require_once $phpbb_root_path . 'includes' . $sep . 'functions_post.php';
 if (!empty($board_config['privmsg_disable'])) {
 	message_die(GENERAL_MESSAGE, 'PM_disabled');
 }
-
-$html_entities_match   = ['#&(?!(\#[0-9]+;))#', '#<#', '#>#', '#"#'];
-$html_entities_replace = ['&amp;', '&lt;', '&gt;', '&quot;'];
 
 //
 // Parameters
@@ -1082,7 +1078,7 @@ if ($mode === 'newpm') {
                     $bbcode_uid = make_bbcode_uid();
                 }
 
-                $privmsg_message = prepare_message($_POST['message'], $html_on, $bbcode_on, $smilies_on, $bbcode_uid);
+                $privmsg_message = PostHelper::prepareMessage($_POST['message'], $html_on, $bbcode_on, $smilies_on, $bbcode_uid);
             }
         } else {
             $error = true;
@@ -1220,7 +1216,7 @@ if ($mode === 'newpm') {
 				$emailer->setFrom($board_config['board_email']);
 				$emailer->setReplyTo($board_config['board_email']);
 
-				$emailer->use_template('privmsg_notify', $to_userdata['user_lang']);
+				$emailer->useTemplate('privmsg_notify', $to_userdata['user_lang']);
 				$emailer->setEmailAddress($to_userdata['user_email']);
 				$emailer->setSubject($lang['Notification_subject']);
 
@@ -1447,8 +1443,8 @@ if ($mode === 'newpm') {
 			$bbcode_uid = make_bbcode_uid();
 		}
 
-		$previewMessage  = stripslashes(prepare_message($privmsg_message, $html_on, $bbcode_on, $smilies_on, $bbcode_uid));
-		$privmsg_message = stripslashes(preg_replace($html_entities_match, $html_entities_replace, $privmsg_message));
+        $previewMessage = stripslashes(PostHelper::prepareMessage($privmsg_message, $html_on, $bbcode_on, $smilies_on, $bbcode_uid));
+		$privmsg_message = stripslashes(preg_replace(PostHelper::$htmlEntitiesMatch, PostHelper::$htmlEntitiesReplace, $privmsg_message));
 
         //
         // Finalise processing as per viewtopic
@@ -1604,7 +1600,7 @@ if ($mode === 'newpm') {
 	//
 	// Send smilies to template
 	//
-	generate_smilies('inline', PAGE_PRIVMSGS);
+    PostHelper::generateSmileys('inline', PAGE_PRIVMSGS);
 
 	$template->assignVars(
 	    [

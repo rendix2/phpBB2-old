@@ -34,11 +34,9 @@ function topic_review($topic_id, $is_inline_review)
      */
     global $template;
 
-	global $board_config, $lang, $images, $theme, $phpbb_root_path;
-	global $userdata, $user_ip;
+	global $board_config, $lang, $images, $theme;
+	global $userdata;
 	global $orig_word, $replacement_word;
-
-	$sep = DIRECTORY_SEPARATOR;
 
     if (!$is_inline_review) {
         if (!isset($topic_id) || !$topic_id) {

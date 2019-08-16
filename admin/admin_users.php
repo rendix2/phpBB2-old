@@ -34,7 +34,6 @@ $phpbb_root_path = '.' . $sep . '..' . $sep;
 
 require_once '.' . $sep . 'pagestart.php';
 require_once $phpbb_root_path . 'includes' . $sep . 'bbcode.php';
-require_once $phpbb_root_path . 'includes' . $sep . 'functions_post.php';
 
 $html_entities_match   = ['#<#', '#>#'];
 $html_entities_replace = ['&lt;', '&gt;'];
@@ -284,7 +283,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 				$signature_bbcode_uid = make_bbcode_uid();
 			}
 
-			$signature = prepare_message($signature, $allowhtml, $allowbbcode, $allowsmilies, $signature_bbcode_uid);
+			$signature = PostHelper::prepareMessage($signature, $allowhtml, $allowbbcode, $allowsmilies, $signature_bbcode_uid);
 
             if (mb_strlen($sig_length_check) > $board_config['max_sig_chars']) {
                 $error = true;
@@ -633,7 +632,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 		$interests = $this_userdata->user_interests;
 
 		$signature = ($this_userdata->user_sig_bbcode_uid !== '') ? preg_replace('#:' . $this_userdata->user_sig_bbcode_uid . '#si', '', $this_userdata->user_sig) : $this_userdata->user_sig;
-		$signature = preg_replace($html_entities_match, $html_entities_replace, $signature);
+		$signature = preg_replace(PostHelper::$htmlEntitiesMatch, PostHelper::$htmlEntitiesReplace, $signature);
 
 		$viewemail = $this_userdata->user_viewemail;
 		$notifypm = $this_userdata->user_notify_pm;

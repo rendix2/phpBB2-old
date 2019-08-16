@@ -187,7 +187,7 @@ class Emailer
      *
      * @return bool
      */
-	public function use_template($template_file, $template_lang = '')
+	public function useTemplate($template_file, $template_lang = '')
 	{
 		global $board_config, $phpbb_root_path;
 

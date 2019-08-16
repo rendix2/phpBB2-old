@@ -36,20 +36,20 @@ if (empty($_GET['id'])) {
 	exit;
 }
 
-$confirm_id = htmlspecialchars($_GET['id']);
+$confirmId = htmlspecialchars($_GET['id']);
 
 // Define available charset
 $chars = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',  'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
-if (!preg_match('/^[A-Za-z0-9]+$/', $confirm_id)) {
-	$confirm_id = '';
+if (!preg_match('/^[A-Za-z0-9]+$/', $confirmId)) {
+	$confirmId = '';
 }
 
 // Try and grab code for this id and session
 $code = dibi::select('code')
     ->from(CONFIRM_TABLE)
     ->where('session_id = %s', $userdata['session_id'])
-    ->where('confirm_id = %s', $confirm_id)
+    ->where('confirm_id = %s', $confirmId)
     ->fetchSingle();
 
 // If we have a row then grab data else create a new id
@@ -61,60 +61,61 @@ if (!$code) {
 // Thanks to DavidMJ for emulating zlib within the code :)
 $_png = define_filtered_pngs();
 
-$total_width = 320;
-$total_height = 50;
-$img_height = 40;
-$img_width = 0;
-$l = 0;
+$totalWidth  = 320;
+$totalHeight = 50;
+$imageHeight = 40;
+$imageWidth  = 0;
+$l           = 0;
 
 list($usec, $sec) = explode(' ', microtime()); 
 mt_srand($sec * $usec); 
 
-$char_widths = [];
+$charWidths = [];
 
-$code_strlen = mb_strlen($code);
+$codeLength = mb_strlen($code);
 
-for ($i = 0; $i < $code_strlen; $i++) {
+for ($i = 0; $i < $codeLength; $i++) {
 	$char = $code{$i};
 
-	$width = mt_rand(0, 4);
-	$char_widths[] = $width;
-	$img_width += $_png[$char]['width'] - $width;
+	$width        = mt_rand(0, 4);
+    $charWidths[] = $width;
+	$imageWidth   += $_png[$char]['width'] - $width;
 }
 
-$offset_x = mt_rand(0, $total_width - $img_width);
-$offset_y = mt_rand(0, $total_height - $img_height);
+$offsetX = mt_rand(0, $totalWidth - $imageWidth);
+$offsetY = mt_rand(0, $totalHeight - $imageHeight);
 
-$image = '';
-$hold_chars = [];
-for ($i = 0; $i < $total_height; $i++) {
+$image     = '';
+$holdChars = [];
+
+for ($i = 0; $i < $totalHeight; $i++) {
 	$image .= chr(0);
 
-	if ($i > $offset_y && $i < $offset_y + $img_height) {
+	if ($i > $offsetY && $i < $offsetY + $imageHeight) {
 		$j = 0;
 
-		for ($k = 0; $k < $offset_x; $k++) {
+		for ($k = 0; $k < $offsetX; $k++) {
 			$image .= chr(mt_rand(140, 255));
 		}
 
-		for ($k = 0; $k < $code_strlen; $k++) {
+		for ($k = 0; $k < $codeLength; $k++) {
 			$char = $code{$k};
 
-			if (empty($hold_chars[$char])) {
-				$hold_chars[$char] = explode("\n", chunk_split(base64_decode($_png[$char]['data']), $_png[$char]['width'] + 1, "\n"));
+			if (empty($holdChars[$char])) {
+                $holdChars[$char] = explode("\n", chunk_split(base64_decode($_png[$char]['data']), $_png[$char]['width'] + 1, "\n"));
 			}
 
-			$image .= randomise(substr($hold_chars[$char][$l], 1), $char_widths[$j]);
+			$image .= randomise(substr($holdChars[$char][$l], 1), $charWidths[$j]);
 			$j++;
 		}
 
-		for ($k = $offset_x + $img_width; $k < $total_width; $k++) {
+		for ($k = $offsetX + $imageWidth; $k < $totalWidth; $k++) {
 			$image .= chr(mt_rand(140, 255));
 		}
 
 		$l++;
 	} else {
-		for ($k = 0; $k < $total_width; $k++) {
+		for ($k = 0; $k < $totalWidth; $k++) {
 			$image .= chr(mt_rand(140, 255));
 		}
 	}
@@ -122,7 +123,7 @@ for ($i = 0; $i < $total_height; $i++) {
 }
 unset($hold);
 
-$image = create_png($image, $total_width, $total_height);
+$image = create_png($image, $totalWidth, $totalHeight);
 
 // Output image
 header('Content-Type: image/png');
@@ -136,25 +137,25 @@ exit;
 // This is designed to randomise the pixels of the image data within
 // certain limits so as to keep it readable. It also varies the image
 // width a little
-function randomise($scanline, $width)
+function randomise($scanLine, $width)
 {
-	$new_line = '';
+	$newLine = '';
 	$start = floor($width/2);
-	$end = strlen($scanline) - ceil($width/2);
+	$end = strlen($scanLine) - ceil($width/2);
 
 	for ($i = $start; $i < $end; $i++) {
-		$pixel = ord($scanline{$i});
+		$pixel = ord($scanLine{$i});
 
 		if ($pixel < 190) {
-			$new_line .= chr(mt_rand(0, 205));
+			$newLine .= chr(mt_rand(0, 205));
 		} elseif ($pixel > 190) {
-			$new_line .= chr(mt_rand(145, 255));
+			$newLine .= chr(mt_rand(145, 255));
 		} else {
-			$new_line .= $scanline{$i};
+			$newLine .= $scanLine{$i};
 		}
 	}
 
-	return $new_line;
+	return $newLine;
 }
 
 // This creates a chunk of the given type, with the given data
@@ -173,7 +174,7 @@ function png_chunk($length, $type, $data)
 // http://www.libpng.org/pub/png/spec/PNG-Contents.html we use
 // png because it's a fully recognised open standard and supported
 // by practically all modern browsers and OSs
-function create_png($raw_image, $width, $height)
+function create_png($rawImage, $width, $height)
 {
 	// SIG
 	$image = pack('C8', 137, 80, 78, 71, 13, 10, 26, 10);
@@ -184,27 +185,27 @@ function create_png($raw_image, $width, $height)
 	$image .= png_chunk(13, 'IHDR', $raw);
 
 	if (@extension_loaded('zlib')) {
-		$raw_image = gzcompress($raw_image);
-		$length = strlen($raw_image);
+		$rawImage = gzcompress($rawImage);
+		$length = strlen($rawImage);
 	} else {
 		// The total length of this image, uncompressed, is just a calculation of pixels
 		$length = ($width + 1) * $height;
 
 		// Adler-32 hash generation
 		// Optimized Adler-32 loop ported from the GNU Classpath project
-		$temp_length = $length;
+		$temporaryLength = $length;
 		$s1 = 1;
 		$s2 = $index = 0;
 
-		while ($temp_length > 0) {
+		while ($temporaryLength > 0) {
 			// We can defer the modulo operation:
 			// s1 maximally grows from 65521 to 65521 + 255 * 3800
 			// s2 maximally grows by 3800 * median(s1) = 2090079800 < 2^31
-			$substract_value = $temp_length < 3800 ? $temp_length : 3800;
-			$temp_length -= $substract_value;
+			$substract_value = $temporaryLength < 3800 ? $temporaryLength : 3800;
+			$temporaryLength -= $substract_value;
 
 			while (--$substract_value >= 0) {
-				$s1 += ord($raw_image[$index]);
+				$s1 += ord($rawImage[$index]);
 				$s2 += $s1;
 
 				$index++;
@@ -216,14 +217,14 @@ function create_png($raw_image, $width, $height)
 		$adler_hash = pack('N', ($s2 << 16) | $s1);
 
 		// This is the same thing as gzcompress($raw_image, 0) but does not need zlib
-		$raw_image = pack('C3v2', 0x78, 0x01, 0x01, $length, ~$length) . $raw_image . $adler_hash;
+		$rawImage = pack('C3v2', 0x78, 0x01, 0x01, $length, ~$length) . $rawImage . $adler_hash;
 
 		// The Zlib header + Adler hash make us add on 11
 		$length += 11;
 	}
 
 	// IDAT
-	$image .= png_chunk($length, 'IDAT', $raw_image);
+	$image .= png_chunk($length, 'IDAT', $rawImage);
 	// IEND
 	$image .= png_chunk(0, 'IEND', '');
 

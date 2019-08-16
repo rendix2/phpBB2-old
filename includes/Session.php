@@ -389,14 +389,14 @@ class Session
 
                         self::clean($userData['session_id']);
 
-                        $user_timezone = isset($userData['user_timezone']) ? $userData['user_timezone'] : $board_config['board_timezone'];
+                        $userZimezone = isset($userData['user_timezone']) ? $userData['user_timezone'] : $board_config['board_timezone'];
 
-                        $expire_date = new DateTime();
-                        $expire_date->setTimestamp($current_time);
-                        $expire_date->setTimezone(new DateTimeZone($user_timezone));
-                        $expire_date->add(new DateInterval('P1Y'));
+                        $expireDate = new DateTime();
+                        $expireDate->setTimestamp($current_time);
+                        $expireDate->setTimezone(new DateTimeZone($userZimezone));
+                        $expireDate->add(new DateInterval('P1Y'));
 
-                        setcookie($dataCookieName, serialize($sessionData), $expire_date->getTimestamp(), $cookiePath, $cookieDomain, $cookieSecure);
+                        setcookie($dataCookieName, serialize($sessionData), $expireDate->getTimestamp(), $cookiePath, $cookieDomain, $cookieSecure);
                         setcookie($sidCookieName, $sessionId, 0, $cookiePath, $cookieDomain, $cookieSecure);
                     }
 

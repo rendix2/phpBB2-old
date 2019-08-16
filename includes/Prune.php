@@ -140,9 +140,9 @@ class Prune
         }
 
         if ($prune->prune_freq && $prune->prune_days) {
-            $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
+            $userTimezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
 
-            $timeZone = new DateTimeZone($user_timezone);
+            $timeZone = new DateTimeZone($userTimezone);
 
             $pruneDate = new DateTime();
             $pruneDate->setTimezone($timeZone);

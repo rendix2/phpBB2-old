@@ -27,7 +27,6 @@ $phpbb_root_path = '.' . $sep;
 
 require_once $phpbb_root_path . 'common.php';
 require_once $phpbb_root_path . 'includes' . $sep . 'bbcode.php';
-require_once $phpbb_root_path . 'includes' . $sep . 'functions_post.php';
 
 //
 // Check and set various parameters
@@ -117,7 +116,7 @@ if ($mode === 'topicreview' && (int)$board_config['topic_review'] === 1) {
 }
 
 if ($mode === 'smilies') {
-    generate_smilies('window', PAGE_POSTING);
+    PostHelper::generateSmileys('window', PAGE_POSTING);
     exit;
 }
 
@@ -620,12 +619,12 @@ if (($delete || $pollDelete || $mode === 'delete') && !$confirm) {
 
 			$bbcode_uid = '';
 
-			prepare_post($mode, $postData, $bbcode_on, $html_on, $smilies_on, $error_msg, $username, $bbcode_uid, $subject, $message, $pollTitle, $pollOptions, $pollLength);
+			PostHelper::preparePost($mode, $postData, $bbcode_on, $html_on, $smilies_on, $error_msg, $username, $bbcode_uid, $subject, $message, $pollTitle, $pollOptions, $pollLength);
 
 			if ($error_msg === '') {
 				$topicType = ( $topicType !== $postData['topic_type'] && !$is_auth['auth_sticky'] && !$is_auth['auth_announce'] ) ? $postData['topic_type'] : $topicType;
 
-				submit_post($mode, $postData, $return_message, $return_meta, $forumId, $topicId, $postId, $poll_id, $topicType, $bbcode_on, $html_on, $smilies_on, $attachSignature, $bbcode_uid, str_replace("\'", "''", $username), str_replace("\'", "''", $subject), str_replace("\'", "''", $message), str_replace("\'", "''", $pollTitle), $pollOptions, $pollLength);
+				PostHelper::submitPost($mode, $postData, $return_message, $return_meta, $forumId, $topicId, $postId, $poll_id, $topicType, $bbcode_on, $html_on, $smilies_on, $attachSignature, $bbcode_uid, str_replace("\'", "''", $username), str_replace("\'", "''", $subject), str_replace("\'", "''", $message), str_replace("\'", "''", $pollTitle), $pollOptions, $pollLength);
 			}
 			break;
 
@@ -635,20 +634,20 @@ if (($delete || $pollDelete || $mode === 'delete') && !$confirm) {
 				message_die(GENERAL_MESSAGE, $error_msg);
 			}
 
-			delete_post($mode, $postData, $return_message, $return_meta, $forumId, $topicId, $postId, $poll_id);
+			PostHelper::deletePost($mode, $postData, $return_message, $return_meta, $forumId, $topicId, $postId, $poll_id);
 			break;
 	}
 
     if ($error_msg === '') {
         if ($mode !== 'editpost') {
             $user_id = ($mode === 'reply' || $mode === 'newtopic') ? $userdata['user_id'] : $postData['poster_id'];
-            update_post_stats($mode, $postData, $forumId, $topicId, $postId, $user_id);
+            PostHelper::updatePostStats($mode, $postData, $forumId, $topicId, $postId, $user_id);
         }
 
         // $mode !== 'newtopic' is because we dont have topic_title :)
         // AND we simply dont have who we should notify :D
 		if ($error_msg === '' && $mode !== 'poll_delete' && $mode !== 'newtopic') {
-			user_notification($mode, $postData, $post_info->topic_title, $forumId, $topicId, $postId, $notify_user);
+			PostHelper::userNotification($mode, $postData, $post_info->topic_title, $forumId, $topicId, $postId, $notify_user);
 		}
 
         if ($mode === 'newtopic' || $mode === 'reply') {
@@ -714,10 +713,10 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg !== '') {
 		$replacement_word = [];
 		obtain_word_list($orig_word, $replacement_word);
 
-		$bbcode_uid      = $bbcode_on ? make_bbcode_uid() : '';
-		$previewMessage  = stripslashes(prepare_message(addslashes(unprepare_message($message)), $html_on, $bbcode_on, $smilies_on, $bbcode_uid));
-		$previewSubject  = $subject;
-		$previewUserName = $username;
+		$bbcode_uid = $bbcode_on ? make_bbcode_uid() : '';
+        $previewMessage = stripslashes(PostHelper::prepareMessage(addslashes(PostHelper::unPrepareMessage($message)), $html_on, $bbcode_on, $smilies_on, $bbcode_uid));
+        $previewSubject = $subject;
+        $previewUserName = $username;
 
 		//
 		// Finalise processing as per viewtopic
@@ -967,7 +966,7 @@ switch ($mode) {
 }
 
 // Generate smilies listing for page output
-generate_smilies('inline', PAGE_POSTING);
+PostHelper::generateSmileys('inline', PAGE_POSTING);
 
 //
 // Include page header

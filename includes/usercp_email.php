@@ -87,15 +87,15 @@ if ($user->user_viewemail || $userdata['user_level'] === ADMIN) {
             $emailer->setFrom($userdata['user_email']);
             $emailer->setReplyTo($userdata['user_email']);
 
-            $email_headers = 'X-AntiAbuse: Board servername - ' . $server_name . "\n";
-            $email_headers .= 'X-AntiAbuse: User_id - ' . $userdata['user_id'] . "\n";
-            $email_headers .= 'X-AntiAbuse: Username - ' . $userdata['username'] . "\n";
-            $email_headers .= 'X-AntiAbuse: User IP - ' . decode_ip($user_ip) . "\n";
+            $emailHeaders = 'X-AntiAbuse: Board servername - ' . $server_name . "\n";
+            $emailHeaders .= 'X-AntiAbuse: User_id - ' . $userdata['user_id'] . "\n";
+            $emailHeaders .= 'X-AntiAbuse: Username - ' . $userdata['username'] . "\n";
+            $emailHeaders .= 'X-AntiAbuse: User IP - ' . decode_ip($user_ip) . "\n";
 
-            $emailer->use_template('profile_send_email', $user->user_lang);
+            $emailer->useTemplate('profile_send_email', $user->user_lang);
             $emailer->setEmailAddress($user->user_email);
             $emailer->setSubject($subject);
-            $emailer->addExtraHeaders($email_headers);
+            $emailer->addExtraHeaders($emailHeaders);
 
             $emailer->assignVars(
                 [
@@ -112,7 +112,7 @@ if ($user->user_viewemail || $userdata['user_level'] === ADMIN) {
             if (!empty($_POST['cc_email'])) {
                 $emailer->setFrom($userdata['user_email']);
                 $emailer->setReplyTo($userdata['user_email']);
-                $emailer->use_template('profile_send_email');
+                $emailer->useTemplate('profile_send_email');
                 $emailer->setEmailAddress($userdata['user_email']);
                 $emailer->setSubject($subject);
 

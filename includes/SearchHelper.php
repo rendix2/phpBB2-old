@@ -136,7 +136,7 @@ class SearchHelper
      */
     public static function addSearchWords($mode, $postId, $post_text, $post_title = '')
     {
-        global $phpbb_root_path, $board_config, $lang, $dbms;
+        global $phpbb_root_path, $board_config, $dbms;
 
         $sep = DIRECTORY_SEPARATOR;
 
@@ -144,8 +144,8 @@ class SearchHelper
         $synonyms = @file($phpbb_root_path . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'search_synonyms.txt');
 
         $search_raw_words = [];
-        $search_raw_words['text'] = self::splitWords(SearchHelper::cleanWords('post', $post_text, $stopWords, $synonyms));
-        $search_raw_words['title'] = self::splitWords(SearchHelper::cleanWords('post', $post_title, $stopWords, $synonyms));
+        $search_raw_words['text'] = self::splitWords(self::cleanWords('post', $post_text, $stopWords, $synonyms));
+        $search_raw_words['title'] = self::splitWords(self::cleanWords('post', $post_title, $stopWords, $synonyms));
 
         @set_time_limit(0);
 

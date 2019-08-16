@@ -59,7 +59,7 @@ if ((int)$board_config['require_activation'] === USER_ACTIVATION_ADMIN && $user-
     }
 }
 
-$update_data = [
+$updateData = [
     'user_active' => 1,
     'user_actkey' => ''
 ];
@@ -69,11 +69,11 @@ $updatePassword = false;
 if ($user->user_newpasswd !== '') {
     $updatePassword = true;
 
-    $update_data['user_password'] = $user->user_newpasswd;
-    $update_data['user_newpasswd'] = '';
+    $updateData['user_password']  = $user->user_newpasswd;
+    $updateData['user_newpasswd'] = '';
 }
 
-dibi::update(USERS_TABLE, $update_data)
+dibi::update(USERS_TABLE, $updateData)
     ->where('user_id = %i', $user->user_id)
     ->execute();
 
@@ -83,7 +83,7 @@ if (!$updatePassword && (int)$board_config['require_activation'] === USER_ACTIVA
     $emailer->setFrom($board_config['board_email']);
     $emailer->setReplyTo($board_config['board_email']);
 
-    $emailer->use_template('admin_welcome_activated', $user->user_lang);
+    $emailer->useTemplate('admin_welcome_activated', $user->user_lang);
     $emailer->setEmailAddress($user->user_email);
     $emailer->setSubject($lang['Account_activated_subject']);
 

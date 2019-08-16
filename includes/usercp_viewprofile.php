@@ -103,37 +103,37 @@ if ($profileData->user_topics !== 0) {
     $percentageTopics = 0;
 }
 
-$avatar_img = '';
+$avatarImage = '';
 
 if ($profileData->user_avatar_type && $profileData->user_allowavatar) {
 	switch($profileData->user_avatar_type) {
 		case USER_AVATAR_UPLOAD:
-			$avatar_img = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $profileData->user_avatar . '" alt="" border="0" />' : '';
+			$avatarImage = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $profileData->user_avatar . '" alt="" border="0" />' : '';
 			break;
 		case USER_AVATAR_REMOTE:
-			$avatar_img = $board_config['allow_avatar_remote'] ? '<img src="' . $profileData->user_avatar . '" alt="" border="0" />' : '';
+			$avatarImage = $board_config['allow_avatar_remote'] ? '<img src="' . $profileData->user_avatar . '" alt="" border="0" />' : '';
 			break;
 		case USER_AVATAR_GALLERY:
-			$avatar_img = $board_config['allow_avatar_local'] ? '<img src="' . $board_config['avatar_gallery_path'] . '/' . $profileData->user_avatar . '" alt="" border="0" />' : '';
+			$avatarImage = $board_config['allow_avatar_local'] ? '<img src="' . $board_config['avatar_gallery_path'] . '/' . $profileData->user_avatar . '" alt="" border="0" />' : '';
 			break;
 	}
 }
 
-$poster_rank = '';
-$rank_image = '';
+$posterRank = '';
+$rankImage  = '';
 
 if ($profileData->user_rank) {
     foreach ($ranks as $rank) {
         if ($profileData->user_rank === $rank->rank_id && $rank->rank_special) {
-            $poster_rank = $rank->rank_title;
-            $rank_image = $rank->rank_image ? '<img src="' . $rank->rank_image . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
+            $posterRank = $rank->rank_title;
+            $rankImage  = $rank->rank_image ? '<img src="' . $rank->rank_image . '" alt="' . $posterRank . '" title="' . $posterRank . '" border="0" /><br />' : '';
         }
     }
 } else {
     foreach ($ranks as $rank) {
         if ($profileData->user_posts >= $rank->rank_min && !$rank->rank_special) {
-            $poster_rank = $rank->rank_title;
-            $rank_image = $rank->rank_image ? '<img src="' . $rank->rank_image . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" border="0" /><br />' : '';
+            $posterRank = $rank->rank_title;
+            $rankImage  = $rank->rank_image ? '<img src="' . $rank->rank_image . '" alt="' . $posterRank . '" title="' . $posterRank . '" border="0" /><br />' : '';
         }
     }
 }
@@ -145,26 +145,24 @@ $pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
 if (!empty($profileData->user_viewemail) || $userdata['user_level'] === ADMIN) {
 	$email_uri = $board_config['board_email_form'] ? Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL .'=' . $profileData->user_id) : 'mailto:' . $profileData->user_email;
 
-	$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
-	$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
+	$emailImage = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
+	$email      = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
 } else {
-	$email_img = '&nbsp;';
-	$email = '&nbsp;';
+	$emailImage = '&nbsp;';
+	$email      = '&nbsp;';
 }
 
 $www_img = $profileData->user_website ? '<a href="' . $profileData->user_website . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '&nbsp;';
 $www     = $profileData->user_website ? '<a href="' . $profileData->user_website . '" target="_userwww">' . $profileData->user_website . '</a>' : '&nbsp;';
 
-$temp_url = Session::appendSid('search.php?search_author=' . urlencode($profileData->username) . '&amp;show_results=posts');
-$search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $profileData->username) . '" title="' . sprintf($lang['Search_user_posts'], $profileData->username) . '" border="0" /></a>';
-$search = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $profileData->username) . '</a>';
+$temp_url    = Session::appendSid('search.php?search_author=' . urlencode($profileData->username) . '&amp;show_results=posts');
+$searchImage = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $profileData->username) . '" title="' . sprintf($lang['Search_user_posts'], $profileData->username) . '" border="0" /></a>';
+$search      = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $profileData->username) . '</a>';
 
 //
 // Generate page
 //
-$page_title = $lang['Viewing_profile'];
-
-PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $lang['Viewing_profile'], $gen_simple_header);
 
 if (function_exists('get_html_translation_table')) {
 	$u_search_author = urlencode(strtr($profileData->username, array_flip(get_html_translation_table(HTML_ENTITIES))));
@@ -176,8 +174,8 @@ $template->assignVars(
     [
         'USERNAME' => $profileData->username,
         'JOINED' => create_date($lang['DATE_FORMAT'], $profileData->user_regdate, $board_config['board_timezone']),
-        'POSTER_RANK' => htmlspecialchars($poster_rank, ENT_QUOTES),
-        'RANK_IMAGE' => $rank_image,
+        'POSTER_RANK' => htmlspecialchars($posterRank, ENT_QUOTES),
+        'RANK_IMAGE' => $rankImage,
 
         'POSTS' => $profileData->user_posts,
         'POST_DAY_STATS' => sprintf($lang['User_post_day_stats'], $postsPerDay),
@@ -188,13 +186,13 @@ $template->assignVars(
         'TOPIC_PERCENT_STATS' => sprintf($lang['User_post_pct_stats'], $percentageTopics),
 
 
-        'SEARCH_IMG' => $search_img,
+        'SEARCH_IMG' => $searchImage,
         'SEARCH' => $search,
 
         'PM_IMG' => $pm_img,
         'PM' => $pm,
 
-        'EMAIL_IMG' => $email_img,
+        'EMAIL_IMG' => $emailImage,
         'EMAIL' => $email,
 
         'WWW_IMG' => $www_img,
@@ -203,7 +201,7 @@ $template->assignVars(
         'LOCATION' => $profileData->user_from ? htmlspecialchars($profileData->user_from, ENT_QUOTES) : '&nbsp;',
         'OCCUPATION' => $profileData->user_occ ? htmlspecialchars($profileData->user_occ, ENT_QUOTES) : '&nbsp;',
         'INTERESTS' => $profileData->user_interests ? htmlspecialchars($profileData->user_interests, ENT_QUOTES) : '&nbsp;',
-        'AVATAR_IMG' => $avatar_img,
+        'AVATAR_IMG' => $avatarImage,
 
         'L_VIEWING_PROFILE' => sprintf($lang['Viewing_user_profile'], $profileData->username),
         'L_ABOUT_USER' => sprintf($lang['About_user'], $profileData->username),

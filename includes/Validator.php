@@ -87,32 +87,29 @@ class Validator
      */
     public static function email($email, array $lang)
     {
-        if ($email !== '') {
-            if (preg_match('/^[a-z0-9&\'\.\-_\+]+@[a-z0-9\-]+\.([a-z0-9\-]+\.)*?[a-z]+$/is', $email)) {
+        if ($email !== '' && preg_match('/^[a-z0-9&\'\.\-_\+]+@[a-z0-9\-]+\.([a-z0-9\-]+\.)*?[a-z]+$/is', $email)) {
+            $bans = dibi::select('ban_email')
+                ->from(BANLIST_TABLE)
+                ->fetchAll();
 
-                $bans = dibi::select('ban_email')
-                    ->from(BANLIST_TABLE)
-                    ->fetchAll();
+            foreach ($bans as $ban) {
+                $match_email = str_replace('*', '.*?', $ban->ban_email);
 
-                foreach ($bans as $ban) {
-                    $match_email = str_replace('*', '.*?', $ban->ban_email);
-
-                    if (preg_match('/^' . $match_email . '$/is', $email)) {
-                        return ['error' => true, 'error_msg' => $lang['Email_banned']];
-                    }
+                if (preg_match('/^' . $match_email . '$/is', $email)) {
+                    return ['error' => true, 'error_msg' => $lang['Email_banned']];
                 }
-
-                $dbEmail = dibi::select('user_email')
-                    ->from(USERS_TABLE)
-                    ->where('user_email = %s', $email)
-                    ->fetch();
-
-                if ($dbEmail) {
-                    return ['error' => true, 'error_msg' => $lang['Email_taken']];
-                }
-
-                return ['error' => false, 'error_msg' => ''];
             }
+
+            $dbEmail = dibi::select('user_email')
+                ->from(USERS_TABLE)
+                ->where('user_email = %s', $email)
+                ->fetch();
+
+            if ($dbEmail) {
+                return ['error' => true, 'error_msg' => $lang['Email_taken']];
+            }
+
+            return ['error' => false, 'error_msg' => ''];
         }
 
         return ['error' => true, 'error_msg' => $lang['Email_invalid']];

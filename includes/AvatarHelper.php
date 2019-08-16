@@ -5,7 +5,7 @@ use Nette\Utils\Finder;
 /**
  * Class AvatarHelper
  *
- * @author Tomáš Babický tomas.babicky@websta.de
+ * @author rendix2
  */
 class AvatarHelper
 {
@@ -317,76 +317,76 @@ class AvatarHelper
     /**
      * @param string       $mode
      * @param string       $category
-     * @param int          $user_id
+     * @param int          $userId
      * @param string       $email
-     * @param string       $current_email
+     * @param string       $currentEmail
      * @param              $coppa
-     * @param string       $username
-     * @param string       $new_password
-     * @param string       $cur_password
-     * @param              $password_confirm
+     * @param string       $userName
+     * @param string       $newPassword
+     * @param string       $currentPassword
+     * @param              $passwordConfirm
      * @param string       $website
      * @param string       $location
      * @param string       $occupation
      * @param string       $interests
      * @param string       $signature
-     * @param bool         $viewemail
-     * @param bool         $notifypm
-     * @param bool         $popup_pm
-     * @param bool         $notifyreply
-     * @param bool         $attachsig
-     * @param bool         $allowhtml
+     * @param bool         $viewEmail
+     * @param bool         $notifyPm
+     * @param bool         $popupPm
+     * @param bool         $notifyReply
+     * @param bool         $attachSignature
+     * @param bool         $allowHtml
      * @param bool         $allowbbcode
-     * @param bool         $allowsmilies
-     * @param bool         $hideonline
+     * @param bool         $allowSmileys
+     * @param bool         $hideOnline
      * @param string       $style
      * @param string       $language
-     * @param string       $timezone
-     * @param string       $dateformat
-     * @param string       $session_id
+     * @param string       $timeZone
+     * @param string       $dateFormat
+     * @param string       $sessionId
      * @param bool         $isAdmin
      * @param BaseTemplate $template
-     * @param null         $user_status
-     * @param bool         $allow_avatar
-     * @param bool         $allow_pm
-     * @param string       $user_rank
+     * @param null         $userStatus
+     * @param bool         $allowAvatar
+     * @param bool         $allowPm
+     * @param string       $userRank
      */
     public static function displayAvatarGallery(
         $mode,
         &$category,
-        &$user_id,
+        &$userId,
         &$email,
-        &$current_email,
+        &$currentEmail,
         &$coppa,
-        &$username,
-        &$new_password,
-        &$cur_password,
-        &$password_confirm,
+        &$userName,
+        &$newPassword,
+        &$currentPassword,
+        &$passwordConfirm,
         &$website,
         &$location,
         &$occupation,
         &$interests,
         &$signature,
-        &$viewemail,
-        &$notifypm,
-        &$popup_pm,
-        &$notifyreply,
-        &$attachsig,
-        &$allowhtml,
+        &$viewEmail,
+        &$notifyPm,
+        &$popupPm,
+        &$notifyReply,
+        &$attachSignature,
+        &$allowHtml,
         &$allowbbcode,
-        &$allowsmilies,
-        &$hideonline,
+        &$allowSmileys,
+        &$hideOnline,
         &$style,
         &$language,
-        &$timezone,
-        &$dateformat,
-        &$session_id,
+        &$timeZone,
+        &$dateFormat,
+        &$sessionId,
         $isAdmin,
         BaseTemplate $template,
-        $user_status = null,
-        $allow_avatar = null,
-        $allow_pm = null,
-        $user_rank = null
+        $userStatus = null,
+        $allowAvatar = null,
+        $allowPm = null,
+        $userRank = null
     ) {
         global $board_config, $lang;
 
@@ -489,56 +489,56 @@ class AvatarHelper
 
         $params = [
             'coppa',
-            'user_id',
-            'username',
+            'userId',
+            'userName',
             'email',
-            'current_email',
-            'cur_password',
-            'new_password',
-            'password_confirm',
+            'currentEmail',
+            'currentPassword',
+            'newPassword',
+            'passwordConfirm',
             'website',
             'location',
             'occupation',
             'interests',
             'signature',
-            'viewemail',
-            'notifypm',
-            'popup_pm',
-            'notifyreply',
-            'attachsig',
-            'allowhtml',
+            'viewEmail',
+            'notifyPm',
+            'popupPm',
+            'notifyReply',
+            'attachSignature',
+            'allowHtml',
             'allowbbcode',
-            'allowsmilies',
-            'hideonline',
+            'allowSmileys',
+            'hideOnline',
             'style',
             'language',
             'timezone',
-            'dateformat',
-            'user_status',
-            'user_rank',
+            'dateFormat',
+            'userStatus',
+            'userRank',
         ];
 
-        $s_hidden_vars = '';
+        $systemHiddenVars = '';
 
         if ($isAdmin) {
-            $s_hidden_vars .= '<input type="hidden" name="mode" value="edit" />';
-            $s_hidden_vars .= '<input type="hidden" name="coppa" value="' . $coppa . '" />';
-            $s_hidden_vars .= '<input type="hidden" name="id" value="' . $user_id . '" />';
-            $s_hidden_vars .= '<input type="hidden" name="user_allowavatar" value="' . $allow_avatar . '" />';
-            $s_hidden_vars .= '<input type="hidden" name="user_allowpm" value="' . $allow_pm . '" />';
-            $s_hidden_vars .= '<input type="hidden" name="popup_pm" value="' . $popup_pm . '" />';
-            $s_hidden_vars .= '<input type="hidden" name="user_rank" value="' . $user_rank . '" />';
+            $systemHiddenVars .= '<input type="hidden" name="mode" value="edit" />';
+            $systemHiddenVars .= '<input type="hidden" name="coppa" value="' . $coppa . '" />';
+            $systemHiddenVars .= '<input type="hidden" name="id" value="' . $userId . '" />';
+            $systemHiddenVars .= '<input type="hidden" name="user_allowavatar" value="' . $allowAvatar . '" />';
+            $systemHiddenVars .= '<input type="hidden" name="user_allowpm" value="' . $allowPm . '" />';
+            $systemHiddenVars .= '<input type="hidden" name="popup_pm" value="' . $popupPm . '" />';
+            $systemHiddenVars .= '<input type="hidden" name="user_rank" value="' . $userRank . '" />';
         } else {
-            $s_hidden_vars .= '<input type="hidden" name="sid" value="' . $session_id . '" />';
+            $systemHiddenVars .= '<input type="hidden" name="sid" value="' . $sessionId . '" />';
         }
 
-        $s_hidden_vars .= '<input type="hidden" name="agreed" value="true" />';
-        $s_hidden_vars .= '<input type="hidden" name="avatarcatname" value="' . $category . '" />';
-        $s_hidden_vars .= '<input type="hidden" name="user_active" value="' . $user_status . '" />';
-        $s_hidden_vars .= CSRF::getInputHtml();
+        $systemHiddenVars .= '<input type="hidden" name="agreed" value="true" />';
+        $systemHiddenVars .= '<input type="hidden" name="avatarcatname" value="' . $category . '" />';
+        $systemHiddenVars .= '<input type="hidden" name="user_active" value="' . $userStatus . '" />';
+        $systemHiddenVars .= CSRF::getInputHtml();
 
         foreach ($params as $param) {
-            $s_hidden_vars .= '<input type="hidden" name="' . $param . '" value="' . str_replace('"', '&quot;', $$param) . '" />';
+            $systemHiddenVars .= '<input type="hidden" name="' . $param . '" value="' . str_replace('"', '&quot;', $$param) . '" />';
         }
 
         $template->assignVars(
@@ -554,7 +554,7 @@ class AvatarHelper
 
                 'S_CATEGORY_SELECT' => $s_categories,
                 'S_COLSPAN'         => $s_colspan,
-                'S_HIDDEN_FIELDS'   => $s_hidden_vars,
+                'S_HIDDEN_FIELDS'   => $systemHiddenVars,
 
                 'F_LOGIN_FORM_TOKEN' => CSRF::getInputHtml(),
             ]

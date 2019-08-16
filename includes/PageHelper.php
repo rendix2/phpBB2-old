@@ -293,19 +293,19 @@ class PageHelper
             //
             // Borrowed from php.net!
             //
-            $gzip_contents = ob_get_contents();
+            $gZipContents = ob_get_contents();
             ob_end_clean();
 
-            $gzip_size = mb_strlen($gzip_contents);
-            $gzip_crc = crc32($gzip_contents);
+            $gZipSize = mb_strlen($gZipContents);
+            $gzipCrc = crc32($gZipContents);
 
-            $gzip_contents = gzcompress($gzip_contents, 9);
-            $gzip_contents = substr($gzip_contents, 0, -4);
+            $gZipContents = gzcompress($gZipContents, 9);
+            $gZipContents = substr($gZipContents, 0, -4);
 
             echo "\x1f\x8b\x08\x00\x00\x00\x00\x00";
-            echo $gzip_contents;
-            echo pack('V', $gzip_crc);
-            echo pack('V', $gzip_size);
+            echo $gZipContents;
+            echo pack('V', $gzipCrc);
+            echo pack('V', $gZipSize);
         }
 
         exit;

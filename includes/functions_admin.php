@@ -106,26 +106,26 @@ function sync($type, $id = false)
                 message_die(GENERAL_ERROR, 'Could not get posts by forum ID');
             }
 
-            $last_post = $row->last_post;
-            $total_posts = $row->total;
+            $lastPost = $row->last_post;
+            $totalPosts = $row->total;
 
-            $total_topics = dibi::select('COUNT(topic_id)')
+            $totalTopics = dibi::select('COUNT(topic_id)')
                 ->as('total')
                 ->from(TOPICS_TABLE)
                 ->where('forum_id = %i', $id)
                 ->fetchSingle();
 
-            if ($total_topics === false) {
+            if ($totalTopics === false) {
                 message_die(GENERAL_ERROR, 'Could not get topic count');
             }
 
-			$forums_update_data = [
-			    'forum_last_post_id' => $last_post,
-                'forum_posts'        => $total_posts,
-                'forum_topics'       => $total_topics
+			$forumsUpdateData = [
+			    'forum_last_post_id' => $lastPost,
+                'forum_posts'        => $totalPosts,
+                'forum_topics'       => $totalTopics
             ];
 
-            dibi::update(FORUMS_TABLE, $forums_update_data)->where('forum_id = %i', $id)->execute();
+            dibi::update(FORUMS_TABLE, $forumsUpdateData)->where('forum_id = %i', $id)->execute();
 
             break;
 
@@ -143,25 +143,25 @@ function sync($type, $id = false)
             if ($row) {
                 if ($row->total_posts) {
                     // Correct the details of this topic
-                    $update_data = [
+                    $updateData = [
                         'topic_replies'       => $row->total_posts - 1,
                         'topic_first_post_id' => $row->first_post,
                         'topic_last_post_id'  => $row->last_post
                     ];
 
-                    dibi::update(TOPICS_TABLE, $update_data)
+                    dibi::update(TOPICS_TABLE, $updateData)
                         ->where('topic_id = %i', $id)
                         ->execute();
                 } else {
                     // There are no replies to this topic
                     // Check if it is a move stub
-                    $topic_moved_id = dibi::select('topic_moved_id')
+                    $topicMovedId = dibi::select('topic_moved_id')
                         ->from(TOPICS_TABLE)
                         ->where('topic_id = %i', $id)
                         ->fetch();
 
-                    if ($topic_moved_id) {
-                        if (!$topic_moved_id->topic_moved_id) {
+                    if ($topicMovedId) {
+                        if (!$topicMovedId->topic_moved_id) {
                             dibi::delete(TOPICS_TABLE)
                                 ->where('topic_id = %i', $id)
                                 ->execute();
@@ -184,7 +184,7 @@ function get_database_size()
 {
     global $dbms, $table_prefix, $lang, $dbname;
 
-    $database_size = false;
+    $databaseSize = false;
 
     // This code is heavily influenced by a similar routine in phpMyAdmin 2.2.0
     switch ($dbms) {
@@ -197,16 +197,16 @@ function get_database_size()
                 if (preg_match('#(3\.23|[45]\.|10\.[0-9]\.[0-9]{1,2}-+Maria)#', $version)) {
                     $tables = dibi::query('SHOW TABLE STATUS FROM %n', $dbname)->fetchAll();
 
-                    $database_size = 0;
+                    $databaseSize = 0;
 
                     foreach ($tables as $table) {
                         if ((isset($table->Type) && $table->Type !== 'MRG_MyISAM') || (isset($table->Engine) && ($table->Engine === 'MyISAM' || $table->Engine === 'InnoDB' || $table->Engine === 'Aria'))) {
                             if ($table_prefix !== '') {
                                 if (strpos($table->Name, $table_prefix) !== false) {
-                                    $database_size += $table->Data_length + $table->Index_length;
+                                    $databaseSize += $table->Data_length + $table->Index_length;
                                 }
                             } else {
-                                $database_size += $table->Data_length + $table->Index_length;
+                                $databaseSize += $table->Data_length + $table->Index_length;
                             }
                         }
                     }
@@ -218,7 +218,7 @@ function get_database_size()
             global $dbhost;
 
             if (file_exists($dbhost)) {
-                $database_size = filesize($dbhost);
+                $databaseSize = filesize($dbhost);
             }
 
             break;
@@ -230,12 +230,12 @@ function get_database_size()
             if ($row) {
                 // Azure stats are stored elsewhere
                 if (strpos($row['mssql_version'], 'SQL Azure') !== false) {
-                    $database_size = dibi::select('((SUM(size) * 8.0) * 1024.0)')->as('dbsize')
+                    $databaseSize = dibi::select('((SUM(size) * 8.0) * 1024.0)')->as('dbsize')
                         ->from('sys.dm_db_partition_stats')
                         ->fetchSingle();
 
                 } else {
-                    $database_size = dibi::select('((SUM(size) * 8.0) * 1024.0)')->as('dbsize')
+                    $databaseSize = dibi::select('((SUM(size) * 8.0) * 1024.0)')->as('dbsize')
                         ->from('sysfiles')
                         ->fetchSingle();
                 }
@@ -261,20 +261,20 @@ function get_database_size()
                     ->where('datname = %s', $database)
                     ->fetchSingle();
 
-                $database_size = dibi::select( 'pg_database_size(%n)', $oid)->as('size')->fetchSingle();
+                $databaseSize = dibi::select( 'pg_database_size(%n)', $oid)->as('size')->fetchSingle();
             }
             break;
 
         case 'oracle':
-            $database_size = dibi::select('SUM(bytes)')->as('dbsize')
+            $databaseSize = dibi::select('SUM(bytes)')->as('dbsize')
                 ->from('user_segments')
                 ->fetchSingle();
             break;
     }
 
-    $database_size = ($database_size !== false) ? get_formatted_filesize($database_size) : $lang['Not_available'];
+    $databaseSize = ($databaseSize !== false) ? get_formatted_filesize($databaseSize) : $lang['Not_available'];
 
-    return $database_size;
+    return $databaseSize;
 }
 
 /**
