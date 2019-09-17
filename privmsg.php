@@ -54,10 +54,14 @@ $refresh = $preview || $submit_search;
 $mark_list = !empty($_POST['mark']) ? $_POST['mark'] : 0;
 
 // todo
+
+// $folder = 'inbox' if we dont have $folder OR folder is not in enabled
 if (isset($_POST['folder']) || isset($_GET['folder'])) {
     $folder = isset($_POST['folder']) ? $_POST['folder'] : $_GET['folder'];
 
-    if ($folder !== 'inbox' && $folder !== 'outbox' && $folder !== 'sentbox' && $folder !== 'savebox') {
+    $enabledFolders = ['inbox', 'outbox', 'sentbox', 'savebox'];
+
+    if (!in_array($folder, $enabledFolders, true)) {
         $folder = 'inbox';
     }
 } else {
@@ -211,21 +215,21 @@ if ($mode === 'newpm') {
 			$l_box_name = $lang['Inbox'];
 
             $privmsg->where('pm.privmsgs_to_userid = %i', $userdata['user_id'])
-                ->where('pm.privmsgs_type IN %in', [PRIVMSGS_READ_MAIL, PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL]);
+                    ->where('pm.privmsgs_type IN %in', [PRIVMSGS_READ_MAIL, PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL]);
 			break;
 			
 		case 'outbox':
 			$l_box_name = $lang['Outbox'];
 
             $privmsg->where('pm.privmsgs_from_userid = %i', $userdata['user_id'])
-                ->where('pm.privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL]);
+                    ->where('pm.privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL]);
             break;
 			
 		case 'sentbox':
 			$l_box_name = $lang['Sentbox'];
 
             $privmsg->where('pm.privmsgs_from_userid = %i', $userdata['user_id'])
-                ->where('pm.privmsgs_type = %i', PRIVMSGS_SENT_MAIL);
+                    ->where('pm.privmsgs_type = %i', PRIVMSGS_SENT_MAIL);
 			break;
 			
 		case 'savebox':
@@ -799,14 +803,16 @@ if ($mode === 'newpm') {
                     dibi::delete(PRIVMSGS_TABLE)
                         ->where('privmsgs_id IN %in', $mark_list)
                         ->where('privmsgs_to_userid = %i', $userdata['user_id'])
-                        ->where('privmsgs_type IN %in', [PRIVMSGS_READ_MAIL, PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL]);
+                        ->where('privmsgs_type IN %in', [PRIVMSGS_READ_MAIL, PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
+                        ->execute();
                     break;
 
 				case 'outbox':
                     dibi::delete(PRIVMSGS_TABLE)
                         ->where('privmsgs_id IN %in', $mark_list)
                         ->where('privmsgs_from_userid = %i', $userdata['user_id'])
-                        ->where('privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL]);
+                        ->where('privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
+                        ->execute();
                     break;
 
 				case 'sentbox':
@@ -953,21 +959,24 @@ if ($mode === 'newpm') {
                 dibi::update(PRIVMSGS_TABLE, ['privmsgs_type' => PRIVMSGS_SAVED_IN_MAIL])
                     ->where('privmsgs_to_userid = %i', $userdata['user_id'])
                     ->where('privmsgs_type IN %in', [PRIVMSGS_READ_MAIL, PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
-                    ->where('privmsgs_id IN %in', $mark_list);
+                    ->where('privmsgs_id IN %in', $mark_list)
+                    ->execute();
 				break;
 
 			case 'outbox':
                 dibi::update(PRIVMSGS_TABLE, ['privmsgs_type' => PRIVMSGS_SAVED_OUT_MAIL])
                     ->where('privmsgs_to_userid = %i', $userdata['user_id'])
                     ->where('privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
-                    ->where('privmsgs_id IN %in', $mark_list);
+                    ->where('privmsgs_id IN %in', $mark_list)
+                    ->execute();
 				break;
 
 			case 'sentbox':
                 dibi::update(PRIVMSGS_TABLE, ['privmsgs_type' => PRIVMSGS_SAVED_OUT_MAIL])
                     ->where('privmsgs_to_userid = %i', $userdata['user_id'])
                     ->where('privmsgs_type = %i', PRIVMSGS_SENT_MAIL)
-                    ->where('privmsgs_id IN %in', $mark_list);
+                    ->where('privmsgs_id IN %in', $mark_list)
+                    ->execute();
 				break;
 		}
 

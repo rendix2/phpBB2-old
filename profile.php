@@ -76,7 +76,6 @@ if (isset($_GET[POST_MODE]) || isset($_POST[POST_MODE])) {
             // yes both!
         case 'editprofile':
         case 'register':
-
             if (!$userdata['session_logged_in'] && $mode === 'editprofile') {
                 redirect(Session::appendSid('login.php?redirect=profile.php&mode=editprofile', true));
             }
