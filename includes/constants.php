@@ -48,6 +48,8 @@ define('USER_AVATAR_UPLOAD', 1);
 define('USER_AVATAR_REMOTE', 2);
 define('USER_AVATAR_GALLERY', 3);
 
+define('USER_MIN_PASSWORD_LENGTH', 8);
+define('USER_MAX_PASSWORD_LENGTH', 32);
 
 // Group settings
 define('GROUP_OPEN', 0);

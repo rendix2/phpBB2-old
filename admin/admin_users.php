@@ -257,10 +257,19 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 			//
 			// Awww, the user wants to change their password, isn't that cute..
 			//
+
+            $passwordLength = mb_strlen($password);
+
             if ($password !== $password_confirm) {
                 $error = true;
 				$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Password_mismatch'];
-			} else {
+			} elseif($passwordLength < USER_MIN_PASSWORD_LENGTH) {
+                $error = true;
+                $error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Password_short'];
+            } elseif($passwordLength < USER_MAX_PASSWORD_LENGTH) {
+                $error     = true;
+                $error_msg .= (isset($error_msg) ? '<br />' : '') . $lang['Password_long'];
+            } else {
                 $passwd_sql['user_password'] = password_hash($password, PASSWORD_BCRYPT);
 			}
         } elseif ($password && !$password_confirm) {

@@ -601,7 +601,8 @@ $lang['Profile_updated_inactive'] = 'Your profile has been updated. However, you
 
 $lang['Password_mismatch'] = 'The passwords you entered did not match.';
 $lang['Current_password_mismatch'] = 'The current password you supplied does not match that stored in the database.';
-$lang['Password_long'] = 'Your password must be no more than 32 characters.';
+$lang['Password_short'] = 'Your password must be no less than ' . USER_MIN_PASSWORD_LENGTH . ' characters.';
+$lang['Password_long'] = 'Your password must be no more than ' . USER_MAX_PASSWORD_LENGTH . ' characters.';
 $lang['Username_taken'] = 'Sorry, but this username has already been taken.';
 $lang['Username_invalid'] = 'Sorry, but this username contains an invalid character such as \'.';
 $lang['Username_disallowed'] = 'Sorry, but this username has been disallowed.';
