@@ -11,6 +11,8 @@ News:
 - returned search button
 - we count users topics
 - optimized for(....) loops
+- using dibi
+- using inner join instead of SELECT * FROM a, b ....
 - added DB Maintenance mod
 - improved admin index (my own improved Advanced Admin Index Stats)
 - improved show size of files (from phpBB3)
@@ -19,7 +21,15 @@ News:
 - removed icq, aim, msnm, yim
 - improved groups management in admin
 - fixed pagination in author search
+- use htmlspecialchars()
+- removed Mozzila navigation bar
+- calling Session::begin() is called in init_userprefs()
 - admin can select template engine
+- admin cannot select if cookie is secure, its automatic
+- users use longer passwords  
+- improved online users on index page
+- removed online users on forum page 
+- ACP DO NOT create left menu automatically by including all admin_*.php files 
   
 Conventions for template:  
 - L_ is a language variable
