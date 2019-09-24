@@ -836,6 +836,7 @@ $lang['Viewing_online'] = 'Viewing who is online';
 $lang['Viewing_member_list'] = 'Viewing member list';
 $lang['Viewing_priv_msgs'] = 'Viewing Private Messages';
 $lang['Viewing_FAQ'] = 'Viewing FAQ';
+$lang['Viewing_ranks'] = 'Viewing ranks';
 
 
 //
@@ -1012,6 +1013,13 @@ $lang['Login_attempts_exceeded'] = 'The maximum number of %s login attempts has 
 $lang['Please_remove_install_contrib'] = 'Please ensure both the install/ and contrib/ directories are deleted';
 
 $lang['Session_invalid'] = 'Invalid Session. Please resubmit the form.';
+
+
+// ranks
+$lang['Ranks'] = 'Ranks';
+$lang['No_ranks'] = 'No ranks.';
+$lang['rank_no_desc'] = 'Rank has no description.'
+
 
 //
 // That's all, Folks!

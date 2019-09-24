@@ -565,6 +565,7 @@ $lang['Ranks_explain'] = 'Using this form you can add, edit, view and delete ran
 $lang['Add_new_rank'] = 'Add new rank';
 
 $lang['Rank_title'] = 'Rank Title';
+$lang['Ranks_desc'] = 'Rank description';
 $lang['Rank_special'] = 'Set as Special Rank';
 $lang['Rank_minimum'] = 'Minimum Posts';
 $lang['Rank_maximum'] = 'Maximum Posts';

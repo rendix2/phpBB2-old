@@ -235,6 +235,7 @@ CREATE TABLE phpbb_privmsgs_text (
 CREATE TABLE phpbb_ranks (
    rank_id int4 DEFAULT nextval('phpbb_ranks_id_seq'::text) NOT NULL,
    rank_title varchar(50) DEFAULT '' NOT NULL,
+   rank_desc text,
    rank_min int4 DEFAULT '0' NOT NULL,
    rank_special int2 DEFAULT '0',
    rank_image varchar(255),

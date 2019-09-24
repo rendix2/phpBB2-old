@@ -95,6 +95,7 @@ if ($mode !== '') {
 		$template->assignVars(
 			[
 				'RANK'             => $rankInfo->rank_title,
+				'RANK_DESC'        => $rankInfo->rank_desc,
 				'SPECIAL_RANK'     => $rankIsSpecial,
 				'NOT_SPECIAL_RANK' => $rankIsNotSpecial,
 				'MINIMUM'          => $rankIsSpecial ? '' : $rankInfo->rank_min,
@@ -103,6 +104,8 @@ if ($mode !== '') {
 
 				'L_RANKS_TITLE'        => $lang['Ranks_title'],
 				'L_RANKS_TEXT'         => $lang['Ranks_explain'],
+
+				'L_RANK_DESC'         => $lang['Ranks_desc'],
 				'L_RANK_TITLE'         => $lang['Rank_title'],
 				'L_RANK_SPECIAL'       => $lang['Rank_special'],
 				'L_RANK_MINIMUM'       => $lang['Rank_minimum'],
@@ -124,6 +127,7 @@ if ($mode !== '') {
 
 		$rankId    = isset($_POST['id'])         ? (int)$_POST['id']          : 0;
 		$rankTitle = isset($_POST['title'])      ? trim($_POST['title'])      : '';
+		$rankDesc = isset($_POST['rank_desc'])   ? trim($_POST['rank_desc'])  : '';
 		$minPosts  = isset($_POST['min_posts'])  ? (int)$_POST['min_posts']   : -1;
 		$rankImage = isset($_POST['rank_image']) ? trim($_POST['rank_image']) : '';
 
@@ -161,6 +165,7 @@ if ($mode !== '') {
 
 			$updateData = [
 				'rank_title' => $rankTitle,
+				'rank_desc' => $rankDesc,
 				'rank_special' => $specialRank,
 				'rank_min' => $minPosts,
 				'rank_image' => $rankImage
@@ -174,6 +179,7 @@ if ($mode !== '') {
 		} else {
 			$insertData = [
 				'rank_title' => $rankTitle,
+				'rank_desc' => $rankDesc,
 				'rank_special' => $specialRank,
 				'rank_min' => $minPosts,
 				'rank_image' => $rankImage
@@ -266,8 +272,8 @@ $rank_count = count($ranks);
 
 $template->assignVars(
 	[
-        'L_RANKS_TITLE'  => $lang['Ranks_title'],
-        'L_RANKS_TEXT'   => $lang['Ranks_explain'],
+        'L_RANK_TITLE'  => $lang['Ranks_title'],
+        'L_RANK_TEXT'   => $lang['Ranks_explain'],
         'L_RANK'         => $lang['Rank_title'],
         'L_RANK_MINIMUM' => $lang['Rank_minimum'],
         'L_SPECIAL_RANK' => $lang['Rank_special'],

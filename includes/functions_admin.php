@@ -308,6 +308,8 @@ function getForumLocation($sessionPage, array $lang)
             return $lang['Viewing_priv_msgs'];
         case PAGE_FAQ:
             return $lang['Viewing_FAQ'];
+        case PAGE_RANKS:
+            return $lang['Viewing_ranks'];
         default:
             return $lang['Forum_index'];
     }

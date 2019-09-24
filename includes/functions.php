@@ -299,6 +299,10 @@ function init_userprefs($pageId)
         }
     }
 
+	if ($userData['user_id'] === ANONYMOUS) {
+        $userData['user_style'] = $board_config['default_style'];
+    }
+
 	$theme = setupStyle($board_config['default_style']);
 
 	return $userData;

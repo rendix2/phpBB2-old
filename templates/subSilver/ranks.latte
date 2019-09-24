@@ -1,0 +1,26 @@
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+    <tr>
+        <td align="left"><span class="nav"><a href="{$U_INDEX}" class="nav">{$L_INDEX}</a></span></td>
+		</span></td>
+    </tr>
+</table>
+
+{foreach $D_RANKS as $rank}
+    <p>
+        <b>{$rank->rank_title}</b>
+    </p>
+
+    {if $rank->rank_image}
+    <img src="{$rank->rank_image}" alt="{$rank->rank_title}">
+    {/if}
+
+    <div>
+        {if $rank->rank_desc}
+            <i>{$rank->rank_desc}</i>
+        {else}
+            <i>{$L_RANK_NO_DESC}</i>
+        {/if}
+    </div>
+
+    <hr>
+{/foreach}

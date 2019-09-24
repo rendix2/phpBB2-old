@@ -125,6 +125,7 @@ define('PAGE_POSTING', -9);
 define('PAGE_PRIVMSGS', -10);
 define('PAGE_GROUPCP', -11);
 define('PAGE_ADMIN_INDEX', -12);
+define('PAGE_RANKS', -13);
 define('PAGE_TOPIC_OFFSET', 5000);
 
 /**

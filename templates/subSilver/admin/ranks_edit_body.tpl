@@ -3,7 +3,8 @@
 
 <p>{L_RANKS_TEXT}</p>
 
-<form action="{S_RANK_ACTION}" method="post"><table class="forumline" cellpadding="4" cellspacing="1" border="0" align="center">
+<form action="{S_RANK_ACTION}" method="post">
+	<table class="forumline" cellpadding="4" cellspacing="1" border="0" align="center">
 	<tr>
 		<th class="thTop" colspan="2">{L_RANKS_TITLE}</th>
 	</tr>
@@ -17,6 +18,16 @@
 			<input class="post" type="text" name="title" id="title" size="35" maxlength="40" value="{RANK}" />
 		</td>
 	</tr>
+		<tr>
+			<td class="row1" width="38%">
+				<label for="rank_desc">
+					<span class="gen">{L_RANK_DESC}:</span>
+				</label>
+			</td>
+			<td class="row2">
+				<textarea name="rank_desc" id="rank_desc">{RANK_DESC}</textarea>
+			</td>
+		</tr>
 	<tr>
 		<td class="row1">
 			<span class="gen">{L_RANK_SPECIAL}</span>
@@ -57,4 +68,5 @@
 		<td class="catBottom" colspan="2" align="center"><input type="submit" name="submit" value="{L_SUBMIT}" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="{L_RESET}" class="liteoption" /></td>
 	</tr>
 </table>
-{S_HIDDEN_FIELDS}</form>
+{S_HIDDEN_FIELDS}
+</form>

@@ -173,6 +173,10 @@ foreach ($rows as $row) {
 					$location    = $lang['Viewing_FAQ'];
 					$locationUrl = 'faq.php';
 					break;
+                case PAGE_RANKS:
+                    $location = $lang['Viewing_ranks'];
+                    $locationUrl = 'ranks.php';
+                    break;
 				default:
 					$location    = $lang['Forum_index'];
 					$locationUrl = 'index.php';
