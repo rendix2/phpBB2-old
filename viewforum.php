@@ -388,10 +388,6 @@ if ($is_auth['auth_mod']) {
 // Dump out the page header and load viewforum template
 //
 
-if ($board_config['show_online']) {
-    showOnline($forumId, $userdata, $board_config, $theme, $lang, $storage, $template);
-}
-
 $page_title = $lang['View_forum'] . ' - ' . $forum->forum_name;
 
 PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $page_title, $gen_simple_header);

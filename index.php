@@ -272,7 +272,19 @@ $is_auth = Auth::authorize(AUTH_VIEW, AUTH_LIST_ALL, $userdata, $forums);
 // Start output of page
 //
 
-showOnline(null, $userdata, $board_config, $theme, $lang, $storage, $template);
+$onlineUsersCount = dibi::select('COUNT(*)')
+    ->from(SESSIONS_TABLE)
+    ->where('session_logged_in = %i', 1)
+    ->groupBy('session_user_id')
+    ->fetchSingle();
+
+if ($onlineUsersCount === 0) {
+    $l_r_user_s = $lang['Online_users_zero_total'];
+} elseif ($onlineUsersCount === 1) {
+    $l_r_user_s = $lang['Online_user_total'];
+} else {
+    $l_r_user_s = $lang['Online_users_total'];
+}
 
 PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $lang['Index'], $gen_simple_header);
 
@@ -280,6 +292,8 @@ $template->setFileNames(['body' => 'index_body.tpl']);
 
 $template->assignVars(
     [
+       'TOTAL_USERS_ONLINE'  => sprintf($l_r_user_s, $onlineUsersCount),
+
         'TOTAL_POSTS' => sprintf($l_total_post_s, $totalPosts),
         'TOTAL_USERS' => sprintf($l_total_user_s, $totalUsers),
         'NEWEST_USER' => sprintf($lang['Newest_user'], '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$newestUserId") . '">', $newestUser, '</a>'),

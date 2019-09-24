@@ -148,8 +148,6 @@ class PageHelper
                 'L_SEARCH_NEW'        => $lang['Search_new'],
                 'L_SEARCH_UNANSWERED' => $lang['Search_unanswered'],
                 'L_SEARCH_SELF'       => $lang['Search_your_posts'],
-                'L_WHOSONLINE_ADMIN'  => sprintf($lang['Admin_online_color'], '<span style="color:#' . $theme['fontcolor3'] . '">', '</span>'),
-                'L_WHOSONLINE_MOD'    => sprintf($lang['Mod_online_color'], '<span style="color:#' . $theme['fontcolor2'] . '">', '</span>'),
 
                 'U_SEARCH_UNANSWERED' => Session::appendSid('search.php?search_id=unanswered'),
                 'U_SEARCH_SELF'       => Session::appendSid('search.php?search_id=egosearch'),

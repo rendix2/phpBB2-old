@@ -134,6 +134,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
             'L_GZIP_COMPRESSION' => $lang['Gzip_compression'],
 
             'L_NUMBER_ONLINE_USERS'    => $lang['Online_users'],
+            'L_NUMBER_ONLINE_REGISTERED_USERS'    => $lang['Online_registered_users'],
             'L_NUMBER_MODERATORS'      => $lang['Thereof_Moderators'],
             'L_NUMBER_ADMINISTRATORS'  => $lang['Thereof_Administrators'],
             'L_NUMBER_ACTIVE_USERS'    => $lang['Thereof_activated_users'],
@@ -175,8 +176,14 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
         ->from(SESSIONS_TABLE)
         ->fetchSingle();
 
+    $registeredOnlineUsers = dibi::select('COUNT(*)')
+        ->from(SESSIONS_TABLE)
+        ->where('session_logged_in = %i', 1)
+        ->groupBy('session_user_id')
+        ->fetchSingle();
+
     // admin stats mod BEGIN
-    $totalUnactiveUsers = dibi::select('COUNT(*)')
+    $totalUnActiveUsers = dibi::select('COUNT(*)')
         ->as('total')
         ->from(USERS_TABLE)
         ->where('user_active = %i', 0)
@@ -197,7 +204,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
         ->where('user_id != %i', ANONYMOUS)
         ->fetchSingle();
 
-    $totalActiveUsers = $totalUsers - $totalUnactiveUsers;
+    $totalActiveUsers = $totalUsers - $totalUnActiveUsers;
 
 	$startDate = create_date($board_config['default_dateformat'], $board_config['board_startdate'], $board_config['board_timezone']);
 
@@ -271,8 +278,10 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
 
             'NUMBER_OF_ONLINE_USERS' => $totalOnlineUsers,
 
+            'NUMBER_OF_REGISTERED_ONLINE_USERS' => $registeredOnlineUsers,
+
             'NUMBER_OF_ACTIVE_USERS'    => $totalActiveUsers,
-            'NUMBER_OF_NONACTIVE_USERS' => $totalUnactiveUsers,
+            'NUMBER_OF_NONACTIVE_USERS' => $totalUnActiveUsers,
 
             'NUMBER_OF_MODERATORS'      => $totalModerators,
             'NUMBER_OF_ADMINISTRATORS'  => $totalAdministrators,

@@ -122,22 +122,10 @@ $lang['Board_disable'] = 'Sorry, but this board is currently unavailable.  Pleas
 //
 $lang['Registered_users'] = 'Registered Users:';
 $lang['Browsing_forum'] = 'Users browsing this forum:';
-$lang['Online_users_zero_total'] = 'In total there are <b>0</b> users online :: ';
-$lang['Online_users_total'] = 'In total there are <b>%d</b> users online :: ';
-$lang['Online_user_total'] = 'In total there is <b>%d</b> user online :: ';
-$lang['Reg_users_zero_total'] = '0 Registered, ';
-$lang['Reg_users_total'] = '%d Registered, ';
-$lang['Reg_user_total'] = '%d Registered, ';
-$lang['Hidden_users_zero_total'] = '0 Hidden and ';
-$lang['Hidden_user_total'] = '%d Hidden and ';
-$lang['Hidden_users_total'] = '%d Hidden and ';
-$lang['Guest_users_zero_total'] = '0 Guests';
-$lang['Guest_users_total'] = '%d Guests';
-$lang['Guest_user_total'] = '%d Guest';
+$lang['Online_users_zero_total'] = 'In total there are <b>0</b> registered users online.';
+$lang['Online_users_total'] = 'In total there are <b>%d</b>  registered users online.';
+$lang['Online_user_total'] = 'In total there is <b>%d</b> registered user online.';
 $lang['Record_online_users'] = 'Most users ever online was <b>%s</b> on %s'; // first %s = number of users, second %s is the date.
-
-$lang['Admin_online_color'] = '%sAdministrator%s';
-$lang['Mod_online_color'] = '%sModerator%s';
 
 $lang['You_last_visit'] = 'You last visited on %s'; // %s replaced by date/time
 $lang['Current_time'] = 'The time now is %s'; // %s replaced by time

@@ -102,6 +102,10 @@
             <td class="row2"><b>{NUMBER_OF_ONLINE_USERS}</b></td>
         </tr>
         <tr>
+            <td class="row1">{L_NUMBER_ONLINE_REGISTERED_USERS}:</td>
+            <td class="row2"><b>{NUMBER_OF_REGISTERED_ONLINE_USERS}</b></td>
+        </tr>
+        <tr>
             <td class="row1">{L_NUMBER_ACTIVE_USERS}:</td>
             <td class="row2"><b>{NUMBER_OF_ACTIVE_USERS}</b></td>
         </tr>

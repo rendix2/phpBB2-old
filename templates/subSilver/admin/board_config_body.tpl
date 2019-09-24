@@ -305,17 +305,6 @@
         </tr>
 
         <tr>
-            <td class="row1">{L_ENABLE_SHOW_ONLINE}</td>
-            <td class="row2">
-                <input type="radio" name="show_online" id="show_online_1" value="1" {SHOW_ONLINE_YES} />
-                <label for="topic_review_1">{L_YES}</label>
-
-                <input type="radio" name="show_online" id="show_online_0" value="0" {SHOW_ONLINE_NO} />
-                <label for="topic_review_0">{L_NO}</label>
-            </td>
-        </tr>
-
-        <tr>
             <th class="thHead" colspan="2">{L_COOKIE_SETTINGS}</th>
         </tr>
 

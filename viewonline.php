@@ -40,11 +40,7 @@ $userdata = init_userprefs(PAGE_VIEW_ONLINE);
 //
 PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $lang['Who_is_Online'], $gen_simple_header);
 
-$template->setFileNames(
-    [
-	   'body' => 'viewonline_body.tpl'        
-    ]
-);
+$template->setFileNames(['body' => 'viewonline_body.tpl']);
 make_jumpbox('viewforum.php');
 
 $template->assignVars(
@@ -67,7 +63,7 @@ $forums = dibi::select(['forum_id', 'forum_name'])
 //
 // Get auth data
 //
-$is_auth = Auth::authorize(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
+$isAuth = Auth::authorize(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
 
 //
 // Get user list
@@ -95,8 +91,9 @@ $guestUsers      = 0;
 $registeredUsers = 0;
 $hiddenUsers     = 0;
 
-$regCounter     = 0;
-$guestCounter   = 0;
+$regCounter = 0;
+$guestCounter = 0;
+
 $previousUserId = 0;
 $previousIp     = '';
 
@@ -109,13 +106,6 @@ foreach ($rows as $row) {
         if ($userId !== $previousUserId) {
 			$userName = $row->username;
 
-            $styleColor = '';
-            if ($row->user_level === ADMIN) {
-                $userName = '<b style="color:#' . $theme['fontcolor3'] . '">' . $userName . '</b>';
-            } elseif ($row->user_level === MOD) {
-                $userName = '<b style="color:#' . $theme['fontcolor2'] . '">' . $userName . '</b>';
-            }
-
             if ($row->user_allow_viewonline) {
                 $viewOnline = true;
                 $registeredUsers++;
@@ -126,18 +116,18 @@ foreach ($rows as $row) {
 				$userName = '<i>' . $userName . '</i>';
 			}
 
-			$whichCounter   = 'reg_counter';
-			$whichRow       = 'reg_user_row';
+			$whichCounter = 'regCounter';
+			$whichRow     = 'reg_user_row';
+
 			$previousUserId = $userId;
 		}
-	}
-	else {
+	} else {
         if ($row->session_ip !== $previousIp) {
 			$userName   = $lang['Guest'];
 			$viewOnline = true;
 			$guestUsers++;
 	
-			$whichCounter = 'guest_counter';
+			$whichCounter = 'guestCounter';
 			$whichRow     = 'guest_user_row';
 		}
 	}
@@ -145,7 +135,7 @@ foreach ($rows as $row) {
 	$previousIp = $row->session_ip;
 
     if ($viewOnline) {
-        if ($row->session_page < 1 || !$is_auth[$row->session_page]['auth_view']) {
+        if ($row->session_page < 1 || !$isAuth[$row->session_page]['auth_view']) {
             switch ($row->session_page) {
 				case PAGE_INDEX:
 					$location    = $lang['Forum_index'];
@@ -221,7 +211,7 @@ if ($registeredUsers === 0) {
 }
 
 if ($hiddenUsers === 0) {
-    $l_h_user_s = $lang['Hidden_users_zero_online'];
+    $l_h_user_s = $lang[''];
 } elseif ($hiddenUsers === 1) {
     $l_h_user_s = $lang['Hidden_user_online'];
 } else {
