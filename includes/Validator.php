@@ -1,5 +1,7 @@
 <?php
 
+use Dibi\Row;
+
 /**
  * Class Validate
  *
@@ -12,13 +14,13 @@ class Validator
      * Also checks if it includes the " character, which we don't allow in usernames.
      * Used for registering, changing names, and posting anonymously with a username
      *
-     * @param string $userName
-     * @param array  $lang
-     * @param array  $userdata
+     * @param string    $userName
+     * @param array     $lang
+     * @param array|Row $userdata
      *
      * @return array
      */
-    public static function userName($userName, array $lang, array $userdata)
+    public static function userName($userName, array $lang, $userdata)
     {
         // Remove doubled up spaces
         $username = preg_replace('#\s+#', ' ', trim($userName));

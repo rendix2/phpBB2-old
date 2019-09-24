@@ -469,6 +469,10 @@ $lang['User_special'] = 'Special admin-only fields';
 $lang['User_special_explain'] = 'These fields are not able to be modified by the users.  Here you can set their status and other options that are not given to users.';
 
 
+$lang['Password_short'] = 'Users password must be no less than ' . USER_MIN_PASSWORD_LENGTH . ' characters.';
+$lang['Password_long'] = 'Users password must be no more than ' . USER_MAX_PASSWORD_LENGTH . ' characters.';
+
+
 //
 // Group Management
 //

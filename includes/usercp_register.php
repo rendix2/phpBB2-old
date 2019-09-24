@@ -284,10 +284,15 @@ if (isset($_POST['submit'])) {
 	$user_password_data = [];
 
     if (!empty($newPassword) && !empty($confirmPassword)) {
+        $passwordLength = mb_strlen($newPassword);
+
         if ($newPassword !== $confirmPassword) {
             $error        = true;
             $errorMessage .= (isset($errorMessage) ? '<br />' : '') . $lang['Password_mismatch'];
-        } elseif (mb_strlen($newPassword) > 32) {
+        } elseif ($passwordLength < USER_MIN_PASSWORD_LENGTH) {
+            $error        = true;
+            $errorMessage .= (isset($errorMessage) ? '<br />' : '') . $lang['Password_short'];
+        } elseif ($passwordLength > USER_MAX_PASSWORD_LENGTH) {
             $error        = true;
             $errorMessage .= (isset($errorMessage) ? '<br />' : '') . $lang['Password_long'];
 		} else {
