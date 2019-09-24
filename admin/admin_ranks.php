@@ -21,12 +21,6 @@ use Nette\Caching\Cache;
  *
  ***************************************************************************/
 
-if (!empty($setmodules)) {
-	$file = basename(__FILE__);
-	$module['Users']['Ranks'] = $file;
-	return;
-}
-
 define('IN_PHPBB', 1);
 
 //

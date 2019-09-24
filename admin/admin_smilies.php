@@ -28,16 +28,6 @@ use Nette\Utils\Finder;
 
 define('IN_PHPBB', 1);
 
-//
-// First we do the setmodules stuff for the admin cp.
-//
-if (!empty($setmodules)) {
-	$filename = basename(__FILE__);
-	$module['General']['Smilies'] = $filename;
-
-	return;
-}
-
 $sep = DIRECTORY_SEPARATOR;
 $phpbb_root_path = '.' . $sep . '..' . $sep;
 

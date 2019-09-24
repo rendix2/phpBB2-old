@@ -21,13 +21,6 @@
 
 define('IN_PHPBB', true);
 
-if (!empty($setmodules)) {
-	$filename = basename(__FILE__);
-	$module['Forums']['Prune'] = $filename;
-
-	return;
-}
-
 //
 // Load default header
 //

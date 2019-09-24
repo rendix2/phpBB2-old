@@ -2,12 +2,6 @@
 
 define('IN_PHPBB', 1);
 
-if (!empty($setmodules)) {
-    $file = basename(__FILE__);
-    $module['Users']['Who_is_Online'] = $file;
-    return;
-}
-
 //
 // Let's set the root dir for phpBB
 //

@@ -37,18 +37,36 @@ require_once '.' . $sep . 'pagestart.php';
 // Generate relevant output
 //
 if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
-    $setmodules = 1;
+    $modules = [];
 
-    $adminFiles = Finder::findFiles('admin_*.php')->from('.' . $sep);
+    $modules['General']['Configuration'] = 'admin_board.php';
+    $modules['General']['Mass_Email'] = 'admin_mass_email.php';
+    $modules['General']['Smilies'] = 'admin_smilies.php';
+    $modules['General']['Word_Censor'] = 'admin_words.php';
 
-    /**
-     * @var SplFileInfo $adminFile
-     */
-    foreach ($adminFiles as $adminFile) {
-        require_once $adminFile->getFilename();
-    }
+    $modules['Database']['DB_Maintenance'] = 'admin_db_maintenance.php';
+    $modules['Database']['Backup_DB'] = 'admin_db_utilities.php?perform=backup';
+    $modules['Database']['Restore_DB'] = 'admin_db_utilities.php?perform=restore';
 
-    unset($setmodules);
+    $modules['Users']['Ban_Management'] = 'admin_user_ban.php';
+    $modules['Users']['Disallow'] = 'admin_disallow.php';
+    $modules['Users']['Manage'] = 'admin_users.php';
+    $modules['Users']['Permissions'] = 'admin_ug_auth.php?mode=user';
+    $modules['Users']['Ranks'] = 'admin_ranks.php';
+    $modules['Users']['Who_is_Online'] = 'admin_online.php';
+
+    $modules['Forums']['Prune'] = 'admin_forum_prune.php';
+    $modules['Forums']['Permissions'] = 'admin_forumauth.php';
+    $modules['Forums']['Manage'] = 'admin_forums.php';
+
+    $modules['Groups']['Add_new'] = 'admin_groups.php?mode=new';
+    $modules['Groups']['Manage'] = 'admin_groups.php';
+    $modules['Groups']['Permissions'] = 'admin_ug_auth.php?mode=group';
+
+    $modules['Styles']['Add_new'] = 'admin_styles.php?mode=addnew';
+    $modules['Styles']['Create_new'] = 'admin_styles.php?mode=create';
+    $modules['Styles']['Manage'] = 'admin_styles.php';
+    $modules['Styles']['Export'] = 'admin_styles.php?mode=export';
 
     require_once  '.' . $sep . 'page_header_admin.php';
 
@@ -65,18 +83,18 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
         ]
     );
 
-    ksort($module);
+    ksort($modules);
 
-	foreach ($module as $cat => $action_array) {
-		$cat = !empty($lang[$cat]) ? $lang[$cat] : str_replace('_', ' ', $cat);
+	foreach ($modules as $category => $actions) {
+		$category = !empty($lang[$category]) ? $lang[$category] : str_replace('_', ' ', $category);
 
-        $template->assignBlockVars('catrow', ['ADMIN_CATEGORY' => $cat]);
+        $template->assignBlockVars('catrow', ['ADMIN_CATEGORY' => $category]);
 
-        ksort($action_array);
+        ksort($actions);
 
 		$rowCount = 0;
 
-		foreach ($action_array as $action => $file) {
+		foreach ($actions as $action => $fileName) {
 			$rowColor = !($rowCount%2) ? $theme['td_color1'] : $theme['td_color2'];
 			$rowClass = !($rowCount%2) ? $theme['td_class1'] : $theme['td_class2'];
 
@@ -88,7 +106,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
                     'ROW_CLASS' => $rowClass,
 
                     'ADMIN_MODULE'   => $action,
-                    'U_ADMIN_MODULE' => Session::appendSid($file)
+                    'U_ADMIN_MODULE' => Session::appendSid($fileName)
                 ]
             );
             $rowCount++;
@@ -231,7 +249,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
 
     if (count($avatars)) {
         /**
-         * @var SplFileInfo $file
+         * @var SplFileInfo $avatar
          */
         foreach ($avatars as $avatar) {
             $avatarDirSize += $avatar->getSize();

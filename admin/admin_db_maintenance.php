@@ -29,12 +29,6 @@ define('DBMTNC_VERSION', '1.3.8');
 define('CONFIG_LEVEL', 2); // Level of configuration available (see above)
 define('HEAP_SIZE', 500); // Limit of Heap-Table for session data
 
-if (!empty($setmodules)) {
-	$filename = basename(__FILE__);
-	$module['Database']['DB_Maintenance'] = $filename;
-	return;
-}
-
 //
 // Load default header
 //

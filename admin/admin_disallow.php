@@ -22,13 +22,6 @@
 
 define('IN_PHPBB', 1);
 
-if (!empty($setmodules)) {
-	$filename = basename(__FILE__);
-	$module['Users']['Disallow'] = $filename;
-
-	return;
-}
-
 //
 // Include required files and check permissions
 //

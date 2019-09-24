@@ -22,12 +22,6 @@ use Nette\Caching\Cache;
  *
  ***************************************************************************/
 
-if (!empty($setmodules)) {
-	$file = basename(__FILE__);
-	$module['General']['Word_Censor'] = $file;
-	return;
-}
-
 define('IN_PHPBB', 1);
 
 //
@@ -212,7 +206,7 @@ if ($mode !== '') {
         ]
     );
 
-    foreach ($words as $word) {
+    foreach ($words as $i => $word) {
 		$word_id = $word->word_id;
 
 		$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
