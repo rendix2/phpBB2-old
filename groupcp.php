@@ -685,6 +685,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
         'u.user_from',
         'u.user_website',
         'u.user_email',
+        'u.user_avatar_type',
     ];
 
     //
