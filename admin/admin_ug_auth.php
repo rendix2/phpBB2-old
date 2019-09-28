@@ -556,6 +556,11 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 	$auth_access = [];
 	$auth_access_count = [];
 
+	// init $auth_access_count
+    foreach ($rows as $row) {
+        $auth_access_count[$row->forum_id] = 0;
+    }
+
     foreach ($rows as $row) {
         $auth_access[$row->forum_id][] = $row;
         $auth_access_count[$row->forum_id]++;
