@@ -752,6 +752,8 @@ if (isset($_POST['groupstatus']) && $groupId) {
     foreach ($groupMembers as $groupMember) {
         if ($groupMember->user_id === $userdata['user_id'] && $userdata['session_logged_in']) {
             $isGroupMember = true;
+
+            break;
         }
     }
 
@@ -760,6 +762,8 @@ if (isset($_POST['groupstatus']) && $groupId) {
     foreach ($modgroup_pending_list as $modgroup_pending_value) {
         if ($modgroup_pending_value->user_id === $userdata['user_id'] && $userdata['session_logged_in']) {
             $isGroupPendingMember = true;
+
+            break;
         }
     }
 

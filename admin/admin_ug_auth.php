@@ -637,8 +637,10 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
                 $allowed = 1;
 
                 foreach ($forum_auth_level_fields[$forum_id] as $j => $auth_level_field) {
-                    if (!$auth_ug[$forum_id][$auth_level_field[$j]]) {
+                    if (!$auth_ug[$forum_id][$auth_level_field]) {
                         $allowed = 0;
+
+                        break;
                     }
                 }
 
