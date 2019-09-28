@@ -189,7 +189,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
     $rows = dibi::select(['ug.user_id', 'g.group_type'])
         ->from(USER_GROUP_TABLE)
         ->as('ug')
-        ->from(GROUPS_TABLE)
+        ->innerJoin(GROUPS_TABLE)
         ->as('g')
         ->on('ug.group_id = g.group_id')
         ->where('g.group_id = %i', $groupId)
@@ -662,6 +662,9 @@ if (isset($_POST['groupstatus']) && $groupId) {
         'user_from',
         'user_website',
         'user_email',
+        'user_avatar_type',
+        'user_allowavatar',
+        'user_avatar',
     ];
 
     //
@@ -697,9 +700,22 @@ if (isset($_POST['groupstatus']) && $groupId) {
         ->where('ug.user_pending = %i', 0)
         ->where('ug.user_id <> %i', $group_moderator->user_id)
         ->orderBy('u.username')
+        ->limit($board_config['group_members_per_page'])
+        ->offset($start)
         ->fetchAll();
 
-    $membersCount = count($groupMembers);
+    $membersCount = dibi::select('COUNT(*)')
+        ->as('count')
+        ->from(USERS_TABLE)
+        ->as('u')
+        ->innerJoin(USER_GROUP_TABLE)
+        ->as('ug')
+        ->on('u.user_id = ug.user_id')
+        ->where('ug.group_id = %i', $groupId)
+        ->where('ug.user_pending = %i', 0)
+        ->where('ug.user_id <> %i', $group_moderator->user_id)
+        ->orderBy('u.username')
+        ->fetchSingle();
 
 	$columns = [
 	    'u.username',
@@ -711,6 +727,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
         'u.user_from',
         'u.user_website',
         'u.user_email',
+        'u.user_avatar_type',
     ];
 
     $modgroup_pending_list = dibi::select($columns)
@@ -883,13 +900,10 @@ if (isset($_POST['groupstatus']) && $groupId) {
 	// Dump out the remaining users
 	//
 
-    $min = min($board_config['group_members_per_page'] + $start, $membersCount);
+    $min = min((int)$board_config['group_members_per_page'] + $start, $membersCount);
 
-    for ($i = $start; $i < $min; $i++) {
-		$username = $groupMembers[$i]['username'];
-		$user_id = $groupMembers[$i]['user_id'];
-
-		generate_user_info($groupMembers[$i], $board_config['default_dateformat'], $isModerator, $from, $posts, $topics, $joined, $poster_avatar, $profileImage, $profile, $searchImage, $search, $pmImage, $pm, $emailImage, $email, $wwwImage, $www);
+    foreach ($groupMembers as $i => $groupMember) {
+		generate_user_info($groupMember, $board_config['default_dateformat'], $isModerator, $from, $posts, $topics, $joined, $poster_avatar, $profileImage, $profile, $searchImage, $search, $pmImage, $pm, $emailImage, $email, $wwwImage, $www);
 
 		if ($groupInfo->group_type !== GROUP_HIDDEN || $isGroupMember || $isModerator) {
 			$rowColor = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
@@ -899,12 +913,12 @@ if (isset($_POST['groupstatus']) && $groupId) {
                 [
                     'ROW_COLOR'      => '#' . $rowColor,
                     'ROW_CLASS'      => $rowClass,
-                    'USERNAME'       => $username,
+                    'USERNAME'       => $groupMember->username,
                     'FROM'           => $from,
                     'JOINED'         => $joined,
                     'POSTS'          => $posts,
                     'TOPICS'         => $topics,
-                    'USER_ID'        => $user_id,
+                    'USER_ID'        => $groupMember->user_id,
                     'AVATAR_IMG'     => $poster_avatar,
                     'PROFILE_IMG'    => $profileImage,
                     'PROFILE'        => $profile,
