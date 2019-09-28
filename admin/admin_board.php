@@ -98,9 +98,9 @@ $html_no = !$new['allow_html'] ? 'checked="checked"' : '';
 $bbcode_yes = $new['allow_bbcode'] ? 'checked="checked"' : '';
 $bbcode_no = !$new['allow_bbcode'] ? 'checked="checked"' : '';
 
-$activation_none  = $new['require_activation'] === USER_ACTIVATION_NONE  ? 'checked="checked"' : '';
-$activation_user  = $new['require_activation'] === USER_ACTIVATION_SELF  ? 'checked="checked"' : '';
-$activation_admin = $new['require_activation'] === USER_ACTIVATION_ADMIN ? 'checked="checked"' : '';
+$activation_none  = (int)$new['require_activation'] === USER_ACTIVATION_NONE  ? 'checked="checked"' : '';
+$activation_user  = (int)$new['require_activation'] === USER_ACTIVATION_SELF  ? 'checked="checked"' : '';
+$activation_admin = (int)$new['require_activation'] === USER_ACTIVATION_ADMIN ? 'checked="checked"' : '';
 
 $confirm_yes =  $new['enable_confirm'] ? 'checked="checked"' : '';
 $confirm_no  = !$new['enable_confirm'] ? 'checked="checked"' : '';
