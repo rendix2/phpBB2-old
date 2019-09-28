@@ -1083,6 +1083,8 @@ if ($mode === 'newpm') {
 
         if (!empty($_POST['message'])) {
             if (!$error) {
+                $bbcode_uid = 0;
+
                 if ($bbcode_on) {
                     $bbcode_uid = make_bbcode_uid();
                 }
