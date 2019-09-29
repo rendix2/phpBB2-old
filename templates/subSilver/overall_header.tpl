@@ -225,23 +225,47 @@ input.liteoption {
 
 <table width="100%" cellspacing="0" cellpadding="10" border="0" align="center"> 
 	<tr> 
-		<td class="bodyline"><table width="100%" cellspacing="0" cellpadding="0" border="0">
-			<tr> 
-				<td><a href="{U_INDEX}"><img src="templates/subSilver/images/logo_phpBB.gif" border="0" alt="{L_INDEX}" vspace="1" /></a></td>
-				<td align="center" width="100%" valign="middle"><span class="maintitle">{SITENAME}</span><br /><span class="gen">{SITE_DESCRIPTION}<br />&nbsp; </span> 
-				<table cellspacing="0" cellpadding="2" border="0">
-					<tr> 
-						<td align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;<a href="{U_FAQ}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_faq.gif" width="12" height="13" border="0" alt="{L_FAQ}" hspace="3" />{L_FAQ}</a>&nbsp; &nbsp;<a href="{U_SEARCH}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_search.gif" width="12" height="13" border="0" alt="{L_SEARCH}" hspace="3" />{L_SEARCH}</a>&nbsp; &nbsp;<a href="{U_MEMBERLIST}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_members.gif" width="12" height="13" border="0" alt="{L_MEMBERLIST}" hspace="3" />{L_MEMBERLIST}</a>&nbsp; &nbsp;<a href="{U_RANKS}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_rank.gif" width="12" height="13" border="0" alt="{L_RANKS}" hspace="3" />{L_RANKS}</a>&nbsp; &nbsp;<a href="{U_GROUP_CP}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_groups.gif" width="12" height="13" border="0" alt="{L_USERGROUPS}" hspace="3" />{L_USERGROUPS}</a>&nbsp;
-						<!-- BEGIN switch_user_logged_out -->
-						&nbsp;<a href="{U_REGISTER}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_register.gif" width="12" height="13" border="0" alt="{L_REGISTER}" hspace="3" />{L_REGISTER}</a>&nbsp;
-						<!-- END switch_user_logged_out -->
-						</span></td>
-					</tr>
-					<tr>
-						<td height="25" align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;<a href="{U_PROFILE}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_profile.gif" width="12" height="13" border="0" alt="{L_PROFILE}" hspace="3" />{L_PROFILE}</a>&nbsp; &nbsp;<a href="{U_PRIVATEMSGS}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_message.gif" width="12" height="13" border="0" alt="{PRIVATE_MESSAGE_INFO}" hspace="3" />{PRIVATE_MESSAGE_INFO}</a>&nbsp; &nbsp;<a href="{U_LOGIN_LOGOUT}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_login.gif" width="12" height="13" border="0" alt="{L_LOGIN_LOGOUT}" hspace="3" />{L_LOGIN_LOGOUT}</a>&nbsp;</span></td>
-					</tr>
-				</table></td>
-			</tr>
-		</table>
-
+		<td class="bodyline">
+			<table width="100%" cellspacing="0" cellpadding="0" border="0">
+				<tr>
+					<td>
+						<a href="{U_INDEX}">
+							<img src="templates/subSilver/images/logo_phpBB.gif" border="0" alt="{L_INDEX}" vspace="1" />
+						</a>
+					</td>
+					<td align="center" width="100%" valign="middle">
+						<span class="maintitle">{SITENAME}</span>
+						<br />
+						<span class="gen">{SITE_DESCRIPTION}<br />&nbsp; </span>
+						<table cellspacing="0" cellpadding="2" border="0">
+							<tr>
+								<td align="center" valign="top" nowrap="nowrap">
+									<span class="mainmenu">&nbsp;
+										<a href="{U_FAQ}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_faq.gif" width="12" height="13" border="0" alt="{L_FAQ}" hspace="3" />{L_FAQ}</a>&nbsp; &nbsp;
+										<a href="{U_SEARCH}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_search.gif" width="12" height="13" border="0" alt="{L_SEARCH}" hspace="3" />{L_SEARCH}</a>&nbsp; &nbsp;
+										<a href="{U_MEMBERLIST}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_members.gif" width="12" height="13" border="0" alt="{L_MEMBERLIST}" hspace="3" />{L_MEMBERLIST}</a>&nbsp; &nbsp;
+										<a href="{U_RANKS}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_rank.gif" width="12" height="13" border="0" alt="{L_RANKS}" hspace="3" />{L_RANKS}</a>&nbsp; &nbsp;
+										<a href="{U_GROUP_CP}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_groups.gif" width="12" height="13" border="0" alt="{L_USERGROUPS}" hspace="3" />{L_USERGROUPS}</a>&nbsp; &nbsp;
+										<!-- BEGIN switch_user_logged_out -->
+										<a href="{U_REGISTER}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_register.gif" width="12" height="13" border="0" alt="{L_REGISTER}" hspace="3" />{L_REGISTER}</a>&nbsp; &nbsp;
+										<!-- END switch_user_logged_out -->
+									</span>
+								</td>
+							</tr>
+							<tr>
+								<td height="25" align="center" valign="top" nowrap="nowrap">
+									<span class="mainmenu">&nbsp;
+										<!-- BEGIN switch_user_logged_in -->
+										<a href="{U_PROFILE}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_profile.gif" width="12" height="13" border="0" alt="{L_PROFILE}" hspace="3" />{L_PROFILE}</a>&nbsp; &nbsp;
+										<a href="{U_SETTINGS}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_profile.gif" width="12" height="13" border="0" alt="{L_SETTINGS}" hspace="3" />{L_SETTINGS}</a>&nbsp; &nbsp;
+										<a href="{U_PRIVATEMSGS}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_message.gif" width="12" height="13" border="0" alt="{PRIVATE_MESSAGE_INFO}" hspace="3" />{PRIVATE_MESSAGE_INFO}</a>&nbsp; &nbsp;
+										<!-- END switch_user_logged_in -->
+										<a href="{U_LOGIN_LOGOUT}" class="mainmenu"><img src="templates/subSilver/images/icon_mini_login.gif" width="12" height="13" border="0" alt="{L_LOGIN_LOGOUT}" hspace="3" />{L_LOGIN_LOGOUT}</a>&nbsp;
+									</span>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
 		<br />

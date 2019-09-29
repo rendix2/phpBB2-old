@@ -139,6 +139,7 @@ class PageHelper
                 'L_INDEX'             => sprintf($lang['Forum_Index'], $boardConfig['sitename']),
                 'L_REGISTER'          => $lang['Register'],
                 'L_PROFILE'           => $lang['Profile'],
+                'L_SETTINGS'          => $lang['Settings'],
                 'L_SEARCH'            => $lang['Search'],
                 'L_PRIVATEMSGS'       => $lang['Private_Messages'],
                 'L_WHO_IS_ONLINE'     => $lang['Who_is_Online'],
@@ -155,7 +156,8 @@ class PageHelper
                 'U_SEARCH_NEW'        => Session::appendSid('search.php?search_id=newposts'),
                 'U_INDEX'             => Session::appendSid('index.php'),
                 'U_REGISTER'          => Session::appendSid('profile.php?mode=register'),
-                'U_PROFILE'           => Session::appendSid('profile.php?mode=editprofile'),
+                'U_PROFILE'           => Session::appendSid('profile.php?mode=viewprofile&' . POST_USERS_URL . '=' . $userData['user_id']), //$userData['user_session_Logged_in']
+                'U_SETTINGS'          => Session::appendSid('profile.php?mode=editprofile'),
                 'U_PRIVATEMSGS'       => Session::appendSid('privmsg.php?folder=inbox'),
                 'U_PRIVATEMSGS_POPUP' => Session::appendSid('privmsg.php?mode=newpm'),
                 'U_SEARCH'            => Session::appendSid('search.php'),

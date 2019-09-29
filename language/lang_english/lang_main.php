@@ -136,6 +136,7 @@ $lang['Search_unanswered'] = 'View unanswered posts';
 
 $lang['Register'] = 'Register';
 $lang['Profile'] = 'Profile';
+$lang['Settings'] = 'Settings';
 $lang['Edit_profile'] = 'Edit your profile';
 $lang['Search'] = 'Search';
 $lang['Memberlist'] = 'Memberlist';
