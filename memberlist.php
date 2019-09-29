@@ -134,7 +134,8 @@ $users = dibi::select($columns)
 
 switch ($mode) {
     case 'joined':
-        $users->orderBy('user_regdate', $sortOrder)
+    default:
+        $users->orderBy('user_id', $sortOrder)
         ->limit($board_config['members_per_page'])
         ->offset($start);
         break;
@@ -171,11 +172,6 @@ switch ($mode) {
     case 'topten':
         $users->orderBy('user_posts', $sortOrder)
             ->limit($board_config['members_per_page']);
-        break;
-    default:
-        $users->orderBy('user_regdate', $sortOrder)
-            ->limit($board_config['members_per_page'])
-            ->offset($start);
         break;
 }
 
