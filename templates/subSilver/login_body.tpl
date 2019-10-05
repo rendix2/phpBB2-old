@@ -34,7 +34,7 @@
                             </span>
                         </td>
                         <td>
-                            <input type="password" class="post" name="password" id="password" size="25" maxlength="32"/>
+                            <input type="password" class="post" name="password" id="password" size="25" maxlength="32" autocomplete="off"/>
                         </td>
                     </tr>
                     <!-- BEGIN switch_allow_autologin -->

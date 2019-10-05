@@ -44,7 +44,7 @@
 				<br/>
 				<span class="gensmall">{L_PASSWORD_IF_CHANGED}</span></td>
 			<td class="row2">
-				<input class="post" type="password" name="password" id="password" size="35" maxlength="32" value=""/>
+				<input class="post" type="password" name="password" id="password" size="35" maxlength="32" value="" autocomplete="off"/>
 			</td>
 		</tr>
 		<tr>
@@ -55,7 +55,7 @@
 				<br/>
 				<span class="gensmall">{L_PASSWORD_CONFIRM_IF_CHANGED}</span></td>
 			<td class="row2">
-				<input class="post" type="password" name="password_confirm" id="password_confirm" size="35" maxlength="32" value=""/>
+				<input class="post" type="password" name="password_confirm" id="password_confirm" size="35" maxlength="32" value="" autocomplete="off"/>
 			</td>
 		</tr>
 		<tr>

@@ -692,7 +692,7 @@
                 <span class="gensmall">{L_SMTP_PASSWORD_EXPLAIN}</span>
             </td>
             <td class="row2">
-                <input class="post" type="password" name="smtp_password" id="smtp_password" value="{SMTP_PASSWORD}" size="25" maxlength="255"/>
+                <input class="post" type="password" name="smtp_password" id="smtp_password" value="{SMTP_PASSWORD}" size="25" maxlength="255" autocomplete="off" />
             </td>
         </tr>
 

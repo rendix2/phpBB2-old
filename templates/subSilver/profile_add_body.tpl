@@ -62,7 +62,7 @@
 		  <br />
 		<span class="gensmall">{L_CONFIRM_PASSWORD_EXPLAIN}</span></td>
 	  <td class="row2"> 
-		<input type="password" class="post" style="width: 200px" name="cur_password" id="cur_password" size="25" maxlength="32" value="{CUR_PASSWORD}" />
+		<input type="password" class="post" style="width: 200px" name="cur_password" id="cur_password" size="25" maxlength="32" value="{CUR_PASSWORD}" autocomplete="off" />
 	  </td>
 	</tr>
 	<!-- END switch_edit_profile -->
@@ -75,7 +75,7 @@
 			<span class="gensmall">{L_PASSWORD_IF_CHANGED}</span>
 		</td>
 		<td class="row2">
-			<input type="password" class="post" style="width: 200px" name="new_password" id="new_password" size="25" maxlength="32" value="{NEW_PASSWORD}"/>
+			<input type="password" class="post" style="width: 200px" name="new_password" id="new_password" size="25" maxlength="32" value="{NEW_PASSWORD}" autocomplete="off" />
 		</td>
 	</tr>
 	<tr>
@@ -87,7 +87,7 @@
 			<span class="gensmall">{L_PASSWORD_CONFIRM_IF_CHANGED}</span>
 		</td>
 		<td class="row2">
-			<input type="password" class="post" style="width: 200px" name="password_confirm" id="password_confirm" size="25" maxlength="32" value="{PASSWORD_CONFIRM}"/>
+			<input type="password" class="post" style="width: 200px" name="password_confirm" id="password_confirm" size="25" maxlength="32" value="{PASSWORD_CONFIRM}" autocomplete="off" />
 		</td>
 	</tr>
 	<!-- Visual Confirmation -->

@@ -175,7 +175,7 @@ foreach ($available_dbms as $var => $param) {
 </tr> 
 <tr> 
 <td class="row1" align="right"><span class="gen">Database Password: </span></td> 
-<td class="row2"><input type="password" name="dbpasswd" value="<?php echo @$dbpasswd; ?>" /></td> 
+<td class="row2"><input type="password" name="dbpasswd" autocomplete="off" value="<?php echo @$dbpasswd; ?>"/></td>
 </tr> 
 <tr> 
 <td class="row1" align="right"><span class="gen">Chosen Prefix: </span></td> 

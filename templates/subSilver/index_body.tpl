@@ -83,7 +83,7 @@
 					<input class="post" type="text" name="username" id="username" size="10"/>
 
 					<label for="password">{L_PASSWORD}:</label>
-					<input class="post" type="password" name="password" id="password" size="10" maxlength="32"/>
+					<input class="post" type="password" name="password" id="password" size="10" maxlength="32" autocomplete="off" />
 
 			 		<!-- BEGIN switch_allow_autologin -->
 			  		<label for="autologin">{L_AUTO_LOGIN}</label>

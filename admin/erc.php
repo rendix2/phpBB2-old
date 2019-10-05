@@ -277,7 +277,7 @@ switch($mode) {
 							<tr>
 								<td>&nbsp;</td>
 								<td><?php echo $lang['Password']; ?>:</td>
-								<td><input type="password" name="board_password" size="30" maxlength="100" /></td>
+								<td><input type="password" name="board_password" size="30" maxlength="100" autocomplete="off" /></td>
 							</tr>
 						</table>
 					</td>
@@ -295,7 +295,7 @@ switch($mode) {
 							<tr>
 								<td>&nbsp;</td>
 								<td><?php echo $lang['Password']; ?>:</td>
-								<td><input type="password" name="db_password" size="30" /></td>
+								<td><input type="password" name="db_password" size="30" autocomplete="off" /></td>
 							</tr>
 						</table>
 					</td>
@@ -577,7 +577,7 @@ switch($mode) {
 				</tr>
 				<tr>
 					<td><b><?php echo $lang['DB_Password']; ?>:</b></td>
-					<td><input type="password" name="new_dbpasswd" size="30" /></td>
+					<td><input type="password" name="new_dbpasswd" size="30" autocomplete="off" /></td>
 				</tr>
 				<tr>
 					<td><b><?php echo $lang['Table_Prefix']; ?>:</b></td>
