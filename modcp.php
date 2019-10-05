@@ -58,34 +58,31 @@ if (isset($_GET[POST_TOPIC_URL]) || isset($_POST[POST_TOPIC_URL])) {
     $topicId = '';
 }
 
-$confirm = $_POST['confirm'] ? true : 0;
-
 //
 // Continue var definitions
 //
 $start = isset($_GET['start']) ? (int)$_GET['start'] : 0;
 $start = $start < 0 ? 0 : $start;
 
-$delete = isset($_POST['delete']);
-$move   = isset($_POST['move']);
-$lock   = isset($_POST['lock']);
-$unlock = isset($_POST['unlock']);
+$delete  = isset($_POST['delete']);
+$move    = isset($_POST['move']);
+$lock    = isset($_POST['lock']);
+$unlock  = isset($_POST['unlock']);
+$confirm = isset($_POST['confirm']);
 
 if (isset($_POST[POST_MODE]) || isset($_GET[POST_MODE])) {
     $mode = isset($_POST[POST_MODE]) ? $_POST[POST_MODE] : $_GET[POST_MODE];
     $mode = htmlspecialchars($mode);
+} else if ($delete) {
+    $mode = 'delete';
+} elseif ($move) {
+    $mode = 'move';
+} elseif ($lock) {
+    $mode = 'lock';
+} elseif ($unlock) {
+    $mode = 'unlock';
 } else {
-    if ($delete) {
-        $mode = 'delete';
-    } elseif ($move) {
-        $mode = 'move';
-    } elseif ($lock) {
-        $mode = 'lock';
-    } elseif ($unlock) {
-        $mode = 'unlock';
-    } else {
-        $mode = '';
-    }
+    $mode = '';
 }
 
 // session id check
@@ -494,13 +491,7 @@ switch ($mode) {
 			message_die(GENERAL_MESSAGE, $lang['None_selected']);
 		}
 
-        $topics_ids = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topicId];
-
-        $topics = dibi::select('topic_id')
-            ->from(TOPICS_TABLE)
-            ->where('topic_id IN %in', $topics_ids)
-            ->where('forum_id = %i', $forumId)
-            ->fetchPairs(null, 'topic_id');
+        $topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topicId];
 
         dibi::update(TOPICS_TABLE, ['topic_status' => TOPIC_UNLOCKED])
             ->where('topic_id IN %in', $topics)
@@ -539,6 +530,10 @@ switch ($mode) {
          * TODO
          */
 		if (isset($_POST['split_type_all']) || isset($_POST['split_type_beyond'])) {
+		    if (!isset($_POST['post_id_list'])) {
+                message_die(GENERAL_MESSAGE, $lang['None_selected']);
+            }
+
 			$posts = $_POST['post_id_list'];
 		}
 
@@ -695,7 +690,7 @@ switch ($mode) {
 				obtain_word_list($orig_word, $replacement_word);
 				$count_orig_word = count($orig_word);
 
-				foreach ($posts as $post) {
+				foreach ($posts as $i => $post) {
 					$message = $post->post_text;
 					$post_subject = $post->post_subject !== '' ? $post->post_subject : $topic_title;
 
@@ -944,8 +939,10 @@ switch ($mode) {
             ->offset($start)
             ->fetchAll();
 
+        $topic_title = '';
+
         foreach ($rows as $row) {
-			$topic_title = '';
+			$topic_title = $row->topic_title;
 
             if ($row->topic_status === TOPIC_LOCKED) {
                 $folder_img = $images['folder_locked'];
