@@ -153,7 +153,7 @@ if (!$board_config) {
     message_die(CRITICAL_ERROR, 'Could not query config information');
 }
 
-if (file_exists('install') || file_exists('contrib')) {
+if (Debugger::$productionMode && (file_exists('install') || file_exists('contrib'))) {
 	message_die(GENERAL_MESSAGE, 'Please_remove_install_contrib');
 }
 
