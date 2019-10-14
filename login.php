@@ -121,7 +121,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
                 $row->user_login_tries >= $board_config['max_login_attempts'] &&
                 $userdata['user_level'] !== ADMIN
             ) {
-                 $message = sprintf($lang['Login_attempts_exceeded'], $board_config['max_login_attempts'], $board_config['login_reset_time']);
+                $message = sprintf($lang['Login_attempts_exceeded'], $board_config['max_login_attempts'], $board_config['login_reset_time']);
 
                 message_die(GENERAL_MESSAGE, $message);
             }
@@ -129,10 +129,14 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
             // password matches and user is active
             // coool, everything is OK, let login and redirect
             if (password_verify($password, $row->user_password) && $row->user_active) {
-                $autologin = isset($_POST['autologin']);
-                $admin     = isset($_POST['admin']);
-
-                $session_id = Session::begin($row->user_id, $user_ip, PAGE_INDEX, false, $autologin, $admin);
+                $session_id = Session::begin(
+                    $row->user_id,
+                    $user_ip,
+                    PAGE_INDEX,
+                    false,
+                    isset($_POST['autologin']),
+                    isset($_POST['admin'])
+                );
 
                 // Reset login tries
                 dibi::update(USERS_TABLE, ['user_login_tries' => 0, 'user_last_login_try' => 0])
