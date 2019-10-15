@@ -29,16 +29,13 @@ define('SMTP_INCLUDED', 1);
 function server_parse($socket, $response, $line = __LINE__) 
 {
 	$server_response = '';
-	while (substr($server_response, 3, 1) !== ' ')
-	{
-		if (!($server_response = fgets($socket, 256))) 
-		{ 
+	while (substr($server_response, 3, 1) !== ' ') {
+		if (!($server_response = fgets($socket, 256))) {
 			message_die(GENERAL_ERROR, "Couldn't get mail server response codes", '', $line, __FILE__);
 		} 
 	} 
 
-	if (!(substr($server_response, 0, 3) === $response))
-	{ 
+	if (!(substr($server_response, 0, 3) === $response)) {
 		message_die(GENERAL_ERROR, "Ran into problems sending Mail. Response: $server_response", '', $line, __FILE__);
 	} 
 }
@@ -51,16 +48,11 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 	// Fix any bare linefeeds in the message to make it RFC821 Compliant.
 	$message = preg_replace("#(?<!\r)\n#si", "\r\n", $message);
 
-	if ($headers !== '')
-	{
-		if (is_array($headers))
-		{
-			if (count($headers) > 1)
-			{
+	if ($headers !== '') {
+		if (is_array($headers)) {
+			if (count($headers) > 1) {
 				$headers = implode("\n", $headers);
-			}
-			else
-			{
+			} else {
 				$headers = $headers[0];
 			}
 		}
@@ -90,20 +82,17 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 		$bcc = explode(', ', $bcc);
 	}
 
-	if (trim($subject) === '')
-	{
+	if (trim($subject) === '') {
 		message_die(GENERAL_ERROR, 'No email Subject specified', '', __LINE__, __FILE__);
 	}
 
-	if (trim($message) === '')
-	{
+	if (trim($message) === '') {
 		message_die(GENERAL_ERROR, 'Email message was blank', '', __LINE__, __FILE__);
 	}
 
 	// Ok we have error checked as much as we can to this point let's get on
 	// it already.
-	if (!$socket = @fsockopen($board_config['smtp_host'], 25, $errno, $errstr, 20) )
-	{
+	if (!$socket = @fsockopen($board_config['smtp_host'], 25, $errno, $errstr, 20) ) {
 		message_die(GENERAL_ERROR, "Could not connect to smtp host : $errno : $errstr", '', __LINE__, __FILE__);
 	}
 
@@ -112,8 +101,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 
 	// Do we want to use AUTH?, send RFC2554 EHLO, else send RFC821 HELO
 	// This improved as provided by SirSir to accomodate
-	if (!empty($board_config['smtp_username']) && !empty($board_config['smtp_password']) )
-	{ 
+	if (!empty($board_config['smtp_username']) && !empty($board_config['smtp_password']) ) {
 		fwrite($socket, 'EHLO ' . $board_config['smtp_host'] . "\r\n");
 		server_parse($socket, '250', __LINE__);
 
@@ -125,9 +113,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 
 		fwrite($socket, base64_encode($board_config['smtp_password']) . "\r\n");
 		server_parse($socket, '235', __LINE__);
-	}
-	else
-	{
+	} else {
 		fwrite($socket, 'HELO ' . $board_config['smtp_host'] . "\r\n");
 		server_parse($socket, '250', __LINE__);
 	}
@@ -142,8 +128,8 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 
 	// Add an additional bit of error checking to the To field.
 	$mail_to = trim($mail_to) === '' ? 'Undisclosed-recipients:;' : trim($mail_to);
-	if (preg_match('#[^ ]+\@[^ ]+#', $mail_to))
-	{
+
+	if (preg_match('#[^ ]+\@[^ ]+#', $mail_to)) {
 		fwrite($socket, "RCPT TO: <$mail_to>\r\n");
 		server_parse($socket, '250', __LINE__);
 	}
@@ -152,8 +138,8 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 	foreach ($bcc as $bcc_address) {
 		// Add an additional bit of error checking to bcc header...
 		$bcc_address = trim($bcc_address);
-		if (preg_match('#[^ ]+\@[^ ]+#', $bcc_address))
-		{
+
+		if (preg_match('#[^ ]+\@[^ ]+#', $bcc_address)) {
 			fwrite($socket, "RCPT TO: <$bcc_address>\r\n");
 			server_parse($socket, '250', __LINE__);
 		}
@@ -162,8 +148,8 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 	foreach ($cc as $cc_address) {
 		// Add an additional bit of error checking to cc header
 		$cc_address = trim($cc_address);
-		if (preg_match('#[^ ]+\@[^ ]+#', $cc_address))
-		{
+
+		if (preg_match('#[^ ]+\@[^ ]+#', $cc_address)) {
 			fwrite($socket, "RCPT TO: <$cc_address>\r\n");
 			server_parse($socket, '250', __LINE__);
 		}
