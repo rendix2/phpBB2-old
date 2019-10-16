@@ -3322,15 +3322,18 @@ switch($mode_id) {
 
 				// Restore session data of current user to prevent getting thrown out of the admin panel
 				echo('<p class="gen"><b>' . $lang['Restoring_session'] . "</b></p>\n");
+
+				$time = time();
+
 				// Set Variables
 				$insertData = [
 					'session_id' => $userdata['session_id'],
 					'session_user_id' => $userdata['user_id'],
-					'session_start' => time(),
+					'session_start' => $time,
 					'session_time' => $time,
 					'session_ip' => $userdata['session_ip'],
 					'session_page' => $userdata['session_page'],
-					'session_logged_in' => $userdata['session_page'],
+					'session_logged_in' => $userdata['session_logged_in'],
 					'session_admin' => 1
 				];
 
