@@ -2802,7 +2802,7 @@ switch($mode_id) {
 							->from(TOPICS_TABLE)
 							->where('topic_id = %i', $row->topic_id)
 							->where(
-								'(topic_replies <> %i OR topic_first_post_id <> OR topic_last_post_id <> %i )',
+								'(topic_replies <> %i OR topic_first_post_id <> %i OR topic_last_post_id <> %i)',
 								$row2->topic_replies,
 								$row2->topic_first_post_id,
 								$row2->topic_last_post_id
@@ -2889,14 +2889,18 @@ switch($mode_id) {
 					->where('(f.forum_topics <> %i OR f.forum_last_post_id <> %i)', 0, 0)
 					->fetchPairs(null, 'forum_id');
 
+                $db_updated = false;
+
 				if (count($result_array)) {
 					$affected_rows = dibi::update(FORUMS_TABLE, ['forum_topics' => 0, 'forum_last_post_id' => 0])
 						->where('forum_id IN %in', $result_array)
 						->execute(dibi::AFFECTED_ROWS);
 
 					if ($affected_rows == 1) {
+                        $db_updated = true;
 						echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
 					} elseif ($affected_rows > 1) {
+                        $db_updated = true;
 						echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
 					}
 				} elseif (!$db_updated) {
