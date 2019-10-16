@@ -826,14 +826,15 @@ switch($mode_id) {
                     ->leftJoin(THEMES_TABLE)
                     ->as('t')
                     ->on('u.user_style = t.themes_id')
-                    ->where('t.themes_id IS NULL AND u.user_id <> %i', ANONYMOUS)
+                    ->where('t.themes_id IS NULL')
+                    ->where('u.user_id <> %i', ANONYMOUS)
                     ->groupBy('u.user_style')
                     ->fetchAll();
 
                 $result_array = [];
 
                 foreach ($rows as $row) {
-                    if ($row->user_style === '') {
+                    if ($row->user_style === '' || $row->user_style === null) {
                         // At least one style is NULL, so change these records
                         echo('<p class="gen">' . $lang['Updating_users_without_style'] . "</p>\n");
 
@@ -958,12 +959,20 @@ switch($mode_id) {
                     $list_open = true;
 
                     foreach ($result_array as $value) {
-                        echo('<li>' . sprintf($lang['Changing_language'], $value, $default_lang) . "</li>\n");
+                        if ($value === null) {
+                            echo('<li>' . sprintf($lang['Changing_language'], 'NULL', $default_lang) . "</li>\n");
+                            dibi::update(USERS_TABLE, ['user_lang' => $default_lang])
+                                ->where('[user_lang] IS NULL')
+                                ->where('[user_id] <> %i', ANONYMOUS)
+                                ->execute();
+                        } else {
+                            echo('<li>' . sprintf($lang['Changing_language'], $value, $default_lang) . "</li>\n");
 
-                        dibi::update(USERS_TABLE, ['user_lang' => $default_lang])
-                            ->where('user_lang = %s', $value)
-                            ->where('user_id <> %i', ANONYMOUS)
-                            ->execute();
+                            dibi::update(USERS_TABLE, ['user_lang' => $default_lang])
+                                ->where('[user_lang] = %s', $value)
+                                ->where('[user_id] <> %i', ANONYMOUS)
+                                ->execute();
+                        }
                     }
 
                     echo("</ul></font>\n");
