@@ -482,6 +482,7 @@ CREATE TABLE phpbb_users (
    user_active tinyint(1) DEFAULT '1',
    username varchar(25) NOT NULL,
    user_password varchar(512) NOT NULL,
+   user_acp_password VARCHAR(512) NOT NULL DEFAULT '',
    user_session_time int(11) DEFAULT '0' NOT NULL,
    user_session_page smallint(5) DEFAULT '0' NOT NULL,
    user_lastvisit int(11) DEFAULT '0' NOT NULL,

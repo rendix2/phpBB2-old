@@ -84,6 +84,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
             'user_id',
             'username',
             'user_password',
+            'user_acp_password',
             'user_active',
             'user_level',
             'user_login_tries',
@@ -126,9 +127,20 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
                 message_die(GENERAL_MESSAGE, $message);
             }
 
+            // check admin password
+            if (isset($_POST['admin'])) {
+                if (!$row->user_acp_password) {
+                    message_die(GENERAL_MESSAGE, $lang['No_ACP_Password']);
+                }
+
+                $userPassword = $row->user_acp_password;
+            } else {
+                $userPassword = $row->user_password;
+            }
+
             // password matches and user is active
             // coool, everything is OK, let login and redirect
-            if (password_verify($password, $row->user_password) && $row->user_active) {
+            if (password_verify($password, $userPassword) && $row->user_active) {
                 $session_id = Session::begin(
                     $row->user_id,
                     $user_ip,
@@ -193,6 +205,10 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 		$page_title = $lang['Login'];
 
         PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+
+        if (isset($_GET['admin']) && $userdata['user_acp_password'] === '') {
+            message_die(GENERAL_MESSAGE, $lang['No_ACP_Password']);
+        }
 
         $template->setFileNames(['body' => 'login_body.tpl']);
 

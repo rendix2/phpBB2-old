@@ -135,7 +135,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 		// Make user an admin (if already user)
 		//
 		if ($userdata['user_id'] !== $user_id) {
-		    dibi::update(USERS_TABLE, ['user_level' => ADMIN])
+		    dibi::update(USERS_TABLE, ['user_level' => ADMIN, 'user_acp_password%sql' => 'user_password'])
                 ->where('user_id = %i', $user_id)
                 ->execute();
 
@@ -192,7 +192,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
                 //
                 // Update users level, reset to USER
                 //
-				dibi::update(USERS_TABLE, ['user_level' => USER])
+				dibi::update(USERS_TABLE, ['user_level' => USER, 'user_acp_password' => ''])
                     ->where('user_id = %i', $user_id)
                     ->execute();
 			}

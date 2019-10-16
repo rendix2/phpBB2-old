@@ -58,6 +58,30 @@
 				<input class="post" type="password" name="password_confirm" id="password_confirm" size="35" maxlength="32" value="" autocomplete="off"/>
 			</td>
 		</tr>
+
+		<tr>
+			<td class="row1">
+				<label for="acp_password">
+					<span class="gen">{L_ACP_PASSWORD}:</span>
+				</label>
+				<br />
+				<span class="gensmall">{L_ACP_PASSWORD_EXPLAIN}{L_ACP_PASSWORD_COMPLEX}</span>
+			</td>
+			<td class="row2">
+				<input class="post" type="password" name="acp_password" id="acp_password" size="35" maxlength="32" value="" />
+			</td>
+		</tr>
+		<tr>
+			<td class="row1">
+				<label for="acp_password_confirm">
+					<span class="gen">{L_ACP_PASSWORD_CONFIRM}:</span>
+				</label>
+			</td>
+			<td class="row2">
+				<input class="post" type="password" name="acp_password_confirm" id="acp_password_confirm" size="35" maxlength="32" value="" />
+			</td>
+		</tr>
+
 		<tr>
 			<td class="catsides" colspan="2">&nbsp;</td>
 		</tr>

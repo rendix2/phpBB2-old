@@ -151,6 +151,8 @@ $default_config = [
     'dbmtnc_rebuildcfg_timeoverwrite' => '0',
     'dbmtnc_disallow_postcounter'     => '0',
     'dbmtnc_disallow_rebuild'         => '0',
+
+    'complex_acp_pw' => '1',
 ];
 
 $sep = DIRECTORY_SEPARATOR;

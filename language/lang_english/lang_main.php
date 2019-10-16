@@ -1019,7 +1019,10 @@ $lang['Session_invalid'] = 'Invalid Session. Please resubmit the form.';
 // ranks
 $lang['Ranks'] = 'Ranks';
 $lang['No_ranks'] = 'No ranks.';
-$lang['rank_no_desc'] = 'Rank has no description.'
+$lang['rank_no_desc'] = 'Rank has no description.';
+
+// different acp password
+$lang['No_ACP_Password'] = '<b>You have no valid password to login the Admin Panel!</b><br /><br />Please contact the board admin to get one.';
 
 
 //

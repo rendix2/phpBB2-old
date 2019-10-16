@@ -115,6 +115,17 @@
         </tr>
 
         <tr>
+            <td class="row1">{L_COMPLEX_ACP_PW}</td>
+            <td class="row2">
+                <input type="radio" name="complex_acp_pw" id="complex_acp_pw_1" value="1" {COMPLEX_ACP_PW_YES} />
+                <label for="complex_acp_pw_1">{L_YES}</label>
+
+                <input type="radio" name="complex_acp_pw" id="complex_acp_pw_0" value="0" {COMPLEX_ACP_PW_NO} />
+                <label for="complex_acp_pw_0">{L_NO}</label>
+            </td>
+        </tr>
+
+        <tr>
             <td class="row1">{L_BOARD_EMAIL_FORM}<br/><span class="gensmall">{L_BOARD_EMAIL_FORM_EXPLAIN}</span></td>
             <td class="row2">
                 <input type="radio" name="board_email_form" id="board_email_form_1" value="1" {BOARD_EMAIL_FORM_ENABLE} />

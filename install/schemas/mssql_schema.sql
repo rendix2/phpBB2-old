@@ -331,6 +331,7 @@ CREATE TABLE [phpbb_users] (
 	[user_active] [smallint] NULL ,
 	[username] [varchar] (25) NOT NULL ,
 	[user_password] [varchar] (512) NOT NULL ,
+	[user_acp_password] [varchar] (512) NOT NULL ,
 	[user_session_time] [int] NOT NULL ,
 	[user_session_page] [smallint] NOT NULL ,
 	[user_lastvisit] [int] NOT NULL ,

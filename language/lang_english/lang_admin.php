@@ -787,6 +787,15 @@ $lang['User_id'] = 'User ID';
 $lang['Group_users'] = 'Group users';
 $lang['Delete_group_member'] = 'The member of group was successfully removed';
 
+// different acp pass
+$lang['Complex_ACP_PW'] = 'Password for ACP login must be different to normal password';
+$lang['ACP_Password_mismatch'] = 'The ACP password does not match the confirmation!';
+$lang['ACP_Password_match_pw'] = 'The ACP password matches the normal password, but you must enter a different one!';
+$lang['ACP_password'] = 'Password for the Admin Panel';
+$lang['ACP_password_confirm'] = 'Confirm the ACP Password';
+$lang['ACP_password_explain'] = 'This password will be used to login into the Admin Panel. From now the normal password can not longer used to login the ACP.';
+$lang['ACP_password_complex'] = '<br />Be sure, to enter a different password as your normal one!';
+
 //
 // That's all Folks!
 // -------------------------------------------------

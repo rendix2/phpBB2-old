@@ -747,6 +747,7 @@ else
             $update_data = [
                 'username'      => $admin_name,
                 'user_password' => $admin_pass_bcrypt,
+                'user_acp_password' => $admin_pass_bcrypt,
                 'user_lang'     => $language,
                 'user_email'    => $board_email,
             ];

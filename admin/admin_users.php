@@ -147,6 +147,9 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 		$password = !empty($_POST['password']) ? trim(strip_tags(htmlspecialchars($_POST['password'] ) )) : '';
 		$password_confirm = !empty($_POST['password_confirm']) ? trim(strip_tags(htmlspecialchars($_POST['password_confirm'] ) )) : '';
 
+        $acp_password = ( !empty($_POST['acp_password']) ) ? trim(strip_tags(htmlspecialchars( $_POST['acp_password'] ) )) : '';
+        $acp_password_confirm = ( !empty($_POST['acp_password_confirm']) ) ? trim(strip_tags(htmlspecialchars( $_POST['acp_password_confirm'] ) )) : '';
+
         $website    = !empty($_POST['website'])    ? trim($_POST['website'])    : '';
         $location   = !empty($_POST['location'])   ? trim($_POST['location'])   : '';
         $occupation = !empty($_POST['occupation']) ? trim($_POST['occupation']) : '';
@@ -200,6 +203,8 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 			$email = stripslashes($email);
 			$password = '';
 			$password_confirm = '';
+            $acp_password = '';
+            $acp_password_confirm = '';
 
             $website    = stripslashes($website);
             $location   = stripslashes($location);
@@ -245,6 +250,42 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 		}
 
 		$passwd_sql = [];
+
+        if ($board_config['complex_acp_pw'] && !empty($acp_password)) {
+            if (!empty($password) && $password == $acp_password) {
+                $error = true;
+                $error_msg .= ((isset($error_msg)) ? '<br />' : '') . $lang['ACP_Password_match_pw'];
+            } else {
+                $row = dibi::select('user_password')
+                    ->from(USERS_TABLE)
+                    ->where('[user_id] = %i', $user_id)
+                    ->fetch();
+
+                if (!$row) {
+                    message_die(GENERAL_ERROR, 'Could not read current password', '', __LINE__, __FILE__, $sql);
+                }
+
+                if (password_verify($acp_password, $row->user_password)) {
+                    $error = true;
+                    $error_msg .= ((isset($error_msg)) ? '<br />' : '') . $lang['ACP_Password_match_pw'];
+                }
+            }
+        }
+
+        if (!empty($acp_password) && !empty($acp_password_confirm)) {
+            if ($acp_password != $acp_password_confirm) {
+                $error = true;
+                $error_msg .= ((isset($error_msg)) ? '<br />' : '') . $lang['ACP_Password_mismatch'];
+            } else {
+                $passwd_sql['user_acp_password'] = password_hash($acp_password, PASSWORD_BCRYPT);
+            }
+        } else if ($acp_password && !$acp_password_confirm) {
+            $error = true;
+            $error_msg .= ((isset($error_msg)) ? '<br />' : '') . $lang['ACP_Password_mismatch'];
+        } else if (!$acp_password && $acp_password_confirm) {
+            $error = true;
+            $error_msg .= ((isset($error_msg)) ? '<br />' : '') . $lang['ACP_Password_mismatch'];
+        }
 
 		if (!empty($password) && !empty($password_confirm)) {
 			//
@@ -596,6 +637,8 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 			$email = stripslashes($email);
 			$password = '';
 			$password_confirm = '';
+            $acp_password = '';
+            $acp_password_confirm = '';
 
             $website    = stripslashes($website);
             $location   = stripslashes($location);
@@ -627,6 +670,8 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 		$email = $this_userdata->user_email;
 		$password = '';
 		$password_confirm = '';
+        $acp_password = '';
+        $acp_password_confirm = '';
 
 		$website = $this_userdata->user_website;
 		$location = $this_userdata->user_from;
@@ -765,6 +810,10 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
                 'L_PASSWORD_IF_CHANGED' => $lang['password_if_changed'],
                 'L_CONFIRM_PASSWORD' => $lang['Confirm_password'],
                 'L_PASSWORD_CONFIRM_IF_CHANGED' => $lang['password_confirm_if_changed'],
+                'L_ACP_PASSWORD' => $lang['ACP_password'],
+                'L_ACP_PASSWORD_CONFIRM' => $lang['ACP_password_confirm'],
+                'L_ACP_PASSWORD_EXPLAIN' => $lang['ACP_password_explain'],
+                'L_ACP_PASSWORD_COMPLEX' => ($board_config['complex_acp_pw']) ? $lang['ACP_password_complex'] : '',
                 'L_SUBMIT' => $lang['Submit'],
                 'L_RESET' => $lang['Reset'],
                 'L_WEBSITE' => $lang['Website'],

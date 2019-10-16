@@ -150,6 +150,9 @@ $avatars_upload_no  = !$new['allow_avatar_upload'] ? 'checked="checked"' : '';
 $smtp_yes =  $new['smtp_delivery'] ? 'checked="checked"' : '';
 $smtp_no  = !$new['smtp_delivery'] ? 'checked="checked"' : '';
 
+$complex_acp_pw_yes = $new['complex_acp_pw']  ? 'checked="checked"' : '';
+$complex_acp_pw_no  = !$new['complex_acp_pw'] ? 'checked="checked"' : '';
+
 $template->setFileNames(['body' => 'admin/board_config_body.tpl']);
 
 //
@@ -239,6 +242,8 @@ $template->assignVars(
 
         'L_SEARCH_FLOOD_INTERVAL'         => $lang['Search_Flood_Interval'],
         'L_SEARCH_FLOOD_INTERVAL_EXPLAIN' => $lang['Search_Flood_Interval_explain'],
+
+        'L_COMPLEX_ACP_PW' => $lang['Complex_ACP_PW'],
 
         'L_MAX_LOGIN_ATTEMPTS'         => $lang['Max_login_attempts'],
         'L_MAX_LOGIN_ATTEMPTS_EXPLAIN' => $lang['Max_login_attempts_explain'],
@@ -376,6 +381,9 @@ $template->assignVars(
         'MAX_POLL_OPTIONS' => $new['max_poll_options'],
 
         'FLOOD_INTERVAL' => $new['flood_interval'],
+
+        'COMPLEX_ACP_PW_YES' => $complex_acp_pw_yes,
+        'COMPLEX_ACP_PW_NO' => $complex_acp_pw_no,
 
         'SEARCH_FLOOD_INTERVAL' => $new['search_flood_interval'],
 

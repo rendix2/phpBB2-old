@@ -76,6 +76,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('rand_seed', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('topic_review', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('signature_delimiter', '<br /><br />_________________<br />');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('template_engine', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('complex_acp_pw', '1');
 
 
 # -- Categories
