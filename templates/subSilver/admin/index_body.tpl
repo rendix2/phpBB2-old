@@ -89,6 +89,15 @@
             <td class="row1">{L_NUMBER_NOT_SINGLE_GROUPS}:</td>
             <td class="row2"><b>{NUMBER_OF_NOT_SINGLE_GROUPS}</b></td>
         </tr>
+
+        <tr>
+            <td class="row1">{L_NUMBER_AUTO_LOGGED_IN_USERS}:</td>
+            <td class="row2"><b>{NUMBER_OF_AUTO_LOGGED_IN_USERS}</b></td>
+        </tr>
+        <tr>
+            <td class="row1">{L_PERCENT_AUTO_LOGGED_IN}:</td>
+            <td class="row2"><b>{PERCENT_AUTO_LOGGED_IN}%</b></td>
+        </tr>
     </table>
 
     <table class="forumline" style="width:50%;float: right" cellspacing="1" cellpadding="4">

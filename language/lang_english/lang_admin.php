@@ -86,6 +86,9 @@ $lang['Number_groups'] = 'Number of groups';
 $lang['Number_single_groups'] = 'Number of single user groups';
 $lang['Number_not_single_groups'] = 'Number of not single groups';
 
+$lang['Number_auto_logged'] = 'Number of auto logged in users';
+$lang['Percent_auto_logged'] = 'Percent of auto logged in users';
+
 $lang['Users_per_day'] = 'Users per day';
 $lang['Board_started'] = 'Board started';
 $lang['Avatar_dir_size'] = 'Avatar directory size';

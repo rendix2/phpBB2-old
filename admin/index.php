@@ -172,6 +172,9 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
             'L_NUMBER_SINGLE_GROUPS' => $lang['Number_single_groups'],
             'L_NUMBER_NOT_SINGLE_GROUPS' =>  $lang['Number_not_single_groups'],
 
+            'L_NUMBER_AUTO_LOGGED_IN_USERS' => $lang['Number_auto_logged'],
+            'L_PERCENT_AUTO_LOGGED_IN' => $lang['Percent_auto_logged'],
+
             'L_PHPBB_VERSION' => $lang['Version_of_board'],
             'L_PHP_VERSION'   => $lang['Version_of_PHP'],
             'L_MYSQL_VERSION' => $lang['Version_of_MySQL'],
@@ -252,6 +255,17 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
         ->from(GROUPS_TABLE)
         ->where('[group_single_user] = %i', 0)
         ->fetchSingle();
+
+    $totalAutoLoggedInUsers = dibi::select('COUNT(user_id)')
+        ->from(
+            dibi::select('user_id')
+            ->from(SESSIONS_KEYS_TABLE)
+            ->groupBy('user_id')
+        )
+        ->as('x')
+        ->fetchSingle();
+
+    $percentAutoLoggedUsers = $totalAutoLoggedInUsers / $totalUsers;
 
     $totalActiveUsers = $totalUsers - $totalUnActiveUsers;
 
@@ -341,6 +355,9 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
             'NUMBER_OF_GROUPS' => $totalGroups,
             'NUMBER_OF_SINGLE_GROUPS' => $totalSingleGroups,
             'NUMBER_OF_NOT_SINGLE_GROUPS' =>  $totalNotSingleGroups,
+
+            'NUMBER_OF_AUTO_LOGGED_IN_USERS' => $totalAutoLoggedInUsers,
+            'PERCENT_AUTO_LOGGED_IN' => round($percentAutoLoggedUsers, 2),
 
             'PHPBB_VERSION' => '2' . $board_config['version'],
             'PHP_VERSION'   => PHP_VERSION,
