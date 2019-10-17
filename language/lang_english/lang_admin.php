@@ -81,6 +81,11 @@ $lang['Topics_per_day'] = 'Topics per day';
 $lang['Number_users'] = 'Number of users';
 $lang['Number_themes'] = 'Number of themes';
 $lang['Number_watching'] = 'Number of watched topics';
+
+$lang['Number_groups'] = 'Number of groups';
+$lang['Number_single_groups'] = 'Number of single user groups';
+$lang['Number_not_single_groups'] = 'Number of not single groups';
+
 $lang['Users_per_day'] = 'Users per day';
 $lang['Board_started'] = 'Board started';
 $lang['Avatar_dir_size'] = 'Avatar directory size';

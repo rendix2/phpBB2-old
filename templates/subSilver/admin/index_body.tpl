@@ -76,6 +76,19 @@
             <td class="row1">{L_NUMBER_WATCHING}:</td>
             <td class="row2"><b>{NUMBER_OF_TOPIC_WATCHING}</b></td>
         </tr>
+
+        <tr>
+            <td class="row1">{L_NUMBER_GROUPS}:</td>
+            <td class="row2"><b>{NUMBER_OF_GROUPS}</b></td>
+        </tr>
+        <tr>
+            <td class="row1">{L_NUMBER_SINGLE_GROUPS}:</td>
+            <td class="row2"><b>{NUMBER_OF_SINGLE_GROUPS}</b></td>
+        </tr>
+        <tr>
+            <td class="row1">{L_NUMBER_NOT_SINGLE_GROUPS}:</td>
+            <td class="row2"><b>{NUMBER_OF_NOT_SINGLE_GROUPS}</b></td>
+        </tr>
     </table>
 
     <table class="forumline" style="width:50%;float: right" cellspacing="1" cellpadding="4">

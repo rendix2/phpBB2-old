@@ -168,6 +168,10 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
             'L_NUMBER_THEMES' => $lang['Number_themes'],
             'L_NUMBER_WATCHING' => $lang['Number_watching'],
 
+            'L_NUMBER_GROUPS' => $lang['Number_groups'],
+            'L_NUMBER_SINGLE_GROUPS' => $lang['Number_single_groups'],
+            'L_NUMBER_NOT_SINGLE_GROUPS' =>  $lang['Number_not_single_groups'],
+
             'L_PHPBB_VERSION' => $lang['Version_of_board'],
             'L_PHP_VERSION'   => $lang['Version_of_PHP'],
             'L_MYSQL_VERSION' => $lang['Version_of_MySQL'],
@@ -233,6 +237,20 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
     $totalTopicWatching = dibi::select('COUNT(*)')
         ->as('total')
         ->from(TOPICS_WATCH_TABLE)
+        ->fetchSingle();
+
+    $totalGroups = dibi::select('COUNT(group_id)')
+        ->from(GROUPS_TABLE)
+        ->fetchSingle();
+
+    $totalSingleGroups = dibi::select('COUNT(group_id)')
+        ->from(GROUPS_TABLE)
+        ->where('[group_single_user] = %i', 1)
+        ->fetchSingle();
+
+    $totalNotSingleGroups = dibi::select('COUNT(group_id)')
+        ->from(GROUPS_TABLE)
+        ->where('[group_single_user] = %i', 0)
         ->fetchSingle();
 
     $totalActiveUsers = $totalUsers - $totalUnActiveUsers;
@@ -319,6 +337,10 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
 
             'NUMBER_OF_THEMES' => $totalTemplates,
             'NUMBER_OF_TOPIC_WATCHING' => $totalTopicWatching,
+
+            'NUMBER_OF_GROUPS' => $totalGroups,
+            'NUMBER_OF_SINGLE_GROUPS' => $totalSingleGroups,
+            'NUMBER_OF_NOT_SINGLE_GROUPS' =>  $totalNotSingleGroups,
 
             'PHPBB_VERSION' => '2' . $board_config['version'],
             'PHP_VERSION'   => PHP_VERSION,
