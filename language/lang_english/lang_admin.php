@@ -79,6 +79,7 @@ $lang['Posts_per_day'] = 'Posts per day';
 $lang['Number_topics'] = 'Number of topics';
 $lang['Topics_per_day'] = 'Topics per day';
 $lang['Number_users'] = 'Number of users';
+$lang['Number_themes'] = 'Number of themes';
 $lang['Users_per_day'] = 'Users per day';
 $lang['Board_started'] = 'Board started';
 $lang['Avatar_dir_size'] = 'Avatar directory size';

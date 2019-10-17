@@ -68,6 +68,10 @@
             <td class="row1">{L_USERS_PER_DAY}:</td>
             <td class="row2"><b>{USERS_PER_DAY}</b></td>
         </tr>
+        <tr>
+            <td class="row1">{L_NUMBER_THEMES}:</td>
+            <td class="row2"><b>{NUMBER_OF_THEMES}</b></td>
+        </tr>
     </table>
 
     <table class="forumline" style="width:50%;float: right" cellspacing="1" cellpadding="4">

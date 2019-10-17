@@ -165,6 +165,8 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
             'L_MEMBERS_STATISTICS'  => $lang['Members_Statistics'],
             'L_DATABASE_STATISTICS' => $lang['Database_Statistics'],
 
+            'L_NUMBER_THEMES' => $lang['Number_themes'],
+
             'L_PHPBB_VERSION' => $lang['Version_of_board'],
             'L_PHP_VERSION'   => $lang['Version_of_PHP'],
             'L_MYSQL_VERSION' => $lang['Version_of_MySQL'],
@@ -220,6 +222,11 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
         ->from(USERS_TABLE)
         ->where('user_level = %i', ADMIN)
         ->where('user_id != %i', ANONYMOUS)
+        ->fetchSingle();
+
+    $totalTemplates = dibi::select('COUNT(themes_id)')
+        ->as('total')
+        ->from(THEMES_TABLE)
         ->fetchSingle();
 
     $totalActiveUsers = $totalUsers - $totalUnActiveUsers;
@@ -303,6 +310,8 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
 
             'NUMBER_OF_MODERATORS'      => $totalModerators,
             'NUMBER_OF_ADMINISTRATORS'  => $totalAdministrators,
+
+            'NUMBER_OF_THEMES' => $totalTemplates,
 
             'PHPBB_VERSION' => '2' . $board_config['version'],
             'PHP_VERSION'   => PHP_VERSION,
