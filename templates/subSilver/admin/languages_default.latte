@@ -4,12 +4,16 @@
         <th class="thHead">{$L_LANG_ID}</th>
         <th class="thHead">{$L_LANG_NAME}</th>
         <th class="thHead"></th>
+        <th class="thHead"></th>
     </tr>
     </thead>
     {foreach $D_LANGUAGES as $language}
         <tr>
             <td class="{$iterator->isEven() ? row1 : row2}">{$language->lang_id}</td>
             <td class="{$iterator->isEven() ? row1 : row2}">{$language->lang_name|firstUpper}</td>
+            <td class="{$iterator->isEven() ? row1 : row2}">
+                <a href="admin_languages.php?mode=edit&{$C_LANG_ID}={$language->lang_id}&{$S_SID}">{$L_INFO}</a>
+            </td>
             <td class="{$iterator->isEven() ? row1 : row2}">
                 <a href="admin_languages.php?mode=delete&{$C_LANG_ID}={$language->lang_id}&{$S_SID}">{$L_DELETE}</a>
             </td>

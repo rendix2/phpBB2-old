@@ -1,0 +1,17 @@
+<table cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
+    <thead>
+        <tr>
+            <th class="thHead">{$L_LANG_FILE_NAME}</th>
+            <th class="thHead">{$L_LANG_FILE_SIZE}</th>
+        </tr>
+    </thead>
+    <tbody>
+            {foreach $S_FILES as $file}
+                <tr>
+                    <td class="{$iterator->isEven() ? row1 : row2}">{$file->getFilename()}</td>
+                    <td class="{$iterator->isEven() ? row1 : row2}">{get_formatted_filesize($file->getSize())}</td>
+                </tr>
+            {/foreach}
+    </tbody>
+
+</table>

@@ -815,6 +815,11 @@ $lang['language_no_replacement'] = 'We did not found any language we could set t
 $lang['Click_return_language'] = 'Click %sHere%s to return to Language management.';
 $lang['Lang_can_be_isntalled'] = 'This languages can be installed.';
 $lang['Installed_language'] = 'The language was successfully installed.';
+$lang['Installed_language_missing_files'] = 'The language was not installed, becuase its missing required files.';
+$lang['Language_not_found'] = 'Language was not found.';
+$lang['Language_file_name'] = 'File name';
+$lang['Language_file_size'] = 'File size';
+$lang['Info'] = 'Info';
 
 //
 // That's all Folks!
