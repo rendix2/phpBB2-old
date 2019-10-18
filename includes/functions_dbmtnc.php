@@ -32,6 +32,7 @@ $tables = [
     'forums',
     'forum_prune',
     'groups',
+    'languages',
     'posts',
     'posts_text',
     'privmsgs',
