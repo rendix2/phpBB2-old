@@ -10,12 +10,20 @@ class Tables
      */
     CONST PREFIX = 'phpbb_';
 
+    /**
+     * @var string
+     */
     const CONFIG_TABLE = self::PREFIX . 'config';
 
     /**
      * @var string
      */
     const LANGUAGES_TABLE = self::PREFIX . 'languages';
+
+    /**
+     * @var string
+     */
+    const RANKS_TABLE = self::PREFIX . 'ranks';
 
     /**
      * @var string

@@ -83,6 +83,10 @@ $lang['Number_themes'] = 'Number of themes';
 $lang['Number_watching'] = 'Number of watched topics';
 $lang['Number_languages'] = 'Number of languages';
 
+$lang['Number_ranks'] = 'Number of ranks';
+$lang['Number_special_ranks'] = 'Number of special ranks';
+$lang['Number_not_special_ranks'] = 'Number of normal ranks';
+
 $lang['Number_groups'] = 'Number of groups';
 $lang['Number_single_groups'] = 'Number of single user groups';
 $lang['Number_not_single_groups'] = 'Number of not single groups';

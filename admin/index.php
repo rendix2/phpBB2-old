@@ -179,6 +179,10 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
 
             'L_NUMBER_OF_LANGUAGES' => $lang['Number_languages'],
 
+            'L_NUMBER_OF_RANKS' => $lang['Number_ranks'],
+            'L_NUMBER_OF_SPECIAL_RANKS' => $lang['Number_special_ranks'],
+            'L_NUMBER_OF_NOT_SPECIAL_RANKS' => $lang['Number_not_special_ranks'],
+
             'L_PHPBB_VERSION' => $lang['Version_of_board'],
             'L_PHP_VERSION'   => $lang['Version_of_PHP'],
             'L_MYSQL_VERSION' => $lang['Version_of_MySQL'],
@@ -271,6 +275,20 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
 
     $totalLanguages = dibi::select('COUNT(lang_id)')
         ->from(Tables::LANGUAGES_TABLE)
+        ->fetchSingle();
+
+    $totalRanks = dibi::select('COUNT(rank_id)')
+        ->from(Tables::RANKS_TABLE)
+        ->fetchSingle();
+
+    $totalSpecialRanks = dibi::select('COUNT(rank_id)')
+        ->from(Tables::RANKS_TABLE)
+        ->where('[rank_special] = %i', 1)
+        ->fetchSingle();
+
+    $totalNotSpecialRanks = dibi::select('COUNT(rank_id)')
+        ->from(Tables::RANKS_TABLE)
+        ->where('[rank_special] = %i', 0)
         ->fetchSingle();
 
     $percentAutoLoggedUsers = $totalAutoLoggedInUsers / $totalUsers;
@@ -368,6 +386,10 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
             'PERCENT_AUTO_LOGGED_IN' => round($percentAutoLoggedUsers, 2),
 
             'NUMBER_OF_LANGUAGES' => $totalLanguages,
+
+            'NUMBER_OF_RANKS' => $totalRanks,
+            'NUMBER_OF_SPECIAL_RANKS' => $totalSpecialRanks,
+            'NUMBER_OF_NOT_SPECIAL_RANKS' => $totalNotSpecialRanks,
 
             'PHPBB_VERSION' => '2' . $board_config['version'],
             'PHP_VERSION'   => PHP_VERSION,

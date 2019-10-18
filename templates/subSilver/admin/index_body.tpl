@@ -104,6 +104,21 @@
             <td class="row1">{L_PERCENT_AUTO_LOGGED_IN}:</td>
             <td class="row2"><b>{PERCENT_AUTO_LOGGED_IN}%</b></td>
         </tr>
+
+        <tr>
+            <td class="row1">{L_NUMBER_OF_RANKS}:</td>
+            <td class="row2"><b>{NUMBER_OF_RANKS}</b></td>
+        </tr>
+
+        <tr>
+            <td class="row1">{L_NUMBER_OF_SPECIAL_RANKS}:</td>
+            <td class="row2"><b>{NUMBER_OF_SPECIAL_RANKS}</b></td>
+        </tr>
+
+        <tr>
+            <td class="row1">{L_NUMBER_OF_NOT_SPECIAL_RANKS}:</td>
+            <td class="row2"><b>{NUMBER_OF_NOT_SPECIAL_RANKS}</b></td>
+        </tr>
     </table>
 
     <table class="forumline" style="width:50%;float: right" cellspacing="1" cellpadding="4">
