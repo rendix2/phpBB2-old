@@ -91,9 +91,15 @@
         </tr>
 
         <tr>
+            <td class="row1">{L_NUMBER_OF_LANGUAGES}:</td>
+            <td class="row2"><b>{NUMBER_OF_LANGUAGES}</b></td>
+        </tr>
+
+        <tr>
             <td class="row1">{L_NUMBER_AUTO_LOGGED_IN_USERS}:</td>
             <td class="row2"><b>{NUMBER_OF_AUTO_LOGGED_IN_USERS}</b></td>
         </tr>
+
         <tr>
             <td class="row1">{L_PERCENT_AUTO_LOGGED_IN}:</td>
             <td class="row2"><b>{PERCENT_AUTO_LOGGED_IN}%</b></td>

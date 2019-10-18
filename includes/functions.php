@@ -244,6 +244,9 @@ function init_userprefs($pageId)
     }
 
     if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $default_lang . $sep . 'lang_main.php'))) {
+        $cache = new Cache($storage, CONFIG_TABLE);
+        $cache->remove(CONFIG_TABLE);
+
 		if ($userData['user_id'] !== ANONYMOUS) {
 			// For logged in users, try the board default language next
 			$default_lang = ltrim(basename(rtrim($board_config['default_lang'])), "'");
@@ -262,9 +265,15 @@ function init_userprefs($pageId)
 	// If we've had to change the value in any way then let's write it back to the database
 	// before we go any further since it means there is something wrong with it
 	if ($userData['user_id'] !== ANONYMOUS && $userData['user_lang'] !== $default_lang) {
-	    dibi::update(USERS_TABLE, ['user_lang' => $default_lang])
-            ->where('user_lang = %s', $userData['user_lang'])
-            ->execute();
+	    if ($userData['user_lang'] === null) {
+            dibi::update(Tables::USERS_TABLE, ['user_lang' => $default_lang])
+                ->where('[user_lang] IS NULL')
+                ->execute();
+        } else {
+            dibi::update(Tables::USERS_TABLE, ['user_lang' => $default_lang])
+                ->where('[user_lang] = %s', $userData['user_lang'])
+                ->execute();
+        }
 
 		$userData['user_lang'] = $default_lang;
 	} elseif ($userData['user_id'] === ANONYMOUS && $board_config['default_lang'] !== $default_lang) {

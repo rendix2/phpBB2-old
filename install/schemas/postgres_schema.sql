@@ -145,6 +145,18 @@ CREATE  INDEX forum_id_phpbb_forums_index ON phpbb_forums (forum_id);
 CREATE  INDEX forums_order_phpbb_forums_index ON phpbb_forums (forum_order);
 CREATE  INDEX forum_last_post_id_phpbb_forums_index ON phpbb_forums (forum_last_post_id);
 
+# --------------------------------------------------------
+#
+# Table structure for table 'phpbb_languages'
+#
+CREATE TABLE `phpbb_languages`
+(
+    `lang_id`        INT          NOT NULL AUTO_INCREMENT COMMENT 'language ID',
+    `lang_name`      VARCHAR(255) NOT NULL COMMENT 'language name',
+    CONSTRAINT phpbb_languages_pkey PRIMARY KEY (lang_id)
+)
+COMMENT = 'list of languages';
+
 
 /* --------------------------------------------------------
   Table structure for table phpbb_forum_prune

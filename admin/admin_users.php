@@ -791,7 +791,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
                 'ALWAYS_ALLOW_SMILIES_YES' => $allowsmilies ? 'checked="checked"' : '',
                 'ALWAYS_ALLOW_SMILIES_NO' => !$allowsmilies ? 'checked="checked"' : '',
                 'AVATAR' => $avatar,
-                'LANGUAGE_SELECT' => Select::language($phpbb_root_path, $user_lang),
+                'LANGUAGE_SELECT' => Select::language($user_lang),
                 'TIMEZONE_SELECT' => Select::timezone($user_timezone),
                 'STYLE_SELECT' => Select::style($user_style),
                 'DATE_FORMAT' => $user_dateformat,

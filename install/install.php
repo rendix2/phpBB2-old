@@ -102,7 +102,7 @@ function page_common_form($hidden, $submit)
 {
 
 ?>
-					<tr> 
+					<tr>
 					  <td class="catBottom" align="center" colspan="2"><?php echo $hidden; ?><input class="mainoption" type="submit" value="<?php echo $submit; ?>" /></td>
 					</tr>
 <?php
@@ -241,10 +241,10 @@ require_once $phpbb_root_path . 'vendor' . $sep . 'autoload.php';
 $loader = new Nette\Loaders\RobotLoader;
 
 // Add directories for RobotLoader to index
-$loader->addDirectory(__DIR__ . $sep . 'includes');
+$loader->addDirectory($phpbb_root_path . $sep . 'includes');
 
 // And set caching to the 'temp' directory
-$loader->setTempDirectory(__DIR__ . $sep . 'temp');
+$loader->setTempDirectory($phpbb_root_path . $sep . 'temp');
 $loader->register(); // Run the RobotLoader
 
 // Include some required functions
@@ -397,11 +397,11 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['up
     echo stripslashes($_POST['config_data']);
 
     exit;
-} elseif (!empty($_POST['send_file']) && $_POST['send_file'] === 2) {
+} elseif (!empty($_POST['send_file']) && $_POST['send_file'] == 2) {
     $s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars(stripslashes($_POST['config_data'])) . '" />';
     $s_hidden_fields .= '<input type="hidden" name="ftp_file" value="1" />';
 
-    if ($upgrade === 1) {
+    if ($upgrade == 1) {
         $s_hidden_fields .= '<input type="hidden" name="upgrade" value="1" />';
     }
 
@@ -444,7 +444,7 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['up
 		// If we're upgrading ...
         if ($upgrade === 1) {
             $s_hidden_fields .= '<input type="hidden" name="upgrade" value="1" />';
-            $s_hidden_fields .= '<input type="hidden" name="dbms" value="' . $dmbs . '" />';
+            $s_hidden_fields .= '<input type="hidden" name="dbms" value="' . $dbms . '" />';
             $s_hidden_fields .= '<input type="hidden" name="prefix" value="' . $table_prefix . '" />';
             $s_hidden_fields .= '<input type="hidden" name="dbhost" value="' . $dbhost . '" />';
             $s_hidden_fields .= '<input type="hidden" name="dbname" value="' . $dbname . '" />';
@@ -486,8 +486,7 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['up
 
 		unlink($tmpfname);
 
-		if ($upgrade === 1)
-		{
+		if ($upgrade == 1) {
             require_once 'upgrade.php';
 			exit;
 		}
@@ -506,7 +505,7 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['up
 		page_footer();
 		exit();
 	}
-} elseif (empty($install_step) || $admin_pass1 !== $admin_pass2 || empty($admin_pass1) || empty($dbhost)) {
+} elseif (empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin_pass1) || empty($dbhost)) {
 	// Ok we haven't installed before so lets work our way through the various
 	// steps of the install process.  This could turn out to be quite a lengty 
 	// process.
@@ -516,7 +515,7 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['up
 	$instruction_text = $lang['Inst_Step_0'];
 
     if (!empty($install_step)) {
-        if ($_POST['admin_pass1'] !== $_POST['admin_pass2'] || (empty($_POST['admin_pass1']) || empty($dbhost)) && $_POST['cur_lang'] === $language) {
+        if ($_POST['admin_pass1'] != $_POST['admin_pass2'] || (empty($_POST['admin_pass1']) || empty($dbhost)) && $_POST['cur_lang'] == $language) {
             $error = $lang['Password_mismatch'];
         }
     }
@@ -652,9 +651,7 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['up
 	page_common_form($s_hidden_fields, $lang['Start_Install']);
 	page_footer();
 	exit;
-}
-else
-{
+} else {
 	// Go ahead and create the DB, then populate it
 	//
 	// MS Access is slightly different in that a pre-built, pre-
@@ -677,9 +674,9 @@ else
 	$delimiter = $available_dbms[$dbms]['DELIM']; 
 	$delimiter_basic = $available_dbms[$dbms]['DELIM_BASIC'];
 
-	if ($install_step === 1) {
-		if ($upgrade !== 1) {
-			if ($dbms !== 'msaccess') {
+	if ($install_step == 1) {
+		if ($upgrade != 1) {
+			if ($dbms != 'msaccess') {
 				// Load in the sql parser
                 require_once $phpbb_root_path . 'includes' . $sep . 'sql_parse.php';
 
@@ -698,7 +695,7 @@ else
 					    $result = dibi::query($sql_query);
 					}
 				}
-		
+
 				// Ok tables have been built, let's fill in the basic information
                 $lines = file($dbms_basic);
 
@@ -718,7 +715,7 @@ else
                 }
 			}
 
-			// Ok at this point they have entered their admin password, let's go 
+			// Ok at this point they have entered their admin password, let's go
 			// ahead and create the admin account with some basic default information
 			// that they can customize later, and write out the config file.  After
 			// this we are going to pass them over to the admin_forum.php script
@@ -759,6 +756,49 @@ else
             dibi::update($table_prefix . 'users', ['user_regdate' => time()])
             ->execute();
 
+            $lang_options = [];
+            $languages = Finder::findDirectories('lang_*')->in($phpbb_root_path . 'language');
+
+            /**
+             * @var SplFileInfo $language
+             */
+            foreach ($languages as $language) {
+                $filename = trim(str_replace('lang_', '', $language->getFilename()));
+
+                $displayName = preg_replace('/^(.*?)_(.*)$/', "\\1 [ \\2 ]", $filename);
+                $displayName = preg_replace("/\[(.*?)_(.*)\]/", "[ \\1 - \\2 ]", $displayName);
+
+                $lang_options[$displayName] = $filename;
+            }
+
+            @asort($lang_options);
+
+            foreach ($lang_options as $key => $value) {
+                $exists = dibi::select('1')
+                    ->from(Tables::LANGUAGES_TABLE)
+                    ->where('[lang_name] = %s', $key)
+                    ->fetchSingle();
+
+                if (!$exists) {
+                    dibi::insert(Tables::LANGUAGES_TABLE, ['lang_name' => $key])->execute();
+                }
+            }
+
+            $dbLanguages = dibi::select('*')
+                ->from(Tables::LANGUAGES_TABLE)
+                ->fetchPairs('lang_id', 'lang_name');
+
+            $fileLanguages = array_keys($lang_options);
+
+            // remove languages which are not present in language folder
+            foreach ($dbLanguages as $dbLanguage) {
+                if (!in_array($dbLanguage, $fileLanguages, true)) {
+                    dibi::delete(Tables::LANGUAGES_TABLE)
+                        ->where('[lang_name] = %s', $dbLanguage)
+                        ->execute();
+                }
+            }
+
 			if ($error !== '') {
 				page_header($lang['Install'], '');
 				page_error($lang['Installer_Error'], $lang['Install_db_error'] . '<br /><br />' . $error);
@@ -778,7 +818,7 @@ else
 			$config_data .= '$dbpasswd = \'' . $dbpasswd . '\';' . "\n\n";
 			$config_data .= '$table_prefix = \'' . $table_prefix . '\';' . "\n\n";
             $config_data .= sprintf('$dns = $dbms.\':host=\'.$dbhost.\';dbname=\'.$dbname.\';charset=utf8\';'. "\n\n", $dbms);
-			$config_data .= 'define(\'PHPBB_INSTALLED\', true);'."\n\n";	
+			$config_data .= 'define(\'PHPBB_INSTALLED\', true);'."\n\n";
 			$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
 
 			@umask(0111);
@@ -804,7 +844,7 @@ else
 						<td class="row1" align="right" width="50%"><span class="gen"><?php echo $lang['Send_file']; ?></span></td>
 						<td class="row2"><input type="radio" name="send_file" value="1"></td>
 					</tr>
-<?php 
+<?php
 
 				} else {
 					page_header($lang['Unwriteable_config']);
@@ -850,7 +890,7 @@ else
 			exit;
 		}
 
-		// Ok we are basically done with the install process let's go on 
+		// Ok we are basically done with the install process let's go on
 		// and let the user configure their board now. We are going to do
 		// this by calling the admin_board.php from the normal board admin
 		// section.

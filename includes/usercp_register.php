@@ -937,7 +937,7 @@ if (isset($_POST['avatargallery']) && !$error) {
             'ALLOW_AVATAR'    => $board_config['allow_avatar_upload'],
             'AVATAR'          => $avatarImage,
             'AVATAR_SIZE'     => $board_config['avatar_filesize'],
-            'LANGUAGE_SELECT' => Select::language($phpbb_root_path, $userLanguage),
+            'LANGUAGE_SELECT' => Select::language($userLanguage),
             'STYLE_SELECT'    => Select::style($userStyle),
             'TIMEZONE_SELECT' => Select::timezone($userTimeZone),
             'DATE_FORMAT'     => $userDateFormat,

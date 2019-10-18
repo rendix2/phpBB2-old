@@ -81,6 +81,7 @@ $lang['Topics_per_day'] = 'Topics per day';
 $lang['Number_users'] = 'Number of users';
 $lang['Number_themes'] = 'Number of themes';
 $lang['Number_watching'] = 'Number of watched topics';
+$lang['Number_languages'] = 'Number of languages';
 
 $lang['Number_groups'] = 'Number of groups';
 $lang['Number_single_groups'] = 'Number of single user groups';
@@ -805,6 +806,15 @@ $lang['ACP_password'] = 'Password for the Admin Panel';
 $lang['ACP_password_confirm'] = 'Confirm the ACP Password';
 $lang['ACP_password_explain'] = 'This password will be used to login into the Admin Panel. From now the normal password can not longer used to login the ACP.';
 $lang['ACP_password_complex'] = '<br />Be sure, to enter a different password as your normal one!';
+
+$lang['Lang_id'] = 'Language ID';
+$lang['Lang_name'] = 'Language name';
+
+$lang['Delete_language'] = 'The language was successfully removed';
+$lang['language_no_replacement'] = 'We did not found any language we could set to users with deleted language. <br><br> Language was not removed.';
+$lang['Click_return_language'] = 'Click %sHere%s to return to Language management.';
+$lang['Lang_can_be_isntalled'] = 'This languages can be installed.';
+$lang['Installed_language'] = 'The language was successfully installed.';
 
 //
 // That's all Folks!

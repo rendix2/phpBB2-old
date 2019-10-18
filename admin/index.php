@@ -63,6 +63,8 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
     $modules['Groups']['Manage'] = 'admin_groups.php';
     $modules['Groups']['Permissions'] = 'admin_ug_auth.php?mode=group';
 
+    $modules['Languages']['Manage'] = 'admin_languages.php';
+
     $modules['Styles']['Add_new'] = 'admin_styles.php?mode=addnew';
     $modules['Styles']['Create_new'] = 'admin_styles.php?mode=create';
     $modules['Styles']['Manage'] = 'admin_styles.php';
@@ -175,6 +177,8 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
             'L_NUMBER_AUTO_LOGGED_IN_USERS' => $lang['Number_auto_logged'],
             'L_PERCENT_AUTO_LOGGED_IN' => $lang['Percent_auto_logged'],
 
+            'L_NUMBER_OF_LANGUAGES' => $lang['Number_languages'],
+
             'L_PHPBB_VERSION' => $lang['Version_of_board'],
             'L_PHP_VERSION'   => $lang['Version_of_PHP'],
             'L_MYSQL_VERSION' => $lang['Version_of_MySQL'],
@@ -263,6 +267,10 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
             ->groupBy('user_id')
         )
         ->as('x')
+        ->fetchSingle();
+
+    $totalLanguages = dibi::select('COUNT(lang_id)')
+        ->from(Tables::LANGUAGES_TABLE)
         ->fetchSingle();
 
     $percentAutoLoggedUsers = $totalAutoLoggedInUsers / $totalUsers;
@@ -358,6 +366,8 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
 
             'NUMBER_OF_AUTO_LOGGED_IN_USERS' => $totalAutoLoggedInUsers,
             'PERCENT_AUTO_LOGGED_IN' => round($percentAutoLoggedUsers, 2),
+
+            'NUMBER_OF_LANGUAGES' => $totalLanguages,
 
             'PHPBB_VERSION' => '2' . $board_config['version'],
             'PHP_VERSION'   => PHP_VERSION,

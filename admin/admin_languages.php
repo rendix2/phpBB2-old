@@ -1,0 +1,158 @@
+<?php
+
+use Nette\Caching\Cache;
+use Nette\Utils\Finder;
+
+define('IN_PHPBB', 1);
+
+//
+// Load default header
+//
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep . '..' . $sep;
+
+require_once '.' . $sep . 'pagestart.php';
+
+if (isset($_POST[POST_MODE]) || isset($_GET[POST_MODE])) {
+    $mode = isset($_POST[POST_MODE]) ? $_POST[POST_MODE] : $_GET[POST_MODE];
+} else {
+    $mode = '';
+}
+
+switch ($mode) {
+
+    case 'install':
+        dibi::insert(Tables::LANGUAGES_TABLE,  ['lang_name' => $_GET[POST_LANG_URL],])->execute();
+
+        $message = $lang['Installed_language'] . '<br /><br />' . sprintf($lang['Click_return_language'], '<a href="' . Session::appendSid('admin_languages.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+
+        message_die(GENERAL_MESSAGE, $message);
+
+        break;
+
+    case 'delete':
+        $language = dibi::select('*')
+            ->from(Tables::LANGUAGES_TABLE)
+            ->where('[lang_id] = %i', $_GET[POST_LANG_URL])
+            ->fetch();
+
+        $replaceLang = dibi::select('*')
+            ->from(Tables::LANGUAGES_TABLE)
+            ->where('[lang_name] = %s', 'english')
+            ->fetch();
+
+        if ($replaceLang && $language->lang_id === $replaceLang->lang_id) {
+            $replaceLang = dibi::select('*')
+                ->from(Tables::LANGUAGES_TABLE)
+                ->where('[lang_name] != %s', 'english')
+                ->orderBy('lang_id', dibi::DESC)
+                ->fetch();
+
+            if (!$replaceLang) {
+                dibi::update(Tables::USERS_TABLE, ['user_lang' => $language->lang_name])
+                    ->where('[user_lang] = %s', $language->lang_name)
+                    ->execute();
+
+                dibi::update(Tables::CONFIG_TABLE, ['config_value' => $language->lang_name])
+                    ->where('[config_name] = %s', 'default_lang')
+                    ->execute();
+
+                $cache = new Cache($storage, CONFIG_TABLE);
+                $cache->remove(CONFIG_TABLE);
+
+                $message = $lang['language_no_replacement'] . '<br /><br />' . sprintf($lang['Click_return_language'], '<a href="' . Session::appendSid('admin_languages.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+
+                message_die(GENERAL_MESSAGE, $message);
+            }
+        }
+
+        if (!$replaceLang) {
+            $replaceLang = dibi::select('*')
+                ->from(Tables::LANGUAGES_TABLE)
+                ->where('[lang_id] != %i', $language->lang_id)
+                ->orderBy('lang_id', dibi::DESC)
+                ->fetch();
+
+            if (!$replaceLang) {
+                dibi::update(Tables::USERS_TABLE, ['user_lang' => $language->lang_name])
+                    ->where('[user_id] != %s', ANONYMOUS)
+                    ->execute();
+
+                dibi::update(Tables::CONFIG_TABLE, ['config_value' => $language->lang_name])
+                    ->where('[config_name] = %s', 'default_lang')
+                    ->execute();
+
+                $cache = new Cache($storage, CONFIG_TABLE);
+                $cache->remove(CONFIG_TABLE);
+
+                $message = $lang['language_no_replacement'] . '<br /><br />' . sprintf($lang['Click_return_language'], '<a href="' . Session::appendSid('admin_languages.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+
+                message_die(GENERAL_MESSAGE, $message);
+            }
+        }
+
+        dibi::delete(Tables::LANGUAGES_TABLE)
+            ->where('[lang_id] = %i', $_GET[POST_LANG_URL])
+            ->execute();
+
+        dibi::update(Tables::USERS_TABLE, ['user_lang' => $replaceLang->lang_name])
+            ->where('[user_lang] = %s', $language->lang_name)
+            ->execute();
+
+        $cache = new Cache($storage, CONFIG_TABLE);
+        $cache->remove(CONFIG_TABLE);
+
+        $message = $lang['Delete_language'] . '<br /><br />' . sprintf($lang['Click_return_language'], '<a href="' . Session::appendSid('admin_languages.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+
+	    message_die(GENERAL_MESSAGE, $message);
+        break;
+
+    case '':
+    default:
+        $databaseLanguages = dibi::select('*')
+        ->from(Tables::LANGUAGES_TABLE)
+        ->fetchAll();
+
+        $resultLanguages = [];
+        $foundLanguages = Finder::findDirectories('lang_*')->in($phpbb_root_path . 'language');
+
+        $databaseLanguagesNames = [];
+
+        foreach ($databaseLanguages as $language) {
+            $databaseLanguagesNames[] = $language->lang_name;
+        }
+
+        /**
+        * @var SplFileInfo $language
+        */
+        foreach ($foundLanguages as $language) {
+            $resultLanguages[] = trim(str_replace('lang_', '', $language->getFilename()));
+        }
+
+        $canInstall = array_diff($resultLanguages, $databaseLanguagesNames);
+
+        $latte = new LatteFactory($storage, $userdata);
+
+    $parameters = [
+        'C_LANG_ID' => POST_LANG_URL,
+
+        'D_LANGUAGES' => $databaseLanguages,
+
+        'S_CAN_BE_INSTALLED' => $canInstall,
+
+        'L_LANG_ID' => $lang['Lang_id'],
+        'L_LANG_NAME' => $lang['Lang_name'],
+        'L_CAN_BE_INSTALLED' => $lang['Lang_can_be_isntalled'],
+        'L_INSTALL' => $lang['Install'],
+
+        'L_YES' => $lang['Yes'],
+        'L_NO' => $lang['No'],
+        'L_DELETE' => $lang['Delete'],
+
+        'S_SID' => $SID,
+    ];
+
+    $latte->render('admin/languages_default.latte', $parameters);
+
+    break;
+}
