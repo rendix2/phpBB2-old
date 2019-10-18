@@ -814,6 +814,7 @@ $lang['ACP_password_complex'] = '<br />Be sure, to enter a different password as
 $lang['Lang_id'] = 'Language ID';
 $lang['Lang_name'] = 'Language name';
 
+$lang['Languages'] = 'Languages';
 $lang['Delete_language'] = 'The language was successfully removed';
 $lang['language_no_replacement'] = 'We did not found any language we could set to users with deleted language. <br><br> Language was not removed.';
 $lang['Click_return_language'] = 'Click %sHere%s to return to Language management.';
