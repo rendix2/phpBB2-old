@@ -810,6 +810,8 @@ $lang['ACP_password'] = 'Password for the Admin Panel';
 $lang['ACP_password_confirm'] = 'Confirm the ACP Password';
 $lang['ACP_password_explain'] = 'This password will be used to login into the Admin Panel. From now the normal password can not longer used to login the ACP.';
 $lang['ACP_password_complex'] = '<br />Be sure, to enter a different password as your normal one!';
+$lang['ACP_password_empty'] = 'ACP password is empty.';
+$lang['ACP_confirm_password_empty'] = 'ACP confirm password is empty.';
 
 $lang['Lang_id'] = 'Language ID';
 $lang['Lang_name'] = 'Language name';
@@ -825,6 +827,10 @@ $lang['Language_not_found'] = 'Language was not found.';
 $lang['Language_file_name'] = 'File name';
 $lang['Language_file_size'] = 'File size';
 $lang['Info'] = 'Info';
+
+$lang['Empty_db_host'] = 'Database host is empty.';
+$lang['Empty_db_name'] = 'Datasase name is empty.';
+$lang['Empty_db_user_name'] = 'Datasase user name is empty.';
 
 //
 // That's all Folks!
