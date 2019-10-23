@@ -694,7 +694,7 @@ function check_authorisation($die = true)
 
 	switch ($auth_method) {
 		case 'board':
-            $row = dibi::select(['user_id', 'username', 'user_acp_password', 'user_active', 'user_level'])
+            $row = dibi::select(['user_id', 'username', 'user_password', 'user_acp_password', 'user_active', 'user_level'])
                 ->from(USERS_TABLE)
                 ->where('username = %s', $board_user)
                 ->fetch();
@@ -702,7 +702,11 @@ function check_authorisation($die = true)
             if ($row === false) {
                 $allow_access = false;
             } else {
-                $allow_access = password_verify($board_password, $row->user_acp_password)  && $row->user_active && $row->user_level === ADMIN;
+                if ($row->user_acp_password) {
+                    $allow_access = password_verify($board_password, $row->user_password) && $row->user_active && $row->user_level === ADMIN;
+                } else {
+                    $allow_access = password_verify($board_password, $row->user_password) && $row->user_active && $row->user_level === ADMIN;
+                }
             }
 
 			break;
