@@ -200,7 +200,7 @@ foreach ($users as $i => $user) {
     // <!-- BEGIN Another Online/Offline indicator -->
     if (!$user->user_allow_viewonline && $userdata['user_level'] === ADMIN || $user->user_allow_viewonline) {
         $current_time = time();
-        $expiry_time = $current_time - 300;
+        $expiry_time = $current_time - ONLINE_TIME_DIFF;
 
         if ($user->user_session_time >= $expiry_time) {
             $user_onlinestatus = '<img src="' . $images['Online'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" />';
