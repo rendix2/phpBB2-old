@@ -8,7 +8,7 @@ class Tables
     /**
      * @var string
      */
-    CONST PREFIX = 'phpbb_';
+    CONST PREFIX = Config::TABLE_PREFIX;
 
     /**
      * @var string

@@ -10,6 +10,7 @@
  *
  ***************************************************************************/
 
+use Nette\PhpGenerator\ClassType;
 use Nette\Utils\Finder;
 use Nette\Utils\Validators;
 
@@ -236,7 +237,7 @@ $phpbb_root_path = '.' . $sep . '..' . $sep;
 $userdata = [];
 $lang = [];
 $error = false;
-$databaseError = [];
+$databaseError = false;
 $validated = false;
 
 require_once $phpbb_root_path . 'vendor' . $sep . 'autoload.php';
@@ -586,16 +587,9 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['up
         $error[] = $lang['ACP_Password_match_pw'];
     }
 
-    if ($error === false) {
+    if ($error === false && $databaseError === false) {
         $validated = true;
     }
-
-
-    dump($validated, '$validated');
-    dump($error, '$error');
-
-
-    //}
 
     $lang_options = [];
     $languages = Finder::findDirectories('lang_*')->in($phpbb_root_path . 'language');
@@ -902,17 +896,17 @@ if ($_GET['install'] == 1 && $validated) {
 
             foreach ($lang_options as $key => $value) {
                 $exists = dibi::select('1')
-                    ->from(Tables::LANGUAGES_TABLE)
+                    ->from($table_prefix . 'languages')
                     ->where('[lang_name] = %s', $key)
                     ->fetchSingle();
 
                 if (!$exists) {
-                    dibi::insert(Tables::LANGUAGES_TABLE, ['lang_name' => $key])->execute();
+                    dibi::insert($table_prefix . 'languages', ['lang_name' => $key])->execute();
                 }
             }
 
             $dbLanguages = dibi::select('*')
-                ->from(Tables::LANGUAGES_TABLE)
+                ->from($table_prefix . 'languages')
                 ->fetchPairs('lang_id', 'lang_name');
 
             $fileLanguages = array_keys($lang_options);
@@ -920,7 +914,7 @@ if ($_GET['install'] == 1 && $validated) {
             // remove languages which are not present in language folder
             foreach ($dbLanguages as $dbLanguage) {
                 if (!in_array($dbLanguage, $fileLanguages, true)) {
-                    dibi::delete(Tables::LANGUAGES_TABLE)
+                    dibi::delete($table_prefix . 'languages')
                         ->where('[lang_name] = %s', $dbLanguage)
                         ->execute();
                 }
@@ -935,6 +929,19 @@ if ($_GET['install'] == 1 && $validated) {
 		}
 
 		if (!$upgrade_now) {
+		    $dns = $dbms . ':host=' . $dbhost .';dbname=' . $dbname . ';charset=utf8';
+
+		    $configClass = new ClassType('Config');
+		    $configClass->setFinal();
+		    $configClass->addComment('Config class of phpBB2');
+		    $configClass->addConstant('TABLE_PREFIX', $table_prefix);
+		    $configClass->addConstant('DBMS', $dbms);
+		    $configClass->addConstant('DATABASE_HOST', $dbhost);
+		    $configClass->addConstant('DATABASE_USER', $dbuser);
+		    $configClass->addConstant('DATABASE_PASSWORD', $dbpasswd);
+		    $configClass->addConstant('DATABASE_DNS', $dns);
+		    $configClass->addConstant('INSTALLED', true);
+
 			// Write out the config file.
 			$config_data = '<?php'."\n\n";
 			$config_data .= "\n// phpBB 2.x auto-generated config file\n// Do not change anything in this file!\n\n";
@@ -946,6 +953,10 @@ if ($_GET['install'] == 1 && $validated) {
 			$config_data .= '$table_prefix = \'' . $table_prefix . '\';' . "\n\n";
             $config_data .= sprintf('$dns = $dbms.\':host=\'.$dbhost.\';dbname=\'.$dbname.\';charset=utf8\';'. "\n\n", $dbms);
 			$config_data .= 'define(\'PHPBB_INSTALLED\', true);'."\n\n";
+
+			$config_data .= $configClass;
+
+			//$config_data .= 'class Config {' . "\n\n\t". ' const TABLE_PREFIX =  \'' . $table_prefix . '\';'."\n\n".'}'."\n\n";
 			$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
 
 			@umask(0111);
@@ -1036,8 +1047,5 @@ if ($_GET['install'] == 1 && $validated) {
 		exit;
 	}
 }
-
-bdump(isset($_POST['install']), 'isset($_POST[\'install\'])');
-bdump($validated, '$validated');
 
 ?>
