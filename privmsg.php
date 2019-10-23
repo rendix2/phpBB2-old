@@ -400,8 +400,7 @@ if ($mode === 'newpm') {
 
     // <!-- BEGIN Another Online/Offline indicator -->
     if (!$privmsg['user_allow_viewonline'] && $userdata['user_level'] === ADMIN || $privmsg['user_allow_viewonline']) {
-        $current_time = time();
-        $expiry_time = $current_time - ONLINE_TIME_DIFF;
+        $expiry_time = time() - ONLINE_TIME_DIFF;
 
         if ($privmsg['user_session_time_1'] >= $expiry_time) {
             $user_onlinestatus = '<img src="' . $images['Online_small'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" />';
@@ -2057,8 +2056,7 @@ if (count($rows)) {
 
         // <!-- BEGIN Another Online/Offline indicator -->
         if (!$row->user_allow_viewonline && $userdata['user_level'] === ADMIN || $row->user_allow_viewonline) {
-            $current_time = time();
-            $expiry_time = $current_time - ONLINE_TIME_DIFF;
+            $expiry_time = time() - ONLINE_TIME_DIFF;
 
             if ($row->user_session_time >= $expiry_time) {
                 $user_onlinestatus = '<img src="' . $images['Online_small'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" />';

@@ -825,8 +825,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
 
     // <!-- BEGIN Another Online/Offline indicator -->
     if (!$group_moderator->user_allow_viewonline && $userdata['user_level'] === ADMIN || $group_moderator->user_allow_viewonline) {
-        $current_time = time();
-        $expiry_time = $current_time - ONLINE_TIME_DIFF;
+        $expiry_time = time() - ONLINE_TIME_DIFF;
 
         if ($group_moderator->user_session_time >= $expiry_time) {
             $user_onlinestatus = '<img src="' . $images['Online'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" />';
@@ -946,8 +945,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
 
         // <!-- BEGIN Another Online/Offline indicator -->
         if (!$groupMember->user_allow_viewonline && $userdata['user_level'] === ADMIN || $groupMember->user_allow_viewonline) {
-            $current_time = time();
-            $expiry_time = $current_time - ONLINE_TIME_DIFF;
+            $expiry_time = time() - ONLINE_TIME_DIFF;
 
             if ($groupMember->user_session_time >= $expiry_time) {
                 $user_onlinestatus = '<img src="' . $images['Online'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" />';
@@ -1079,8 +1077,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
 
                 // <!-- BEGIN Another Online/Offline indicator -->
                 if (!$modgroup_pending_value->user_allow_viewonline && $userdata['user_level'] === ADMIN || $modgroup_pending_value->user_allow_viewonline) {
-                    $current_time = time();
-                    $expiry_time = $current_time - ONLINE_TIME_DIFF;
+                    $expiry_time = time() - ONLINE_TIME_DIFF;
 
                     if ($modgroup_pending_value->user_session_time >= $expiry_time) {
                         $user_onlinestatus = '<img src="' . $images['Online'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" />';
