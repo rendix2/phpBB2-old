@@ -272,26 +272,33 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
             }
         }
 
+        //
+        // Awww, the user wants to change their ACP password, isn't that cute..
+        //
         if (!empty($acp_password) && !empty($acp_password_confirm)) {
-            if ($acp_password != $acp_password_confirm) {
+            $passwordLength = mb_strlen($acp_password);
+
+            if ($acp_password !== $acp_password_confirm) {
                 $error = true;
                 $error_msg .= ((isset($error_msg)) ? '<br />' : '') . $lang['ACP_Password_mismatch'];
+            } elseif($passwordLength < USER_MIN_PASSWORD_LENGTH) {
+                $error = true;
+                $error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Password_short'];
+            } elseif($passwordLength > USER_MAX_PASSWORD_LENGTH) {
+                $error = true;
+                $error_msg .= (isset($error_msg) ? '<br />' : '') . $lang['Password_long'];
             } else {
                 $passwd_sql['user_acp_password'] = password_hash($acp_password, PASSWORD_BCRYPT);
             }
-        } else if ($acp_password && !$acp_password_confirm) {
-            $error = true;
-            $error_msg .= ((isset($error_msg)) ? '<br />' : '') . $lang['ACP_Password_mismatch'];
-        } else if (!$acp_password && $acp_password_confirm) {
+        } else if (($acp_password && !$acp_password_confirm) || (!$acp_password && $acp_password_confirm)) {
             $error = true;
             $error_msg .= ((isset($error_msg)) ? '<br />' : '') . $lang['ACP_Password_mismatch'];
         }
 
+        //
+        // Awww, the user wants to change their normal password, isn't that cute..
+        //
 		if (!empty($password) && !empty($password_confirm)) {
-			//
-			// Awww, the user wants to change their password, isn't that cute..
-			//
-
             $passwordLength = mb_strlen($password);
 
             if ($password !== $password_confirm) {
@@ -301,18 +308,15 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
                 $error = true;
                 $error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Password_short'];
             } elseif($passwordLength < USER_MAX_PASSWORD_LENGTH) {
-                $error     = true;
+                $error = true;
                 $error_msg .= (isset($error_msg) ? '<br />' : '') . $lang['Password_long'];
             } else {
                 $passwd_sql['user_password'] = password_hash($password, PASSWORD_BCRYPT);
 			}
-        } elseif ($password && !$password_confirm) {
+        } elseif (($password && !$password_confirm) || (!$password && $password_confirm)) {
             $error = true;
 			$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Password_mismatch'];
-        } elseif (!$password && $password_confirm) {
-            $error = true;
-			$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Password_mismatch'];
-		}
+        }
 
 		if ($signature !== '') {
 			$sig_length_check = preg_replace('/(\[.*?)(=.*?)\]/is', '\\1]', stripslashes($signature));
