@@ -629,7 +629,9 @@ if ($mode === 'searchuser') {
                 'u.username',
                 'u.user_id',
                 'u.user_sig',
-                'u.user_sig_bbcode_uid'
+                'u.user_sig_bbcode_uid',
+                'u.user_allow_viewonline',
+                'u.user_session_time',
             ];
 
             $search_sets = dibi::select($columns)
@@ -922,6 +924,33 @@ if ($mode === 'searchuser') {
                     $mini_post_alt = $lang['Post'];
                 }
 
+                // <!-- BEGIN Another Online/Offline indicator -->
+                if (!$search_set->user_allow_viewonline && $userdata['user_level'] === ADMIN || $search_set->user_allow_viewonline) {
+                    $expiry_time = time() - ONLINE_TIME_DIFF;
+
+                    if ($search_set->user_session_time >= $expiry_time) {
+                        $user_onlinestatus = '<img src="' . $images['Online'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" align="middle" />';
+
+                        if (!$search_set->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                            $user_onlinestatus = '<img src="' . $images['Hidden_Admin'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" align="middle" />';
+                        }
+                    } else {
+                        $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
+
+                        if (!$search_set->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                            $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
+                        }
+                    }
+                } else {
+                    $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
+                }
+
+                if ($search_set->user_id === ANONYMOUS) {
+                    $user_onlinestatus = '';
+                }
+                // <!-- END Another Online/Offline indicator -->
+
+
                 $template->assignBlockVars('searchresults',
                     [
                         'TOPIC_TITLE'   => $topic_title,
@@ -933,6 +962,10 @@ if ($mode === 'searchuser') {
                         'TOPIC_VIEWS'   => $search_set->topic_views,
                         'MESSAGE'       => $message,
                         'MINI_POST_IMG' => $mini_post_img,
+
+                        // <!-- BEGIN Another Online/Offline indicator -->
+                        'POSTER_ONLINE' => $user_onlinestatus,
+                        // <!-- END Another Online/Offline indicator -->
 
                         'L_MINI_POST_ALT' => $mini_post_alt,
 
