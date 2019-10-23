@@ -191,6 +191,9 @@ if ($mode === 'newpm') {
         ->as('username_2')
         ->select('u2.user_id')
         ->as('user_id_2')
+        ->select('u.user_session_time')
+        ->as('user_session_time_1')
+        ->select('u.user_allow_viewonline')
         ->select($columns)
         ->from(PRIVMSGS_TABLE)
         ->as('pm')
@@ -395,6 +398,29 @@ if ($mode === 'newpm') {
 		'edit'     => '<a href="' . $post_urls['edit'] . '">' . $lang['Edit_pm'] . '</a>'
 	];
 
+    // <!-- BEGIN Another Online/Offline indicator -->
+    if (!$privmsg['user_allow_viewonline'] && $userdata['user_level'] === ADMIN || $privmsg['user_allow_viewonline']) {
+        $current_time = time();
+        $expiry_time = $current_time - 300;
+
+        if ($privmsg['user_session_time_1'] >= $expiry_time) {
+            $user_onlinestatus = '<img src="' . $images['Online_small'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" />';
+
+            if (!$privmsg['user_allow_viewonline'] && $userdata['user_level'] === ADMIN) {
+                $user_onlinestatus = '<img src="' . $images['Hidden_Admin_small'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
+            }
+        } else {
+            $user_onlinestatus = '<img src="' . $images['Offline_small'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
+
+            if (!$privmsg['user_allow_viewonline'] && $userdata['user_level'] === ADMIN) {
+                $user_onlinestatus = '<img src="' . $images['Offline_small'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
+            }
+        }
+    } else {
+        $user_onlinestatus = '<img src="' . $images['Offline_small'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
+    }
+    // <!-- END Another Online/Offline indicator -->
+
     if ($folder === 'inbox') {
 		$post_img = $post_icons['post_img'];
 		$reply_img = $post_icons['reply_img'];
@@ -415,6 +441,10 @@ if ($mode === 'newpm') {
 		$quote = '';
 		$edit = $post_icons['edit'];
 		$l_box_name = $lang['Outbox'];
+
+        // <!-- BEGIN Another Online/Offline indicator -->
+        $user_onlinestatus = '';
+        // <!-- END Another Online/Offline indicator -->
     } elseif ($folder === 'savebox') {
         if ($privmsg->privmsgs_type === PRIVMSGS_SAVED_IN_MAIL) {
 			$post_img = $post_icons['post_img'];
@@ -425,6 +455,10 @@ if ($mode === 'newpm') {
 			$reply = $post_icons['reply'];
 			$quote = $post_icons['quote'];
 			$edit = '';
+
+            // <!-- BEGIN Another Online/Offline indicator -->
+            $user_onlinestatus = '';
+            // <!-- END Another Online/Offline indicator -->
 		} else {
 			$post_img = $post_icons['post_img'];
 			$reply_img = '';
@@ -434,6 +468,10 @@ if ($mode === 'newpm') {
 			$reply = '';
 			$quote = '';
 			$edit = '';
+
+            // <!-- BEGIN Another Online/Offline indicator -->
+            $user_onlinestatus = '';
+            // <!-- END Another Online/Offline indicator -->
 		}
 
 		$l_box_name = $lang['Saved'];
@@ -603,7 +641,7 @@ if ($mode === 'newpm') {
     $template->assignVars(
         [
             'MESSAGE_TO'    => $username_to,
-            'MESSAGE_FROM'  => $username_from,
+            'MESSAGE_FROM'  => $username_from . '&nbsp;' . $user_onlinestatus,
 
             /*
              * this variables are not used in template
@@ -1332,7 +1370,9 @@ if ($mode === 'newpm') {
                 'pmt.privmsgs_text',
                 'u.username',
                 'u.user_id',
-                'u.user_sig'
+                'u.user_sig',
+                'u.user_allow_viewonline',
+                'u.user_session_time'
             ];
 
             $privmsg = dibi::select($columns)
@@ -1766,7 +1806,18 @@ $sql_tot = dibi::select('COUNT(privmsgs_id)')
     ->as('total')
     ->from(PRIVMSGS_TABLE);
 
-$sql = dibi::select(['pm.privmsgs_type', 'pm.privmsgs_id', 'pm.privmsgs_date', 'pm.privmsgs_subject', 'u.user_id', 'u.username'])
+$columns = [
+    'pm.privmsgs_type',
+    'pm.privmsgs_id',
+    'pm.privmsgs_date',
+    'pm.privmsgs_subject',
+    'u.user_id',
+    'u.username',
+    'u.user_session_time',
+    'u.user_allow_viewonline'
+];
+
+$sql = dibi::select($columns)
     ->from(PRIVMSGS_TABLE)
     ->as('pm')
     ->innerJoin(USERS_TABLE)
@@ -2004,6 +2055,29 @@ if (count($rows)) {
 		$msg_userid = $row->user_id;
 		$msg_username = $row->username;
 
+        // <!-- BEGIN Another Online/Offline indicator -->
+        if (!$row->user_allow_viewonline && $userdata['user_level'] === ADMIN || $row->user_allow_viewonline) {
+            $current_time = time();
+            $expiry_time = $current_time - 300;
+
+            if ($row->user_session_time >= $expiry_time) {
+                $user_onlinestatus = '<img src="' . $images['Online_small'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" />';
+
+                if (!$row->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                    $user_onlinestatus = '<img src="' . $images['Hidden_Admin_small'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
+                }
+            } else {
+                $user_onlinestatus = '<img src="' . $images['Offline_small'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
+
+                if (!$row->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                    $user_onlinestatus = '<img src="' . $images['Offline_small'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
+                }
+            }
+        } else {
+            $user_onlinestatus = '<img src="' . $images['Offline_small'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
+        }
+        // <!-- END Another Online/Offline indicator -->
+
 		$u_from_user_profile = Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$msg_userid");
 
 		$msg_subject = $row->privmsgs_subject;
@@ -2030,7 +2104,7 @@ if (count($rows)) {
             [
                 'ROW_COLOR'          => '#' . $row_color,
                 'ROW_CLASS'          => $row_class,
-                'FROM'               => $msg_username,
+                'FROM'               => $msg_username . '&nbsp;' . $user_onlinestatus,
                 'SUBJECT'            => htmlspecialchars($msg_subject, ENT_QUOTES),
                 'DATE'               => $msg_date,
                 'PRIVMSG_FOLDER_IMG' => $icon_flag,

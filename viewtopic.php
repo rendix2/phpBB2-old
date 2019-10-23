@@ -402,6 +402,8 @@ $columns = [
     'u.user_avatar_type',
     'u.user_allowavatar',
     'u.user_allowsmile',
+    'u.user_allow_viewonline',
+    'u.user_session_time',
     'p.*',
     'pt.post_text',
     'pt.post_subject',
@@ -853,6 +855,33 @@ foreach ($posts as $i => $post) {
 		}
 	}
 
+    // <!-- BEGIN Another Online/Offline indicator -->
+    if (!$post->user_allow_viewonline && $userdata['user_level'] === ADMIN || $post->user_allow_viewonline) {
+        $current_time = time();
+        $expiry_time = $current_time - 300;
+
+        if ($post->user_session_time >= $expiry_time) {
+            $user_onlinestatus = '<img src="' . $images['Online'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" align="middle" />';
+
+            if (!$post->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                $user_onlinestatus = '<img src="' . $images['Hidden_Admin'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" align="middle" />';
+            }
+        } else {
+            $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
+
+            if (!$post->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
+            }
+        }
+    } else {
+        $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
+    }
+
+    if ($post->user_id === ANONYMOUS) {
+        $user_onlinestatus = '';
+    }
+    // <!-- END Another Online/Offline indicator -->
+
 	//
 	// Define the little post icon
 	//
@@ -1086,6 +1115,10 @@ foreach ($posts as $i => $post) {
             'POSTER_TOPICS'  => $posterTopics,
             'POSTER_FROM'    => $posterFrom,
             'POSTER_AVATAR'  => $posterAvatar,
+
+            // <!-- BEGIN Another Online/Offline indicator -->
+            'POSTER_ONLINE' => $user_onlinestatus,
+            // <!-- END Another Online/Offline indicator -->
 
             'POST_DATE'      => $postDate,
             'POST_SUBJECT'   => $postSubject,

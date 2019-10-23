@@ -89,7 +89,7 @@
 	</tr>
 	<tr> 
 	  <td class="row1" align="center"> {MOD_PM_IMG} </td>
-	  <td class="row1" align="center"><span class="gen"><a href="{U_MOD_VIEWPROFILE}" class="gen">{MOD_USERNAME}</a></span></td>
+	  <td class="row1" align="center"><span class="gen"><a href="{U_MOD_VIEWPROFILE}" class="gen">{MOD_USERNAME}</a><br />{MOD_ONLINE}</span></td>
 	  <td class="row1" align="center" valign="middle"><span class="gen">{MOD_POSTS}</span></td>
 	  <td class="row1" align="center" valign="middle"><span class="gen">{MOD_TOPICS}</span></td>
 	  <td class="row1" align="center" valign="middle"><span class="gen">{MOD_FROM}</span></td>
@@ -103,7 +103,7 @@
 	<!-- BEGIN member_row -->
 	<tr> 
 	  <td class="{member_row.ROW_CLASS}" align="center"> {member_row.PM_IMG} </td>
-	  <td class="{member_row.ROW_CLASS}" align="center"><span class="gen"><a href="{member_row.U_VIEWPROFILE}" class="gen">{member_row.USERNAME}</a></span></td>
+	  <td class="{member_row.ROW_CLASS}" align="center"><span class="gen"><a href="{member_row.U_VIEWPROFILE}" class="gen">{member_row.USERNAME}</a><br />{member_row.ONLINESTATUS}</span></td>
 	  <td class="{member_row.ROW_CLASS}" align="center"><span class="gen">{member_row.POSTS}</span></td>
 	  <td class="{member_row.ROW_CLASS}" align="center"><span class="gen">{member_row.TOPICS}</span></td>
 	  <td class="{member_row.ROW_CLASS}" align="center"><span class="gen"> {member_row.FROM}

@@ -1030,6 +1030,11 @@ $lang['Empty_confirm_user_password'] = 'User confirmation pasword is empty.';
 $lang['Empty_user_email'] = 'User email is empty.';
 $lang['User_email_invalid'] = 'User email is not valid.';
 
+// Another Online/Offline indicator
+$lang['Online'] = 'Online';
+$lang['Offline'] = 'Offline';
+$lang['Hidden'] = 'Hidden';
+
 
 //
 // That's all, Folks!

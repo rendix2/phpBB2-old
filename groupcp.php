@@ -665,6 +665,8 @@ if (isset($_POST['groupstatus']) && $groupId) {
         'user_avatar_type',
         'user_allowavatar',
         'user_avatar',
+        'user_allow_viewonline',
+        'user_session_time'
     ];
 
     //
@@ -686,6 +688,8 @@ if (isset($_POST['groupstatus']) && $groupId) {
         'u.user_website',
         'u.user_email',
         'u.user_avatar_type',
+        'u.user_allow_viewonline',
+        'u.user_session_time'
     ];
 
     //
@@ -729,6 +733,8 @@ if (isset($_POST['groupstatus']) && $groupId) {
         'u.user_website',
         'u.user_email',
         'u.user_avatar_type',
+        'u.user_allow_viewonline',
+        'u.user_session_time'
     ];
 
     $modgroup_pending_list = dibi::select($columns)
@@ -817,6 +823,29 @@ if (isset($_POST['groupstatus']) && $groupId) {
 
 	generate_user_info($group_moderator, $board_config['default_dateformat'], $isModerator, $from, $posts, $topics, $joined, $poster_avatar, $profileImage, $profile, $searchImage, $search, $pmImage, $pm, $emailImage, $email, $wwwImage, $www);
 
+    // <!-- BEGIN Another Online/Offline indicator -->
+    if (!$group_moderator->user_allow_viewonline && $userdata['user_level'] === ADMIN || $group_moderator->user_allow_viewonline) {
+        $current_time = time();
+        $expiry_time = $current_time - 300;
+
+        if ($group_moderator->user_session_time >= $expiry_time) {
+            $user_onlinestatus = '<img src="' . $images['Online'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" />';
+
+            if (!$group_moderator->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                $user_onlinestatus = '<img src="' . $images['Hidden_Admin'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
+            }
+        } else {
+            $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
+
+            if (!$group_moderator->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
+            }
+        }
+    } else {
+        $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
+    }
+    // <!-- END Another Online/Offline indicator -->
+
 	$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
 	$template->assignVars([
@@ -859,6 +888,11 @@ if (isset($_POST['groupstatus']) && $groupId) {
             'MOD_ROW_CLASS' => $theme['td_class1'],
 
             'MOD_USERNAME' => $username,
+
+            // <!-- BEGIN Another Online/Offline indicator -->
+            'MOD_ONLINE' => $user_onlinestatus,
+            // <!-- END Another Online/Offline indicator -->
+
             'MOD_FROM' => $from,
             'MOD_JOINED' => $joined,
             'MOD_POSTS' => $posts,
@@ -910,7 +944,30 @@ if (isset($_POST['groupstatus']) && $groupId) {
     foreach ($groupMembers as $i => $groupMember) {
 		generate_user_info($groupMember, $board_config['default_dateformat'], $isModerator, $from, $posts, $topics, $joined, $poster_avatar, $profileImage, $profile, $searchImage, $search, $pmImage, $pm, $emailImage, $email, $wwwImage, $www);
 
-		if ($groupInfo->group_type !== GROUP_HIDDEN || $isGroupMember || $isModerator) {
+        // <!-- BEGIN Another Online/Offline indicator -->
+        if (!$groupMember->user_allow_viewonline && $userdata['user_level'] === ADMIN || $groupMember->user_allow_viewonline) {
+            $current_time = time();
+            $expiry_time = $current_time - 300;
+
+            if ($groupMember->user_session_time >= $expiry_time) {
+                $user_onlinestatus = '<img src="' . $images['Online'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" />';
+
+                if (!$groupMember->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                    $user_onlinestatus = '<img src="' . $images['Hidden_Admin'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
+                }
+            } else {
+                $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
+
+                if (!$groupMember->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                    $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
+                }
+            }
+        } else {
+            $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
+        }
+        // <!-- END Another Online/Offline indicator -->
+
+        if ($groupInfo->group_type !== GROUP_HIDDEN || $isGroupMember || $isModerator) {
 			$rowColor = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
 			$rowClass = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
@@ -919,6 +976,11 @@ if (isset($_POST['groupstatus']) && $groupId) {
                     'ROW_COLOR'      => '#' . $rowColor,
                     'ROW_CLASS'      => $rowClass,
                     'USERNAME'       => $groupMember->username,
+
+                    // <!-- BEGIN Another Online/Offline indicator -->
+                    'ONLINESTATUS' => $user_onlinestatus,
+                    // <!-- END Another Online/Offline indicator -->
+
                     'FROM'           => $from,
                     'JOINED'         => $joined,
                     'POSTS'          => $posts,
@@ -1015,6 +1077,29 @@ if (isset($_POST['groupstatus']) && $groupId) {
                     $www
                 );
 
+                // <!-- BEGIN Another Online/Offline indicator -->
+                if (!$modgroup_pending_value->user_allow_viewonline && $userdata['user_level'] === ADMIN || $modgroup_pending_value->user_allow_viewonline) {
+                    $current_time = time();
+                    $expiry_time = $current_time - 300;
+
+                    if ($modgroup_pending_value->user_session_time >= $expiry_time) {
+                        $user_onlinestatus = '<img src="' . $images['Online'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" />';
+
+                        if (!$modgroup_pending_value->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                            $user_onlinestatus = '<img src="' . $images['Hidden_Admin'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
+                        }
+                    } else {
+                        $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
+
+                        if (!$modgroup_pending_value->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                            $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
+                        }
+                    }
+                } else {
+                    $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
+                }
+                // <!-- END Another Online/Offline indicator -->
+
 				$rowColor = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
 				$rowClass = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
@@ -1025,6 +1110,11 @@ if (isset($_POST['groupstatus']) && $groupId) {
                         'ROW_CLASS'      => $rowClass,
                         'ROW_COLOR'      => '#' . $rowColor,
                         'USERNAME'       => $username,
+
+                        // <!-- BEGIN Another Online/Offline indicator -->
+                        'ONLINESTATUS' => $user_onlinestatus,
+                        // <!-- END Another Online/Offline indicator -->
+
                         'FROM'           => $from,
                         'JOINED'         => $joined,
                         'POSTS'          => $posts,

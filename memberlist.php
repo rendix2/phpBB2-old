@@ -125,7 +125,9 @@ $columns = [
     'user_email',
     'user_avatar',
     'user_avatar_type',
-    'user_allowavatar'
+    'user_allowavatar',
+    'user_allow_viewonline',
+    'user_session_time'
 ];
 
 $users = dibi::select($columns)
@@ -195,6 +197,29 @@ foreach ($users as $i => $user) {
         }
     }
 
+    // <!-- BEGIN Another Online/Offline indicator -->
+    if (!$user->user_allow_viewonline && $userdata['user_level'] === ADMIN || $user->user_allow_viewonline) {
+        $current_time = time();
+        $expiry_time = $current_time - 300;
+
+        if ($user->user_session_time >= $expiry_time) {
+            $user_onlinestatus = '<img src="' . $images['Online'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" />';
+
+            if (!$user->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                $user_onlinestatus = '<img src="' . $images['Hidden_Admin'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
+            }
+        } else {
+            $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
+
+            if (!$user->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
+            }
+        }
+    } else {
+        $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
+    }
+    // <!-- END Another Online/Offline indicator -->
+
     if (!empty($user->user_viewemail) || $userdata['user_level'] === ADMIN) {
         $emailUrl    = $board_config['board_email_form'] ? Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL . '=' . $user->user_id) : 'mailto:' . $user->user_email;
         $emailImage = '<a href="' . $emailUrl . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
@@ -228,6 +253,11 @@ foreach ($users as $i => $user) {
             'ROW_COLOR' => '#' . $rowColor,
             'ROW_CLASS' => $rowClass,
             'USERNAME' => $user->username,
+
+            // <!-- BEGIN Another Online/Offline indicator -->
+            'ONLINESTATUS' => $user_onlinestatus,
+            // <!-- END Another Online/Offline indicator -->
+
             'FROM' => $from,
             'JOINED' => create_date($lang['DATE_FORMAT'], $user->user_regdate, $board_config['board_timezone']),
             'POSTS' => $user->user_posts ? $user->user_posts : 0,
