@@ -940,6 +940,7 @@ if ($_GET['install'] == 1 && $validated) {
 		    $configClass->addConstant('DATABASE_USER', $dbuser);
 		    $configClass->addConstant('DATABASE_PASSWORD', $dbpasswd);
 		    $configClass->addConstant('DATABASE_DNS', $dns);
+		    $configClass->addConstant('DATABASE_DRIVER', 'PDO');
 		    $configClass->addConstant('INSTALLED', true);
 
 			// Write out the config file.
