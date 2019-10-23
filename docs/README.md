@@ -31,6 +31,9 @@ News:
 - removed online users on forum page 
 - ACP DO NOT create left menu automatically by including all admin_*.php files 
 - ACP can have different password to login
+- Another Online/Offline indicator
+- improved install
+- improved config.php file
   
 Conventions for template:  
 - L_ is a language variable
