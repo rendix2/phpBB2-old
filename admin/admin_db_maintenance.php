@@ -435,6 +435,7 @@ switch($mode_id) {
                         'user_level' => 0,
                         'user_regdate' => 0,
                         'user_password' => '',
+                        'user_acp_password' => '',
                         'user_email'    => '',
                         'user_website'  => '',
                         'user_occ'   => '',
