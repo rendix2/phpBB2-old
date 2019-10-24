@@ -136,7 +136,7 @@ class SearchHelper
      */
     public static function addSearchWords($mode, $postId, $post_text, $post_title = '')
     {
-        global $phpbb_root_path, $board_config, $dbms;
+        global $phpbb_root_path, $board_config;
 
         $sep = DIRECTORY_SEPARATOR;
 
@@ -176,7 +176,7 @@ class SearchHelper
             $words = array_unique($words);
             $checkWords = [];
 
-            switch ($dbms) {
+            switch (Config::DBMS) {
                 case 'postgresql':
                 case 'msaccess':
                 case 'mssql-odbc':
@@ -191,7 +191,7 @@ class SearchHelper
 
             foreach ($words as $word) {
                 if (!isset($checkWords[$word])) {
-                    switch ($dbms) {
+                    switch (Config::DBMS) {
                         case 'mysql':
                             $insertData = [
                                 'word_text' => $word,
@@ -298,11 +298,9 @@ class SearchHelper
      */
     public static function removeSearchPost(array $post_ids)
     {
-        global $dbms;
-
         $wordsRemoved = false;
 
-        if ($dbms === 'mysql') {
+        if (Config::DBMS === 'mysql') {
             $words = dibi::select('word_id')
                 ->from(SEARCH_MATCH_TABLE)
                 ->where('post_id IN %in', $post_ids)

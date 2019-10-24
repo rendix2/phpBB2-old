@@ -354,7 +354,6 @@ function getmicrotime()
 //
 function get_table_statistic()
 {
-	global $table_prefix;
 	global $tables;
 
 	$stat['all']['count'] = 0;
@@ -372,7 +371,7 @@ function get_table_statistic()
 	$prefixedTables = [];
 
 	foreach ($tables as  $key => $table) {
-	    $prefixedTables[$key] = $table_prefix . $table;
+	    $prefixedTables[$key] = Config::TABLE_PREFIX . $table;
     }
 
     foreach ($rows as $row) {
@@ -387,7 +386,7 @@ function get_table_statistic()
         }
 
         foreach ($tables as $table) {
-            if ($table_prefix . $table === $row->Name) {
+            if (Config::TABLE_PREFIX . $table === $row->Name) {
                 $stat['core']['count']++;
                 $stat['core']['records'] += (int)$row->Rows;
                 $stat['core']['size']    += (int)$row->Data_length + (int)$row->Index_length;
@@ -675,7 +674,7 @@ function language_select($default, $select_name = 'language', $file_to_check = '
 
 function check_authorisation($die = true)
 {
-	global $lang, $dbuser, $dbpasswd, $option, $_POST;
+	global $lang, $option, $_POST;
 
     $auth_method    = isset($_POST['auth_method']) ? htmlspecialchars($_POST['auth_method']) : '';
     $board_password = isset($_POST['board_password']) ? $_POST['board_password'] : '';
@@ -711,7 +710,7 @@ function check_authorisation($die = true)
 
 			break;
 		case 'db':
-            $allow_access = $db_user === $dbuser && $db_password === $dbpasswd;
+            $allow_access = $db_user === Config::DATABASE_USER && $db_password === CONFIG::DATABASE_PASSWORD;
 			break;
 		default:
             $allow_access = false;

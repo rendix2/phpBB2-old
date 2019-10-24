@@ -182,12 +182,12 @@ function sync($type, $id = false)
  */
 function get_database_size()
 {
-    global $dbms, $table_prefix, $lang, $dbname;
+    global $lang;
 
     $databaseSize = false;
 
     // This code is heavily influenced by a similar routine in phpMyAdmin 2.2.0
-    switch ($dbms) {
+    switch (Config::DBMS) {
         case 'mysql':
             $row = dibi::query('SELECT VERSION() AS mysql_version')->fetch();
 
@@ -195,14 +195,14 @@ function get_database_size()
                 $version = $row->mysql_version;
 
                 if (preg_match('#(3\.23|[45]\.|10\.[0-9]\.[0-9]{1,2}-+Maria)#', $version)) {
-                    $tables = dibi::query('SHOW TABLE STATUS FROM %n', $dbname)->fetchAll();
+                    $tables = dibi::query('SHOW TABLE STATUS FROM %n', Config::DATABASE_NAME)->fetchAll();
 
                     $databaseSize = 0;
 
                     foreach ($tables as $table) {
                         if ((isset($table->Type) && $table->Type !== 'MRG_MyISAM') || (isset($table->Engine) && ($table->Engine === 'MyISAM' || $table->Engine === 'InnoDB' || $table->Engine === 'Aria'))) {
-                            if ($table_prefix !== '') {
-                                if (strpos($table->Name, $table_prefix) !== false) {
+                            if (Config::TABLE_PREFIX !== '') {
+                                if (strpos($table->Name, Config::TABLE_PREFIX) !== false) {
                                     $databaseSize += $table->Data_length + $table->Index_length;
                                 }
                             } else {
@@ -215,10 +215,8 @@ function get_database_size()
             break;
 
         case 'sqlite3':
-            global $dbhost;
-
-            if (file_exists($dbhost)) {
-                $databaseSize = filesize($dbhost);
+            if (file_exists(Config::DATABASE_HOST)) {
+                $databaseSize = filesize(Config::DATABASE_HOST);
             }
 
             break;

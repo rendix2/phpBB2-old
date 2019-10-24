@@ -11,6 +11,7 @@
  ***************************************************************************/
 
 use Nette\PhpGenerator\ClassType;
+use Nette\PhpGenerator\PhpFile;
 use Nette\Utils\Finder;
 use Nette\Utils\Validators;
 
@@ -254,7 +255,10 @@ $loader->register(); // Run the RobotLoader
 \Tracy\Debugger::enable();
 
 // Include some required functions
-require_once $phpbb_root_path . 'includes' . $sep . 'constants.php';
+//require_once $phpbb_root_path . 'includes' . $sep . 'constants.php';
+define('USER_MIN_PASSWORD_LENGTH', 8);
+define('USER_MAX_PASSWORD_LENGTH', 32);
+
 require_once $phpbb_root_path . 'includes' . $sep . 'functions.php';
 
 // Define schema info
@@ -373,9 +377,9 @@ if (!empty($_POST['server_port'])) {
     }
 }
 
-// Open config.php ... if it exists
-if (@file_exists(@phpbb_realpath('config.php'))) {
-    require_once $phpbb_root_path . 'config.php';
+// Open Config.php ... if it exists
+if (@file_exists(@phpbb_realpath('Config.php'))) {
+    require_once $phpbb_root_path . 'Config.php';
 }
 
 // Is phpBB already installed? Yes? Redirect to the index
@@ -397,8 +401,8 @@ if ($upgrade === 1) {
 
 // What do we need to do?
 if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['upgrade_now'])) {
-    header('Content-Type: text/x-delimtext; name="config.php"');
-    header('Content-disposition: attachment; filename="config.php"');
+    header('Content-Type: text/x-delimtext; name="Config.php"');
+    header('Content-disposition: attachment; filename="Config.php"');
 
     // We need to stripslashes no matter what the setting of magic_quotes_gpc is
     // because we add slashes at the top if its off, and they are added automaticlly
@@ -491,7 +495,7 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['up
 		// Now ftp it across.
 		@ftp_chdir($conn_id, $ftp_dir);
 
-		$res = ftp_put($conn_id, 'config.php', $tmpfname, FTP_ASCII);
+		$res = ftp_put($conn_id, 'Config.php', $tmpfname, FTP_ASCII);
 
 		@ftp_close($conn_id);
 
@@ -931,6 +935,8 @@ if ($_GET['install'] == 1 && $validated) {
 		if (!$upgrade_now) {
 		    $dns = $dbms . ':host=' . $dbhost .';dbname=' . $dbname . ';charset=utf8';
 
+		    $phpFile = new PhpFile();
+
 		    $configClass = new ClassType('Config');
 		    $configClass->setFinal();
 		    $configClass->addComment('Config class of phpBB2');
@@ -945,30 +951,13 @@ if ($_GET['install'] == 1 && $validated) {
 		    $configClass->addConstant('DATABASE_LAZY', true);
 		    $configClass->addConstant('INSTALLED', true);
 
-			// Write out the config file.
-			$config_data = '<?php'."\n\n";
-			$config_data .= "\n// phpBB 2.x auto-generated config file\n// Do not change anything in this file!\n\n";
-			$config_data .= '$dbms = \'' . $dbms . '\';' . "\n\n";
-			$config_data .= '$dbhost = \'' . $dbhost . '\';' . "\n";
-			$config_data .= '$dbname = \'' . $dbname . '\';' . "\n";
-			$config_data .= '$dbuser = \'' . $dbuser . '\';' . "\n";
-			$config_data .= '$dbpasswd = \'' . $dbpasswd . '\';' . "\n\n";
-			$config_data .= '$table_prefix = \'' . $table_prefix . '\';' . "\n\n";
-            $config_data .= sprintf('$dns = $dbms.\':host=\'.$dbhost.\';dbname=\'.$dbname.\';charset=utf8\';'. "\n\n", $dbms);
-			$config_data .= 'define(\'PHPBB_INSTALLED\', true);'."\n\n";
-
-			$config_data .= $configClass;
-
-			//$config_data .= 'class Config {' . "\n\n\t". ' const TABLE_PREFIX =  \'' . $table_prefix . '\';'."\n\n".'}'."\n\n";
-			$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
-
 			@umask(0111);
             $no_open = false;
 
 			// Unable to open the file writeable do something here as an attempt
 			// to get around that...
-			if (!($fp = @fopen($phpbb_root_path . 'config.php', 'wb'))) {
-				$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars($config_data) . '" />';
+			if (!($fp = @fopen($phpbb_root_path . 'Config.php', 'wb'))) {
+				$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars($phpFile . $configClass) . '" />';
 
 				if (@extension_loaded('ftp') && !defined('NO_FTP')) {
 					page_header($lang['Unwriteable_config'] . '<p>' . $lang['ftp_option'] . '</p>');
@@ -1019,7 +1008,7 @@ if ($_GET['install'] == 1 && $validated) {
 				exit;
 			}
 
-			$result = @fwrite($fp, $config_data, strlen($config_data));
+			$result = @fwrite($fp, $phpFile . $configClass, mb_strlen($phpFile . $configClass));
 
 			@fclose($fp);
 			$upgrade_now = $lang['upgrade_submit'];

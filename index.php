@@ -123,7 +123,7 @@ if (!count($categories)) {
 //
 // Define appropriate SQL
 //
-switch ($dbms) {
+switch (Config::DBMS) {
     case 'postgresql':
         $sql = 'SELECT f.*, p.post_time, p.post_username, u.username, u.user_id 
 				FROM ' . FORUMS_TABLE . ' f, ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u

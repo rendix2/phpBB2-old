@@ -532,7 +532,7 @@ $lang['DB_Name'] = 'Your Database Name';
 $lang['DB_Username'] = 'Database Username';
 $lang['DB_Password'] = 'Database Password';
 $lang['Table_Prefix'] = 'Prefix for tables in database';
-$lang['New_config_php'] = "This is your new config.php";
+$lang['New_config_php'] = "This is your new Config.php";
 // Options
 $lang['cls'] = 'Clear all sessions';
 $lang['rdb'] = 'Repair database tables';
@@ -545,7 +545,7 @@ $lang['dgc'] = 'Disable GZip compression';
 $lang['cbl'] = 'Clear ban list';
 $lang['raa'] = 'Remove all administrators';
 $lang['mua'] = 'Grant user admin privileges';
-$lang['rcp'] = 'Recreate config.php';
+$lang['rcp'] = 'Recreate Config.php';
 // Info for options
 $lang['cls_info'] = 'When proceeding all sessions will be cleared.';
 $lang['rdb_info'] = 'When proceeding the tables of the database will be repaired.';
@@ -561,7 +561,7 @@ $lang['cbl_info'] = 'When proceeding both the ban list and the disallowed users 
 $lang['raa_info'] = 'When proceeding all admins will be set to normal users. If you use an admin account to authenticate, the account used for
 	authentication will keep its admin level.';
 $lang['mua_info'] = 'When proceeding the selected user will be granted administrator privileges. The user will also be activated.';
-$lang['rcp_info'] = 'When proceeding a new config.php will be created with the data entered.';
+$lang['rcp_info'] = 'When proceeding a new Config.php will be created with the data entered.';
 // Success messages for options
 $lang['cls_success'] = 'All sessions were cleared successful.';
 $lang['rdb_success'] = 'The tables of the database were repaired.';
@@ -580,7 +580,7 @@ $lang['cbl_success_anonymous'] = 'The ban list and the disallowed users were cle
 $lang['raa_success'] = 'All admins were removed successful.';
 $lang['mua_success'] = 'The selected user has now admin privileges.';
 $lang['mua_failed'] = '<b>Error:</b> The selected user does not exist or already has admin privileges.';
-$lang['rcp_success'] = "Copy the text to a text file, rename it to <b>config.php</b> and upload it to the root directory of the forum. Please
+$lang['rcp_success'] = "Copy the text to a text file, rename it to <b>Config.php</b> and upload it to the root directory of the forum. Please
 	ensure that there is no character (including spaces and line feeds) before the <b>&lt;?php</b> and after the <b>?&gt;</b>.<br />
 	You can also %sdownload%s the file to your computer.";
 // Text for success messages
@@ -598,5 +598,5 @@ $lang['Option_Help_Text'] = '<p>If you get reported that there was an error crea
 	This will also activate the user and reset its login attempts so you can use an user just created before. If you are not able to add
 	a new user, you can clear the ban list with <b>Clear ban list</b> (this will also restore the anonymous user).</p>
 	<p>If your board was hacked, it\'s recommended that you remove all admin accounts by selecting <b>Remove all administrators</b>. (The account itself will not be deleted but the rights will be removed.)</p>
-	<p>If you need to restore your config.php you can do so by selecting <b>Recreate config.php</b>.</p>';
+	<p>If you need to restore your Config.php you can do so by selecting <b>Recreate Config.php</b>.</p>';
 ?>

@@ -90,7 +90,7 @@ if ($function !== 'perform_rebuild') // Don't send header when rebuilding the se
 //
 // Check the db-type
 //
-if ($dbms !== 'mysql') {
+if (Config::DBMS !== 'mysql') {
 	message_die(GENERAL_MESSAGE, $lang['dbtype_not_supported']);
 }
 
@@ -3366,7 +3366,7 @@ switch($mode_id) {
 				$list_open = TRUE;
 
 				foreach ($tables as $table) {
-					$tablename = $table_prefix . $table;
+					$tablename = Config::TABLE_PREFIX . $table;
 
                     $row = dibi::query('CHECK TABLE %n', $tablename)->fetch();
 
@@ -3405,7 +3405,7 @@ switch($mode_id) {
 				$list_open = TRUE;
 
 				foreach ($tables as $table) {
-					$tablename = $table_prefix . $table;
+					$tablename = Config::TABLE_PREFIX . $table;
 
                     $row = dibi::query('REPAIR TABLE %n', $tablename)->fetch();
 
@@ -3439,7 +3439,7 @@ switch($mode_id) {
                 $list_open = true;
 
 				foreach ($tables as $table) {
-					$tablename = $table_prefix . $table;
+					$tablename = Config::TABLE_PREFIX . $table;
 
 					$row = dibi::query('OPTIMIZE TABLE %n', $tablename)->fetch();
 
@@ -3517,7 +3517,7 @@ switch($mode_id) {
 						->where('session_id != %s', $userdata['session_id']);
 
 					// When using MySQL 4: delete only the oldest records
-					if ($dbms === 'mysql4') {
+					if (Config::DBMS === 'mysql4') {
 						$deleteFluent->orderBy('session_start')
 							->limit($sessionCount - HEAP_SIZE);
 					}

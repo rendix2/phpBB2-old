@@ -26,14 +26,12 @@ class Manager
      */
     public function __construct()
     {
-        global $table_prefix;
-
         $origClassName = str_replace('Manager', '', get_class($this));
         $explodedName  = explode('\\', $origClassName);
         $count         = count($explodedName);
         $className     = $explodedName[$count - 1];
 
-        $this->tablePrefix = $table_prefix;
+        $this->tablePrefix = Config::TABLE_PREFIX;
         $this->tableName   = mb_strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $className));
         $this->tableName   = $this->tablePrefix . $this->tableName;
         $this->primaryKey  = dibi::getDatabaseInfo()->getTable($this->tableName)->primaryKey->columns[0]->getName();

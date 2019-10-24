@@ -374,7 +374,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 		//
 
         // TODO
-        switch ($dbms) {
+        switch (Config::DBMS) {
 			case 'postgresql':
 				$sql = 'SELECT u.user_id 
 					FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug, ' . AUTH_ACCESS_TABLE . ' aa

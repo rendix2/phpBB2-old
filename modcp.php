@@ -795,7 +795,7 @@ switch ($mode) {
         //
 		// Get other IP's this user has posted under
 		//
-        $order_by = $dbms === 'msaccess' ? 'COUNT(*)' : 'postings';
+        $order_by = Config::DBMS === 'msaccess' ? 'COUNT(*)' : 'postings';
 
         $rows = dibi::select('poster_ip')
             ->select('COUNT(*)')
@@ -837,7 +837,7 @@ switch ($mode) {
 		//
 		// Get other users who've posted under this IP
 		//
-        $order_by = $dbms === 'msaccess' ? 'COUNT(*)' : 'postings';
+        $order_by = Config::DBMS === 'msaccess' ? 'COUNT(*)' : 'postings';
 
         $rows = dibi::select('u.user_id')
             ->select('u.username')

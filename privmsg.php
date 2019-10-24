@@ -320,7 +320,7 @@ if ($mode === 'newpm') {
             ->where('privmsgs_type = %i', PRIVMSGS_SENT_MAIL)
             ->fetch();
 
-		$sql_priority = ( $dbms === 'mysql' ) ? 'LOW_PRIORITY' : '';
+        $sql_priority = (Config::DBMS === 'mysql') ? 'LOW_PRIORITY' : '';
 
         if ($sent_info) {
 			if ($board_config['max_sentbox_privmsgs'] && $sent_info->sent_items >= $board_config['max_sentbox_privmsgs']) {
@@ -895,7 +895,7 @@ if ($mode === 'newpm') {
                 PRIVMSGS_SAVED_OUT_MAIL
             )->fetch();
 
-		$sql_priority = $dbms === 'mysql' ? 'LOW_PRIORITY' : '';
+		$sql_priority = Config::DBMS === 'mysql' ? 'LOW_PRIORITY' : '';
 
         if ($saved_info) {
 			if ($board_config['max_savebox_privmsgs'] && $saved_info->savebox_items >= $board_config['max_savebox_privmsgs']) {
@@ -1164,7 +1164,7 @@ if ($mode === 'newpm') {
                 message_die(GENERAL_MESSAGE, $lang['No_such_user']);
             }
 
-            $sql_priority = $dbms === 'mysql' ? 'LOW_PRIORITY' : '';
+            $sql_priority = Config::DBMS === 'mysql' ? 'LOW_PRIORITY' : '';
 
             if ($board_config['max_inbox_privmsgs'] && $inbox_info->inbox_items >= $board_config['max_inbox_privmsgs']) {
                 $old_privmsgs_id = dibi::select('privmsgs_id')

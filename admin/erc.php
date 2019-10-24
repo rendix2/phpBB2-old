@@ -35,7 +35,7 @@ require_once $phpbb_root_path . 'includes' . $sep . 'functions_dbmtnc.php';
 $mode   = isset($_POST['mode'])   ? htmlspecialchars($_POST['mode']) : (isset($_GET['mode']) ? htmlspecialchars($_GET['mode']) : 'start');
 $option = isset($_POST['option']) ? htmlspecialchars($_POST['option']) : '';
 
-// Before doing anything else send config.php if requested
+// Before doing anything else send Config.php if requested
 if ($mode === 'download') {
 	// Get and convert Variables
 	$new_dbms         = isset($_GET['ndbms']) ? $_GET['ndbms'] : '';
@@ -52,7 +52,7 @@ if ($mode === 'download') {
 		$$var = str_replace("'", "\\'", str_replace("\\", "\\\\", $$var));
 	}
 
-	// Create the config.php
+	// Create the Config.php
 	$data = "<?php\n" . 
 		"\n" .
 		"//\n" .
@@ -73,7 +73,7 @@ if ($mode === 'download') {
 		"\n" .
 		'?>';
 	header('Content-type: text/plain');
-	header('Content-Disposition: attachment; filename=config.php');
+	header('Content-Disposition: attachment; filename=Config.php');
 	echo $data;
 	exit;
 }
@@ -537,7 +537,7 @@ switch($mode) {
 	</tr>
 <?php
 				break;
-			case 'rcp': // Recreate config.php
+			case 'rcp': // Recreate Config.php
 				$available_dbms = [
 					'mysql'      => ['LABEL'=> 'MySQL 3.x'],
 					'mysql4'     => ['LABEL'=> 'MySQL 4.x'],
@@ -632,7 +632,7 @@ switch($mode) {
 	<ul>
 <?php
 					foreach ($tables as $table) {
-						$tablename = $table_prefix . $table;
+						$tablename = Config::TABLE_PREFIX . $table;
 
 						$row = dibi::query('REPAIR TABLE %n', $tablename)->fetch();
 
@@ -1036,7 +1036,7 @@ switch($mode) {
 					success_message($lang['mua_success']);
 				}
 				break;
-			case 'rcp': // Recreate config.php
+			case 'rcp': // Recreate Config.php
 				// Get Variables
 				$var_array = ['new_dbms', 'new_dbhost', 'new_dbname', 'new_dbuser', 'new_dbpasswd', 'new_table_prefix'];
 
