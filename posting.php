@@ -200,7 +200,7 @@ switch ($mode) {
         }
 
         $post_info = dibi::select('*')
-            ->from(FORUMS_TABLE)
+            ->from(Tables::FORUMS_TABLE)
             ->where('forum_id = %i', $forumId)
             ->fetch();
         break;
@@ -212,9 +212,9 @@ switch ($mode) {
         }
 
     $post_info = dibi::select(['f.*', 't.topic_status', 't.topic_title', 't.topic_type'])
-        ->from(FORUMS_TABLE)
+        ->from(Tables::FORUMS_TABLE)
         ->as('f')
-        ->innerJoin(TOPICS_TABLE)
+        ->innerJoin(Tables::TOPICS_TABLE)
         ->as('t')
         ->on('f.forum_id = t.forum_id')
         ->where('t.topic_id = %i', $topicId)
@@ -257,18 +257,18 @@ switch ($mode) {
             ];
 
             $post_info = dibi::select($columns)
-                ->from(POSTS_TABLE)
+                ->from(Tables::POSTS_TABLE)
                 ->as('p')
-                ->innerJoin(TOPICS_TABLE)
+                ->innerJoin(Tables::TOPICS_TABLE)
                 ->as('t')
                 ->on('t.topic_id = p.topic_id')
-                ->innerJoin(FORUMS_TABLE)
+                ->innerJoin(Tables::FORUMS_TABLE)
                 ->as('f')
                 ->on('f.forum_id = p.forum_id')
-                ->innerJoin(POSTS_TEXT_TABLE)
+                ->innerJoin(Tables::POSTS_TEXT_TABLE)
                 ->as('pt')
                 ->on('pt.post_id = p.post_id')
-                ->innerJoin(USERS_TABLE)
+                ->innerJoin(Tables::USERS_TABLE)
                 ->as('u')
                 ->on('u.user_id = p.poster_id')
                 ->where('p.post_id = %i', $postId)
@@ -288,12 +288,12 @@ switch ($mode) {
             ];
 
             $post_info = dibi::select($columns)
-                ->from(POSTS_TABLE)
+                ->from(Tables::POSTS_TABLE)
                 ->as('p')
-                ->innerJoin(TOPICS_TABLE)
+                ->innerJoin(Tables::TOPICS_TABLE)
                 ->as('t')
                 ->on('t.topic_id = p.topic_id')
-                ->innerJoin(FORUMS_TABLE)
+                ->innerJoin(Tables::FORUMS_TABLE)
                 ->as('f')
                 ->on('f.forum_id = p.forum_id')
                 ->where('p.post_id = %i', $postId)
@@ -331,9 +331,9 @@ if ($post_info) {
 
 		if ($postData['first_post'] && $postData['has_poll']) {
 		    $votes = dibi::select('*')
-                ->from(VOTE_DESC_TABLE)
+                ->from(Tables::VOTE_DESC_TABLE)
                 ->as('vd')
-                ->innerJoin(VOTE_RESULTS_TABLE)
+                ->innerJoin(Tables::VOTE_RESULTS_TABLE)
                 ->as('vr')
                 ->on('vr.vote_id = vd.vote_id')
                 ->where('vd.topic_id = %i', $topicId)
@@ -475,7 +475,7 @@ if (($submit || $refresh) && $is_auth['auth_read']) {
 } else {
     if ($mode !== 'newtopic' && $userdata['session_logged_in'] && $is_auth['auth_read']) {
         $notify_user = dibi::select('topic_id')
-            ->from(TOPICS_WATCH_TABLE)
+            ->from(Tables::TOPICS_WATCH_TABLE)
             ->where('topic_id = %i', $topicId)
             ->where('user_id = %i', $userdata['user_id'])
             ->fetchSingle();
@@ -543,9 +543,9 @@ if (($delete || $pollDelete || $mode === 'delete') && !$confirm) {
     $vote_option_id = (int)$_POST['vote_id'];
 
     $vote_info = dibi::select('vd.vote_id')
-        ->from(VOTE_DESC_TABLE)
+        ->from(Tables::VOTE_DESC_TABLE)
         ->as('vd')
-        ->innerJoin(VOTE_RESULTS_TABLE)
+        ->innerJoin(Tables::VOTE_RESULTS_TABLE)
         ->as('vr')
         ->on('vr.vote_id = vd.vote_id')
         ->where('vd.topic_id = %i', $topicId)
@@ -560,7 +560,7 @@ if (($delete || $pollDelete || $mode === 'delete') && !$confirm) {
     $vote_id = $vote_info->vote_id;
 
     $row = dibi::select('*')
-        ->from(VOTE_USERS_TABLE)
+        ->from(Tables::VOTE_USERS_TABLE)
         ->where('vote_id = %i', $vote_id)
         ->where('vote_user_id = %i', $userdata['user_id'])
         ->fetch();
@@ -569,7 +569,7 @@ if (($delete || $pollDelete || $mode === 'delete') && !$confirm) {
         message_die(GENERAL_MESSAGE, $lang['Already_voted']);
     }
 
-    dibi::update(VOTE_RESULTS_TABLE, ['vote_result%sql' => 'vote_result + 1'])
+    dibi::update(Tables::VOTE_RESULTS_TABLE, ['vote_result%sql' => 'vote_result + 1'])
         ->where('vote_id = %i', $vote_id)
         ->where('vote_option_id = %i', $vote_option_id)
         ->execute();
@@ -580,7 +580,7 @@ if (($delete || $pollDelete || $mode === 'delete') && !$confirm) {
         'vote_user_ip' => $user_ip
     ];
 
-    dibi::insert(VOTE_USERS_TABLE, $insert_data)->execute();
+    dibi::insert(Tables::VOTE_USERS_TABLE, $insert_data)->execute();
 
     $template->assignVars(
         [

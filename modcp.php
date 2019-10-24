@@ -97,9 +97,9 @@ if (!empty($_POST['sid']) || !empty($_GET['sid'])) {
 //
 if (!empty($topicId)) {
     $topic_row = dibi::select(['f.forum_id','f.forum_name', 'f.forum_topics'])
-        ->from(TOPICS_TABLE)
+        ->from(Tables::TOPICS_TABLE)
         ->as('t')
-        ->innerJoin(FORUMS_TABLE)
+        ->innerJoin(Tables::FORUMS_TABLE)
         ->as('f')
         ->on('f.forum_id = t.forum_id')
         ->where('t.topic_id = %i', $topicId)
@@ -115,7 +115,7 @@ if (!empty($topicId)) {
 	$forumName   = $topic_row->forum_name;
 } elseif (!empty($forumId)) {
     $topic_row = dibi::select(['forum_name', 'forum_topics'])
-        ->from(FORUMS_TABLE)
+        ->from(Tables::FORUMS_TABLE)
         ->where('forum_id = %i', $forumId)
         ->fetch();
 
@@ -189,7 +189,7 @@ switch ($mode) {
             $topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topicId];
 
 			$topicIds = dibi::select('topic_id')
-                ->from(TOPICS_TABLE)
+                ->from(Tables::TOPICS_TABLE)
                 ->where('topic_id IN %in', $topics)
                 ->where('forum_id = %i', $forumId)
                 ->fetchPairs(null, 'topic_id');
@@ -201,14 +201,14 @@ switch ($mode) {
             $topicAuthors = dibi::select('topic_poster')
                 ->select('COUNT(topic_id)')
                 ->as('topics')
-                ->from(TOPICS_TABLE)
+                ->from(Tables::TOPICS_TABLE)
                 ->where('topic_id IN %in', $topicIds)
                 ->where('forum_id = %i', $forumId)
                 ->groupBy('topic_poster')
                 ->fetchAll();
 
 			foreach ($topicAuthors as $author) {
-                dibi::update(USERS_TABLE, ['user_topics%sql' => 'user_topics - '. $author->topics])
+                dibi::update(Tables::USERS_TABLE, ['user_topics%sql' => 'user_topics - '. $author->topics])
                     ->where('user_id = %i', $author->topic_poster)
                     ->execute();
             }
@@ -216,19 +216,19 @@ switch ($mode) {
 			$postsAuthors = dibi::select('poster_id')
                 ->select('COUNT(post_id)')
                 ->as('posts')
-                ->from(POSTS_TABLE)
+                ->from(Tables::POSTS_TABLE)
                 ->where('topic_id IN %in', $topicIds)
                 ->groupBy('poster_id')
                 ->fetchAll();
 
 			foreach ($postsAuthors as $poster) {
-                dibi::update(USERS_TABLE, ['user_posts%sql' => 'user_posts - ' . $poster->posts])
+                dibi::update(Tables::USERS_TABLE, ['user_posts%sql' => 'user_posts - ' . $poster->posts])
                     ->where('user_id = %i', $poster->poster_id)
                     ->execute();
             }
 
             $postIds = dibi::select('post_id')
-                ->from(POSTS_TABLE)
+                ->from(Tables::POSTS_TABLE)
                 ->where('topic_id IN %in', $topicIds)
                 ->fetchPairs(null, 'post_id');
 
@@ -236,16 +236,16 @@ switch ($mode) {
 			// Got all required info so go ahead and start deleting everything
 			//
 
-            dibi::delete(TOPICS_TABLE)
+            dibi::delete(Tables::TOPICS_TABLE)
                 ->where('topic_id IN %in OR topic_moved_id IN %in', $topicIds, $topicIds)
                 ->execute();
 
             if (count($postIds)) {
-                dibi::delete(POSTS_TABLE)
+                dibi::delete(Tables::POSTS_TABLE)
                     ->where('post_id IN %in', $postIds)
                     ->execute();
 
-                dibi::delete(POSTS_TEXT_TABLE)
+                dibi::delete(Tables::POSTS_TEXT_TABLE)
                     ->where('post_id IN %in', $postIds)
                     ->execute();
 
@@ -253,25 +253,25 @@ switch ($mode) {
             }
 
             $votes = dibi::select('vote_id')
-                ->from(VOTE_DESC_TABLE)
+                ->from(Tables::VOTE_DESC_TABLE)
                 ->where('topic_id IN %in', $topicIds)
                 ->fetchPairs(null, 'vote_id');
 
             if (count($votes)) {
-                dibi::delete(VOTE_DESC_TABLE)
+                dibi::delete(Tables::VOTE_DESC_TABLE)
                     ->where('vote_id IN %in', $votes)
                     ->execute();
 
-                dibi::delete(VOTE_RESULTS_TABLE)
+                dibi::delete(Tables::VOTE_RESULTS_TABLE)
                     ->where('vote_id IN %in', $votes)
                     ->execute();
 
-                dibi::delete(VOTE_USERS_TABLE)
+                dibi::delete(Tables::VOTE_USERS_TABLE)
                     ->where('vote_id IN %in', $votes)
                     ->execute();
             }
 
-            dibi::delete(TOPICS_WATCH_TABLE)
+            dibi::delete(Tables::TOPICS_WATCH_TABLE)
                 ->where('topic_id IN %in', $topicIds)
                 ->execute();
 
@@ -344,7 +344,7 @@ switch ($mode) {
 			$old_forum_id = $forumId;
 
 			$check_forum_id = dibi::select('forum_id')
-                ->from(FORUMS_TABLE)
+                ->from(Tables::FORUMS_TABLE)
                 ->where('forum_id = %i', $new_forum_id)
                 ->fetchSingle();
 
@@ -356,7 +356,7 @@ switch ($mode) {
                 $topics_ids = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topicId];
 
 				$topics = dibi::select('*')
-                    ->from(TOPICS_TABLE)
+                    ->from(Tables::TOPICS_TABLE)
                     ->where('topic_id IN %in', $topics_ids)
                     ->where('forum_id = %i', $old_forum_id)
                     ->where('topic_status <> %i', TOPIC_MOVED)
@@ -380,14 +380,14 @@ switch ($mode) {
 
                         ];
 
-					    dibi::insert(TOPICS_TABLE, $insert_data)->execute();
+					    dibi::insert(Tables::TOPICS_TABLE, $insert_data)->execute();
 					}
 
-					dibi::update(TOPICS_TABLE, ['forum_id' => $new_forum_id])
+					dibi::update(Tables::TOPICS_TABLE, ['forum_id' => $new_forum_id])
                         ->where('topic_id = %i', $topic->topic_id)
                         ->execute();
 
-					dibi::update(POSTS_TABLE, ['forum_id' => $new_forum_id])
+					dibi::update(Tables::POSTS_TABLE, ['forum_id' => $new_forum_id])
                         ->where('topic_id = %i', $topic->topic_id)
                         ->execute();
 				}
@@ -464,7 +464,7 @@ switch ($mode) {
         $topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topicId];
 
         // TODO there is no check if ids exists
-		dibi::update(TOPICS_TABLE, ['topic_status' => TOPIC_LOCKED])
+		dibi::update(Tables::TOPICS_TABLE, ['topic_status' => TOPIC_LOCKED])
             ->where('topic_id IN %in', $topics)
             ->where('forum_id = %i', $forumId)
             ->where('topic_moved_id = %i', 0)
@@ -493,7 +493,7 @@ switch ($mode) {
 
         $topics = isset($_POST['topic_id_list']) ? $_POST['topic_id_list'] : [$topicId];
 
-        dibi::update(TOPICS_TABLE, ['topic_status' => TOPIC_UNLOCKED])
+        dibi::update(Tables::TOPICS_TABLE, ['topic_status' => TOPIC_UNLOCKED])
             ->where('topic_id IN %in', $topics)
             ->where('forum_id = %i', $forumId)
             ->where('topic_moved_id = %i', 0)
@@ -539,7 +539,7 @@ switch ($mode) {
 
 		if (count($posts)) {
 		    $postIds = dibi::select('post_id')
-                ->from(POSTS_TABLE)
+                ->from(Tables::POSTS_TABLE)
                 ->where('post_id IN %in', $posts)
                 ->where('forum_id = %i', $forumId)
                 ->fetchPairs(null, 'post_id');
@@ -550,7 +550,7 @@ switch ($mode) {
 
 			// TODO!!!!!!!!
 			$posts = dibi::select(['post_id', 'poster_id', 'topic_id', 'post_time'])
-                ->from(POSTS_TABLE)
+                ->from(Tables::POSTS_TABLE)
                 ->where('post_id IN %in', $postIds)
                 ->orderBy('post_time', dibi::ASC)
                 ->fetchAll();
@@ -578,7 +578,7 @@ switch ($mode) {
 				$topic_time = time();
 
 				$check_forum_id = dibi::select('forum_id')
-                    ->from(FORUMS_TABLE)
+                    ->from(Tables::FORUMS_TABLE)
                     ->where('forum_id = %i', $new_forum_id)
                     ->fetchSingle();
 
@@ -595,23 +595,23 @@ switch ($mode) {
                     'topic_type'   => POST_NORMAL
                 ];
 
-                $new_topic_id = dibi::insert(TOPICS_TABLE, $insert_data)->execute(dibi::IDENTIFIER);
+                $new_topic_id = dibi::insert(Tables::TOPICS_TABLE, $insert_data)->execute(dibi::IDENTIFIER);
 
 				// Update topic watch table, switch users whose posts
 				// have moved, over to watching the new topic
 
-                dibi::update(TOPICS_WATCH_TABLE, ['topic_id' => $new_topic_id])
+                dibi::update(Tables::TOPICS_WATCH_TABLE, ['topic_id' => $new_topic_id])
                     ->where('topic_id = %i', $topicId)
                     ->where('user_id IN %in', $user_ids_sql)
                     ->execute();
 
                 if (!empty($_POST['split_type_beyond'])) {
-                    dibi::update(POSTS_TABLE, ['topic_id' => $new_topic_id, 'forum_id' => $new_forum_id])
+                    dibi::update(Tables::POSTS_TABLE, ['topic_id' => $new_topic_id, 'forum_id' => $new_forum_id])
                         ->where('post_time >= %i', $post_time)
                         ->where('topic_id = %i', $topicId)
                         ->execute();
                 } else {
-                    dibi::update(POSTS_TABLE, ['topic_id' => $new_topic_id, 'forum_id' => $new_forum_id])
+                    dibi::update(Tables::POSTS_TABLE, ['topic_id' => $new_topic_id, 'forum_id' => $new_forum_id])
                         ->where('post_id IN %in', $post_ids_sql)
                         ->execute();
                 }
@@ -637,12 +637,12 @@ switch ($mode) {
             $template->setFileNames(['split_body' => 'modcp_split.tpl']);
 
             $posts = dibi::select(['u.username', 'p.*', 'pt.post_text', 'pt.bbcode_uid', 'pt.post_subject', 'p.post_username'])
-                ->from(POSTS_TABLE)
+                ->from(Tables::POSTS_TABLE)
                 ->as('p')
-                ->innerJoin(USERS_TABLE)
+                ->innerJoin(Tables::USERS_TABLE)
                 ->as('u')
                 ->on('p.poster_id = u.user_id')
-                ->innerJoin(POSTS_TEXT_TABLE)
+                ->innerJoin(Tables::POSTS_TEXT_TABLE)
                 ->as('pt')
                 ->on('p.post_id = pt.post_id')
                 ->where('p.topic_id = %i', $topicId)
@@ -761,7 +761,7 @@ switch ($mode) {
         $template->setFileNames(['viewip' => 'modcp_viewip.tpl']);
 
         $post = dibi::select(['poster_ip', 'poster_id'])
-            ->from(POSTS_TABLE)
+            ->from(Tables::POSTS_TABLE)
             ->where('post_id = %i', $postId)
             ->where('forum_id = %i', $forumId)
             ->fetch();
@@ -800,7 +800,7 @@ switch ($mode) {
         $rows = dibi::select('poster_ip')
             ->select('COUNT(*)')
             ->as('postings')
-            ->from(POSTS_TABLE)
+            ->from(Tables::POSTS_TABLE)
             ->where('poster_id = %i', $poster_id)
             ->groupBy('poster_ip')
             ->orderBy($order_by, dibi::DESC)
@@ -843,9 +843,9 @@ switch ($mode) {
             ->select('u.username')
             ->select('COUNT(*)')
             ->as('postings')
-            ->from(USERS_TABLE)
+            ->from(Tables::USERS_TABLE)
             ->as('u')
-            ->innerJoin(POSTS_TABLE)
+            ->innerJoin(Tables::POSTS_TABLE)
             ->as('p')
             ->on('p.poster_id = u.user_id')
             ->where('poster_ip = %s', $post->poster_ip)
@@ -924,12 +924,12 @@ switch ($mode) {
 		$count_orig_word = count($orig_word);
 
 		$rows = dibi::select(['t.*', 'u.username', 'u.user_id', 'p.post_time'])
-            ->from(TOPICS_TABLE)
+            ->from(Tables::TOPICS_TABLE)
             ->as('t')
-            ->innerJoin(USERS_TABLE)
+            ->innerJoin(Tables::USERS_TABLE)
             ->as('u')
             ->on('t.topic_poster = u.user_id')
-            ->innerJoin(POSTS_TABLE)
+            ->innerJoin(Tables::POSTS_TABLE)
             ->as('p')
             ->on('p.post_id = t.topic_last_post_id')
             ->where('t.forum_id = %i', $forumId)

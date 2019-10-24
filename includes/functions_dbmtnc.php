@@ -189,12 +189,12 @@ function update_config($name, $value)
 	global $board_config;
 	global $storage;
 
-    dibi::update(CONFIG_TABLE, ['config_value' => $value])
+    dibi::update(Tables::CONFIG_TABLE, ['config_value' => $value])
         ->where('config_name = %s', $name)
         ->execute();
 
-    $cache = new Cache($storage, CONFIG_TABLE);
-    $cache->remove(CONFIG_TABLE);
+    $cache = new Cache($storage, Tables::CONFIG_TABLE);
+    $cache->remove(Tables::CONFIG_TABLE);
 
 	$board_config[$name] = $value;
 }
@@ -303,7 +303,7 @@ function check_condition($check)
         case 1: // MySQL >= 3.23.17
             return true;
 		case 2: // Session Table not HEAP
-            $row = dibi::query('SHOW TABLE STATUS LIKE %~like~', SESSIONS_TABLE)->fetch();
+            $row = dibi::query('SHOW TABLE STATUS LIKE %~like~', Tables::SESSIONS_TABLE)->fetch();
 
             if (!$row) {
                 return false; // Status unknown
@@ -411,7 +411,7 @@ function create_cat()
 		// H�chten Wert von cat_order ermitteln
         $next_cat_order = dibi::select('MAX(cat_order)')
             ->as('cart_order')
-            ->from(CATEGORIES_TABLE)
+            ->from(Tables::CATEGORIES_TABLE)
             ->fetchSingle();
 
         $next_cat_order += 10;
@@ -421,7 +421,7 @@ function create_cat()
             'cat_order' => $next_cat_order
         ];
 
-        $cat_id = dibi::insert(CATEGORIES_TABLE, $insertData)->execute(dibi::IDENTIFIER);
+        $cat_id = dibi::insert(Tables::CATEGORIES_TABLE, $insertData)->execute(dibi::IDENTIFIER);
 		$cat_created = true;
 	}
 
@@ -442,7 +442,7 @@ function create_forum()
 	if (!$forum_created) {
         $next_forum_order = dibi::select('MAX(forum_order)')
             ->as('forum_order')
-            ->from(FORUMS_TABLE)
+            ->from(Tables::FORUMS_TABLE)
             ->where('cat_id = %i', $cat_id)
             ->fetchSingle();
 
@@ -472,7 +472,7 @@ function create_forum()
             'auth_attachments' => 0,
         ];
 
-        $forum_id = dibi::insert(FORUMS_TABLE, $insertData)->execute(dibi::IDENTIFIER);
+        $forum_id = dibi::insert(Tables::FORUMS_TABLE, $insertData)->execute(dibi::IDENTIFIER);
         $forum_created = true;
 	}
 	return $forum_id;
@@ -505,7 +505,7 @@ function create_topic()
             'topic_moved_id' => 0,
         ];
 
-	    $topic_id = dibi::insert(TOPICS_TABLE, $insertData)->execute(dibi::IDENTIFIER);
+	    $topic_id = dibi::insert(Tables::TOPICS_TABLE, $insertData)->execute(dibi::IDENTIFIER);
         $topic_created = true;
 	}
 	return $topic_id;
@@ -518,7 +518,7 @@ function get_poster($topic_id)
 {
     $firstPost = dibi::select('Min(post_id)')
         ->as('first_post')
-        ->from(POSTS_TABLE)
+        ->from(Tables::POSTS_TABLE)
         ->where('topic_id = %i', $topic_id)
         ->fetchSingle();
 
@@ -527,7 +527,7 @@ function get_poster($topic_id)
     }
 
     $posterId = dibi::select('poster_id')
-        ->from(POSTS_TABLE)
+        ->from(Tables::POSTS_TABLE)
         ->where('post_id = %i', $firstPost)
         ->fetch();
 
@@ -566,7 +566,7 @@ function get_word_id($word)
     }
 
     $row = dibi::select(['word_id', 'word_common'])
-        ->from(SEARCH_WORD_TABLE)
+        ->from(Tables::SEARCH_WORD_TABLE)
         ->where('word_text = %s', $word)
         ->fetch();
 
@@ -577,7 +577,7 @@ function get_word_id($word)
             return $row->word_id;
         }
     } else { // Word was not found
-        return dibi::insert(SEARCH_WORD_TABLE, ['word_text' => $word, 'word_common' => 0])
+        return dibi::insert(Tables::SEARCH_WORD_TABLE, ['word_text' => $word, 'word_common' => 0])
             ->execute(dibi::IDENTIFIER);
     }
 }
@@ -694,7 +694,7 @@ function check_authorisation($die = true)
 	switch ($auth_method) {
 		case 'board':
             $row = dibi::select(['user_id', 'username', 'user_password', 'user_acp_password', 'user_active', 'user_level'])
-                ->from(USERS_TABLE)
+                ->from(Tables::USERS_TABLE)
                 ->where('username = %s', $board_user)
                 ->fetch();
 
@@ -729,7 +729,7 @@ function check_authorisation($die = true)
 function get_config_data($option)
 {
 	$config = dibi::select('config_value')
-        ->from(CONFIG_TABLE)
+        ->from(Tables::CONFIG_TABLE)
         ->where('config_name = %s', $option)
         ->fetchSingle();
 

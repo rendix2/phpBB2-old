@@ -99,19 +99,19 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
 		if (!empty($clear_current)) {
 		    // TODO really without where???!
 
-            $cache = new Cache($storage, SMILIES_TABLE);
+            $cache = new Cache($storage, Tables::SMILEYS_TABLE);
 
-            $key = SMILIES_TABLE . '_ordered_by_smilies_id';
-            $key_all = SMILIES_TABLE . '_all';
+            $key = Tables::SMILEYS_TABLE . '_ordered_by_smilies_id';
+            $key_all = Tables::SMILEYS_TABLE . '_all';
 
             $cache->remove($key);
             $cache->remove($key_all);
 
-		    dibi::delete(SMILIES_TABLE)
+		    dibi::delete(Tables::SMILEYS_TABLE)
                 ->execute();
 		} else {
             $smiles_dibi = dibi::select('code')
-                ->from(SMILIES_TABLE)
+                ->from(Tables::SMILEYS_TABLE)
                 ->fetchAll();
 
             $smiles = [];
@@ -127,10 +127,10 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
 			message_die(GENERAL_ERROR, "Couldn't read smiley pak file", '', __LINE__, __FILE__);
 		}
 
-        $cache = new Cache($storage, SMILIES_TABLE);
+        $cache = new Cache($storage, Tables::SMILEYS_TABLE);
 
-        $key = SMILIES_TABLE . '_ordered_by_smilies_id';
-        $key_all = SMILIES_TABLE . '_all';
+        $key = Tables::SMILEYS_TABLE . '_ordered_by_smilies_id';
+        $key_all = Tables::SMILEYS_TABLE . '_all';
 
         $cache->remove($key);
         $cache->remove($key_all);
@@ -155,7 +155,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
                             'emoticon' => $smile_data[1],
                         ];
 
-					    dibi::update(SMILIES_TABLE, $update_data)
+					    dibi::update(Tables::SMILEYS_TABLE, $update_data)
                             ->where('code = %s', $smile_data[$j])
                             ->execute();
 					}
@@ -166,7 +166,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
                         'emoticon' => $smile_data[1]
                     ];
 
-				    dibi::insert(SMILIES_TABLE, $insert_data)->execute();
+				    dibi::insert(Tables::SMILEYS_TABLE, $insert_data)->execute();
 				}
 			}
 		}
@@ -218,7 +218,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
 	//
 	if ($_GET['export_pack'] === 'send') {
         $resultset = dibi::select('*')
-            ->from(SMILIES_TABLE)
+            ->from(Tables::SMILEYS_TABLE)
             ->fetchAll();
 
 		$smile_pak = '';
@@ -290,15 +290,15 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
 			$confirm = isset($_POST['confirm']);
 
 			if ($confirm) {
-                $cache = new Cache($storage, SMILIES_TABLE);
+                $cache = new Cache($storage, Tables::SMILEYS_TABLE);
 
-                $key = SMILIES_TABLE . '_ordered_by_smilies_id';
-                $key_all = SMILIES_TABLE . '_all';
+                $key = Tables::SMILEYS_TABLE . '_ordered_by_smilies_id';
+                $key_all = Tables::SMILEYS_TABLE . '_all';
 
                 $cache->remove($key);
                 $cache->remove($key_all);
 
-			    dibi::delete(SMILIES_TABLE)
+			    dibi::delete(Tables::SMILEYS_TABLE)
                     ->where('smilies_id = %i', $smiley_id)
                     ->execute();
 
@@ -336,7 +336,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
 			$smiley_id = (int)$smiley_id;
 
             $smile_data = dibi::select('*')
-                ->from(SMILIES_TABLE)
+                ->from(Tables::SMILEYS_TABLE)
                 ->where('smilies_id = %i', $smiley_id)
                 ->fetch();
 
@@ -419,10 +419,10 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
 			// Proceed with updating the smiley table.
 			//
 
-            $cache = new Cache($storage, SMILIES_TABLE);
+            $cache = new Cache($storage, Tables::SMILEYS_TABLE);
 
-            $key = SMILIES_TABLE . '_ordered_by_smilies_id';
-            $key_all = SMILIES_TABLE . '_all';
+            $key = Tables::SMILEYS_TABLE . '_ordered_by_smilies_id';
+            $key_all = Tables::SMILEYS_TABLE . '_all';
 
             $cache->remove($key);
             $cache->remove($key_all);
@@ -433,7 +433,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
                 'emoticon' =>$smile_emotion
             ];
 
-            dibi::update(SMILIES_TABLE, $update_data)
+            dibi::update(Tables::SMILEYS_TABLE, $update_data)
                 ->where('smilies_id = %i', $smile_id)
                 ->execute();
 
@@ -473,10 +473,10 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
 			// Save the data to the smiley table.
 			//
 
-            $cache = new Cache($storage, SMILIES_TABLE);
+            $cache = new Cache($storage, Tables::SMILEYS_TABLE);
 
-            $key = SMILIES_TABLE . '_ordered_by_smilies_id';
-            $key_all = SMILIES_TABLE . '_all';
+            $key = Tables::SMILEYS_TABLE . '_ordered_by_smilies_id';
+            $key_all = Tables::SMILEYS_TABLE . '_all';
 
             $cache->remove($key);
             $cache->remove($key_all);
@@ -487,7 +487,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
                 'emoticon' => $smile_emotion
             ];
 
-            dibi::insert(SMILIES_TABLE, $insert_data)->execute();
+            dibi::insert(Tables::SMILEYS_TABLE, $insert_data)->execute();
 
 			$message = $lang['smiley_add_success'] . '<br /><br />' . sprintf($lang['Click_return_smileadmin'], '<a href="' . Session::appendSid('admin_smilies.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
@@ -501,7 +501,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
 	// any options.
 	//
     $smilies = dibi::select('*')
-        ->from(SMILIES_TABLE)
+        ->from(Tables::SMILEYS_TABLE)
         ->fetchAll();
 
     $template->setFileNames(['body' => 'admin/smile_list_body.tpl']);

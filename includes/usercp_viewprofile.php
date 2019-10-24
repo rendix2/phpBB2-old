@@ -45,8 +45,8 @@ if (!$profileData) {
 	message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
 }
 
-$cache = new Cache($storage, RANKS_TABLE);
-$key   = RANKS_TABLE . '_ordered_by_rank_special_rank_min';
+$cache = new Cache($storage, Tables::RANKS_TABLE);
+$key   = Tables::RANKS_TABLE . '_ordered_by_rank_special_rank_min';
 $sep   = DIRECTORY_SEPARATOR;
 
 $cachedRanks = $cache->load($key);
@@ -55,7 +55,7 @@ if ($cachedRanks !== null) {
     $ranks = $cachedRanks;
 } else {
     $ranks = dibi::select('*')
-        ->from(RANKS_TABLE)
+        ->from(Tables::RANKS_TABLE)
         ->orderBy('rank_special')
         ->orderBy('rank_min')
         ->fetchAll();

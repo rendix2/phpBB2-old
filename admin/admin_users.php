@@ -59,9 +59,9 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 
 		if ($_POST['deleteuser'] && ($userdata['user_id'] !== $user_id )) {
             $row =  dibi::select('g.group_id')
-                ->from(USER_GROUP_TABLE)
+                ->from(Tables::USERS_GROUPS_TABLE)
                 ->as('ug')
-                ->innerJoin(GROUPS_TABLE)
+                ->innerJoin(Tables::GROUPS_TABLE)
                 ->as('g')
                 ->on('g.group_id = ug.group_id')
                 ->where('ug.user_id = %i', $user_id)
@@ -73,65 +73,65 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
                 'post_username' => $this_userdata->username
             ];
 
-            dibi::update(POSTS_TABLE, $update_data)
+            dibi::update(Tables::POSTS_TABLE, $update_data)
                 ->where('poster_id = %i', $user_id)
                 ->execute();
 
-            dibi::update(TOPICS_TABLE, ['topic_poster' => DELETED])
+            dibi::update(\Ifsnop\Mysqldump\TypeAdapter::TOPICS_TABLE, ['topic_poster' => DELETED])
                 ->where('topic_poster = %i', $user_id)
                 ->execute();
 
-            dibi::update(VOTE_USERS_TABLE, ['vote_user_id' => DELETED])
+            dibi::update(Tables::VOTE_USERS_TABLE, ['vote_user_id' => DELETED])
                 ->where('vote_user_id = %i', $user_id)
                 ->execute();
 
-            dibi::update(GROUPS_TABLE, ['group_moderator' => DELETED])
+            dibi::update(Tables::GROUPS_TABLE, ['group_moderator' => DELETED])
                 ->where('group_moderator = %i', $user_id)
                 ->execute();
 
-			dibi::delete(USERS_TABLE)
+			dibi::delete(Tables::USERS_TABLE)
                 ->where('user_id = %i', $user_id)
                 ->execute();
 
-            dibi::delete(USER_GROUP_TABLE)
+            dibi::delete(Tables::USERS_GROUPS_TABLE)
                 ->where('user_id = %i', $user_id)
                 ->execute();
 
-            dibi::delete(GROUPS_TABLE)
+            dibi::delete(Tables::GROUPS_TABLE)
                 ->where('group_id = %i', $row->group_id)
                 ->execute();
 
-            dibi::delete(AUTH_ACCESS_TABLE)
+            dibi::delete(Tables::AUTH_ACCESS_TABLE)
                 ->where('group_id = %i', $row->group_id)
                 ->execute();
 
-            dibi::delete(TOPICS_WATCH_TABLE)
+            dibi::delete(Tables::TOPICS_WATCH_TABLE)
                 ->where('user_id = %i', $user_id)
                 ->execute();
 
-            dibi::delete(BANLIST_TABLE)
+            dibi::delete(Tables::BAN_LIST_TABLE)
                 ->where('ban_userid = %i', $user_id)
                 ->execute();
 
-            dibi::delete(SESSIONS_TABLE)
+            dibi::delete(Tables::SESSIONS_TABLE)
                 ->where('session_user_id = %i', $user_id)
                 ->execute();
 
-            dibi::delete(SESSIONS_KEYS_TABLE)
+            dibi::delete(Tables::SESSIONS_AUTO_LOGIN_KEYS_TABLE)
                 ->where('user_id = %i', $user_id)
                 ->execute();
 
             $privmsgs_ids = dibi::select('privmsgs_id')
-                ->from(PRIVMSGS_TABLE)
+                ->from(Tables::PRIVATE_MESSAGE_TABLE)
                 ->where('privmsgs_from_userid = %i OR privmsgs_to_userid = %i', $user_id, $user_id)
                 ->fetchPairs(null, 'privmsgs_id');
 
             if (count($privmsgs_ids)) {
-                dibi::delete(PRIVMSGS_TABLE)
+                dibi::delete(Tables::PRIVATE_MESSAGE_TABLE)
                     ->where('privmsgs_id IN %in', $privmsgs_ids)
                     ->execute();
 
-                dibi::delete(PRIVMSGS_TEXT_TABLE)
+                dibi::delete(Tables::PRIVATE_MESSAGE_TEXT_TABLE)
                     ->where('privmsgs_text_id IN %in', $privmsgs_ids)
                     ->execute();
             }
@@ -257,7 +257,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
                 $error_msg .= ((isset($error_msg)) ? '<br />' : '') . $lang['ACP_Password_match_pw'];
             } else {
                 $row = dibi::select('user_password')
-                    ->from(USERS_TABLE)
+                    ->from(Tables::USERS_TABLE)
                     ->where('[user_id] = %i', $user_id)
                     ->fetch();
 
@@ -603,19 +603,19 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 
 		    $update_data = array_merge($update_data, $username_sql, $passwd_sql, $avatar_sql);
 
-		    $result = dibi::update(USERS_TABLE, $update_data)
+		    $result = dibi::update(Tables::USERS_TABLE, $update_data)
                 ->where('user_id = %i', $user_id)
                 ->execute();
 
             if (isset($rename_user)) {
-                dibi::update(GROUPS_TABLE, ['group_name' => $rename_user])
+                dibi::update(Tables::GROUPS_TABLE, ['group_name' => $rename_user])
                     ->where('group_name = %s', $this_userdata['username'])
                     ->execute();
             }
 
             // Delete user session, to prevent the user navigating the forum (if logged in) when disabled
             if (!$user_status) {
-                dibi::delete(SESSIONS_TABLE)
+                dibi::delete(Tables::SESSIONS_TABLE)
                     ->where('session_user_id = %i', $user_id)
                     ->execute();
             }
@@ -747,7 +747,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 		}
 
 		$ranks = dibi::select('*')
-            ->from(RANKS_TABLE)
+            ->from(Tables::RANKS_TABLE)
             ->where('rank_special = %i', 1)
             ->orderBy('rank_title')
             ->fetchAll();

@@ -195,15 +195,15 @@ if ($mode === 'newpm') {
         ->as('user_session_time_1')
         ->select('u.user_allow_viewonline')
         ->select($columns)
-        ->from(PRIVMSGS_TABLE)
+        ->from(Tables::PRIVATE_MESSAGE_TABLE)
         ->as('pm')
-        ->innerJoin(PRIVMSGS_TEXT_TABLE)
+        ->innerJoin(Tables::PRIVATE_MESSAGE_TEXT_TABLE)
         ->as('pmt')
         ->on('pmt.privmsgs_text_id = pm.privmsgs_id')
-        ->innerJoin(USERS_TABLE)
+        ->innerJoin(Tables::USERS_TABLE)
         ->as('u')
         ->on('u.user_id = pm.privmsgs_from_userid')
-        ->innerJoin(USERS_TABLE)
+        ->innerJoin(Tables::USERS_TABLE)
         ->as('u2')
         ->on('u2.user_id = pm.privmsgs_to_userid')
         ->where('pm.privmsgs_id = %i', $privmsgs_id);
@@ -272,7 +272,7 @@ if ($mode === 'newpm') {
             case PRIVMSGS_NEW_MAIL:
                 $countUnread = dibi::select('COUNT(*)')
                     ->as('count')
-                    ->from(PRIVMSGS_TABLE)
+                    ->from(Tables::PRIVATE_MESSAGE_TABLE)
                     ->where('privmsgs_to_userid = %i', $userdata['user_id'])
                     ->where('privmsgs_type = %i', PRIVMSGS_NEW_MAIL)
                     ->fetchSingle();
@@ -283,14 +283,14 @@ if ($mode === 'newpm') {
                     $countUnread = 0;
                 }
 
-                dibi::update(USERS_TABLE, ['user_new_privmsg' => 'user_new_privmsg - 1'])
+                dibi::update(Tables::USERS_TABLE, ['user_new_privmsg' => 'user_new_privmsg - 1'])
                     ->where('user_id = %i', $userdata['user_id'])
                     ->execute();
                 break;
             case PRIVMSGS_UNREAD_MAIL:
                 $countUnread = dibi::select('COUNT(*)')
                     ->as('count')
-                    ->from(PRIVMSGS_TABLE)
+                    ->from(Tables::PRIVATE_MESSAGE_TABLE)
                     ->where('privmsgs_to_userid = %i', $userdata['user_id'])
                     ->where('privmsgs_type = %i', PRIVMSGS_UNREAD_MAIL)
                     ->fetchSingle();
@@ -301,13 +301,13 @@ if ($mode === 'newpm') {
                     $countUnread = 0;
                 }
 
-                dibi::update(USERS_TABLE, ['user_unread_privmsg%sql' => $countUnread])
+                dibi::update(Tables::USERS_TABLE, ['user_unread_privmsg%sql' => $countUnread])
                     ->where('user_id = %i', $userdata['user_id'])
                     ->execute();
                 break;
         }
 
-		dibi::update(PRIVMSGS_TABLE, ['privmsgs_type' => PRIVMSGS_READ_MAIL])
+		dibi::update(Tables::PRIVATE_MESSAGE_TABLE, ['privmsgs_type' => PRIVMSGS_READ_MAIL])
             ->where('privmsgs_id = %i', $privmsg->privmsgs_id)
             ->execute();
 
@@ -315,7 +315,7 @@ if ($mode === 'newpm') {
             ->as('sent_items')
             ->select('MIN(privmsgs_date)')
             ->as('oldest_post_time')
-            ->from(PRIVMSGS_TABLE)
+            ->from(Tables::PRIVATE_MESSAGE_TABLE)
             ->where('privmsgs_from_userid = %i', $privmsg->privmsgs_from_userid)
             ->where('privmsgs_type = %i', PRIVMSGS_SENT_MAIL)
             ->fetch();
@@ -325,18 +325,18 @@ if ($mode === 'newpm') {
         if ($sent_info) {
 			if ($board_config['max_sentbox_privmsgs'] && $sent_info->sent_items >= $board_config['max_sentbox_privmsgs']) {
                 $old_privmsgs_id = dibi::select('privmsgs_id')
-                    ->from(PRIVMSGS_TABLE)
+                    ->from(Tables::PRIVATE_MESSAGE_TABLE)
                     ->where('privmsgs_type = %i', PRIVMSGS_SENT_MAIL)
                     ->where('privmsgs_date = %i', $sent_info->oldest_post_time)
                     ->where('privmsgs_from_userid = %i', $privmsg->privmsgs_from_userid)
                     ->fetchSingle();
 
-				dibi::delete(PRIVMSGS_TABLE)
+				dibi::delete(Tables::PRIVATE_MESSAGE_TABLE)
                     ->setFlag($sql_priority)
                     ->where('privmsgs_id = %i', $old_privmsgs_id)
                     ->execute();
 
-                dibi::delete(PRIVMSGS_TEXT_TABLE)
+                dibi::delete(Tables::PRIVATE_MESSAGE_TEXT_TABLE)
                     ->setFlag($sql_priority)
                     ->where('privmsgs_text_id = %i', $old_privmsgs_id)
                     ->execute();
@@ -363,7 +363,7 @@ if ($mode === 'newpm') {
             'privmsgs_attach_sig'     => $privmsg->privmsgs_attach_sig
         ];
 
-        $privmsg_sent_id = dibi::insert(PRIVMSGS_TABLE, $insert_data)->execute(dibi::IDENTIFIER);
+        $privmsg_sent_id = dibi::insert(Tables::PRIVATE_MESSAGE_TABLE, $insert_data)->execute(dibi::IDENTIFIER);
 
         $insert_data = [
             'privmsgs_text_id'    => $privmsg_sent_id,
@@ -371,7 +371,7 @@ if ($mode === 'newpm') {
             'privmsgs_text'       => $privmsg->privmsgs_text
         ];
 
-        dibi::insert(PRIVMSGS_TEXT_TABLE, $insert_data)->execute();
+        dibi::insert(Tables::PRIVATE_MESSAGE_TEXT_TABLE, $insert_data)->execute();
 	}
 
 	//
@@ -722,7 +722,7 @@ if ($mode === 'newpm') {
 		switch($folder) {
 			case 'inbox':
                 $mark_list = dibi::select('privmsgs_id')
-                    ->from(PRIVMSGS_TABLE)
+                    ->from(Tables::PRIVATE_MESSAGE_TABLE)
                     ->where('privmsgs_to_userid = %i', $userdata['user_id'])
                     ->where('privmsgs_type IN %in', [PRIVMSGS_READ_MAIL, PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
                     ->where('privmsgs_id IN %in', $mark_list)
@@ -731,7 +731,7 @@ if ($mode === 'newpm') {
 
 			case 'outbox':
                 $mark_list = dibi::select('privmsgs_id')
-                    ->from(PRIVMSGS_TABLE)
+                    ->from(Tables::PRIVATE_MESSAGE_TABLE)
                     ->where('privmsgs_from_userid = %i', $userdata['user_id'])
                     ->where('privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
                     ->where('privmsgs_id IN %in', $mark_list)
@@ -740,7 +740,7 @@ if ($mode === 'newpm') {
 
 			case 'sentbox':
                 $mark_list = dibi::select('privmsgs_id')
-                    ->from(PRIVMSGS_TABLE)
+                    ->from(Tables::PRIVATE_MESSAGE_TABLE)
                     ->where('privmsgs_from_userid = %i', $userdata['user_id'])
                     ->where('privmsgs_type = %i', PRIVMSGS_SENT_MAIL)
                     ->where('privmsgs_id IN %in', $mark_list)
@@ -749,7 +749,7 @@ if ($mode === 'newpm') {
 
 			case 'savebox':
                 $mark_list = dibi::select('privmsgs_id')
-                    ->from(PRIVMSGS_TABLE)
+                    ->from(Tables::PRIVATE_MESSAGE_TABLE)
                     ->where(
                         '( (privmsgs_from_userid = %i AND privmsgs_type = %i) OR (privmsgs_to_userid  = %i AND privmsgs_type = %i) )',
                         $userdata['user_id'],
@@ -767,7 +767,7 @@ if ($mode === 'newpm') {
                 // Get information relevant to new or unread mail
                 // so we can adjust users counters appropriately
 			    $rows = dibi::select(['privmsgs_to_userid', 'privmsgs_type'])
-                    ->from(PRIVMSGS_TABLE)
+                    ->from(Tables::PRIVATE_MESSAGE_TABLE)
                     ->where('privmsgs_id IN %in', $mark_list);
 
 				switch ($folder) {
@@ -818,7 +818,7 @@ if ($mode === 'newpm') {
 							}
 
 							foreach ($dec_array as $dec => $user_ids) {
-								dibi::update(USERS_TABLE, [$type . '%sql' => $type . ' - ' . $dec])
+								dibi::update(Tables::USERS_TABLE, [$type . '%sql' => $type . ' - ' . $dec])
                                     ->where('user_id IN %in', $user_ids)
                                     ->execute();
 							}
@@ -830,14 +830,14 @@ if ($mode === 'newpm') {
 			}
 
             // Delete the messages text
-			dibi::delete(PRIVMSGS_TEXT_TABLE)
+			dibi::delete(Tables::PRIVATE_MESSAGE_TEXT_TABLE)
                 ->where('privmsgs_text_id IN %in', $mark_list)
                 ->execute();
 
             // Delete the messages
             switch ($folder) {
 				case 'inbox':
-                    dibi::delete(PRIVMSGS_TABLE)
+                    dibi::delete(Tables::PRIVATE_MESSAGE_TABLE)
                         ->where('privmsgs_id IN %in', $mark_list)
                         ->where('privmsgs_to_userid = %i', $userdata['user_id'])
                         ->where('privmsgs_type IN %in', [PRIVMSGS_READ_MAIL, PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
@@ -845,7 +845,7 @@ if ($mode === 'newpm') {
                     break;
 
 				case 'outbox':
-                    dibi::delete(PRIVMSGS_TABLE)
+                    dibi::delete(Tables::PRIVATE_MESSAGE_TABLE)
                         ->where('privmsgs_id IN %in', $mark_list)
                         ->where('privmsgs_from_userid = %i', $userdata['user_id'])
                         ->where('privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
@@ -853,7 +853,7 @@ if ($mode === 'newpm') {
                     break;
 
 				case 'sentbox':
-                    dibi::delete(PRIVMSGS_TABLE)
+                    dibi::delete(Tables::PRIVATE_MESSAGE_TABLE)
                         ->where('privmsgs_id IN %in', $mark_list)
                         ->where('privmsgs_from_userid = %i', $userdata['user_id'])
                         ->where('privmsgs_type = %i', PRIVMSGS_SENT_MAIL)
@@ -861,7 +861,7 @@ if ($mode === 'newpm') {
 					break;
 
 				case 'savebox':
-                    dibi::delete(PRIVMSGS_TABLE)
+                    dibi::delete(Tables::PRIVATE_MESSAGE_TABLE)
                         ->where('privmsgs_id IN %in', $mark_list)
                         ->where(
                             '( (privmsgs_from_userid = %i AND privmsgs_type = %i ) OR (privmsgs_to_userid = %i AND privmsgs_type = %i ) )',
@@ -886,7 +886,7 @@ if ($mode === 'newpm') {
             ->as('savebox_items')
             ->select('MIN(privmsgs_date)')
             ->as('oldest_post_time')
-            ->from(PRIVMSGS_TABLE)
+            ->from(Tables::PRIVATE_MESSAGE_TABLE)
             ->where(
                 '((privmsgs_to_userid = %i AND privmsgs_type = %i) OR (privmsgs_from_userid = %i AND privmsgs_type = %i))',
                 $userdata['user_id'],
@@ -900,7 +900,7 @@ if ($mode === 'newpm') {
         if ($saved_info) {
 			if ($board_config['max_savebox_privmsgs'] && $saved_info->savebox_items >= $board_config['max_savebox_privmsgs']) {
 			    $old_privmsgs_id = dibi::select('privmsgs_id')
-                    ->from(PRIVMSGS_TABLE)
+                    ->from(Tables::PRIVATE_MESSAGE_TABLE)
                     ->where(
                         '((privmsgs_to_userid = %i AND privmsgs_type = %i) OR (privmsgs_from_userid = %i AND privmsgs_type = %i))',
                         $userdata['user_id'],
@@ -911,12 +911,12 @@ if ($mode === 'newpm') {
                     ->where('privmsgs_date = %i', $saved_info->oldest_post_time)
                     ->fetchSingle();
 
-				dibi::delete(PRIVMSGS_TABLE)
+				dibi::delete(Tables::PRIVATE_MESSAGE_TABLE)
                     ->setFlag($sql_priority)
                     ->where('privmsgs_id = %i', $old_privmsgs_id)
                     ->execute();
 
-                dibi::delete(PRIVMSGS_TEXT_TABLE)
+                dibi::delete(Tables::PRIVATE_MESSAGE_TEXT_TABLE)
                     ->setFlag($sql_priority)
                     ->where('privmsgs_text_id = %i', $old_privmsgs_id)
                     ->execute();
@@ -928,7 +928,7 @@ if ($mode === 'newpm') {
 			// Get information relevant to new or unread mail
 			// so we can adjust users counters appropriately
             $rows = dibi::select(['privmsgs_to_userid','privmsgs_type'])
-                ->from(PRIVMSGS_TABLE)
+                ->from(Tables::PRIVATE_MESSAGE_TABLE)
                 ->where('privmsgs_id IN %in', $mark_list);
 
             switch ($folder) {
@@ -980,7 +980,7 @@ if ($mode === 'newpm') {
 						}
 
 						foreach ($dec_array as $dec => $user_ids) {
-                            dibi::update(USERS_TABLE, [$type . '%sql' => $type . ' - ' . $dec])
+                            dibi::update(Tables::USERS_TABLE, [$type . '%sql' => $type . ' - ' . $dec])
                                 ->where('user_id IN %in', $user_ids)
                                 ->execute();
 						}
@@ -993,7 +993,7 @@ if ($mode === 'newpm') {
 
 		switch ($folder) {
 			case 'inbox':
-                dibi::update(PRIVMSGS_TABLE, ['privmsgs_type' => PRIVMSGS_SAVED_IN_MAIL])
+                dibi::update(Tables::PRIVATE_MESSAGE_TABLE, ['privmsgs_type' => PRIVMSGS_SAVED_IN_MAIL])
                     ->where('privmsgs_to_userid = %i', $userdata['user_id'])
                     ->where('privmsgs_type IN %in', [PRIVMSGS_READ_MAIL, PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
                     ->where('privmsgs_id IN %in', $mark_list)
@@ -1001,7 +1001,7 @@ if ($mode === 'newpm') {
 				break;
 
 			case 'outbox':
-                dibi::update(PRIVMSGS_TABLE, ['privmsgs_type' => PRIVMSGS_SAVED_OUT_MAIL])
+                dibi::update(Tables::PRIVATE_MESSAGE_TABLE, ['privmsgs_type' => PRIVMSGS_SAVED_OUT_MAIL])
                     ->where('privmsgs_to_userid = %i', $userdata['user_id'])
                     ->where('privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
                     ->where('privmsgs_id IN %in', $mark_list)
@@ -1009,7 +1009,7 @@ if ($mode === 'newpm') {
 				break;
 
 			case 'sentbox':
-                dibi::update(PRIVMSGS_TABLE, ['privmsgs_type' => PRIVMSGS_SAVED_OUT_MAIL])
+                dibi::update(Tables::PRIVATE_MESSAGE_TABLE, ['privmsgs_type' => PRIVMSGS_SAVED_OUT_MAIL])
                     ->where('privmsgs_to_userid = %i', $userdata['user_id'])
                     ->where('privmsgs_type = %i', PRIVMSGS_SENT_MAIL)
                     ->where('privmsgs_id IN %in', $mark_list)
@@ -1055,7 +1055,7 @@ if ($mode === 'newpm') {
 		//
         $last_post_time = dibi::select('MAX(privmsgs_date)')
             ->as('last_post_time')
-            ->from(PRIVMSGS_TABLE)
+            ->from(Tables::PRIVATE_MESSAGE_TABLE)
             ->where('privmsgs_from_userid = %i', $userdata['user_id'])
             ->fetchSingle();
 
@@ -1071,7 +1071,7 @@ if ($mode === 'newpm') {
 
 	if ($submit && $mode === 'edit') {
 	    $row = dibi::select('privmsgs_from_userid')
-            ->from(PRIVMSGS_TABLE)
+            ->from(Tables::PRIVATE_MESSAGE_TABLE)
             ->where('privmsgs_id = %i', (int) $privmsg_id)
             ->where('privmsgs_from_userid = %i', $userdata['user_id'])
             ->fetch();
@@ -1097,7 +1097,7 @@ if ($mode === 'newpm') {
             $toUserName = phpbb_clean_username($_POST['username']);
 
             $to_userdata = dibi::select(['user_id', 'user_notify_pm', 'user_email', 'user_lang', 'user_active'])
-                ->from(USERS_TABLE)
+                ->from(Tables::USERS_TABLE)
                 ->where('username = %s', $toUserName)
                 ->fetch();
 
@@ -1155,7 +1155,7 @@ if ($mode === 'newpm') {
                 ->as('inbox_items')
                 ->select('MIN(privmsgs_date)')
                 ->as('oldest_post_time')
-                ->from(PRIVMSGS_TABLE)
+                ->from(Tables::PRIVATE_MESSAGE_TABLE)
                 ->where('(privmsgs_type = %i OR privmsgs_type = %i OR privmsgs_type = %i)', PRIVMSGS_NEW_MAIL, PRIVMSGS_READ_MAIL, PRIVMSGS_UNREAD_MAIL)
                 ->where('privmsgs_to_userid = %i', $to_userdata['user_id'])
                 ->fetch();
@@ -1168,18 +1168,18 @@ if ($mode === 'newpm') {
 
             if ($board_config['max_inbox_privmsgs'] && $inbox_info->inbox_items >= $board_config['max_inbox_privmsgs']) {
                 $old_privmsgs_id = dibi::select('privmsgs_id')
-                    ->from(PRIVMSGS_TABLE)
+                    ->from(Tables::PRIVATE_MESSAGE_TABLE)
                     ->where('(privmsgs_type = %i OR privmsgs_type = %i OR privmsgs_type)', PRIVMSGS_NEW_MAIL, PRIVMSGS_READ_MAIL, PRIVMSGS_UNREAD_MAIL)
                     ->where('privmsgs_date = %i', $inbox_info->oldest_post_time)
                     ->where('privmsgs_to_userid = %i', $to_userdata['user_id'])
                     ->fetchSingle();
 
-                dibi::delete(PRIVMSGS_TABLE)
+                dibi::delete(Tables::PRIVATE_MESSAGE_TABLE)
                     ->setFlag($sql_priority)
                     ->where('privmsgs_id = %i', $old_privmsgs_id)
                     ->execute();
 
-                dibi::delete(PRIVMSGS_TEXT_TABLE)
+                dibi::delete(Tables::PRIVATE_MESSAGE_TEXT_TABLE)
                     ->setFlag($sql_priority)
                     ->where('privmsgs_text_id = %i', $old_privmsgs_id)
                     ->execute();
@@ -1198,7 +1198,7 @@ if ($mode === 'newpm') {
                 'privmsgs_attach_sig'     => $attach_sig
             ];
 
-            $privmsg_sent_id = dibi::insert(PRIVMSGS_TABLE, $insert_data)
+            $privmsg_sent_id = dibi::insert(Tables::PRIVATE_MESSAGE_TABLE, $insert_data)
                 ->execute(dibi::IDENTIFIER);
 		} else {
             $update_data = [
@@ -1214,7 +1214,7 @@ if ($mode === 'newpm') {
                 'privmsgs_attach_sig'     => $attach_sig
             ];
 
-		    dibi::update(PRIVMSGS_TABLE, $update_data)
+		    dibi::update(Tables::PRIVATE_MESSAGE_TABLE, $update_data)
                 ->where('privmsgs_id = %i', $privmsg_id)
                 ->execute();
 		}
@@ -1226,14 +1226,14 @@ if ($mode === 'newpm') {
                 'privmsgs_text'       => $privmsg_message
             ];
 
-			dibi::insert(PRIVMSGS_TEXT_TABLE, $insert_data)->execute();
+			dibi::insert(Tables::PRIVATE_MESSAGE_TEXT_TABLE, $insert_data)->execute();
 		} else {
             $update_data = [
                 'privmsgs_text'       => $privmsg_message,
                 'privmsgs_bbcode_uid' => $bbcode_uid
             ];
 
-		    dibi::update(PRIVMSGS_TEXT_TABLE, $update_data)
+		    dibi::update(Tables::PRIVATE_MESSAGE_TEXT_TABLE, $update_data)
                 ->where('privmsgs_text_id = %i', $privmsg_id)
                 ->execute();
 		}
@@ -1248,7 +1248,7 @@ if ($mode === 'newpm') {
                 'user_last_privmsg' => time()
             ];
 
-            dibi::update(USERS_TABLE, $update_data)
+            dibi::update(Tables::USERS_TABLE, $update_data)
                 ->where('user_id = %i', $to_userdata['user_id'])
                 ->execute();
 
@@ -1324,9 +1324,9 @@ if ($mode === 'newpm') {
             $page_title = $lang['Edit_pm'];
 
             $postrow = dibi::select(['u.user_id', 'u.user_sig'])
-                ->from(PRIVMSGS_TABLE)
+                ->from(Tables::PRIVATE_MESSAGE_TABLE)
                 ->as('pm')
-                ->innerJoin(USERS_TABLE)
+                ->innerJoin(Tables::USERS_TABLE)
                 ->as('u')
                 ->on('u.user_id = pm.privmsgs_from_userid')
                 ->where('pm.privmsgs_id = %i', $privmsg_id)
@@ -1351,7 +1351,7 @@ if ($mode === 'newpm') {
                 $error_msg = $lang['No_such_user'];
             } else {
                 $user_check = dibi::select('username')
-                    ->from(USERS_TABLE)
+                    ->from(Tables::USERS_TABLE)
                     ->where('user_id = %i', $user_id)
                     ->fetch();
 
@@ -1375,12 +1375,12 @@ if ($mode === 'newpm') {
             ];
 
             $privmsg = dibi::select($columns)
-                ->from(PRIVMSGS_TABLE)
+                ->from(Tables::PRIVATE_MESSAGE_TABLE)
                 ->as('pm')
-                ->innerJoin(PRIVMSGS_TEXT_TABLE)
+                ->innerJoin(Tables::PRIVATE_MESSAGE_TEXT_TABLE)
                 ->as('pmt')
                 ->on('pmt.privmsgs_text_id = pm.privmsgs_id')
-                ->innerJoin(USERS_TABLE)
+                ->innerJoin(Tables::USERS_TABLE)
                 ->as('u')
                 ->on('u.user_id = pm.privmsgs_to_userid')
                 ->where('pm.privmsgs_id = %i', $privmsg_id)
@@ -1424,12 +1424,12 @@ if ($mode === 'newpm') {
             ];
 
             $privmsg = dibi::select($columns)
-                ->from(PRIVMSGS_TABLE)
+                ->from(Tables::PRIVATE_MESSAGE_TABLE)
                 ->as('pm')
-                ->innerJoin(PRIVMSGS_TEXT_TABLE)
+                ->innerJoin(Tables::PRIVATE_MESSAGE_TEXT_TABLE)
                 ->as('pmt')
                 ->on('pmt.privmsgs_text_id = pm.privmsgs_id')
-                ->innerJoin(USERS_TABLE)
+                ->innerJoin(Tables::USERS_TABLE)
                 ->as('u')
                 ->on('u.user_id = pm.privmsgs_from_userid')
                 ->where('pm.privmsgs_id = %i', $privmsg_id)
@@ -1761,11 +1761,11 @@ $update_data = [
     'user_last_privmsg' => $userdata['session_start']
 ];
 
-dibi::update(USERS_TABLE, $update_data)
+dibi::update(Tables::USERS_TABLE, $update_data)
     ->where('user_id = %i', $userdata['user_id'])
     ->execute();
 
-dibi::update(PRIVMSGS_TABLE, ['privmsgs_type' => PRIVMSGS_UNREAD_MAIL])
+dibi::update(Tables::PRIVATE_MESSAGE_TABLE, ['privmsgs_type' => PRIVMSGS_UNREAD_MAIL])
     ->where('privmsgs_type = %i', PRIVMSGS_NEW_MAIL)
     ->where('privmsgs_to_userid = %i', $userdata['user_id'])
     ->execute();
@@ -1803,7 +1803,7 @@ $post_new_mesg_url = '<a href="' . Session::appendSid('privmsg.php?mode=post') .
 //
 $sql_tot = dibi::select('COUNT(privmsgs_id)')
     ->as('total')
-    ->from(PRIVMSGS_TABLE);
+    ->from(Tables::PRIVATE_MESSAGE_TABLE);
 
 $columns = [
     'pm.privmsgs_type',
@@ -1817,9 +1817,9 @@ $columns = [
 ];
 
 $sql = dibi::select($columns)
-    ->from(PRIVMSGS_TABLE)
+    ->from(Tables::PRIVATE_MESSAGE_TABLE)
     ->as('pm')
-    ->innerJoin(USERS_TABLE)
+    ->innerJoin(Tables::USERS_TABLE)
     ->as('u');
 
 switch( $folder) {

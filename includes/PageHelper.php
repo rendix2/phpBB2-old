@@ -80,7 +80,7 @@ class PageHelper
                 $l_privmsgs_text = sprintf($l_message_new, $userData['user_new_privmsg']);
 
                 if ($userData['user_last_privmsg'] > $userData['user_lastvisit']) {
-                    dibi::update(USERS_TABLE, ['user_last_privmsg' => $userData['user_lastvisit']])
+                    dibi::update(Tables::USERS_TABLE, ['user_last_privmsg' => $userData['user_lastvisit']])
                         ->where('user_id = %i', $userData['user_id'])
                         ->execute();
 

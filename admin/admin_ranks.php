@@ -65,7 +65,7 @@ if ($mode === 'edit') {// OK, lets edit this ranks
 	}
 
 	$rankInfo = dibi::select('*')
-		->from(RANKS_TABLE)
+		->from(Tables::RANKS_TABLE)
 		->where('rank_id = %i', $rankId)
 		->fetch();
 
@@ -166,14 +166,14 @@ if ($mode === 'edit') {// OK, lets edit this ranks
 		}
 	}
 
-	$cache = new Cache($storage, RANKS_TABLE);
-	$key = RANKS_TABLE . '_ordered_by_rank_special_rank_min';
+	$cache = new Cache($storage, Tables::RANKS_TABLE);
+	$key = Tables::RANKS_TABLE . '_ordered_by_rank_special_rank_min';
 
 	$cache->remove($key);
 
 	if ($rankId) {
 		if (!$specialRank) {
-			dibi::update(USERS_TABLE, ['user_rank' => 0])
+			dibi::update(Tables::USERS_TABLE, ['user_rank' => 0])
 				->where('user_rank = %i', $rankId)
 				->execute();
 		}
@@ -186,7 +186,7 @@ if ($mode === 'edit') {// OK, lets edit this ranks
 			'rank_image' => $rankImage
 		];
 
-		dibi::update(RANKS_TABLE, $updateData)
+		dibi::update(Tables::RANKS_TABLE, $updateData)
 			->where('rank_id = %i', $rankId)
 			->execute();
 
@@ -200,7 +200,7 @@ if ($mode === 'edit') {// OK, lets edit this ranks
 			'rank_image' => $rankImage
 		];
 
-		dibi::insert(RANKS_TABLE, $insertData)->execute();
+		dibi::insert(Tables::RANKS_TABLE, $insertData)->execute();
 
 		$message = $lang['Rank_added'];
 	}
@@ -219,16 +219,16 @@ if ($mode === 'edit') {// OK, lets edit this ranks
 	$confirm = isset($_POST['confirm']);
 
 	if ($rankId && $confirm) {
-		$cache = new Cache($storage, RANKS_TABLE);
-		$key = RANKS_TABLE . '_ordered_by_rank_special_rank_min';
+		$cache = new Cache($storage, Tables::RANKS_TABLE);
+		$key = Tables::RANKS_TABLE . '_ordered_by_rank_special_rank_min';
 
 		$cache->remove($key);
 
-		dibi::delete(RANKS_TABLE)
+		dibi::delete(Tables::RANKS_TABLE)
 			->where('rank_id = %i', $rankId)
 			->execute();
 
-		$result = dibi::update(USERS_TABLE, ['user_rank' => 0])
+		$result = dibi::update(Tables::USERS_TABLE, ['user_rank' => 0])
 			->where('user_rank = %i', $rankId)
 			->execute();
 
@@ -261,7 +261,7 @@ if ($mode === 'edit') {// OK, lets edit this ranks
 	$template->setFileNames(['body' => 'admin/ranks_list_body.tpl']);
 
 	$ranks = dibi::select('*')
-		->from(RANKS_TABLE)
+		->from(Tables::RANKS_TABLE)
 		->orderBy('rank_min', dibi::ASC)
 		->orderBy('rank_special', dibi::ASC)
 		->fetchAll();

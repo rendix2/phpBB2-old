@@ -70,7 +70,7 @@ if ($mode !== '') {
 		if ($mode === 'edit') {
 			if ($word_id) {
                 $word_info = dibi::select('*')
-                    ->from(WORDS_TABLE)
+                    ->from(Tables::WORDS_TABLE)
                     ->where('word_id = %i', $word_id)
                     ->fetch();
 
@@ -109,9 +109,9 @@ if ($mode !== '') {
             message_die(GENERAL_MESSAGE, $lang['Must_enter_word']);
         }
 
-        $cache = new Cache($storage, WORDS_TABLE);
+        $cache = new Cache($storage, Tables::WORDS_TABLE);
 
-        $cache->remove(WORDS_TABLE);
+        $cache->remove(Tables::WORDS_TABLE);
 
 		if ($word_id) {
 		    $update_data = [
@@ -119,7 +119,7 @@ if ($mode !== '') {
                 'replacement' => $replacement
             ];
 
-            dibi::update(WORDS_TABLE, $update_data)
+            dibi::update(Tables::WORDS_TABLE, $update_data)
                 ->where('word_id = %i', $word_id)
                 ->execute();
 
@@ -130,7 +130,7 @@ if ($mode !== '') {
                 'replacement' => $replacement
             ];
 
-		    dibi::insert(WORDS_TABLE, $insert_data)->execute();
+		    dibi::insert(Tables::WORDS_TABLE, $insert_data)->execute();
 
 			$message = $lang['Word_added'];
 		}
@@ -149,11 +149,11 @@ if ($mode !== '') {
 		$confirm = isset($_POST['confirm']);
 
 		if ($word_id && $confirm) {
-            $cache = new Cache($storage, WORDS_TABLE);
+            $cache = new Cache($storage, Tables::WORDS_TABLE);
 
-            $cache->remove(WORDS_TABLE);
+            $cache->remove(Tables::WORDS_TABLE);
 
-		    dibi::delete(WORDS_TABLE)
+		    dibi::delete(Tables::WORDS_TABLE)
                 ->where('word_id = %i', $word_id)
                 ->execute();
 
@@ -186,7 +186,7 @@ if ($mode !== '') {
      $template->setFileNames(['body' => 'admin/words_list_body.tpl']);
 
      $words = dibi::select('*')
-         ->from(WORDS_TABLE)
+         ->from(Tables::WORDS_TABLE)
          ->orderBy('word')
          ->fetchAll();
 

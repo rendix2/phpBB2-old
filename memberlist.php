@@ -131,7 +131,7 @@ $columns = [
 ];
 
 $users = dibi::select($columns)
-    ->from(USERS_TABLE)
+    ->from(Tables::USERS_TABLE)
     ->where('user_id <> %i', ANONYMOUS);
 
 switch ($mode) {
@@ -281,7 +281,7 @@ foreach ($users as $i => $user) {
 if ($mode !== 'topten' || $board_config['members_per_page'] < 10) {
     $total_members = dibi::select('COUNT(*) - 1')
         ->as('total')
-        ->from(USERS_TABLE)
+        ->from(Tables::USERS_TABLE)
         ->fetchSingle();
 
     if ($total_members) {

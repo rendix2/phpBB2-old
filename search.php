@@ -150,9 +150,9 @@ if ($mode === 'searchuser') {
 		//
 		$result = dibi::select('MAX(sr.search_time)')
             ->as('last_search_time')
-            ->from(SEARCH_TABLE)
+            ->from(Tables::SEARCH_TABLE)
             ->as('sr')
-            ->innerJoin(SESSIONS_TABLE)
+            ->innerJoin(Tables::SESSIONS_TABLE)
             ->as('se')
             ->on('sr.session_id = se.session_id');
 
@@ -172,7 +172,7 @@ if ($mode === 'searchuser') {
             if ($search_id === 'newposts') {
                 if ($userdata['session_logged_in']) {
                     $search_ids = dibi::select('post_id')
-                        ->from(POSTS_TABLE)
+                        ->from(Tables::POSTS_TABLE)
                         ->where('post_time >= %i', $userdata['user_lastvisit'])
                         ->fetchPairs(null, 'post_id');
 				} else {
@@ -185,7 +185,7 @@ if ($mode === 'searchuser') {
             } elseif ($search_id === 'egosearch') {
                 if ($userdata['session_logged_in']) {
                     $search_ids = dibi::select('post_id')
-                        ->from(POSTS_TABLE)
+                        ->from(Tables::POSTS_TABLE)
                         ->where('poster_id = %i', $userdata['user_id'])
                         ->fetchPairs(null, 'post_id');
                 } else {
@@ -203,7 +203,7 @@ if ($mode === 'searchuser') {
 				}
 
                 $user_ids = dibi::select('user_id')
-                    ->from(USERS_TABLE)
+                    ->from(Tables::USERS_TABLE)
                     ->where('username LIKE %~like~', $search_author)
                     ->fetchPairs(null, 'user_id');
 
@@ -212,7 +212,7 @@ if ($mode === 'searchuser') {
                 }
 
                 $search_ids = dibi::select('post_id')
-                    ->from(POSTS_TABLE)
+                    ->from(Tables::POSTS_TABLE)
                     ->where('poster_id IN %in', $user_ids);
 
                 if ($search_time) {
@@ -268,9 +268,9 @@ if ($mode === 'searchuser') {
 
 							// TODO THERE WAS LIKE 'awwdawd' WITHOUT LIKE '%%'
 							$post_ids = dibi::select('m.post_id')
-                                ->from(SEARCH_WORD_TABLE)
+                                ->from(Tables::SEARCH_WORD_TABLE)
                                 ->as('w')
-                                ->innerJoin(SEARCH_MATCH_TABLE)
+                                ->innerJoin(Tables::SEARCH_MATCH_TABLE)
                                 ->as('m')
                                 ->on('m.word_id = w.word_id')
                                 ->where('w.word_text LIKE %~like~', $match_word)
@@ -287,11 +287,11 @@ if ($mode === 'searchuser') {
                             // TODO THERE WAS LIKE 'awwdawd' WITHOUT LIKE '%%'
                             if ($search_fields) {
                                 $post_ids = dibi::select('post_id')
-                                    ->from(POSTS_TEXT_TABLE)
+                                    ->from(Tables::POSTS_TEXT_TABLE)
                                     ->where('post_text LIKE ~%like~ OR post_subject LIKE %~like~', $match_word, $match_word);
                             } else {
                                 $post_ids = dibi::select('post_id')
-                                    ->from(POSTS_TEXT_TABLE)
+                                    ->from(Tables::POSTS_TEXT_TABLE)
                                     ->where('post_text LIKE %like', $match_word);
                             }
 
@@ -395,7 +395,7 @@ if ($mode === 'searchuser') {
                 foreach ($search_id_chunks as $search_id_chunk) {
                     if ($search_author === '' && $auth_sql === '') {
                         $search_ids = dibi::select('topic_id')
-                            ->from(POSTS_TABLE)
+                            ->from(Tables::POSTS_TABLE)
                             ->where('post_id IN %in', $search_id_chunk);
 
                         if ($search_time) {
@@ -405,14 +405,14 @@ if ($mode === 'searchuser') {
                         $search_ids = $search_ids->groupBy('topic_id')
                             ->fetchPairs(null, 'topic_id');
                     } else {
-						$from_sql = POSTS_TABLE . ' p';
+						$from_sql = Tables::POSTS_TABLE . ' p';
 
                         $search_ids = dibi::select('p.topic_id')
-                            ->from(POSTS_TABLE)
+                            ->from(Tables::POSTS_TABLE)
                             ->as('p');
 
                         if ($search_author !== '') {
-                            $search_ids->innerJoin(USERS_TABLE)
+                            $search_ids->innerJoin(Tables::USERS_TABLE)
                                 ->as('u')
                                 ->on('u.user_id = p.poster_id')
                                 ->where('u.user_id IN %in', $user_ids);
@@ -423,7 +423,7 @@ if ($mode === 'searchuser') {
                         }
 
                         if ($auth_sql !== '') {
-                            $search_ids->from(FORUMS_TABLE)
+                            $search_ids->from(Tables::FORUMS_TABLE)
                                 ->as('f')
                                 ->where('f.forum_id = p.forum_id');
 
@@ -450,7 +450,7 @@ if ($mode === 'searchuser') {
 				foreach ($search_id_chunks as $search_id_chunk) {
                     if ($search_author === '' && $auth_sql === '') {
                         $search_ids = dibi::select('post_id')
-                            ->from(POSTS_TABLE)
+                            ->from(Tables::POSTS_TABLE)
                             ->where('post_id IN %in', $search_id_chunk);
 
                         if ($search_time) {
@@ -460,11 +460,11 @@ if ($mode === 'searchuser') {
                         $search_ids = $search_ids->fetchPairs(null, 'post_id');
                     } else {
                         $search_ids = dibi::select('p.post_id')
-                            ->from(POSTS_TABLE)
+                            ->from(Tables::POSTS_TABLE)
                             ->as('p');
 
                         if ($auth_sql !== '') {
-                            $search_ids->from(FORUMS_TABLE)
+                            $search_ids->from(Tables::FORUMS_TABLE)
                                 ->as('f')
                                 ->where('f.forum_id = p.forum_id')
                                 ->where($auth_sql);
@@ -472,7 +472,7 @@ if ($mode === 'searchuser') {
 
                         // TODO this query we can optimize
                         if ($search_author !== '') {
-                            $search_ids->from(USERS_TABLE)
+                            $search_ids->from(Tables::USERS_TABLE)
                                 ->as('u')
                                 ->where('u.user_id = p.poster_id')
                                 ->where('u.username LIKE %~like~', $search_author);
@@ -494,9 +494,9 @@ if ($mode === 'searchuser') {
 			if ($auth_sql !== '') {
 			    // TODO i guess we dont need f.forum
                 $search_ids = dibi::select(['t.topic_id', 'f.forum_id'])
-                    ->from(TOPICS_TABLE)
+                    ->from(Tables::TOPICS_TABLE)
                     ->as('t')
-                    ->innerJoin(FORUMS_TABLE)
+                    ->innerJoin(Tables::FORUMS_TABLE)
                     ->as('f')
                     ->on('t.forum_id = f.forum_id')
                     ->where('t.topic_replies = %i', 0)
@@ -505,7 +505,7 @@ if ($mode === 'searchuser') {
                     ->fetchPairs(null, 'topic_id');
 			} else {
                 $search_ids = dibi::select('topic_id')
-                    ->from(TOPICS_TABLE)
+                    ->from(Tables::TOPICS_TABLE)
                     ->where('topic_replies = %i', 0)
                     ->where('topic_moved_id = %i', 0)
                     ->fetchPairs(null, 'topic_id');
@@ -526,7 +526,7 @@ if ($mode === 'searchuser') {
 		//
 		// Delete old data from the search result table
 		//
-        dibi::delete(SEARCH_TABLE)
+        dibi::delete(Tables::SEARCH_TABLE)
             ->where('search_time < %i', $current_time - (int)$board_config['session_length'])
             ->execute();
 
@@ -576,7 +576,7 @@ if ($mode === 'searchuser') {
             'search_array' => $result_array
         ];
 
-		dibi::update(SEARCH_TABLE, $update_data)
+		dibi::update(Tables::SEARCH_TABLE, $update_data)
             ->where('session_id = %s', $userdata['session_id'])
             ->execute();
 
@@ -589,14 +589,14 @@ if ($mode === 'searchuser') {
 
             ];
 
-            dibi::insert(SEARCH_TABLE, $insert_data)->execute();
+            dibi::insert(Tables::SEARCH_TABLE, $insert_data)->execute();
 		}
 	} else {
 		$search_id = (int)$search_id;
 
 		if ($search_id) {
             $row = dibi::select('search_array')
-                ->from(SEARCH_TABLE)
+                ->from(Tables::SEARCH_TABLE)
                 ->where('search_id = %i', $search_id)
                 ->where('session_id = %s', $userdata['session_id'])
                 ->fetch();
@@ -635,18 +635,18 @@ if ($mode === 'searchuser') {
             ];
 
             $search_sets = dibi::select($columns)
-                ->from(FORUMS_TABLE)
+                ->from(Tables::FORUMS_TABLE)
                 ->as('f')
-                ->innerJoin(POSTS_TABLE)
+                ->innerJoin(Tables::POSTS_TABLE)
                 ->as('p')
                 ->on('f.forum_id = p.forum_id')
-                ->innerJoin(TOPICS_TABLE)
+                ->innerJoin(Tables::TOPICS_TABLE)
                 ->as('t')
                 ->on('p.topic_id = t.topic_id')
-                ->innerJoin(USERS_TABLE)
+                ->innerJoin(Tables::USERS_TABLE)
                 ->as('u')
                 ->on('p.poster_id = u.user_id')
-                ->innerJoin(POSTS_TEXT_TABLE)
+                ->innerJoin(Tables::POSTS_TEXT_TABLE)
                 ->as('pt')
                 ->on('pt.post_id = p.post_id')
                 ->where('p.post_id IN %in', $search_ids);
@@ -671,24 +671,24 @@ if ($mode === 'searchuser') {
                 ->select('p.post_id')
                 ->select('pt.post_text')
                 ->select('u.user_allowhtml')
-                ->from(TOPICS_TABLE)
+                ->from(Tables::TOPICS_TABLE)
                 ->as('t')
-                ->innerJoin(FORUMS_TABLE)
+                ->innerJoin(Tables::FORUMS_TABLE)
                 ->as('f')
                 ->on('f.forum_id = t.forum_id')
-                ->innerJoin(USERS_TABLE)
+                ->innerJoin(Tables::USERS_TABLE)
                 ->as('u')
                 ->on('t.topic_poster = u.user_id')
-                ->innerJoin(POSTS_TABLE)
+                ->innerJoin(Tables::POSTS_TABLE)
                 ->as('p')
                 ->on('p.post_id = t.topic_first_post_id')
-                ->innerJoin(POSTS_TABLE)
+                ->innerJoin(Tables::POSTS_TABLE)
                 ->as('p2')
                 ->on('p2.post_id = t.topic_last_post_id')
-                ->innerJoin(USERS_TABLE)
+                ->innerJoin(Tables::USERS_TABLE)
                 ->as('u2')
                 ->on('u2.user_id = p2.poster_id')
-                ->innerJoin(POSTS_TEXT_TABLE)
+                ->innerJoin(Tables::POSTS_TEXT_TABLE)
                 ->as('pt')
                 ->on('p.post_id = pt.post_id')
                 ->where('t.topic_id IN %in', $search_ids);
@@ -1194,9 +1194,9 @@ $template->assignVars(['F_LOGIN_FORM_TOKEN' => CSRF::getInputHtml()]);
 // Search forum
 //
 $result = dibi::select(['c.cat_title', 'c.cat_id', 'f.forum_name', 'f.forum_id'])
-    ->from(CATEGORIES_TABLE)
+    ->from(Tables::CATEGORIES_TABLE)
     ->as('c')
-    ->innerJoin(FORUMS_TABLE)
+    ->innerJoin(Tables::FORUMS_TABLE)
     ->as('f')
     ->on('f.cat_id = c.cat_id')
     ->orderBy('c.cat_order')

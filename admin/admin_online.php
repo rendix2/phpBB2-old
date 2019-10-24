@@ -24,9 +24,9 @@ $time->setTimezone(new DateTimeZone($user_timezone));
 $time->sub(new DateInterval('PT' . ONLINE_TIME_DIFF . 'S'));
 
 $registeredUsers = dibi::select(['u.user_id', 'u.username', 'u.user_session_time', 'u.user_session_page', 'u.user_allow_viewonline', 's.session_logged_in', 's.session_ip', 's.session_start', 'session_page'])
-    ->from(USERS_TABLE)
+    ->from(Tables::USERS_TABLE)
     ->as('u')
-    ->innerJoin(SESSIONS_TABLE)
+    ->innerJoin(Tables::SESSIONS_TABLE)
     ->as('s')
     ->on('u.user_id = s.session_user_id')
     ->where('s.session_logged_in = %i', 1)
@@ -37,14 +37,14 @@ $registeredUsers = dibi::select(['u.user_id', 'u.username', 'u.user_session_time
     ->fetchAll();
 
 $guestUsers = dibi::select(['session_page', 'session_logged_in', 'session_time', 'session_ip', 'session_start'])
-    ->from(SESSIONS_TABLE)
+    ->from(Tables::SESSIONS_TABLE)
     ->where('session_logged_in = %i', 0)
     ->where('session_time >= %i', $time->getTimestamp())
     ->orderBy('session_time', 'DESC')
     ->fetchAll();
 
 $forums = dibi::select(['forum_name', 'forum_id'])
-    ->from(FORUMS_TABLE)
+    ->from(Tables::FORUMS_TABLE)
     ->fetchPairs('forum_id', 'forum_name');
 
 if (count($registeredUsers)) {

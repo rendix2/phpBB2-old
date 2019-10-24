@@ -117,7 +117,7 @@ class Select
     public static function groups()
     {
         $groups = dibi::select(['group_id', 'group_name'])
-            ->from(GROUPS_TABLE)
+            ->from(Tables::GROUPS_TABLE)
             ->where('group_single_user <> %i', 1)
             ->orderBy('group_name')
             ->fetchPairs('group_id', 'group_name');
@@ -162,7 +162,7 @@ class Select
     public static function style($defaultStyle, $selectName = 'style', $dirname = 'templates')
     {
         $themes = dibi::select(['themes_id', 'style_name'])
-            ->from(THEMES_TABLE)
+            ->from(Tables::THEMES_TABLE)
             ->orderBy('template_name')
             ->orderBy('themes_id')
             ->fetchPairs('themes_id', 'style_name');
@@ -201,7 +201,7 @@ class Select
         // this method is not used so much, so we can let here the new query
         // and fix bug in origin code
         $defaultTheme = dibi::select(['style_name'])
-            ->from(THEMES_TABLE)
+            ->from(Tables::THEMES_TABLE)
             ->where('themes_id = %i', $boardConfig['default_style'])
             ->fetchSingle();
 

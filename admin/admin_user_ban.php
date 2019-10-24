@@ -141,7 +141,7 @@ if (isset($_POST['submit'])) {
 	}
 
     $bans = dibi::select('*')
-        ->from(BANLIST_TABLE)
+        ->from(Tables::BAN_LIST_TABLE)
         ->fetchAll();
 
 	$kill_session_sql = '';
@@ -158,7 +158,7 @@ if (isset($_POST['submit'])) {
         if (!$in_banlist) {
             $kill_session_sql .= (($kill_session_sql !== '') ? ' OR ' : '') . 'session_user_id = ' . $user_value;
 
-            dibi::insert(BANLIST_TABLE, ['ban_userid' => $user_value])
+            dibi::insert(Tables::BAN_LIST_TABLE, ['ban_userid' => $user_value])
                 ->execute();
         }
     }
@@ -181,7 +181,7 @@ if (isset($_POST['submit'])) {
 
             $kill_session_sql .= (($kill_session_sql !== '') ? ' OR ' : '') . $kill_ip_sql;
 
-            dibi::insert(BANLIST_TABLE, ['ban_ip' => $ip_value])->execute();
+            dibi::insert(Tables::BAN_LIST_TABLE, ['ban_ip' => $ip_value])->execute();
         }
     }
 
@@ -191,7 +191,7 @@ if (isset($_POST['submit'])) {
 	// initialisation resulting in an instant ban
 	//
     if ($kill_session_sql !== '') {
-        dibi::delete(SESSIONS_TABLE)
+        dibi::delete(Tables::SESSIONS_TABLE)
             ->where($kill_session_sql)
             ->execute();
     }
@@ -206,7 +206,7 @@ if (isset($_POST['submit'])) {
         }
 
         if (!$in_banlist) {
-            dibi::insert(BANLIST_TABLE, ['ban_email' => $email_value])
+            dibi::insert(Tables::BAN_LIST_TABLE, ['ban_email' => $email_value])
                 ->execute();
         }
     }
@@ -244,7 +244,7 @@ if (isset($_POST['submit'])) {
     }
 
     if (count($where_sql)) {
-        dibi::delete(BANLIST_TABLE)
+        dibi::delete(Tables::BAN_LIST_TABLE)
             ->where('ban_id IN %in', $where_sql)
             ->execute();
     }
@@ -285,9 +285,9 @@ if (isset($_POST['submit'])) {
 	$emailban_count = 0;
 
     $user_list = dibi::select(['b.ban_id', 'u.user_id', 'u.username'])
-        ->from(BANLIST_TABLE)
+        ->from(Tables::BAN_LIST_TABLE)
         ->as('b')
-        ->innerJoin(USERS_TABLE)
+        ->innerJoin(Tables::USERS_TABLE)
         ->as('u')
         ->on('u.user_id = b.ban_userid')
         ->where('b.ban_userid <> %i', 0)
@@ -308,7 +308,7 @@ if (isset($_POST['submit'])) {
 	$select_userlist = '<select name="unban_user[]" multiple="multiple" size="5">' . $select_userlist . '</select>';
 
     $banlist = dibi::select(['ban_id', 'ban_ip', 'ban_email'])
-        ->from(BANLIST_TABLE)
+        ->from(Tables::BAN_LIST_TABLE)
         ->fetchAll();
 
 	$select_iplist = '';

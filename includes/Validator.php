@@ -29,7 +29,7 @@ class Validator
         $lowerUserName = mb_strtolower($username);
 
         $dbUserNme = dibi::select('username')
-            ->from(USERS_TABLE)
+            ->from(Tables::USERS_TABLE)
             ->where('LOWER(username) = %s', $lowerUserName)
             ->fetch();
 
@@ -41,7 +41,7 @@ class Validator
         }
 
         $db_group_name = dibi::select('group_name')
-            ->from(GROUPS_TABLE)
+            ->from(Tables::GROUPS_TABLE)
             ->where('LOWER(group_name) = %s', $lowerUserName)
             ->fetch();
 
@@ -50,7 +50,7 @@ class Validator
         }
 
         $disallows = dibi::select('disallow_username')
-            ->from(DISALLOW_TABLE)
+            ->from(Tables::DISS_ALLOW_TABLE)
             ->fetchAll();
 
         foreach ($disallows as $disallow) {
@@ -60,7 +60,7 @@ class Validator
         }
 
         $words = dibi::select('word')
-            ->from(WORDS_TABLE)
+            ->from(Tables::WORDS_TABLE)
             ->fetchAll();
 
         foreach ($words as $word) {
@@ -91,7 +91,7 @@ class Validator
     {
         if ($email !== '' && preg_match('/^[a-z0-9&\'\.\-_\+]+@[a-z0-9\-]+\.([a-z0-9\-]+\.)*?[a-z]+$/is', $email)) {
             $bans = dibi::select('ban_email')
-                ->from(BANLIST_TABLE)
+                ->from(Tables::BAN_LIST_TABLE)
                 ->fetchAll();
 
             foreach ($bans as $ban) {
@@ -103,7 +103,7 @@ class Validator
             }
 
             $dbEmail = dibi::select('user_email')
-                ->from(USERS_TABLE)
+                ->from(Tables::USERS_TABLE)
                 ->where('user_email = %s', $email)
                 ->fetch();
 

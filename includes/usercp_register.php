@@ -163,7 +163,7 @@ if (
 
 	// TODO i think i have this value already in $board_config, why i get it again???
 	$board_default_dateformat = dibi::select('config_value')
-        ->from(CONFIG_TABLE)
+        ->from(Tables::CONFIG_TABLE)
         ->where('config_name = %s', 'default_dateformat')
         ->fetchSingle();
 
@@ -259,7 +259,7 @@ if (isset($_POST['submit'])) {
 
 			// todo maybe fetchSingle()??
 			$row = dibi::select('code')
-                ->from(CONFIRM_TABLE)
+                ->from(Tables::CONFIRM_TABLE)
                 ->where('confirm_id = %s', $confirmId)
                 ->where('session_id = %s', $userdata['session_id'])
                 ->fetch();
@@ -269,7 +269,7 @@ if (isset($_POST['submit'])) {
                     $error        = true;
 					$errorMessage .= ( isset($errorMessage) ? '<br />' : '' ) . $lang['Confirm_code_wrong'];
 				} else {
-				    dibi::delete(CONFIRM_TABLE)
+				    dibi::delete(Tables::CONFIRM_TABLE)
                         ->where('confirm_id = %s', $confirmId)
                         ->where('session_id = %s', $userdata['session_id'])
                         ->execute();
@@ -298,7 +298,7 @@ if (isset($_POST['submit'])) {
 		} else {
             if ($mode === 'editprofile') {
 			    $db_password = dibi::select('user_password')
-                    ->from(USERS_TABLE)
+                    ->from(Tables::USERS_TABLE)
                     ->where('user_id = %i', $userId)
                     ->fetchSingle();
 
@@ -337,7 +337,7 @@ if (isset($_POST['submit'])) {
 
         if ($mode === 'editprofile') {
             $db_password = dibi::select('user_password')
-                ->from(USERS_TABLE)
+                ->from(Tables::USERS_TABLE)
                 ->where('user_id = %i', $userId)
                 ->fetchSingle();
 
@@ -465,7 +465,7 @@ if (isset($_POST['submit'])) {
 
 			$updateData = array_merge($updateData, $avatarData, $username_data, $user_password_data);
 
-			dibi::update(USERS_TABLE, $updateData)
+			dibi::update(Tables::USERS_TABLE, $updateData)
                 ->where('user_id = %i', $userId)
                 ->execute();
 
@@ -502,7 +502,7 @@ if (isset($_POST['submit'])) {
  					$emailer->reset();
                 } elseif ($board_config['require_activation'] === USER_ACTIVATION_ADMIN) {
  				    $admins = dibi::select(['user_email', 'user_lang'])
-                        ->from(USERS_TABLE)
+                        ->from(Tables::USERS_TABLE)
                         ->where('user_level = %i', ADMIN)
                         ->fetchAll();
 
@@ -590,7 +590,7 @@ if (isset($_POST['submit'])) {
                 $insertData['user_actkey'] = '';
 			}
 
-			$userId = dibi::insert(USERS_TABLE, $insertData)->execute();
+			$userId = dibi::insert(Tables::USERS_TABLE, $insertData)->execute();
 
             $group_insert_data = [
                 'group_name'        => '',
@@ -599,7 +599,7 @@ if (isset($_POST['submit'])) {
                 'group_moderator'   => 0
             ];
 
-            $groupId = dibi::insert(GROUPS_TABLE, $group_insert_data)->execute(dibi::IDENTIFIER);
+            $groupId = dibi::insert(Tables::GROUPS_TABLE, $group_insert_data)->execute(dibi::IDENTIFIER);
 
 			$userGroupDataInsert = [
                 'user_id' => $userId,
@@ -607,7 +607,7 @@ if (isset($_POST['submit'])) {
                 'user_pending' => 0
             ];
 
-			dibi::insert(USER_GROUP_TABLE, $userGroupDataInsert)->execute();
+			dibi::insert(Tables::USERS_GROUPS_TABLE, $userGroupDataInsert)->execute();
 
             if ($coppa) {
 				$message = $lang['COPPA'];
@@ -669,7 +669,7 @@ if (isset($_POST['submit'])) {
 
             if ($board_config['require_activation'] === USER_ACTIVATION_ADMIN) {
 			    $admins = dibi::select(['user_email', 'user_lang'])
-                    ->from(USERS_TABLE)
+                    ->from(Tables::USERS_TABLE)
                     ->where('user_level = %i', ADMIN)
                     ->fetchAll();
 
@@ -844,18 +844,18 @@ if (isset($_POST['avatargallery']) && !$error) {
 
 	if (!empty($board_config['enable_confirm']) && $mode === 'register') {
 	    $sessions = dibi::select('session_id')
-            ->from(SESSIONS_TABLE)
+            ->from(Tables::SESSIONS_TABLE)
             ->fetchPairs(null, 'session_id');
 
 	    if (count($sessions)) {
-	        dibi::delete(CONFIRM_TABLE)
+	        dibi::delete(Tables::CONFIRM_TABLE)
                 ->where('session_id NOT IN %in', $sessions)
                 ->execute();
         }
 
         $attempts = dibi::select('COUNT(session_id)')
             ->as('attempts')
-            ->from(CONFIRM_TABLE)
+            ->from(Tables::CONFIRM_TABLE)
             ->where('session_id = %s', $userdata['session_id'])
             ->fetchSingle();
 
@@ -877,7 +877,7 @@ if (isset($_POST['avatargallery']) && !$error) {
             'code'       => $code
         ];
 
-		dibi::insert(CONFIRM_TABLE, $confirm_insert_data)->execute();
+		dibi::insert(Tables::CONFIRM_TABLE, $confirm_insert_data)->execute();
 
 		unset($code);
 

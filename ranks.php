@@ -19,7 +19,7 @@ $userdata = init_userprefs(PAGE_RANKS);
 PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $lang['Index'], $gen_simple_header);
 
 $ranks = dibi::select('*')
-    ->from(RANKS_TABLE)
+    ->from(Tables::RANKS_TABLE)
     ->fetchAll();
 
 if (!count($ranks)) {

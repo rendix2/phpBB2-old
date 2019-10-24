@@ -79,9 +79,9 @@ class Session
         if ($userId !== ANONYMOUS) {
             if (isset($sessionData['autologinid']) && (string) $sessionData['autologinid'] !== '' && $userId) {
                 $userData = dibi::select('u.*')
-                    ->from(USERS_TABLE)
+                    ->from(Tables::USERS_TABLE)
                     ->as('u')
-                    ->innerJoin(SESSIONS_KEYS_TABLE)
+                    ->innerJoin(Tables::SESSIONS_AUTO_LOGIN_KEYS_TABLE)
                     ->as('k')
                     ->on('k.user_id = u.user_id')
                     ->where('u.user_id = %i', (int) $userId)
@@ -97,7 +97,7 @@ class Session
                 $sessionData['userid'] = $userId;
 
                 $userData = dibi::select('*')
-                    ->from(USERS_TABLE)
+                    ->from(Tables::USERS_TABLE)
                     ->where('user_id = %i', (int) $userId)
                     ->where('user_active = %i', 1)
                     ->fetch();
@@ -126,7 +126,7 @@ class Session
             $enableAutoLogin            = $login = false;
 
             $userData = dibi::select('*')
-                ->from(USERS_TABLE)
+                ->from(Tables::USERS_TABLE)
                 ->where('user_id = %i', $userId)
                 ->fetch();
 
@@ -153,7 +153,7 @@ class Session
             $ban_email2 = substr( $userData['user_email'], strpos($userData['user_email'], '@'));
 
             $ban_info = dibi::select(['ban_ip', 'ban_userid', 'ban_email'])
-                ->from(BANLIST_TABLE)
+                ->from(Tables::BAN_LIST_TABLE)
                 ->where(
                     'ban_ip IN %in OR ban_userid = %i OR ban_email LIKE %~like~ OR ban_email LIKE %~like~',
                     $ban_ip_array,
@@ -163,7 +163,7 @@ class Session
                 )->fetch();
         } else {
             $ban_info = dibi::select(['ban_ip', 'ban_userid', 'ban_email'])
-                ->from(BANLIST_TABLE)
+                ->from(Tables::BAN_LIST_TABLE)
                 ->where(
                     'ban_ip IN %in OR ban_userid = %i',
                     $ban_ip_array,
@@ -187,7 +187,7 @@ class Session
             'session_admin' => $isAdmin
         ];
 
-        $result = dibi::update(SESSIONS_TABLE, $updateData)
+        $result = dibi::update(Tables::SESSIONS_TABLE, $updateData)
             ->where('session_id = %s', $sessionId)
             ->where('session_ip = %s', $userIp)
             ->execute();
@@ -206,7 +206,7 @@ class Session
                 'session_admin' => $isAdmin
             ];
 
-            dibi::insert(SESSIONS_TABLE, $insertData)->execute();
+            dibi::insert(Tables::SESSIONS_TABLE, $insertData)->execute();
         }
 
         if ($userId !== ANONYMOUS) {
@@ -219,7 +219,7 @@ class Session
                     'user_lastvisit'    => $lastVisit
                 ];
 
-                dibi::update(USERS_TABLE, $updateData)
+                dibi::update(Tables::USERS_TABLE, $updateData)
                     ->where('user_id = %i', $userId)
                     ->execute();
             }
@@ -239,7 +239,7 @@ class Session
                         'last_login' => $currentTime
                     ];
 
-                    dibi::update(SESSIONS_KEYS_TABLE, $updateData)
+                    dibi::update(Tables::SESSIONS_AUTO_LOGIN_KEYS_TABLE, $updateData)
                         ->where('key_id = %s', hash('sha512', $sessionData['autologinid']))
                         ->execute();
                 } else {
@@ -250,7 +250,7 @@ class Session
                         'last_login' => $currentTime
                     ];
 
-                    dibi::insert(SESSIONS_KEYS_TABLE, $insertData)->execute();
+                    dibi::insert(Tables::SESSIONS_AUTO_LOGIN_KEYS_TABLE, $insertData)->execute();
                 }
 
                 $sessionData['autologinid'] = $auto_login_key;
@@ -354,9 +354,9 @@ class Session
             // data in preparation
             //
             $userData = dibi::select('u.*, s.*')
-                ->from(SESSIONS_TABLE)
+                ->from(Tables::SESSIONS_TABLE)
                 ->as('s')
-                ->innerJoin(USERS_TABLE)
+                ->innerJoin(Tables::USERS_TABLE)
                 ->as('u')
                 ->on('u.user_id = s.session_user_id')
                 ->where('session_id = %s', $sessionId)
@@ -392,12 +392,12 @@ class Session
                             $update_data['session_admin'] = 0;
                         }
 
-                        dibi::update(SESSIONS_TABLE, $update_data)
+                        dibi::update(Tables::SESSIONS_TABLE, $update_data)
                             ->where('session_id = %s', $userData['session_id'])
                             ->execute();
 
                         if ($userData['user_id'] !== ANONYMOUS) {
-                            dibi::update(USERS_TABLE, ['user_session_time' => $current_time, 'user_session_page' => $thisPageId])
+                            dibi::update(Tables::USERS_TABLE, ['user_session_time' => $current_time, 'user_session_page' => $thisPageId])
                                 ->where('user_id = %i', $userData['user_id'])
                                 ->execute();
                         }
@@ -487,7 +487,7 @@ class Session
         // Delete existing session
         //
 
-        dibi::delete(SESSIONS_TABLE)
+        dibi::delete(Tables::SESSIONS_TABLE)
             ->where('session_id = %s', $sessionId)
             ->where('session_user_id = %i', $userId)
             ->execute();
@@ -498,7 +498,7 @@ class Session
         if (isset($userdata['session_key']) && $userdata['session_key'] !== '') {
             $autoLoginKey = hash('sha512', $userdata['session_key']);
 
-            dibi::delete(SESSIONS_KEYS_TABLE)
+            dibi::delete(Tables::SESSIONS_AUTO_LOGIN_KEYS_TABLE)
                 ->where('user_id = %i',(int) $userId)
                 ->where('key_id = %s', $autoLoginKey)
                 ->execute();
@@ -509,7 +509,7 @@ class Session
         // but just in case it isn't, reset $userdata to the details for a guest
         //
         $userdata = dibi::select('*')
-            ->from(USERS_TABLE)
+            ->from(Tables::USERS_TABLE)
             ->where('user_id = %i', ANONYMOUS)
             ->fetch();
 
@@ -567,7 +567,7 @@ class Session
         $time->setTimezone(new DateTimeZone($userTimezone));
         $time->sub(new DateInterval('PT' . $board_config['session_length'] . 'S'));
 
-        dibi::delete(SESSIONS_TABLE)
+        dibi::delete(Tables::SESSIONS_TABLE)
             ->where('session_time < %i', $time->getTimestamp())
             ->where('session_id <> %s', $session_id)
             ->execute();
@@ -584,7 +584,7 @@ class Session
             $time->setTimezone(new DateTimeZone($userTimezone));
             $time->sub(new DateInterval('P' . (int)$board_config['max_autologin_time'] . 'D'));
 
-            dibi::delete(SESSIONS_KEYS_TABLE)
+            dibi::delete(Tables::SESSIONS_AUTO_LOGIN_KEYS_TABLE)
                 ->where('last_login < %i', $time->getTimestamp())
                 ->execute();
         }
@@ -607,7 +607,7 @@ class Session
 
         $key_sql = $userId === $userdata['user_id'] && !empty($userdata['session_key']);
 
-        $deleteSessionKeys = dibi::delete(SESSIONS_KEYS_TABLE)
+        $deleteSessionKeys = dibi::delete(Tables::SESSIONS_AUTO_LOGIN_KEYS_TABLE)
             ->where('user_id = %i', $userId);
 
         if ($key_sql) {
@@ -616,7 +616,7 @@ class Session
 
         $deleteSessionKeys->execute();
 
-        $deleteSession = dibi::delete(SESSIONS_TABLE)
+        $deleteSession = dibi::delete(Tables::SESSIONS_TABLE)
             ->where('session_user_id = %i', $userId);
 
         if ($userId === $userdata['user_id']) {
@@ -635,7 +635,7 @@ class Session
                 'last_login' => $currentTime
             ];
 
-            dibi::update(SESSIONS_KEYS_TABLE, $update_data)
+            dibi::update(Tables::SESSIONS_AUTO_LOGIN_KEYS_TABLE, $update_data)
                 ->where('key_id = %s', hash('sha512', $userdata['session_key']))
                 ->execute();
 

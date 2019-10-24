@@ -110,8 +110,8 @@ switch ($mode) {
                     ->where('[config_name] = %s', 'default_lang')
                     ->execute();
 
-                $cache = new Cache($storage, CONFIG_TABLE);
-                $cache->remove(CONFIG_TABLE);
+                $cache = new Cache($storage, Tables::CONFIG_TABLE);
+                $cache->remove(Tables::CONFIG_TABLE);
 
                 $message = $lang['language_no_replacement'] . '<br /><br />' . sprintf($lang['Click_return_language'], '<a href="' . Session::appendSid('admin_languages.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
@@ -135,8 +135,8 @@ switch ($mode) {
                     ->where('[config_name] = %s', 'default_lang')
                     ->execute();
 
-                $cache = new Cache($storage, CONFIG_TABLE);
-                $cache->remove(CONFIG_TABLE);
+                $cache = new Cache($storage, Tables::CONFIG_TABLE);
+                $cache->remove(Tables::CONFIG_TABLE);
 
                 $message = $lang['language_no_replacement'] . '<br /><br />' . sprintf($lang['Click_return_language'], '<a href="' . Session::appendSid('admin_languages.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
@@ -152,8 +152,8 @@ switch ($mode) {
             ->where('[user_lang] = %s', $language->lang_name)
             ->execute();
 
-        $cache = new Cache($storage, CONFIG_TABLE);
-        $cache->remove(CONFIG_TABLE);
+        $cache = new Cache($storage, Tables::CONFIG_TABLE);
+        $cache->remove(CONFIG_TATables::CONFIG_TABLEBLE);
 
         $message = $lang['Delete_language'] . '<br /><br />' . sprintf($lang['Click_return_language'], '<a href="' . Session::appendSid('admin_languages.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 

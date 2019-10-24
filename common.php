@@ -142,18 +142,18 @@ $user_ip = encode_ip($client_ip);
 //
 
 $storage = new FileStorage(__DIR__ . $sep . 'temp');
-$cache   = new Cache($storage, CONFIG_TABLE);
+$cache   = new Cache($storage, Tables::CONFIG_TABLE);
 
-$boardConfigCached = $cache->load(CONFIG_TABLE);
+$boardConfigCached = $cache->load(Tables::CONFIG_TABLE);
 
 if ($boardConfigCached !== null) {
     $board_config = $boardConfigCached;
 } else {
     $board_config = dibi::select('*')
-        ->from(CONFIG_TABLE)
+        ->from(Tables::CONFIG_TABLE)
         ->fetchPairs('config_name', 'config_value');
 
-    $cache->save(CONFIG_TABLE, $board_config);
+    $cache->save(Tables::CONFIG_TABLE, $board_config);
 }
 
 if (!$board_config) {

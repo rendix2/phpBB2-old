@@ -200,20 +200,20 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
 
 	$totalForumsCount = dibi::select('COUNT(*)')
         ->as('total')
-        ->from(FORUMS_TABLE)
+        ->from(Tables::FORUMS_TABLE)
         ->fetchSingle();
 
     $totalCategoriesCount = dibi::select('COUNT(*)')
         ->as('total')
-        ->from(CATEGORIES_TABLE)
+        ->from(Tables::CATEGORIES_TABLE)
         ->fetchSingle();
 
 	$totalOnlineUsers = dibi::select('COUNT(*)')
-        ->from(SESSIONS_TABLE)
+        ->from(Tables::SESSIONS_TABLE)
         ->fetchSingle();
 
     $registeredOnlineUsers = dibi::select('COUNT(*)')
-        ->from(SESSIONS_TABLE)
+        ->from(Tables::SESSIONS_TABLE)
         ->where('session_logged_in = %i', 1)
         ->groupBy('session_user_id')
         ->fetchSingle();
@@ -221,53 +221,53 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
     // admin stats mod BEGIN
     $totalUnActiveUsers = dibi::select('COUNT(*)')
         ->as('total')
-        ->from(USERS_TABLE)
+        ->from(Tables::USERS_TABLE)
         ->where('user_active = %i', 0)
         ->where('user_id != %i', ANONYMOUS)
         ->fetchSingle();
 
     $totalModerators = dibi::select('COUNT(user_id)')
         ->as('total')
-        ->from(USERS_TABLE)
+        ->from(Tables::USERS_TABLE)
         ->where('user_level = %i', MOD)
         ->where('user_id != %i', ANONYMOUS)
         ->fetchSingle();
 
     $totalAdministrators = dibi::select('COUNT(user_id)')
         ->as('total')
-        ->from(USERS_TABLE)
+        ->from(Tables::USERS_TABLE)
         ->where('user_level = %i', ADMIN)
         ->where('user_id != %i', ANONYMOUS)
         ->fetchSingle();
 
     $totalTemplates = dibi::select('COUNT(themes_id)')
         ->as('total')
-        ->from(THEMES_TABLE)
+        ->from(Tables::THEMES_TABLE)
         ->fetchSingle();
 
     $totalTopicWatching = dibi::select('COUNT(*)')
         ->as('total')
-        ->from(TOPICS_WATCH_TABLE)
+        ->from(Tables::TOPICS_WATCH_TABLE)
         ->fetchSingle();
 
     $totalGroups = dibi::select('COUNT(group_id)')
-        ->from(GROUPS_TABLE)
+        ->from(Tables::GROUPS_TABLE)
         ->fetchSingle();
 
     $totalSingleGroups = dibi::select('COUNT(group_id)')
-        ->from(GROUPS_TABLE)
+        ->from(Tables::GROUPS_TABLE)
         ->where('[group_single_user] = %i', 1)
         ->fetchSingle();
 
     $totalNotSingleGroups = dibi::select('COUNT(group_id)')
-        ->from(GROUPS_TABLE)
+        ->from(Tables::GROUPS_TABLE)
         ->where('[group_single_user] = %i', 0)
         ->fetchSingle();
 
     $totalAutoLoggedInUsers = dibi::select('COUNT(user_id)')
         ->from(
             dibi::select('user_id')
-            ->from(SESSIONS_KEYS_TABLE)
+            ->from(Tables::SESSIONS_AUTO_LOGIN_KEYS_TABLE)
             ->groupBy('user_id')
         )
         ->as('x')
