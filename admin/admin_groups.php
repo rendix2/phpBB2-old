@@ -277,6 +277,7 @@ if ($mode === 'users') {
 	$parameters = [
 		'C_USER_ID' => POST_USERS_URL,
 		'C_GROUP_ID' => POST_GROUPS_URL,
+		'C_MODE' => POST_MODE,
 
 		'D_USERS' => $users,
 
@@ -325,6 +326,7 @@ if ($mode === '') {
         'C_CLOSED'   => GROUP_CLOSED,
         'C_HIDDEN'   => GROUP_HIDDEN,
         'C_GROUP_ID' => POST_GROUPS_URL,
+		'C_MODE' => POST_MODE,
 
 		'D_GROUPS' => $groups,
 

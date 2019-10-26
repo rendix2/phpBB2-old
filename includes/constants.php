@@ -107,6 +107,7 @@ define('POST_POST_URL', 'p');
 define('POST_GROUPS_URL', 'g');
 define('POST_LANG_URL', 'l');
 define('POST_MODE', 'mode');
+define('POST_SESSION_USER_URL', 's');
 
 // Session parameters
 define('SESSION_METHOD_COOKIE', 100);

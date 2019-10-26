@@ -74,6 +74,8 @@ switch ($mode) {
         $latte = new LatteFactory($storage, $userdata);
 
         $parameters = [
+            'C_MODE' => POST_MODE,
+
             'L_LANG_FILE_NAME' => $lang['Language_file_name'],
             'L_LANG_FILE_SIZE' => $lang['Language_file_size'],
             'S_FILES' => $foundFiles
@@ -188,6 +190,7 @@ switch ($mode) {
 
     $parameters = [
         'C_LANG_ID' => POST_LANG_URL,
+        'C_MODE' => POST_MODE,
 
         'D_LANGUAGES' => $databaseLanguages,
 

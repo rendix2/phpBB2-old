@@ -54,6 +54,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
     $modules['Users']['Permissions'] = 'admin_ug_auth.php?mode=user';
     $modules['Users']['Ranks'] = 'admin_ranks.php';
     $modules['Users']['Who_is_Online'] = 'admin_online.php';
+    $modules['Users']['Auto_login'] = 'admin_auto_login.php';
 
     $modules['Forums']['Prune'] = 'admin_forum_prune.php';
     $modules['Forums']['Permissions'] = 'admin_forumauth.php';

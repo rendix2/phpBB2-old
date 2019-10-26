@@ -832,6 +832,9 @@ $lang['Empty_db_host'] = 'Database host is empty.';
 $lang['Empty_db_name'] = 'Datasase name is empty.';
 $lang['Empty_db_user_name'] = 'Datasase user name is empty.';
 
+$lang['Last_login'] = 'Last login';
+$lang['Delete_auto_login'] = 'The auto login key was successfully removed.';
+
 //
 // That's all Folks!
 // -------------------------------------------------
