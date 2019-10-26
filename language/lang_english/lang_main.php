@@ -669,6 +669,8 @@ $lang['Sort_Posts'] = 'Total posts';
 $lang['Sort_Topics'] = 'Total topics';
 $lang['Sort_Email'] = 'Email';
 $lang['Sort_Website'] = 'Website';
+$lang['Sort_Online'] = 'Online status';
+
 $lang['Sort_Ascending'] = 'Ascending';
 $lang['Sort_Descending'] = 'Descending';
 $lang['Order'] = 'Order';

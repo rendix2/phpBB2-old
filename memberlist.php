@@ -62,7 +62,8 @@ $modeTypes = [
     'topics'   => $lang['Sort_Topics'],
     'email'    => $lang['Sort_Email'],
     'website'  => $lang['Sort_Website'],
-    'topten'   => $lang['Sort_Top_Ten']
+    'topten'   => $lang['Sort_Top_Ten'],
+    'online'   => $lang['Sort_Online'],
 ];
 
 $selectSortModeValues= '';
@@ -173,6 +174,10 @@ switch ($mode) {
         break;
     case 'topten':
         $users->orderBy('user_posts', $sortOrder)
+            ->limit($board_config['members_per_page']);
+        break;
+    case 'online':
+        $users->orderBy('user_session_time', $sortOrder)
             ->limit($board_config['members_per_page']);
         break;
 }
