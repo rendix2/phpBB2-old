@@ -278,6 +278,7 @@ switch ($mode) {
                 'f.*',
                 't.topic_id',
                 't.topic_status',
+                't.topic_title',
                 't.topic_type',
                 't.topic_first_post_id',
                 't.topic_last_post_id',
