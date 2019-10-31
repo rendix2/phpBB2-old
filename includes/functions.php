@@ -14,7 +14,6 @@
 use Dibi\Exception;
 use Dibi\Row;
 use Nette\Caching\Cache;
-use Nette\Caching\IStorage;
 
 /***************************************************************************
  *
@@ -557,8 +556,58 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 
 	$sep = DIRECTORY_SEPARATOR;
 
+    //+MOD: Fix message_die for multiple errors MOD
+    static $msg_history;
+
+    if( !isset($msg_history) ) {
+        $msg_history = array();
+    }
+
+    $msg_history[] = [
+        'msg_code'  => $msg_code,
+        'msg_text'  => $msg_text,
+        'msg_title' => $msg_title,
+        'err_line'  => $err_line,
+        'err_file'  => $err_file,
+        'sql'       => $sql
+    ];
+    //-MOD: Fix message_die for multiple errors MOD
+
     if (defined('HAS_DIED')) {
-        die("message_die() was called multiple times. This isn't supposed to happen. Was message_die() used in PageHelper.php?");
+        //+MOD: Fix message_die for multiple errors MOD
+
+        //
+        // This message is printed at the end of the report.
+        // Of course, you can change it to suit your own needs. ;-)
+        //
+        $custom_error_message = 'Please, contact the %swebmaster%s. Thank you.';
+
+        if (!empty($board_config) && !empty($board_config['board_email'])) {
+            $custom_error_message = sprintf($custom_error_message,
+                '<a href="mailto:' . $board_config['board_email'] . '">', '</a>');
+        } else {
+            $custom_error_message = sprintf($custom_error_message, '', '');
+        }
+
+        echo "<html>\n<body>\n<b>Critical Error!</b><br />\nmessage_die() was called multiple times.<br />&nbsp;<hr />";
+
+        for ($i = 0; $i < count($msg_history); $i++) {
+            echo '<b>Error #' . ($i + 1) . "</b>\n<br />\n";
+            if (!empty($msg_history[$i]['msg_title'])) {
+                echo '<b>' . $msg_history[$i]['msg_title'] . "</b>\n<br />\n";
+            }
+            echo $msg_history[$i]['msg_text'] . "\n<br /><br />\n";
+            if (!empty($msg_history[$i]['err_line'])) {
+                echo '<b>Line :</b> ' . $msg_history[$i]['err_line'] . '<br /><b>File :</b> ' . $msg_history[$i]['err_file'] . "</b>\n<br />\n";
+            }
+            if (!empty($msg_history[$i]['sql'])) {
+                echo '<b>SQL :</b> ' . $msg_history[$i]['sql'] . "\n<br />\n";
+            }
+            echo "&nbsp;<hr />\n";
+        }
+        echo $custom_error_message . '<hr /><br clear="all">';
+        die("</body>\n</html>");
+        //-MOD: Fix message_die for multiple errors MOD
     }
 	
 	define('HAS_DIED', 1);
