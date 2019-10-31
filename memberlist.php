@@ -62,7 +62,8 @@ $modeTypes = [
     'topics'   => $lang['Sort_Topics'],
     'email'    => $lang['Sort_Email'],
     'website'  => $lang['Sort_Website'],
-    'topten'   => $lang['Sort_Top_Ten']
+    'topten'   => $lang['Sort_Top_Ten'],
+    'online'   => $lang['Sort_Online'],
 ];
 
 $selectSortModeValues= '';
@@ -125,11 +126,13 @@ $columns = [
     'user_email',
     'user_avatar',
     'user_avatar_type',
-    'user_allowavatar'
+    'user_allowavatar',
+    'user_allow_viewonline',
+    'user_session_time'
 ];
 
 $users = dibi::select($columns)
-    ->from(USERS_TABLE)
+    ->from(Tables::USERS_TABLE)
     ->where('user_id <> %i', ANONYMOUS);
 
 switch ($mode) {
@@ -173,6 +176,10 @@ switch ($mode) {
         $users->orderBy('user_posts', $sortOrder)
             ->limit($board_config['members_per_page']);
         break;
+    case 'online':
+        $users->orderBy('user_session_time', $sortOrder)
+            ->limit($board_config['members_per_page']);
+        break;
 }
 
 $users = $users->fetchAll();
@@ -194,6 +201,28 @@ foreach ($users as $i => $user) {
                 break;
         }
     }
+
+    // <!-- BEGIN Another Online/Offline indicator -->
+    if (!$user->user_allow_viewonline && $userdata['user_level'] === ADMIN || $user->user_allow_viewonline) {
+        $expiry_time = time() - ONLINE_TIME_DIFF;
+
+        if ($user->user_session_time >= $expiry_time) {
+            $user_onlinestatus = '<img src="' . $images['Online'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" />';
+
+            if (!$user->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                $user_onlinestatus = '<img src="' . $images['Hidden_Admin'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
+            }
+        } else {
+            $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
+
+            if (!$user->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
+            }
+        }
+    } else {
+        $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
+    }
+    // <!-- END Another Online/Offline indicator -->
 
     if (!empty($user->user_viewemail) || $userdata['user_level'] === ADMIN) {
         $emailUrl    = $board_config['board_email_form'] ? Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL . '=' . $user->user_id) : 'mailto:' . $user->user_email;
@@ -228,6 +257,11 @@ foreach ($users as $i => $user) {
             'ROW_COLOR' => '#' . $rowColor,
             'ROW_CLASS' => $rowClass,
             'USERNAME' => $user->username,
+
+            // <!-- BEGIN Another Online/Offline indicator -->
+            'ONLINESTATUS' => $user_onlinestatus,
+            // <!-- END Another Online/Offline indicator -->
+
             'FROM' => $from,
             'JOINED' => create_date($lang['DATE_FORMAT'], $user->user_regdate, $board_config['board_timezone']),
             'POSTS' => $user->user_posts ? $user->user_posts : 0,
@@ -252,7 +286,7 @@ foreach ($users as $i => $user) {
 if ($mode !== 'topten' || $board_config['members_per_page'] < 10) {
     $total_members = dibi::select('COUNT(*) - 1')
         ->as('total')
-        ->from(USERS_TABLE)
+        ->from(Tables::USERS_TABLE)
         ->fetchSingle();
 
     if ($total_members) {

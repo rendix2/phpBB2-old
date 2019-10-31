@@ -18,7 +18,7 @@ class Prune
     public static function run($forumId, $pruneDate, $pruneAll = false)
     {
         $topics = dibi::select('topic_id')
-            ->from(TOPICS_TABLE)
+            ->from(Tables::TOPICS_TABLE)
             ->where('topic_last_post_id = %i', 0)
             ->fetchAll();
 
@@ -30,9 +30,9 @@ class Prune
         // Those without polls and announcements ... unless told otherwise!
         //
         $topicQuery = dibi::select('t.topic_id')
-            ->from(POSTS_TABLE)
+            ->from(Tables::POSTS_TABLE)
             ->as('p')
-            ->innerJoin(TOPICS_TABLE)
+            ->innerJoin(Tables::TOPICS_TABLE)
             ->as('t')
             ->on('p.post_id = t.topic_last_post_id')
             ->where('t.forum_id = %i', $forumId);
@@ -50,14 +50,14 @@ class Prune
 
         if (count($topicData)) {
             $postIds = dibi::select('post_id')
-                ->from(POSTS_TABLE)
+                ->from(Tables::POSTS_TABLE)
                 ->where('forum_id = %i', $forumId)
                 ->where('topic_id IN %in', $topicData)
                 ->fetchPairs(null, 'post_id');
 
             if (count($postIds)) {
                 $userIds = dibi::select('poster_id')
-                    ->from(POSTS_TABLE)
+                    ->from(Tables::POSTS_TABLE)
                     ->where('post_id IN %in', $postIds)
                     ->fetchPairs(null, 'user_id');
 
@@ -72,7 +72,7 @@ class Prune
                 }
 
                 foreach ($userCounts as $userId => $userCount) {
-                    dibi::update(USERS_TABLE, ['user_posts%sql' => 'user_posts - ' . $userCount])
+                    dibi::update(Tables::USERS_TABLE, ['user_posts%sql' => 'user_posts - ' . $userCount])
                         ->where('user_id = %i', $userId)
                         ->execute();
                 }
@@ -80,30 +80,30 @@ class Prune
                 $topicAuthors = dibi::select('topic_poster')
                     ->select('COUNT(topic_id)')
                     ->as('topics')
-                    ->from(TOPICS_TABLE)
+                    ->from(Tables::TOPICS_TABLE)
                     ->where('topic_id IN %in', $topicData)
                     ->groupBy('topic_poster')
                     ->fetchAll();
 
                 foreach ($topicAuthors as $author) {
-                    dibi::update(USERS_TABLE, ['user_topics%sql' => 'user_topics - '. $author->topics])
+                    dibi::update(Tables::USERS_TABLE, ['user_topics%sql' => 'user_topics - '. $author->topics])
                         ->where('user_id = %i', $author->topic_poster)
                         ->execute();
                 }
 
-                dibi::delete(TOPICS_WATCH_TABLE)
+                dibi::delete(Tables::TOPICS_WATCH_TABLE)
                     ->where('topic_id IN %in', $topicData)
                     ->execute();
 
-                $prunedTopics = dibi::delete(TOPICS_TABLE)
+                $prunedTopics = dibi::delete(Tables::TOPICS_TABLE)
                     ->where('topic_id IN %in', $topicData)
                     ->execute(dibi::AFFECTED_ROWS);
 
-                $prunedPosts = dibi::delete(POSTS_TABLE)
+                $prunedPosts = dibi::delete(Tables::POSTS_TABLE)
                     ->where('post_id IN %in', $postIds)
                     ->execute(dibi::AFFECTED_ROWS);
 
-                dibi::delete(POSTS_TEXT_TABLE)
+                dibi::delete(Tables::POSTS_TEXT_TABLE)
                     ->where('post_id IN %in', $postIds)
                     ->execute(dibi::AFFECTED_ROWS);
 
@@ -131,7 +131,7 @@ class Prune
         global $board_config;
 
         $prune = dibi::select('*')
-            ->from(PRUNE_TABLE)
+            ->from(Tables::PRUNE_TABLE)
             ->where('forum_id = %i', $forumId)
             ->fetch();
 
@@ -157,7 +157,7 @@ class Prune
             self::run($forumId, $pruneDate);
             sync('forum', $forumId);
 
-            dibi::update(FORUMS_TABLE, ['prune_next' => $nextPrune])
+            dibi::update(Tables::FORUMS_TABLE, ['prune_next' => $nextPrune])
                 ->where('forum_id = %i', $forumId)
                 ->execute();
         }

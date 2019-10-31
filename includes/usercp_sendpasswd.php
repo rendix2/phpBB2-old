@@ -34,7 +34,7 @@ if (isset($_POST['submit'])) {
 	$email    = !empty($_POST['email'])    ? trim(strip_tags(htmlspecialchars($_POST['email']))) : '';
 
 	$user = dibi::select(['user_id', 'username', 'user_email', 'user_active', 'user_lang'])
-        ->from(USERS_TABLE)
+        ->from(Tables::USERS_TABLE)
         ->where('user_email = %s', $email)
         ->where('username = %s', $username)
         ->fetch();
@@ -58,7 +58,7 @@ if (isset($_POST['submit'])) {
         'user_actkey'    => $userActivationKey
     ];
 
-    dibi::update(USERS_TABLE, $updateData)
+    dibi::update(Tables::USERS_TABLE, $updateData)
         ->where('user_id = %i', $user->user_id)
         ->execute();
 

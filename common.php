@@ -78,9 +78,16 @@ $lang = [];
 $dss_seeded = false;
 $gen_simple_header = false;
 
-require_once $phpbb_root_path . 'config.php';
+if (file_exists($phpbb_root_path . 'Config.php')) {
+    require_once $phpbb_root_path . 'Config.php';
+} else {
+    header('Location: ' . $phpbb_root_path . 'install' . $sep . 'install.php');
+    exit;
+}
 
-if (!defined('PHPBB_INSTALLED')) {
+$classReflection = new ReflectionClass('Config');
+
+if (!$classReflection->hasConstant('INSTALLED')) {
     header('Location: ' . $phpbb_root_path . 'install' . $sep . 'install.php');
 	exit;
 }
@@ -90,10 +97,10 @@ require_once $phpbb_root_path . 'includes' . $sep . 'functions.php';
 
 // now we connect to database via dibi!
 $connection = dibi::connect([
-    'driver'   => 'PDO',
-    'username' => $dbuser,
-    'password' => $dbpasswd,
-    'dsn'      => $dns
+    'driver'   => Config::DATABASE_DRIVER,
+    'username' => Config::DATABASE_USER,
+    'password' => Config::DATABASE_PASSWORD,
+    'dsn'      => Config::DATABASE_DNS
 ]);
 
 $connection->connect();
@@ -135,18 +142,18 @@ $user_ip = encode_ip($client_ip);
 //
 
 $storage = new FileStorage(__DIR__ . $sep . 'temp');
-$cache   = new Cache($storage, CONFIG_TABLE);
+$cache   = new Cache($storage, Tables::CONFIG_TABLE);
 
-$boardConfigCached = $cache->load(CONFIG_TABLE);
+$boardConfigCached = $cache->load(Tables::CONFIG_TABLE);
 
 if ($boardConfigCached !== null) {
     $board_config = $boardConfigCached;
 } else {
     $board_config = dibi::select('*')
-        ->from(CONFIG_TABLE)
+        ->from(Tables::CONFIG_TABLE)
         ->fetchPairs('config_name', 'config_value');
 
-    $cache->save(CONFIG_TABLE, $board_config);
+    $cache->save(Tables::CONFIG_TABLE, $board_config);
 }
 
 if (!$board_config) {

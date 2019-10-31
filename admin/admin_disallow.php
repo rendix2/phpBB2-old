@@ -38,7 +38,7 @@ if (isset($_POST['add_name'])) {
 	}
 
 	if (Validator::userName($disallowed_user, $lang, $userdata->toArray())) {
-		dibi::insert(DISALLOW_TABLE, ['disallow_username' => $disallowed_user])->execute();
+		dibi::insert(Tables::DISS_ALLOW_TABLE, ['disallow_username' => $disallowed_user])->execute();
 
 		$message = $lang['Disallow_successful'];
 	} else {
@@ -57,7 +57,7 @@ if (isset($_POST['add_name'])) {
         message_die(GENERAL_MESSAGE, $message);
     }
 
-    dibi::delete(DISALLOW_TABLE)
+    dibi::delete(Tables::DISS_ALLOW_TABLE)
         ->where('disallow_id = %i', $disallowed_id)
         ->execute();
 
@@ -70,7 +70,7 @@ if (isset($_POST['add_name'])) {
 // Grab the current list of disallowed usernames...
 //
 $disallowed = dibi::select('*')
-    ->from(DISALLOW_TABLE)
+    ->from(Tables::DISS_ALLOW_TABLE)
     ->fetchPairs('disallow_id', 'disallow_username');
 
 //

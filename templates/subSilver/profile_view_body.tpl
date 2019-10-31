@@ -14,7 +14,7 @@
 	<td class="catRight" width="60%"><b><span class="gen">{L_ABOUT_USER}</span></b></td>
   </tr>
   <tr> 
-	<td class="row1" height="6" valign="top" align="center">{AVATAR_IMG}<br /><span class="postdetails">{POSTER_RANK}</span></td>
+	<td class="row1" height="6" valign="top" align="center">{AVATAR_IMG}<br /><span class="postdetails">{POSTER_RANK}<br />{USER_ONLINESTATUS}</span></td>
 	<td class="row1" rowspan="3" valign="top"><table width="100%" border="0" cellspacing="1" cellpadding="3">
 		<tr> 
 		  <td valign="middle" align="right" nowrap="nowrap"><span class="gen">{L_JOINED}:&nbsp;</span></td>

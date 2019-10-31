@@ -36,12 +36,12 @@ function get_db_stat($mode)
         case 'usercount':
             return dibi::select('COUNT(user_id) - 1')
                 ->as('total')
-                ->from(USERS_TABLE)
+                ->from(Tables::USERS_TABLE)
                 ->fetchSingle();
 
         case 'newestuser':
             return dibi::select(['user_id', 'username'])
-                ->from(USERS_TABLE)
+                ->from(Tables::USERS_TABLE)
                 ->where('user_id <> %i', ANONYMOUS)
                 ->orderBy('user_id', dibi::DESC)
                 ->fetch();
@@ -49,13 +49,13 @@ function get_db_stat($mode)
         case 'postcount':
             return dibi::select('SUM(forum_posts)')
                 ->as('post_total')
-                ->from(FORUMS_TABLE)
+                ->from(Tables::FORUMS_TABLE)
                 ->fetchSingle();
 
         case 'topiccount':
             return dibi::select('SUM(forum_topics)')
                 ->as('topic_total')
-                ->from(FORUMS_TABLE)
+                ->from(Tables::FORUMS_TABLE)
                 ->fetchSingle();
     }
 }
@@ -87,12 +87,12 @@ function dss_rand()
 	$board_config['rand_seed'] = md5($board_config['rand_seed'] . $val . 'a');
 
     if ($dss_seeded !== true) {
-        dibi::update(CONFIG_TABLE, ['config_value' => $board_config['rand_seed']])
+        dibi::update(Tables::CONFIG_TABLE, ['config_value' => $board_config['rand_seed']])
             ->where('config_name = %s', 'rand_seed')
             ->execute();
 
-        $cache = new Cache($storage, CONFIG_TABLE);
-        $cache->remove(CONFIG_TABLE);
+        $cache = new Cache($storage, Tables::CONFIG_TABLE);
+        $cache->remove(Tables::CONFIG_TABLE);
 
         $dss_seeded = true;
     }
@@ -120,7 +120,7 @@ function get_userdata($user_id, $force_str = false)
     }
 
     $user = dibi::select('*')
-        ->from(USERS_TABLE);
+        ->from(Tables::USERS_TABLE);
 
     if (is_int($user_id)) {
         $user->where('user_id = %i', $user_id);
@@ -146,9 +146,9 @@ function make_jumpbox($action, $match_forum_id = 0)
     $jumpBox = '';
 
     $categories = dibi::select(['c.cat_id', 'c.cat_title', 'c.cat_order'])
-        ->from(CATEGORIES_TABLE)
+        ->from(Tables::CATEGORIES_TABLE)
         ->as('c')
-        ->innerJoin(FORUMS_TABLE)
+        ->innerJoin(Tables::FORUMS_TABLE)
         ->as('f')
         ->on('f.cat_id = c.cat_id')
         ->groupBy('c.cat_id')
@@ -159,7 +159,7 @@ function make_jumpbox($action, $match_forum_id = 0)
 
     if (count($categories)) {
         $forums = dibi::select('*')
-            ->from(FORUMS_TABLE)
+            ->from(Tables::FORUMS_TABLE)
             ->orderBy('cat_id')
             ->orderBy('forum_order')
             ->fetchAll();
@@ -243,6 +243,9 @@ function init_userprefs($pageId)
     }
 
     if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $default_lang . $sep . 'lang_main.php'))) {
+        $cache = new Cache($storage, Tables::CONFIG_TABLE);
+        $cache->remove(Tables::CONFIG_TABLE);
+
 		if ($userData['user_id'] !== ANONYMOUS) {
 			// For logged in users, try the board default language next
 			$default_lang = ltrim(basename(rtrim($board_config['default_lang'])), "'");
@@ -261,18 +264,24 @@ function init_userprefs($pageId)
 	// If we've had to change the value in any way then let's write it back to the database
 	// before we go any further since it means there is something wrong with it
 	if ($userData['user_id'] !== ANONYMOUS && $userData['user_lang'] !== $default_lang) {
-	    dibi::update(USERS_TABLE, ['user_lang' => $default_lang])
-            ->where('user_lang = %s', $userData['user_lang'])
-            ->execute();
+	    if ($userData['user_lang'] === null) {
+            dibi::update(Tables::USERS_TABLE, ['user_lang' => $default_lang])
+                ->where('[user_lang] IS NULL')
+                ->execute();
+        } else {
+            dibi::update(Tables::USERS_TABLE, ['user_lang' => $default_lang])
+                ->where('[user_lang] = %s', $userData['user_lang'])
+                ->execute();
+        }
 
 		$userData['user_lang'] = $default_lang;
 	} elseif ($userData['user_id'] === ANONYMOUS && $board_config['default_lang'] !== $default_lang) {
-        dibi::update(CONFIG_TABLE, ['config_value' => $default_lang])
+        dibi::update(Tables::CONFIG_TABLE, ['config_value' => $default_lang])
             ->where('config_name = %s', 'default_lang')
             ->execute();
 
-        $cache = new Cache($storage, CONFIG_TABLE);
-        $cache->remove(CONFIG_TABLE);
+        $cache = new Cache($storage, Tables::CONFIG_TABLE);
+        $cache->remove(Tables::CONFIG_TABLE);
 	}
 
 	$board_config['default_lang'] = $default_lang;
@@ -314,16 +323,16 @@ function setupStyle($style)
 
 	$sep = DIRECTORY_SEPARATOR;
 
-	$cache = new Cache($storage, THEMES_TABLE);
+	$cache = new Cache($storage, Tables::THEMES_TABLE);
 
-	$key = THEMES_TABLE . '_'. (int)$style;
+	$key = Tables::THEMES_TABLE . '_'. (int)$style;
 	$cachedTheme = $cache->load($key);
 
 	if ($cachedTheme !== null) {
         $theme = $cachedTheme;
 	} else {
         $theme = dibi::select('*')
-            ->from(THEMES_TABLE)
+            ->from(Tables::THEMES_TABLE)
             ->where('themes_id = %i', (int)$style)
             ->fetch();
 
@@ -336,12 +345,12 @@ function setupStyle($style)
         }
 
 	    $default_theme = dibi::select('*')
-            ->from(THEMES_TABLE)
+            ->from(Tables::THEMES_TABLE)
             ->where('themes_id = %i',(int) $board_config['default_style'])
             ->fetch();
 
 	    if ($default_theme) {
-	        dibi::update(USERS_TABLE, ['user_style' => (int) $board_config['default_style']])
+	        dibi::update(Tables::USERS_TABLE, ['user_style' => (int) $board_config['default_style']])
                 ->where('user_style = %s', $style)
                 ->execute();
         } else {
@@ -505,9 +514,9 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 {
     global $storage;
 
-    $cache = new Cache($storage, WORDS_TABLE);
+    $cache = new Cache($storage, Tables::WORDS_TABLE);
 
-    $cachedWords = $cache->load(WORDS_TABLE);
+    $cachedWords = $cache->load(Tables::WORDS_TABLE);
 
 	//
 	// Define censored word matches
@@ -516,10 +525,10 @@ function obtain_word_list(&$orig_word, &$replacement_word)
         $words = $cachedWords;
     } else {
         $words = dibi::select(['word', 'replacement'])
-            ->from(WORDS_TABLE)
+            ->from(Tables::WORDS_TABLE)
             ->fetchPairs('word', 'replacement');
 
-        $cache->save(WORDS_TABLE, $words);
+        $cache->save(Tables::WORDS_TABLE, $words);
     }
 
     foreach ($words as $word => $replacement) {

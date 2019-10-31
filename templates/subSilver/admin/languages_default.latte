@@ -1,0 +1,44 @@
+<table cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
+    <thead>
+    <tr>
+        <th class="thHead">{$L_LANG_ID}</th>
+        <th class="thHead">{$L_LANG_NAME}</th>
+        <th class="thHead"></th>
+        <th class="thHead"></th>
+    </tr>
+    </thead>
+    {foreach $D_LANGUAGES as $language}
+        <tr>
+            <td class="{$iterator->isEven() ? row1 : row2}">{$language->lang_id}</td>
+            <td class="{$iterator->isEven() ? row1 : row2}">{$language->lang_name|firstUpper}</td>
+            <td class="{$iterator->isEven() ? row1 : row2}">
+                <a href="admin_languages.php?{$C_MODE}=edit&{$C_LANG_ID}={$language->lang_id}&{$S_SID}">{$L_INFO}</a>
+            </td>
+            <td class="{$iterator->isEven() ? row1 : row2}">
+                <a href="admin_languages.php?{$C_MODE}=delete&{$C_LANG_ID}={$language->lang_id}&{$S_SID}">{$L_DELETE}</a>
+            </td>
+        </tr>
+    {/foreach}
+</table>
+
+{if count($S_CAN_BE_INSTALLED)}
+    <span>{$L_CAN_BE_INSTALLED}</span>
+
+<table cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
+    <thead>
+    <tr>
+        <th class="thHead">{$L_LANG_NAME}</th>
+        <th class="thHead"></th>
+    </tr>
+    </thead>
+    {foreach $S_CAN_BE_INSTALLED as $language}
+        <tr>
+            <td class="{$iterator->isEven() ? row1 : row2}">{$language}</td>
+            <td class="{$iterator->isEven() ? row1 : row2}">
+                <a href="admin_languages.php?{$C_MODE}=install&{$C_LANG_ID}={$language}&{$S_SID}">{$L_INSTALL}</a>
+            </td>
+        </tr>
+    {/foreach}
+
+</table>
+{/if}

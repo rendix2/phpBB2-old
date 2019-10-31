@@ -57,7 +57,7 @@ $template->assignVars(
 // Forum info
 //
 $forums = dibi::select(['forum_id', 'forum_name'])
-    ->from(FORUMS_TABLE)
+    ->from(Tables::FORUMS_TABLE)
     ->fetchPairs('forum_id', 'forum_name');
 
 //
@@ -77,9 +77,9 @@ $time->setTimezone(new DateTimeZone($userTimeZone));
 $time->sub(new DateInterval('PT' . ONLINE_TIME_DIFF . 'S'));
 
 $rows = dibi::select($columns)
-    ->from(USERS_TABLE)
+    ->from(Tables::USERS_TABLE)
     ->as('u')
-    ->innerJoin(SESSIONS_TABLE)
+    ->innerJoin(Tables::SESSIONS_TABLE)
     ->as('s')
     ->on('u.user_id = s.session_user_id')
     ->where('s.session_time >= %i', $time->getTimestamp())

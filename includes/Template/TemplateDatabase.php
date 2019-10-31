@@ -72,7 +72,7 @@ class TemplateDatabase extends BaseTemplate
         }
 
         $rows = dibi::select('*')
-            ->from(TEMPLATE_CACHE_TABLE)
+            ->from(Tables::TEMPLATE_CACHE_TABLE)
             ->where('template_name IN %in', $filename_array)
             ->fetchAll();
 
@@ -110,7 +110,7 @@ class TemplateDatabase extends BaseTemplate
                 'template_compile' => $this->compiledCode[$handle]
             ];
 
-            dibi::query('REPLACE INTO %n %v', TEMPLATE_CACHE_TABLE, $replace_data);
+            dibi::query('REPLACE INTO %n %v', Tables::TEMPLATE_CACHE_TABLE, $replace_data);
 		}
 
 		$_str = '';
@@ -148,7 +148,7 @@ class TemplateDatabase extends BaseTemplate
                 'template_compile' => $code
             ];
 
-            dibi::query('REPLACE INTO %n %v', TEMPLATE_CACHE_TABLE, $replace_data);
+            dibi::query('REPLACE INTO %n %v', Tables::TEMPLATE_CACHE_TABLE, $replace_data);
 		} else {
 			$code = $this->compiledCode[$handle];
 		}

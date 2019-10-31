@@ -62,9 +62,9 @@ if (isset($_GET['perform']) || isset($_POST['perform'])) {
 	switch($perform) {
 		case 'backup':
 			$dumper = new Mysqldump(
-				$dbms.':host='.$dbhost.';dbname='.$dbname.';charset=utf8',
-				$dbuser,
-				$dbpasswd
+				Config::DATABASE_DNS,
+				Config::DATABASE_USER,
+				Config::DATABASE_PASSWORD
 			);
 
 			$sep = DIRECTORY_SEPARATOR;

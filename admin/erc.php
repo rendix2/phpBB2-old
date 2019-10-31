@@ -35,7 +35,7 @@ require_once $phpbb_root_path . 'includes' . $sep . 'functions_dbmtnc.php';
 $mode   = isset($_POST['mode'])   ? htmlspecialchars($_POST['mode']) : (isset($_GET['mode']) ? htmlspecialchars($_GET['mode']) : 'start');
 $option = isset($_POST['option']) ? htmlspecialchars($_POST['option']) : '';
 
-// Before doing anything else send config.php if requested
+// Before doing anything else send Config.php if requested
 if ($mode === 'download') {
 	// Get and convert Variables
 	$new_dbms         = isset($_GET['ndbms']) ? $_GET['ndbms'] : '';
@@ -52,7 +52,7 @@ if ($mode === 'download') {
 		$$var = str_replace("'", "\\'", str_replace("\\", "\\\\", $$var));
 	}
 
-	// Create the config.php
+	// Create the Config.php
 	$data = "<?php\n" . 
 		"\n" .
 		"//\n" .
@@ -73,7 +73,7 @@ if ($mode === 'download') {
 		"\n" .
 		'?>';
 	header('Content-type: text/plain');
-	header('Content-Disposition: attachment; filename=config.php');
+	header('Content-Disposition: attachment; filename=Config.php');
 	echo $data;
 	exit;
 }
@@ -470,7 +470,7 @@ switch($mode) {
 
 			    $themes_count = dibi::select('COUNT(*)')
 			    ->as('themes_count')
-			    ->from(THEMES_TABLE)
+			    ->from(Tables::THEMES_TABLE)
 			    ->fetchSingle();
 ?>
 	<tr>
@@ -537,7 +537,7 @@ switch($mode) {
 	</tr>
 <?php
 				break;
-			case 'rcp': // Recreate config.php
+			case 'rcp': // Recreate Config.php
 				$available_dbms = [
 					'mysql'      => ['LABEL'=> 'MySQL 3.x'],
 					'mysql4'     => ['LABEL'=> 'MySQL 4.x'],
@@ -620,8 +620,8 @@ switch($mode) {
 			case 'cls': // Clear Sessions
 				check_authorisation();
 
-				dibi::query('TRUNCATE TABLE %n', SESSIONS_TABLE);
-				dibi::query('TRUNCATE TABLE %n', SEARCH_TABLE);
+				dibi::query('TRUNCATE TABLE %n', Tables::SESSIONS_TABLE);
+				dibi::query('TRUNCATE TABLE %n', Tables::SEARCH_TABLE);
 
 				success_message($lang['cls_success']);
 				break;
@@ -632,7 +632,7 @@ switch($mode) {
 	<ul>
 <?php
 					foreach ($tables as $table) {
-						$tablename = $table_prefix . $table;
+						$tablename = Config::TABLE_PREFIX . $table;
 
 						$row = dibi::query('REPAIR TABLE %n', $tablename)->fetch();
 
@@ -690,7 +690,7 @@ switch($mode) {
 
 				$row = dibi::select('MIN(topic_time)')
 				    ->as('startdate')
-				    ->from(TOPICS_TABLE)
+				    ->from(Tables::TOPICS_TABLE)
 				    ->fetch();
 
 				if ($row && $row->startdate > 0) {
@@ -704,19 +704,19 @@ switch($mode) {
 <?php
 				foreach ($default_config as $key => $value) {
 				    $row = dibi::select('config_value')
-				    ->from(CONFIG_TABLE)
+				    ->from(Tables::CONFIG_TABLE)
 				    ->where('config_name = %s', $key)
 				    ->fetch();
 
 					if (!$row){
 						echo("<li><b>$key:</b> $value</li>\n");
 
-						dibi::insert(CONFIG_TABLE, ['config_name' => $key, 'config_value' => $value])->execute();
+						dibi::insert(Tables::CONFIG_TABLE, ['config_name' => $key, 'config_value' => $value])->execute();
 					}
 				}
 
-				$cache = new Cache($storage, CONFIG_TABLE);
-                $cache->remove(CONFIG_TABLE);
+				$cache = new Cache($storage, Tables::CONFIG_TABLE);
+                $cache->remove(Tables::CONFIG_TABLE);
 ?>
 	</ul>
 <?php
@@ -735,31 +735,31 @@ switch($mode) {
 				$path = isset($_POST['path']) ? str_replace("\\'", "''", $_POST['path']) : '';
 				
 				if ($secure_select === 1) {
-				    dibi::update(CONFIG_TABLE, ['config_value' => $secure])
+				    dibi::update(Tables::CONFIG_TABLE, ['config_value' => $secure])
 				        ->where('config_name = %s', 'cookie_secure')
 				        ->execute();
 				}
 
 				if ($domain_select === 1) {
-				    dibi::update(CONFIG_TABLE, ['config_value' => $domain])
+				    dibi::update(Tables::CONFIG_TABLE, ['config_value' => $domain])
 				        ->where('config_name = %s', 'server_name')
 				        ->execute();
 				}
 
 				if ($port_select === 1) {
-				    dibi::update(CONFIG_TABLE, ['config_value' => $port])
+				    dibi::update(Tables::CONFIG_TABLE, ['config_value' => $port])
 				        ->where('config_name = %s', 'server_port')
 				        ->execute();
 				}
 
 				if ($path_select === 1) {
-				    dibi::update(CONFIG_TABLE, ['config_value' => $path])
+				    dibi::update(Tables::CONFIG_TABLE, ['config_value' => $path])
 				        ->where('config_name = %s', 'script_path')
 				        ->execute();
 				}
 
-                $cache = new Cache($storage, CONFIG_TABLE);
-                $cache->remove(CONFIG_TABLE);
+                $cache = new Cache($storage, Tables::CONFIG_TABLE);
+                $cache->remove(Tables::CONFIG_TABLE);
 
 				success_message($lang['rpd_success']);
 				break;
@@ -770,20 +770,20 @@ switch($mode) {
 				$cookie_name = isset($_POST['cookie_name']) ? str_replace("\\'", "''", $_POST['cookie_name']) : '';
 				$cookie_path = isset($_POST['cookie_path']) ? str_replace("\\'", "''", $_POST['cookie_path']) : '';
 
-				dibi::update(CONFIG_TABLE, ['config_value' => $cookie_domain])
+				dibi::update(Tables::CONFIG_TABLE, ['config_value' => $cookie_domain])
 				->where('config_name = %s', 'cookie_domain')
 				->execute();
 
-				dibi::update(CONFIG_TABLE, ['config_value' => $cookie_name])
+				dibi::update(Tables::CONFIG_TABLE, ['config_value' => $cookie_name])
 				->where('config_name = %s', 'cookie_name')
 				->execute();
 
-				dibi::update(CONFIG_TABLE, ['config_value' => $cookie_path])
+				dibi::update(Tables::CONFIG_TABLE, ['config_value' => $cookie_path])
 				->where('config_name = %s', 'cookie_path')
 				->execute();
 
-				$cache = new Cache($storage, CONFIG_TABLE);
-                $cache->remove(CONFIG_TABLE);
+				$cache = new Cache($storage, Tables::CONFIG_TABLE);
+                $cache->remove(Tables::CONFIG_TABLE);
 
 				success_message($lang['rcd_success']);
 				break;
@@ -795,16 +795,16 @@ switch($mode) {
 				$board_user = str_replace("'", "\\'", $board_user);
 
 				if (is_file(@phpbb_realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $new_lang . $sep . 'lang_main.php')) && is_file(@phpbb_realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $new_lang . $sep .'lang_admin.php'))){
-				    dibi::update(USERS_TABLE, ['user_lang' => $new_lang])
+				    dibi::update(Tables::USERS_TABLE, ['user_lang' => $new_lang])
 				     ->where('username = %s', $board_user)
 				      ->execute();
 
-				    dibi::update(CONFIG_TABLE, ['config_value' => $new_lang])
+				    dibi::update(Tables::CONFIG_TABLE, ['config_value' => $new_lang])
 				        ->where('config_name = %s', 'default_lang')
 				        ->execute();
 
-				    $cache = new Cache($storage, CONFIG_TABLE);
-                    $cache->remove(CONFIG_TABLE);
+				    $cache = new Cache($storage, Tables::CONFIG_TABLE);
+                    $cache->remove(Tables::CONFIG_TABLE);
 
 					success_message($lang['rld_success']);
 				} else {
@@ -878,7 +878,7 @@ switch($mode) {
 
                     ];
 
-				    $new_style = dibi::insert(THEMES_TABLE, $insertData)->execute(dibi::IDENTIFIER);
+				    $new_style = dibi::insert(Tables::THEMES_TABLE, $insertData)->execute(dibi::IDENTIFIER);
 
 					$method = 'select_theme';
 ?>
@@ -887,16 +887,16 @@ switch($mode) {
 				}
 
 				if ($method === 'select_theme') {
-				    dibi::update(USERS_TABLE, ['user_style' => $new_style])
+				    dibi::update(Tables::USERS_TABLE, ['user_style' => $new_style])
 				    ->where('username = %s', $board_user)
 				    ->execute();
 
-				    dibi::update(CONFIG_TABLE, ['config_value' => $new_style])
+				    dibi::update(Tables::CONFIG_TABLE, ['config_value' => $new_style])
 				    ->where('config_name = %s', 'default_style')
 				    ->execute();
 
-				    $cache = new Cache($storage, CONFIG_TABLE);
-                    $cache->remove(CONFIG_TABLE);
+				    $cache = new Cache($storage, Tables::CONFIG_TABLE);
+                    $cache->remove(Tables::CONFIG_TABLE);
 
 					success_message($lang['rtd_success']);
 				}
@@ -904,23 +904,23 @@ switch($mode) {
 			case 'dgc': // Disable GZip compression 
 				check_authorisation();
 
-				dibi::update(CONFIG_TABLE, ['config_value' => 0])
+				dibi::update(Tables::CONFIG_TABLE, ['config_value' => 0])
 				->where('config_name = %s', 'gzip_compress')
 				->execute();
 
-				$cache = new Cache($storage, CONFIG_TABLE);
-                $cache->remove(CONFIG_TABLE);
+				$cache = new Cache($storage, Tables::CONFIG_TABLE);
+                $cache->remove(Tables::CONFIG_TABLE);
 
 				success_message($lang['dgc_success']);
 				break;
 			case 'cbl': // Clear ban list 
 				check_authorisation();
 
-				dibi::query('TRUNCATE TABLE %n', BANLIST_TABLE);
-				dibi::query('TRUNCATE TABLE %n', DISALLOW_TABLE);
+				dibi::query('TRUNCATE TABLE %n', Tables::BAN_LIST_TABLE);
+				dibi::query('TRUNCATE TABLE %n', Tables::DISS_ALLOW_TABLE);
 
 				$row = dibi::select('user_id')
-				->from(USERS_TABLE)
+				->from(Tables::USERS_TABLE)
 				->where('user_id = %i', ANONYMOUS)
 				->fetch();
 
@@ -934,6 +934,7 @@ switch($mode) {
                         'user_level' => 0,
                         'user_regdate' => 0,
                         'user_password' => '',
+                        'user_acp_password' => '',
                         'user_email'    => '',
                         'user_website'  => '',
                         'user_occ'   => '',
@@ -962,7 +963,7 @@ switch($mode) {
                         'user_active' => 0
                     ];
 
-                    dibi::insert(USERS_TABLE, $insertData)->execute();
+                    dibi::insert(Tables::USERS_TABLE, $insertData)->execute();
 
 					success_message($lang['cbl_success_anonymous']);
 				}
@@ -975,7 +976,7 @@ switch($mode) {
 				$board_user = substr(str_replace("\\'", "'", $board_user), 0, 25);
 
 				$rows = dibi::select(['user_id', 'username'])
-				->from(USERS_TABLE)
+				->from(Tables::USERS_TABLE)
 				->where('user_level = %i', ADMIN)
 				->fetchAll();
 ?>
@@ -987,9 +988,9 @@ switch($mode) {
 						// Checking whether user is a moderator
 
 						$row2 = dibi::select('ug.user_id')
-						    ->from(USER_GROUP_TABLE)
+						    ->from(Tables::USERS_GROUPS_TABLE)
 						    ->as('ug')
-						    ->innerJoin(AUTH_ACCESS_TABLE)
+						    ->innerJoin(Tables::AUTH_ACCESS_TABLE)
 						    ->as('aa')
 						    ->on('ug.group_id = aa.group_id')
 						    ->where('ug.user_id = %i', $row->user_id)
@@ -999,7 +1000,7 @@ switch($mode) {
 
 						$new_state = $row2 ? MOD : USER;
 
-						dibi::update(USERS_TABLE, ['user_level' => $new_state])
+						dibi::update(Tables::USERS_TABLE, ['user_level' => $new_state])
 						    ->where('user_id = %i', $row['user_id'])
 						    ->execute();
 
@@ -1017,13 +1018,13 @@ switch($mode) {
 				check_authorisation();
 				$username = isset($_POST['username']) ? str_replace("\\'", "''", $_POST['username']) : '';
 
-				$affected_rows1 = dibi::update(USERS_TABLE, ['user_active' => 1, 'user_level' => ADMIN])
+				$affected_rows1 = dibi::update(Tables::USERS_TABLE, ['user_active' => 1, 'user_level' => ADMIN])
 				->where('username = %s', $username)
 				->where('user_id <> %i', ANONYMOUS)
 				->execute(dibi::AFFECTED_ROWS);
 
 				// Try to update the login data
-				$affected_rows2 = dibi::update(USERS_TABLE, ['user_login_tries' => 0, 'user_last_login_try' => 0])
+				$affected_rows2 = dibi::update(Tables::USERS_TABLE, ['user_login_tries' => 0, 'user_last_login_try' => 0])
 				->where('username = %s', $username)
 				->execute(dibi::AFFECTED_ROWS);
 
@@ -1035,7 +1036,7 @@ switch($mode) {
 					success_message($lang['mua_success']);
 				}
 				break;
-			case 'rcp': // Recreate config.php
+			case 'rcp': // Recreate Config.php
 				// Get Variables
 				$var_array = ['new_dbms', 'new_dbhost', 'new_dbname', 'new_dbuser', 'new_dbpasswd', 'new_table_prefix'];
 

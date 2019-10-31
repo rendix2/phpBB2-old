@@ -10,7 +10,10 @@
  *
  ***************************************************************************/
 
+use Nette\PhpGenerator\ClassType;
+use Nette\PhpGenerator\PhpFile;
 use Nette\Utils\Finder;
+use Nette\Utils\Validators;
 
 /***************************************************************************
  *
@@ -77,9 +80,9 @@ td.catHead,td.catSides,td.catLeft,td.catRight,td.catBottom { background-image: u
 				<td><br /><br /></td>
 			</tr>
 			<tr>
-				<td width="100%"><table width="100%" cellpadding="2" cellspacing="1" border="0" class="forumline"><form action="<?php echo $form_action ? $form_action : 'install.php'; ?>" name="install" method="post">
+				<td width="100%"><table width="100%" cellpadding="2" cellspacing="1" border="0" class="forumline"><form action="<?php echo $form_action ? $form_action : 'install.php?install=1'; ?>" name="install" method="post">
 <?php
-
+            CSRF::getInputHtml();
 }
 
 function page_footer()
@@ -102,8 +105,8 @@ function page_common_form($hidden, $submit)
 {
 
 ?>
-					<tr> 
-					  <td class="catBottom" align="center" colspan="2"><?php echo $hidden; ?><input class="mainoption" type="submit" value="<?php echo $submit; ?>" /></td>
+					<tr>
+					  <td class="catBottom" align="center" colspan="2"><?php echo $hidden; ?><input class="mainoption" type="submit" name="install" value="<?php echo $submit; ?>" /></td>
 					</tr>
 <?php
 
@@ -235,20 +238,27 @@ $phpbb_root_path = '.' . $sep . '..' . $sep;
 $userdata = [];
 $lang = [];
 $error = false;
+$databaseError = false;
+$validated = false;
 
 require_once $phpbb_root_path . 'vendor' . $sep . 'autoload.php';
 
 $loader = new Nette\Loaders\RobotLoader;
 
 // Add directories for RobotLoader to index
-$loader->addDirectory(__DIR__ . $sep . 'includes');
+$loader->addDirectory($phpbb_root_path . $sep . 'includes');
 
 // And set caching to the 'temp' directory
-$loader->setTempDirectory(__DIR__ . $sep . 'temp');
+$loader->setTempDirectory($phpbb_root_path . $sep . 'temp');
 $loader->register(); // Run the RobotLoader
 
+\Tracy\Debugger::enable();
+
 // Include some required functions
-require_once $phpbb_root_path . 'includes' . $sep . 'constants.php';
+//require_once $phpbb_root_path . 'includes' . $sep . 'constants.php';
+define('USER_MIN_PASSWORD_LENGTH', 8);
+define('USER_MAX_PASSWORD_LENGTH', 32);
+
 require_once $phpbb_root_path . 'includes' . $sep . 'functions.php';
 
 // Define schema info
@@ -325,17 +335,20 @@ $admin_name = !empty($_POST['admin_name']) ? $_POST['admin_name'] : '';
 $admin_pass1 = !empty($_POST['admin_pass1']) ? $_POST['admin_pass1'] : '';
 $admin_pass2 = !empty($_POST['admin_pass2']) ? $_POST['admin_pass2'] : '';
 
+$admin_acp_pass1 = !empty($_POST['admin_acp_pass1']) ? $_POST['admin_acp_pass1'] : '';
+$admin_acp_pass2 = !empty($_POST['admin_acp_pass1']) ? $_POST['admin_acp_pass2'] : '';
+
 $ftp_path = !empty($_POST['ftp_path']) ? $_POST['ftp_path'] : '';
 $ftp_user = !empty($_POST['ftp_user']) ? $_POST['ftp_user'] : '';
 $ftp_pass = !empty($_POST['ftp_pass']) ? $_POST['ftp_pass'] : '';
 
 if (isset($_POST['lang']) && preg_match('#^[a-z_]+$#', $_POST['lang']))
 {
-	$language = strip_tags($_POST['lang']);
+	$boardLanguage = strip_tags($_POST['lang']);
 }
 else
 {
-	$language = guess_lang();
+    $boardLanguage = guess_lang();
 }
 
 $board_email = !empty($_POST['board_email']) ? $_POST['board_email'] : '';
@@ -364,9 +377,9 @@ if (!empty($_POST['server_port'])) {
     }
 }
 
-// Open config.php ... if it exists
-if (@file_exists(@phpbb_realpath('config.php'))) {
-    require_once $phpbb_root_path . 'config.php';
+// Open Config.php ... if it exists
+if (@file_exists(@phpbb_realpath('Config.php'))) {
+    require_once $phpbb_root_path . 'Config.php';
 }
 
 // Is phpBB already installed? Yes? Redirect to the index
@@ -375,8 +388,8 @@ if (defined('PHPBB_INSTALLED')) {
 }
 
 // Import language file, setup template ...
-require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $language . $sep . 'lang_main.php';
-require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $language . $sep . 'lang_admin.php';
+require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $boardLanguage . $sep . 'lang_main.php';
+require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $boardLanguage . $sep . 'lang_admin.php';
 
 // Ok for the time being I'm commenting this out whilst I'm working on
 // better integration of the install with upgrade as per Bart's request
@@ -388,8 +401,8 @@ if ($upgrade === 1) {
 
 // What do we need to do?
 if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['upgrade_now'])) {
-    header('Content-Type: text/x-delimtext; name="config.php"');
-    header('Content-disposition: attachment; filename="config.php"');
+    header('Content-Type: text/x-delimtext; name="Config.php"');
+    header('Content-disposition: attachment; filename="Config.php"');
 
     // We need to stripslashes no matter what the setting of magic_quotes_gpc is
     // because we add slashes at the top if its off, and they are added automaticlly
@@ -397,11 +410,11 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['up
     echo stripslashes($_POST['config_data']);
 
     exit;
-} elseif (!empty($_POST['send_file']) && $_POST['send_file'] === 2) {
+} elseif (!empty($_POST['send_file']) && $_POST['send_file'] == 2) {
     $s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars(stripslashes($_POST['config_data'])) . '" />';
     $s_hidden_fields .= '<input type="hidden" name="ftp_file" value="1" />';
 
-    if ($upgrade === 1) {
+    if ($upgrade == 1) {
         $s_hidden_fields .= '<input type="hidden" name="upgrade" value="1" />';
     }
 
@@ -444,7 +457,7 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['up
 		// If we're upgrading ...
         if ($upgrade === 1) {
             $s_hidden_fields .= '<input type="hidden" name="upgrade" value="1" />';
-            $s_hidden_fields .= '<input type="hidden" name="dbms" value="' . $dmbs . '" />';
+            $s_hidden_fields .= '<input type="hidden" name="dbms" value="' . $dbms . '" />';
             $s_hidden_fields .= '<input type="hidden" name="prefix" value="' . $table_prefix . '" />';
             $s_hidden_fields .= '<input type="hidden" name="dbhost" value="' . $dbhost . '" />';
             $s_hidden_fields .= '<input type="hidden" name="dbname" value="' . $dbname . '" />';
@@ -453,6 +466,8 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['up
             $s_hidden_fields .= '<input type="hidden" name="install_step" value="1" />';
             $s_hidden_fields .= '<input type="hidden" name="admin_pass1" value="1" />';
             $s_hidden_fields .= '<input type="hidden" name="admin_pass2" value="1" />';
+            $s_hidden_fields .= '<input type="hidden" name="admin_acp_pass1" value="1" />';
+            $s_hidden_fields .= '<input type="hidden" name="admin_acpt_pass2" value="1" />';
             $s_hidden_fields .= '<input type="hidden" name="server_port" value="' . $server_port . '" />';
             $s_hidden_fields .= '<input type="hidden" name="server_name" value="' . $server_name . '" />';
             $s_hidden_fields .= '<input type="hidden" name="script_path" value="' . $script_path . '" />';
@@ -480,14 +495,13 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['up
 		// Now ftp it across.
 		@ftp_chdir($conn_id, $ftp_dir);
 
-		$res = ftp_put($conn_id, 'config.php', $tmpfname, FTP_ASCII);
+		$res = ftp_put($conn_id, 'Config.php', $tmpfname, FTP_ASCII);
 
 		@ftp_close($conn_id);
 
 		unlink($tmpfname);
 
-		if ($upgrade === 1)
-		{
+		if ($upgrade == 1) {
             require_once 'upgrade.php';
 			exit;
 		}
@@ -498,6 +512,7 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['up
 		// section.
 		$s_hidden_fields = '<input type="hidden" name="username" value="' . $admin_name . '" />';
 		$s_hidden_fields .= '<input type="hidden" name="password" value="' . $admin_pass1 . '" />';
+		$s_hidden_fields .= '<input type="hidden" name="acp_password" value="' . $admin_acp_pass1 . '" />';
 		$s_hidden_fields .= '<input type="hidden" name="redirect" value="../admin/index.php" />';
 		$s_hidden_fields .= '<input type="hidden" name="submit" value="' . $lang['Login'] . '" />';
 
@@ -506,19 +521,78 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['up
 		page_footer();
 		exit();
 	}
-} elseif (empty($install_step) || $admin_pass1 !== $admin_pass2 || empty($admin_pass1) || empty($dbhost)) {
-	// Ok we haven't installed before so lets work our way through the various
-	// steps of the install process.  This could turn out to be quite a lengty 
-	// process.
+} elseif ($validated === false) {
+    // Ok we haven't installed before so lets work our way through the various
+    // steps of the install process.  This could turn out to be quite a lengty
+    // process.
 
-	// Step 0 gather the pertinant info for database setup...
-	// Namely dbms, dbhost, dbname, dbuser, and dbpasswd.
-	$instruction_text = $lang['Inst_Step_0'];
+    // Step 0 gather the pertinant info for database setup...
+    // Namely dbms, dbhost, dbname, dbuser, and dbpasswd.
+    $instruction_text = $lang['Inst_Step_0'];
 
-    if (!empty($install_step)) {
-        if ($_POST['admin_pass1'] !== $_POST['admin_pass2'] || (empty($_POST['admin_pass1']) || empty($dbhost)) && $_POST['cur_lang'] === $language) {
-            $error = $lang['Password_mismatch'];
+    //if (empty($install_step)) {
+    if (empty($_POST['dbhost'])) {
+        $databaseError[] = $lang['Empty_db_host'];
+    }
+
+    if (empty($_POST['dbname'])) {
+        $databaseError[] = $lang['Empty_db_name'];
+    }
+
+    if (empty($_POST['dbuser'])) {
+        $databaseError[] = $lang['Empty_db_user_name'];
+    }
+
+    if (empty($_POST['admin_name'])) {
+        $error[] = $lang['Empty_user_name'];
+    }
+
+    if (empty($_POST['board_email'])) {
+        $error[] = $lang['Empty_user_email'];
+    } else {
+        if (!Validators::isEmail($_POST['board_email'])) {
+            $error[] = $lang['User_email_invalid'];
         }
+    }
+
+    if (empty($_POST['admin_pass1'])) {
+        $error[] = $lang['Empty_user_password'];
+    }
+
+    if (empty($_POST['admin_pass2'])) {
+        $error[] = $lang['Empty_confirm_user_password'];
+    }
+
+    if ($_POST['admin_pass1'] === $_POST['admin_pass2']) {
+        if (mb_strlen($_POST['admin_pass1']) < USER_MIN_PASSWORD_LENGTH) {
+            $error[] = $lang['Password_short'];
+        }
+    } else {
+        $error[] = $lang['Password_mismatch'];
+    }
+
+    if (empty($_POST['admin_acp_pass1'])) {
+        $error[] = $lang['ACP_password_empty'];
+    }
+
+    if (empty($_POST['admin_acp_pass2'])) {
+        $error[] = $lang['ACP_confirm_password_empty'];
+    }
+
+    if ($_POST['admin_acp_pass1'] === $_POST['admin_acp_pass2']) {
+        if (mb_strlen($_POST['admin_acp_pass1']) < USER_MIN_PASSWORD_LENGTH) {
+            $error[] = $lang['Password_short'];
+        }
+    } else {
+        $error[] = $lang['Password_mismatch'];
+    }
+
+    if ($_POST['admin_pass1'] === $_POST['admin_acp_pass1']) {
+        $error[] = $lang['ACP_Password_match_pw'];
+    }
+
+    if ($error === false && $databaseError === false) {
+        $validated = true;
     }
 
     $lang_options = [];
@@ -538,123 +612,169 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['up
 
     @asort($lang_options);
 
-	$lang_select = '<select name="lang" onchange="this.form.submit()">';
+    $lang_select = '<select name="lang" onchange="this.form.submit()">';
 
     foreach ($lang_options as $displayname => $filename) {
-        $selected    = ($language === $filename) ? ' selected="selected"' : '';
+        $selected = ($boardLanguage === $filename) ? ' selected="selected"' : '';
         $lang_select .= '<option value="' . $filename . '"' . $selected . '>' . ucwords($displayname) . '</option>';
     }
 
-	$lang_select .= '</select>';
+    $lang_select .= '</select>';
 
-	$dbms_select = '<select name="dbms" onchange="if (this.form.upgrade.options[this.form.upgrade.selectedIndex].value == 1){ this.selectedIndex = 0;}">';
+    $dbms_select = '<select name="dbms" onchange="if (this.form.upgrade.options[this.form.upgrade.selectedIndex].value == 1){ this.selectedIndex = 0;}">';
 
-	foreach ($available_dbms as $dbms_name => $details) {
-        $selected    = ($dbms_name === $dbms) ? 'selected="selected"' : '';
+    foreach ($available_dbms as $dbms_name => $details) {
+        $selected = ($dbms_name === $dbms) ? 'selected="selected"' : '';
         $dbms_select .= '<option value="' . $dbms_name . '">' . htmlspecialchars($details['LABEL'], ENT_QUOTES) . '</option>';
     }
 
-	$dbms_select .= '</select>';
+    $dbms_select .= '</select>';
 
-	$upgrade_option = '<select name="upgrade"';
-	$upgrade_option .= 'onchange="if (this.options[this.selectedIndex].value == 1) { this.form.dbms.selectedIndex = 0; }">';
-	$upgrade_option .= '<option value="0">' . $lang['Install'] . '</option>';
-	$upgrade_option .= '<option value="1">' . $lang['Upgrade'] . '</option></select>';
-	
-	$s_hidden_fields = '<input type="hidden" name="install_step" value="1" /><input type="hidden" name="cur_lang" value="' . $language . '" />';
+    $upgrade_option = '<select name="upgrade"';
+    $upgrade_option .= 'onchange="if (this.options[this.selectedIndex].value == 1) { this.form.dbms.selectedIndex = 0; }">';
+    $upgrade_option .= '<option value="0">' . $lang['Install'] . '</option>';
+    $upgrade_option .= '<option value="1">' . $lang['Upgrade'] . '</option></select>';
 
-	page_header($instruction_text);
+    $s_hidden_fields = '<input type="hidden" name="install_step" value="1" /><input type="hidden" name="cur_lang" value="' . $boardLanguage . '" />';
 
-?>
-					<tr>
-						<th colspan="2"><?php echo $lang['Initial_config']; ?></th>
-					</tr>
-					<tr>
-						<td class="row1" align="right" width="30%"><span class="gen"><?php echo $lang['Default_lang']; ?>: </span></td>
-						<td class="row2"><?php echo $lang_select; ?></td>
-					</tr>
-					<tr>
-						<td class="row1" align="right"><span class="gen"><?php echo $lang['dbms']; ?>: </span></td>
-						<td class="row2"><?php echo $dbms_select; ?></td>
-					</tr>
-					<tr>
-						<td class="row1" align="right"><span class="gen"><?php echo $lang['Install_Method']; ?>:</span></td>
-						<td class="row2"><?php echo $upgrade_option; ?></td>
-					</tr>
-					<tr>
-						<th colspan="2"><?php echo $lang['DB_config']; ?></th>
-					</tr>
-					<tr>
-						<td class="row1" align="right"><span class="gen"><?php echo $lang['DB_Host']; ?>: </span></td>
-						<td class="row2"><input type="text" name="dbhost" value="<?php echo $dbhost; ?>" /></td>
-					</tr>
-					<tr>
-						<td class="row1" align="right"><span class="gen"><?php echo $lang['DB_Name']; ?>: </span></td>
-						<td class="row2"><input type="text" name="dbname" value="<?php echo $dbname; ?>" /></td>
-					</tr>
-					<tr>
-						<td class="row1" align="right"><span class="gen"><?php echo $lang['DB_Username']; ?>: </span></td>
-						<td class="row2"><input type="text" name="dbuser" value="<?php echo $dbuser; ?>" /></td>
-					</tr>
-					<tr>
-						<td class="row1" align="right"><span class="gen"><?php echo $lang['DB_Password']; ?>: </span></td>
-						<td class="row2"><input type="password" name="dbpasswd" value="<?php echo $dbpasswd; ?>" /></td>
-					</tr>
-					<tr>
-						<td class="row1" align="right"><span class="gen"><?php echo $lang['Table_Prefix']; ?>: </span></td>
-						<td class="row2"><input type="text" name="prefix" value="<?php echo !empty($table_prefix) ? $table_prefix : 'phpbb_'; ?>" /></td>
-					</tr>
-					<tr>
-						<th colspan="2"><?php echo $lang['Admin_config']; ?></th>
-					</tr>
+    page_header($instruction_text);
+
+    ?>
+    <tr>
+        <th colspan="2"><?php echo $lang['Initial_config']; ?></th>
+    </tr>
+    <tr>
+        <td class="row1" align="right" width="30%"><span class="gen"><?php echo $lang['Default_lang']; ?>: </span></td>
+        <td class="row2"><?php echo $lang_select; ?></td>
+    </tr>
+    <tr>
+        <td class="row1" align="right"><span class="gen"><?php echo $lang['dbms']; ?>: </span></td>
+        <td class="row2"><?php echo $dbms_select; ?></td>
+    </tr>
+    <tr>
+        <td class="row1" align="right"><span class="gen"><?php echo $lang['Install_Method']; ?>:</span></td>
+        <td class="row2"><?php echo $upgrade_option; ?></td>
+    </tr>
+    <tr>
+        <th colspan="2"><?php echo $lang['DB_config']; ?></th>
+    </tr>
+
+    <?php
+    if ($databaseError) {
+        ?>
+        <tr>
+            <td class="row1" colspan="2">
+                            <span class="gen" style="color:red">
+                                <ul>
 <?php
 
-	if ($error)
-	{
-?>
-					<tr>
-						<td class="row1" colspan="2" align="center"><span class="gen" style="color:red"><?php echo $error; ?></span></td>
-					</tr>
-<?php
-
-	}
-?>
-					<tr>
-						<td class="row1" align="right"><span class="gen"><?php echo $lang['Admin_email']; ?>: </span></td>
-						<td class="row2"><input type="text" name="board_email" value="<?php echo $board_email; ?>" /></td>
-					</tr> 
-					<tr>
-						<td class="row1" align="right"><span class="gen"><?php echo $lang['Server_name']; ?>: </span></td>
-						<td class="row2"><input type="text" name="server_name" value="<?php echo $server_name; ?>" /></td>
-					</tr> 
-					<tr>
-						<td class="row1" align="right"><span class="gen"><?php echo $lang['Server_port']; ?>: </span></td>
-						<td class="row2"><input type="text" name="server_port" value="<?php echo $server_port; ?>" /></td>
-					</tr>
-					<tr>
-						<td class="row1" align="right"><span class="gen"><?php echo $lang['Script_path']; ?>: </span></td>
-						<td class="row2"><input type="text" name="script_path" value="<?php echo $script_path; ?>" /></td>
-					</tr>
-					<tr>
-						<td class="row1" align="right"><span class="gen"><?php echo $lang['Admin_Username']; ?>: </span></td>
-						<td class="row2"><input type="text" name="admin_name" value="<?php echo $admin_name; ?>" /></td>
-					</tr>
-					<tr>
-						<td class="row1" align="right"><span class="gen"><?php echo $lang['Admin_Password']; ?>: </span></td>
-						<td class="row2"><input type="password" name="admin_pass1" value="<?php echo $admin_pass1; ?>" /></td>
-					</tr>
-					<tr>
-						<td class="row1" align="right"><span class="gen"><?php echo $lang['Admin_Password_confirm']; ?>: </span></td>
-						<td class="row2"><input type="password" name="admin_pass2" value="<?php echo $admin_pass2; ?>" /></td>
-					</tr>
-<?php
-
-	page_common_form($s_hidden_fields, $lang['Start_Install']);
-	page_footer();
-	exit;
+foreach ($databaseError as $value) {
+    echo '<li>' . $value . '</li>';
 }
-else
-{
+?>
+                                </ul>
+                            </span>
+            </td>
+        </tr>
+        <?php
+    }
+    ?>
+    <tr>
+        <td class="row1" align="right"><span class="gen"><?php echo $lang['DB_Host']; ?>: </span></td>
+        <td class="row2"><input type="text" name="dbhost" value="<?php echo $dbhost; ?>"/></td>
+    </tr>
+    <tr>
+        <td class="row1" align="right"><span class="gen"><?php echo $lang['DB_Name']; ?>: </span></td>
+        <td class="row2"><input type="text" name="dbname" value="<?php echo $dbname; ?>"/></td>
+    </tr>
+    <tr>
+        <td class="row1" align="right"><span class="gen"><?php echo $lang['DB_Username']; ?>: </span></td>
+        <td class="row2"><input type="text" name="dbuser" value="<?php echo $dbuser; ?>"/></td>
+    </tr>
+    <tr>
+        <td class="row1" align="right"><span class="gen"><?php echo $lang['DB_Password']; ?>: </span></td>
+        <td class="row2"><input type="password" name="dbpasswd" autocomplete="off"/></td>
+    </tr>
+    <tr>
+        <td class="row1" align="right"><span class="gen"><?php echo $lang['Table_Prefix']; ?>: </span></td>
+        <td class="row2"><input type="text" name="prefix"
+                                value="<?php echo !empty($table_prefix) ? $table_prefix : 'phpbb_'; ?>"/></td>
+    </tr>
+    <tr>
+        <th colspan="2"><?php echo $lang['Admin_config']; ?></th>
+    </tr>
+    <?php
+
+    if ($error) {
+        ?>
+        <tr>
+            <td class="row1" colspan="2"><span class="gen" style="color:red">
+
+                                <ul>
+<?php
+
+foreach ($error as $value) {
+    echo '<li>' . $value . '</li>';
+}
+?>
+                            </ul>
+
+
+                            </span></td>
+        </tr>
+        <?php
+
+    }
+    ?>
+
+    <tr>
+        <td class="row1" align="right"><span class="gen"><?php echo $lang['Admin_Username']; ?>: </span></td>
+        <td class="row2"><input type="text" name="admin_name" value="<?php echo $admin_name; ?>"/></td>
+    </tr>
+    <tr>
+        <td class="row1" align="right"><span class="gen"><?php echo $lang['Admin_email']; ?>: </span></td>
+        <td class="row2"><input type="text" name="board_email" value="<?php echo $board_email; ?>"/></td>
+    </tr>
+    <tr>
+        <td class="row1" align="right"><span class="gen"><?php echo $lang['Admin_Password']; ?>: </span></td>
+        <td class="row2"><input type="password" name="admin_pass1" autocomplete="off"/></td>
+    </tr>
+    <tr>
+        <td class="row1" align="right"><span class="gen"><?php echo $lang['Admin_Password_confirm']; ?>: </span></td>
+        <td class="row2"><input type="password" name="admin_pass2" autocomplete="off"/></td>
+    </tr>
+
+    <tr>
+        <td class="row1" align="right"><span class="gen"><?php echo $lang['ACP_password']; ?>: </span></td>
+        <td class="row2"><input type="password" name="admin_acp_pass1" autocomplete="off"/></td>
+    </tr>
+    <tr>
+        <td class="row1" align="right"><span class="gen"><?php echo $lang['ACP_password_confirm']; ?>: </span></td>
+        <td class="row2"><input type="password" name="admin_acp_pass2" autocomplete="off"/></td>
+    </tr>
+
+    <tr>
+        <td class="row1" align="right"><span class="gen"><?php echo $lang['Server_name']; ?>: </span></td>
+        <td class="row2"><input type="text" name="server_name" value="<?php echo $server_name; ?>"/></td>
+    </tr>
+    <tr>
+        <td class="row1" align="right"><span class="gen"><?php echo $lang['Server_port']; ?>: </span></td>
+        <td class="row2"><input type="text" name="server_port" value="<?php echo $server_port; ?>"/></td>
+    </tr>
+    <tr>
+        <td class="row1" align="right"><span class="gen"><?php echo $lang['Script_path']; ?>: </span></td>
+        <td class="row2"><input type="text" name="script_path" value="<?php echo $script_path; ?>"/></td>
+    </tr>
+    <?php
+
+    page_common_form($s_hidden_fields, $lang['Start_Install']);
+    page_footer();
+}
+
+
+if ($_GET['install'] == 1 && $validated) {
+//} else {
+
 	// Go ahead and create the DB, then populate it
 	//
 	// MS Access is slightly different in that a pre-built, pre-
@@ -677,9 +797,9 @@ else
 	$delimiter = $available_dbms[$dbms]['DELIM']; 
 	$delimiter_basic = $available_dbms[$dbms]['DELIM_BASIC'];
 
-	if ($install_step === 1) {
-		if ($upgrade !== 1) {
-			if ($dbms !== 'msaccess') {
+	if ($install_step == 1) {
+		if ($upgrade != 1) {
+			if ($dbms != 'msaccess') {
 				// Load in the sql parser
                 require_once $phpbb_root_path . 'includes' . $sep . 'sql_parse.php';
 
@@ -698,9 +818,11 @@ else
 					    $result = dibi::query($sql_query);
 					}
 				}
-		
+
 				// Ok tables have been built, let's fill in the basic information
                 $lines = file($dbms_basic);
+
+                $templine = '';
 
                 foreach ($lines as $line) {
                     if (substr($line, 0, 2) === '--' || $line === '') {
@@ -718,7 +840,7 @@ else
                 }
 			}
 
-			// Ok at this point they have entered their admin password, let's go 
+			// Ok at this point they have entered their admin password, let's go
 			// ahead and create the admin account with some basic default information
 			// that they can customize later, and write out the config file.  After
 			// this we are going to pass them over to the admin_forum.php script
@@ -727,7 +849,7 @@ else
 
 			// Update the default admin user with their information.
             dibi::insert($table_prefix.'config', ['config_name' => 'board_startdate', 'config_value' => time()])->execute();
-            dibi::insert($table_prefix.'config', ['config_name' => 'default_lang', 'config_value' => $language])->execute();
+            dibi::insert($table_prefix.'config', ['config_name' => 'default_lang', 'config_value' => $boardLanguage])->execute();
 
             $update_config = [
                 'board_email' => $board_email,
@@ -748,7 +870,7 @@ else
                 'username'      => $admin_name,
                 'user_password' => $admin_pass_bcrypt,
                 'user_acp_password' => $admin_pass_bcrypt,
-                'user_lang'     => $language,
+                'user_lang'     => $boardLanguage,
                 'user_email'    => $board_email,
             ];
 
@@ -759,6 +881,49 @@ else
             dibi::update($table_prefix . 'users', ['user_regdate' => time()])
             ->execute();
 
+            $lang_options = [];
+            $languages = Finder::findDirectories('lang_*')->in($phpbb_root_path . 'language');
+
+            /**
+             * @var SplFileInfo $language
+             */
+            foreach ($languages as $language) {
+                $filename = trim(str_replace('lang_', '', $language->getFilename()));
+
+                $displayName = preg_replace('/^(.*?)_(.*)$/', "\\1 [ \\2 ]", $filename);
+                $displayName = preg_replace("/\[(.*?)_(.*)\]/", "[ \\1 - \\2 ]", $displayName);
+
+                $lang_options[$displayName] = $filename;
+            }
+
+            @asort($lang_options);
+
+            foreach ($lang_options as $key => $value) {
+                $exists = dibi::select('1')
+                    ->from($table_prefix . 'languages')
+                    ->where('[lang_name] = %s', $key)
+                    ->fetchSingle();
+
+                if (!$exists) {
+                    dibi::insert($table_prefix . 'languages', ['lang_name' => $key])->execute();
+                }
+            }
+
+            $dbLanguages = dibi::select('*')
+                ->from($table_prefix . 'languages')
+                ->fetchPairs('lang_id', 'lang_name');
+
+            $fileLanguages = array_keys($lang_options);
+
+            // remove languages which are not present in language folder
+            foreach ($dbLanguages as $dbLanguage) {
+                if (!in_array($dbLanguage, $fileLanguages, true)) {
+                    dibi::delete($table_prefix . 'languages')
+                        ->where('[lang_name] = %s', $dbLanguage)
+                        ->execute();
+                }
+            }
+
 			if ($error !== '') {
 				page_header($lang['Install'], '');
 				page_error($lang['Installer_Error'], $lang['Install_db_error'] . '<br /><br />' . $error);
@@ -768,26 +933,31 @@ else
 		}
 
 		if (!$upgrade_now) {
-			// Write out the config file.
-			$config_data = '<?php'."\n\n";
-			$config_data .= "\n// phpBB 2.x auto-generated config file\n// Do not change anything in this file!\n\n";
-			$config_data .= '$dbms = \'' . $dbms . '\';' . "\n\n";
-			$config_data .= '$dbhost = \'' . $dbhost . '\';' . "\n";
-			$config_data .= '$dbname = \'' . $dbname . '\';' . "\n";
-			$config_data .= '$dbuser = \'' . $dbuser . '\';' . "\n";
-			$config_data .= '$dbpasswd = \'' . $dbpasswd . '\';' . "\n\n";
-			$config_data .= '$table_prefix = \'' . $table_prefix . '\';' . "\n\n";
-            $config_data .= sprintf('$dns = $dbms.\':host=\'.$dbhost.\';dbname=\'.$dbname.\';charset=utf8\';'. "\n\n", $dbms);
-			$config_data .= 'define(\'PHPBB_INSTALLED\', true);'."\n\n";	
-			$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
+		    $dns = $dbms . ':host=' . $dbhost .';dbname=' . $dbname . ';charset=utf8';
+
+		    $phpFile = new PhpFile();
+
+		    $configClass = new ClassType('Config');
+		    $configClass->setFinal();
+		    $configClass->addComment('Config class of phpBB2');
+		    $configClass->addConstant('TABLE_PREFIX', $table_prefix);
+		    $configClass->addConstant('DBMS', $dbms);
+		    $configClass->addConstant('DATABASE_HOST', $dbhost);
+		    $configClass->addConstant('DATABASE_USER', $dbuser);
+		    $configClass->addConstant('DATABASE_PASSWORD', $dbpasswd);
+		    $configClass->addConstant('DATABASE_NAME', $dbname);
+		    $configClass->addConstant('DATABASE_DNS', $dns);
+		    $configClass->addConstant('DATABASE_DRIVER', 'PDO');
+		    $configClass->addConstant('DATABASE_LAZY', true);
+		    $configClass->addConstant('INSTALLED', true);
 
 			@umask(0111);
             $no_open = false;
 
 			// Unable to open the file writeable do something here as an attempt
 			// to get around that...
-			if (!($fp = @fopen($phpbb_root_path . 'config.php', 'wb'))) {
-				$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars($config_data) . '" />';
+			if (!($fp = @fopen($phpbb_root_path . 'Config.php', 'wb'))) {
+				$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars($phpFile . $configClass) . '" />';
 
 				if (@extension_loaded('ftp') && !defined('NO_FTP')) {
 					page_header($lang['Unwriteable_config'] . '<p>' . $lang['ftp_option'] . '</p>');
@@ -804,7 +974,7 @@ else
 						<td class="row1" align="right" width="50%"><span class="gen"><?php echo $lang['Send_file']; ?></span></td>
 						<td class="row2"><input type="radio" name="send_file" value="1"></td>
 					</tr>
-<?php 
+<?php
 
 				} else {
 					page_header($lang['Unwriteable_config']);
@@ -822,6 +992,8 @@ else
                     $s_hidden_fields .= '<input type="hidden" name="install_step" value="1" />';
                     $s_hidden_fields .= '<input type="hidden" name="admin_pass1" value="1" />';
                     $s_hidden_fields .= '<input type="hidden" name="admin_pass2" value="1" />';
+                    $s_hidden_fields .= '<input type="hidden" name="admin_acp_pass1" value="1" />';
+                    $s_hidden_fields .= '<input type="hidden" name="admin_acp_pass2" value="1" />';
                     $s_hidden_fields .= '<input type="hidden" name="server_port" value="' . $server_port . '" />';
                     $s_hidden_fields .= '<input type="hidden" name="server_name" value="' . $server_name . '" />';
                     $s_hidden_fields .= '<input type="hidden" name="script_path" value="' . $script_path . '" />';
@@ -836,7 +1008,7 @@ else
 				exit;
 			}
 
-			$result = @fwrite($fp, $config_data, strlen($config_data));
+			$result = @fwrite($fp, $phpFile . $configClass, mb_strlen($phpFile . $configClass));
 
 			@fclose($fp);
 			$upgrade_now = $lang['upgrade_submit'];
@@ -850,14 +1022,16 @@ else
 			exit;
 		}
 
-		// Ok we are basically done with the install process let's go on 
+		// Ok we are basically done with the install process let's go on
 		// and let the user configure their board now. We are going to do
 		// this by calling the admin_board.php from the normal board admin
 		// section.
 		$s_hidden_fields = '<input type="hidden" name="username" value="' . $admin_name . '" />';
 		$s_hidden_fields .= '<input type="hidden" name="password" value="' . $admin_pass1 . '" />';
+		$s_hidden_fields .= '<input type="hidden" name="acp_password" value="' . $admin_acp_pass1 . '" />';
 		$s_hidden_fields .= '<input type="hidden" name="redirect" value="admin/index.php" />';
 		$s_hidden_fields .= '<input type="hidden" name="login" value="true" />';
+		$s_hidden_fields .= CSRF::getInputHtml();
 
 		page_header($lang['Inst_Step_2'], '../login.php');
 		page_common_form($s_hidden_fields, $lang['Finish_Install']);

@@ -67,13 +67,13 @@ function get_info($mode, $id)
 {
 	switch($mode) {
 		case 'category':
-			$table = CATEGORIES_TABLE;
+			$table = Tables::CATEGORIES_TABLE;
 			$idfield = 'cat_id';
 			$namefield = 'cat_title';
 			break;
 
 		case 'forum':
-			$table = FORUMS_TABLE;
+			$table = Tables::FORUMS_TABLE;
 			$idfield = 'forum_id';
 			$namefield = 'forum_name';
 			break;
@@ -109,13 +109,13 @@ function get_list($mode, $id, $select)
 {
 	switch($mode) {
 		case 'category':
-			$table = CATEGORIES_TABLE;
+			$table = Tables::CATEGORIES_TABLE;
 			$idfield = 'cat_id';
 			$namefield = 'cat_title';
 			break;
 
 		case 'forum':
-			$table = FORUMS_TABLE;
+			$table = Tables::FORUMS_TABLE;
 			$idfield = 'forum_id';
 			$namefield = 'forum_name';
 			break;
@@ -160,14 +160,14 @@ function renumber_order($mode, $cat = 0)
 	switch($mode)
 	{
 		case 'category':
-			$table = CATEGORIES_TABLE;
+			$table = Tables::CATEGORIES_TABLE;
 			$idfield = 'cat_id';
 			$orderfield = 'cat_order';
 			$cat = 0;
 			break;
 
 		case 'forum':
-			$table = FORUMS_TABLE;
+			$table = Tables::FORUMS_TABLE;
 			$idfield = 'forum_id';
 			$orderfield = 'forum_order';
 			$catfield = 'cat_id';
@@ -246,7 +246,7 @@ if (!empty($mode)) {
 					$prune_enabled = 'checked="checked"';
 
 					$pr_row = dibi::select('*')
-                        ->from(PRUNE_TABLE)
+                        ->from(Tables::PRUNE_TABLE)
                         ->where('forum_id = %i', $forum_id)
                         ->fetch();
 
@@ -325,7 +325,7 @@ if (!empty($mode)) {
 
             $max_order = dibi::select('MAX(forum_order)')
                 ->as('max_order')
-                ->from(FORUMS_TABLE)
+                ->from(Tables::FORUMS_TABLE)
                 ->where('cat_id = %i', (int)$_POST[POST_CAT_URL])
                 ->fetchSingle();
 
@@ -346,7 +346,7 @@ if (!empty($mode)) {
             $forum_auth_ary['prune_enable'] = (int)$_POST['prune_enable'];
 
 			// There is no problem having duplicate forum names so we won't check for it.
-            $forums_id = dibi::insert(FORUMS_TABLE, $forum_auth_ary)->execute(dibi::IDENTIFIER);
+            $forums_id = dibi::insert(Tables::FORUMS_TABLE, $forum_auth_ary)->execute(dibi::IDENTIFIER);
 
             if ($_POST['prune_enable']) {
 
@@ -360,7 +360,7 @@ if (!empty($mode)) {
                     'prune_freq' => (int)$_POST['prune_freq']
                 ];
 
-				dibi::insert(PRUNE_TABLE, $insert_data)->execute();
+				dibi::insert(Tables::PRUNE_TABLE, $insert_data)->execute();
 			}
 
 			$message = $lang['Forums_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
@@ -383,7 +383,7 @@ if (!empty($mode)) {
                 'prune_enable' => (int)$_POST['prune_enable']
             ];
 
-			dibi::update(FORUMS_TABLE, $update_data)
+			dibi::update(Tables::FORUMS_TABLE, $update_data)
                 ->where('forum_id = %i', (int)$_POST[POST_FORUM_URL])
                 ->execute();
 
@@ -395,7 +395,7 @@ if (!empty($mode)) {
 				// little improvement
 				$prune_count = dibi::select('COUNT(*)')
                     ->as('prune_count')
-                    ->from(PRUNE_TABLE)
+                    ->from(Tables::PRUNE_TABLE)
                     ->where('forum_id = %i', (int)$_POST[POST_FORUM_URL])
                     ->fetchSingle();
 
@@ -409,7 +409,7 @@ if (!empty($mode)) {
                         'prune_freq' => (int)$_POST['prune_freq']
                     ];
 
-				    dibi::update(PRUNE_TABLE, $update_data)
+				    dibi::update(Tables::PRUNE_TABLE, $update_data)
                         ->where('forum_id = %i', (int)$_POST[POST_FORUM_URL])
                         ->execute();
 				} else {
@@ -419,7 +419,7 @@ if (!empty($mode)) {
                         'prune_freq' => (int)$_POST['prune_freq']
                     ];
 
-				    dibi::insert(PRUNE_TABLE, $insert_data)->execute();
+				    dibi::insert(Tables::PRUNE_TABLE, $insert_data)->execute();
 				}
 			}
 
@@ -437,7 +437,7 @@ if (!empty($mode)) {
 
 			$max_order = dibi::select('MAX(cat_order)')
                 ->as('max_order')
-                ->from(CATEGORIES_TABLE)
+                ->from(Tables::CATEGORIES_TABLE)
                 ->fetchSingle();
 
 			$next_order = $max_order + 10;
@@ -451,7 +451,7 @@ if (!empty($mode)) {
                 'cat_order' => $next_order
             ];
 
-            dibi::insert(CATEGORIES_TABLE, $insert_data)->execute();
+            dibi::insert(Tables::CATEGORIES_TABLE, $insert_data)->execute();
 
 			$message = $lang['Forums_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
@@ -494,7 +494,7 @@ if (!empty($mode)) {
 
 		case 'modcat':
             // Modify a category in the DB
-		    dibi::update(CATEGORIES_TABLE, ['cat_title' => $_POST['cat_title']])
+		    dibi::update(Tables::CATEGORIES_TABLE, ['cat_title' => $_POST['cat_title']])
                 ->where('cat_id = %i', (int)$_POST[POST_CAT_URL])
                 ->execute();
 
@@ -556,24 +556,24 @@ if (!empty($mode)) {
 				// Delete polls in this forum
 
                 $vote_ids = dibi::select('v.vote_id')
-                    ->from(VOTE_DESC_TABLE)
+                    ->from(Tables::VOTE_DESC_TABLE)
                     ->as('v')
-                    ->innerJoin(TOPICS_TABLE)
+                    ->innerJoin(Tables::TOPICS_TABLE)
                     ->as('t')
                     ->on('v.topic_id = t.topic_id')
                     ->where('t.forum_id = %i', $from_id)
                     ->fetchPairs(null, 'vote_id');
 
                 if (count($vote_ids)) {
-                    dibi::delete(VOTE_DESC_TABLE)
+                    dibi::delete(Tables::VOTE_DESC_TABLE)
                         ->where('vote_id IN %in', $vote_ids)
                         ->execute();
 
-                    dibi::delete(VOTE_RESULTS_TABLE)
+                    dibi::delete(Tables::VOTE_RESULTS_TABLE)
                         ->where('vote_id IN %in', $vote_ids)
                         ->execute();
 
-                    dibi::delete(VOTE_USERS_TABLE)
+                    dibi::delete(Tables::VOTE_USERS_TABLE)
                         ->where('vote_id IN %in', $vote_ids)
                         ->execute();
                 }
@@ -581,7 +581,7 @@ if (!empty($mode)) {
 				Prune::run($from_id, 0, true); // Delete everything from forum
 			} else {
 			    $forums_exists = dibi::select('*')
-                    ->from(FORUMS_TABLE)
+                    ->from(Tables::FORUMS_TABLE)
                     ->where('forum_id IN %in', [$from_id, $to_id])
                     ->fetchAll();
 
@@ -589,11 +589,11 @@ if (!empty($mode)) {
 					message_die(GENERAL_ERROR, "Ambiguous forum ID's", '', __LINE__, __FILE__);
 				}
 
-				dibi::update(TOPICS_TABLE, ['forum_id' => $to_id])
+				dibi::update(Tables::TOPICS_TABLE, ['forum_id' => $to_id])
                     ->where('forum_id = %i', $from_id)
                     ->execute();
 
-				dibi::update(POSTS_TABLE, ['forum_id' => $to_id])
+				dibi::update(Tables::POSTS_TABLE, ['forum_id' => $to_id])
                     ->where('forum_id = %i', $from_id)
                     ->execute();
 
@@ -602,9 +602,9 @@ if (!empty($mode)) {
 
             // Alter Mod level if appropriate - 2.0.4
 			$user_mods_ids = dibi::select('ug.user_id')
-                ->from(AUTH_ACCESS_TABLE)
+                ->from(Tables::AUTH_ACCESS_TABLE)
                 ->as('a')
-                ->innerJoin(USER_GROUP_TABLE)
+                ->innerJoin(Tables::USERS_GROUPS_TABLE)
                 ->as('ug')
                 ->on('ug.group_id = a.group_id')
                 ->where('a.forum_id <> %i', $from_id)
@@ -613,9 +613,9 @@ if (!empty($mode)) {
 
             if (count($user_mods_ids)) {
                 $user_ids = dibi::select('ug.user_id')
-                    ->from(AUTH_ACCESS_TABLE)
+                    ->from(Tables::AUTH_ACCESS_TABLE)
                     ->as('a')
-                    ->innerJoin(USER_GROUP_TABLE)
+                    ->innerJoin(Tables::USERS_GROUPS_TABLE)
                     ->as('ug')
                     ->on('ug.group_id = a.group_id')
                     ->where('a.forum_id = %i', $from_id)
@@ -624,22 +624,22 @@ if (!empty($mode)) {
                     ->fetchPairs(null, 'user_id');
 
                 if (count($user_ids)) {
-                    dibi::update(USERS_TABLE, ['user_level' => USER])
+                    dibi::update(Tables::USERS_TABLE, ['user_level' => USER])
                         ->where('user_id IN %in', $user_ids)
                         ->where('user_level <> %i', ADMIN)
                         ->execute();
                 }
             }
 
-            dibi::delete(FORUMS_TABLE)
+            dibi::delete(Tables::FORUMS_TABLE)
                 ->where('forum_id = %i', $from_id)
                 ->execute();
 
-			dibi::delete(AUTH_ACCESS_TABLE)
+			dibi::delete(Tables::AUTH_ACCESS_TABLE)
                 ->where('forum_id = %i', $from_id)
                 ->execute();
 
-            dibi::delete(PRUNE_TABLE)
+            dibi::delete(Tables::PRUNE_TABLE)
                 ->where('forum_id = %i', $from_id)
                 ->execute();
 
@@ -664,7 +664,7 @@ if (!empty($mode)) {
 			if ($catinfo->number === 1) {
                 $count = dibi::select('COUNT(*)')
                     ->select('total')
-                    ->as(FORUMS_TABLE)
+                    ->as(Tables::FORUMS_TABLE)
                     ->fetchSingle();
 
 				if ($count === false) {
@@ -714,7 +714,7 @@ if (!empty($mode)) {
 
 			if (!empty($to_id)) {
 			    $cat_exists = dibi::select('*')
-                    ->from(CATEGORIES_TABLE)
+                    ->from(Tables::CATEGORIES_TABLE)
                     ->where('cat_id IN %in', [$from_id, $to_id])
                     ->fetchAll();
 
@@ -722,12 +722,12 @@ if (!empty($mode)) {
 					message_die(GENERAL_ERROR, "Ambiguous category ID's", '', __LINE__, __FILE__);
 				}
 
-				dibi::update(FORUMS_TABLE, ['cat_id' => $to_id])
+				dibi::update(Tables::FORUMS_TABLE, ['cat_id' => $to_id])
                     ->where('cat_id = %i', $from_id)
                     ->execute();
 			}
 
-			dibi::delete(CATEGORIES_TABLE)
+			dibi::delete(Tables::CATEGORIES_TABLE)
                 ->where('cat_id = %i', $from_id)
                 ->execute();
 
@@ -749,11 +749,11 @@ if (!empty($mode)) {
 			$cat_id = $forum_info->cat_id;
 
             if ($move > 0) {
-                dibi::update(FORUMS_TABLE, ['forum_order%sql' => 'forum_order + ' . $move])
+                dibi::update(Tables::FORUMS_TABLE, ['forum_order%sql' => 'forum_order + ' . $move])
                     ->where('forum_id = %i', $forum_id)
                     ->execute();
             } else {
-                dibi::update(FORUMS_TABLE, ['forum_order%sql' => 'forum_order  - ' . abs($move)])
+                dibi::update(Tables::FORUMS_TABLE, ['forum_order%sql' => 'forum_order  - ' . abs($move)])
                     ->where('forum_id = %i', $forum_id)
                     ->execute();
             }
@@ -771,11 +771,11 @@ if (!empty($mode)) {
 			$cat_id = (int)$_GET[POST_CAT_URL];
 
             if ($move > 0) {
-                dibi::update(CATEGORIES_TABLE, ['cat_order%sql' => 'cat_order + ' . $move])
+                dibi::update(Tables::CATEGORIES_TABLE, ['cat_order%sql' => 'cat_order + ' . $move])
                     ->where('cat_id = %i', $cat_id)
                     ->execute();
             } else {
-                dibi::update(CATEGORIES_TABLE, ['cat_order%sql' => 'cat_order - ' . abs($move)])
+                dibi::update(Tables::CATEGORIES_TABLE, ['cat_order%sql' => 'cat_order - ' . abs($move)])
                     ->where('cat_id = %i', $cat_id)
                     ->execute();
             }
@@ -826,7 +826,7 @@ $template->assignVars(
 );
 
 $categories = dibi::select(['cat_id', 'cat_title', 'cat_order'])
-    ->from(CATEGORIES_TABLE)
+    ->from(Tables::CATEGORIES_TABLE)
     ->orderBy('cat_order')
     ->fetchAll();
 
@@ -836,7 +836,7 @@ $forums_count = 0;
 
 if ($category_count) {
     $forums = dibi::select('*')
-        ->from(FORUMS_TABLE)
+        ->from(Tables::FORUMS_TABLE)
         ->orderBy('cat_id')
         ->orderBy('forum_order')
         ->fetchAll();

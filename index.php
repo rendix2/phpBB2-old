@@ -112,7 +112,7 @@ if ($totalUsers === 0) {
 //
 
 $categories = dibi::select(['cat_id', 'cat_title', 'cat_order'])
-    ->from(CATEGORIES_TABLE)
+    ->from(Tables::CATEGORIES_TABLE)
     ->orderBy('cat_order')
     ->fetchAll();
 
@@ -123,18 +123,18 @@ if (!count($categories)) {
 //
 // Define appropriate SQL
 //
-switch ($dbms) {
+switch (Config::DBMS) {
     case 'postgresql':
         $sql = 'SELECT f.*, p.post_time, p.post_username, u.username, u.user_id 
-				FROM ' . FORUMS_TABLE . ' f, ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
+				FROM ' . Tables::FORUMS_TABLE . ' f, ' . Tables::POSTS_TABLE . ' p, ' . Tables::USERS_TABLE . ' u
 				WHERE p.post_id = f.forum_last_post_id 
 					AND u.user_id = p.poster_id  
 					UNION (
 						SELECT f.*, NULL, NULL, NULL, NULL
-						FROM ' . FORUMS_TABLE . ' f
+						FROM ' . Tables::FORUMS_TABLE . ' f
 						WHERE NOT EXISTS (
 							SELECT p.post_time
-							FROM ' . POSTS_TABLE . ' p
+							FROM ' . Tables::POSTS_TABLE . ' p
 							WHERE p.post_id = f.forum_last_post_id  
 						)
 					)
@@ -145,12 +145,12 @@ switch ($dbms) {
 
     case 'oracle':
         $forums = dibi::select('f.*, p.post_time, p.post_username, u.username, u.user_id')
-            ->from(FORUMS_TABLE)
+            ->from(Tables::FORUMS_TABLE)
             ->as('f')
-            ->innerJoin(POSTS_TABLE)
+            ->innerJoin(Tables::POSTS_TABLE)
             ->as('p')
             ->on('p.post_id = f.forum_last_post_id(+)')
-            ->innerJoin(USERS_TABLE)
+            ->innerJoin(Tables::USERS_TABLE)
             ->as('u')
             ->on('u.user_id = p.poster_id(+)')
             ->orderBy('f.cat_id')
@@ -161,12 +161,12 @@ switch ($dbms) {
     default:
         // there was left join
         $forums = dibi::select('f.*, p.post_time, p.post_username, u.username, u.user_id')
-            ->from(FORUMS_TABLE)
+            ->from(Tables::FORUMS_TABLE)
             ->as('f')
-            ->leftJoin(POSTS_TABLE)
+            ->leftJoin(Tables::POSTS_TABLE)
             ->as('p')
             ->on('p.post_id = f.forum_last_post_id')
-            ->leftJoin(USERS_TABLE)
+            ->leftJoin(Tables::USERS_TABLE)
             ->as('u')
             ->on('u.user_id = p.poster_id')
             ->orderBy('f.cat_id')
@@ -192,9 +192,9 @@ if ($userdata['session_logged_in']) {
     }
 
     $new_topic_tmp_data = dibi::select('t.forum_id, t.topic_id, p.post_time')
-        ->from(TOPICS_TABLE)
+        ->from(Tables::TOPICS_TABLE)
         ->as('t')
-        ->innerJoin(POSTS_TABLE) // maybe there should be letft/inner join....
+        ->innerJoin(Tables::POSTS_TABLE) // maybe there should be letft/inner join....
         ->as('p')
         ->on('p.post_id = t.topic_last_post_id')
         ->where('p.post_time > %i', $userdata['user_lastvisit'])
@@ -214,15 +214,15 @@ if ($userdata['session_logged_in']) {
 //
 
 $forumModeratorsData = dibi::select('aa.forum_id, u.user_id, u.username')
-    ->from(AUTH_ACCESS_TABLE)
+    ->from(Tables::AUTH_ACCESS_TABLE)
     ->as('aa')
-    ->innerJoin(USER_GROUP_TABLE)
+    ->innerJoin(Tables::USERS_GROUPS_TABLE)
     ->as('ug')
     ->on('ug.group_id = aa.group_id')
-    ->innerJoin(GROUPS_TABLE)
+    ->innerJoin(Tables::GROUPS_TABLE)
     ->as('g')
     ->on('g.group_id = aa.group_id')
-    ->innerJoin(USERS_TABLE)
+    ->innerJoin(Tables::USERS_TABLE)
     ->as('u')
     ->on('u.user_id = ug.user_id')
     ->where('aa.auth_mod = %i', 1)
@@ -241,12 +241,12 @@ foreach ($forumModeratorsData as $row) {
 }
 
 $forumModeratorsData = dibi::select('aa.forum_id, g.group_id, g.group_name')
-    ->from(AUTH_ACCESS_TABLE)
+    ->from(Tables::AUTH_ACCESS_TABLE)
     ->as('aa')
-    ->innerJoin(USER_GROUP_TABLE)
+    ->innerJoin(Tables::USERS_GROUPS_TABLE)
     ->as('ug')
     ->on('ug.group_id = aa.group_id')
-    ->innerJoin(GROUPS_TABLE)
+    ->innerJoin(Tables::GROUPS_TABLE)
     ->as('g')
     ->on('g.group_id = aa.group_id')
     ->where('aa.auth_mod = %i', 1)
@@ -273,7 +273,7 @@ $is_auth = Auth::authorize(AUTH_VIEW, AUTH_LIST_ALL, $userdata, $forums);
 //
 
 $onlineUsersCount = dibi::select('COUNT(*)')
-    ->from(SESSIONS_TABLE)
+    ->from(Tables::SESSIONS_TABLE)
     ->where('session_logged_in = %i', 1)
     ->groupBy('session_user_id')
     ->fetchSingle();

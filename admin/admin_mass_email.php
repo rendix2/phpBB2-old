@@ -63,9 +63,9 @@ if (isset($_POST['submit'])) {
 
     if ($group_id !== -1) {
         $bcc_list = dibi::select('u.user_email')
-            ->from(USERS_TABLE)
+            ->from(Tables::USERS_TABLE)
             ->as('u')
-            ->innerJoin(USER_GROUP_TABLE)
+            ->innerJoin(Tables::USERS_GROUPS_TABLE)
             ->as('ug')
             ->on('u.user_id = ug.user_id')
             ->where('ug.group_id = %i', $group_id)
@@ -73,7 +73,7 @@ if (isset($_POST['submit'])) {
             ->fetchPairs(null, 'user_email');
     } else {
         $bbc_list = dibi::select('user_email')
-            ->from(USERS_TABLE)
+            ->from(Tables::USERS_TABLE)
             ->fetchPairs(null, 'user_email');
     }
 
@@ -140,7 +140,7 @@ if ($error) {
 //
 
 $groups = dibi::select(['group_id', 'group_name'])
-    ->from(GROUPS_TABLE)
+    ->from(Tables::GROUPS_TABLE)
     ->where('group_single_user <> %i', 1)
     ->fetchPairs('group_id', 'group_name');
 

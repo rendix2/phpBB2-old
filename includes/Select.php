@@ -117,7 +117,7 @@ class Select
     public static function groups()
     {
         $groups = dibi::select(['group_id', 'group_name'])
-            ->from(GROUPS_TABLE)
+            ->from(Tables::GROUPS_TABLE)
             ->where('group_single_user <> %i', 1)
             ->orderBy('group_name')
             ->fetchPairs('group_id', 'group_name');
@@ -162,7 +162,7 @@ class Select
     public static function style($defaultStyle, $selectName = 'style', $dirname = 'templates')
     {
         $themes = dibi::select(['themes_id', 'style_name'])
-            ->from(THEMES_TABLE)
+            ->from(Tables::THEMES_TABLE)
             ->orderBy('template_name')
             ->orderBy('themes_id')
             ->fetchPairs('themes_id', 'style_name');
@@ -201,7 +201,7 @@ class Select
         // this method is not used so much, so we can let here the new query
         // and fix bug in origin code
         $defaultTheme = dibi::select(['style_name'])
-            ->from(THEMES_TABLE)
+            ->from(Tables::THEMES_TABLE)
             ->where('themes_id = %i', $boardConfig['default_style'])
             ->fetchSingle();
 
@@ -230,32 +230,19 @@ class Select
      *
      * @return string
      */
-    public static function language($phpbb_root_path, $default, $selectName = 'language')
+    public static function language($default, $selectName = 'language')
     {
-        $resultLanguages = [];
-        $languages = Finder::findDirectories('lang_*')->in($phpbb_root_path . 'language');
+        $languages = dibi::select('*')
+            ->from(Tables::LANGUAGES_TABLE)
+            ->fetchPairs('lang_id', 'lang_name');
 
-        /**
-         * @var SplFileInfo $language
-         */
-        foreach ($languages as $language) {
-            $filename = trim(str_replace('lang_', '', $language->getFilename()));
-
-            $displayName = preg_replace('/^(.*?)_(.*)$/', "\\1 [ \\2 ]", $filename);
-            $displayName = preg_replace("/\[(.*?)_(.*)\]/", "[ \\1 - \\2 ]", $displayName);
-
-            $resultLanguages[$displayName] = $filename;
-        }
-
-        @asort($resultLanguages);
-
-        $default = strtolower($default);
+        $default = mb_strtolower($default);
         $langValues = '';
 
-        foreach ($resultLanguages as $displayName => $filename) {
-            $selected = $default === strtolower($filename) ? 'selected="selected"' : '';
+        foreach ($languages as $langId => $langName) {
+            $selected = $default === $langName? 'selected="selected"' : '';
 
-            $langValues .= '<option value="' . $filename . '" ' . $selected . '>' . htmlspecialchars(ucwords($displayName), ENT_QUOTES) . '</option>';
+            $langValues .= '<option value="' . $langId . '" ' . $selected . '>' . htmlspecialchars(ucwords($langName), ENT_QUOTES) . '</option>';
         }
 
         return '<select name="' . $selectName . '" id="' . $selectName . '"">' . $langValues . '</select>';

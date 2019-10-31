@@ -136,7 +136,7 @@ class SearchHelper
      */
     public static function addSearchWords($mode, $postId, $post_text, $post_title = '')
     {
-        global $phpbb_root_path, $board_config, $dbms;
+        global $phpbb_root_path, $board_config;
 
         $sep = DIRECTORY_SEPARATOR;
 
@@ -176,14 +176,14 @@ class SearchHelper
             $words = array_unique($words);
             $checkWords = [];
 
-            switch ($dbms) {
+            switch (Config::DBMS) {
                 case 'postgresql':
                 case 'msaccess':
                 case 'mssql-odbc':
                 case 'oracle':
                 case 'db2':
                     $checkWords = dibi::select(['word_id', 'word_text'])
-                        ->from(SEARCH_WORD_TABLE)
+                        ->from(Tables::SEARCH_WORD_TABLE)
                         ->where('word_text IN %in', $words)
                         ->fetchPairs('word_text', 'word_id');
                     break;
@@ -191,14 +191,14 @@ class SearchHelper
 
             foreach ($words as $word) {
                 if (!isset($checkWords[$word])) {
-                    switch ($dbms) {
+                    switch (Config::DBMS) {
                         case 'mysql':
                             $insertData = [
                                 'word_text' => $word,
                                 'word_common' => 0
                             ];
 
-                            dibi::insert(SEARCH_WORD_TABLE, $insertData)->setFlag('IGNORE')->execute();
+                            dibi::insert(Tables::SEARCH_WORD_TABLE, $insertData)->setFlag('IGNORE')->execute();
                             break;
                         case 'mssql':
                         case 'mssql-odbc':
@@ -208,7 +208,7 @@ class SearchHelper
                                 'word_common' => 0
                             ];
 
-                            dibi::insert(SEARCH_WORD_TABLE, $insertData)->execute();
+                            dibi::insert(Tables::SEARCH_WORD_TABLE, $insertData)->execute();
                             break;
                     }
                 }
@@ -223,10 +223,10 @@ class SearchHelper
                                 SELECT %i, word_id, %i
                                 FROM %n
                                 WHERE word_text IN %in',
-                    SEARCH_MATCH_TABLE,
+                    Tables::SEARCH_MATCH_TABLE,
                     $postId,
                     $titleMatch,
-                    SEARCH_WORD_TABLE,
+                    Tables::SEARCH_WORD_TABLE,
                     $matchQql
                 );
             }
@@ -250,7 +250,7 @@ class SearchHelper
     {
         $totalPosts = dibi::select('COUNT(post_id)')
             ->as('total_posts')
-            ->from(POSTS_TABLE)
+            ->from(Tables::POSTS_TABLE)
             ->fetchSingle();
 
         if ($totalPosts === false) {
@@ -262,7 +262,7 @@ class SearchHelper
 
             if ($mode === 'single' && count($word_id_list)) {
                 $wordIds = dibi::select('m.word_id')
-                    ->from(SEARCH_MATCH_TABLE)
+                    ->from(Tables::SEARCH_MATCH_TABLE)
                     ->as('m')
                     ->innerJoin('SEARCH_WORD_TABLE')
                     ->as('w')
@@ -273,18 +273,18 @@ class SearchHelper
                     ->fetchPairs(null, 'word_id');
             } else {
                 $wordIds = dibi::select('word_id')
-                    ->from(SEARCH_MATCH_TABLE)
+                    ->from(Tables::SEARCH_MATCH_TABLE)
                     ->groupBy('word_id')
                     ->having('COUNT(word_id) > %i', $common_threshold)
                     ->fetchPairs(null, 'word_id');
             }
 
             if (count($wordIds)) {
-                dibi::update(SEARCH_WORD_TABLE, ['word_common' => 1])
+                dibi::update(Tables::SEARCH_WORD_TABLE, ['word_common' => 1])
                     ->where('word_id IN %in', $wordIds)
                     ->execute();
 
-                dibi::delete(SEARCH_MATCH_TABLE)
+                dibi::delete(Tables::SEARCH_MATCH_TABLE)
                     ->where('word_id IN %in', $wordIds)
                     ->execute();
             }
@@ -298,48 +298,46 @@ class SearchHelper
      */
     public static function removeSearchPost(array $post_ids)
     {
-        global $dbms;
-
         $wordsRemoved = false;
 
-        if ($dbms === 'mysql') {
+        if (Config::DBMS === 'mysql') {
             $words = dibi::select('word_id')
-                ->from(SEARCH_MATCH_TABLE)
+                ->from(Tables::SEARCH_MATCH_TABLE)
                 ->where('post_id IN %in', $post_ids)
                 ->groupBy('word_id')
                 ->fetchPairs(null, 'word_id');
 
             if (count($words)) {
                 $wordsMatch = dibi::select('word_id')
-                    ->from(SEARCH_MATCH_TABLE)
+                    ->from(Tables::SEARCH_MATCH_TABLE)
                     ->where('word_id IN %in', $words)
                     ->groupBy('word_id')
                     ->having('COUNT(word_id) = 1')
                     ->fetchPairs(null, 'word_id');
 
                 if (count($wordsMatch)) {
-                    $wordsRemoved = dibi::delete(SEARCH_WORD_TABLE)
+                    $wordsRemoved = dibi::delete(Tables::SEARCH_WORD_TABLE)
                         ->where('word_id IN %in', $wordsMatch)
                         ->execute(dibi::AFFECTED_ROWS);
                 }
             }
         } else {
-            $wordsRemoved = dibi::delete(SEARCH_WORD_TABLE)
+            $wordsRemoved = dibi::delete(Tables::SEARCH_WORD_TABLE)
                 ->where('word_id IN',
 
                     dibi::select('word_id')
-                        ->from(SEARCH_MATCH_TABLE)
+                        ->from(Tables::SEARCH_MATCH_TABLE)
                         ->where('word_id IN',
 
                             dibi::select('word_id')
-                                ->from(SEARCH_MATCH_TABLE)
+                                ->from(Tables::SEARCH_MATCH_TABLE)
                                 ->where('post_id IN', $post_ids))
                         ->groupBy('word_id')
                         ->having('COUNT(word_id) = %i', 1))
                 ->execute(dibi::AFFECTED_ROWS);
         }
 
-        dibi::delete(SEARCH_MATCH_TABLE)
+        dibi::delete(Tables::SEARCH_MATCH_TABLE)
             ->where('post_id IN %in', $post_ids)
             ->execute();
 
@@ -369,7 +367,7 @@ class SearchHelper
             $username_search = preg_replace('/\*/', '%', phpbb_clean_username($search_match));
 
             $userNames = dibi::select('username')
-                ->from(USERS_TABLE)
+                ->from(Tables::USERS_TABLE)
                 ->where('username LIKE %~like~', $username_search)
                 ->where('user_id <> %i', ANONYMOUS)
                 ->orderBy('username')

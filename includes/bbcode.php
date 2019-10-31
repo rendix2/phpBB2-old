@@ -651,9 +651,9 @@ function smilies_pass($message)
 		global $board_config;
 		$orig = $repl = [];
 
-        $cache = new Cache($storage, SMILIES_TABLE);
+        $cache = new Cache($storage, Tables::SMILEYS_TABLE);
 
-        $key = SMILIES_TABLE . '_all';
+        $key = Tables::SMILEYS_TABLE . '_all';
 
         $smileysCaches = $cache->load($key);
 
@@ -661,7 +661,7 @@ function smilies_pass($message)
             $smilies = $smileysCaches;
         } else {
             $smilies = dibi::select('*')
-                ->from(SMILIES_TABLE)
+                ->from(Tables::SMILEYS_TABLE)
                 ->fetchAll();
 
             $cache->save($key, $smilies);

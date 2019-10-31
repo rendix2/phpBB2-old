@@ -37,9 +37,9 @@ function make_forum_select($boxName, $ignoreForum = false, $selectForum = '')
 	$isAuth = Auth::authorize(AUTH_READ, AUTH_LIST_ALL, $userdata);
 
 	$forums = dibi::select(['f.forum_id', 'f.forum_name'])
-        ->from(CATEGORIES_TABLE)
+        ->from(Tables::CATEGORIES_TABLE)
         ->as('c')
-        ->innerJoin(FORUMS_TABLE)
+        ->innerJoin(Tables::FORUMS_TABLE)
         ->as('f')
         ->on('f.cat_id = c.cat_id')
         ->orderBy('c.cat_order')
@@ -75,7 +75,7 @@ function sync($type, $id = false)
     switch ($type) {
         case 'all forums':
             $forums = dibi::select('forum_id')
-                ->from(FORUMS_TABLE)
+                ->from(Tables::FORUMS_TABLE)
                 ->fetchAll();
 
             foreach ($forums as $forum) {
@@ -85,7 +85,7 @@ function sync($type, $id = false)
 
         case 'all topics':
             $topics = dibi::select('topic_id')
-                ->from(TOPICS_TABLE)
+                ->from(Tables::TOPICS_TABLE)
                 ->fetchAll();
 
             foreach ($topics as $topic) {
@@ -98,7 +98,7 @@ function sync($type, $id = false)
                 ->as('last_post')
                 ->select('COUNT(post_id)')
                 ->as('total')
-                ->from(POSTS_TABLE)
+                ->from(Tables::POSTS_TABLE)
                 ->where('forum_id = %i', $id)
                 ->fetch();
 
@@ -111,7 +111,7 @@ function sync($type, $id = false)
 
             $totalTopics = dibi::select('COUNT(topic_id)')
                 ->as('total')
-                ->from(TOPICS_TABLE)
+                ->from(Tables::TOPICS_TABLE)
                 ->where('forum_id = %i', $id)
                 ->fetchSingle();
 
@@ -125,7 +125,7 @@ function sync($type, $id = false)
                 'forum_topics'       => $totalTopics
             ];
 
-            dibi::update(FORUMS_TABLE, $forumsUpdateData)->where('forum_id = %i', $id)->execute();
+            dibi::update(Tables::FORUMS_TABLE, $forumsUpdateData)->where('forum_id = %i', $id)->execute();
 
             break;
 
@@ -136,7 +136,7 @@ function sync($type, $id = false)
                 ->as('first_post')
                 ->select('COUNT(post_id)')
                 ->as('total_posts')
-                ->from(POSTS_TABLE)
+                ->from(Tables::POSTS_TABLE)
                 ->where('topic_id = %i', $id)
                 ->fetch();
 
@@ -149,20 +149,20 @@ function sync($type, $id = false)
                         'topic_last_post_id'  => $row->last_post
                     ];
 
-                    dibi::update(TOPICS_TABLE, $updateData)
+                    dibi::update(Tables::TOPICS_TABLE, $updateData)
                         ->where('topic_id = %i', $id)
                         ->execute();
                 } else {
                     // There are no replies to this topic
                     // Check if it is a move stub
                     $topicMovedId = dibi::select('topic_moved_id')
-                        ->from(TOPICS_TABLE)
+                        ->from(Tables::TOPICS_TABLE)
                         ->where('topic_id = %i', $id)
                         ->fetch();
 
                     if ($topicMovedId) {
                         if (!$topicMovedId->topic_moved_id) {
-                            dibi::delete(TOPICS_TABLE)
+                            dibi::delete(Tables::TOPICS_TABLE)
                                 ->where('topic_id = %i', $id)
                                 ->execute();
                         }
@@ -182,12 +182,12 @@ function sync($type, $id = false)
  */
 function get_database_size()
 {
-    global $dbms, $table_prefix, $lang, $dbname;
+    global $lang;
 
     $databaseSize = false;
 
     // This code is heavily influenced by a similar routine in phpMyAdmin 2.2.0
-    switch ($dbms) {
+    switch (Config::DBMS) {
         case 'mysql':
             $row = dibi::query('SELECT VERSION() AS mysql_version')->fetch();
 
@@ -195,14 +195,14 @@ function get_database_size()
                 $version = $row->mysql_version;
 
                 if (preg_match('#(3\.23|[45]\.|10\.[0-9]\.[0-9]{1,2}-+Maria)#', $version)) {
-                    $tables = dibi::query('SHOW TABLE STATUS FROM %n', $dbname)->fetchAll();
+                    $tables = dibi::query('SHOW TABLE STATUS FROM %n', Config::DATABASE_NAME)->fetchAll();
 
                     $databaseSize = 0;
 
                     foreach ($tables as $table) {
                         if ((isset($table->Type) && $table->Type !== 'MRG_MyISAM') || (isset($table->Engine) && ($table->Engine === 'MyISAM' || $table->Engine === 'InnoDB' || $table->Engine === 'Aria'))) {
-                            if ($table_prefix !== '') {
-                                if (strpos($table->Name, $table_prefix) !== false) {
+                            if (Config::TABLE_PREFIX !== '') {
+                                if (strpos($table->Name, Config::TABLE_PREFIX) !== false) {
                                     $databaseSize += $table->Data_length + $table->Index_length;
                                 }
                             } else {
@@ -215,10 +215,8 @@ function get_database_size()
             break;
 
         case 'sqlite3':
-            global $dbhost;
-
-            if (file_exists($dbhost)) {
-                $databaseSize = filesize($dbhost);
+            if (file_exists(Config::DATABASE_HOST)) {
+                $databaseSize = filesize(Config::DATABASE_HOST);
             }
 
             break;

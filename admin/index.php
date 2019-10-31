@@ -54,6 +54,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
     $modules['Users']['Permissions'] = 'admin_ug_auth.php?mode=user';
     $modules['Users']['Ranks'] = 'admin_ranks.php';
     $modules['Users']['Who_is_Online'] = 'admin_online.php';
+    $modules['Users']['Auto_login'] = 'admin_auto_login.php';
 
     $modules['Forums']['Prune'] = 'admin_forum_prune.php';
     $modules['Forums']['Permissions'] = 'admin_forumauth.php';
@@ -62,6 +63,8 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
     $modules['Groups']['Add_new'] = 'admin_groups.php?mode=new';
     $modules['Groups']['Manage'] = 'admin_groups.php';
     $modules['Groups']['Permissions'] = 'admin_ug_auth.php?mode=group';
+
+    $modules['Languages']['Manage'] = 'admin_languages.php';
 
     $modules['Styles']['Add_new'] = 'admin_styles.php?mode=addnew';
     $modules['Styles']['Create_new'] = 'admin_styles.php?mode=create';
@@ -165,6 +168,22 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
             'L_MEMBERS_STATISTICS'  => $lang['Members_Statistics'],
             'L_DATABASE_STATISTICS' => $lang['Database_Statistics'],
 
+            'L_NUMBER_THEMES' => $lang['Number_themes'],
+            'L_NUMBER_WATCHING' => $lang['Number_watching'],
+
+            'L_NUMBER_GROUPS' => $lang['Number_groups'],
+            'L_NUMBER_SINGLE_GROUPS' => $lang['Number_single_groups'],
+            'L_NUMBER_NOT_SINGLE_GROUPS' =>  $lang['Number_not_single_groups'],
+
+            'L_NUMBER_AUTO_LOGGED_IN_USERS' => $lang['Number_auto_logged'],
+            'L_PERCENT_AUTO_LOGGED_IN' => $lang['Percent_auto_logged'],
+
+            'L_NUMBER_OF_LANGUAGES' => $lang['Number_languages'],
+
+            'L_NUMBER_OF_RANKS' => $lang['Number_ranks'],
+            'L_NUMBER_OF_SPECIAL_RANKS' => $lang['Number_special_ranks'],
+            'L_NUMBER_OF_NOT_SPECIAL_RANKS' => $lang['Number_not_special_ranks'],
+
             'L_PHPBB_VERSION' => $lang['Version_of_board'],
             'L_PHP_VERSION'   => $lang['Version_of_PHP'],
             'L_MYSQL_VERSION' => $lang['Version_of_MySQL'],
@@ -182,20 +201,20 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
 
 	$totalForumsCount = dibi::select('COUNT(*)')
         ->as('total')
-        ->from(FORUMS_TABLE)
+        ->from(Tables::FORUMS_TABLE)
         ->fetchSingle();
 
     $totalCategoriesCount = dibi::select('COUNT(*)')
         ->as('total')
-        ->from(CATEGORIES_TABLE)
+        ->from(Tables::CATEGORIES_TABLE)
         ->fetchSingle();
 
 	$totalOnlineUsers = dibi::select('COUNT(*)')
-        ->from(SESSIONS_TABLE)
+        ->from(Tables::SESSIONS_TABLE)
         ->fetchSingle();
 
     $registeredOnlineUsers = dibi::select('COUNT(*)')
-        ->from(SESSIONS_TABLE)
+        ->from(Tables::SESSIONS_TABLE)
         ->where('session_logged_in = %i', 1)
         ->groupBy('session_user_id')
         ->fetchSingle();
@@ -203,24 +222,77 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
     // admin stats mod BEGIN
     $totalUnActiveUsers = dibi::select('COUNT(*)')
         ->as('total')
-        ->from(USERS_TABLE)
+        ->from(Tables::USERS_TABLE)
         ->where('user_active = %i', 0)
         ->where('user_id != %i', ANONYMOUS)
         ->fetchSingle();
 
     $totalModerators = dibi::select('COUNT(user_id)')
         ->as('total')
-        ->from(USERS_TABLE)
+        ->from(Tables::USERS_TABLE)
         ->where('user_level = %i', MOD)
         ->where('user_id != %i', ANONYMOUS)
         ->fetchSingle();
 
     $totalAdministrators = dibi::select('COUNT(user_id)')
         ->as('total')
-        ->from(USERS_TABLE)
+        ->from(Tables::USERS_TABLE)
         ->where('user_level = %i', ADMIN)
         ->where('user_id != %i', ANONYMOUS)
         ->fetchSingle();
+
+    $totalTemplates = dibi::select('COUNT(themes_id)')
+        ->as('total')
+        ->from(Tables::THEMES_TABLE)
+        ->fetchSingle();
+
+    $totalTopicWatching = dibi::select('COUNT(*)')
+        ->as('total')
+        ->from(Tables::TOPICS_WATCH_TABLE)
+        ->fetchSingle();
+
+    $totalGroups = dibi::select('COUNT(group_id)')
+        ->from(Tables::GROUPS_TABLE)
+        ->fetchSingle();
+
+    $totalSingleGroups = dibi::select('COUNT(group_id)')
+        ->from(Tables::GROUPS_TABLE)
+        ->where('[group_single_user] = %i', 1)
+        ->fetchSingle();
+
+    $totalNotSingleGroups = dibi::select('COUNT(group_id)')
+        ->from(Tables::GROUPS_TABLE)
+        ->where('[group_single_user] = %i', 0)
+        ->fetchSingle();
+
+    $totalAutoLoggedInUsers = dibi::select('COUNT(user_id)')
+        ->from(
+            dibi::select('user_id')
+            ->from(Tables::SESSIONS_AUTO_LOGIN_KEYS_TABLE)
+            ->groupBy('user_id')
+        )
+        ->as('x')
+        ->fetchSingle();
+
+    $totalLanguages = dibi::select('COUNT(lang_id)')
+        ->from(Tables::LANGUAGES_TABLE)
+        ->fetchSingle();
+
+    $totalRanks = dibi::select('COUNT(rank_id)')
+        ->from(Tables::RANKS_TABLE)
+        ->fetchSingle();
+
+    $totalSpecialRanks = dibi::select('COUNT(rank_id)')
+        ->from(Tables::RANKS_TABLE)
+        ->where('[rank_special] = %i', 1)
+        ->fetchSingle();
+
+    $totalNotSpecialRanks = dibi::select('COUNT(rank_id)')
+        ->from(Tables::RANKS_TABLE)
+        ->where('[rank_special] = %i', 0)
+        ->fetchSingle();
+
+    $percentAutoLoggedUsers = $totalAutoLoggedInUsers / $totalUsers;
 
     $totalActiveUsers = $totalUsers - $totalUnActiveUsers;
 
@@ -303,6 +375,22 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
 
             'NUMBER_OF_MODERATORS'      => $totalModerators,
             'NUMBER_OF_ADMINISTRATORS'  => $totalAdministrators,
+
+            'NUMBER_OF_THEMES' => $totalTemplates,
+            'NUMBER_OF_TOPIC_WATCHING' => $totalTopicWatching,
+
+            'NUMBER_OF_GROUPS' => $totalGroups,
+            'NUMBER_OF_SINGLE_GROUPS' => $totalSingleGroups,
+            'NUMBER_OF_NOT_SINGLE_GROUPS' =>  $totalNotSingleGroups,
+
+            'NUMBER_OF_AUTO_LOGGED_IN_USERS' => $totalAutoLoggedInUsers,
+            'PERCENT_AUTO_LOGGED_IN' => round($percentAutoLoggedUsers, 2),
+
+            'NUMBER_OF_LANGUAGES' => $totalLanguages,
+
+            'NUMBER_OF_RANKS' => $totalRanks,
+            'NUMBER_OF_SPECIAL_RANKS' => $totalSpecialRanks,
+            'NUMBER_OF_NOT_SPECIAL_RANKS' => $totalNotSpecialRanks,
 
             'PHPBB_VERSION' => '2' . $board_config['version'],
             'PHP_VERSION'   => PHP_VERSION,

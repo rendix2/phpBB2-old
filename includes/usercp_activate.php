@@ -28,7 +28,7 @@ if (!defined('IN_PHPBB')) {
 $columns = ['user_active', 'user_id', 'username', 'user_email', 'user_newpasswd', 'user_lang', 'user_actkey'];
 
 $user = dibi::select($columns)
-    ->from(USERS_TABLE)
+    ->from(Tables::USERS_TABLE)
     ->where('user_id = %i', (int)$_GET[POST_USERS_URL])
     ->fetch();
 
@@ -73,7 +73,7 @@ if ($user->user_newpasswd !== '') {
     $updateData['user_newpasswd'] = '';
 }
 
-dibi::update(USERS_TABLE, $updateData)
+dibi::update(Tables::USERS_TABLE, $updateData)
     ->where('user_id = %i', $user->user_id)
     ->execute();
 

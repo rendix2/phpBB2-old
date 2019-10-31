@@ -308,12 +308,12 @@ class Emailer
 			if (!$result && !$board_config['sendmail_fix'] && $empty_to_header) {
 				$to = ' ';
 
-				dibi::update(CONFIG_TABLE, ['config_value' => 1])
+				dibi::update(Tables::CONFIG_TABLE, ['config_value' => 1])
                     ->where('config_name =  %s', 'sendmail_fix')
                     ->execute();
 
-                $cache = new Cache($storage, CONFIG_TABLE);
-                $cache->remove(CONFIG_TABLE);
+                $cache = new Cache($storage, Tables::CONFIG_TABLE);
+                $cache->remove(Tables::CONFIG_TABLE);
 
 				$board_config['sendmail_fix'] = 1;
 				$result = @mail($to, $this->subject, preg_replace("#(?<!\r)\n#s", "\n", $this->msg), $this->extra_headers);

@@ -45,8 +45,8 @@ if (!$profileData) {
 	message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
 }
 
-$cache = new Cache($storage, RANKS_TABLE);
-$key   = RANKS_TABLE . '_ordered_by_rank_special_rank_min';
+$cache = new Cache($storage, Tables::RANKS_TABLE);
+$key   = Tables::RANKS_TABLE . '_ordered_by_rank_special_rank_min';
 $sep   = DIRECTORY_SEPARATOR;
 
 $cachedRanks = $cache->load($key);
@@ -55,7 +55,7 @@ if ($cachedRanks !== null) {
     $ranks = $cachedRanks;
 } else {
     $ranks = dibi::select('*')
-        ->from(RANKS_TABLE)
+        ->from(Tables::RANKS_TABLE)
         ->orderBy('rank_special')
         ->orderBy('rank_min')
         ->fetchAll();
@@ -159,6 +159,28 @@ $temp_url    = Session::appendSid('search.php?search_author=' . urlencode($profi
 $searchImage = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $profileData->username) . '" title="' . sprintf($lang['Search_user_posts'], $profileData->username) . '" border="0" /></a>';
 $search      = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $profileData->username) . '</a>';
 
+// <!-- BEGIN Another Online/Offline indicator -->
+if (!$profileData->user_allow_viewonline && $userdata['user_level'] === ADMIN || $profileData->user_allow_viewonline) {
+    $expiry_time = time() - ONLINE_TIME_DIFF;
+
+    if ($profileData->user_session_time >= $expiry_time) {
+        $user_onlinestatus = '<img src="' . $images['Online'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" />';
+
+        if (!$profileData->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+            $user_onlinestatus = '<img src="' . $images['Hidden_Admin'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" align="middle" />';
+        }
+    } else {
+        $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
+
+        if (!$profileData->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+            $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
+        }
+    }
+} else {
+    $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
+}
+// <!-- END Another Online/Offline indicator -->
+
 //
 // Generate page
 //
@@ -201,6 +223,11 @@ $template->assignVars(
         'LOCATION' => $profileData->user_from ? htmlspecialchars($profileData->user_from, ENT_QUOTES) : '&nbsp;',
         'OCCUPATION' => $profileData->user_occ ? htmlspecialchars($profileData->user_occ, ENT_QUOTES) : '&nbsp;',
         'INTERESTS' => $profileData->user_interests ? htmlspecialchars($profileData->user_interests, ENT_QUOTES) : '&nbsp;',
+
+        // <!-- BEGIN Another Online/Offline indicator -->
+        'USER_ONLINESTATUS' => $user_onlinestatus,
+        // <!-- END Another Online/Offline indicator -->
+
         'AVATAR_IMG' => $avatarImage,
 
         'L_VIEWING_PROFILE' => sprintf($lang['Viewing_user_profile'], $profileData->username),

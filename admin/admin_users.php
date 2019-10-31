@@ -59,9 +59,9 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 
 		if ($_POST['deleteuser'] && ($userdata['user_id'] !== $user_id )) {
             $row =  dibi::select('g.group_id')
-                ->from(USER_GROUP_TABLE)
+                ->from(Tables::USERS_GROUPS_TABLE)
                 ->as('ug')
-                ->innerJoin(GROUPS_TABLE)
+                ->innerJoin(Tables::GROUPS_TABLE)
                 ->as('g')
                 ->on('g.group_id = ug.group_id')
                 ->where('ug.user_id = %i', $user_id)
@@ -73,65 +73,65 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
                 'post_username' => $this_userdata->username
             ];
 
-            dibi::update(POSTS_TABLE, $update_data)
+            dibi::update(Tables::POSTS_TABLE, $update_data)
                 ->where('poster_id = %i', $user_id)
                 ->execute();
 
-            dibi::update(TOPICS_TABLE, ['topic_poster' => DELETED])
+            dibi::update(\Ifsnop\Mysqldump\TypeAdapter::TOPICS_TABLE, ['topic_poster' => DELETED])
                 ->where('topic_poster = %i', $user_id)
                 ->execute();
 
-            dibi::update(VOTE_USERS_TABLE, ['vote_user_id' => DELETED])
+            dibi::update(Tables::VOTE_USERS_TABLE, ['vote_user_id' => DELETED])
                 ->where('vote_user_id = %i', $user_id)
                 ->execute();
 
-            dibi::update(GROUPS_TABLE, ['group_moderator' => DELETED])
+            dibi::update(Tables::GROUPS_TABLE, ['group_moderator' => DELETED])
                 ->where('group_moderator = %i', $user_id)
                 ->execute();
 
-			dibi::delete(USERS_TABLE)
+			dibi::delete(Tables::USERS_TABLE)
                 ->where('user_id = %i', $user_id)
                 ->execute();
 
-            dibi::delete(USER_GROUP_TABLE)
+            dibi::delete(Tables::USERS_GROUPS_TABLE)
                 ->where('user_id = %i', $user_id)
                 ->execute();
 
-            dibi::delete(GROUPS_TABLE)
+            dibi::delete(Tables::GROUPS_TABLE)
                 ->where('group_id = %i', $row->group_id)
                 ->execute();
 
-            dibi::delete(AUTH_ACCESS_TABLE)
+            dibi::delete(Tables::AUTH_ACCESS_TABLE)
                 ->where('group_id = %i', $row->group_id)
                 ->execute();
 
-            dibi::delete(TOPICS_WATCH_TABLE)
+            dibi::delete(Tables::TOPICS_WATCH_TABLE)
                 ->where('user_id = %i', $user_id)
                 ->execute();
 
-            dibi::delete(BANLIST_TABLE)
+            dibi::delete(Tables::BAN_LIST_TABLE)
                 ->where('ban_userid = %i', $user_id)
                 ->execute();
 
-            dibi::delete(SESSIONS_TABLE)
+            dibi::delete(Tables::SESSIONS_TABLE)
                 ->where('session_user_id = %i', $user_id)
                 ->execute();
 
-            dibi::delete(SESSIONS_KEYS_TABLE)
+            dibi::delete(Tables::SESSIONS_AUTO_LOGIN_KEYS_TABLE)
                 ->where('user_id = %i', $user_id)
                 ->execute();
 
             $privmsgs_ids = dibi::select('privmsgs_id')
-                ->from(PRIVMSGS_TABLE)
+                ->from(Tables::PRIVATE_MESSAGE_TABLE)
                 ->where('privmsgs_from_userid = %i OR privmsgs_to_userid = %i', $user_id, $user_id)
                 ->fetchPairs(null, 'privmsgs_id');
 
             if (count($privmsgs_ids)) {
-                dibi::delete(PRIVMSGS_TABLE)
+                dibi::delete(Tables::PRIVATE_MESSAGE_TABLE)
                     ->where('privmsgs_id IN %in', $privmsgs_ids)
                     ->execute();
 
-                dibi::delete(PRIVMSGS_TEXT_TABLE)
+                dibi::delete(Tables::PRIVATE_MESSAGE_TEXT_TABLE)
                     ->where('privmsgs_text_id IN %in', $privmsgs_ids)
                     ->execute();
             }
@@ -257,7 +257,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
                 $error_msg .= ((isset($error_msg)) ? '<br />' : '') . $lang['ACP_Password_match_pw'];
             } else {
                 $row = dibi::select('user_password')
-                    ->from(USERS_TABLE)
+                    ->from(Tables::USERS_TABLE)
                     ->where('[user_id] = %i', $user_id)
                     ->fetch();
 
@@ -272,26 +272,33 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
             }
         }
 
+        //
+        // Awww, the user wants to change their ACP password, isn't that cute..
+        //
         if (!empty($acp_password) && !empty($acp_password_confirm)) {
-            if ($acp_password != $acp_password_confirm) {
+            $passwordLength = mb_strlen($acp_password);
+
+            if ($acp_password !== $acp_password_confirm) {
                 $error = true;
                 $error_msg .= ((isset($error_msg)) ? '<br />' : '') . $lang['ACP_Password_mismatch'];
+            } elseif($passwordLength < USER_MIN_PASSWORD_LENGTH) {
+                $error = true;
+                $error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Password_short'];
+            } elseif($passwordLength > USER_MAX_PASSWORD_LENGTH) {
+                $error = true;
+                $error_msg .= (isset($error_msg) ? '<br />' : '') . $lang['Password_long'];
             } else {
                 $passwd_sql['user_acp_password'] = password_hash($acp_password, PASSWORD_BCRYPT);
             }
-        } else if ($acp_password && !$acp_password_confirm) {
-            $error = true;
-            $error_msg .= ((isset($error_msg)) ? '<br />' : '') . $lang['ACP_Password_mismatch'];
-        } else if (!$acp_password && $acp_password_confirm) {
+        } else if (($acp_password && !$acp_password_confirm) || (!$acp_password && $acp_password_confirm)) {
             $error = true;
             $error_msg .= ((isset($error_msg)) ? '<br />' : '') . $lang['ACP_Password_mismatch'];
         }
 
+        //
+        // Awww, the user wants to change their normal password, isn't that cute..
+        //
 		if (!empty($password) && !empty($password_confirm)) {
-			//
-			// Awww, the user wants to change their password, isn't that cute..
-			//
-
             $passwordLength = mb_strlen($password);
 
             if ($password !== $password_confirm) {
@@ -301,18 +308,15 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
                 $error = true;
                 $error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Password_short'];
             } elseif($passwordLength < USER_MAX_PASSWORD_LENGTH) {
-                $error     = true;
+                $error = true;
                 $error_msg .= (isset($error_msg) ? '<br />' : '') . $lang['Password_long'];
             } else {
                 $passwd_sql['user_password'] = password_hash($password, PASSWORD_BCRYPT);
 			}
-        } elseif ($password && !$password_confirm) {
+        } elseif (($password && !$password_confirm) || (!$password && $password_confirm)) {
             $error = true;
 			$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Password_mismatch'];
-        } elseif (!$password && $password_confirm) {
-            $error = true;
-			$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Password_mismatch'];
-		}
+        }
 
 		if ($signature !== '') {
 			$sig_length_check = preg_replace('/(\[.*?)(=.*?)\]/is', '\\1]', stripslashes($signature));
@@ -599,19 +603,19 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 
 		    $update_data = array_merge($update_data, $username_sql, $passwd_sql, $avatar_sql);
 
-		    $result = dibi::update(USERS_TABLE, $update_data)
+		    $result = dibi::update(Tables::USERS_TABLE, $update_data)
                 ->where('user_id = %i', $user_id)
                 ->execute();
 
             if (isset($rename_user)) {
-                dibi::update(GROUPS_TABLE, ['group_name' => $rename_user])
+                dibi::update(Tables::GROUPS_TABLE, ['group_name' => $rename_user])
                     ->where('group_name = %s', $this_userdata['username'])
                     ->execute();
             }
 
             // Delete user session, to prevent the user navigating the forum (if logged in) when disabled
             if (!$user_status) {
-                dibi::delete(SESSIONS_TABLE)
+                dibi::delete(Tables::SESSIONS_TABLE)
                     ->where('session_user_id = %i', $user_id)
                     ->execute();
             }
@@ -743,7 +747,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 		}
 
 		$ranks = dibi::select('*')
-            ->from(RANKS_TABLE)
+            ->from(Tables::RANKS_TABLE)
             ->where('rank_special = %i', 1)
             ->orderBy('rank_title')
             ->fetchAll();
@@ -791,7 +795,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
                 'ALWAYS_ALLOW_SMILIES_YES' => $allowsmilies ? 'checked="checked"' : '',
                 'ALWAYS_ALLOW_SMILIES_NO' => !$allowsmilies ? 'checked="checked"' : '',
                 'AVATAR' => $avatar,
-                'LANGUAGE_SELECT' => Select::language($phpbb_root_path, $user_lang),
+                'LANGUAGE_SELECT' => Select::language($user_lang),
                 'TIMEZONE_SELECT' => Select::timezone($user_timezone),
                 'STYLE_SELECT' => Select::style($user_style),
                 'DATE_FORMAT' => $user_dateformat,

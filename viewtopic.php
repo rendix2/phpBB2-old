@@ -72,11 +72,11 @@ if (isset($_GET['view']) && empty($_GET[POST_POST_URL])) {
 
             if ($sessionId) {
 			    $sessionPostId = dibi::select('p.post_id')
-                    ->from(POSTS_TABLE)
+                    ->from(Tables::POSTS_TABLE)
                     ->as('p')
-                    ->from(SESSIONS_TABLE)
+                    ->from(Tables::SESSIONS_TABLE)
                     ->as('s')
-                    ->from(USERS_TABLE)
+                    ->from(Tables::USERS_TABLE)
                     ->as('u')
                     ->where('s.session_id = %s', $sessionId)
                     ->where('u.user_id = s.session_user_id')
@@ -105,9 +105,9 @@ if (isset($_GET['view']) && empty($_GET[POST_POST_URL])) {
 		$sqlOrdering  = $_GET['view'] === 'next' ? 'ASC' : 'DESC';
 
 		$row = dibi::select('t.topic_id')
-            ->from(TOPICS_TABLE)
+            ->from(Tables::TOPICS_TABLE)
             ->as('t')
-            ->innerJoin(TOPICS_TABLE)
+            ->innerJoin(Tables::TOPICS_TABLE)
             ->as('t2')
             ->on('t.forum_id = t2.forum_id')
             ->where('t2.topic_id = %i', $topicId)
@@ -141,15 +141,15 @@ if ($postId) {
     $forum_topic_data = dibi::select($columns)
         ->select('COUNT(p2.post_id)')
         ->as('prev_posts')
-        ->from(TOPICS_TABLE)
+        ->from(Tables::TOPICS_TABLE)
         ->as('t')
-        ->innerJoin(FORUMS_TABLE)
+        ->innerJoin(Tables::FORUMS_TABLE)
         ->as('f')
         ->on('f.forum_id = t.forum_id')
-        ->innerJoin(POSTS_TABLE)
+        ->innerJoin(Tables::POSTS_TABLE)
         ->as('p')
         ->on('t.topic_id = p.topic_id')
-        ->innerJoin(POSTS_TABLE)
+        ->innerJoin(Tables::POSTS_TABLE)
         ->as('p2')
         ->on('p2.topic_id = p.topic_id')
         ->where('p.post_id = %i', $postId)
@@ -187,9 +187,9 @@ if ($postId) {
     ];
 
     $forum_topic_data = dibi::select($columns)
-        ->from(TOPICS_TABLE)
+        ->from(Tables::TOPICS_TABLE)
         ->as('t')
-        ->innerJoin(FORUMS_TABLE)
+        ->innerJoin(Tables::FORUMS_TABLE)
         ->as('f')
         ->on('f.forum_id = t.forum_id')
         ->where('t.topic_id = %i', $topicId)
@@ -246,7 +246,7 @@ if ($userdata['session_logged_in']) {
 	$canWatchTopic = true;
 
 	$row = dibi::select('notify_status')
-        ->from(TOPICS_WATCH_TABLE)
+        ->from(Tables::TOPICS_WATCH_TABLE)
         ->where('topic_id = %i', $topicId)
         ->where('user_id = %i', $userdata['user_id'])
         ->fetch();
@@ -256,9 +256,9 @@ if ($userdata['session_logged_in']) {
             if ($_GET['unwatch'] === 'topic') {
 				$isWatchingTopic = 0;
 
-				$sqlPriority = $dbms === 'mysql' ? 'LOW_PRIORITY' : '';
+				$sqlPriority = Config::DBMS === 'mysql' ? 'LOW_PRIORITY' : '';
 
-				dibi::delete(TOPICS_WATCH_TABLE)
+				dibi::delete(Tables::TOPICS_WATCH_TABLE)
                     ->setFlag($sqlPriority)
                     ->where('topic_id = %i', $topicId)
                     ->where('user_id = %i', $userdata['user_id'])
@@ -277,9 +277,9 @@ if ($userdata['session_logged_in']) {
 			$isWatchingTopic = true;
 
             if ($row->notify_status) {
-                $sqlPriority = $dbms === 'mysql' ? 'LOW_PRIORITY' : '';
+                $sqlPriority = Config::DBMS === 'mysql' ? 'LOW_PRIORITY' : '';
 
-				dibi::update(TOPICS_WATCH_TABLE, ['notify_status' => 0])
+				dibi::update(Tables::TOPICS_WATCH_TABLE, ['notify_status' => 0])
                     ->setFlag($sqlPriority)
                     ->where('topic_id = %i', $topicId)
                     ->where('user_id = %i', $userdata['user_id'])
@@ -291,7 +291,7 @@ if ($userdata['session_logged_in']) {
             if ($_GET['watch'] === 'topic') {
 				$isWatchingTopic = true;
 
-				$sqlPriority = $dbms === 'mysql' ? 'LOW_PRIORITY' : '';
+				$sqlPriority = Config::DBMS === 'mysql' ? 'LOW_PRIORITY' : '';
 
                 $insertData = [
                     'user_id' => $userdata['user_id'],
@@ -299,7 +299,7 @@ if ($userdata['session_logged_in']) {
                     'notify_status' => 0
                 ];
 
-				dibi::insert(TOPICS_WATCH_TABLE, $insertData)
+				dibi::insert(Tables::TOPICS_WATCH_TABLE, $insertData)
                     ->setFlag($sqlPriority)
                     ->execute();
 			}
@@ -346,9 +346,9 @@ if (!empty($_POST['postdays']) || !empty($_GET['postdays'])) {
 
     $totalReplies = dibi::select('COUNT(p.post_id)')
         ->as('num_posts')
-        ->from(TOPICS_TABLE)
+        ->from(Tables::TOPICS_TABLE)
         ->as('t')
-        ->innerJoin(POSTS_TABLE)
+        ->innerJoin(Tables::POSTS_TABLE)
         ->as('p')
         ->on('p.topic_id = t.topic_id')
         ->where('t.topic_id = %i', $topicId)
@@ -402,6 +402,8 @@ $columns = [
     'u.user_avatar_type',
     'u.user_allowavatar',
     'u.user_allowsmile',
+    'u.user_allow_viewonline',
+    'u.user_session_time',
     'p.*',
     'pt.post_text',
     'pt.post_subject',
@@ -409,12 +411,12 @@ $columns = [
 ];
 
 $posts = dibi::select($columns)
-    ->from(POSTS_TABLE)
+    ->from(Tables::POSTS_TABLE)
     ->as('p')
-    ->innerJoin(USERS_TABLE)
+    ->innerJoin(Tables::USERS_TABLE)
     ->as('u')
     ->on('u.user_id = p.poster_id')
-    ->innerJoin(POSTS_TEXT_TABLE)
+    ->innerJoin(Tables::POSTS_TEXT_TABLE)
     ->as('pt')
     ->on('pt.post_id = p.post_id')
     ->where('p.topic_id = %i', $topicId);
@@ -461,13 +463,13 @@ if ($resync) {
 
     $totalReplies = dibi::select('COUNT(post_id)')
         ->as('total')
-        ->from(POSTS_TABLE)
+        ->from(Tables::POSTS_TABLE)
         ->where('topic_id = %i', $topicId)
         ->fetchSingle();
 }
 
-$cache = new Cache($storage, RANKS_TABLE);
-$key   = RANKS_TABLE . '_ordered_by_rank_special_rank_min';
+$cache = new Cache($storage, Tables::RANKS_TABLE);
+$key   = Tables::RANKS_TABLE . '_ordered_by_rank_special_rank_min';
 
 $cachedRanks = $cache->load($key);
 
@@ -475,7 +477,7 @@ if ($cachedRanks !== null) {
     $ranks = $cachedRanks;
 } else {
     $ranks = dibi::select('*')
-        ->from(RANKS_TABLE)
+        ->from(Tables::RANKS_TABLE)
         ->orderBy('rank_special')
         ->orderBy('rank_min')
         ->fetchAll();
@@ -692,9 +694,9 @@ if (!empty($forum_topic_data->topic_vote)) {
     ];
 
     $votes = dibi::select($columns)
-        ->from(VOTE_DESC_TABLE)
+        ->from(Tables::VOTE_DESC_TABLE)
         ->as('vd')
-        ->innerJoin(VOTE_RESULTS_TABLE)
+        ->innerJoin(Tables::VOTE_RESULTS_TABLE)
         ->as('vr')
         ->on('vr.vote_id = vd.vote_id')
         ->where('vd.topic_id = %i', $topicId)
@@ -711,7 +713,7 @@ if (!empty($forum_topic_data->topic_vote)) {
          * check if user voted
          */
         $userVoted = dibi::select('vote_id')
-            ->from(VOTE_USERS_TABLE)
+            ->from(Tables::VOTE_USERS_TABLE)
             ->where('vote_id = %i', $voteId)
             ->where('vote_user_id = %i', (int)$userdata['user_id'])
             ->fetch();
@@ -816,7 +818,7 @@ if (!empty($forum_topic_data->topic_vote)) {
 //
 // Update the topic view counter
 //
-dibi::update(TOPICS_TABLE, ['topic_views%sql' => 'topic_views + 1'])
+dibi::update(Tables::TOPICS_TABLE, ['topic_views%sql' => 'topic_views + 1'])
     ->where('topic_id = %i', $topicId)
     ->execute();
 
@@ -852,6 +854,32 @@ foreach ($posts as $i => $post) {
 				break;
 		}
 	}
+
+    // <!-- BEGIN Another Online/Offline indicator -->
+    if (!$post->user_allow_viewonline && $userdata['user_level'] === ADMIN || $post->user_allow_viewonline) {
+        $expiry_time = time() - ONLINE_TIME_DIFF;
+
+        if ($post->user_session_time >= $expiry_time) {
+            $user_onlinestatus = '<img src="' . $images['Online'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" align="middle" />';
+
+            if (!$post->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                $user_onlinestatus = '<img src="' . $images['Hidden_Admin'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" align="middle" />';
+            }
+        } else {
+            $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
+
+            if (!$post->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
+            }
+        }
+    } else {
+        $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
+    }
+
+    if ($post->user_id === ANONYMOUS) {
+        $user_onlinestatus = '';
+    }
+    // <!-- END Another Online/Offline indicator -->
 
 	//
 	// Define the little post icon
@@ -1086,6 +1114,10 @@ foreach ($posts as $i => $post) {
             'POSTER_TOPICS'  => $posterTopics,
             'POSTER_FROM'    => $posterFrom,
             'POSTER_AVATAR'  => $posterAvatar,
+
+            // <!-- BEGIN Another Online/Offline indicator -->
+            'POSTER_ONLINE' => $user_onlinestatus,
+            // <!-- END Another Online/Offline indicator -->
 
             'POST_DATE'      => $postDate,
             'POST_SUBJECT'   => $postSubject,

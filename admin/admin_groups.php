@@ -69,7 +69,7 @@ if (isset($_POST['group_update'])) {
 	if ($mode === 'edit') {
 		// TODO we dont need check group_single_user
 		$group_info = dibi::select('*')
-			->from(GROUPS_TABLE)
+			->from(Tables::GROUPS_TABLE)
 			->where('group_id = %i', $group_id)
 			->where('group_single_user <> %i', 1)
 			->fetch();
@@ -80,14 +80,14 @@ if (isset($_POST['group_update'])) {
 
 		if ($group_info->group_moderator !== $group_moderator) {
 			if ($delete_old_moderator) {
-				dibi::delete(USER_GROUP_TABLE)
+				dibi::delete(Tables::USERS_GROUPS_TABLE)
 					->where('user_id = %i', $group_info->group_moderator)
 					->where('group_id = %i', $group_id)
 					->execute();
 			}
 
 			$moderator = dibi::select('user_id')
-				->from(USER_GROUP_TABLE)
+				->from(Tables::USERS_GROUPS_TABLE)
 				->where('user_id = %i', $group_moderator)
 				->where('group_id = %i', $group_id)
 				->fetch();
@@ -99,7 +99,7 @@ if (isset($_POST['group_update'])) {
 					'user_pending' => 0
 				];
 
-				dibi::insert(USER_GROUP_TABLE, $moderator_insert_data)->execute();
+				dibi::insert(Tables::USERS_GROUPS_TABLE, $moderator_insert_data)->execute();
 			}
 		}
 
@@ -110,7 +110,7 @@ if (isset($_POST['group_update'])) {
 			'group_moderator'   => $group_moderator
 		];
 
-		dibi::update(GROUPS_TABLE, $group_update_data)
+		dibi::update(Tables::GROUPS_TABLE, $group_update_data)
 			->where('group_id = %i', $group_id)
 			->execute();
 
@@ -126,7 +126,7 @@ if (isset($_POST['group_update'])) {
 			'group_single_user' => 0
 		];
 
-		$new_group_id = dibi::insert(GROUPS_TABLE, $group_insert_data)->execute(dibi::IDENTIFIER);
+		$new_group_id = dibi::insert(Tables::GROUPS_TABLE, $group_insert_data)->execute(dibi::IDENTIFIER);
 
 		$user_group_insert_data = [
 			'group_id' => $new_group_id,
@@ -134,7 +134,7 @@ if (isset($_POST['group_update'])) {
 			'user_pending' => 0
 		];
 
-		dibi::insert(USER_GROUP_TABLE, $user_group_insert_data)->execute();
+		dibi::insert(Tables::USERS_GROUPS_TABLE, $user_group_insert_data)->execute();
 
 		$message = $lang['Added_new_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . Session::appendSid('admin_groups.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
@@ -156,7 +156,7 @@ if ($mode === 'edit' || $mode === 'new') {
 		// They're editing. Grab the vars.
 		//
 		$group_info = dibi::select('*')
-			->from(GROUPS_TABLE)
+			->from(Tables::GROUPS_TABLE)
 			->where('group_id = %i', $group_id)
 			->where('group_single_user <> %i', 1)
 			->fetch();
@@ -171,7 +171,7 @@ if ($mode === 'edit' || $mode === 'new') {
 			$moderatorName = $userdata['username'];
 		} else {
 			$moderator = dibi::select(['user_id', 'username'])
-				->from(USERS_TABLE)
+				->from(Tables::USERS_TABLE)
 				->where('user_id = %i', $group_info->group_moderator)
 				->fetch();
 
@@ -255,7 +255,7 @@ if ($mode === 'edit' || $mode === 'new') {
 // shows users of group
 if ($mode === 'users') {
 	$group = dibi::select('*')
-		->from(GROUPS_TABLE)
+		->from(Tables::GROUPS_TABLE)
 		->where('group_id = %i', $group_id)
 		->fetch();
 
@@ -264,9 +264,9 @@ if ($mode === 'users') {
 	}
 
 	$users = dibi::select('u.*, ug.user_pending')
-		->from(USER_GROUP_TABLE)
+		->from(Tables::USERS_GROUPS_TABLE)
 		->as('ug')
-		->innerJoin(USERS_TABLE)
+		->innerJoin(Tables::USERS_TABLE)
 		->as('u')
 		->on('ug.user_id =  u.user_id')
 		->where('ug.group_id = %i', $group_id)
@@ -277,6 +277,7 @@ if ($mode === 'users') {
 	$parameters = [
 		'C_USER_ID' => POST_USERS_URL,
 		'C_GROUP_ID' => POST_GROUPS_URL,
+		'C_MODE' => POST_MODE,
 
 		'D_USERS' => $users,
 
@@ -299,7 +300,7 @@ if ($mode === 'users') {
 
 // delete user from group
 if ($mode === 'deleteUser') {
-	dibi::delete(USER_GROUP_TABLE)
+	dibi::delete(Tables::USERS_GROUPS_TABLE)
 		->where('user_id = %i', $_GET[POST_USERS_URL])
 		->where('group_id = %i', $group_id)
 		->execute();
@@ -312,9 +313,9 @@ if ($mode === 'deleteUser') {
 // list of groups
 if ($mode === '') {
 	$groups = dibi::select('*')
-		->from(GROUPS_TABLE)
+		->from(Tables::GROUPS_TABLE)
 		->as('g')
-		->leftJoin(USERS_TABLE)
+		->leftJoin(Tables::USERS_TABLE)
 		->as('u')
 		->on('g.group_moderator = u.user_id')
 		->where('g.group_single_user <> %i', 1)
@@ -325,6 +326,7 @@ if ($mode === '') {
         'C_CLOSED'   => GROUP_CLOSED,
         'C_HIDDEN'   => GROUP_HIDDEN,
         'C_GROUP_ID' => POST_GROUPS_URL,
+		'C_MODE' => POST_MODE,
 
 		'D_GROUPS' => $groups,
 
@@ -359,14 +361,14 @@ if ($mode === 'delete') {
 	// Reset User Moderator Level
 	//
 	$auth_mod = dibi::select('auth_mod')
-		->from(AUTH_ACCESS_TABLE)
+		->from(Tables::AUTH_ACCESS_TABLE)
 		->where('group_id = %i', $group_id)
 		->fetchSingle();
 
 	if ((int)$auth_mod === 1) {
 		// Yes, get the assigned users and update their Permission if they are no longer moderator of one of the forums
 		$users = dibi::select('user_id')
-			->from(USER_GROUP_TABLE)
+			->from(Tables::USERS_GROUPS_TABLE)
 			->where('group_id = %i', $group_id)
 			->fetchAll();
 
@@ -374,11 +376,11 @@ if ($mode === 'delete') {
 		// dont check it in update query
 		foreach ($users as $user) {
 			$group_ids = dibi::select('g.group_id')
-				->from(AUTH_ACCESS_TABLE)
+				->from(Tables::AUTH_ACCESS_TABLE)
 				->as('a')
-				->from(GROUPS_TABLE)
+				->from(Tables::GROUPS_TABLE)
 				->as('g')
-				->from(USER_GROUP_TABLE)
+				->from(Tables::USERS_GROUPS_TABLE)
 				->as('ug')
 				->where('a.auth_mod = %i', 1)
 				->where('g.group_id = a.group_id')
@@ -389,7 +391,7 @@ if ($mode === 'delete') {
 				->fetchAll();
 
 			if (count($group_ids) === 0) {
-				dibi::update(USERS_TABLE, ['user_level' => USER])
+				dibi::update(Tables::USERS_TABLE, ['user_level' => USER])
 					->where('user_level = %i', MOD)
 					->where('user_id = %i', (int)$user->user_id)
 					->execute();
@@ -400,15 +402,15 @@ if ($mode === 'delete') {
 	//
 	// Delete Group
 	//
-	dibi::delete(GROUPS_TABLE)
+	dibi::delete(Tables::GROUPS_TABLE)
 		->where('group_id = %i', $group_id)
 		->execute();
 
-	dibi::delete(USER_GROUP_TABLE)
+	dibi::delete(Tables::USERS_GROUPS_TABLE)
 		->where('group_id = %i', $group_id)
 		->execute();
 
-	dibi::delete(AUTH_ACCESS_TABLE)
+	dibi::delete(Tables::AUTH_ACCESS_TABLE)
 		->where('group_id = %i', $group_id)
 		->execute();
 

@@ -96,6 +96,13 @@ CREATE TABLE [phpbb_forums] (
 ) ON [PRIMARY]
 GO
 
+
+CREATE TABLE [phpbb_languages] (
+    [lang_id]        [INT]           NOT NULL,
+    [lang_name]      [varchar] (255) NOT NULL,
+) ON [PRIMARY]
+GO
+
 CREATE TABLE [phpbb_groups] (
 	[group_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[group_type] [smallint] NULL ,
@@ -458,6 +465,13 @@ ALTER TABLE [phpbb_forums] WITH NOCHECK ADD
 	)  ON [PRIMARY]
 GO
 
+ALTER TABLE [phpbb_languages] WITH NOCHECK ADD
+	CONSTRAINT [PK_phpbb_languages] PRIMARY KEY  CLUSTERED
+	(
+		[lang_id]
+	)  ON [PRIMARY]
+GO
+
 ALTER TABLE [phpbb_groups] WITH NOCHECK ADD
 	CONSTRAINT [PK_phpbb_groups] PRIMARY KEY  CLUSTERED
 	(
@@ -673,6 +687,9 @@ GO
 GO
 
  CREATE  INDEX [IX_phpbb_forums] ON [phpbb_forums]([cat_id], [forum_order], [forum_last_post_id]) ON [PRIMARY]
+GO
+
+ CREATE  INDEX [IX_phpbb_languages] ON [phpbb_anguages]([lang_id]) ON [PRIMARY]
 GO
 
  CREATE  INDEX [IX_phpbb_groups] ON [phpbb_groups]([group_single_user]) ON [PRIMARY]

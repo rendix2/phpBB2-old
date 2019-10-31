@@ -41,7 +41,7 @@ if (!$userdata['session_logged_in']) {
 }
 
 $user = dibi::select(['username', 'user_email', 'user_viewemail', 'user_lang'])
-    ->from(USERS_TABLE)
+    ->from(Tables::USERS_TABLE)
     ->where('user_id = %i', $user_id)
     ->fetch();
 
@@ -74,7 +74,7 @@ if ($user->user_viewemail || $userdata['user_level'] === ADMIN) {
         }
 
         if (!$error) {
-            $result = dibi::update(USERS_TABLE, ['user_emailtime' => time()])
+            $result = dibi::update(Tables::USERS_TABLE, ['user_emailtime' => time()])
                 ->where('user_id = %i', $userdata['user_id'])
                 ->execute();
 

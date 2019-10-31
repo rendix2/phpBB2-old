@@ -110,7 +110,7 @@ if (isset($_POST['submit'])) {
 			if (count($forum_auth_fields) === count($simple_ary)) {
                 $update_data = array_combine($forum_auth_fields, $simple_ary);
 
-                dibi::update(FORUMS_TABLE, $update_data)
+                dibi::update(Tables::FORUMS_TABLE, $update_data)
                     ->where('forum_id = %i', $forum_id)
                     ->execute();
             }
@@ -127,7 +127,7 @@ if (isset($_POST['submit'])) {
                 $update_data[$forum_auth_field] = $value;
             }
 
-		    dibi::update(FORUMS_TABLE, $update_data)
+		    dibi::update(Tables::FORUMS_TABLE, $update_data)
                 ->where('forum_id = %i', $forum_id)
                 ->execute();
 		}
@@ -152,9 +152,9 @@ if (isset($_POST['submit'])) {
 // was
 //
 $forums = dibi::select('f.*')
-    ->from(FORUMS_TABLE)
+    ->from(Tables::FORUMS_TABLE)
     ->as('f')
-    ->innerJoin(CATEGORIES_TABLE)
+    ->innerJoin(Tables::CATEGORIES_TABLE)
     ->as('c')
     ->on('c.cat_id = f.cat_id');
 

@@ -669,6 +669,8 @@ $lang['Sort_Posts'] = 'Total posts';
 $lang['Sort_Topics'] = 'Total topics';
 $lang['Sort_Email'] = 'Email';
 $lang['Sort_Website'] = 'Website';
+$lang['Sort_Online'] = 'Online status';
+
 $lang['Sort_Ascending'] = 'Ascending';
 $lang['Sort_Descending'] = 'Descending';
 $lang['Order'] = 'Order';
@@ -1023,6 +1025,17 @@ $lang['rank_no_desc'] = 'Rank has no description.';
 
 // different acp password
 $lang['No_ACP_Password'] = '<b>You have no valid password to login the Admin Panel!</b><br /><br />Please contact the board admin to get one.';
+
+$lang['Empty_user_name'] = 'Username is empty.';
+$lang['Empty_user_password'] = 'User password is empty.';
+$lang['Empty_confirm_user_password'] = 'User confirmation pasword is empty.';
+$lang['Empty_user_email'] = 'User email is empty.';
+$lang['User_email_invalid'] = 'User email is not valid.';
+
+// Another Online/Offline indicator
+$lang['Online'] = 'Online';
+$lang['Offline'] = 'Offline';
+$lang['Hidden'] = 'Hidden';
 
 
 //

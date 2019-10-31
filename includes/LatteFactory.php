@@ -70,8 +70,8 @@ class LatteFactory
     {
         $sep = DIRECTORY_SEPARATOR;
 
-        $cache = new Cache($this->storage, THEMES_TABLE);
-        $key   = THEMES_TABLE . '_'. $this->userData['user_style'];
+        $cache = new Cache($this->storage, Tables::THEMES_TABLE);
+        $key   = Tables::THEMES_TABLE . '_'. $this->userData['user_style'];
 
         $cachedTheme = $cache->load($key);
 

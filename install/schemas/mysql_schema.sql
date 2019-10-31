@@ -161,6 +161,17 @@ CREATE TABLE phpbb_forums (
    KEY forum_last_post_id (forum_last_post_id)
 );
 
+# --------------------------------------------------------
+#
+# Table structure for table 'phpbb_languages'
+#
+CREATE TABLE `phpbb_languages`
+(
+    `lang_id`        INT          NOT NULL AUTO_INCREMENT COMMENT 'language ID',
+    `lang_name`      VARCHAR(255) NOT NULL COMMENT 'language name',
+    PRIMARY KEY (`lang_id`)
+)
+COMMENT = 'list of languages';
 
 # --------------------------------------------------------
 #

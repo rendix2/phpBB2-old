@@ -28,7 +28,7 @@ require_once '.' . $sep . 'pagestart.php';
 //
 // todo i think we already have this data
 $configs = dibi::select('*')
-	->from(CONFIG_TABLE)
+	->from(Tables::CONFIG_TABLE)
 	->fetchAll();
 
 $new = [];
@@ -63,7 +63,7 @@ foreach ($configs as $config) {
 
     if (isset($_POST['submit'])) {
         if ($new[$config_name] !== $board_config[$config_name]) {
-            dibi::update(CONFIG_TABLE, ['config_value' => $new[$config_name]])
+            dibi::update(Tables::CONFIG_TABLE, ['config_value' => $new[$config_name]])
                 ->where('config_name = %s', $config_name)
                 ->execute();
         }
@@ -71,9 +71,9 @@ foreach ($configs as $config) {
 }
 
 if (isset($_POST['submit'])) {
-    $cache = new Cache($storage, CONFIG_TABLE);
+    $cache = new Cache($storage, Tables::CONFIG_TABLE);
 
-    $cache->remove(CONFIG_TABLE);
+    $cache->remove(Tables::CONFIG_TABLE);
 
     $message = $lang['Config_updated'] . '<br /><br />' . sprintf($lang['Click_return_config'], '<a href="' . Session::appendSid('admin_board.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
@@ -81,7 +81,7 @@ if (isset($_POST['submit'])) {
 }
 
 $style_select = Select::style($new['default_style'], 'default_style', '..' . $sep . 'templates');
-$lang_select = Select::language($phpbb_root_path, $new['default_lang'], 'default_lang');
+$lang_select = Select::language($new['default_lang'], 'default_lang');
 $timezone_select = Select::timezone($new['board_timezone'], 'board_timezone');
 
 $disable_board_yes =  $new['board_disable'] ? 'checked="checked"' : '';

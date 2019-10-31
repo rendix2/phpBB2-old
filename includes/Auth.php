@@ -120,14 +120,14 @@ class Auth
             if ($forumId !== AUTH_LIST_ALL) {
                 $f_access = dibi::select('a.forum_id')
                     ->select($authSql)
-                    ->from(FORUMS_TABLE)
+                    ->from(Tables::FORUMS_TABLE)
                     ->as('a')
                     ->where('a.forum_id = %i', $forumId)
                     ->fetch();
             } else {
                 $f_access = dibi::select('a.forum_id')
                     ->select($authSql)
-                    ->from(FORUMS_TABLE)
+                    ->from(Tables::FORUMS_TABLE)
                     ->as('a')
                     ->fetchAll();
             }
@@ -147,9 +147,9 @@ class Auth
             $rows = dibi::select('a.forum_id')
                 ->select($authSql)
                 ->select('a.auth_mod ')
-                ->from(AUTH_ACCESS_TABLE)
+                ->from(Tables::AUTH_ACCESS_TABLE)
                 ->as('a')
-                ->innerJoin(USER_GROUP_TABLE)
+                ->innerJoin(Tables::USERS_GROUPS_TABLE)
                 ->as('ug')
                 ->on('a.group_id = ug.group_id')
                 ->where('ug.user_id = %i', $userdata['user_id'])

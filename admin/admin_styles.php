@@ -72,7 +72,7 @@ switch ($mode) {
 				}
 			}
 
-			dibi::insert(THEMES_TABLE, $insert_data)->execute();
+			dibi::insert(Tables::THEMES_TABLE, $insert_data)->execute();
 			
 			$message = $lang['Theme_installed'] . '<br /><br />' . sprintf($lang['Click_return_styleadmin'], '<a href="' . Session::appendSid('admin_styles.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
@@ -94,7 +94,7 @@ switch ($mode) {
                     require_once $newTemplate->getRealPath() . $sep . 'theme_info.cfg';
 
                     $templateCheck = dibi::select('themes_id')
-                        ->from(THEMES_TABLE)
+                        ->from(Tables::THEMES_TABLE)
                         ->where('style_name = %s', $newTemplate->getFilename())
                         ->fetch();
 
@@ -220,12 +220,12 @@ switch ($mode) {
 			//
 			
 			if ($mode === 'edit') {
-                $cache = new Cache($storage, THEMES_TABLE);
-                $key   = THEMES_TABLE . '_'. $style_id;
+                $cache = new Cache($storage, Tables::THEMES_TABLE);
+                $key   = Tables::THEMES_TABLE . '_'. $style_id;
 
                 $cache->remove($key);
 
-			    dibi::update(THEMES_TABLE, $updated)
+			    dibi::update(Tables::THEMES_TABLE, $updated)
                     ->where('themes_id = %i', $style_id)
                     ->execute();
 				
@@ -233,18 +233,18 @@ switch ($mode) {
 				// Check if there's a names table entry for this style
 				//
 				$theme_exists = dibi::select('themes_id')
-                    ->from(THEMES_NAME_TABLE)
+                    ->from(Tables::THEMES_NAME_TABLE)
                     ->where('themes_id = %i', $style_id)
                     ->fetchSingle();
 
 				if ($theme_exists) {
-				    dibi::update(THEMES_NAME_TABLE, $updated_name)
+				    dibi::update(Tables::THEMES_NAME_TABLE, $updated_name)
                         ->where('themes_id = %i', $style_id)
                         ->execute();
 				} else {
                     $updated_name['themes_id'] =  $style_id;
 
-				    dibi::insert(THEMES_NAME_TABLE, $updated_name)->execute();
+				    dibi::insert(Tables::THEMES_NAME_TABLE, $updated_name)->execute();
 				}
 							
 				$message = $lang['Theme_updated'] . '<br /><br />' . sprintf($lang['Click_return_styleadmin'], '<a href="' . Session::appendSid('admin_styles.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
@@ -255,7 +255,7 @@ switch ($mode) {
 				// First, check if we already have a style by this name
 				//
                 $theme_check = dibi::select('themes_id')
-                    ->from(THEMES_TABLE)
+                    ->from(Tables::THEMES_TABLE)
                     ->where('style_name = %s', $updated['style_name'])
                     ->fetch();
 				
@@ -263,14 +263,14 @@ switch ($mode) {
 					message_die(GENERAL_ERROR, $lang['Style_exists'], $lang['Error']);
 				}
 
-                $style_id = dibi::insert(THEMES_TABLE, $updated)->execute(dibi::IDENTIFIER);
+                $style_id = dibi::insert(Tables::THEMES_TABLE, $updated)->execute(dibi::IDENTIFIER);
 				
 				// 
 				// Insert names data
 				//
                 $updated_name['themes_id'] =  $style_id;
 
-                dibi::insert(THEMES_NAME_TABLE, $updated_name)->execute();
+                dibi::insert(Tables::THEMES_NAME_TABLE, $updated_name)->execute();
 				
 				$message = $lang['Theme_created'] . '<br /><br />' . sprintf($lang['Click_return_styleadmin'], '<a href="' . Session::appendSid('admin_styles.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
@@ -286,7 +286,7 @@ switch ($mode) {
 				// Fetch the Theme Info from the db
 				//
                 $selected_values = dibi::select('*')
-                    ->from(THEMES_TABLE)
+                    ->from(Tables::THEMES_TABLE)
                     ->where('themes_id = %i', $style_id)
                     ->fetch();
 				
@@ -294,7 +294,7 @@ switch ($mode) {
 				// Fetch the Themes Name data
 				//
                 $selected_names = dibi::select('*')
-                    ->from(THEMES_NAME_TABLE)
+                    ->from(Tables::THEMES_NAME_TABLE)
                     ->where('themes_id = %i', $style_id)
                     ->fetch();
 
@@ -446,7 +446,7 @@ switch ($mode) {
 			$template_name = $_POST['export_template'];
 
             $themes = dibi::select('*')
-                ->from(THEMES_TABLE)
+                ->from(Tables::THEMES_TABLE)
                 ->where('template_name = %s', $template_name)
                 ->fetchAll();
 			
@@ -535,12 +535,12 @@ switch ($mode) {
 			// The user has confirmed the delete. Remove the style, the style element
 			// names and update any users who might be using this style
 			//
-            $cache = new Cache($storage, THEMES_TABLE);
-            $key   = THEMES_TABLE . '_'. $style_id;
+            $cache = new Cache($storage, Tables::THEMES_TABLE);
+            $key   = Tables::THEMES_TABLE . '_'. $style_id;
 
             $cache->remove($key);
 
-            dibi::delete(THEMES_TABLE)
+            dibi::delete(Tables::THEMES_TABLE)
                 ->where('themes_id = %i', $style_id)
                 ->execute();
 
@@ -548,11 +548,11 @@ switch ($mode) {
 			// There may not be any theme name data so don't throw an error
 			// if the SQL dosan't work
 			//
-            dibi::delete(THEMES_NAME_TABLE)
+            dibi::delete(Tables::THEMES_NAME_TABLE)
                 ->where('themes_id = %i', $style_id)
                 ->execute();
 
-            dibi::update(USERS_TABLE, ['user_style' => $board_config['default_style']])
+            dibi::update(Tables::USERS_TABLE, ['user_style' => $board_config['default_style']])
                 ->where('user_style = %i', $style_id)
                 ->execute();
 
@@ -591,7 +591,7 @@ switch ($mode) {
 
 	default:
         $styles = dibi::select(['themes_id', 'template_name', 'style_name'])
-            ->from(THEMES_TABLE)
+            ->from(Tables::THEMES_TABLE)
             ->orderBy('template_name')
             ->fetchAll();
 

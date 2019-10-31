@@ -1,4 +1,7 @@
-<?php 
+<?php
+/**
+ * @deprecated
+ */
 /*************************************************************************** 
 *                               dbinformer.php 
 *                            ------------------- 
@@ -95,9 +98,9 @@ $available_dbms = [
 if (isset($_POST['download_config']) && $_POST['download_config'] == true && isset($_POST['submit_download_config']) && $_POST['submit_download_config'] == 'Download')
 { 
     /* borrowed from install.php */ 
-    header('Content-Type: text/x-delimtext; name="config.php"'); 
-    header('Content-disposition: attachment; filename=config.php'); 
-    echo make_download($dbms, $dbhost, $dbname, $dbuser, $dbpasswd, $table_prefix); 
+    header('Content-Type: text/x-delimtext; name="Config.php"');
+    header('Content-disposition: attachment; filename=Config.php');
+    echo make_download(Config::DBMS, Config::DATABASE_HOST, Config::DATABASE_NAME, Config::DATABASE_USER, Config::DATABASE_PASSWORD, Config::TABLE_PREFIX);
     return; 
 } 
 ?> 
@@ -155,7 +158,7 @@ h3 {font-size:12pt;color:blue}
 <?php 
 /* loop through the dbms, with the correct one selected (hopefully!) */ 
 foreach ($available_dbms as $var => $param) {
-    $selected = ($dbms == $var) ? ' selected="selected"' : ''; 
+    $selected = (Config::DBMS == $var) ? ' selected="selected"' : '';
     echo '<option value="' . $var . '"' . $selected . '>' . htmlspecialchars($param, ENT_QUOTES) . '</option>';
 } 
 ?> 
@@ -163,23 +166,23 @@ foreach ($available_dbms as $var => $param) {
 </tr> 
 <tr> 
 <td class="row1" align="right"><span class="gen">Database Server Hostname / DSN: </span></td> 
-<td class="row2"><input type="text" name="dbhost" value="<?php echo @$dbhost; ?>" /></td> 
+<td class="row2"><input type="text" name="dbhost" value="<?php echo @Config::DATABASE_HOST; ?>" /></td>
 </tr> 
 <tr> 
 <td class="row1" align="right"><span class="gen">Your Database Name: </span></td> 
-<td class="row2"><input type="text" name="dbname" value="<?php echo @$dbname; ?>" /></td> 
+<td class="row2"><input type="text" name="dbname" value="<?php echo @Config::DATABASE_NAME; ?>" /></td>
 </tr> 
 <tr> 
 <td class="row1" align="right"><span class="gen">Database Username: </span></td> 
-<td class="row2"><input type="text" name="dbuser" value="<?php echo @$dbuser; ?>" /></td> 
+<td class="row2"><input type="text" name="dbuser" value="<?php echo @Config::DATABASE_USER; ?>" /></td>
 </tr> 
 <tr> 
 <td class="row1" align="right"><span class="gen">Database Password: </span></td> 
-<td class="row2"><input type="password" name="dbpasswd" autocomplete="off" value="<?php echo @$dbpasswd; ?>"/></td>
+<td class="row2"><input type="password" name="dbpasswd" autocomplete="off" value="<?php echo @Config::DATABASE_PASSWORD; ?>"/></td>
 </tr> 
 <tr> 
 <td class="row1" align="right"><span class="gen">Chosen Prefix: </span></td> 
-<td class="row2"><input type="text" name="table_prefix" value="<?php echo @$table_prefix; ?>" /></td> 
+<td class="row2"><input type="text" name="table_prefix" value="<?php echo @Config::TABLE_PREFIX; ?>" /></td>
 </tr> 
 <tr> 
 <td class="row1" align="right"><span class="gen">Generate a config file: </span></td> 
@@ -201,7 +204,7 @@ if (!isset($_POST['submit']))
 else 
 { 
     /* dbal added by Techie-Micheal [and then obliterated by BFL]. weeeeeee! */ 
-    switch ($dbms) 
+    switch (Config::DBMS)
     { 
         case 'mysql':
             if (function_exists(@mysql_connect)) {
@@ -216,7 +219,7 @@ else
                 ];
             } else {
                 $error     = true;
-                $error_msg = 'You do not have the needed functions available for ' . $available_dbms[$dbms] . '.';
+                $error_msg = 'You do not have the needed functions available for ' . $available_dbms[Config::DBMS] . '.';
             }
             break;
 
@@ -233,7 +236,7 @@ else
                 ];
             } else {
                 $error     = true;
-                $error_msg = 'You do not have the needed functions available for ' . $available_dbms[$dbms] . '.';
+                $error_msg = 'You do not have the needed functions available for ' . $available_dbms[Config::DBMS] . '.';
             }
             break;
              
@@ -250,7 +253,7 @@ else
                 ];
             } else {
                 $error     = true;
-                $error_msg = 'You do not have the needed functions available for ' . $available_dbms[$dbms] . '.';
+                $error_msg = 'You do not have the needed functions available for ' . $available_dbms[Config::DBMS] . '.';
             }
             break;
               
@@ -268,7 +271,7 @@ else
                 ];
             } else {
                 $error     = true;
-                $error_msg = 'You do not have the needed functions available for ' . $available_dbms[$dbms] . '.';
+                $error_msg = 'You do not have the needed functions available for ' . $available_dbms[Config::DBMS] . '.';
             }
             break;
         case 'mssql':
@@ -284,7 +287,7 @@ else
                 ];
             } else {
                 $error     = true;
-                $error_msg = 'You do not have the needed functions available for ' . $available_dbms[$dbms] . '.';
+                $error_msg = 'You do not have the needed functions available for ' . $available_dbms[Config::DBMS] . '.';
             }
             break;
 
@@ -301,7 +304,7 @@ else
                 ];
             } else {
                 $error     = true;
-                $error_msg = 'You do not have the needed functions available for ' . $available_dbms[$dbms] . '.';
+                $error_msg = 'You do not have the needed functions available for ' . $available_dbms[Config::DBMS] . '.';
             }
             break;
 
@@ -334,7 +337,7 @@ else
             $connect = true;
         }
 
-        if ($dbms == 'msaccess' || $dbms == 'postgres' || $dbms == 'mssql-odbc') {
+        if (Config::DBMS == 'msaccess' || Config::DBMS == 'postgres' || Config::DBMS == 'mssql-odbc') {
             /* for dbmses which have no db select function */
             $select = true;
         } else {
@@ -349,7 +352,7 @@ else
 
         if ($connect == true && $select == true) {
             echo '<a name="tables"><h3><u>Tables in database</u></h3></a>';
-            if ($dbms == 'mysql' || $dbms == 'mysql4' || $dbms == 'postgres') {
+            if (Config::DBMS == 'mysql' || Config::DBMS == 'mysql4' || Config::DBMS == 'postgres') {
                 echo '<i>Tables with the table prefix you specified are in bold.</i>';
                 echo '<ul>';
 
@@ -382,13 +385,13 @@ else
             } 
             else 
             { 
-                echo 'Either copy the <b>19</b> lines below and save them as <u>config.php</u> or click on the <u>Download</u> button below. Then upload the file to your phpBB2 root directory (phpBB2/ by default). Make sure that there is nothing (this includes blank spaces) after the <u>?></u>.<br /><br />'; 
+                echo 'Either copy the <b>19</b> lines below and save them as <u>Config.php</u> or click on the <u>Download</u> button below. Then upload the file to your phpBB2 root directory (phpBB2/ by default). Make sure that there is nothing (this includes blank spaces) after the <u>?></u>.<br /><br />';
 
                 /* Create our config file */ 
                 echo '<form action="' . htmlspecialchars($_SERVER['PHP_SELF']) . '" method="post"><table cellspacing="1" cellpadding="3" border="0"><tr><td class="code">';
-                echo make_config($dbms, $dbhost, $dbname, $dbuser, $dbpasswd, $table_prefix); 
+                echo make_config(Config::DBMS, $dbhost, $dbname, $dbuser, $dbpasswd, $table_prefix);
                 echo '</td></tr></table>'; 
-                echo '<input type="hidden" name="dbms" value="' . $dbms . '" />'; 
+                echo '<input type="hidden" name="dbms" value="' . Config::DBMS . '" />';
                 echo '<input type="hidden" name="dbhost" value="' . $dbhost . '" />'; 
                 echo '<input type="hidden" name="dbname" value="' . $dbname . '" />'; 
                 echo '<input type="hidden" name="dbuser" value="' . $dbuser . '" />'; 

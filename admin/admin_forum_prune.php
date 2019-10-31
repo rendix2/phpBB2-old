@@ -50,9 +50,9 @@ if (isset($_GET[POST_FORUM_URL]) || isset($_POST[POST_FORUM_URL])) {
 //
 
 $forums = dibi::select('f.*')
-    ->from(FORUMS_TABLE)
+    ->from(Tables::FORUMS_TABLE)
     ->as('f')
-    ->innerJoin(CATEGORIES_TABLE)
+    ->innerJoin(Tables::CATEGORIES_TABLE)
     ->as('c')
     ->on('c.cat_id = f.cat_id');
 
