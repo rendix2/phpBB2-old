@@ -78,7 +78,7 @@ class Tables
     /**
      * @var string
      */
-    const PRUNE_TABLE = self::PREFIX . 'prune';
+    const PRUNE_TABLE = self::PREFIX . 'forum_prune';
 
     /**
      * @var string
