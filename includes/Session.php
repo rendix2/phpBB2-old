@@ -664,8 +664,7 @@ class Session
             );
 
             $userdata['session_key'] = $autoLoginKey;
-            unset($sessionData);
-            unset($autoLoginKey);
+            unset($sessionData, $autoLoginKey);
         }
     }
 

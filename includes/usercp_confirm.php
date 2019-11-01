@@ -130,8 +130,7 @@ header('Content-Type: image/png');
 header('Cache-control: no-cache, no-store');
 echo $image;
 
-unset($image);
-unset($_png);
+unset($image, $_png);
 exit;
 
 // This is designed to randomise the pixels of the image data within

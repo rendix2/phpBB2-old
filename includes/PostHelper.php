@@ -128,7 +128,7 @@ class PostHelper
         // Check message
         if (!empty($message)) {
             $bbcode_uid = $bbcodeOn ? make_bbcode_uid() : '';
-            $message = PostHelper::prepareMessage(trim($message), $htmlOn, $bbcodeOn, $smiliesOn, $bbcode_uid);
+            $message = self::prepareMessage(trim($message), $htmlOn, $bbcodeOn, $smiliesOn, $bbcode_uid);
         } elseif ($mode !== 'delete' && $mode !== 'poll_delete')  {
             $errorMessage .= !empty($errorMessage) ? '<br />' . $lang['Empty_message'] : $lang['Empty_message'];
         }
@@ -698,7 +698,7 @@ class PostHelper
                     $emailer->setFrom($board_config['board_email']);
                     $emailer->setReplyTo($board_config['board_email']);
 
-                    $topicTitle = count($origWords) ? preg_replace($origWords, $replacementWords, PostHelper::unPrepareMessage($topicTitle)) : PostHelper::unPrepareMessage($topicTitle);
+                    $topicTitle = count($origWords) ? preg_replace($origWords, $replacementWords, self::unPrepareMessage($topicTitle)) : self::unPrepareMessage($topicTitle);
 
                     foreach ($bcc_list_ary as $userLang => $bccList) {
                         $emailer->useTemplate('topic_notify', $userLang);

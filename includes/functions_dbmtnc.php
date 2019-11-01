@@ -159,7 +159,7 @@ $default_config = [
 $sep = DIRECTORY_SEPARATOR;
 
 // append data added in later versions
-if (isset($board_config) && isset($board_config['version'])) {
+if (isset($board_config, $board_config['version'])) {
     $phpbb_version = explode('.', substr($board_config['version'], 1));
 } else {
     // Fallback for ERC
