@@ -600,17 +600,17 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 
         echo "<html>\n<body>\n<b>Critical Error!</b><br />\nmessage_die() was called multiple times.<br />&nbsp;<hr />";
 
-        for ($i = 0; $i < count($msg_history); $i++) {
+        foreach ($msg_history as $messasage) {
             echo '<b>Error #' . ($i + 1) . "</b>\n<br />\n";
-            if (!empty($msg_history[$i]['msg_title'])) {
-                echo '<b>' . $msg_history[$i]['msg_title'] . "</b>\n<br />\n";
+            if (!empty($messasage->msg_title)) {
+                echo '<b>' . $messasage->msg_title . "</b>\n<br />\n";
             }
-            echo $msg_history[$i]['msg_text'] . "\n<br /><br />\n";
-            if (!empty($msg_history[$i]['err_line'])) {
-                echo '<b>Line :</b> ' . $msg_history[$i]['err_line'] . '<br /><b>File :</b> ' . $msg_history[$i]['err_file'] . "</b>\n<br />\n";
+            echo $messasage->msg_text . "\n<br /><br />\n";
+            if (!empty($messasage->err_line)) {
+                echo '<b>Line :</b> ' . $messasage->err_line . '<br /><b>File :</b> ' . $messasage->err_file . "</b>\n<br />\n";
             }
-            if (!empty($msg_history[$i]['sql'])) {
-                echo '<b>SQL :</b> ' . $msg_history[$i]['sql'] . "\n<br />\n";
+            if (!empty($messasage->sql)) {
+                echo '<b>SQL :</b> ' . $messasage->sql . "\n<br />\n";
             }
             echo "&nbsp;<hr />\n";
         }

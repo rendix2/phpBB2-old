@@ -244,32 +244,31 @@ class TemplateDatabase extends BaseTemplate
 		$code = preg_replace('#\{([a-z0-9\-_]*?)\}#is', '\' . ( ( isset($this->_tpldata[\'.\'][0][\'\1\']) ) ? $this->_tpldata[\'.\'][0][\'\1\'] : \'\' ) . \'', $code);
 
 		// Break it up into lines.
-		$code_lines = explode("\n", $code);
+		$codeLines = explode("\n", $code);
 
 		$block_nesting_level = 0;
 		$block_names = [];
 		$block_names[0] = '.';
 
 		// Second: prepend echo ', append ' . "\n"; to each line.
-		$line_count = count($code_lines);
 
-		for ($i = 0; $i < $line_count; $i++) {
-			$code_lines[$i] = rtrim($code_lines[$i]);
+		foreach ($codeLines as &$codeLine) {
+            $codeLine = rtrim($codeLine);
 
-			if (preg_match('#<!-- BEGIN (.*?) -->#', $code_lines[$i], $m)) {
+			if (preg_match('#<!-- BEGIN (.*?) -->#', $codeLine, $m)) {
 				$n[0] = $m[0];
 				$n[1] = $m[1];
 
 				// Added: dougk_ff7-Keeps templates from bombing if begin is on the same line as end.. I think. :)
-				if (preg_match('#<!-- END (.*?) -->#', $code_lines[$i], $n) ) {
+				if (preg_match('#<!-- END (.*?) -->#', $codeLine, $n) ) {
 					$block_nesting_level++;
 					$block_names[$block_nesting_level] = $m[1];
 
 					if ($block_nesting_level < 2) {
 						// Block is not nested.
-						$code_lines[$i] = '$_' . $a[1] . '_count = ( isset($this->_tpldata[\'' . $n[1] . '.\']) ) ?  count($this->_tpldata[\'' . $n[1] . '.\']) : 0;';
-						$code_lines[$i] .= "\n" . 'for ($_' . $n[1] . '_i = 0; $_' . $n[1] . '_i < $_' . $n[1] . '_count; $_' . $n[1] . '_i++)';
-						$code_lines[$i] .= "\n" . '{';
+                        $codeLine = '$_' . $a[1] . '_count = ( isset($this->_tpldata[\'' . $n[1] . '.\']) ) ?  count($this->_tpldata[\'' . $n[1] . '.\']) : 0;';
+                        $codeLine .= "\n" . 'for ($_' . $n[1] . '_i = 0; $_' . $n[1] . '_i < $_' . $n[1] . '_count; $_' . $n[1] . '_i++)';
+                        $codeLine .= "\n" . '{';
 					} else {
 						// This block is nested.
 						// Generate a namespace string for this block.
@@ -283,15 +282,15 @@ class TemplateDatabase extends BaseTemplate
 						$varref = $this->generateBlockDataRef($namespace, false);
 
 						// Create the for loop code to iterate over this block.
-						$code_lines[$i] = '$_' . $a[1] . '_count = ( isset(' . $varref . ') ) ? count(' . $varref . ') : 0;';
-						$code_lines[$i] .= "\n" . 'for ($_' . $n[1] . '_i = 0; $_' . $n[1] . '_i < $_' . $n[1] . '_count; $_' . $n[1] . '_i++)';
-						$code_lines[$i] .= "\n" . '{';
+                        $codeLine = '$_' . $a[1] . '_count = ( isset(' . $varref . ') ) ? count(' . $varref . ') : 0;';
+                        $codeLine .= "\n" . 'for ($_' . $n[1] . '_i = 0; $_' . $n[1] . '_i < $_' . $n[1] . '_count; $_' . $n[1] . '_i++)';
+                        $codeLine .= "\n" . '{';
 					}
 
 					// We have the end of a block.
 					unset($block_names[$block_nesting_level]);
 					$block_nesting_level--;
-					$code_lines[$i] .= '} // END ' . $n[1];
+                    $codeLine .= '} // END ' . $n[1];
 					$m[0] = $n[0];
 					$m[1] = $n[1];
 				} else {
@@ -301,9 +300,9 @@ class TemplateDatabase extends BaseTemplate
 
 					if ($block_nesting_level < 2) {
 						// Block is not nested.
-						$code_lines[$i] = '$_' . $m[1] . '_count = ( isset($this->_tpldata[\'' . $m[1] . '.\']) ) ? count($this->_tpldata[\'' . $m[1] . '.\']) : 0;';
-						$code_lines[$i] .= "\n" . 'for ($_' . $m[1] . '_i = 0; $_' . $m[1] . '_i < $_' . $m[1] . '_count; $_' . $m[1] . '_i++)';
-						$code_lines[$i] .= "\n" . '{';
+                        $codeLine = '$_' . $m[1] . '_count = ( isset($this->_tpldata[\'' . $m[1] . '.\']) ) ? count($this->_tpldata[\'' . $m[1] . '.\']) : 0;';
+                        $codeLine .= "\n" . 'for ($_' . $m[1] . '_i = 0; $_' . $m[1] . '_i < $_' . $m[1] . '_count; $_' . $m[1] . '_i++)';
+                        $codeLine .= "\n" . '{';
 					} else {
 						// This block is nested.
 
@@ -318,28 +317,30 @@ class TemplateDatabase extends BaseTemplate
 						$varref = $this->generateBlockDataRef($namespace, false);
 
 						// Create the for loop code to iterate over this block.
-						$code_lines[$i] = '$_' . $m[1] . '_count = ( isset(' . $varref . ') ) ? count(' . $varref . ') : 0;';
-						$code_lines[$i] .= "\n" . 'for ($_' . $m[1] . '_i = 0; $_' . $m[1] . '_i < $_' . $m[1] . '_count; $_' . $m[1] . '_i++)';
-						$code_lines[$i] .= "\n" . '{';
+                        $codeLine = '$_' . $m[1] . '_count = ( isset(' . $varref . ') ) ? count(' . $varref . ') : 0;';
+                        $codeLine .= "\n" . 'for ($_' . $m[1] . '_i = 0; $_' . $m[1] . '_i < $_' . $m[1] . '_count; $_' . $m[1] . '_i++)';
+                        $codeLine .= "\n" . '{';
 					}
 				}
-			} elseif (preg_match('#<!-- END (.*?) -->#', $code_lines[$i], $m)) {
+			} elseif (preg_match('#<!-- END (.*?) -->#', $codeLine, $m)) {
 				// We have the end of a block.
 				unset($block_names[$block_nesting_level]);
 				$block_nesting_level--;
-				$code_lines[$i] = '} // END ' . $m[1];
+                $codeLine = '} // END ' . $m[1];
 			} else {
 				// We have an ordinary line of code.
 				if ($do_not_echo) {
-                    $code_lines[$i] = '$' . $retvar . '.= \'' . $code_lines[$i] . '\' . "\\n";';
+                    $codeLine = '$' . $retvar . '.= \'' . $codeLine . '\' . "\\n";';
 				} else {
-                    $code_lines[$i] = 'echo \'' . $code_lines[$i] . '\' . "\\n";';
+                    $codeLine = 'echo \'' . $codeLine . '\' . "\\n";';
 				}
 			}
 		}
 
+		unset($codeLine);
+
 		// Bring it back into a single string of lines of code.
-		return implode("\n", $code_lines);
+		return implode("\n", $codeLines);
 	}
 
     /**
