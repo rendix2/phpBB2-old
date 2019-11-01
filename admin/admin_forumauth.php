@@ -34,15 +34,15 @@ require_once '.' . $sep . 'pagestart.php';
 //
 // Start program - define vars
 //
-//          View      Read      Post      Reply     Edit     Delete    Sticky   Announce    Vote      Poll
+//              View      Read              Post            Reply           Edit            Delete          Sticky          Announce        Vote                Poll
 $simple_auth_ary = [
-    0 => [AUTH_ALL, AUTH_ALL, AUTH_ALL, AUTH_ALL, AUTH_REG, AUTH_REG, AUTH_MOD, AUTH_MOD, AUTH_REG, AUTH_REG],
-    1 => [AUTH_ALL, AUTH_ALL, AUTH_REG, AUTH_REG, AUTH_REG, AUTH_REG, AUTH_MOD, AUTH_MOD, AUTH_REG, AUTH_REG],
-    2 => [AUTH_REG, AUTH_REG, AUTH_REG, AUTH_REG, AUTH_REG, AUTH_REG, AUTH_MOD, AUTH_MOD, AUTH_REG, AUTH_REG],
-    3 => [AUTH_ALL, AUTH_ACL, AUTH_ACL, AUTH_ACL, AUTH_ACL, AUTH_ACL, AUTH_ACL, AUTH_MOD, AUTH_ACL, AUTH_ACL],
-    4 => [AUTH_ACL, AUTH_ACL, AUTH_ACL, AUTH_ACL, AUTH_ACL, AUTH_ACL, AUTH_ACL, AUTH_MOD, AUTH_ACL, AUTH_ACL],
-    5 => [AUTH_ALL, AUTH_MOD, AUTH_MOD, AUTH_MOD, AUTH_MOD, AUTH_MOD, AUTH_MOD, AUTH_MOD, AUTH_MOD, AUTH_MOD],
-    6 => [AUTH_MOD, AUTH_MOD, AUTH_MOD, AUTH_MOD, AUTH_MOD, AUTH_MOD, AUTH_MOD, AUTH_MOD, AUTH_MOD, AUTH_MOD],
+    0 => [Auth::AUTH_ALL, Auth::AUTH_ALL, Auth::AUTH_ALL, Auth::AUTH_ALL, Auth::AUTH_REG, Auth::AUTH_REG, Auth::AUTH_MOD, Auth::AUTH_MOD, Auth::AUTH_REG, Auth::AUTH_REG],
+    1 => [Auth::AUTH_ALL, Auth::AUTH_ALL, Auth::AUTH_REG, Auth::AUTH_REG, Auth::AUTH_REG, Auth::AUTH_REG, Auth::AUTH_MOD, Auth::AUTH_MOD, Auth::AUTH_REG, Auth::AUTH_REG],
+    2 => [Auth::AUTH_REG, Auth::AUTH_REG, Auth::AUTH_REG, Auth::AUTH_REG, Auth::AUTH_REG, Auth::AUTH_REG, Auth::AUTH_MOD, Auth::AUTH_MOD, Auth::AUTH_REG, Auth::AUTH_REG],
+    3 => [Auth::AUTH_ALL, Auth::AUTH_ACL, Auth::AUTH_ACL, Auth::AUTH_ACL, Auth::AUTH_ACL, Auth::AUTH_ACL, Auth::AUTH_ACL, Auth::AUTH_MOD, Auth::AUTH_ACL, Auth::AUTH_ACL],
+    4 => [Auth::AUTH_ACL, Auth::AUTH_ACL, Auth::AUTH_ACL, Auth::AUTH_ACL, Auth::AUTH_ACL, Auth::AUTH_ACL, Auth::AUTH_ACL, Auth::AUTH_MOD, Auth::AUTH_ACL, Auth::AUTH_ACL],
+    5 => [Auth::AUTH_ALL, Auth::AUTH_MOD, Auth::AUTH_MOD, Auth::AUTH_MOD, Auth::AUTH_MOD, Auth::AUTH_MOD, Auth::AUTH_MOD, Auth::AUTH_MOD, Auth::AUTH_MOD, Auth::AUTH_MOD],
+    6 => [Auth::AUTH_MOD, Auth::AUTH_MOD, Auth::AUTH_MOD, Auth::AUTH_MOD, Auth::AUTH_MOD, Auth::AUTH_MOD, Auth::AUTH_MOD, Auth::AUTH_MOD, Auth::AUTH_MOD, Auth::AUTH_MOD],
 ];
 
 $simple_auth_types = [
@@ -82,7 +82,7 @@ $field_names = [
 ];
 
 $forum_auth_levels = ['ALL', 'REG', 'PRIVATE', 'MOD', 'ADMIN'];
-$forum_auth_const  = [AUTH_ALL, AUTH_REG, AUTH_ACL, AUTH_MOD, AUTH_ADMIN];
+$forum_auth_const  = [Auth::AUTH_ALL, Auth::AUTH_REG, Auth::AUTH_ACL, Auth::AUTH_MOD, Auth::AUTH_ADMIN];
 
 if (isset($_GET[POST_FORUM_URL]) || isset($_POST[POST_FORUM_URL])) {
     $forum_id  = isset($_POST[POST_FORUM_URL]) ? (int)$_POST[POST_FORUM_URL] : (int)$_GET[POST_FORUM_URL];
@@ -120,8 +120,8 @@ if (isset($_POST['submit'])) {
 		    foreach ($forum_auth_fields as $forum_auth_field) {
                 $value = (int)$_POST[$forum_auth_field];
 
-                if ($forum_auth_field === 'auth_value' && $_POST['auth_vote'] === AUTH_ALL) {
-                    $value = AUTH_REG;
+                if ($forum_auth_field === 'auth_value' && $_POST['auth_vote'] === Auth::AUTH_ALL) {
+                    $value = Auth::AUTH_REG;
                 }
 
                 $update_data[$forum_auth_field] = $value;

@@ -84,7 +84,7 @@ function topic_review($topic_id, $is_inline_review)
 		//
 
 		// TODO for now to arrary
-		$is_auth = Auth::authorize(AUTH_ALL, $forum->forum_id, $userdata, $forum->toArray());
+		$is_auth = Auth::authorize(Auth::AUTH_ALL, $forum->forum_id, $userdata, $forum->toArray());
 
         if (!$is_auth['auth_read']) {
             message_die(GENERAL_MESSAGE, sprintf($lang['Sorry_auth_read'], $is_auth['auth_read_type']));

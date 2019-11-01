@@ -8,6 +8,86 @@
 class Auth
 {
     /**
+     * @var int
+     */
+    const AUTH_ALL = 0;
+
+    /**
+     * @var int
+     */
+    const AUTH_REG = 1;
+
+    /**
+     * @var int
+     */
+    const AUTH_ACL = 2;
+
+    /**
+     * @var int
+     */
+    const AUTH_MOD = 3;
+
+    /**
+     * @var int
+     */
+    const AUTH_ADMIN = 5;
+
+    /**
+     * @var int
+     */
+    const AUTH_VIEW = 1;
+
+    /**
+     * @var int
+     */
+    const AUTH_READ  = 2;
+
+    /**
+     * @var int
+     */
+    const AUTH_POST = 3;
+
+    /**
+     * @var int
+     */
+    const AUTH_REPLY = 4;
+
+    /**
+     * @var int
+     */
+    const AUTH_EDIT = 5;
+
+    /**
+     * @var int
+     */
+    const AUTH_DELETE  = 6;
+
+    /**
+     * @var int
+     */
+    const AUTH_ANNOUNCE = 7;
+
+    /**
+     * @var int
+     */
+    const AUTH_STICKY = 8;
+
+    /**
+     * @var int
+     */
+    const AUTH_POLL_CREATE = 9;
+
+    /**
+     * @var int
+     */
+    const AUTH_VOTE = 10;
+
+    /**
+     * @var int
+     */
+    const AUTH_ATTACH = 11;
+    
+    /**
      *
      *  $type's accepted (pre-pend with AUTH_):
      *  VIEW, READ, POST, REPLY, EDIT, DELETE, STICKY, ANNOUNCE, VOTE, POLLCREATE
@@ -51,61 +131,62 @@ class Auth
         $authFields = [];
 
         switch ($type) {
-            case AUTH_ALL:
+            case self::AUTH_ALL:
                 $authSql      = ['a.auth_view', 'a.auth_read', 'a.auth_post', 'a.auth_reply', 'a.auth_edit', 'a.auth_delete', 'a.auth_sticky', 'a.auth_announce', 'a.auth_vote', 'a.auth_pollcreate'];
                 $authFields = ['auth_view', 'auth_read', 'auth_post', 'auth_reply', 'auth_edit', 'auth_delete', 'auth_sticky', 'auth_announce', 'auth_vote', 'auth_pollcreate'];
                 break;
 
-            case AUTH_VIEW:
+            case self::AUTH_VIEW:
                 $authSql      = ['a.auth_view'];
                 $authFields = ['auth_view'];
                 break;
 
-            case AUTH_READ:
+            case self::AUTH_READ:
                 $authSql      = ['a.auth_read'];
                 $authFields = ['auth_read'];
                 break;
 
-            case AUTH_POST:
+            case self::AUTH_POST:
                 $authSql      = ['a.auth_post'];
                 $authFields = ['auth_post'];
                 break;
 
-            case AUTH_REPLY:
+            case self::AUTH_REPLY:
                 $authSql      = ['a.auth_reply'];
                 $authFields = ['auth_reply'];
                 break;
 
-            case AUTH_EDIT:
+            case self::AUTH_EDIT:
                 $authSql      = ['a.auth_edit'];
                 $authFields = ['auth_edit'];
                 break;
 
-            case AUTH_DELETE:
+            case self::AUTH_DELETE:
                 $authSql      = ['a.auth_delete'];
                 $authFields = ['auth_delete'];
                 break;
 
-            case AUTH_ANNOUNCE:
+            case self::AUTH_ANNOUNCE:
                 $authSql      = ['a.auth_announce'];
                 $authFields = ['auth_announce'];
                 break;
-            case AUTH_STICKY:
+
+            case self::AUTH_STICKY:
                 $authSql      = ['a.auth_sticky'];
                 $authFields = ['auth_sticky'];
                 break;
 
-            case AUTH_POLLCREATE:
+            case self::AUTH_POLL_CREATE:
                 $authSql      = ['a.auth_pollcreate'];
                 $authFields = ['auth_pollcreate'];
                 break;
 
-            case AUTH_VOTE:
+            case self::AUTH_VOTE:
                 $authSql      = ['a.auth_vote'];
                 $authFields = ['auth_vote'];
                 break;
 
-            case AUTH_ATTACH:
+            case self::AUTH_ATTACH:
                 break;
 
             default:
@@ -117,7 +198,7 @@ class Auth
         // then we need to pull the auth information on the given forum (or all forums)
         //
         if (empty($f_access)) {
-            if ($forumId !== AUTH_LIST_ALL) {
+            if ($forumId !== self::AUTH_ALL) {
                 $f_access = dibi::select('a.forum_id')
                     ->select($authSql)
                     ->from(Tables::FORUMS_TABLE)
@@ -155,14 +236,14 @@ class Auth
                 ->where('ug.user_id = %i', $userdata['user_id'])
                 ->where('ug.user_pending = %i', 0);
 
-            if ($forumId !== AUTH_LIST_ALL) {
+            if ($forumId !== self::AUTH_ALL) {
                 $rows->where('a.forum_id = %i', $forumId);
             }
 
             $rows = $rows->fetchAll();
 
             foreach ($rows as $row) {
-                if ($forumId !== AUTH_LIST_ALL) {
+                if ($forumId !== self::AUTH_ALL) {
                     $u_access[] = $row;
                 } else {
                     $u_access[$row->forum_id][] = $row;
@@ -188,31 +269,31 @@ class Auth
             // and admin automatically have access to an ACL forum, similarly we assume admins meet an
             // auth requirement of MOD
             //
-            if ($forumId !== AUTH_LIST_ALL) {
+            if ($forumId !== self::AUTH_ALL) {
                 $value = $f_access[$key];
 
-                switch( $value) {
-                    case AUTH_ALL:
+                switch ($value) {
+                    case self::AUTH_ALL:
                         $authUser[$key] = true;
                         $authUser[$key . '_type'] = $lang['Auth_Anonymous_Users'];
                         break;
 
-                    case AUTH_REG:
+                    case self::AUTH_REG:
                         $authUser[$key] = $userdata['session_logged_in'] ? true : 0;
                         $authUser[$key . '_type'] = $lang['Auth_Registered_Users'];
                         break;
 
-                    case AUTH_ACL:
-                        $authUser[$key] = $userdata['session_logged_in'] ? self::auth_check_user(AUTH_ACL, $key, $u_access, $isAdmin) : 0;
+                    case self::AUTH_ACL:
+                        $authUser[$key] = $userdata['session_logged_in'] ? self::auth_check_user(self::AUTH_ACL, $key, $u_access, $isAdmin) : 0;
                         $authUser[$key . '_type'] = $lang['Auth_Users_granted_access'];
                         break;
 
-                    case AUTH_MOD:
-                        $authUser[$key] = $userdata['session_logged_in'] ? self::auth_check_user(AUTH_MOD, 'auth_mod', $u_access, $isAdmin) : 0;
+                    case self::AUTH_MOD:
+                        $authUser[$key] = $userdata['session_logged_in'] ? self::auth_check_user(self::AUTH_MOD, 'auth_mod', $u_access, $isAdmin) : 0;
                         $authUser[$key . '_type'] = $lang['Auth_Moderators'];
                         break;
 
-                    case AUTH_ADMIN:
+                    case self::AUTH_ADMIN:
                         $authUser[$key] = $isAdmin;
                         $authUser[$key . '_type'] = $lang['Auth_Administrators'];
                         break;
@@ -228,27 +309,27 @@ class Auth
                     $u_access[$f_forum_id] = isset($u_access[$f_forum_id]) ? $u_access[$f_forum_id] : [];
 
                     switch ($value) {
-                        case AUTH_ALL:
+                        case self::AUTH_ALL:
                             $authUser[$f_forum_id][$key] = true;
                             $authUser[$f_forum_id][$key . '_type'] = $lang['Auth_Anonymous_Users'];
                             break;
 
-                        case AUTH_REG:
+                        case self::AUTH_REG:
                             $authUser[$f_forum_id][$key] = $userdata['session_logged_in'] ? true : 0;
                             $authUser[$f_forum_id][$key . '_type'] = $lang['Auth_Registered_Users'];
                             break;
 
-                        case AUTH_ACL:
-                            $authUser[$f_forum_id][$key] = $userdata['session_logged_in'] ? self::auth_check_user(AUTH_ACL, $key, $u_access[$f_forum_id], $isAdmin) : 0;
+                        case self::AUTH_ACL:
+                            $authUser[$f_forum_id][$key] = $userdata['session_logged_in'] ? self::auth_check_user(self::AUTH_ACL, $key, $u_access[$f_forum_id], $isAdmin) : 0;
                             $authUser[$f_forum_id][$key . '_type'] = $lang['Auth_Users_granted_access'];
                             break;
 
-                        case AUTH_MOD:
-                            $authUser[$f_forum_id][$key] = $userdata['session_logged_in'] ? self::auth_check_user(AUTH_MOD, 'auth_mod', $u_access[$f_forum_id], $isAdmin) : 0;
+                        case self::AUTH_MOD:
+                            $authUser[$f_forum_id][$key] = $userdata['session_logged_in'] ? self::auth_check_user(self::AUTH_MOD, 'auth_mod', $u_access[$f_forum_id], $isAdmin) : 0;
                             $authUser[$f_forum_id][$key . '_type'] = $lang['Auth_Moderators'];
                             break;
 
-                        case AUTH_ADMIN:
+                        case self::AUTH_ADMIN:
                             $authUser[$f_forum_id][$key] = $isAdmin;
                             $authUser[$f_forum_id][$key . '_type'] = $lang['Auth_Administrators'];
                             break;
@@ -264,14 +345,14 @@ class Auth
         //
         // Is user a moderator?
         //
-        if ($forumId !== AUTH_LIST_ALL) {
-            $authUser['auth_mod'] = $userdata['session_logged_in'] ? self::auth_check_user(AUTH_MOD, 'auth_mod', $u_access, $isAdmin) : 0;
+        if ($forumId !== self::AUTH_ALL) {
+            $authUser['auth_mod'] = $userdata['session_logged_in'] ? self::auth_check_user(self::AUTH_MOD, 'auth_mod', $u_access, $isAdmin) : 0;
         } else {
             foreach ($f_access as $f_access_value) {
                 $f_forum_id = $f_access_value['forum_id'];
                 $u_access[$f_forum_id] = isset($u_access[$f_forum_id]) ? $u_access[$f_forum_id] : [];
 
-                $authUser[$f_forum_id]['auth_mod'] = $userdata['session_logged_in'] ? self::auth_check_user(AUTH_MOD, 'auth_mod', $u_access[$f_forum_id], $isAdmin) : 0;
+                $authUser[$f_forum_id]['auth_mod'] = $userdata['session_logged_in'] ? self::auth_check_user(self::AUTH_MOD, 'auth_mod', $u_access[$f_forum_id], $isAdmin) : 0;
             }
         }
 
@@ -294,15 +375,15 @@ class Auth
             foreach ($u_access as $u_access_value) {
                 $result = 0;
 
-                if ($type === AUTH_ACL) {
+                if ($type === self::AUTH_ACL) {
                     $result = $u_access_value[$key];
                 }
 
-                if ($type === AUTH_MOD) {
+                if ($type === self::AUTH_MOD) {
                     $result = $result || $u_access_value['auth_mod'];
                 }
 
-                if ($type === AUTH_ADMIN) {
+                if ($type === self::AUTH_ADMIN) {
                     $result = $result || $isAdmin;
 
                     // TODO CHECK THIS if its needed

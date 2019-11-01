@@ -213,7 +213,7 @@ $userdata = init_userprefs($forumId);
 //
 // Start auth check
 //
-$is_auth = Auth::authorize(AUTH_ALL, $forumId, $userdata, $forum_topic_data);
+$is_auth = Auth::authorize(Auth::AUTH_ALL, $forumId, $userdata, $forum_topic_data);
 
 if (!$is_auth['auth_view'] || !$is_auth['auth_read']) {
     if (!$userdata['session_logged_in']) {

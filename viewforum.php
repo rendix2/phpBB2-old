@@ -87,7 +87,7 @@ $forumAllCookieName = $board_config['cookie_name'] . '_f_all';
 //
 // Start auth check
 //
-$is_auth = Auth::authorize(AUTH_ALL, $forumId, $userdata, $forum);
+$is_auth = Auth::authorize(Auth::AUTH_ALL, $forumId, $userdata, $forum);
 
 if (!$is_auth['auth_read'] || !$is_auth['auth_view']) {
     if (!$userdata['session_logged_in']) {

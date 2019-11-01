@@ -32,16 +32,16 @@ $phpbb_root_path = '.' . $sep . '..' . $sep;
 require_once '.' . $sep . 'pagestart.php';
 
 $forum_auth_ary = [
-    'auth_view'       => AUTH_ALL,
-    'auth_read'       => AUTH_ALL,
-    'auth_post'       => AUTH_REG,
-    'auth_reply'      => AUTH_REG,
-    'auth_edit'       => AUTH_REG,
-    'auth_delete'     => AUTH_REG,
-    'auth_sticky'     => AUTH_MOD,
-    'auth_announce'   => AUTH_MOD,
-    'auth_vote'       => AUTH_REG,
-    'auth_pollcreate' => AUTH_REG
+    'auth_view'       => Auth::AUTH_ALL,
+    'auth_read'       => Auth::AUTH_ALL,
+    'auth_post'       => Auth::AUTH_REG,
+    'auth_reply'      => Auth::AUTH_REG,
+    'auth_edit'       => Auth::AUTH_REG,
+    'auth_delete'     => Auth::AUTH_REG,
+    'auth_sticky'     => Auth::AUTH_MOD,
+    'auth_announce'   => Auth::AUTH_MOD,
+    'auth_vote'       => Auth::AUTH_REG,
+    'auth_pollcreate' => Auth::AUTH_REG
 ];
 
 //

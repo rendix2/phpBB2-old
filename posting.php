@@ -311,7 +311,7 @@ if ($post_info) {
 	$forumId   = $post_info->forum_id;
 	$forumName = $post_info->forum_name;
 
-	$is_auth = Auth::authorize(AUTH_ALL, $forumId, $userdata, $post_info);
+	$is_auth = Auth::authorize(Auth::AUTH_ALL, $forumId, $userdata, $post_info);
 
     if ($post_info->forum_status === FORUM_LOCKED && !$is_auth['auth_mod']) {
         message_die(GENERAL_MESSAGE, $lang['Forum_locked']);

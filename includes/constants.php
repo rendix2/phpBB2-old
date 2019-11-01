@@ -136,60 +136,40 @@ define('PAGE_TOPIC_OFFSET', 5000);
 define('ONLINE_TIME_DIFF', 300);
 
 
-// Auth settings
-define('AUTH_LIST_ALL', 0);
-define('AUTH_ALL', 0);
-
-define('AUTH_REG', 1);
-define('AUTH_ACL', 2);
-define('AUTH_MOD', 3);
-define('AUTH_ADMIN', 5);
-
-define('AUTH_VIEW', 1);
-define('AUTH_READ', 2);
-define('AUTH_POST', 3);
-define('AUTH_REPLY', 4);
-define('AUTH_EDIT', 5);
-define('AUTH_DELETE', 6);
-define('AUTH_ANNOUNCE', 7);
-define('AUTH_STICKY', 8);
-define('AUTH_POLLCREATE', 9);
-define('AUTH_VOTE', 10);
-define('AUTH_ATTACH', 11);
-
-
 // Table names
-//define('CONFIRM_TABLE', Config::TABLE_PREFIX.'confirm');
-//define('AUTH_ACCESS_TABLE', Config::TABLE_PREFIX.'auth_access');
-//define('BANLIST_TABLE', Config::TABLE_PREFIX.'banlist');
-//define('CATEGORIES_TABLE', Config::TABLE_PREFIX.'categories');
-//define('CONFIG_TABLE', Config::TABLE_PREFIX.'config');
-//define('DISALLOW_TABLE', Config::TABLE_PREFIX.'disallow');
-//define('FORUMS_TABLE', Config::TABLE_PREFIX.'forums');
-//define('GROUPS_TABLE', Config::TABLE_PREFIX.'groups');
-//define('POSTS_TABLE', Config::TABLE_PREFIX.'posts');
-//define('POSTS_TEXT_TABLE', Config::TABLE_PREFIX.'posts_text');
-//define('PRIVMSGS_TABLE', Config::TABLE_PREFIX.'privmsgs');
-//define('PRIVMSGS_TEXT_TABLE', Config::TABLE_PREFIX.'privmsgs_text');
+/*
+define('CONFIRM_TABLE', Config::TABLE_PREFIX.'confirm');
+define('AUTH_ACCESS_TABLE', Config::TABLE_PREFIX.'auth_access');
+define('BANLIST_TABLE', Config::TABLE_PREFIX.'banlist');
+define('CATEGORIES_TABLE', Config::TABLE_PREFIX.'categories');
+define('CONFIG_TABLE', Config::TABLE_PREFIX.'config');
+define('DISALLOW_TABLE', Config::TABLE_PREFIX.'disallow');
+define('FORUMS_TABLE', Config::TABLE_PREFIX.'forums');
+define('GROUPS_TABLE', Config::TABLE_PREFIX.'groups');
+define('POSTS_TABLE', Config::TABLE_PREFIX.'posts');
+define('POSTS_TEXT_TABLE', Config::TABLE_PREFIX.'posts_text');
+define('PRIVMSGS_TABLE', Config::TABLE_PREFIX.'privmsgs');
+define('PRIVMSGS_TEXT_TABLE', Config::TABLE_PREFIX.'privmsgs_text');
 define('PRIVMSGS_IGNORE_TABLE', Config::TABLE_PREFIX.'privmsgs_ignore');
-//define('PRUNE_TABLE', Config::TABLE_PREFIX.'forum_prune');
-//define('RANKS_TABLE', Config::TABLE_PREFIX.'ranks');
-//define('SEARCH_TABLE', Config::TABLE_PREFIX.'search_results');
-//define('SEARCH_WORD_TABLE', Config::TABLE_PREFIX.'search_wordlist');
-//define('SEARCH_MATCH_TABLE', Config::TABLE_PREFIX.'search_wordmatch');
-//define('SESSIONS_TABLE', Config::TABLE_PREFIX.'sessions');
-//define('SESSIONS_KEYS_TABLE', Config::TABLE_PREFIX.'sessions_keys');
-//define('SMILIES_TABLE', Config::TABLE_PREFIX.'smilies');
-//define('TEMPLATE_CACHE_TABLE', Config::TABLE_PREFIX . 'template_cache');
-//define('THEMES_TABLE', Config::TABLE_PREFIX.'themes');
-//define('THEMES_NAME_TABLE', Config::TABLE_PREFIX.'themes_name');
-//define('TOPICS_TABLE', Config::TABLE_PREFIX.'topics');
-//define('TOPICS_WATCH_TABLE', Config::TABLE_PREFIX.'topics_watch');
-//define('USER_GROUP_TABLE', Config::TABLE_PREFIX.'user_group');
-//define('USERS_TABLE', Config::TABLE_PREFIX.'users');
-//define('WORDS_TABLE', Config::TABLE_PREFIX.'words');
-//define('VOTE_DESC_TABLE', Config::TABLE_PREFIX.'vote_desc');
-//define('VOTE_RESULTS_TABLE', Config::TABLE_PREFIX.'vote_results');
-//define('VOTE_USERS_TABLE', Config::TABLE_PREFIX.'vote_voters');
+define('PRUNE_TABLE', Config::TABLE_PREFIX.'forum_prune');
+define('RANKS_TABLE', Config::TABLE_PREFIX.'ranks');
+define('SEARCH_TABLE', Config::TABLE_PREFIX.'search_results');
+define('SEARCH_WORD_TABLE', Config::TABLE_PREFIX.'search_wordlist');
+define('SEARCH_MATCH_TABLE', Config::TABLE_PREFIX.'search_wordmatch');
+define('SESSIONS_TABLE', Config::TABLE_PREFIX.'sessions');
+define('SESSIONS_KEYS_TABLE', Config::TABLE_PREFIX.'sessions_keys');
+define('SMILIES_TABLE', Config::TABLE_PREFIX.'smilies');
+define('TEMPLATE_CACHE_TABLE', Config::TABLE_PREFIX . 'template_cache');
+define('THEMES_TABLE', Config::TABLE_PREFIX.'themes');
+define('THEMES_NAME_TABLE', Config::TABLE_PREFIX.'themes_name');
+define('TOPICS_TABLE', Config::TABLE_PREFIX.'topics');
+define('TOPICS_WATCH_TABLE', Config::TABLE_PREFIX.'topics_watch');
+define('USER_GROUP_TABLE', Config::TABLE_PREFIX.'user_group');
+define('USERS_TABLE', Config::TABLE_PREFIX.'users');
+define('WORDS_TABLE', Config::TABLE_PREFIX.'words');
+define('VOTE_DESC_TABLE', Config::TABLE_PREFIX.'vote_desc');
+define('VOTE_RESULTS_TABLE', Config::TABLE_PREFIX.'vote_results');
+define('VOTE_USERS_TABLE', Config::TABLE_PREFIX.'vote_voters');
+*/
 
 ?>

@@ -171,7 +171,7 @@ function make_jumpbox($action, $match_forum_id = 0)
 				$boxstring_forums = '';
 
 				foreach ($forums as $forum) {
-					if ($forum->cat_id === $category->cat_id && $forum->auth_view <= AUTH_REG) {
+					if ($forum->cat_id === $category->cat_id && $forum->auth_view <= Auth::AUTH_REG) {
 
 //					if ($forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $is_auth[$forum_rows[$j]['forum_id']]['auth_view'] )
 //					{

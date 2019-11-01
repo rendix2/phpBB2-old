@@ -63,7 +63,7 @@ $forums = dibi::select(['forum_id', 'forum_name'])
 //
 // Get auth data
 //
-$isAuth = Auth::authorize(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
+$isAuth = Auth::authorize(Auth::AUTH_VIEW, Auth::AUTH_ALL, $userdata);
 
 //
 // Get user list
