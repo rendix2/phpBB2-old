@@ -105,18 +105,23 @@ $connection = dibi::connect([
 
 $connection->connect();
 
+// adds dibi into tracy
+$panel = new Panel();
+$panel->explain = true;
+Panel::$maxLength = 10000;
+$panel->register($connection);
+
+// cache
+$storage = new FileStorage(__DIR__ . $sep . 'temp');
+$cache   = new Cache($storage, Tables::CONFIG_TABLE);
+
+// attachment mod
 require_once($phpbb_root_path . 'attach_mod/attachment_mod.php');
 
 // enable tracy
 Debugger::enable();
 Debugger::$maxDepth = 5;
 Debugger::$maxLength = 2000;
-
-// adds dibi into tracy
-$panel = new Panel();
-$panel->explain = true;
-Panel::$maxLength = 10000;
-$panel->register($connection);
 
 // We do not need this any longer, unset for safety purposes
 //unset($dbpasswd);
@@ -144,9 +149,6 @@ $user_ip = encode_ip($client_ip);
 // then we output a CRITICAL_ERROR since
 // basic forum information is not available
 //
-
-$storage = new FileStorage(__DIR__ . $sep . 'temp');
-$cache   = new Cache($storage, Tables::CONFIG_TABLE);
 
 $boardConfigCached = $cache->load(Tables::CONFIG_TABLE);
 

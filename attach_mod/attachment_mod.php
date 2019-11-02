@@ -9,11 +9,12 @@
  * Minimum Requirement: PHP 4.2.0
  */
 
+use Nette\Caching\Cache;
+
 /**
  */
 if (!defined('IN_PHPBB')) {
     die('Hacking attempt');
-    exit;
 }
 
 require_once($phpbb_root_path . 'attach_mod/includes/constants.php');
@@ -84,35 +85,14 @@ function get_config()
 }
 
 // Get Attachment Config
-$cache_dir = $phpbb_root_path . '/temp';
-$cache_file = $cache_dir . '/attach_config.php';
-$attach_config = array();
+$cache = new Cache($storage, Tables::ATTACH_CONFIG_TABLE);
+$key   = Tables::ATTACH_CONFIG_TABLE;
 
-if (file_exists($cache_dir) && is_dir($cache_dir) && is_writable($cache_dir)) {
-    if (file_exists($cache_file)) {
-        require_once($cache_file);
-    } else {
-        $attach_config = get_config();
-        $fp = @fopen($cache_file, 'wt+');
-        if ($fp) {
-            $lines = array();
-            foreach ($attach_config as $k => $v) {
-                if (is_int($v)) {
-                    $lines[] = "'$k'=>$v";
-                } else if (is_bool($v)) {
-                    $lines[] = "'$k'=>" . (($v) ? 'TRUE' : 'FALSE');
-                } else {
-                    $lines[] = "'$k'=>'" . str_replace("'", "\\'", str_replace('\\', '\\\\', $v)) . "'";
-                }
-            }
-            fwrite($fp, '<?php $attach_config = array(' . implode(',', $lines) . '); ?>');
-            fclose($fp);
+$attach_config = $cache->load($key);
 
-            @chmod($cache_file, 0777);
-        }
-    }
-} else {
+if (!$attach_config) {
     $attach_config = get_config();
+    $cache->save($key, $attach_config);
 }
 
 // Please do not change the include-order, it is valuable for proper execution.

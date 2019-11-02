@@ -8,6 +8,8 @@
  *
  */
 
+use Nette\Caching\Cache;
+
 /**
  */
 define('IN_PHPBB', true);
@@ -134,14 +136,10 @@ foreach ($rows as $row) {
     }
 }
 
-$cache_dir = $phpbb_root_path . '/temp';
-$cache_file = $cache_dir . '/attach_config.php';
+$cache = new Cache($storage, Tables::ATTACH_CONFIG_TABLE);
+$key   = Tables::ATTACH_CONFIG_TABLE;
 
-if ((file_exists($cache_dir)) && (is_dir($cache_dir))) {
-    if (file_exists($cache_file)) {
-        @unlink($cache_file);
-    }
-}
+$cache->remove($key);
 
 $select_size_mode = size_select('size', $size);
 $select_quota_size_mode = size_select('quota_size', $quota_size);
