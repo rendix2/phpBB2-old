@@ -186,6 +186,8 @@ if (!$profileData->user_allow_viewonline && $userdata['user_level'] === ADMIN ||
 //
 PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $lang['Viewing_profile'], $gen_simple_header);
 
+display_upload_attach_box_limits($profileData['user_id']);
+
 if (function_exists('get_html_translation_table')) {
 	$u_search_author = urlencode(strtr($profileData->username, array_flip(get_html_translation_table(HTML_ENTITIES))));
 } else {

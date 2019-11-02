@@ -102,6 +102,8 @@ $field_names = [
     'auth_pollcreate' => $lang['Pollcreate']
 ];
 
+attach_setup_usergroup_auth($forum_auth_fields, $auth_field_match, $field_names);
+
 if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'group' && $group_id))) {
 	$user_level = '';
 

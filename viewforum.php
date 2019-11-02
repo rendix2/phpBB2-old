@@ -380,6 +380,8 @@ $s_auth_can .= ( $is_auth['auth_edit']   ? $lang['Rules_edit_can']   : $lang['Ru
 $s_auth_can .= ( $is_auth['auth_delete'] ? $lang['Rules_delete_can'] : $lang['Rules_delete_cannot'] ) . '<br />';
 $s_auth_can .= ( $is_auth['auth_vote']   ? $lang['Rules_vote_can']   : $lang['Rules_vote_cannot'] )   . '<br />';
 
+attach_build_auth_levels($is_auth, $s_auth_can);
+
 if ($is_auth['auth_mod']) {
 	$s_auth_can .= sprintf($lang['Rules_moderate'], '<a href="modcp.php?' . POST_FORUM_URL . "=$forumId&amp;start=" . $start . '&amp;sid=' . $userdata['session_id'] . '">', '</a>');
 }
@@ -604,6 +606,7 @@ if ($totalBaseTopics) {
                 'GOTO_PAGE'        => $gotoPage,
                 'REPLIES'          => $replies,
                 'NEWEST_POST_IMG'  => $newest_post_img,
+                'TOPIC_ATTACHMENT_IMG' => topic_attachment_image($topic->topic_attachment),
                 'TOPIC_TITLE'      => $topicTitle,
                 'TOPIC_TYPE'       => $topicType,
                 'VIEWS'            => $topic->topic_views,

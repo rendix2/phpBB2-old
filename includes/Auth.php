@@ -86,6 +86,11 @@ class Auth
      * @var int
      */
     const AUTH_ATTACH = 11;
+
+    /**
+     * @var int
+     */
+    const AUTH_DOWNLOAD = 20;
     
     /**
      *
@@ -192,6 +197,8 @@ class Auth
             default:
                 break;
         }
+
+        attach_setup_basic_auth($type, $authFields, $authSql);
 
         //
         // If f_access has been passed, or auth is needed to return an array of forums

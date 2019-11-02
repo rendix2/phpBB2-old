@@ -136,6 +136,7 @@ if ($postId) {
                 't.topic_vote', 't.topic_last_post_id', 'f.forum_name', 'f.forum_status', 'f.forum_id', 'f.auth_view',
                 'f.auth_read', 'f.auth_post', 'f.auth_reply', 'f.auth_edit', 'f.auth_delete', 'f.auth_sticky',
                 'f.auth_announce', 'f.auth_pollcreate', 'f.auth_vote', 'f.auth_attachments',
+                'f.auth_download', 't.topic_attachment'
     ];
 
     $forum_topic_data = dibi::select($columns)
@@ -183,7 +184,8 @@ if ($postId) {
     $columns = ['t.topic_id', 't.topic_title', 't.topic_status', 't.topic_replies', 't.topic_time', 't.topic_type',
                 't.topic_vote', 't.topic_last_post_id', 'f.forum_name', 'f.forum_status', 'f.forum_id', 'f.auth_view',
                 'f.auth_read', 'f.auth_post', 'f.auth_reply', 'f.auth_edit', 'f.auth_delete', 'f.auth_sticky',
-                'f.auth_announce', 'f.auth_pollcreate', 'f.auth_vote', 'f.auth_attachments'
+                'f.auth_announce', 'f.auth_pollcreate', 'f.auth_vote', 'f.auth_attachments',
+                'f.auth_download', 't.topic_attachment'
     ];
 
     $forum_topic_data = dibi::select($columns)
@@ -199,6 +201,8 @@ if ($postId) {
 if (!$forum_topic_data) {
     message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
 }
+
+attach_setup_viewtopic_auth($order_sql, $sql);
 
 $forumId = (int)$forum_topic_data->forum_id;
 
@@ -592,6 +596,8 @@ $s_auth_can .= ( $is_auth['auth_edit']   ? $lang['Rules_edit_can']   : $lang['Ru
 $s_auth_can .= ( $is_auth['auth_delete'] ? $lang['Rules_delete_can'] : $lang['Rules_delete_cannot'] ) . '<br />';
 $s_auth_can .= ( $is_auth['auth_vote']   ? $lang['Rules_vote_can']   : $lang['Rules_vote_cannot'] )   . '<br />';
 
+attach_build_auth_levels($is_auth, $s_auth_can);
+
 $topic_mod = '';
 
 if ($is_auth['auth_mod']) {
@@ -814,6 +820,8 @@ if (!empty($forum_topic_data->topic_vote)) {
         $template->assignVarFromHandle('POLL_DISPLAY', 'pollbox');
 	}
 }
+
+init_display_post_attachments($forum_topic_data['topic_attachment']);
 
 //
 // Update the topic view counter
@@ -1161,6 +1169,8 @@ foreach ($posts as $i => $post) {
             'U_POST_ID'   => $post->post_id
         ]
     );
+
+    display_post_attachments($post->post_id, $post->post_attachment);
 }
 
 $template->pparse('body');

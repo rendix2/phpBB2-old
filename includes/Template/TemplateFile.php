@@ -76,6 +76,11 @@ class TemplateFile extends BaseTemplate {
         $this->filename  = null;
     }
 
+    public function getCacheDir()
+    {
+        return $this->cacheDir;
+    }
+
     /**
      * Sets the template root directory for this Template object.
      *

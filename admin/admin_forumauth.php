@@ -84,6 +84,8 @@ $field_names = [
 $forum_auth_levels = ['ALL', 'REG', 'PRIVATE', 'MOD', 'ADMIN'];
 $forum_auth_const  = [Auth::AUTH_ALL, Auth::AUTH_REG, Auth::AUTH_ACL, Auth::AUTH_MOD, Auth::AUTH_ADMIN];
 
+attach_setup_forum_auth($simple_auth_ary, $forum_auth_fields, $field_names);
+
 if (isset($_GET[POST_FORUM_URL]) || isset($_POST[POST_FORUM_URL])) {
     $forum_id  = isset($_POST[POST_FORUM_URL]) ? (int)$_POST[POST_FORUM_URL] : (int)$_GET[POST_FORUM_URL];
     $forum_sql = true;

@@ -295,7 +295,7 @@ function lock_db($unlock = false, $delay = true, $ignore_default = false)
 //
 function check_condition($check)
 {
-	global $db, $board_config;
+	global $board_config;
 
 	switch ($check)
 	{
@@ -553,7 +553,6 @@ function catch_error($errno, $errstr)
 //
 function get_word_id($word)
 {
-	global $board_config, $db, $lang, $template, $theme;
 	global $stopword_array, $synonym_array;
 
 	// Check whether word is in stopword array

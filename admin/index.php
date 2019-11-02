@@ -71,6 +71,13 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
     $modules['Styles']['Manage'] = 'admin_styles.php';
     $modules['Styles']['Export'] = 'admin_styles.php?mode=export';
 
+    $modules['Attachments']['Manage'] = 'admin_attachments.php?mode=manage';
+    $modules['Attachments']['Shadow_attachments'] = 'admin_attachments.php?mode=shadow';
+    $modules['Extensions']['Special_categories'] = 'admin_attachments.php?mode=cats';
+    $modules['Attachments']['Sync_attachments'] = 'admin_attachments.php?mode=sync';
+    $modules['Attachments']['Quota_limits'] = 'admin_attachments.php?mode=quota';
+    $modules['Attachments']['Control_Panel'] = 'admin_attach_cp.php';
+
     require_once  '.' . $sep . 'page_header_admin.php';
 
     $template->setFileNames(['body' => 'admin/index_navigate.tpl']);

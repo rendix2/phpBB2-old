@@ -59,6 +59,8 @@ if (isset($_GET[POST_MODE])) {
 
 require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . $lang_file . '.php';
 
+attach_faq_include($lang_file);
+
 //
 // Pull the array data from the lang pack
 //

@@ -19,8 +19,12 @@
 	<td class="row2"><span class="genmed">{L_SUBJECT}:</span></td>
 	<td width="100%" class="row2"><span class="genmed">{POST_SUBJECT}</span></td>
   </tr>
-  <tr> 
-	<td valign="top" colspan="2" class="row1"><span class="postbody">{MESSAGE}</span></td>
+  <tr>
+      <td valign="top" colspan="2" class="row1"><span class="postbody">{MESSAGE}</span>
+          <!-- BEGIN postrow -->
+          {ATTACHMENTS}
+          <!-- END postrow -->
+      </td>
   </tr>
 </table>
 

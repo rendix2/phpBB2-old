@@ -497,6 +497,8 @@ if ($submit || $refresh) {
     }
 }
 
+execute_posting_attachment_handling();
+
 // --------------------
 //  What shall we do?
 //
@@ -643,6 +645,8 @@ if (($delete || $pollDelete || $mode === 'delete') && !$confirm) {
         if ($mode !== 'editpost') {
             $user_id = ($mode === 'reply' || $mode === 'newtopic') ? $userdata['user_id'] : $postData['poster_id'];
             PostHelper::updatePostStats($mode, $postData, $forumId, $topicId, $postId, $user_id);
+
+            $attachment_mod['posting']->insert_attachment($postId);
         }
 
         // $mode !== 'newtopic' is because we dont have topic_title :)
@@ -675,11 +679,13 @@ if (($delete || $pollDelete || $mode === 'delete') && !$confirm) {
             );
 		}
 
+        /*
         $template->assignVars(
             [
                 'META' => $return_meta
             ]
         );
+        */
 
         message_die(GENERAL_MESSAGE, $return_message);
 	}
@@ -769,6 +775,8 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg !== '') {
 		$previewMessage = nl2br($previewMessage);
 
         $template->setFileNames(['preview' => 'posting_preview.tpl']);
+
+        $attachment_mod['posting']->preview_attachments();
 
         $template->assignVars(
             [

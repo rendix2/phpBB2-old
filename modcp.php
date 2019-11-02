@@ -250,6 +250,8 @@ switch ($mode) {
                     ->execute();
 
                 SearchHelper::removeSearchPost($postIds);
+
+                delete_attachment(explode(', ', $post_id_sql));
             }
 
             $votes = dibi::select('vote_id')
@@ -998,6 +1000,7 @@ switch ($mode) {
                     'REPLIES'          => $row->topic_replies,
                     'LAST_POST_TIME'   => $last_post_time,
                     'TOPIC_ID'         => $topicId,
+                    'TOPIC_ATTACHMENT_IMG' => topic_attachment_image($row['topic_attachment']),
 
                     'L_TOPIC_FOLDER_ALT' => $folder_alt
                 ]

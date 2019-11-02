@@ -109,6 +109,8 @@ class Prune
 
                 SearchHelper::removeSearchPost($postIds);
 
+                prune_attachments($postIds);
+
                 return ['topics' => $prunedTopics, 'posts' => $prunedPosts];
             }
         }

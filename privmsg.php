@@ -118,6 +118,8 @@ $sentbox_url = $folder !== 'sentbox' || $mode !== '' ? '<a href="' . Session::ap
 $savebox_img = $folder !== 'savebox' || $mode !== '' ? '<a href="' . Session::appendSid('privmsg.php?folder=savebox') . '"><img src="' . $images['pm_savebox'] . '" border="0" alt="' . $lang['Savebox'] . '" /></a>' : '<img src="' . $images['pm_savebox'] . '" border="0" alt="' . $lang['Savebox'] . '" />';
 $savebox_url = $folder !== 'savebox' || $mode !== '' ? '<a href="' . Session::appendSid('privmsg.php?folder=savebox') . '">' . $lang['Savebox'] . '</a>' : $lang['Savebox'];
 
+execute_privmsgs_attachment_handling($mode);
+
 // ----------
 // Start main
 //
@@ -374,6 +376,10 @@ if ($mode === 'newpm') {
         dibi::insert(Tables::PRIVATE_MESSAGE_TEXT_TABLE, $insert_data)->execute();
 	}
 
+    $privmsg_sent_id = isset($privmsg_sent_id) ? $privmsg_sent_id : $privmsg_id;
+
+    $attachment_mod['pm']->duplicate_attachment_pm($privmsg['privmsgs_attachment'], $privmsg['privmsgs_id'], $privmsg_sent_id);
+
 	//
 	// Pick a folder, any folder, so long as it's one below ...
 	//
@@ -544,6 +550,8 @@ if ($mode === 'newpm') {
 	$user_id_from = $privmsg->user_id_1;
 	$username_to = $privmsg->username_2;
 	$user_id_to = $privmsg->user_id_2;
+
+    init_display_pm_attachments($privmsg['privmsgs_attachment']);
 
 	$post_date = create_date($board_config['default_dateformat'], $privmsg->privmsgs_date, $board_config['board_timezone']);
 
@@ -761,6 +769,8 @@ if ($mode === 'newpm') {
                     ->fetchPairs(null, 'privmsgs_id');
 				break;
 		}
+
+        $attachment_mod['pm']->delete_all_pm_attachments($mark_list);
 
         if (count($mark_list)) {
             if ($folder === 'inbox' || $folder === 'outbox') {
@@ -1238,6 +1248,8 @@ if ($mode === 'newpm') {
                 ->execute();
 		}
 
+        $attachment_mod['pm']->insert_attachment_pm($privmsg_id);
+
         if ($mode !== 'edit') {
 			//
 			// Add to the users new pm counter
@@ -1539,6 +1551,8 @@ if ($mode === 'newpm') {
         }
 
         $template->setFileNames(['preview' => 'privmsgs_preview.tpl']);
+
+        $attachment_mod['pm']->preview_attachments();
 
         $template->assignVars(
             [
@@ -2105,6 +2119,7 @@ if (count($rows)) {
                 'FROM'               => $msg_username . '&nbsp;' . $user_onlinestatus,
                 'SUBJECT'            => htmlspecialchars($msg_subject, ENT_QUOTES),
                 'DATE'               => $msg_date,
+                'PRIVMSG_ATTACHMENTS_IMG' => privmsgs_attachment_image($privmsg_id),
                 'PRIVMSG_FOLDER_IMG' => $icon_flag,
 
                 'L_PRIVMSG_FOLDER_ALT' => $icon_flag_alt,

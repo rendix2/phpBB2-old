@@ -58,6 +58,15 @@
 			<input type="checkbox" name="delete_old_moderator" id="delete_old_moderator" value="1">{L_YES}
 		</td>
 	</tr>
+
+		<tr>
+			<td class="row1"><span class="gen">{L_UPLOAD_QUOTA}</span></td>
+			<td class="row2">{S_SELECT_UPLOAD_QUOTA}</td>
+		</tr>
+		<tr>
+			<td class="row1"><span class="gen">{L_PM_QUOTA}</span></td>
+			<td class="row2">{S_SELECT_PM_QUOTA}</td>
+		</tr>
 	<!-- END group_edit -->
 	<tr> 
 	  <td class="catBottom" colspan="2" align="center"><span class="cattitle">

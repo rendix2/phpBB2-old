@@ -56,7 +56,9 @@ function topic_review($topic_id, $is_inline_review)
             'f.auth_announce',
             'f.auth_pollcreate',
             'f.auth_vote',
-            'f.auth_attachments'
+            'f.auth_attachments',
+            'f.auth_download',
+            't.topic_attachment'
         ];
 
         //
@@ -74,6 +76,9 @@ function topic_review($topic_id, $is_inline_review)
         if (!$forum) {
             message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
         }
+
+        $tmp = '';
+        attach_setup_viewtopic_auth($tmp, $sql);
 		
 		//
 		// Start session management
@@ -134,6 +139,8 @@ function topic_review($topic_id, $is_inline_review)
         ->orderBy('p.post_time', dibi::DESC)
         ->limit($board_config['posts_per_page'])
         ->fetchAll();
+
+    init_display_review_attachments($is_auth);
 
 	//
 	// Okay, let's do the loop, yeah come on baby let's do the loop
@@ -203,6 +210,8 @@ function topic_review($topic_id, $is_inline_review)
                     'L_MINI_POST_ALT' => $lang['Post']
                 ]
             );
+
+            display_review_attachments($row['post_id'], $row['post_attachment'], $is_auth);
 		}
 	} else {
 		message_die(GENERAL_MESSAGE, 'Topic_post_not_exist', '', __LINE__, __FILE__);

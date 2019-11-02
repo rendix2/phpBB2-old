@@ -137,7 +137,7 @@ define('ONLINE_TIME_DIFF', 300);
 
 
 // Table names
-/*
+
 define('CONFIRM_TABLE', Config::TABLE_PREFIX.'confirm');
 define('AUTH_ACCESS_TABLE', Config::TABLE_PREFIX.'auth_access');
 define('BANLIST_TABLE', Config::TABLE_PREFIX.'banlist');
@@ -170,6 +170,6 @@ define('WORDS_TABLE', Config::TABLE_PREFIX.'words');
 define('VOTE_DESC_TABLE', Config::TABLE_PREFIX.'vote_desc');
 define('VOTE_RESULTS_TABLE', Config::TABLE_PREFIX.'vote_results');
 define('VOTE_USERS_TABLE', Config::TABLE_PREFIX.'vote_voters');
-*/
+
 
 ?>

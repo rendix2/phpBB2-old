@@ -296,6 +296,8 @@ function init_userprefs($pageId)
         require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'lang_admin.php';
 	}
 
+    include_attach_lang();
+
 	//
 	// Set up style
 	//
@@ -376,7 +378,7 @@ function setupStyle($style)
 	if ($template) {
 	    // LOOK this variable is used in required cfg file! if you change it, you have to change it in that file!!!!
 		$currentTemplatePath = $templatePath . $templateName;
-        @require_once $phpbb_root_path . $templatePath . $templateName . $sep . $templateName . '.cfg';
+        require_once $phpbb_root_path . $templatePath . $templateName . $sep . $templateName . '.cfg';
 
 		if (!defined('TEMPLATE_CONFIG')) {
 			message_die(CRITICAL_ERROR, "Could not open $templateName template config file", '', __LINE__, __FILE__);
@@ -560,7 +562,7 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 //
 function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '', $err_file = '')
 {
-	global $db, $template, $board_config, $theme, $lang, $phpbb_root_path, $gen_simple_header, $images;
+	global $template, $board_config, $theme, $lang, $phpbb_root_path, $gen_simple_header, $images;
 	global $userdata, $user_ip, $session_length;
 
 	$sep = DIRECTORY_SEPARATOR;

@@ -14,6 +14,7 @@ use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\PhpFile;
 use Nette\Utils\Finder;
 use Nette\Utils\Validators;
+use Tracy\Debugger;
 
 /***************************************************************************
  *
@@ -252,7 +253,7 @@ $loader->addDirectory($phpbb_root_path . $sep . 'includes');
 $loader->setTempDirectory($phpbb_root_path . $sep . 'temp');
 $loader->register(); // Run the RobotLoader
 
-\Tracy\Debugger::enable();
+Debugger::enable();
 
 // Include some required functions
 //require_once $phpbb_root_path . 'includes' . $sep . 'constants.php';

@@ -2591,7 +2591,6 @@ switch($mode_id) {
                 }
 
 /*
-				bdump($php_ver);
 				switch ($php_ver) {
 					case 3: // use standard method if we have PHP 3
                     case 4:

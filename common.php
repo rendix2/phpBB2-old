@@ -105,8 +105,12 @@ $connection = dibi::connect([
 
 $connection->connect();
 
+require_once($phpbb_root_path . 'attach_mod/attachment_mod.php');
+
 // enable tracy
 Debugger::enable();
+Debugger::$maxDepth = 5;
+Debugger::$maxLength = 2000;
 
 // adds dibi into tracy
 $panel = new Panel();

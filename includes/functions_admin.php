@@ -168,6 +168,8 @@ function sync($type, $id = false)
                         }
                     }
                 }
+
+                attachment_sync_topic($id);
             }
             break;
     }

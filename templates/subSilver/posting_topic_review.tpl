@@ -23,7 +23,7 @@
 				<td colspan="2"><hr /></td>
 			</tr>
 			<tr> 
-				<td colspan="2"><span class="postbody">{postrow.MESSAGE}</span></td>
+				<td colspan="2"><span class="postbody">{postrow.MESSAGE}{postrow.ATTACHMENTS}</span></td>
 			</tr>
 		</table></td>
 	</tr>

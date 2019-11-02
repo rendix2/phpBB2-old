@@ -104,6 +104,26 @@ abstract class BaseTemplate
 
     abstract public function setFileNames(array $filename_array);
 
+    public function getUnCompiledCode()
+    {
+        return $this->uncompiledCode;
+    }
+
+    public function getFiles()
+    {
+        return $this->files;
+    }
+
+    public function getRoot()
+    {
+        return $this->root;
+    }
+
+    public function addUnCompiledCode($key, $value)
+    {
+        $this->uncompiledCode[$key] = $value;
+    }
+
     /**
      * Block-level variable assignment. Adds a new block iteration with the given
      * variable assignments. Note that this should only be called once per block

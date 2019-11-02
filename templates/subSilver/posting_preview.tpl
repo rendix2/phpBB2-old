@@ -11,6 +11,11 @@
 			<tr>
 				<td>
 					<span class="postbody">{MESSAGE}</span>
+
+					<!-- BEGIN postrow -->
+					{ATTACHMENTS}
+					<!-- END postrow -->
+
 				</td>
 			</tr>
 		</table></td>

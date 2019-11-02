@@ -144,6 +144,8 @@ if (isset($_POST['group_update'])) {
 	}
 }
 
+attachment_quota_settings('group', $_POST['group_update'], $mode);
+
 // add or edit view
 if ($mode === 'edit' || $mode === 'new') {
 	//

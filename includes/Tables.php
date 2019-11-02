@@ -169,4 +169,44 @@ class Tables
      * @var string
      */
     const VOTE_USERS_TABLE = self::PREFIX . 'vote_voters';
+
+    /**
+     * @var string
+     */
+    const ATTACH_CONFIG_TABLE = self::PREFIX . 'attachments_config';
+
+    /**
+     * @var string
+     */
+    const ATTACH_ATTACHMENT_TABLE = self::PREFIX . 'attachments';
+
+    /**
+     * @var string
+     */
+    const ATTACH_QUOTA_TABLE = self::PREFIX . 'attach_quota';
+
+    /**
+     * @var string
+     */
+    const ATTACH_EXTENSION_GROUPS_TABLE = self::PREFIX . 'extension_groups';
+
+    /**
+     * @var string
+     */
+    const ATTACH_QUOTA_LIMITS_TABLE = self::PREFIX . 'quota_limits';
+
+    /**
+     * @var string
+     */
+    const ATTACH_ATTACHMENTS_DESC_TABLE = self::PREFIX . 'attachments_desc';
+
+    /**
+     * @var string
+     */
+    const ATTACH_EXTENSION_TABLE = self::PREFIX . 'extensions';
+
+    /**
+     * @var string
+     */
+    const ATTACH_FORBIDEN_EXTENSIONS_TABLE = self::PREFIX . 'forbidden_extensions';
 }
