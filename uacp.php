@@ -86,26 +86,26 @@ if ($sort_order == 'ASC') {
 }
 $select_sort_order .= '</select>';
 
-$delete = (isset($_POST['delete'])) ? true : false;
-$delete_id_list = (isset($_POST['delete_id_list'])) ? array_map('intval', $_POST['delete_id_list']) : array();
+$delete = isset($_POST['delete']);
+$delete_id_list = (isset($_POST['delete_id_list'])) ? array_map('intval', $_POST['delete_id_list']) : [];
 
-$confirm = (isset($_POST['confirm']) && $_POST['confirm']) ? true : false;
+$confirm = isset($_POST['confirm']) && $_POST['confirm'];
 
-if ($confirm && count($delete_id_list) > 0) {
-	$attachments = array();
+if ($confirm && count($delete_id_list)) {
+	$attachments = [];
 
-	for ($i = 0; $i < count($delete_id_list); $i++) {
+	foreach ($delete_id_list as $attachId) {
 	    $row = dibi::select(['post_id', 'privmsgs_id'])
             ->from(Tables::ATTACH_ATTACHMENT_TABLE)
-            ->where('[attach_id] = %i', $delete_id_list[$i])
+            ->where('[attach_id] = %i', $attachId)
             ->where('(user_id_1 = %i OR user_id_2 = %i)', $profiledata['user_id'], $profiledata['user_id'])
             ->fetch();
 
         if ($row) {
             if ($row['post_id'] != 0) {
-                delete_attachment(0, (int)$delete_id_list[$i]);
+                delete_attachment(0, (int)$attachId);
             } else {
-                delete_attachment(0, (int)$delete_id_list[$i], PAGE_PRIVMSGS, (int)$profiledata['user_id']);
+                delete_attachment(0, (int)$attachId, PAGE_PRIVMSGS, (int)$profiledata['user_id']);
             }
         }
 	}
@@ -118,8 +118,8 @@ if ($confirm && count($delete_id_list) > 0) {
 	$hidden_fields .= '<input type="hidden" name="start" value="' . $start . '" />';
 	$hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
-	for ($i = 0; $i < count($delete_id_list); $i++) {
-		$hidden_fields .= '<input type="hidden" name="delete_id_list[]" value="' . (int)$delete_id_list[$i] . '" />';
+	foreach ($delete_id_list as $attachId) {
+		$hidden_fields .= '<input type="hidden" name="delete_id_list[]" value="' . (int)$attachId . '" />';
 	}
 
 	$template->setFileNames(['confirm' => 'confirm_body.tpl']);
@@ -139,7 +139,7 @@ if ($confirm && count($delete_id_list) > 0) {
 
 	$template->pparse('confirm');
 
-    require_once($phpbb_root_path . 'includes/page_tail.php');
+	PageHelper::footer($template, $userdata, $lang, false);
 
 	exit;
 }
@@ -313,8 +313,8 @@ if (count($attachments) > 0) {
         if (count($post_titles) > 0) {
             $delete_box = '<input type="checkbox" name="delete_id_list[]" value="' . (int)$attachment->attach_id . '" />';
 
-            for ($j = 0; $j < count($delete_id_list); $j++) {
-                if ($delete_id_list[$j] == $attachment->attach_id) {
+            foreach ($delete_id_list as $attachId) {
+                if ($attachId == $attachment->attach_id) {
                     $delete_box = '<input type="checkbox" name="delete_id_list[]" value="' . (int)$attachment->attach_id . '" checked="checked" />';
                     break;
                 }

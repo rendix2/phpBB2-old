@@ -115,13 +115,8 @@ class attach_pm extends attach_parent
         global $confirm, $delete_all;
 
         if (count($mark_list)) {
-            $delete_sql_id = '';
-            for ($i = 0; $i < count($mark_list); $i++) {
-                $delete_sql_id .= (($delete_sql_id != '') ? ', ' : '') . (int)$mark_list[$i];
-            }
-
             if ($delete_all && $confirm) {
-                delete_attachment($delete_sql_id, 0, PAGE_PRIVMSGS);
+                delete_attachment($mark_list, 0, PAGE_PRIVMSGS);
             }
         }
     }

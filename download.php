@@ -257,10 +257,7 @@ for ($i = 0; $i < $num_auth_pages && $authorised == false; $i++) {
             ->where('[post_id] = %i', $auth_pages[$i]['post_id'])
             ->fetch();
 
-        bdump($row, '$row');
-
         $forum_id = $row['forum_id'];
-
         $is_auth = Auth::authorize(Auth::AUTH_ALL, $forum_id, $userdata);
 
         if ($is_auth['auth_download']) {
@@ -274,8 +271,6 @@ for ($i = 0; $i < $num_auth_pages && $authorised == false; $i++) {
         bdump($userdata['user_id'] , '$userdata[\'user_id\'] ');
 
         if (((int)$attach_config['allow_pm_attach']) && (($userdata['user_id'] == $auth_pages[$i]['user_id_2']) || ($userdata['user_id'] == $auth_pages[$i]['user_id_1'])) || ($userdata['user_level'] == ADMIN)) {
-
-            bdump('A');
             $authorised = true;
         }
     }
