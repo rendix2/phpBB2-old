@@ -264,7 +264,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
                     ->fetch();
 
                 if (!$row) {
-                    message_die(GENERAL_ERROR, 'Could not read current password', '', __LINE__, __FILE__, $sql);
+                    message_die(GENERAL_ERROR, 'Could not read current password', '', __LINE__, __FILE__);
                 }
 
                 if (password_verify($acp_password, $row->user_password)) {

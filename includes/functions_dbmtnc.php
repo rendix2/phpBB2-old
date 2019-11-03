@@ -584,7 +584,7 @@ function get_word_id($word)
 //
 // Resets the auto increment for a table
 //
-function set_autoincrement($table, $column, $length, $unsigned = TRUE)
+function set_autoincrement($table, $column, $length, $unsigned = true)
 {
 	global $lang;
 
@@ -592,7 +592,7 @@ function set_autoincrement($table, $column, $length, $unsigned = TRUE)
 
     $row = dibi::query('SHOW COLUMNS FROM %n LIKE %~like~', $table, $column)->fetch();
 
-    if (strpos($row->Extra, 'auto_increment') !== FALSE) {
+    if (strpos($row->Extra, 'auto_increment') !== false) {
         echo("<li>$table: " . $lang['Ai_message_no_update'] . "</li>\n");
     } else {
         echo("<li>$table: <b>" . $lang['Ai_message_update_table'] . "</b></li>\n");

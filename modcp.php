@@ -251,7 +251,7 @@ switch ($mode) {
 
                 SearchHelper::removeSearchPost($postIds);
 
-                delete_attachment(explode(', ', $post_id_sql));
+                delete_attachment($postIds);
             }
 
             $votes = dibi::select('vote_id')

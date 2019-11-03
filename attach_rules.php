@@ -14,13 +14,15 @@ if (defined('IN_PHPBB')) {
     die('Hacking attempt');
 }
 
-define('IN_PHPBB', TRUE);
-$phpbb_root_path = './';
+define('IN_PHPBB', true);
 
-require_once($phpbb_root_path . 'common.php');
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep;
+
+require_once $phpbb_root_path . 'common.php';
 
 $forum_id = get_var('f', 0);
-$privmsg = (!$forum_id) ? true : false;
+$privmsg = !$forum_id;
 
 // Start Session Management
 // TODO PAGE_INDEX is not so good....
@@ -73,8 +75,10 @@ foreach ($rows as $row) {
 
         $max_filesize = ($det_filesize == 0) ? $lang['Unlimited'] : $det_filesize . ' ' . $size_lang;
 
-        $template->assignBlockVars('group_row', array(
-                'GROUP_RULE_HEADER' => sprintf($lang['Group_rule_header'], $group_name, $max_filesize))
+        $template->assignBlockVars('group_row',
+            [
+                'GROUP_RULE_HEADER' => sprintf($lang['Group_rule_header'], $group_name, $max_filesize)
+            ]
         );
 
         $e_rows = dibi::select('extension')
@@ -86,8 +90,10 @@ foreach ($rows as $row) {
         $e_num_rows = count($e_rows);
 
         for ($j = 0; $j < $e_num_rows; $j++) {
-            $template->assignBlockVars('group_row.extension_row', array(
-                    'EXTENSION' => $e_rows[$j]['extension'])
+            $template->assignBlockVars('group_row.extension_row',
+                [
+                    'EXTENSION' => $e_rows[$j]['extension']
+                ]
             );
         }
     }
@@ -95,14 +101,16 @@ foreach ($rows as $row) {
 
 PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $lang['Attach_rules_title'], true);
 
-$template->assignVars(array(
+$template->assignVars(
+    [
         'L_RULES_TITLE' => $lang['Attach_rules_title'],
         'L_CLOSE_WINDOW' => $lang['Close_window'],
-        'L_EMPTY_GROUP_PERMS' => $lang['Note_user_empty_group_permissions'])
+        'L_EMPTY_GROUP_PERMS' => $lang['Note_user_empty_group_permissions']
+    ]
 );
 
 if ($nothing) {
-    $template->assignBlockVars('switch_nothing', array());
+    $template->assignBlockVars('switch_nothing', []);
 }
 
 $template->pparse('body');

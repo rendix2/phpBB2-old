@@ -12,14 +12,13 @@
  */
 if (!defined('IN_PHPBB')) {
     die('Hacking attempt');
-    exit;
 }
 
-$allowed_extensions = array();
-$display_categories = array();
-$download_modes = array();
-$upload_icons = array();
-$attachments = array();
+$allowed_extensions = [];
+$display_categories = [];
+$download_modes = [];
+$upload_icons = [];
+$attachments = [];
 
 /**
  * Clear the templates compile cache
@@ -39,8 +38,6 @@ function display_compile_cache_clear($filename, $template_var)
             @unlink($template->getCacheDir() . $filename . '.php');
         }
     }
-
-    return;
 }
 
 /**
@@ -127,9 +124,7 @@ function topic_attachment_image($switch_attachment)
         return '';
     }
 
-    $image = '<img src="' . $attach_config['topic_icon'] . '" alt="" border="0" /> ';
-
-    return $image;
+    return '<img src="' . $attach_config['topic_icon'] . '" alt="" border="0" /> ';
 }
 
 /**
@@ -188,7 +183,7 @@ function init_display_post_attachments($switch_attachment)
         return;
     }
 
-    $post_id_array = array();
+    $post_id_array = [];
 
     for ($i = 0; $i < $totalPosts; $i++) {
         if ($posts[$i]['post_attachment'] == 1) {
@@ -217,9 +212,11 @@ function init_display_post_attachments($switch_attachment)
 
     init_complete_extensions_data();
 
-    $template->assignVars(array(
+    $template->assignVars(
+        [
             'L_POSTED_ATTACHMENTS' => $lang['Posted_attachments'],
-            'L_KILOBYTE' => $lang['KB'])
+            'L_KILOBYTE' => $lang['KB']
+        ]
     );
 }
 
@@ -244,9 +241,7 @@ function privmsgs_attachment_image($privmsg_id)
         return '';
     }
 
-    $image = '<img src="' . $attach_config['topic_icon'] . '" alt="" border="0" /> ';
-
-    return $image;
+    return '<img src="' . $attach_config['topic_icon'] . '" alt="" border="0" /> ';
 }
 
 /**
@@ -268,9 +263,11 @@ function display_pm_attachments($privmsgs_id, $switch_attachment)
 
     display_attachments($privmsgs_id);
 
-    $template->assignBlockVars('switch_attachments', array());
-    $template->assignVars(array(
-            'L_DELETE_ATTACHMENTS' => $lang['Delete_attachments'])
+    $template->assignBlockVars('switch_attachments', []);
+    $template->assignVars(
+        [
+            'L_DELETE_ATTACHMENTS' => $lang['Delete_attachments']
+        ]
     );
 }
 
@@ -300,15 +297,17 @@ function init_display_pm_attachments($switch_attachment)
         return;
     }
 
-    $template->assignBlockVars('postrow', array());
+    $template->assignBlockVars('postrow', []);
 
     init_display_template('body', '{ATTACHMENTS}');
 
     init_complete_extensions_data();
 
-    $template->assignVars(array(
+    $template->assignVars(
+        [
             'L_POSTED_ATTACHMENTS' => $lang['Posted_attachments'],
-            'L_KILOBYTE' => $lang['KB'])
+            'L_KILOBYTE' => $lang['KB']
+        ]
     );
 
     display_pm_attachments($privmsgs_id, $switch_attachment);
@@ -376,12 +375,14 @@ function display_attachments_preview($attachment_list, $attachment_filesize_list
 
         init_complete_extensions_data();
 
-        $template->assignBlockVars('postrow', array());
-        $template->assignBlockVars('postrow.attach', array());
+        $template->assignBlockVars('postrow', []);
+        $template->assignBlockVars('postrow.attach', []);
 
-        $template->assignVars(array(
+        $template->assignVars(
+            [
                 'T_BODY_TEXT' => '#' . $theme['body_text'],
-                'T_TR_COLOR3' => '#' . $theme['tr_color3'])
+                'T_TR_COLOR3' => '#' . $theme['tr_color3']
+            ]
         );
 
         for ($i = 0, $size = count($attachment_list); $i < $size; $i++) {
@@ -389,7 +390,7 @@ function display_attachments_preview($attachment_list, $attachment_filesize_list
             $thumb_filename = $upload_dir . '/' . THUMB_DIR . '/t_' . basename($attachment_list[$i]);
 
             $filesize = $attachment_filesize_list[$i];
-            $size_lang = ($filesize >= 1048576) ? $lang['MB'] : (($filesize >= 1024) ? $lang['KB'] : $lang['Bytes']);
+            $size_lang =  ($filesize >= 1048576) ? $lang['MB'] : (($filesize >= 1024) ? $lang['KB'] : $lang['Bytes']);
 
             if ($filesize >= 1048576) {
                 $filesize = (round((round($filesize / 1048576 * 100) / 100), 2));
@@ -409,90 +410,100 @@ function display_attachments_preview($attachment_list, $attachment_filesize_list
             if (!in_array($extension, $allowed_extensions)) {
                 $denied = true;
 
-                $template->assignBlockVars('postrow.attach.denyrow', array(
-                        'L_DENIED' => sprintf($lang['Extension_disabled_after_posting'], $extension))
+                $template->assignBlockVars('postrow.attach.denyrow',
+                    [
+                        'L_DENIED' => sprintf($lang['Extension_disabled_after_posting'], $extension)
+                    ]
                 );
             }
 
             if (!$denied) {
                 // Some basic Template Vars
-                $template->assignVars(array(
+                $template->assignVars(
+                    [
                         'L_DESCRIPTION' => $lang['Description'],
                         'L_DOWNLOAD' => $lang['Download'],
                         'L_FILENAME' => $lang['File_name'],
-                        'L_FILESIZE' => $lang['Filesize'])
+                        'L_FILESIZE' => $lang['Filesize']
+                    ]
                 );
 
                 // define category
-                $image = FALSE;
-                $stream = FALSE;
-                $swf = FALSE;
-                $thumbnail = FALSE;
-                $link = FALSE;
+                $image = false;
+                $stream = false;
+                $swf = false;
+                $thumbnail = false;
+                $link = false;
 
                 if ((int)$display_categories[$extension] == STREAM_CAT) {
-                    $stream = TRUE;
+                    $stream = true;
                 } else if ((int)$display_categories[$extension] == SWF_CAT) {
-                    $swf = TRUE;
+                    $swf = true;
                 } else if ((int)$display_categories[$extension] == IMAGE_CAT && (int)$attach_config['img_display_inlined']) {
                     if ((int)$attach_config['img_link_width'] != 0 || (int)$attach_config['img_link_height'] != 0) {
                         list($width, $height) = image_getdimension($filename);
 
                         if ($width == 0 && $height == 0) {
-                            $image = TRUE;
+                            $image = true;
                         } else {
                             if ($width <= (int)$attach_config['img_link_width'] && $height <= (int)$attach_config['img_link_height']) {
-                                $image = TRUE;
+                                $image = true;
                             }
                         }
                     } else {
-                        $image = TRUE;
+                        $image = true;
                     }
                 }
 
                 if ((int)$display_categories[$extension] == IMAGE_CAT && (int)$attachment_thumbnail_list[$i] == 1) {
-                    $thumbnail = TRUE;
-                    $image = FALSE;
+                    $thumbnail = true;
+                    $image = false;
                 }
 
                 if (!$image && !$stream && !$swf && !$thumbnail) {
-                    $link = TRUE;
+                    $link = true;
                 }
 
                 if ($image) {
                     // Images
-                    $template->assignBlockVars('postrow.attach.cat_images', array(
+                    $template->assignBlockVars('postrow.attach.cat_images',
+                        [
                             'DOWNLOAD_NAME' => $display_name,
                             'IMG_SRC' => $filename,
                             'FILESIZE' => $filesize,
                             'SIZE_VAR' => $size_lang,
                             'COMMENT' => $comment,
-                            'L_DOWNLOADED_VIEWED' => $lang['Viewed'])
+                            'L_DOWNLOADED_VIEWED' => $lang['Viewed']
+                        ]
                     );
                 }
 
                 if ($thumbnail) {
                     // Images, but display Thumbnail
-                    $template->assignBlockVars('postrow.attach.cat_thumb_images', array(
+                    $template->assignBlockVars('postrow.attach.cat_thumb_images',
+                        [
                             'DOWNLOAD_NAME' => $display_name,
                             'IMG_SRC' => $filename,
                             'IMG_THUMB_SRC' => $thumb_filename,
                             'FILESIZE' => $filesize,
                             'SIZE_VAR' => $size_lang,
                             'COMMENT' => $comment,
-                            'L_DOWNLOADED_VIEWED' => $lang['Viewed'])
+                            'L_DOWNLOADED_VIEWED' => $lang['Viewed']
+                        ]
                     );
                 }
 
                 if ($stream) {
                     // Streams
-                    $template->assignBlockVars('postrow.attach.cat_stream', array(
+                    $template->assignBlockVars('postrow.attach.cat_stream',
+                        [
                             'U_DOWNLOAD_LINK' => $filename,
                             'DOWNLOAD_NAME' => $display_name,
                             'FILESIZE' => $filesize,
                             'SIZE_VAR' => $size_lang,
                             'COMMENT' => $comment,
-                            'L_DOWNLOADED_VIEWED' => $lang['Viewed'])
+                            'L_DOWNLOADED_VIEWED' => $lang['Viewed']
+                        ]
                     );
                 }
 
@@ -500,7 +511,8 @@ function display_attachments_preview($attachment_list, $attachment_filesize_list
                     // Macromedia Flash Files
                     list($width, $height) = swf_getdimension($filename);
 
-                    $template->assignBlockVars('postrow.attach.cat_swf', array(
+                    $template->assignBlockVars('postrow.attach.cat_swf',
+                        [
                             'U_DOWNLOAD_LINK' => $filename,
                             'DOWNLOAD_NAME' => $display_name,
                             'FILESIZE' => $filesize,
@@ -508,7 +520,8 @@ function display_attachments_preview($attachment_list, $attachment_filesize_list
                             'COMMENT' => $comment,
                             'L_DOWNLOADED_VIEWED' => $lang['Viewed'],
                             'WIDTH' => $width,
-                            'HEIGHT' => $height)
+                            'HEIGHT' => $height
+                        ]
                     );
                 }
 
@@ -524,7 +537,8 @@ function display_attachments_preview($attachment_list, $attachment_filesize_list
                     $target_blank = 'target="_blank"';
 
                     // display attachment
-                    $template->assignBlockVars('postrow.attach.attachrow', array(
+                    $template->assignBlockVars('postrow.attach.attachrow',
+                        [
                             'U_DOWNLOAD_LINK' => $filename,
                             'S_UPLOAD_IMAGE' => $upload_image,
 
@@ -533,7 +547,8 @@ function display_attachments_preview($attachment_list, $attachment_filesize_list
                             'SIZE_VAR' => $size_lang,
                             'COMMENT' => $comment,
                             'L_DOWNLOADED_VIEWED' => $lang['Downloaded'],
-                            'TARGET_BLANK' => $target_blank)
+                            'TARGET_BLANK' => $target_blank
+                        ]
                     );
                 }
             }
@@ -561,7 +576,7 @@ function display_attachments($post_id)
         return;
     }
 
-    $template->assignBlockVars('postrow.attach', array());
+    $template->assignBlockVars('postrow.attach', []);
 
     for ($i = 0; $i < $num_attachments; $i++) {
         // Some basic things...
@@ -595,54 +610,58 @@ function display_attachments($post_id)
         if (!in_array($attachments['_' . $post_id][$i]['extension'], $allowed_extensions)) {
             $denied = true;
 
-            $template->assignBlockVars('postrow.attach.denyrow', array(
-                    'L_DENIED' => sprintf($lang['Extension_disabled_after_posting'], $attachments['_' . $post_id][$i]['extension']))
+            $template->assignBlockVars('postrow.attach.denyrow',
+                [
+                    'L_DENIED' => sprintf($lang['Extension_disabled_after_posting'], $attachments['_' . $post_id][$i]['extension'])
+                ]
             );
         }
 
         if (!$denied || $userdata['user_level'] == ADMIN) {
             // Some basic Template Vars
-            $template->assignVars(array(
+            $template->assignVars(
+                [
                     'L_DESCRIPTION' => $lang['Description'],
                     'L_DOWNLOAD' => $lang['Download'],
                     'L_FILENAME' => $lang['File_name'],
-                    'L_FILESIZE' => $lang['Filesize'])
+                    'L_FILESIZE' => $lang['Filesize']
+                ]
             );
 
             // define category
-            $image = FALSE;
-            $stream = FALSE;
-            $swf = FALSE;
-            $thumbnail = FALSE;
-            $link = FALSE;
+            $image = false;
+            $stream = false;
+            $swf = false;
+            $thumbnail = false;
+            $link = false;
 
             if ((int)$display_categories[$attachments['_' . $post_id][$i]['extension']] == STREAM_CAT) {
-                $stream = TRUE;
+                $stream = true;
             } else if ((int)$display_categories[$attachments['_' . $post_id][$i]['extension']] == SWF_CAT) {
-                $swf = TRUE;
+                $swf = true;
             } else if ((int)$display_categories[$attachments['_' . $post_id][$i]['extension']] == IMAGE_CAT && (int)$attach_config['img_display_inlined']) {
                 if ((int)$attach_config['img_link_width'] != 0 || (int)$attach_config['img_link_height'] != 0) {
                     list($width, $height) = image_getdimension($filename);
 
                     if ($width == 0 && $height == 0) {
-                        $image = TRUE;
+                        $image = true;
                     } else {
                         if ($width <= (int)$attach_config['img_link_width'] && $height <= (int)$attach_config['img_link_height']) {
-                            $image = TRUE;
+                            $image = true;
                         }
                     }
                 } else {
-                    $image = TRUE;
+                    $image = true;
                 }
             }
 
             if ((int)$display_categories[$attachments['_' . $post_id][$i]['extension']] == IMAGE_CAT && $attachments['_' . $post_id][$i]['thumbnail'] == 1) {
-                $thumbnail = TRUE;
-                $image = FALSE;
+                $thumbnail = true;
+                $image = false;
             }
 
             if (!$image && !$stream && !$swf && !$thumbnail) {
-                $link = TRUE;
+                $link = true;
             }
 
             if ($image) {
@@ -650,26 +669,26 @@ function display_attachments($post_id)
                 // NOTE: If you want to use the download.php everytime an image is displayed inlined, replace the
                 // Section between BEGIN and END with (Without the // of course):
                 //	$img_source = append_sid($phpbb_root_path . 'download.' . $phpEx . '?id=' . $attachments['_' . $post_id][$i]['attach_id']);
-                //	$download_link = TRUE;
+                //	$download_link = true;
                 //
                 //
                 if ((int)$attach_config['allow_ftp_upload'] && trim($attach_config['download_path']) == '') {
                     $img_source = Session::appendSid($phpbb_root_path . 'download.php?id=' . $attachments['_' . $post_id][$i]['attach_id']);
-                    $download_link = TRUE;
+                    $download_link = true;
                 } else {
                     // Check if we can reach the file or if it is stored outside of the webroot
                     if ($attach_config['upload_dir'][0] == '/' || ($attach_config['upload_dir'][0] != '/' && $attach_config['upload_dir'][1] == ':')) {
                         $img_source = Session::appendSid($phpbb_root_path . 'download.php?id=' . $attachments['_' . $post_id][$i]['attach_id']);
-                        $download_link = TRUE;
+                        $download_link = true;
                     } else {
                         // BEGIN
                         $img_source = $filename;
-                        $download_link = FALSE;
+                        $download_link = false;
                         // END
                     }
                 }
 
-                $template->assignBlockVars('postrow.attach.cat_images', array(
+                $template->assignBlockVars('postrow.attach.cat_images', [
                         'DOWNLOAD_NAME' => $display_name,
                         'S_UPLOAD_IMAGE' => $upload_image,
 
@@ -678,7 +697,7 @@ function display_attachments($post_id)
                         'SIZE_VAR' => $size_lang,
                         'COMMENT' => $comment,
                         'L_DOWNLOADED_VIEWED' => $lang['Viewed'],
-                        'L_DOWNLOAD_COUNT' => sprintf($lang['Download_number'], $attachments['_' . $post_id][$i]['download_count']))
+                        'L_DOWNLOAD_COUNT' => sprintf($lang['Download_number'], $attachments['_' . $post_id][$i]['download_count'])]
                 );
 
                 // Directly Viewed Image ... update the download count
@@ -708,7 +727,8 @@ function display_attachments($post_id)
                     }
                 }
 
-                $template->assignBlockVars('postrow.attach.cat_thumb_images', array(
+                $template->assignBlockVars('postrow.attach.cat_thumb_images',
+                    [
                         'DOWNLOAD_NAME' => $display_name,
                         'S_UPLOAD_IMAGE' => $upload_image,
 
@@ -718,13 +738,15 @@ function display_attachments($post_id)
                         'SIZE_VAR' => $size_lang,
                         'COMMENT' => $comment,
                         'L_DOWNLOADED_VIEWED' => $lang['Viewed'],
-                        'L_DOWNLOAD_COUNT' => sprintf($lang['Download_number'], $attachments['_' . $post_id][$i]['download_count']))
+                        'L_DOWNLOAD_COUNT' => sprintf($lang['Download_number'], $attachments['_' . $post_id][$i]['download_count'])
+                    ]
                 );
             }
 
             if ($stream) {
                 // Streams
-                $template->assignBlockVars('postrow.attach.cat_stream', array(
+                $template->assignBlockVars('postrow.attach.cat_stream',
+                    [
                         'U_DOWNLOAD_LINK' => $filename,
                         'S_UPLOAD_IMAGE' => $upload_image,
 
@@ -734,7 +756,8 @@ function display_attachments($post_id)
                         'SIZE_VAR' => $size_lang,
                         'COMMENT' => $comment,
                         'L_DOWNLOADED_VIEWED' => $lang['Viewed'],
-                        'L_DOWNLOAD_COUNT' => sprintf($lang['Download_number'], $attachments['_' . $post_id][$i]['download_count']))
+                        'L_DOWNLOAD_COUNT' => sprintf($lang['Download_number'], $attachments['_' . $post_id][$i]['download_count'])
+                    ]
                 );
 
                 // Viewed/Heared File ... update the download count (download.php is not called here)
@@ -747,7 +770,8 @@ function display_attachments($post_id)
                 // Macromedia Flash Files
                 list($width, $height) = swf_getdimension($filename);
 
-                $template->assignBlockVars('postrow.attach.cat_swf', array(
+                $template->assignBlockVars('postrow.attach.cat_swf',
+                    [
                         'U_DOWNLOAD_LINK' => $filename,
                         'S_UPLOAD_IMAGE' => $upload_image,
 
@@ -758,7 +782,8 @@ function display_attachments($post_id)
                         'L_DOWNLOADED_VIEWED' => $lang['Viewed'],
                         'L_DOWNLOAD_COUNT' => sprintf($lang['Download_number'], $attachments['_' . $post_id][$i]['download_count']),
                         'WIDTH' => $width,
-                        'HEIGHT' => $height)
+                        'HEIGHT' => $height
+                    ]
                 );
 
                 // Viewed/Heared File ... update the download count (download.php is not called here)
@@ -772,7 +797,8 @@ function display_attachments($post_id)
                 $target_blank = 'target="_blank"'; //( (intval($display_categories[$attachments['_' . $post_id][$i]['extension']]) == IMAGE_CAT) ) ? 'target="_blank"' : '';
 
                 // display attachment
-                $template->assignBlockVars('postrow.attach.attachrow', array(
+                $template->assignBlockVars('postrow.attach.attachrow',
+                    [
                         'U_DOWNLOAD_LINK' => Session::appendSid($phpbb_root_path . 'download.php?id=' . $attachments['_' . $post_id][$i]['attach_id']),
                         'S_UPLOAD_IMAGE' => $upload_image,
 
@@ -783,7 +809,8 @@ function display_attachments($post_id)
                         'TARGET_BLANK' => $target_blank,
 
                         'L_DOWNLOADED_VIEWED' => $lang['Downloaded'],
-                        'L_DOWNLOAD_COUNT' => sprintf($lang['Download_number'], $attachments['_' . $post_id][$i]['download_count']))
+                        'L_DOWNLOAD_COUNT' => sprintf($lang['Download_number'], $attachments['_' . $post_id][$i]['download_count'])
+                    ]
                 );
             }
         }

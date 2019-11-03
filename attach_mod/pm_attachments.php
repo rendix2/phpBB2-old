@@ -20,22 +20,26 @@ if (!defined('IN_PHPBB')) {
  */
 class attach_pm extends attach_parent
 {
+    /**
+     * @var bool $pm_delete_attachments
+     */
     public $pm_delete_attachments = false;
 
     /**
      * Constructor
      */
-    function __construct()
+    public function __construct()
     {
-        $this->attach_parent();
-        $this->pm_delete_attachments = (isset($_POST['pm_delete_attach'])) ? true : false;
+        parent::__construct();
+
+        $this->pm_delete_attachments = isset($_POST['pm_delete_attach']);
         $this->page = PAGE_PRIVMSGS;
     }
 
     /**
      * Preview Attachments in PM's
      */
-    function preview_attachments()
+    public function preview_attachments()
     {
         global $attach_config, $userdata;
 
@@ -49,7 +53,7 @@ class attach_pm extends attach_parent
     /**
      * Insert an Attachment into a private message
      */
-    function insert_attachment_pm($a_privmsgs_id)
+    public function insert_attachment_pm($a_privmsgs_id)
     {
         global $mode, $attach_config, $privmsg_sent_id, $userdata, $to_userdata;
 
@@ -75,7 +79,7 @@ class attach_pm extends attach_parent
     /**
      * Duplicate Attachment for sent PM
      */
-    function duplicate_attachment_pm($switch_attachment, $original_privmsg_id, $new_privmsg_id)
+    public function duplicate_attachment_pm($switch_attachment, $original_privmsg_id, $new_privmsg_id)
     {
         global $privmsg, $folder;
 
@@ -89,13 +93,13 @@ class attach_pm extends attach_parent
 
             if ($num_rows > 0) {
                 foreach ($rows as $row) {
-                    $sql_ary = array(
+                    $sql_ary = [
                         'attach_id' => (int)$row->attach_id,
                         'post_id' => (int)$row->post_id,
                         'privmsgs_id' => (int)$new_privmsg_id,
                         'user_id_1' => (int)$row->user_id_1,
                         'user_id_2' => (int)$row->user_id_2,
-                    );
+                    ];
 
                     dibi::insert(Tables::ATTACH_ATTACHMENT_TABLE, $sql_ary)->execute();
                 }
@@ -110,21 +114,19 @@ class attach_pm extends attach_parent
     /**
      * Delete Attachments out of selected Private Message(s)
      */
-    function delete_all_pm_attachments($mark_list)
+    public function delete_all_pm_attachments($mark_list)
     {
         global $confirm, $delete_all;
 
-        if (count($mark_list)) {
-            if ($delete_all && $confirm) {
-                delete_attachment($mark_list, 0, PAGE_PRIVMSGS);
-            }
+        if (count($mark_list) && $delete_all && $confirm) {
+            delete_attachment($mark_list, 0, PAGE_PRIVMSGS);
         }
     }
 
     /**
      * Display the Attach Limit Box (move it to displaying.php ?)
      */
-    function display_attach_box_limits()
+    public function display_attach_box_limits()
     {
         global $folder, $attach_config, $board_config, $template, $lang, $userdata, $db;
 
@@ -140,6 +142,7 @@ class attach_pm extends attach_parent
 
         $attach_limit_pct = ($pm_filesize_limit > 0) ? round(($pm_filesize_total / $pm_filesize_limit) * 100) : 0;
         $attach_limit_img_length = ($pm_filesize_limit > 0) ? round(($pm_filesize_total / $pm_filesize_limit) * $board_config['privmsg_graphic_length']) : 0;
+
         if ($attach_limit_pct > 100) {
             $attach_limit_img_length = $board_config['privmsg_graphic_length'];
         }
@@ -147,18 +150,20 @@ class attach_pm extends attach_parent
 
         $l_box_size_status = sprintf($lang['Attachbox_limit'], $attach_limit_pct);
 
-        $template->assignVars(array(
+        $template->assignVars(
+            [
                 'ATTACHBOX_LIMIT_IMG_WIDTH' => $attach_limit_img_length,
                 'ATTACHBOX_LIMIT_PERCENT' => $attach_limit_pct,
 
-                'ATTACH_BOX_SIZE_STATUS' => $l_box_size_status)
+                'ATTACH_BOX_SIZE_STATUS' => $l_box_size_status
+            ]
         );
     }
 
     /**
      * For Private Messaging
      */
-    function privmsgs_attachment_mod($mode)
+    public function privmsgs_attachment_mod($mode)
     {
         global $attach_config, $template, $lang, $userdata, $phpbb_root_path, $db;
         global $confirm, $delete, $delete_all, $post_id, $privmsgs_id, $privmsg_id, $submit, $refresh, $mark_list, $folder;
@@ -172,8 +177,8 @@ class attach_pm extends attach_parent
         }
 
         if (!$refresh) {
-            $add_attachment_box = (!empty($_POST['add_attachment_box'])) ? TRUE : FALSE;
-            $posted_attachments_box = (!empty($_POST['posted_attachments_box'])) ? TRUE : FALSE;
+            $add_attachment_box = !empty($_POST['add_attachment_box']);
+            $posted_attachments_box = !empty($_POST['posted_attachments_box']);
 
             $refresh = $add_attachment_box || $posted_attachments_box;
         }
@@ -186,23 +191,18 @@ class attach_pm extends attach_parent
             return;
         }
 
-        $mark_list = get_var('mark', array(0));
+        $mark_list = get_var('mark', [0]);
 
         if (($this->pm_delete_attachments || $delete) && count($mark_list)) {
             if (!$userdata['session_logged_in']) {
                 $header_location = (@preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE'))) ? 'Refresh: 0; URL=' : 'Location: ';
-                header($header_location . Session::appendSid($phpbb_root_path . "login.php?redirect=privmsg.php&folder=inbox", true));
+                header($header_location . Session::appendSid($phpbb_root_path . 'login.php?redirect=privmsg.php&folder=inbox', true));
                 exit;
             }
 
             if (count($mark_list)) {
-                $delete_sql_id = '';
-                for ($i = 0; $i < count($mark_list); $i++) {
-                    $delete_sql_id .= (($delete_sql_id != '') ? ', ' : '') . (int)$mark_list[$i];
-                }
-
                 if (($this->pm_delete_attachments || $confirm) && !$delete_all) {
-                    delete_attachment($delete_sql_id, 0, PAGE_PRIVMSGS);
+                    delete_attachment($mark_list, 0, PAGE_PRIVMSGS);
                 }
             }
         }
@@ -226,5 +226,3 @@ function execute_privmsgs_attachment_handling($mode)
         $attachment_mod['pm']->privmsgs_attachment_mod($mode);
     }
 }
-
-?>

@@ -8,6 +8,8 @@
  *
  */
 
+use Dibi\Fluent;
+
 /**
  * All Attachment Functions needed everywhere
  */
@@ -110,7 +112,7 @@ function auth_unpack($auth_cache)
     $one_char_encoding = '#';
     $two_char_encoding = '.';
 
-    $auth = array();
+    $auth = [];
     $auth_len = 1;
 
     for ($pos = 0; $pos < strlen($auth_cache); $pos += $auth_len) {
@@ -143,7 +145,7 @@ function is_forum_authed($auth_cache, $check_forum_id)
         return true;
     }
 
-    $auth = array();
+    $auth = [];
     $auth_len = 1;
 
     for ($pos = 0; $pos < strlen($auth_cache); $pos += $auth_len) {
@@ -300,7 +302,7 @@ function attachment_exists($filename)
 
         $conn_id = attach_init_ftp();
 
-        $file_listing = array();
+        $file_listing = [];
 
         $file_listing = @ftp_rawlist($conn_id, $filename);
 
@@ -346,7 +348,7 @@ function thumbnail_exists($filename)
 
         $conn_id = attach_init_ftp(MODE_THUMBNAIL);
 
-        $file_listing = array();
+        $file_listing = [];
 
         $filename = 't_' . $filename;
         $file_listing = @ftp_rawlist($conn_id, $filename);
@@ -424,7 +426,7 @@ function get_attachments_from_post($post_id_array)
 {
     global $db, $attach_config;
 
-    $attachments = array();
+    $attachments = [];
 
     if (!is_array($post_id_array)) {
         if (empty($post_id_array)) {
@@ -463,7 +465,7 @@ function get_attachments_from_pm($privmsgs_id_array)
 {
     global $attach_config;
 
-    $attachments = array();
+    $attachments = [];
 
     if (!is_array($privmsgs_id_array)) {
         if (empty($privmsgs_id_array)) {
@@ -472,7 +474,7 @@ function get_attachments_from_pm($privmsgs_id_array)
 
         $privmsgs_id = (int)$privmsgs_id_array;
 
-        $privmsgs_id_array = array();
+        $privmsgs_id_array = [];
         $privmsgs_id_array[] = $privmsgs_id;
     }
 
@@ -688,7 +690,7 @@ function _set_var(&$result, $var, $type, $multibyte = false)
     $result = $var;
 
     if ($type == 'string') {
-        $result = trim(htmlspecialchars(str_replace(array("\r\n", "\r", '\xFF'), array("\n", "\n", ' '), $result)));
+        $result = trim(htmlspecialchars(str_replace(["\r\n", "\r", '\xFF'], ["\n", "\n", ' '], $result)));
         // 2.0.x is doing addslashes on all variables
         $result = stripslashes($result);
         if ($multibyte) {
@@ -707,7 +709,7 @@ function get_var($var_name, $default, $multibyte = false)
     $request_var = (isset($_POST[$var_name])) ? $_POST : $_GET;
 
     if (!isset($request_var[$var_name]) || (is_array($request_var[$var_name]) && !is_array($default)) || (is_array($default) && !is_array($request_var[$var_name]))) {
-        return (is_array($default)) ? array() : $default;
+        return (is_array($default)) ? [] : $default;
     }
 
     $var = $request_var[$var_name];
@@ -722,7 +724,7 @@ function get_var($var_name, $default, $multibyte = false)
 
     if (is_array($var)) {
         $_var = $var;
-        $var = array();
+        $var = [];
 
         foreach ($_var as $k => $v) {
             if (is_array($v)) {
@@ -768,7 +770,7 @@ function attach_mod_sql_escape($text)
     }
 }
 
-function getOrderBy(\Dibi\Fluent $fluent, $mode, $view, $start, $sort_order, $board_config)
+function getOrderBy(Fluent $fluent, $mode, $view, $start, $sort_order, $board_config)
 {
     // Set Order
     if ($view == 'username') {

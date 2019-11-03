@@ -12,7 +12,6 @@
  */
 if (!defined('IN_PHPBB')) {
     die('Hacking attempt');
-    exit;
 }
 
 // Attachment Debug Mode

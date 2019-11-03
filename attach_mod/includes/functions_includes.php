@@ -23,9 +23,11 @@ function attach_faq_include($lang_file)
         return;
     }
 
+    $sep = DIRECTORY_SEPARATOR;
+
     if ($lang_file == 'lang_faq') {
         $language = attach_mod_get_lang('lang_faq_attach');
-        require_once($phpbb_root_path . 'language/lang_' . $language . '/lang_faq_attach.php');
+        require_once($phpbb_root_path . 'language ' . $sep . 'lang_' . $language . $sep . 'lang_faq_attach.php');
     }
 }
 
@@ -143,8 +145,10 @@ function attachment_quota_settings($admin_mode, $submit = false, $mode)
 {
     global $template, $lang, $lang, $phpbb_root_path, $attach_config;
 
+    $sep = DIRECTORY_SEPARATOR;
+
     // Make sure constants got included
-    require_once($phpbb_root_path . 'attach_mod/includes/constants.php');
+    require_once $phpbb_root_path . 'attach_mod' . $sep . 'includes' . $sep . 'constants.php';
 
     if (!(int)$attach_config['allow_ftp_upload']) {
         if ($attach_config['upload_dir'][0] == '/' || ($attach_config['upload_dir'][0] != '/' && $attach_config['upload_dir'][1] == ':')) {
@@ -156,14 +160,14 @@ function attachment_quota_settings($admin_mode, $submit = false, $mode)
         $upload_dir = $attach_config['download_path'];
     }
 
-    require_once($phpbb_root_path . 'attach_mod/includes/functions_selects.php');
-    require_once($phpbb_root_path . 'attach_mod/includes/functions_admin.php');
+    require_once $phpbb_root_path . 'attach_mod' . $sep . 'includes' . $sep . 'functions_selects.php';
+    require_once $phpbb_root_path . 'attach_mod' . $sep . 'includes' . $sep . 'functions_admin.php';
 
     $user_id = 0;
 
     if ($admin_mode == 'user') {
         // We overwrite submit here... to be sure
-        $submit = (isset($_POST['submit'])) ? true : false;
+        $submit = isset($_POST['submit']);
 
         if (!$submit && $mode != 'save') {
             $user_id = get_var(POST_USERS_URL, 0);
@@ -214,11 +218,13 @@ function attachment_quota_settings($admin_mode, $submit = false, $mode)
             $pm_quota = $attach_config['default_pm_quota'];
         }
 
-        $template->assignVars(array(
+        $template->assignVars(
+            [
                 'S_SELECT_UPLOAD_QUOTA' => quota_limit_select('user_upload_quota', $upload_quota),
                 'S_SELECT_PM_QUOTA' => quota_limit_select('user_pm_quota', $pm_quota),
                 'L_UPLOAD_QUOTA' => $lang['Upload_quota'],
-                'L_PM_QUOTA' => $lang['Pm_quota'])
+                'L_PM_QUOTA' => $lang['Pm_quota']
+            ]
         );
     }
 
@@ -263,11 +269,13 @@ function attachment_quota_settings($admin_mode, $submit = false, $mode)
             $pm_quota = $attach_config['default_pm_quota'];
         }
 
-        $template->assignVars(array(
+        $template->assignVars(
+            [
                 'S_SELECT_UPLOAD_QUOTA' => quota_limit_select('group_upload_quota', $upload_quota),
                 'S_SELECT_PM_QUOTA' => quota_limit_select('group_pm_quota', $pm_quota),
                 'L_UPLOAD_QUOTA' => $lang['Upload_quota'],
-                'L_PM_QUOTA' => $lang['Pm_quota'])
+                'L_PM_QUOTA' => $lang['Pm_quota']
+            ]
         );
     }
 
@@ -413,9 +421,10 @@ function display_upload_attach_box_limits($user_id, $group_id = 0)
 
     $l_box_size_status = sprintf($lang['Upload_percent_profile'], $upload_limit_pct);
 
-    $template->assignBlockVars('switch_upload_limits', array());
+    $template->assignBlockVars('switch_upload_limits', []);
 
-    $template->assignVars(array(
+    $template->assignVars(
+        [
             'L_UACP' => $lang['UACP'],
             'L_UPLOAD_QUOTA' => $lang['Upload_quota'],
             'U_UACP' => $phpbb_root_path . 'uacp.php?' . POST_USERS_URL . '=' . $user_id . '&amp;sid=' . $userdata['session_id'],
@@ -423,17 +432,9 @@ function display_upload_attach_box_limits($user_id, $group_id = 0)
             'QUOTA' => sprintf($lang['User_quota_profile'], $user_quota),
             'UPLOAD_LIMIT_IMG_WIDTH' => $upload_limit_img_length,
             'UPLOAD_LIMIT_PERCENT' => $upload_limit_pct,
-            'PERCENT_FULL' => $l_box_size_status)
+            'PERCENT_FULL' => $l_box_size_status
+        ]
     );
-}
-
-/**
- * Prune Attachments (includes/prune.php)
- */
-function prune_attachments($sql_post)
-{
-    // prune it.
-    delete_attachment($sql_post);
 }
 
 /**
@@ -444,8 +445,8 @@ function prune_attachments($sql_post)
  * viewonline.php:
  *        perform_attach_pageregister($row['session_page']);
  * admin/index.php:
- *        perform_attach_pageregister($onlinerow_reg[$i]['user_session_page'], TRUE);
- *        perform_attach_pageregister($onlinerow_guest[$i]['session_page'], TRUE);
+ *        perform_attach_pageregister($onlinerow_reg[$i]['user_session_page'], true);
+ *        perform_attach_pageregister($onlinerow_guest[$i]['session_page'], true);
  */
 function perform_attach_pageregister($session_page, $in_admin = false)
 {
@@ -454,12 +455,12 @@ function perform_attach_pageregister($session_page, $in_admin = false)
     switch ($session_page) {
         case (PAGE_UACP):
             $location = $lang['User_acp_title'];
-            $location_url = ($in_admin) ? "index.php?pane=right" : "index.php";
+            $location_url = ($in_admin) ? 'index.php?pane=right' : 'index.php';
             break;
 
         case (PAGE_RULES):
             $location = $lang['Rules_page'];
-            $location_url = ($in_admin) ? "index.php?pane=right" : "index.php";
+            $location_url = ($in_admin) ? 'index.php?pane=right' : 'index.php';
             break;
     }
 }

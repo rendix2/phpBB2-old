@@ -532,7 +532,7 @@ $lang['DB_Name'] = 'Your Database Name';
 $lang['DB_Username'] = 'Database Username';
 $lang['DB_Password'] = 'Database Password';
 $lang['Table_Prefix'] = 'Prefix for tables in database';
-$lang['New_config_php'] = "This is your new Config.php";
+$lang['New_config_php'] = 'This is your new Config.php';
 // Options
 $lang['cls'] = 'Clear all sessions';
 $lang['rdb'] = 'Repair database tables';

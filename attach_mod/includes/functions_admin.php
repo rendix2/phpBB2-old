@@ -36,12 +36,12 @@ function process_quota_settings($mode, $id, $quota_type, $quota_limit_id = 0)
                 ->fetch();
 
             if (!$checkQuota) {
-                $sql_ary = array(
+                $sql_ary = [
                     'user_id' => (int)$id,
                     'group_id' => 0,
                     'quota_type' => (int)$quota_type,
                     'quota_limit_id' => (int)$quota_limit_id
-                );
+                ];
 
                 dibi::insert(Tables::ATTACH_QUOTA_TABLE, $sql_ary)->execute();
             } else {
@@ -92,7 +92,7 @@ function sort_multi_array($sort_array, $key, $sort_order, $pre_string_sort = 0)
     $last_element = count($sort_array) - 1;
 
     if (!$pre_string_sort) {
-        $string_sort = (!is_numeric($sort_array[$last_element - 1][$key])) ? true : false;
+        $string_sort = !is_numeric($sort_array[$last_element - 1][$key]);
     } else {
         $string_sort = $pre_string_sort;
     }
@@ -174,7 +174,7 @@ function collect_attachments()
 {
     global $upload_dir, $attach_config;
 
-    $file_attachments = array();
+    $file_attachments = [];
 
     if (!(int)$attach_config['allow_ftp_upload']) {
         if ($dir = @opendir($upload_dir)) {
@@ -191,7 +191,7 @@ function collect_attachments()
     } else {
         $conn_id = attach_init_ftp();
 
-        $file_listing = array();
+        $file_listing = [];
 
         $file_listing = @ftp_rawlist($conn_id, '');
 
@@ -245,7 +245,7 @@ function get_formatted_dirsize()
     } else {
         $conn_id = attach_init_ftp();
 
-        $file_listing = array();
+        $file_listing = [];
 
         $file_listing = @ftp_rawlist($conn_id, '');
 
@@ -290,7 +290,18 @@ function get_formatted_dirsize()
 function search_attachments($order_by, &$total_rows)
 {
     // Get submitted Vars
-    $search_vars = array('search_keyword_fname', 'search_keyword_comment', 'search_author', 'search_size_smaller', 'search_size_greater', 'search_count_smaller', 'search_count_greater', 'search_days_greater', 'search_forum', 'search_cat');
+    $search_vars = [
+        'search_keyword_fname',
+        'search_keyword_comment',
+        'search_author',
+        'search_size_smaller',
+        'search_size_greater',
+        'search_count_smaller',
+        'search_count_greater',
+        'search_days_greater',
+        'search_forum',
+        'search_cat'
+    ];
 
     for ($i = 0; $i < count($search_vars); $i++) {
         $$search_vars[$i] = get_var($search_vars[$i], '');
@@ -421,7 +432,7 @@ function limit_array($array, $start, $pagelimit)
     // array from start - start+pagelimit
     $limit = (count($array) < ($start + $pagelimit)) ? count($array) : $start + $pagelimit;
 
-    $limit_array = array();
+    $limit_array = [];
 
     for ($i = $start; $i < $limit; $i++) {
         $limit_array[] = $array[$i];

@@ -12,12 +12,14 @@
  */
 define('IN_PHPBB', true);
 
+$sep = DIRECTORY_SEPARATOR;
+
 // Let's set the root dir for phpBB
-$phpbb_root_path = './../';
+$phpbb_root_path = '.' . $sep . '..' . $sep;
 
-require_once('pagestart.php');
+require_once 'pagestart.php';
 
-require_once($phpbb_root_path . 'attach_mod/includes/constants.php');
+require_once $phpbb_root_path . 'attach_mod' . $sep . 'includes' . $sep . 'constants.php';
 
 if (!(int)$attach_config['allow_ftp_upload']) {
     if (($attach_config['upload_dir'][0] == '/') || (($attach_config['upload_dir'][0] != '/') && ($attach_config['upload_dir'][1] == ':'))) {
@@ -29,8 +31,8 @@ if (!(int)$attach_config['allow_ftp_upload']) {
     $upload_dir = $attach_config['download_path'];
 }
 
-require_once($phpbb_root_path . 'attach_mod/includes/functions_selects.php');
-require_once($phpbb_root_path . 'attach_mod/includes/functions_admin.php');
+require_once $phpbb_root_path . 'attach_mod' . $sep . 'includes' . $sep . 'functions_selects.php';
+require_once $phpbb_root_path . 'attach_mod' . $sep . 'includes' . $sep . 'functions_admin.php';
 
 // Check if the language got included
 if (!isset($lang['Test_settings_successful'])) {
@@ -72,17 +74,17 @@ if ($view == 'username') {
     $sort_order = 'DESC';
 } else {
     $view = 'stats';
-    $mode_types_text = array();
+    $mode_types_text = [];
     $sort_order = 'ASC';
 }
 
 
 // Pagination ?
-$do_pagination = ($view != 'stats' && $view != 'search') ? true : false;
+$do_pagination = $view != 'stats' && $view != 'search';
 
 // Set select fields
-$view_types_text = array($lang['View_Statistic'], $lang['View_Search'], $lang['View_Username'], $lang['View_Attachments']);
-$view_types = array('stats', 'search', 'username', 'attachments');
+$view_types_text = [$lang['View_Statistic'], $lang['View_Search'], $lang['View_Username'], $lang['View_Attachments']];
+$view_types = ['stats', 'search', 'username', 'attachments'];
 
 $select_view = '<select name="view">';
 
@@ -112,14 +114,14 @@ if ($sort_order == 'ASC') {
 }
 $select_sort_order .= '</select>';
 
-$submit_change = (isset($_POST['submit_change'])) ? TRUE : FALSE;
-$delete = (isset($_POST['delete'])) ? TRUE : FALSE;
+$submit_change = isset($_POST['submit_change']);
+$delete = isset($_POST['delete']);
 $delete_id_list = get_var('delete_id_list', array(0));
 
-$confirm = isset($_POST['confirm']) ? TRUE : FALSE;
+$confirm = isset($_POST['confirm']);
 
 if ($confirm && count($delete_id_list) > 0) {
-    $attachments = array();
+    $attachments = [];
 
     delete_attachment(0, $delete_id_list);
 } else if ($delete && count($delete_id_list) > 0) {
@@ -130,8 +132,8 @@ if ($confirm && count($delete_id_list) > 0) {
     $hidden_fields .= '<input type="hidden" name="u_id" value="' . $uid . '" />';
     $hidden_fields .= '<input type="hidden" name="start" value="' . $start . '" />';
 
-    for ($i = 0; $i < count($delete_id_list); $i++) {
-        $hidden_fields .= '<input type="hidden" name="delete_id_list[]" value="' . $delete_id_list[$i] . '" />';
+    foreach ($delete_id_list as $attachId) {
+        $hidden_fields .= '<input type="hidden" name="delete_id_list[]" value="' . $attachId . '" />';
     }
 
     $template->setFileNames(['confirm' => 'confirm_body.tpl']);
@@ -150,7 +152,7 @@ if ($confirm && count($delete_id_list) > 0) {
 
     $template->pparse('confirm');
 
-    require_once('page_footer_admin.php');
+    require_once 'page_footer_admin.php';
 
     exit;
 }
@@ -174,7 +176,7 @@ if ($submit_change && $view == 'attachments') {
     $attach_download_count_list = get_var('attach_count_list', array(0));
 
     // Generate correct Change List
-    $attachments = array();
+    $attachments = [];
 
     for ($i = 0; $i < count($attach_change_list); $i++) {
         $attachments['_' . $attach_change_list[$i]]['comment'] = $attach_comment_list[$i];
@@ -400,7 +402,7 @@ if ($view == 'username') {
         }
 
         if ($mode == 'filesize') {
-            $members = sort_multi_array($members, 'total_size', $sort_order, FALSE);
+            $members = sort_multi_array($members, 'total_size', $sort_order, false);
             $members = limit_array($members, $start, $board_config['topics_per_page']);
         }
 
@@ -432,7 +434,7 @@ if ($view == 'username') {
 
 // Attachments
 if ($view == 'attachments') {
-    $user_based = ($uid) ? TRUE : FALSE;
+    $user_based = ($uid) ? true : false;
     $search_based = isset($_POST['search']) && $_POST['search'];
 
     $hidden_fields = '';
@@ -532,8 +534,8 @@ if ($view == 'attachments') {
         foreach ($attachments as $attachment) {
             $delete_box = '<input type="checkbox" name="delete_id_list[]" value="' . (int)$attachment->attach_id . '" />';
 
-            for ($j = 0; $j < count($delete_id_list); $j++) {
-                if ($delete_id_list[$j] == $attachment->attach_id) {
+            foreach ($delete_id_list as $attachId) {
+                if ($attachId == $attachment->attach_id) {
                     $delete_box = '<input type="checkbox" name="delete_id_list[]" value="' . (int)$attachment->attach_id . '" checked="checked" />';
                     break;
                 }
@@ -637,6 +639,6 @@ if ($do_pagination && $total_rows > $board_config['topics_per_page']) {
 $template->assignVars(['ATTACH_VERSION' => sprintf($lang['Attachment_version'], $attach_config['attach_version'])]);
 $template->pparse('body');
 
-require_once('page_footer_admin.php');
+require_once 'page_footer_admin.php';
 
 ?>

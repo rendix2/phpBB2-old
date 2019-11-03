@@ -116,12 +116,13 @@ $storage = new FileStorage(__DIR__ . $sep . 'temp');
 $cache   = new Cache($storage, Tables::CONFIG_TABLE);
 
 // attachment mod
-require_once($phpbb_root_path . 'attach_mod/attachment_mod.php');
+require_once $phpbb_root_path . 'attach_mod' . $sep . 'attachment_mod.php';
 
 // enable tracy
 Debugger::enable();
 Debugger::$maxDepth = 5;
 Debugger::$maxLength = 2000;
+//Debugger::$strictMode = true;
 
 // We do not need this any longer, unset for safety purposes
 //unset($dbpasswd);

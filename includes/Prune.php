@@ -109,7 +109,7 @@ class Prune
 
                 SearchHelper::removeSearchPost($postIds);
 
-                prune_attachments($postIds);
+                delete_attachment($postIds);
 
                 return ['topics' => $prunedTopics, 'posts' => $prunedPosts];
             }

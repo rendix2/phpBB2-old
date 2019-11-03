@@ -23,7 +23,7 @@ function delete_attachment($post_id_array = 0, $attach_id_array = 0, $page = 0, 
     }
 
     if ($post_id_array === 0 && $attach_id_array !== 0) {
-        $post_id_array = array();
+        $post_id_array = [];
 
         if (!is_array($attach_id_array)) {
             if (strstr($attach_id_array, ', ')) {
@@ -32,7 +32,7 @@ function delete_attachment($post_id_array = 0, $attach_id_array = 0, $page = 0, 
                 $attach_id_array = explode(',', $attach_id_array);
             } else {
                 $attach_id = (int)$attach_id_array;
-                $attach_id_array = array();
+                $attach_id_array = [];
                 $attach_id_array[] = $attach_id;
             }
         }
@@ -75,7 +75,7 @@ function delete_attachment($post_id_array = 0, $attach_id_array = 0, $page = 0, 
         {
             $post_id = intval($post_id_array);
 
-            $post_id_array = array();
+            $post_id_array = [];
             $post_id_array[] = $post_id;
         }
     }
@@ -93,7 +93,6 @@ function delete_attachment($post_id_array = 0, $attach_id_array = 0, $page = 0, 
                 ->from(Tables::ATTACH_ATTACHMENT_TABLE)
                 ->where('[privmsgs_id] IN %in', $post_id_array)
                 ->fetchPairs(null, 'attach_id');
-            ')';
         } else {
             $attach_id_array = dibi::select('attach_id')
                 ->from(Tables::ATTACH_ATTACHMENT_TABLE)
@@ -110,7 +109,7 @@ function delete_attachment($post_id_array = 0, $attach_id_array = 0, $page = 0, 
         } else {
             $attach_id = (int)$attach_id_array;
 
-            $attach_id_array = array();
+            $attach_id_array = [];
             $attach_id_array[] = $attach_id;
         }
     }
@@ -122,7 +121,7 @@ function delete_attachment($post_id_array = 0, $attach_id_array = 0, $page = 0, 
     if ($page == PAGE_PRIVMSGS) {
         $sql_id = 'privmsgs_id';
         if ($user_id) {
-            $post_id_array_2 = array();
+            $post_id_array_2 = [];
 
             $rows = dibi::select(['privmsgs_id', 'privmsgs_type', 'privmsgs_to_userid', 'privmsgs_from_userid'])
                 ->from(Tables::PRIVATE_MESSAGE_TABLE)
@@ -175,7 +174,7 @@ function delete_attachment($post_id_array = 0, $attach_id_array = 0, $page = 0, 
                     ->fetchAll();
 
                 foreach ($attachments as $attachment) {
-                    unlink_attach($attachments->physical_filename);
+                    unlink_attach($attachment->physical_filename);
 
                     if ((int)$attachment->thumbnail == 1) {
                         unlink_attach($attachment->physical_filename, MODE_THUMBNAIL);
@@ -209,7 +208,7 @@ function delete_attachment($post_id_array = 0, $attach_id_array = 0, $page = 0, 
                 ->from(Tables::POSTS_TABLE)
                 ->where('[post_id] = %i', $post_id_array)
                 ->groupBy('topic_id')
-                ->fetchPairs(null, 'topicv_id');
+                ->fetchPairs(null, 'topic_id');
 
             foreach ($topics as $topic) {
                 attachment_sync_topic($topic);

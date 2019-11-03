@@ -644,9 +644,9 @@ if (($delete || $pollDelete || $mode === 'delete') && !$confirm) {
     if ($error_msg === '') {
         if ($mode !== 'editpost') {
             $user_id = ($mode === 'reply' || $mode === 'newtopic') ? $userdata['user_id'] : $postData['poster_id'];
-            PostHelper::updatePostStats($mode, $postData, $forumId, $topicId, $postId, $user_id);
 
             $attachment_mod['posting']->insert_attachment($postId);
+            PostHelper::updatePostStats($mode, $postData, $forumId, $topicId, $postId, $user_id);
         }
 
         // $mode !== 'newtopic' is because we dont have topic_title :)

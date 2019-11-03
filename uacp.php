@@ -10,10 +10,12 @@
 
 /**
 */
-define('IN_PHPBB', true);
-$phpbb_root_path = './';
+$sep = DIRECTORY_SEPARATOR;
 
-require_once($phpbb_root_path . 'common.php');
+define('IN_PHPBB', true);
+$phpbb_root_path = '.' . $sep;
+
+require_once $phpbb_root_path . 'common.php';
 
 // session id check
 $sid = get_var('sid', '');
@@ -43,19 +45,25 @@ PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, 
 
 $language = $board_config['default_lang'];
 
-if (!file_exists($phpbb_root_path . 'language/lang_' . $language . '/lang_admin_attach.php')) {
+if (!file_exists($phpbb_root_path . 'language'. $sep .'lang_' . $language . $sep . 'lang_admin_attach.php')) {
 	$language = $attach_config['board_lang'];
 }
 
-require_once($phpbb_root_path . 'language/lang_' . $language . '/lang_admin_attach.php');
+require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $language . $sep . 'lang_admin_attach.php';
 
 $start = get_var('start', 0);
 $sort_order = get_var('order', 'ASC');
 $sort_order = ($sort_order == 'ASC') ? 'ASC' : 'DESC';
 $mode = get_var('mode', '');
 
-$mode_types_text = array($lang['Sort_Filename'], $lang['Sort_Comment'], $lang['Sort_Extension'], $lang['Sort_Size'], $lang['Sort_Downloads'], $lang['Sort_Posttime'], /*$lang['Sort_Posts']*/);
-$mode_types = array('real_filename', 'comment', 'extension', 'filesize', 'downloads', 'post_time'/*, 'posts'*/);
+$mode_types = [
+    'real_filename' => $lang['Sort_Filename'],
+    'comment' => $lang['Sort_Comment'],
+    'extension' => $lang['Sort_Extension'],
+    'filesize' => $lang['Sort_Size'],
+    'downloads' => $lang['Sort_Downloads'],
+    'post_time' => $lang['Sort_Posttime']
+];
 
 if (!$mode) {
 	$mode = 'real_filename';
@@ -68,12 +76,12 @@ $do_pagination = true;
 // Set select fields
 $select_sort_mode = $select_sort_order = '';
 
-if (count($mode_types_text) > 0) {
+if (count($mode_types) > 0) {
 	$select_sort_mode = '<select name="mode">';
 
-	for ($i = 0; $i < count($mode_types_text); $i++) {
-		$selected = ($mode == $mode_types[$i]) ? ' selected="selected"' : '';
-		$select_sort_mode .= '<option value="' . $mode_types[$i] . '"' . $selected . '>' . $mode_types_text[$i] . '</option>';
+	foreach ($mode_types as $value => $text ) {
+		$selected = ($mode == $value) ? ' selected="selected"' : '';
+		$select_sort_mode .= '<option value="' . $value . '"' . $selected . '>' . $text . '</option>';
 	}
 	$select_sort_mode .= '</select>';
 }
@@ -156,29 +164,31 @@ $s_hidden = '<input type="hidden" name="' . POST_USERS_URL . '" value="' . (int)
 $s_hidden .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
 // Assign Template Vars
-$template->assignVars(array(
-	'L_SUBMIT'				=> $lang['Submit'],
-	'L_UACP'				=> $lang['UACP'],
-	'L_SELECT_SORT_METHOD'	=> $lang['Select_sort_method'],
-	'L_ORDER'				=> $lang['Order'],
-	'L_FILENAME'			=> $lang['File_name'],
-	'L_FILECOMMENT'			=> $lang['File_comment_cp'],
-	'L_EXTENSION'			=> $lang['Extension'],
-	'L_SIZE'				=> $lang['Size_in_kb'],
-	'L_DOWNLOADS'			=> $lang['Downloads'],
-	'L_POST_TIME'			=> $lang['Post_time'],
-	'L_POSTED_IN_TOPIC'		=> $lang['Posted_in_topic'],
-	'L_DELETE'				=> $lang['Delete'],
-	'L_DELETE_MARKED'		=> $lang['Delete_marked'],
-	'L_MARK_ALL'			=> $lang['Mark_all'],
-	'L_UNMARK_ALL'			=> $lang['Unmark_all'],
+$template->assignVars(
+    [
+        'L_SUBMIT' => $lang['Submit'],
+        'L_UACP' => $lang['UACP'],
+        'L_SELECT_SORT_METHOD' => $lang['Select_sort_method'],
+        'L_ORDER' => $lang['Order'],
+        'L_FILENAME' => $lang['File_name'],
+        'L_FILECOMMENT' => $lang['File_comment_cp'],
+        'L_EXTENSION' => $lang['Extension'],
+        'L_SIZE' => $lang['Size_in_kb'],
+        'L_DOWNLOADS' => $lang['Downloads'],
+        'L_POST_TIME' => $lang['Post_time'],
+        'L_POSTED_IN_TOPIC' => $lang['Posted_in_topic'],
+        'L_DELETE' => $lang['Delete'],
+        'L_DELETE_MARKED' => $lang['Delete_marked'],
+        'L_MARK_ALL' => $lang['Mark_all'],
+        'L_UNMARK_ALL' => $lang['Unmark_all'],
 
-	'USERNAME'		=> $profiledata['username'],
+        'USERNAME' => $profiledata['username'],
 
-	'S_USER_HIDDEN'		=> $s_hidden,
-	'S_MODE_ACTION'		=> Session::appendSid($phpbb_root_path . 'uacp.php'),
-	'S_MODE_SELECT'		=> $select_sort_mode,
-	'S_ORDER_SELECT'	=> $select_sort_order)
+        'S_USER_HIDDEN' => $s_hidden,
+        'S_MODE_ACTION' => Session::appendSid($phpbb_root_path . 'uacp.php'),
+        'S_MODE_SELECT' => $select_sort_mode,
+        'S_ORDER_SELECT' => $select_sort_order
+    ]
 );
 
 $attach_ids = dibi::select('attach_id')
@@ -189,7 +199,7 @@ $attach_ids = dibi::select('attach_id')
 
 $num_attach_ids = count($attach_ids);
 $total_rows = $num_attach_ids;
-$attachments = array();
+$attachments = [];
 
 if ($num_attach_ids > 0) {
     $attachments = dibi::select('a.*')
@@ -242,7 +252,7 @@ if (count($attachments) > 0) {
 
 		// Is the Attachment assigned to more than one post?
 		// If it's not assigned to any post, it's an private message thingy. ;)
-		$post_titles = array();
+		$post_titles = [];
 
 		$ids = dibi::select('*')
             ->from(Tables::ATTACH_ATTACHMENT_TABLE)
@@ -327,24 +337,26 @@ if (count($attachments) > 0) {
 
 			$comment = str_replace("\n", '<br />', $attachment->comment);
 
-			$template->assignBlockVars('attachrow', array(
-				'ROW_NUMBER'		=> $i + ($start + 1 ),
-				'ROW_COLOR'			=> '#' . $row_color,
-				'ROW_CLASS'			=> $row_class,
+            $template->assignBlockVars('attachrow',
+                [
+                    'ROW_NUMBER' => $i + ($start + 1),
+                    'ROW_COLOR' => '#' . $row_color,
+                    'ROW_CLASS' => $row_class,
 
-				'FILENAME'			=> $attachment->real_filename,
-				'COMMENT'			=> $comment,
-				'EXTENSION'			=> $attachment->extension,
-				'SIZE'				=> round(($attachment->filesize / MEGABYTE), 2),
-				'DOWNLOAD_COUNT'	=> $attachment->download_count,
-				'POST_TIME'			=> create_date($board_config['default_dateformat'], $attachment->filetime, $board_config['board_timezone']),
-				'POST_TITLE'		=> $post_titles,
+                    'FILENAME' => $attachment->real_filename,
+                    'COMMENT' => $comment,
+                    'EXTENSION' => $attachment->extension,
+                    'SIZE' => round(($attachment->filesize / MEGABYTE), 2),
+                    'DOWNLOAD_COUNT' => $attachment->download_count,
+                    'POST_TIME' => create_date($board_config['default_dateformat'], $attachment->filetime, $board_config['board_timezone']),
+                    'POST_TITLE' => $post_titles,
 
-				'S_DELETE_BOX'		=> $delete_box,
-				'S_HIDDEN'			=> $hidden_field,
-				'U_VIEW_ATTACHMENT'	=> Session::appendSid($phpbb_root_path . 'download.php?id=' . $attachment->attach_id))
-	//			'U_VIEW_POST' => ($attachments[$i]['post_id'] != 0) ? append_sid("../viewtopic." . $phpEx . "?" . POST_POST_URL . "=" . $attachments[$i]['post_id'] . "#" . $attachments[$i]['post_id']) : '')
-			);
+                    'S_DELETE_BOX' => $delete_box,
+                    'S_HIDDEN' => $hidden_field,
+                    'U_VIEW_ATTACHMENT' => Session::appendSid($phpbb_root_path . 'download.php?id=' . $attachment->attach_id)
+                ]
+            //			'U_VIEW_POST' => ($attachments[$i]['post_id'] != 0) ? append_sid("../viewtopic." . $phpEx . "?" . POST_POST_URL . "=" . $attachments[$i]['post_id'] . "#" . $attachments[$i]['post_id']) : '')
+            );
 		}
 	}
 }
@@ -353,12 +365,14 @@ if (count($attachments) > 0) {
 if ($do_pagination && $total_rows > $board_config['topics_per_page']) {
 	$pagination = generate_pagination($phpbb_root_path . 'uacp.php?mode=' . $mode . '&amp;order=' . $sort_order . '&amp;' . POST_USERS_URL . '=' . $profiledata['user_id'] . '&amp;sid=' . $userdata['session_id'], $total_rows, $board_config['topics_per_page'], $start).'&nbsp;';
 
-	$template->assignVars(array(
-		'PAGINATION'	=> $pagination,
-		'PAGE_NUMBER'	=> sprintf($lang['Page_of'], (floor($start / $board_config['topics_per_page']) + 1), ceil($total_rows / $board_config['topics_per_page'])), 
+    $template->assignVars(
+        [
+            'PAGINATION' => $pagination,
+            'PAGE_NUMBER' => sprintf($lang['Page_of'], (floor($start / $board_config['topics_per_page']) + 1), ceil($total_rows / $board_config['topics_per_page'])),
 
-		'L_GOTO_PAGE'	=> $lang['Goto_page'])
-	);
+            'L_GOTO_PAGE' => $lang['Goto_page']
+        ]
+    );
 }
 
 $template->pparse('body');

@@ -78,6 +78,10 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
     $modules['Attachments']['Quota_limits'] = 'admin_attachments.php?mode=quota';
     $modules['Attachments']['Control_Panel'] = 'admin_attach_cp.php';
 
+    $modules['Extensions']['Extension_control'] = 'admin_extensions.php?mode=extensions';
+    $modules['Extensions']['Extension_group_manage'] = 'admin_extensions.php?mode=groups';
+    $modules['Extensions']['Forbidden_extensions'] = 'admin_extensions.php?mode=forbidden';
+
     require_once  '.' . $sep . 'page_header_admin.php';
 
     $template->setFileNames(['body' => 'admin/index_navigate.tpl']);

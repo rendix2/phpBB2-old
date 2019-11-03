@@ -13,10 +13,6 @@
 /**
 * DO NOT CHANGE
 */
-if (!isset($lang) || !is_array($lang))
-{
-	$lang = array();
-}
 
 //
 // Attachment Mod Main Language Variables

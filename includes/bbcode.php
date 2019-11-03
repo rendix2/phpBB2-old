@@ -130,7 +130,7 @@ function bbencode_second_pass($text, $uid)
 
 	$text = preg_replace('#(script|about|applet|activex|chrome):#is', "\\1&#058;", $text);
 
-	// pad it with a space so we can distinguish between FALSE and matching the 1st char (index 0).
+	// pad it with a space so we can distinguish between false and matching the 1st char (index 0).
 	// This is important; bbencode_quote(), bbencode_list(), and bbencode_code() all depend on it.
 	$text = ' ' . $text;
 
@@ -249,7 +249,7 @@ function make_bbcode_uid()
 
 function bbencode_first_pass($text, $uid)
 {
-	// pad it with a space so we can distinguish between FALSE and matching the 1st char (index 0).
+	// pad it with a space so we can distinguish between false and matching the 1st char (index 0).
 	// This is important; bbencode_quote(), bbencode_list(), and bbencode_code() all depend on it.
 	$text = ' ' . $text;
 
@@ -310,7 +310,7 @@ function bbencode_first_pass($text, $uid)
  *				That function will be called when a match is found, and passed 2
  *				parameters: ($text, $uid). The function should return a string.
  *				This is used when some transformation needs to be applied to the
- *				text INSIDE a pair of matching tags. If this variable is FALSE or the
+ *				text INSIDE a pair of matching tags. If this variable is false or the
  *				empty string, it will not be executed.
  * If open_tag is an array, then the pda will try to match pairs consisting of
  * any element of open_tag followed by close_tag. This allows us to match things

@@ -571,7 +571,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
     static $msg_history;
 
     if( !isset($msg_history) ) {
-        $msg_history = array();
+        $msg_history = [];
     }
 
     $msg_history[] = [
@@ -580,7 +580,6 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
         'msg_title' => $msg_title,
         'err_line'  => $err_line,
         'err_file'  => $err_file,
-        'sql'       => $sql
     ];
     //-MOD: Fix message_die for multiple errors MOD
 
@@ -816,38 +815,38 @@ function get_formatted_filesize($value, $string_only = true, $allowed_units = fa
 {
     global $user;
 
-    $available_units = array(
-        'tb' => array(
-            'min' 		=> 1099511627776, // pow(2, 40)
-            'index'		=> 4,
-            'si_unit'	=> 'TB',
-            'iec_unit'	=> 'TIB',
-        ),
-        'gb' => array(
-            'min' 		=> 1073741824, // pow(2, 30)
-            'index'		=> 3,
-            'si_unit'	=> 'GB',
-            'iec_unit'	=> 'GIB',
-        ),
-        'mb' => array(
-            'min'		=> 1048576, // pow(2, 20)
-            'index'		=> 2,
-            'si_unit'	=> 'MB',
-            'iec_unit'	=> 'MIB',
-        ),
-        'kb' => array(
-            'min'		=> 1024, // pow(2, 10)
-            'index'		=> 1,
-            'si_unit'	=> 'KB',
-            'iec_unit'	=> 'KIB',
-        ),
-        'b' => array(
-            'min'		=> 0,
-            'index'		=> 0,
-            'si_unit'	=> 'BYTES', // Language index
-            'iec_unit'	=> 'BYTES',  // Language index
-        ),
-    );
+    $available_units = [
+        'tb' => [
+            'min' => 1099511627776, // pow(2, 40)
+            'index' => 4,
+            'si_unit' => 'TB',
+            'iec_unit' => 'TIB',
+        ],
+        'gb' => [
+            'min' => 1073741824, // pow(2, 30)
+            'index' => 3,
+            'si_unit' => 'GB',
+            'iec_unit' => 'GIB',
+        ],
+        'mb' => [
+            'min' => 1048576, // pow(2, 20)
+            'index' => 2,
+            'si_unit' => 'MB',
+            'iec_unit' => 'MIB',
+        ],
+        'kb' => [
+            'min' => 1024, // pow(2, 10)
+            'index' => 1,
+            'si_unit' => 'KB',
+            'iec_unit' => 'KIB',
+        ],
+        'b' => [
+            'min' => 0,
+            'index' => 0,
+            'si_unit' => 'BYTES', // Language index
+            'iec_unit' => 'BYTES',  // Language index
+        ],
+    ];
 
     foreach ($available_units as $si_identifier => $unit_info) {
         if (!empty($allowed_units) && $si_identifier !== 'b' && !in_array($si_identifier, $allowed_units, true)) {

@@ -103,8 +103,8 @@ function category_select($select_name, $group_id = 0)
 
     $type_category = 0;
 
-    $types = array(NONE_CAT);
-    $modes = array('none');
+    $types = [NONE_CAT];
+    $modes = ['none'];
 
     for ($i = 0; $i < count($types_category); $i++) {
         $types[] = $types_category[$i];
@@ -135,8 +135,8 @@ function size_select($select_name, $size_compare)
 {
     global $lang;
 
-    $size_types_text = array($lang['Bytes'], $lang['KB'], $lang['MB']);
-    $size_types = array('b', 'kb', 'mb');
+    $size_types_text = [$lang['Bytes'], $lang['KB'], $lang['MB']];
+    $size_types = ['b', 'kb', 'mb'];
 
     $select_field = '<select name="' . $select_name . '">';
 

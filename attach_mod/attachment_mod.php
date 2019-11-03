@@ -17,12 +17,14 @@ if (!defined('IN_PHPBB')) {
     die('Hacking attempt');
 }
 
-require_once($phpbb_root_path . 'attach_mod/includes/constants.php');
-require_once($phpbb_root_path . 'attach_mod/includes/functions_includes.php');
-require_once($phpbb_root_path . 'attach_mod/includes/functions_attach.php');
-require_once($phpbb_root_path . 'attach_mod/includes/functions_delete.php');
-require_once($phpbb_root_path . 'attach_mod/includes/functions_thumbs.php');
-require_once($phpbb_root_path . 'attach_mod/includes/functions_filetypes.php');
+$sep = DIRECTORY_SEPARATOR;
+
+require_once $phpbb_root_path . 'attach_mod' . $sep . 'includes' . $sep . 'constants.php';
+require_once $phpbb_root_path . 'attach_mod' . $sep . 'includes' . $sep . 'functions_includes.php';
+require_once $phpbb_root_path . 'attach_mod' . $sep . 'includes' . $sep . 'functions_attach.php';
+require_once $phpbb_root_path . 'attach_mod' . $sep . 'includes' . $sep . 'functions_delete.php';
+require_once $phpbb_root_path . 'attach_mod' . $sep . 'includes' . $sep . 'functions_thumbs.php';
+require_once $phpbb_root_path . 'attach_mod' . $sep . 'includes' . $sep . 'functions_filetypes.php';
 
 if (defined('ATTACH_INSTALL')) {
     return;
@@ -55,7 +57,10 @@ function attach_mod_get_lang($language_file)
  */
 function include_attach_lang()
 {
-    global $phpbb_root_path, $lang, $board_config, $attach_config;
+    global $phpbb_root_path;
+
+    // from some reason its important to make it work :O
+    global $lang;
 
     // Include Language
     $language = attach_mod_get_lang('lang_main_attach');
@@ -86,7 +91,7 @@ function get_config()
 
 // Get Attachment Config
 $cache = new Cache($storage, Tables::ATTACH_CONFIG_TABLE);
-$key   = Tables::ATTACH_CONFIG_TABLE;
+$key = Tables::ATTACH_CONFIG_TABLE;
 
 $attach_config = $cache->load($key);
 
@@ -97,23 +102,18 @@ if (!$attach_config) {
 
 // Please do not change the include-order, it is valuable for proper execution.
 // Functions for displaying Attachment Things
-require_once($phpbb_root_path . 'attach_mod/displaying.php');
+require_once $phpbb_root_path . 'attach_mod' . $sep . 'displaying.php';
 
 // Posting Attachments Class (HAVE TO BE BEFORE PM)
-require_once($phpbb_root_path . 'attach_mod/posting_attachments.php');
+require_once $phpbb_root_path . 'attach_mod' . $sep . 'posting_attachments.php';
 
 // PM Attachments Class
-require_once($phpbb_root_path . 'attach_mod/pm_attachments.php');
+require_once $phpbb_root_path . 'attach_mod' . $sep . 'pm_attachments.php';
 
 if (!(int)$attach_config['allow_ftp_upload']) {
     $upload_dir = $attach_config['upload_dir'];
 } else {
     $upload_dir = $attach_config['download_path'];
 }
-
-if (!function_exists('attach_mod_sql_escape')) {
-    message_die(GENERAL_MESSAGE, 'You haven\'t correctly updated/installed the Attachment Mod.<br />You seem to forgot uploading a new file. Please refer to the update instructions for help and make sure you have uploaded every file correctly.');
-}
-
 
 ?>

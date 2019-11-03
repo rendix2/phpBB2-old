@@ -16,9 +16,10 @@ if (defined('IN_PHPBB')) {
 
 define('IN_PHPBB', true);
 
-$phpbb_root_path = './';
+$sep = DIRECTORY_SEPARATOR;
+$phpbb_root_path = '.' . $sep;
 
-require_once($phpbb_root_path . 'common.php');
+require_once $phpbb_root_path . 'common.php';
 
 //
 // Delete the / * to uncomment the block, and edit the values (read the comments) to
@@ -65,23 +66,23 @@ $url = trim($site[0]);
 
 if ($url != '')
 {
-	$allowed = ($allow_deny_order == ALLOWED_DENIED) ? FALSE : TRUE;
+	$allowed = ($allow_deny_order == ALLOWED_DENIED) ? false : true;
 	
 	for ($i = 0; $i < count($sites); $i++)
 	{
 		if (strstr($url, $sites[$i]))
 		{
-			$allowed = ($allow_deny_order == ALLOWED_DENIED) ? TRUE : FALSE;
+			$allowed = ($allow_deny_order == ALLOWED_DENIED) ? true : false;
 			break;
 		}
 	}
 }
 else
 {
-	$allowed = TRUE;
+	$allowed = true;
 }
 
-if ($allowed == FALSE)
+if ($allowed == false)
 {
 	message_die(GENERAL_MESSAGE, $lang['Denied_Message']);
 }
@@ -103,7 +104,7 @@ function send_file_to_browser($attachment, $upload_dir)
 
     if (!(int)$attach_config['allow_ftp_upload']) {
         if (@!file_exists(@amod_realpath($filename))) {
-            message_die(GENERAL_ERROR, $lang['Error_no_attachment'] . "<br /><br /><b>404 File Not Found:</b> The File <i>" . $filename . "</i> does not exist.");
+            message_die(GENERAL_ERROR, $lang['Error_no_attachment'] . '<br /><br /><b>404 File Not Found:</b> The File <i>' . $filename . "</i> does not exist.");
         } else {
             $gotit = true;
         }
@@ -189,7 +190,7 @@ function send_file_to_browser($attachment, $upload_dir)
         $result = @ftp_get($conn_id, $tmp_filename, $filename, $mode);
 
         if (!$result) {
-            message_die(GENERAL_ERROR, $lang['Error_no_attachment'] . "<br /><br /><b>404 File Not Found:</b> The File <i>" . $filename . "</i> does not exist.");
+            message_die(GENERAL_ERROR, $lang['Error_no_attachment'] . '<br /><br /><b>404 File Not Found:</b> The File <i>' . $filename . '</i> does not exist.');
         }
 
         @ftp_close($conn_id);
@@ -201,7 +202,7 @@ function send_file_to_browser($attachment, $upload_dir)
         readfile($tmp_filename);
         @unlink($tmp_filename);
     } else {
-        message_die(GENERAL_ERROR, $lang['Error_no_attachment'] . "<br /><br /><b>404 File Not Found:</b> The File <i>" . $filename . "</i> does not exist.");
+        message_die(GENERAL_ERROR, $lang['Error_no_attachment'] . '<br /><br /><b>404 File Not Found:</b> The File <i>' . $filename . '</i> does not exist.');
     }
 
     exit;
@@ -244,7 +245,7 @@ $auth_pages = dibi::select('*')
     ->from(Tables::ATTACH_ATTACHMENT_TABLE)
     ->where('[attach_id] = %i', $attachment['attach_id'])
     ->fetchAll();
-bdump($auth_pages, '$auth_pages');
+
 
 $num_auth_pages = count($auth_pages);
 
@@ -264,12 +265,6 @@ for ($i = 0; $i < $num_auth_pages && $authorised == false; $i++) {
             $authorised = true;
         }
     } else {
-        bdump($attach_config['allow_pm_attach'], '$attach_config[\'allow_pm_attach\']');
-        bdump(($userdata['user_id'] == $auth_pages[$i]['user_id_2']), '($userdata[\'user_id\'] == $auth_pages[$i][\'user_id_2\'])');
-        bdump(($userdata['user_id'] == $auth_pages[$i]['user_id_1']), '$userdata[\'user_id\'] == $auth_pages[$i][\'user_id_1\']');
-        bdump(($auth_pages[$i]['user_id_1']), '$auth_pages[$i][\'user_id_1\']');
-        bdump($userdata['user_id'] , '$userdata[\'user_id\'] ');
-
         if (((int)$attach_config['allow_pm_attach']) && (($userdata['user_id'] == $auth_pages[$i]['user_id_2']) || ($userdata['user_id'] == $auth_pages[$i]['user_id_1'])) || ($userdata['user_level'] == ADMIN)) {
             $authorised = true;
         }

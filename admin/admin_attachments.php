@@ -14,13 +14,15 @@ use Nette\Caching\Cache;
  */
 define('IN_PHPBB', true);
 
-// Let's set the root dir for phpBB
-$phpbb_root_path = '../';
-require_once('pagestart.php');
+$sep = DIRECTORY_SEPARATOR;
 
-require_once($phpbb_root_path . 'attach_mod/includes/constants.php');
-require_once($phpbb_root_path . 'includes/functions_admin.php');
-require_once($phpbb_root_path . 'attach_mod/includes/functions_attach.php');
+// Let's set the root dir for phpBB
+$phpbb_root_path = '..' . $sep;
+require_once 'pagestart.php';
+
+require_once $phpbb_root_path . 'attach_mod' . $sep . 'includes' . $sep . 'constants.php';
+require_once $phpbb_root_path . 'includes' . $sep . 'functions_admin.php';
+require_once $phpbb_root_path . 'attach_mod' . $sep . 'includes' . $sep . 'functions_attach.php';
 
 if (!(int)$attach_config['allow_ftp_upload']) {
     if (($attach_config['upload_dir'][0] == '/') || (($attach_config['upload_dir'][0] != '/') && ($attach_config['upload_dir'][1] == ':'))) {
@@ -32,8 +34,8 @@ if (!(int)$attach_config['allow_ftp_upload']) {
     $upload_dir = $attach_config['download_path'];
 }
 
-require_once($phpbb_root_path . 'attach_mod/includes/functions_selects.php');
-require_once($phpbb_root_path . 'attach_mod/includes/functions_admin.php');
+require_once $phpbb_root_path . 'attach_mod' . $sep . 'includes' . $sep . 'functions_selects.php';
+require_once $phpbb_root_path . 'attach_mod' . $sep . 'includes' . $sep . 'functions_admin.php';
 
 // Check if the language got included
 if (!isset($lang['Test_settings_successful'])) {
@@ -48,10 +50,11 @@ $size = get_var('size', '');
 $quota_size = get_var('quota_size', '');
 $pm_size = get_var('pm_size', '');
 
-$submit = (isset($_POST['submit'])) ? TRUE : FALSE;
-$check_upload = (isset($_POST['settings'])) ? TRUE : FALSE;
-$check_image_cat = (isset($_POST['cat_settings'])) ? TRUE : FALSE;
-$search_imagick = (isset($_POST['search_imagick'])) ? TRUE : FALSE;
+$submit = isset($_POST['submit']);
+$check_upload = isset($_POST['settings']);
+$check_image_cat = isset($_POST['cat_settings']);
+$search_imagick = isset($_POST['search_imagick']);
+$error = null;
 
 // Re-evaluate the Attachment Configuration
 $rows = dibi::select('*')
@@ -137,7 +140,7 @@ foreach ($rows as $row) {
 }
 
 $cache = new Cache($storage, Tables::ATTACH_CONFIG_TABLE);
-$key   = Tables::ATTACH_CONFIG_TABLE;
+$key = Tables::ATTACH_CONFIG_TABLE;
 
 $cache->remove($key);
 
@@ -157,11 +160,11 @@ if ($search_imagick) {
             $paths = explode(' ', $retval);
 
             if (is_array($paths)) {
-                for ($i = 0; $i < count($paths); $i++) {
-                    $path = basename($paths[$i]);
+                foreach ($paths as $path) {
+                    $path = basename($path);
 
                     if ($path == 'convert') {
-                        $imagick = $paths[$i];
+                        $imagick = $path;
                     }
                 }
             }
@@ -204,13 +207,13 @@ if ($check_upload) {
         }
 
         if (!$error && !is_dir($upload_dir)) {
-            $error = TRUE;
+            $error = true;
             $error_msg = sprintf($lang['Directory_is_not_a_dir'], $attach_config['upload_dir']) . '<br />';
         }
 
         if (!$error) {
-            if (!($fp = @fopen($upload_dir . '/0_000000.000', 'w'))) {
-                $error = TRUE;
+            if (!($fp = @fopen($upload_dir . '/0_000000.000', 'wb'))) {
+                $error = true;
                 $error_msg = sprintf($lang['Directory_not_writeable'], $attach_config['upload_dir']) . '<br />';
             } else {
                 @fclose($fp);
@@ -224,19 +227,19 @@ if ($check_upload) {
         $conn_id = @ftp_connect($server);
 
         if (!$conn_id) {
-            $error = TRUE;
+            $error = true;
             $error_msg = sprintf($lang['Ftp_error_connect'], $server) . '<br />';
         }
 
         $login_result = @ftp_login($conn_id, $attach_config['ftp_user'], $attach_config['ftp_pass']);
 
         if ((!$login_result) && (!$error)) {
-            $error = TRUE;
+            $error = true;
             $error_msg = sprintf($lang['Ftp_error_login'], $attach_config['ftp_user']) . '<br />';
         }
 
         if (!@ftp_pasv($conn_id, (int)$attach_config['ftp_pasv_mode'])) {
-            $error = TRUE;
+            $error = true;
             $error_msg = $lang['Ftp_error_pasv_mode'];
         }
 
@@ -246,7 +249,7 @@ if ($check_upload) {
 
             @unlink($tmpfname); // unlink for safety on php4.0.3+
 
-            $fp = @fopen($tmpfname, 'w');
+            $fp = @fopen($tmpfname, 'wb');
 
             @fwrite($fp, 'test');
 
@@ -255,19 +258,19 @@ if ($check_upload) {
             $result = @ftp_chdir($conn_id, $attach_config['ftp_path']);
 
             if (!$result) {
-                $error = TRUE;
+                $error = true;
                 $error_msg = sprintf($lang['Ftp_error_path'], $attach_config['ftp_path']) . '<br />';
             } else {
                 $res = @ftp_put($conn_id, 't0000', $tmpfname, FTP_ASCII);
 
                 if (!$res) {
-                    $error = TRUE;
+                    $error = true;
                     $error_msg = sprintf($lang['Ftp_error_upload'], $attach_config['ftp_path']) . '<br />';
                 } else {
                     $res = @ftp_delete($conn_id, 't0000');
 
                     if (!$res) {
-                        $error = TRUE;
+                        $error = true;
                         $error_msg = sprintf($lang['Ftp_error_delete'], $attach_config['ftp_path']) . '<br />';
                     }
                 }
@@ -280,23 +283,21 @@ if ($check_upload) {
     }
 
     if (!$error) {
-        message_die(GENERAL_MESSAGE, $lang['Test_settings_successful'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid("admin_attachments.php?mode=manage") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid("index.php?pane=right") . '">', '</a>'));
+        message_die(GENERAL_MESSAGE, $lang['Test_settings_successful'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_attachments.php?mode=manage') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>'));
     }
 }
 
 // Management
 if ($submit && $mode == 'manage') {
     if (!$error) {
-        message_die(GENERAL_MESSAGE, $lang['Attach_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid("admin_attachments.php?mode=manage") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid("index.php?pane=right") . '">', '</a>'));
+        message_die(GENERAL_MESSAGE, $lang['Attach_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_attachments.php?mode=manage') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>'));
     }
 }
 
 if ($mode == 'manage') {
-    $template->setFileNames(array(
-            'body' => 'admin/attach_manage_body.tpl')
-    );
+    $template->setFileNames(['body' => 'admin/attach_manage_body.tpl']);
 
-    $yes_no_switches = array('disable_mod', 'allow_pm_attach', 'allow_ftp_upload', 'attachment_topic_review', 'display_order', 'show_apcp', 'ftp_pasv_mode');
+    $yes_no_switches = ['disable_mod', 'allow_pm_attach', 'allow_ftp_upload', 'attachment_topic_review', 'display_order', 'show_apcp', 'ftp_pasv_mode'];
 
     for ($i = 0; $i < count($yes_no_switches); $i++) {
         eval("\$" . $yes_no_switches[$i] . "_yes = ( \$new_attach['" . $yes_no_switches[$i] . "'] != '0' ) ? 'checked=\"checked\"' : '';");
@@ -304,12 +305,12 @@ if ($mode == 'manage') {
     }
 
     if (!function_exists('ftp_connect')) {
-        $template->assignBlockVars('switch_no_ftp', array());
+        $template->assignBlockVars('switch_no_ftp', []);
     } else {
-        $template->assignBlockVars('switch_ftp', array());
+        $template->assignBlockVars('switch_ftp', []);
     }
 
-    $template->assignVars(array(
+    $template->assignVars([
             'L_MANAGE_TITLE' => $lang['Attach_settings'],
             'L_MANAGE_EXPLAIN' => $lang['Manage_attachments_explain'],
             'L_ATTACHMENT_SETTINGS' => $lang['Attach_settings'],
@@ -401,22 +402,22 @@ if ($mode == 'manage') {
             'DISPLAY_ORDER_ASC' => $display_order_yes,
             'DISPLAY_ORDER_DESC' => $display_order_no,
             'SHOW_APCP_YES' => $show_apcp_yes,
-            'SHOW_APCP_NO' => $show_apcp_no)
+            'SHOW_APCP_NO' => $show_apcp_no]
     );
 }
 
 // Shadow Attachments
 if ($submit && $mode == 'shadow') {
     // Delete Attachments from file system...
-    $attach_file_list = get_var('attach_file_list', array(''));
+    $attach_file_list = get_var('attach_file_list', ['']);
 
-    for ($i = 0; $i < count($attach_file_list); $i++) {
-        unlink_attach($attach_file_list[$i]);
-        unlink_attach($attach_file_list[$i], MODE_THUMBNAIL);
+    foreach ($attach_file_list as $value) {
+        unlink_attach($value);
+        unlink_attach($value, MODE_THUMBNAIL);
     }
 
     // Delete Attachments from table...
-    $attach_id_list = get_var('attach_id_list', array(0));
+    $attach_id_list = get_var('attach_id_list', [0]);
 
     dibi::delete(Tables::ATTACH_ATTACHMENTS_DESC_TABLE)
         ->where('[attach_id] IN %in', $attach_id_list)
@@ -426,23 +427,26 @@ if ($submit && $mode == 'shadow') {
         ->where('[attach_id] IN %in', $attach_id_list)
         ->execute();
 
-    $message = $lang['Attach_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid("admin_attachments.php?mode=shadow") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid("index.php?pane=right") . '">', '</a>');
+    $message = $lang['Attach_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_attachments.php?mode=shadow') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
     message_die(GENERAL_MESSAGE, $message);
 }
+
+$shadow_attachments = [];
+$shadow_row = [];
 
 if ($mode == 'shadow') {
     @set_time_limit(0);
 
     // Shadow Attachments
-    $template->setFileNames(array(
-            'body' => 'admin/attach_shadow.tpl')
+    $template->setFileNames([
+            'body' => 'admin/attach_shadow.tpl']
     );
 
-    $shadow_attachments = array();
-    $shadow_row = array();
+    $shadow_attachments = [];
+    $shadow_row = [];
 
-    $template->assignVars(array(
+    $template->assignVars([
             'L_SHADOW_TITLE' => $lang['Shadow_attachments'],
             'L_SHADOW_EXPLAIN' => $lang['Shadow_attachments_explain'],
             'L_EXPLAIN_FILE' => $lang['Shadow_attachments_file_explain'],
@@ -455,12 +459,12 @@ if ($mode == 'shadow') {
             'L_UNMARK_ALL' => $lang['Unmark_all'],
 
             'S_HIDDEN' => $hidden,
-            'S_ATTACH_ACTION' => Session::appendSid('admin_attachments.php?mode=shadow'))
+            'S_ATTACH_ACTION' => Session::appendSid('admin_attachments.php?mode=shadow')]
     );
 
-    $table_attachments = array();
-    $assign_attachments = array();
-    $file_attachments = array();
+    $table_attachments = [];
+    $assign_attachments = [];
+    $file_attachments = [];
 
     // collect all attachments in attach-table
     $rows = dibi::select(['attach_id', 'physical_filename', 'comment'])
@@ -484,8 +488,8 @@ if ($mode == 'shadow') {
     // collect all attachments on file-system
     $file_attachments = collect_attachments();
 
-    $shadow_attachments = array();
-    $shadow_row = array();
+    $shadow_attachments = [];
+    $shadow_row = [];
 
     // Now determine the needed Informations
 
@@ -546,41 +550,42 @@ if ($mode == 'shadow') {
 
 
 }
-for ($i = 0; $i < count($shadow_attachments); $i++) {
-    $template->assignBlockVars('file_shadow_row', array(
-            'ATTACH_ID' => $shadow_attachments[$i],
-            'ATTACH_FILENAME' => $shadow_attachments[$i],
+
+foreach ($shadow_attachments as $shadow_attachment) {
+    $template->assignBlockVars('file_shadow_row',
+        [
+            'ATTACH_ID' => $shadow_attachment,
+            'ATTACH_FILENAME' => $shadow_attachment,
             'ATTACH_COMMENT' => $lang['No_file_comment_available'],
-            'U_ATTACHMENT' => $upload_dir . '/' . basename($shadow_attachments[$i]))
+            'U_ATTACHMENT' => $upload_dir . '/' . basename($shadow_attachment)
+        ]
     );
 }
 
 for ($i = 0; $i < count($shadow_row['attach_id']); $i++) {
-    $template->assignBlockVars('table_shadow_row', array(
+    $template->assignBlockVars('table_shadow_row', [
             'ATTACH_ID' => $shadow_row['attach_id'][$i],
             'ATTACH_FILENAME' => basename($shadow_row['physical_filename'][$i]),
-            'ATTACH_COMMENT' => (trim($shadow_row['comment'][$i]) == '') ? $lang['No_file_comment_available'] : trim($shadow_row['comment'][$i]))
+            'ATTACH_COMMENT' => (trim($shadow_row['comment'][$i]) == '') ? $lang['No_file_comment_available'] : trim($shadow_row['comment'][$i])]
     );
 }
 
 if ($submit && $mode == 'cats') {
     if (!$error) {
-        message_die(GENERAL_MESSAGE, $lang['Attach_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid("admin_attachments.php?mode=cats") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid("index.php?pane=right") . '">', '</a>'));
+        message_die(GENERAL_MESSAGE, $lang['Attach_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_attachments.php?mode=cats') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>'));
     }
 }
 
 if ($mode == 'cats') {
-    $template->setFileNames(array(
-            'body' => 'admin/attach_cat_body.tpl')
-    );
+    $template->setFileNames(['body' => 'admin/attach_cat_body.tpl']);
 
     $s_assigned_group_images = $lang['None'];
     $s_assigned_group_streams = $lang['None'];
     $s_assigned_group_flash = $lang['None'];
 
-    $s_assigned_group_images = array();
-    $s_assigned_group_streams = array();
-    $s_assigned_group_flash = array();
+    $s_assigned_group_images = [];
+    $s_assigned_group_streams = [];
+    $s_assigned_group_flash = [];
 
     $rows = dibi::select(['group_name', 'cat_id'])
         ->from(Tables::ATTACH_EXTENSION_GROUPS_TABLE)
@@ -611,10 +616,10 @@ if ($mode == 'cats') {
     if (!is_imagick() && !@extension_loaded('gd')) {
         $new_attach['img_create_thumbnail'] = '0';
     } else {
-        $template->assignBlockVars('switch_thumbnail_support', array());
+        $template->assignBlockVars('switch_thumbnail_support', []);
     }
 
-    $template->assignVars(array(
+    $template->assignVars([
             'L_MANAGE_CAT_TITLE' => $lang['Manage_categories'],
             'L_MANAGE_CAT_EXPLAIN' => $lang['Manage_categories_explain'],
             'L_SETTINGS_CAT_IMAGES' => $lang['Settings_cat_images'],
@@ -662,7 +667,7 @@ if ($mode == 'cats') {
             'USE_GD2_NO' => $use_gd2_no,
 
             'S_ASSIGNED_GROUP_IMAGES' => implode(', ', $s_assigned_group_images),
-            'S_ATTACH_ACTION' => Session::appendSid('admin_attachments.php?mode=cats'))
+            'S_ATTACH_ACTION' => Session::appendSid('admin_attachments.php?mode=cats')]
     );
 }
 
@@ -697,13 +702,13 @@ if ($check_image_cat) {
         }
 
         if (!$error && !is_dir($upload_dir)) {
-            $error = TRUE;
+            $error = true;
             $error_msg = sprintf($lang['Directory_is_not_a_dir'], $upload_dir) . '<br />';
         }
 
         if (!$error) {
-            if (!($fp = @fopen($upload_dir . '/0_000000.000', 'w'))) {
-                $error = TRUE;
+            if (!($fp = @fopen($upload_dir . '/0_000000.000', 'wb'))) {
+                $error = true;
                 $error_msg = sprintf($lang['Directory_not_writeable'], $upload_dir) . '<br />';
             } else {
                 @fclose($fp);
@@ -717,19 +722,19 @@ if ($check_image_cat) {
         $conn_id = @ftp_connect($server);
 
         if (!$conn_id) {
-            $error = TRUE;
+            $error = true;
             $error_msg = sprintf($lang['Ftp_error_connect'], $server) . '<br />';
         }
 
         $login_result = @ftp_login($conn_id, $attach_config['ftp_user'], $attach_config['ftp_pass']);
 
         if (!$login_result && !$error) {
-            $error = TRUE;
+            $error = true;
             $error_msg = sprintf($lang['Ftp_error_login'], $attach_config['ftp_user']) . '<br />';
         }
 
         if (!@ftp_pasv($conn_id, (int)$attach_config['ftp_pasv_mode'])) {
-            $error = TRUE;
+            $error = true;
             $error_msg = $lang['Ftp_error_pasv_mode'];
         }
 
@@ -739,7 +744,7 @@ if ($check_image_cat) {
 
             @unlink($tmpfname); // unlink for safety on php4.0.3+
 
-            $fp = @fopen($tmpfname, 'w');
+            $fp = @fopen($tmpfname, 'wb');
 
             @fwrite($fp, 'test');
 
@@ -754,19 +759,19 @@ if ($check_image_cat) {
             $result = @ftp_chdir($conn_id, $attach_config['ftp_path'] . '/' . THUMB_DIR);
 
             if (!$result) {
-                $error = TRUE;
+                $error = true;
                 $error_msg = sprintf($lang['Ftp_error_path'], $attach_config['ftp_path'] . '/' . THUMB_DIR) . '<br />';
             } else {
                 $res = @ftp_put($conn_id, 't0000', $tmpfname, FTP_ASCII);
 
                 if (!$res) {
-                    $error = TRUE;
+                    $error = true;
                     $error_msg = sprintf($lang['Ftp_error_upload'], $attach_config['ftp_path'] . '/' . THUMB_DIR) . '<br />';
                 } else {
                     $res = @ftp_delete($conn_id, 't0000');
 
                     if (!$res) {
-                        $error = TRUE;
+                        $error = true;
                         $error_msg = sprintf($lang['Ftp_error_delete'], $attach_config['ftp_path'] . '/' . THUMB_DIR) . '<br />';
                     }
                 }
@@ -779,7 +784,7 @@ if ($check_image_cat) {
     }
 
     if (!$error) {
-        message_die(GENERAL_MESSAGE, $lang['Test_settings_successful'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid("admin_attachments.php?mode=cats") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid("index.php?pane=right") . '">', '</a>'));
+        message_die(GENERAL_MESSAGE, $lang['Test_settings_successful'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_attachments.php?mode=cats') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>'));
     }
 }
 
@@ -901,12 +906,12 @@ if ($mode == 'sync') {
 // Quota Limit Settings
 if ($submit && $mode == 'quota') {
     // Change Quota Limit
-    $quota_change_list = get_var('quota_change_list', array(0));
-    $quota_desc_list = get_var('quota_desc_list', array(''));
-    $filesize_list = get_var('max_filesize_list', array(0));
-    $size_select_list = get_var('size_select_list', array(''));
+    $quota_change_list = get_var('quota_change_list', [0]);
+    $quota_desc_list = get_var('quota_desc_list', ['']);
+    $filesize_list = get_var('max_filesize_list', [0]);
+    $size_select_list = get_var('size_select_list', ['']);
 
-    $allowed_list = array();
+    $allowed_list = [];
 
     for ($i = 0; $i < count($quota_change_list); $i++) {
         $filesize_list[$i] = ($size_select_list[$i] == 'kb') ? round($filesize_list[$i] * 1024) : (($size_select_list[$i] == 'mb') ? round($filesize_list[$i] * 1048576) : $filesize_list[$i]);
@@ -917,7 +922,7 @@ if ($submit && $mode == 'quota') {
     }
 
     // Delete Quota Limits
-    $quota_id_list = get_var('quota_id_list', array(0));
+    $quota_id_list = get_var('quota_id_list', [0]);
 
     if (count($quota_id_list)) {
         dibi::delete(Tables::ATTACH_QUOTA_LIMITS_TABLE)
@@ -934,7 +939,8 @@ if ($submit && $mode == 'quota') {
     $quota_desc = get_var('quota_description', '');
     $filesize = get_var('add_max_filesize', 0);
     $size_select = get_var('add_size_select', '');
-    $add = (isset($_POST['add_quota_check'])) ? TRUE : FALSE;
+
+    $add = isset($_POST['add_quota_check']);
 
     if ($quota_desc != '' && $add) {
         // check Quota Description
@@ -944,7 +950,7 @@ if ($submit && $mode == 'quota') {
 
         foreach ($rows as $row) {
             if ($row->quota_desc == $quota_desc) {
-                $error = TRUE;
+                $error = true;
 
                 if (isset($error_msg)) {
                     $error_msg .= '<br />';
@@ -962,7 +968,7 @@ if ($submit && $mode == 'quota') {
     }
 
     if (!$error) {
-        $message = $lang['Attach_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid("admin_attachments.php?mode=quota") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid("index.php?pane=right") . '">', '</a>');
+        $message = $lang['Attach_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_attachments.php?mode=quota') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
         message_die(GENERAL_MESSAGE, $message);
     }
@@ -970,8 +976,10 @@ if ($submit && $mode == 'quota') {
 }
 
 if ($mode == 'quota') {
-    $template->setFileNames(array(
-            'body' => 'admin/attach_quota_body.tpl')
+    $template->setFileNames(
+        [
+            'body' => 'admin/attach_quota_body.tpl'
+        ]
     );
 
     $max_add_filesize = $attach_config['max_filesize'];
@@ -983,7 +991,7 @@ if ($mode == 'quota') {
         $max_add_filesize = round($max_add_filesize / 1024 * 100) / 100;
     }
 
-    $template->assignVars(array(
+    $template->assignVars([
             'L_MANAGE_QUOTAS_TITLE' => $lang['Manage_quotas'],
             'L_MANAGE_QUOTAS_EXPLAIN' => $lang['Manage_quotas_explain'],
             'L_SUBMIT' => $lang['Submit'],
@@ -999,7 +1007,7 @@ if ($mode == 'quota') {
             'S_FILESIZE' => size_select('add_size_select', $size),
             'L_REMOVE_SELECTED' => $lang['Remove_selected'],
 
-            'S_ATTACH_ACTION' => Session::appendSid('admin_attachments.php?mode=quota'))
+            'S_ATTACH_ACTION' => Session::appendSid('admin_attachments.php?mode=quota')]
     );
 
     $rows = dibi::select('*')
@@ -1007,21 +1015,23 @@ if ($mode == 'quota') {
         ->orderBy('quota_limit', dibi::DESC)
         ->fetchAll();
 
-    for ($i = 0; $i < count($rows); $i++) {
-        $size_format = ($rows[$i]['quota_limit'] >= 1048576) ? 'mb' : (($rows[$i]['quota_limit'] >= 1024) ? 'kb' : 'b');
+    foreach ($rows as $row) {
+        $size_format = ($row->quota_limit >= 1048576) ? 'mb' : (($row->quota_limit >= 1024) ? 'kb' : 'b');
 
-        if ($rows[$i]['quota_limit'] >= 1048576) {
-            $rows[$i]['quota_limit'] = round($rows[$i]['quota_limit'] / 1048576 * 100) / 100;
-        } else if ($rows[$i]['quota_limit'] >= 1024) {
-            $rows[$i]['quota_limit'] = round($rows[$i]['quota_limit'] / 1024 * 100) / 100;
+        if ($row->quota_limit >= 1048576) {
+            $row->quota_limit = round($row->quota_limit / 1048576 * 100) / 100;
+        } else if ($row->quota_limit >= 1024) {
+            $row->quota_limit = round($row->quota_limit / 1024 * 100) / 100;
         }
 
-        $template->assignBlockVars('limit_row', array(
-                'QUOTA_NAME' => $rows[$i]['quota_desc'],
-                'QUOTA_ID' => $rows[$i]['quota_limit_id'],
+        $template->assignBlockVars('limit_row',
+            [
+                'QUOTA_NAME' => $row->quota_desc,
+                'QUOTA_ID' => $row->quota_limit_id,
                 'S_FILESIZE' => size_select('size_select_list[]', $size_format),
-                'U_VIEW' => Session::appendSid("admin_attachments.php?mode=$mode&amp;e_mode=view_quota&amp;quota_id=" . $rows[$i]['quota_limit_id']),
-                'MAX_FILESIZE' => $rows[$i]['quota_limit'])
+                'U_VIEW' => Session::appendSid("admin_attachments.php?mode=$mode&amp;e_mode=view_quota&amp;quota_id=" . $row->quota_limit_id),
+                'MAX_FILESIZE' => $row->quota_limit
+            ]
         );
     }
 }
@@ -1033,19 +1043,19 @@ if ($mode == 'quota' && $e_mode == 'view_quota') {
         message_die(GENERAL_MESSAGE, 'Invalid Call');
     }
 
-    $template->assignBlockVars('switch_quota_limit_desc', array());
+    $template->assignBlockVars('switch_quota_limit_desc', []);
 
     $row = dibi::select('*')
         ->from(Tables::ATTACH_QUOTA_LIMITS_TABLE)
         ->where('[quota_limit_id] = %i', $quota_id)
         ->fetch();
 
-    $template->assignVars(array(
+    $template->assignVars([
             'L_QUOTA_LIMIT_DESC' => $row->quota_desc,
             'L_ASSIGNED_USERS' => $lang['Assigned_users'],
             'L_ASSIGNED_GROUPS' => $lang['Assigned_groups'],
             'L_UPLOAD_QUOTA' => $lang['Upload_quota'],
-            'L_PM_QUOTA' => $lang['Pm_quota'])
+            'L_PM_QUOTA' => $lang['Pm_quota']]
     );
 
     $rows = dibi::select(['q.user_id', 'u.username', 'q.quota_type'])
@@ -1061,14 +1071,14 @@ if ($mode == 'quota' && $e_mode == 'view_quota') {
 
     foreach ($rows as $row) {
         if ($row->quota_type == QUOTA_UPLOAD_LIMIT) {
-            $template->assignBlockVars('users_upload_row', array(
+            $template->assignBlockVars('users_upload_row', [
                     'USER_ID' => $row->user_id,
-                    'USERNAME' => $row->username)
+                    'USERNAME' => $row->username]
             );
         } else if ($row->quota_type == QUOTA_PM_LIMIT) {
-            $template->assignBlockVars('users_pm_row', array(
+            $template->assignBlockVars('users_pm_row', [
                     'USER_ID' => $row->user_id,
-                    'USERNAME' => $row->username)
+                    'USERNAME' => $row->username]
             );
         }
     }
@@ -1085,38 +1095,33 @@ if ($mode == 'quota' && $e_mode == 'view_quota') {
 
     foreach ($rows as $row) {
         if ($row->quota_type == QUOTA_UPLOAD_LIMIT) {
-            $template->assignBlockVars('groups_upload_row', array(
+            $template->assignBlockVars('groups_upload_row', [
                     'GROUP_ID' => $row->group_id,
-                    'GROUPNAME' => $row->group_name)
+                    'GROUPNAME' => $row->group_name]
             );
         } else if ($row->quota_type == QUOTA_PM_LIMIT) {
-            $template->assignBlockVars('groups_pm_row', array(
+            $template->assignBlockVars('groups_pm_row', [
                     'GROUP_ID' => $row->group_id,
-                    'GROUPNAME' => $row->group_name)
+                    'GROUPNAME' => $row->group_name]
             );
         }
     }
 }
 
-
 if ($error) {
-    $template->setFileNames(array(
-            'reg_header' => 'error_body.tpl')
-    );
-
-    $template->assignVars(array(
-            'ERROR_MESSAGE' => $error_msg)
-    );
-
+    $template->setFileNames(['reg_header' => 'error_body.tpl']);
+    $template->assignVars(['ERROR_MESSAGE' => $error_msg]);
     $template->assignVarFromHandle('ERROR_BOX', 'reg_header');
 }
 
-$template->assignVars(array(
-        'ATTACH_VERSION' => sprintf($lang['Attachment_version'], $attach_config['attach_version']))
+$template->assignVars(
+    [
+        'ATTACH_VERSION' => sprintf($lang['Attachment_version'], $attach_config['attach_version'])
+    ]
 );
 
 $template->pparse('body');
 
-require_once('page_footer_admin.php');
+require_once 'page_footer_admin.php';
 
 ?>

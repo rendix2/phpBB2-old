@@ -7,3 +7,4 @@ config.php
 ./config.php
 /temp
 /cache
+/files

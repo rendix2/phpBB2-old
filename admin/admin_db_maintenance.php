@@ -34,7 +34,7 @@ define('HEAP_SIZE', 500); // Limit of Heap-Table for session data
 //
 $sep = DIRECTORY_SEPARATOR;
 $phpbb_root_path = '.' . $sep . '..' . $sep;
-$no_page_header = TRUE; // We do not send the page header right here to prevent problems with GZIP-compression
+$no_page_header = true; // We do not send the page header right here to prevent problems with GZIP-compression
 
 require_once '.' . $sep . 'pagestart.php';
 require_once $phpbb_root_path . 'includes' . $sep . 'functions_dbmtnc.php';
@@ -99,7 +99,7 @@ switch($mode_id) {
 		if ($function === '') {
 			message_die(GENERAL_ERROR, $lang['no_function_specified']);
 		}
-		$warning_message_defined = FALSE;
+		$warning_message_defined = false;
 
         foreach ($mtnc as $value) {
             if (count($value) && $value[0] === $function) {
@@ -144,7 +144,7 @@ switch($mode_id) {
 		// phpBB-Template System not used here to allow output information directly to the screen
 		// Using the font tag will allow to get the gen-class applied :-)
 		//
-		$list_open = FALSE;
+		$list_open = false;
 
 		//
 		// Increase maximum execution time, but don't complain about it if it isn't
@@ -471,7 +471,7 @@ switch($mode_id) {
 
 				// Update incorrect pending information: either a single user group with pending state or a group with pending state NULL
 				echo('<p class="gen"><b>' . $lang['Checking_incorrect_pending_information'] . "</b></p>\n");
-				$db_updated = FALSE;
+				$db_updated = false;
 
 				// Update the cases where user_pending is null (there were some cases reported, so we just do it)
 				$affected_rows = dibi::update(Tables::USERS_GROUPS_TABLE, ['user_pending' => 1])
@@ -579,7 +579,7 @@ switch($mode_id) {
 				}
 				// Create single user groups
                 if (count($missing_groups)) {
-					$db_updated = TRUE;
+					$db_updated = true;
 					$record_list = implode(',', $missing_groups);
 					echo('<p class="gen">' . $lang['Recreating_SUG'] . ": $record_list</p>\n");
 
@@ -1770,7 +1770,7 @@ switch($mode_id) {
 					if (!$list_open) {
 						echo('<p class="gen">' . $lang['Votes_wo_result_found'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
-						$list_open = TRUE;
+						$list_open = true;
 					}
 					$start_time = create_date($board_config['default_dateformat'], $row->vote_start,
 					$board_config['board_timezone']);
@@ -1806,7 +1806,7 @@ switch($mode_id) {
 
 				// Check vote data in topics
 				echo('<p class="gen"><b>' . $lang['Checking_topics_vote_data'] . "</b></p>\n");
-				$db_updated = FALSE;
+				$db_updated = false;
 
 				$result_array = dibi::select('t.topic_id')
 					->from(Tables::TOPICS_TABLE)
@@ -1949,7 +1949,7 @@ switch($mode_id) {
                     echo($lang['Nothing_to_do']);
                 }
 
-				lock_db(TRUE);
+				lock_db(true);
 				break;
 			case 'check_pm': // Check private messages
 				echo('<h1>' . $lang['Checking_pm_tables'] . "</h1>\n");
@@ -2261,7 +2261,7 @@ switch($mode_id) {
                     echo($lang['Nothing_to_do']);
                 }
 
-				lock_db(TRUE);
+				lock_db(true);
 				break;
 			case 'check_config': // Check config table
 				echo('<h1>' . $lang['Checking_config_table'] . "</h1>\n");
@@ -2329,7 +2329,7 @@ switch($mode_id) {
                     echo($lang['Nothing_to_do']);
                 }
 				
-				lock_db(TRUE);
+				lock_db(true);
 				break;
 			case 'check_search_wordmatch': // Check search word match data
 				echo('<h1>' . $lang['Checking_search_wordmatch_tables'] . "</h1>\n");
@@ -2385,7 +2385,7 @@ switch($mode_id) {
 					echo($lang['Nothing_to_do']);
 				}
 
-				lock_db(TRUE);
+				lock_db(true);
 				break;
 			case 'check_search_wordlist': // Check search word list data
                 echo('<h1>' . $lang['Checking_search_wordlist_tables'] . "</h1>\n");
@@ -2438,7 +2438,7 @@ switch($mode_id) {
                     echo($lang['Nothing_to_do']);
                 }
 
-				lock_db(TRUE);
+				lock_db(true);
 				break;
 			case 'rebuild_search_index': // Rebuild Search Index
 				echo('<h1>' . $lang['Rebuilding_search_index'] . "</h1>\n");
@@ -2534,7 +2534,7 @@ switch($mode_id) {
                     @set_time_limit(0);
                 }
 
-				if ($execution_time === FALSE) {
+				if ($execution_time === false) {
 					$execution_time = 30; // Asume 30 if an error occurs
 				}
 
@@ -2569,7 +2569,7 @@ switch($mode_id) {
 					echo('<p class="gen">' . $lang['Indexing_finished'] . ".</p>\n");
 
 					if ($db_state == 0) {
-						lock_db(TRUE, TRUE, TRUE);
+						lock_db(true, true, true);
 					} else {
 						echo('<p class="gen"><b>' . $lang['Unlock_db'] . "</b></p>\n");
 						echo('<p class="gen">' . $lang['Ignore_unlock_command'] . "</p>\n");
@@ -2608,19 +2608,19 @@ switch($mode_id) {
                         if (!is_array($synonym_array)) {
                             $synonym_array = [];
                         }
-                        $empty_array = array(); // We'll need this array for passing it to the clean_words function
+                        $empty_array = []; // We'll need this array for passing it to the clean_words function
 						// Convert arrays
                         for ($i = 0; $i < count($stopword_array); $i++) {
                             $stopword_array[$i] = trim(strtolower($stopword_array[$i]));
                         }
-						$result_array = array(array(), array());
+						$result_array = array([], []);
 						for ($i = 0; $i < count($synonym_array); $i++) {
 							list($replace_synonym, $match_synonym) = split(' ', trim(strtolower($synonym_array[$i])));
 							$result_array[0][] = trim($replace_synonym);
 							$result_array[1][] = trim($match_synonym);
 						}
 						$synonym_array = $result_array;
-						$result_array = array(array(), array(), array());
+						$result_array = array([], [], []);
 						$i = 0;
 						while ($row && ($post_size <= $board_config['dbmtnc_rebuildcfg_maxmemory'] * 1024 || $i < $board_config['dbmtnc_rebuildcfg_minposts']))
 						{
@@ -2656,7 +2656,7 @@ switch($mode_id) {
 						$cache_word = '';
 						$cache_word_id = 0;
 						$insert_values = '';
-						$word_array = array();
+						$word_array = [];
 						$array_count = count($result_array[0]);
 						for ($i = 0; $i < $array_count; $i++) {
 							if ( $result_array[2][$i] !== $cache_word ) // We have a new word (don't allow type conversions)
@@ -2759,7 +2759,7 @@ switch($mode_id) {
 					if (!$list_open) {
 						echo('<p class="gen">' . $lang['Synchronizing_topics'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
-						$list_open = TRUE;
+						$list_open = true;
 					}
 					echo('<li>' . sprintf($lang['Synchronizing_topic'], $row->topic_id, htmlspecialchars($row->topic_title)) . "</li>\n");
 
@@ -2776,7 +2776,7 @@ switch($mode_id) {
 
                 if ($list_open) {
 					echo("</ul></font>\n");
-					$list_open = FALSE;
+					$list_open = false;
 				} else {
 					echo($lang['Nothing_to_do']);
 				}
@@ -2821,7 +2821,7 @@ switch($mode_id) {
 								echo('<p class="gen">' . $lang['Synchronizing_moved_topics'] . ":</p>\n");
 								echo("<font class=\"gen\"><ul>\n");
 
-								$list_open = TRUE;
+								$list_open = true;
 							}
 							echo('<li>' . sprintf($lang['Synchronizing_moved_topic'], $row->topic_id, $row->topic_moved_id, htmlspecialchars($row->topic_title)) . "</li>\n");
 
@@ -2868,7 +2868,7 @@ switch($mode_id) {
 					if (!$list_open) {
 						echo('<p class="gen">' . $lang['Synchronizing_forums'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
-						$list_open = TRUE;
+						$list_open = true;
 					}
 					echo('<li>' . sprintf($lang['Synchronizing_forum'], $row->forum_id, htmlspecialchars($row->forum_name)) . "</li>\n");
 
@@ -3029,7 +3029,7 @@ switch($mode_id) {
 						if (!$list_open) {
 							echo('<p class="gen">' . $lang['Synchronizing_users'] . ":</p>\n");
 							echo("<font class=\"gen\"><ul>\n");
-							$list_open = TRUE;
+							$list_open = true;
 						}
 
 						echo('<li>' . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row->username), $row->user_id, $row->user_posts, $row->new_counter) . "</li>\n");
@@ -3099,7 +3099,7 @@ switch($mode_id) {
                         if (!$list_open) {
                             echo('<p class="gen">' . $lang['Synchronizing_users'] . ":</p>\n");
                             echo("<font class=\"gen\"><ul>\n");
-                            $list_open = TRUE;
+                            $list_open = true;
                         }
 
                         echo('<li>' . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row->username), $row->user_id, $row->user_topics, $row->new_counter) . "</li>\n");
@@ -3184,7 +3184,7 @@ switch($mode_id) {
 					if (!$list_open) {
 						echo('<p class="gen">' . $lang['Updating_mod_state'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
-						$list_open = TRUE;
+						$list_open = true;
 					}
 					echo('<li>' . sprintf($lang['Changing_moderator_status'], htmlspecialchars($row->username), $row->user_id) . "</li>\n");
 
@@ -3213,7 +3213,7 @@ switch($mode_id) {
 					if (!$list_open) {
 						echo('<p class="gen">' . $lang['Updating_mod_state'] . ":</p>\n");
 						echo("<font class=\"gen\"><ul>\n");
-						$list_open = TRUE;
+						$list_open = true;
 					}
 					echo('<li>' . sprintf($lang['Changing_moderator_status'], htmlspecialchars($row->username), $row->user_id) . "</li>\n");
 
@@ -3229,7 +3229,7 @@ switch($mode_id) {
                     echo($lang['Nothing_to_do']);
                 }
 
-				lock_db(TRUE);
+				lock_db(true);
 				break;
 			case 'reset_date': // Reset dates
 				echo('<h1>' . $lang['Resetting_future_post_dates'] . "</h1>\n");
@@ -3318,7 +3318,7 @@ switch($mode_id) {
 					}
 				}
 
-				lock_db(TRUE);
+				lock_db(true);
 				break;
 			case 'reset_sessions': // Reset sessions
 				echo('<h1>' . $lang['Resetting_sessions'] . "</h1>\n");
@@ -3353,7 +3353,7 @@ switch($mode_id) {
 
 				echo('<p class="gen">' . $lang['Done'] . "</p>\n");
 
-				lock_db(TRUE);
+				lock_db(true);
 				break;
 			case 'check_db': // Check database
 				echo('<h1>' . $lang['Checking_db'] . "</h1>\n");
@@ -3361,7 +3361,7 @@ switch($mode_id) {
 				lock_db();
 				echo('<p class="gen"><b>' . $lang['Checking_tables'] . ":</b></p>\n");
 				echo("<font class=\"gen\"><ul>\n");
-				$list_open = TRUE;
+				$list_open = true;
 
 				foreach ($tables as $table) {
 					$tablename = Config::TABLE_PREFIX . $table;
@@ -3387,9 +3387,9 @@ switch($mode_id) {
 
 				echo("</ul></font>\n");
 
-				$list_open = FALSE;
+				$list_open = false;
 
-				lock_db(TRUE);
+				lock_db(true);
 
 				break;
 			case 'repair_db': // Repair database
@@ -3400,7 +3400,7 @@ switch($mode_id) {
 				echo('<p class="gen"><b>' . $lang['Repairing_tables'] . ":</b></p>\n");
 				echo("<font class=\"gen\"><ul>\n");
 
-				$list_open = TRUE;
+				$list_open = true;
 
 				foreach ($tables as $table) {
 					$tablename = Config::TABLE_PREFIX . $table;
@@ -3459,12 +3459,12 @@ switch($mode_id) {
 					}
 				}
 				echo("</ul></font>\n");
-				$list_open = FALSE;
+				$list_open = false;
 				$new_stat = get_table_statistic();
 				$reduction_absolute = $old_stat['core']['size'] - $new_stat['core']['size'];
 				$reduction_percent = ($reduction_absolute / $old_stat['core']['size']) * 100;
 				echo('<p class="gen">' . sprintf($lang['Optimization_statistic'], get_formatted_filesize($old_stat['core']['size']), get_formatted_filesize($new_stat['core']['size']), get_formatted_filesize(abs($reduction_absolute)), $reduction_percent) . "</b></p>\n");
-				lock_db(TRUE);
+				lock_db(true);
 				break;
 			case 'reset_auto_increment': // Reset autoincrement values
 				echo('<h1>' . $lang['Reset_ai'] . "</h1>\n");
@@ -3476,7 +3476,7 @@ switch($mode_id) {
 				set_autoincrement(Tables::CATEGORIES_TABLE, 'cat_id', 8);
 				set_autoincrement(Tables::DISS_ALLOW_TABLE, 'disallow_id', 8);
 				set_autoincrement(Tables::PRUNE_TABLE, 'prune_id', 8);
-				set_autoincrement(Tables::GROUPS_TABLE, 'group_id', 8, FALSE);
+				set_autoincrement(Tables::GROUPS_TABLE, 'group_id', 8, false);
 				set_autoincrement(Tables::POSTS_TABLE, 'post_id', 8);
 				set_autoincrement(Tables::PRIVATE_MESSAGE_TABLE, 'privmsgs_id', 8);
 				set_autoincrement(Tables::RANKS_TABLE, 'rank_id', 5);
@@ -3488,9 +3488,9 @@ switch($mode_id) {
 				set_autoincrement(Tables::WORDS_TABLE, 'word_id', 8);
 
 				echo("</ul></font>\n");
-				$list_open = FALSE;
+				$list_open = false;
 
-				lock_db(TRUE);
+				lock_db(true);
 				break;
 			case 'heap_convert': // Convert session table to HEAP
 				echo('<h1>' . $lang['Reset_ai'] . "</h1>\n");
@@ -3525,11 +3525,11 @@ switch($mode_id) {
 
 				dibi::query('ALTER TABLE %n ENGINE = HEAP, MAX_ROWS = %i', Tables::SESSIONS_TABLE, HEAP_SIZE);
 
-				lock_db(TRUE);
+				lock_db(true);
 				break;
 			case 'unlock_db': // Unlock the database
 				echo('<h1>' . $lang['Unlocking_db'] . "</h1>\n");
-				lock_db(TRUE, TRUE, TRUE);
+				lock_db(true, true, true);
 				break;
 			default:
 				echo('<p class="gen">' . $lang['function_unknown'] . "</p>\n");
