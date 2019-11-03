@@ -34,6 +34,13 @@ News:
 - Another Online/Offline indicator
 - improved install
 - improved config.php file
+- Improved admin index - more stats
+- List of languages is database
+- Tables class
+- Admin can manage auto logged in users
+- Fix message_die for multiple errors MOD
+- Auth consts
+- attachmemt mod
   
 Conventions for template:  
 - L_ is a language variable
