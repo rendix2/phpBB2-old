@@ -22,7 +22,7 @@ require_once 'pagestart.php';
 require_once $phpbb_root_path . 'attach_mod' . $sep . 'includes' . $sep . 'constants.php';
 
 if (!(int)$attach_config['allow_ftp_upload']) {
-    if (($attach_config['upload_dir'][0] == '/') || (($attach_config['upload_dir'][0] != '/') && ($attach_config['upload_dir'][1] == ':'))) {
+    if (($attach_config['upload_dir'][0] === '/') || (($attach_config['upload_dir'][0] !== '/') && ($attach_config['upload_dir'][1] === ':'))) {
         $upload_dir = $attach_config['upload_dir'];
     } else {
         $upload_dir = '../' . $attach_config['upload_dir'];
@@ -43,7 +43,7 @@ if (!isset($lang['Test_settings_successful'])) {
 // Init Variables
 $start = get_var('start', 0);
 $sort_order = get_var('order', 'ASC');
-$sort_order = ($sort_order == 'ASC') ? 'ASC' : 'DESC';
+$sort_order = ($sort_order === 'ASC') ? 'ASC' : 'DESC';
 $mode = get_var('mode', '');
 $view = get_var('view', '');
 $uid = (isset($_POST['u_id'])) ? get_var('u_id', 0) : get_var('uid', 0);
@@ -51,25 +51,42 @@ $uid = (isset($_POST['u_id'])) ? get_var('u_id', 0) : get_var('uid', 0);
 $view = (isset($_POST['search']) && $_POST['search']) ? 'attachments' : $view;
 
 // process modes based on view
-if ($view == 'username') {
-    $mode_types_text = array($lang['Sort_Username'], $lang['Sort_Attachments'], $lang['Sort_Size']);
-    $mode_types = array('username', 'attachments', 'filesize');
+if ($view === 'username') {
+    $mode_types = [
+        'username' => $lang['Sort_Username'],
+        'attachments' => $lang['Sort_Attachments'],
+        'filesize' => $lang['Sort_Size']
+    ];
 
     if (!$mode) {
         $mode = 'attachments';
         $sort_order = 'DESC';
     }
-} else if ($view == 'attachments') {
-    $mode_types_text = array($lang['Sort_Filename'], $lang['Sort_Comment'], $lang['Sort_Extension'], $lang['Sort_Size'], $lang['Sort_Downloads'], $lang['Sort_Posttime'], /*$lang['Sort_Posts']*/);
-    $mode_types = array('real_filename', 'comment', 'extension', 'filesize', 'downloads', 'post_time'/*, 'posts'*/);
+} else if ($view === 'attachments') {
+    $mode_types = [
+        'real_filename' => $lang['Sort_Filename'],
+        'comment' => $lang['Sort_Comment'],
+        'extension' => $lang['Sort_Extension'],
+        'filesize' => $lang['Sort_Size'],
+        'downloads' => $lang['Sort_Downloads'],
+        'post_time' => $lang['Sort_Posttime']
+        /*, 'posts' => $lang['Sort_Posts']*/
+    ];
 
     if (!$mode) {
         $mode = 'real_filename';
         $sort_order = 'ASC';
     }
-} else if ($view == 'search') {
-    $mode_types_text = array($lang['Sort_Filename'], $lang['Sort_Comment'], $lang['Sort_Extension'], $lang['Sort_Size'], $lang['Sort_Downloads'], $lang['Sort_Posttime'], /*$lang['Sort_Posts']*/);
-    $mode_types = array('real_filename', 'comment', 'extension', 'filesize', 'downloads', 'post_time'/*, 'posts'*/);
+} else if ($view === 'search') {
+    $mode_types = [
+        'real_filename' => $lang['Sort_Filename'],
+        'comment' => $lang['Sort_Comment'],
+        'extension' => $lang['Sort_Extension'],
+        'filesize' => $lang['Sort_Size'],
+        'downloads' => $lang['Sort_Downloads'],
+        'post_time' => $lang['Sort_Posttime']
+        /*, 'posts' => $lang['Sort_Posts'] */
+    ];
 
     $sort_order = 'DESC';
 } else {
@@ -80,17 +97,21 @@ if ($view == 'username') {
 
 
 // Pagination ?
-$do_pagination = $view != 'stats' && $view != 'search';
+$do_pagination = $view !== 'stats' && $view !== 'search';
 
 // Set select fields
-$view_types_text = [$lang['View_Statistic'], $lang['View_Search'], $lang['View_Username'], $lang['View_Attachments']];
-$view_types = ['stats', 'search', 'username', 'attachments'];
+$view_types = [
+    'stats' => $lang['View_Statistic'],
+    'search' => $lang['View_Search'],
+    'username' => $lang['View_Username'],
+    'attachments' => $lang['View_Attachments']
+];
 
 $select_view = '<select name="view">';
 
-for ($i = 0; $i < count($view_types_text); $i++) {
-    $selected = ($view == $view_types[$i]) ? ' selected="selected"' : '';
-    $select_view .= '<option value="' . $view_types[$i] . '"' . $selected . '>' . $view_types_text[$i] . '</option>';
+foreach ($view_types as $value => $text) {
+    $selected = ($view === $value) ? ' selected="selected"' : '';
+    $select_view .= '<option value="' . $value . '"' . $selected . '>' . $text . '</option>';
 }
 
 $select_view .= '</select>';
@@ -98,16 +119,16 @@ $select_view .= '</select>';
 if (count($mode_types_text) > 0) {
     $select_sort_mode = '<select name="mode">';
 
-    for ($i = 0; $i < count($mode_types_text); $i++) {
-        $selected = ($mode == $mode_types[$i]) ? ' selected="selected"' : '';
-        $select_sort_mode .= '<option value="' . $mode_types[$i] . '"' . $selected . '>' . $mode_types_text[$i] . '</option>';
+    foreach ($mode_types as $value => $text) {
+        $selected = ($mode === $value) ? ' selected="selected"' : '';
+        $select_sort_mode .= '<option value="' . $value . '"' . $selected . '>' . $text . '</option>';
     }
 
     $select_sort_mode .= '</select>';
 }
 
 $select_sort_order = '<select name="order">';
-if ($sort_order == 'ASC') {
+if ($sort_order === 'ASC') {
     $select_sort_order .= '<option value="ASC" selected="selected">' . $lang['Sort_Ascending'] . '</option><option value="DESC">' . $lang['Sort_Descending'] . '</option>';
 } else {
     $select_sort_order .= '<option value="ASC">' . $lang['Sort_Ascending'] . '</option><option value="DESC" selected="selected">' . $lang['Sort_Descending'] . '</option>';
@@ -170,7 +191,7 @@ $template->assignVars(
     ]
 );
 
-if ($submit_change && $view == 'attachments') {
+if ($submit_change && $view === 'attachments') {
     $attach_change_list = get_var('attach_id_list', array(0));
     $attach_comment_list = get_var('attach_comment_list', array(''));
     $attach_download_count_list = get_var('attach_count_list', array(0));
@@ -190,7 +211,7 @@ if ($submit_change && $view == 'attachments') {
 
     foreach ($attachrows as $attachrow) {
         if (isset($attachments['_' . $attachrow['attach_id']])) {
-            if ($attachrow['comment'] != $attachments['_' . $attachrow['attach_id']]['comment'] || $attachrow['download_count'] != $attachments['_' . $attachrow['attach_id']]['download_count']) {
+            if ($attachrow['comment'] !== $attachments['_' . $attachrow['attach_id']]['comment'] || $attachrow['download_count'] !== $attachments['_' . $attachrow['attach_id']]['download_count']) {
                 $updateDate = [
                     'comment' => $attachments['_' . $attachrow['attach_id']]['comment'],
                     'download_count' => $attachments['_' . $attachrow['attach_id']]['download_count']
@@ -205,7 +226,7 @@ if ($submit_change && $view == 'attachments') {
 }
 
 // Statistics
-if ($view == 'stats') {
+if ($view === 'stats') {
     $template->setFileNames(['body' => 'admin/attach_cp_body.tpl']);
 
     $upload_dir_size = get_formatted_dirsize();
@@ -278,7 +299,7 @@ if ($view == 'stats') {
 }
 
 // Search
-if ($view == 'search') {
+if ($view === 'search') {
     // Get Forums and Categories
     $rows = dibi::select(['c.cat_title', 'c.cat_id', 'f.forum_name', 'f.forum_id'])
         ->from(Tables::CATEGORIES_TABLE)
@@ -299,7 +320,7 @@ if ($view == 'search') {
         }
     }
 
-    if ($s_forums != '') {
+    if ($s_forums !== '') {
         $s_forums = '<option value="0">' . $lang['All_available'] . '</option>' . $s_forums;
 
         // Category to search
@@ -342,7 +363,7 @@ if ($view == 'search') {
 
 
 // Username
-if ($view == 'username') {
+if ($view === 'username') {
     $template->setFileNames(['body' => 'admin/attach_cp_user.tpl']);
 
     $template->assignVars(
@@ -373,7 +394,7 @@ if ($view == 'username') {
         ->groupBy('a.user_id_1')
         ->groupBy('u.username');
 
-    if ($mode != 'filesize') {
+    if ($mode !== 'filesize') {
         $members = getOrderBy($members, $mode, $view, $start, $sort_order, $board_config);
     }
 
@@ -401,7 +422,7 @@ if ($view == 'username') {
             }
         }
 
-        if ($mode == 'filesize') {
+        if ($mode === 'filesize') {
             $members = sort_multi_array($members, 'total_size', $sort_order, false);
             $members = limit_array($members, $start, $board_config['topics_per_page']);
         }
@@ -433,7 +454,7 @@ if ($view == 'username') {
 }
 
 // Attachments
-if ($view == 'attachments') {
+if ($view === 'attachments') {
     $user_based = ($uid) ? true : false;
     $search_based = isset($_POST['search']) && $_POST['search'];
 
@@ -491,7 +512,7 @@ if ($view == 'attachments') {
 
         $num_attach_ids = count($attach_ids);
 
-        if ($num_attach_ids == 0) {
+        if ($num_attach_ids === 0) {
             message_die(GENERAL_MESSAGE, 'For some reason no Attachments are assigned to the User "' . $username . '".');
         }
 
@@ -535,7 +556,7 @@ if ($view == 'attachments') {
             $delete_box = '<input type="checkbox" name="delete_id_list[]" value="' . (int)$attachment->attach_id . '" />';
 
             foreach ($delete_id_list as $attachId) {
-                if ($attachId == $attachment->attach_id) {
+                if ($attachId === $attachment->attach_id) {
                     $delete_box = '<input type="checkbox" name="delete_id_list[]" value="' . (int)$attachment->attach_id . '" checked="checked" />';
                     break;
                 }
@@ -556,7 +577,7 @@ if ($view == 'attachments') {
             $num_ids = count($ids);
 
             for ($j = 0; $j < $num_ids; $j++) {
-                if ($ids[$j]['post_id'] != 0) {
+                if ($ids[$j]['post_id'] !== 0) {
                     $post_title = dibi::select('t.topic_title')
                         ->from(Tables::TOPICS_TABLE)
                         ->as('t')
@@ -608,12 +629,10 @@ if ($view == 'attachments') {
         }
     }
 
-    if (!$search_based && !$user_based) {
-        if ($total_attachments == 0) {
-            $total_rows = dibi::select('COUNT(attach_id)')
-                ->from(Tables::VOTE_DESC_TABLE)
-                ->fetchSingle();
-        }
+    if (!$search_based && !$user_based && $total_attachments === 0) {
+        $total_rows = dibi::select('COUNT(attach_id)')
+            ->from(Tables::VOTE_DESC_TABLE)
+            ->fetchSingle();
     }
 }
 

@@ -20,11 +20,10 @@ $sep = DIRECTORY_SEPARATOR;
 $phpbb_root_path = '..' . $sep;
 
 require_once 'pagestart.php';
-
 require_once $phpbb_root_path . 'attach_mod' . $sep . 'includes' . $sep . 'constants.php';
 
 if (!(int)$attach_config['allow_ftp_upload']) {
-    if (($attach_config['upload_dir'][0] == '/') || (($attach_config['upload_dir'][0] != '/') && ($attach_config['upload_dir'][1] == ':'))) {
+    if (($attach_config['upload_dir'][0] === '/') || (($attach_config['upload_dir'][0] !== '/') && ($attach_config['upload_dir'][1] === ':'))) {
         $upload_dir = $attach_config['upload_dir'];
     } else {
         $upload_dir = $phpbb_root_path . $attach_config['upload_dir'];
@@ -68,7 +67,7 @@ if (!$attach_config) {
 }
 
 // Extension Management
-if ($submit && $mode == 'extensions') {
+if ($submit && $mode === 'extensions') {
     // Change Extensions ?
     $extension_change_list = get_var('extension_change_list', [0]);
     $extension_explain_list = get_var('extension_explain_list', ['']);
@@ -88,7 +87,7 @@ if ($submit && $mode == 'extensions') {
         ->fetchAll();
 
     foreach ($extension_rows as $extension_row) {
-        if ($extension_row->comment != $extensions['_' . $extension_row->ext_id]['comment'] || (int)$extension_row->group_id != (int)$extensions['_' . $extension_row->ext_id]['group_id']) {
+        if ($extension_row->comment !== $extensions['_' . $extension_row->ext_id]['comment'] || (int)$extension_row->group_id !== (int)$extensions['_' . $extension_row->ext_id]['group_id']) {
             $sql_ary = [
                 'comment' => (string)$extensions['_' . $extension_row->ext_id]['comment'],
                 'group_id' => (int)$extensions['_' . $extension_row->ext_id]['group_id']
@@ -116,7 +115,7 @@ if ($submit && $mode == 'extensions') {
 
     $add = isset($_POST['add_extension_check']);
 
-    if ($extension != '' && $add) {
+    if ($extension !== '' && $add) {
         $template->assignVars(
             [
                 'ADD_EXTENSION' => $extension,
@@ -131,7 +130,7 @@ if ($submit && $mode == 'extensions') {
                 ->fetchAll();
 
             foreach ($rows as $row) {
-                if (strtolower(trim($row->extension)) == strtolower(trim($extension))) {
+                if (strtolower(trim($row->extension)) === strtolower(trim($extension))) {
                     $error = true;
 
                     if (isset($error_msg)) {
@@ -149,7 +148,7 @@ if ($submit && $mode == 'extensions') {
                     ->fetchAll();
 
                 foreach ($rows as $row) {
-                    if (strtolower(trim($row->extension)) == strtolower(trim($extension))) {
+                    if (strtolower(trim($row->extension)) === strtolower(trim($extension))) {
                         $error = true;
 
                         if (isset($error_msg)) {
@@ -180,7 +179,7 @@ if ($submit && $mode == 'extensions') {
     }
 }
 
-if ($mode == 'extensions') {
+if ($mode === 'extensions') {
     // Extensions
     $template->setFileNames(['body' => 'admin/attach_extensions.tpl']);
 
@@ -248,7 +247,7 @@ if ($mode == 'extensions') {
 }
 
 // Extension Groups
-if ($submit && $mode == 'groups') {
+if ($submit && $mode === 'groups') {
     // Change Extension Groups ?
     $group_change_list = get_var('group_change_list', [0]);
     $extension_group_list = get_var('extension_group_list', ['']);
@@ -263,7 +262,7 @@ if ($submit && $mode == 'groups') {
 
     for ($i = 0; $i < count($group_allowed_list); $i++) {
         for ($j = 0; $j < count($group_change_list); $j++) {
-            if ($group_allowed_list[$i] == $group_change_list[$j]) {
+            if ($group_allowed_list[$i] === $group_change_list[$j]) {
                 $allowed_list[$j] = 1;
             }
         }
@@ -272,7 +271,7 @@ if ($submit && $mode == 'groups') {
     for ($i = 0; $i < count($group_change_list); $i++) {
         $allowed = (isset($allowed_list[$i])) ? 1 : 0;
 
-        $filesize_list[$i] = ($size_select_list[$i] == 'kb') ? round($filesize_list[$i] * 1024) : (($size_select_list[$i] == 'mb') ? round($filesize_list[$i] * 1048576) : $filesize_list[$i]);
+        $filesize_list[$i] = ($size_select_list[$i] === 'kb') ? round($filesize_list[$i] * 1024) : (($size_select_list[$i] === 'mb') ? round($filesize_list[$i] * 1048576) : $filesize_list[$i]);
 
         $sql_ary = [
             'group_name' => (string)$extension_group_list[$i],
@@ -313,14 +312,14 @@ if ($submit && $mode == 'groups') {
     $is_allowed = isset($_POST['add_allowed']);
     $add = isset($_POST['add_extension_group_check']);
 
-    if ($extension_group != '' && $add) {
+    if ($extension_group !== '' && $add) {
         // check Extension Group
         $rows = dibi::select('group_name')
             ->from(Tables::ATTACH_EXTENSION_GROUPS_TABLE)
             ->fetchAll();
 
         foreach ($rows as $row) {
-            if ($row->group_name == $extension_group) {
+            if ($row->group_name === $extension_group) {
                 $error = true;
 
                 if (isset($error_msg)) {
@@ -332,7 +331,7 @@ if ($submit && $mode == 'groups') {
         }
 
         if (!$error) {
-            $filesize = ($size_select == 'kb') ? round($filesize * 1024) : (($size_select == 'mb') ? round($filesize * 1048576) : $filesize);
+            $filesize = ($size_select === 'kb') ? round($filesize * 1024) : (($size_select === 'mb') ? round($filesize * 1048576) : $filesize);
 
             $sql_ary = [
                 'group_name' => (string)$extension_group,
@@ -355,7 +354,7 @@ if ($submit && $mode == 'groups') {
     }
 }
 
-if ($mode == 'groups') {
+if ($mode === 'groups') {
     // Extension Groups
     $template->setFileNames(['body' => 'admin/attach_extension_groups.tpl']);
 
@@ -417,7 +416,7 @@ if ($mode == 'groups') {
             $extension_group->max_filesize = round($extension_group->max_filesize / 1024 * 100) / 100;
         }
 
-        $s_allowed = ($extension_group->allow_group == 1) ? 'checked="checked"' : '';
+        $s_allowed = ($extension_group->allow_group === 1) ? 'checked="checked"' : '';
 
         $template->assignBlockVars('grouprow', [
                 'GROUP_ID' => $extension_group->group_id,
@@ -430,12 +429,12 @@ if ($mode == 'groups') {
                 'S_FILESIZE' => size_select('size_select_list[]', $size_format),
 
                 'MAX_FILESIZE' => $extension_group->max_filesize,
-                'CAT_BOX' => ($viewgroup == $extension_group->group_id) ? $lang['Decollapse'] : $lang['Collapse'],
-                'U_VIEWGROUP' => ($viewgroup == $extension_group->group_id) ? Session::appendSid("admin_extensions.php?mode=groups") : Session::appendSid("admin_extensions.php?mode=groups&" . POST_GROUPS_URL . "=" . $extension_group->group_id),
+                'CAT_BOX' => ($viewgroup === $extension_group->group_id) ? $lang['Decollapse'] : $lang['Collapse'],
+                'U_VIEWGROUP' => ($viewgroup === $extension_group->group_id) ? Session::appendSid("admin_extensions.php?mode=groups") : Session::appendSid("admin_extensions.php?mode=groups&" . POST_GROUPS_URL . "=" . $extension_group->group_id),
                 'U_FORUM_PERMISSIONS' => Session::appendSid("admin_extensions.php?mode=$mode&amp;e_mode=perm&amp;e_group=" . $extension_group->group_id)]
         );
 
-        if ($viewgroup && $viewgroup == $extension_group->group_id) {
+        if ($viewgroup && $viewgroup === $extension_group->group_id) {
             $extensions = dibi::select(['comment', 'extension'])
                 ->from(Tables::ATTACH_EXTENSION_TABLE)
                 ->where('[group_id] = %i', $viewgroup)
@@ -452,7 +451,7 @@ if ($mode == 'groups') {
 }
 
 // Forbidden Extensions
-if ($submit && $mode == 'forbidden') {
+if ($submit && $mode === 'forbidden') {
     // Store new forbidden extension or delete selected forbidden extensions
     $extension = get_var('extension_id_list', [0]);
 
@@ -466,14 +465,14 @@ if ($submit && $mode == 'forbidden') {
 
     $add = isset($_POST['add_extension_check']);
 
-    if ($extension != '' && $add) {
+    if ($extension !== '' && $add) {
         // Check Extension
         $rows = dibi::select('extension')
             ->from(Tables::ATTACH_FORBIDEN_EXTENSIONS_TABLE)
             ->fetchAll();
 
         foreach ($rows as $row) {
-            if ($row->extension == $extension) {
+            if ($row->extension === $extension) {
                 $error = true;
 
                 if (isset($error_msg)) {
@@ -491,7 +490,7 @@ if ($submit && $mode == 'forbidden') {
                 ->fetchPairs(null, 'extension');
 
             foreach ($extensions as $extensionValue) {
-                if (strtolower(trim($extensionValue)) == strtolower(trim($extension))) {
+                if (strtolower(trim($extensionValue)) === strtolower(trim($extension))) {
                     $error = true;
 
                     if (isset($error_msg)) {
@@ -517,7 +516,7 @@ if ($submit && $mode == 'forbidden') {
 
 }
 
-if ($mode == 'forbidden') {
+if ($mode === 'forbidden') {
     $template->setFileNames([
             'body' => 'admin/attach_forbidden_extensions.tpl']
     );
@@ -546,7 +545,7 @@ if ($mode == 'forbidden') {
     }
 }
 
-if ($e_mode == 'perm') {
+if ($e_mode === 'perm') {
     $group = get_var('e_group', 0);
 
     $add_forum = isset($_POST['add_forum']);
@@ -558,12 +557,12 @@ if ($e_mode == 'perm') {
 }
 
 // Add Forums
-if ($add_forum && $e_mode == 'perm' && $group) {
+if ($add_forum && $e_mode === 'perm' && $group) {
     $add_forums_list = get_var('entries', [0]);
     $add_all_forums = false;
 
     foreach ($add_forums_list as $value) {
-        if ($value == GPERM_ALL) {
+        if ($value === GPERM_ALL) {
             $add_all_forums = true;
 
             break;
@@ -584,7 +583,7 @@ if ($add_forum && $e_mode == 'perm' && $group) {
             ->where('[group_id] = %i', $group)
             ->fetch();
 
-        if (trim($row->forum_permissions) == '') {
+        if (trim($row->forum_permissions) === '') {
             $auth_p = [];
         } else {
             $auth_p = auth_unpack($row->forum_permissions);
@@ -606,7 +605,7 @@ if ($add_forum && $e_mode == 'perm' && $group) {
 }
 
 // Delete Forums
-if ($delete_forum && $e_mode == 'perm' && $group) {
+if ($delete_forum && $e_mode === 'perm' && $group) {
     $delete_forums_list = get_var('entries', [0]);
 
     // Get the current Forums
@@ -633,7 +632,7 @@ if ($delete_forum && $e_mode == 'perm' && $group) {
 }
 
 // Display the Group Permissions Box for configuring it
-if ($e_mode == 'perm' && $group) {
+if ($e_mode === 'perm' && $group) {
     $template->setFileNames([
             'perm_box' => 'admin/extension_groups_permissions.tpl']
     );
@@ -648,7 +647,7 @@ if ($e_mode == 'perm' && $group) {
 
     $forum_perm = [];
 
-    if ($allowed_forums == '') {
+    if ($allowed_forums === '') {
         $forum_perm[0]['forum_id'] = 0;
         $forum_perm[0]['forum_name'] = $lang['Perm_all_forums'];
     } else {
@@ -724,7 +723,7 @@ if ($e_mode == 'perm' && $group) {
         foreach ($rows2 as $row2) {
             $allowed_forums = auth_unpack(trim($row2->forum_permissions));
 
-            if (in_array($forum_id, $allowed_forums) || trim($row2->forum_permissions) == '') {
+            if (in_array($forum_id, $allowed_forums) || trim($row2->forum_permissions) === '') {
                 $found_forum = true;
                 break;
             }
@@ -738,7 +737,7 @@ if ($e_mode == 'perm' && $group) {
     $message = '';
 
     foreach ($empty_perm_forums as $forum_id => $forum_name) {
-        $message .= ($message == '') ? $forum_name : '<br />' . $forum_name;
+        $message .= ($message === '') ? $forum_name : '<br />' . $forum_name;
     }
 
     if (count($empty_perm_forums) > 0) {

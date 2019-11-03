@@ -25,7 +25,7 @@ require_once $phpbb_root_path . 'includes' . $sep . 'functions_admin.php';
 require_once $phpbb_root_path . 'attach_mod' . $sep . 'includes' . $sep . 'functions_attach.php';
 
 if (!(int)$attach_config['allow_ftp_upload']) {
-    if (($attach_config['upload_dir'][0] == '/') || (($attach_config['upload_dir'][0] != '/') && ($attach_config['upload_dir'][1] == ':'))) {
+    if (($attach_config['upload_dir'][0] === '/') || (($attach_config['upload_dir'][0] !== '/') && ($attach_config['upload_dir'][1] === ':'))) {
         $upload_dir = $attach_config['upload_dir'];
     } else {
         $upload_dir = '../' . $attach_config['upload_dir'];
@@ -67,19 +67,19 @@ foreach ($rows as $row) {
 
     $new_attach[$config_name] = get_var($config_name, trim($attach_config[$config_name]));
 
-    if (!$size && !$submit && $config_name == 'max_filesize') {
+    if (!$size && !$submit && $config_name === 'max_filesize') {
         $size = ($attach_config[$config_name] >= 1048576) ? 'mb' : (($attach_config[$config_name] >= 1024) ? 'kb' : 'b');
     }
 
-    if (!$quota_size && !$submit && $config_name == 'attachment_quota') {
-        $quota_size = ($attach_config[$config_name] >= 1048576) ? 'mb' : (($attach_config[$config_name] >= 1024) ? 'kb' : 'b');
+    if (!$quota_size && !$submit && $config_name === 'attachment_quota') {
+        $quota_size = ($attach_config[$config_name] >= 1048576) ? 'mb' : (($attach_config[$config_name] >== 1024) ? 'kb' : 'b');
     }
 
-    if (!$pm_size && !$submit && $config_name == 'max_filesize_pm') {
+    if (!$pm_size && !$submit && $config_name === 'max_filesize_pm') {
         $pm_size = ($attach_config[$config_name] >= 1048576) ? 'mb' : (($attach_config[$config_name] >= 1024) ? 'kb' : 'b');
     }
 
-    if (!$submit && ($config_name == 'max_filesize' || $config_name == 'attachment_quota' || $config_name == 'max_filesize_pm')) {
+    if (!$submit && ($config_name === 'max_filesize' || $config_name === 'attachment_quota' || $config_name === 'max_filesize_pm')) {
         if ($new_attach[$config_name] >= 1048576) {
             $new_attach[$config_name] = round($new_attach[$config_name] / 1048576 * 100) / 100;
         } else if ($new_attach[$config_name] >= 1024) {
@@ -87,37 +87,37 @@ foreach ($rows as $row) {
         }
     }
 
-    if ($submit && ($mode == 'manage' || $mode == 'cats')) {
-        if ($config_name == 'max_filesize') {
+    if ($submit && ($mode === 'manage' || $mode === 'cats')) {
+        if ($config_name === 'max_filesize') {
             $old = $new_attach[$config_name];
-            $new_attach[$config_name] = ($size == 'kb') ? round($new_attach[$config_name] * 1024) : (($size == 'mb') ? round($new_attach[$config_name] * 1048576) : $new_attach[$config_name]);
+            $new_attach[$config_name] = ($size === 'kb') ? round($new_attach[$config_name] * 1024) : (($size === 'mb') ? round($new_attach[$config_name] * 1048576) : $new_attach[$config_name]);
         }
 
-        if ($config_name == 'attachment_quota') {
+        if ($config_name === 'attachment_quota') {
             $old = $new_attach[$config_name];
-            $new_attach[$config_name] = ($quota_size == 'kb') ? round($new_attach[$config_name] * 1024) : (($quota_size == 'mb') ? round($new_attach[$config_name] * 1048576) : $new_attach[$config_name]);
+            $new_attach[$config_name] = ($quota_size === 'kb') ? round($new_attach[$config_name] * 1024) : (($quota_size === 'mb') ? round($new_attach[$config_name] * 1048576) : $new_attach[$config_name]);
         }
 
-        if ($config_name == 'max_filesize_pm') {
+        if ($config_name === 'max_filesize_pm') {
             $old = $new_attach[$config_name];
-            $new_attach[$config_name] = ($pm_size == 'kb') ? round($new_attach[$config_name] * 1024) : (($pm_size == 'mb') ? round($new_attach[$config_name] * 1048576) : $new_attach[$config_name]);
+            $new_attach[$config_name] = ($pm_size === 'kb') ? round($new_attach[$config_name] * 1024) : (($pm_size === 'mb') ? round($new_attach[$config_name] * 1048576) : $new_attach[$config_name]);
         }
 
-        if ($config_name == 'ftp_server' || $config_name == 'ftp_path' || $config_name == 'download_path') {
+        if ($config_name === 'ftp_server' || $config_name === 'ftp_path' || $config_name === 'download_path') {
             $value = trim($new_attach[$config_name]);
 
-            if ($value[strlen($value) - 1] == '/') {
+            if ($value[strlen($value) - 1] === '/') {
                 $value[strlen($value) - 1] = ' ';
             }
 
             $new_attach[$config_name] = trim($value);
         }
 
-        if ($config_name == 'max_filesize') {
+        if ($config_name === 'max_filesize') {
             $old_size = $attach_config[$config_name];
             $new_size = $new_attach[$config_name];
 
-            if ($old_size != $new_size) {
+            if ($old_size !== $new_size) {
                 // See, if we have a similar value of old_size in Mime Groups. If so, update these values.
                 dibi::update(Tables::ATTACH_EXTENSION_GROUPS_TABLE, ['max_filesize' => (int)$new_size])
                     ->where('[max_filesize] = %i', (int)$old_size)
@@ -133,7 +133,7 @@ foreach ($rows as $row) {
                 ->execute();
         }
 
-        if ($config_name == 'max_filesize' || $config_name == 'attachment_quota' || $config_name == 'max_filesize_pm') {
+        if ($config_name === 'max_filesize' || $config_name === 'attachment_quota' || $config_name === 'max_filesize_pm') {
             $new_attach[$config_name] = $old;
         }
     }
@@ -154,7 +154,7 @@ if ($search_imagick) {
 
     if (eregi('convert', $imagick)) {
         return true;
-    } else if ($imagick != 'none') {
+    } else if ($imagick !== 'none') {
         if (!eregi('WIN', PHP_OS)) {
             $retval = @exec('whereis convert');
             $paths = explode(' ', $retval);
@@ -163,7 +163,7 @@ if ($search_imagick) {
                 foreach ($paths as $path) {
                     $path = basename($path);
 
-                    if ($path == 'convert') {
+                    if ($path === 'convert') {
                         $imagick = $path;
                     }
                 }
@@ -191,7 +191,7 @@ if ($check_upload) {
         ->from(Tables::ATTACH_CONFIG_TABLE)
         ->fetchPairs('config_name', 'config_value');
 
-    if ($attach_config['upload_dir'][0] == '/' || ($attach_config['upload_dir'][0] != '/' && $attach_config['upload_dir'][1] == ':')) {
+    if ($attach_config['upload_dir'][0] === '/' || ($attach_config['upload_dir'][0] !== '/' && $attach_config['upload_dir'][1] === ':')) {
         $upload_dir = $attach_config['upload_dir'];
     } else {
         $upload_dir = $phpbb_root_path . $attach_config['upload_dir'];
@@ -200,7 +200,7 @@ if ($check_upload) {
     $error = false;
 
     // Does the target directory exist, is it a directory and writeable. (only test if ftp upload is disabled)
-    if ((int)$attach_config['allow_ftp_upload'] == 0) {
+    if ((int)$attach_config['allow_ftp_upload'] === 0) {
         if (!@file_exists(@amod_realpath($upload_dir))) {
             $error = true;
             $error_msg = sprintf($lang['Directory_does_not_exist'], $attach_config['upload_dir']) . '<br />';
@@ -288,20 +288,20 @@ if ($check_upload) {
 }
 
 // Management
-if ($submit && $mode == 'manage') {
+if ($submit && $mode === 'manage') {
     if (!$error) {
         message_die(GENERAL_MESSAGE, $lang['Attach_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_attachments.php?mode=manage') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>'));
     }
 }
 
-if ($mode == 'manage') {
+if ($mode === 'manage') {
     $template->setFileNames(['body' => 'admin/attach_manage_body.tpl']);
 
     $yes_no_switches = ['disable_mod', 'allow_pm_attach', 'allow_ftp_upload', 'attachment_topic_review', 'display_order', 'show_apcp', 'ftp_pasv_mode'];
 
-    for ($i = 0; $i < count($yes_no_switches); $i++) {
-        eval("\$" . $yes_no_switches[$i] . "_yes = ( \$new_attach['" . $yes_no_switches[$i] . "'] != '0' ) ? 'checked=\"checked\"' : '';");
-        eval("\$" . $yes_no_switches[$i] . "_no = ( \$new_attach['" . $yes_no_switches[$i] . "'] == '0' ) ? 'checked=\"checked\"' : '';");
+    foreach ($yes_no_switches as $variable) {
+        eval("\$" . $variable . "_yes = ( \$new_attach['" . $variable . "'] != '0' ) ? 'checked=\"checked\"' : '';");
+        eval("\$" . $variable . "_no = ( \$new_attach['" . $variable . "'] == '0' ) ? 'checked=\"checked\"' : '';");
     }
 
     if (!function_exists('ftp_connect')) {
@@ -407,7 +407,7 @@ if ($mode == 'manage') {
 }
 
 // Shadow Attachments
-if ($submit && $mode == 'shadow') {
+if ($submit && $mode === 'shadow') {
     // Delete Attachments from file system...
     $attach_file_list = get_var('attach_file_list', ['']);
 
@@ -435,7 +435,7 @@ if ($submit && $mode == 'shadow') {
 $shadow_attachments = [];
 $shadow_row = [];
 
-if ($mode == 'shadow') {
+if ($mode === 'shadow') {
     @set_time_limit(0);
 
     // Shadow Attachments
@@ -496,15 +496,15 @@ if ($mode == 'shadow') {
     // Go through all Files on the filespace and see if all are stored within the DB
     for ($i = 0; $i < count($file_attachments); $i++) {
         if (count($table_attachments['attach_id']) > 0) {
-            if ($file_attachments[$i] != '') {
-                if (!in_array(trim($file_attachments[$i]), $table_attachments['physical_filename'])) {
+            if ($file_attachments[$i] !== '') {
+                if (!in_array(trim($file_attachments[$i]), $table_attachments['physical_filename'], true)) {
                     $shadow_attachments[] = trim($file_attachments[$i]);
                     // Delete this file from the file_attachments to not have double assignments in next steps
                     $file_attachments[$i] = '';
                 }
             }
         } else {
-            if ($file_attachments[$i] != '') {
+            if ($file_attachments[$i] !== '') {
                 $shadow_attachments[] = trim($file_attachments[$i]);
                 // Delete this file from the file_attachments to not have double assignments in next steps
                 $file_attachments[$i] = '';
@@ -514,7 +514,7 @@ if ($mode == 'shadow') {
 
     // Now look for Attachment ID's defined for posts or topics but not defined at the Attachments Description Table
     for ($i = 0; $i < count($assign_attachments); $i++) {
-        if (!in_array($assign_attachments[$i], $table_attachments['attach_id'])) {
+        if (!in_array($assign_attachments[$i], $table_attachments['attach_id'], true)) {
             $shadow_row['attach_id'][] = $assign_attachments[$i];
             $shadow_row['physical_filename'][] = $assign_attachments[$i];
             $shadow_row['comment'][] = $lang['Empty_file_entry'];
@@ -523,8 +523,8 @@ if ($mode == 'shadow') {
 
     // Go through the Database and get those Files not stored at the Filespace
     for ($i = 0; $i < count($table_attachments['attach_id']); $i++) {
-        if ($table_attachments['physical_filename'][$i] != '') {
-            if (!in_array(trim($table_attachments['physical_filename'][$i]), $file_attachments)) {
+        if ($table_attachments['physical_filename'][$i] !== '') {
+            if (!in_array(trim($table_attachments['physical_filename'][$i]), $file_attachments, true)) {
                 $shadow_row['attach_id'][] = $table_attachments['attach_id'][$i];
                 $shadow_row['physical_filename'][] = trim($table_attachments['physical_filename'][$i]);
                 $shadow_row['comment'][] = $table_attachments['comment'][$i];
@@ -566,17 +566,17 @@ for ($i = 0; $i < count($shadow_row['attach_id']); $i++) {
     $template->assignBlockVars('table_shadow_row', [
             'ATTACH_ID' => $shadow_row['attach_id'][$i],
             'ATTACH_FILENAME' => basename($shadow_row['physical_filename'][$i]),
-            'ATTACH_COMMENT' => (trim($shadow_row['comment'][$i]) == '') ? $lang['No_file_comment_available'] : trim($shadow_row['comment'][$i])]
+            'ATTACH_COMMENT' => (trim($shadow_row['comment'][$i]) === '') ? $lang['No_file_comment_available'] : trim($shadow_row['comment'][$i])]
     );
 }
 
-if ($submit && $mode == 'cats') {
+if ($submit && $mode === 'cats') {
     if (!$error) {
         message_die(GENERAL_MESSAGE, $lang['Attach_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_attachments.php?mode=cats') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>'));
     }
 }
 
-if ($mode == 'cats') {
+if ($mode === 'cats') {
     $template->setFileNames(['body' => 'admin/attach_cat_body.tpl']);
 
     $s_assigned_group_images = $lang['None'];
@@ -594,23 +594,23 @@ if ($mode == 'cats') {
         ->fetchAll();
 
     foreach ($rows as $row) {
-        if ($row['cat_id'] == IMAGE_CAT) {
+        if ($row['cat_id'] === IMAGE_CAT) {
             $s_assigned_group_images[] = $row['group_name'];
-        } else if ($row['cat_id'] == STREAM_CAT) {
+        } else if ($row['cat_id'] === STREAM_CAT) {
             $s_assigned_group_streams[] = $row['group_name'];
-        } else if ($row['cat_id'] == SWF_CAT) {
+        } else if ($row['cat_id'] === SWF_CAT) {
             $s_assigned_group_flash[] = $row['group_name'];
         }
     }
 
-    $display_inlined_yes = ($new_attach['img_display_inlined'] != '0') ? 'checked="checked"' : '';
-    $display_inlined_no = ($new_attach['img_display_inlined'] == '0') ? 'checked="checked"' : '';
+    $display_inlined_yes = ($new_attach['img_display_inlined'] !== '0') ? 'checked="checked"' : '';
+    $display_inlined_no = ($new_attach['img_display_inlined'] === '0') ? 'checked="checked"' : '';
 
-    $create_thumbnail_yes = ($new_attach['img_create_thumbnail'] != '0') ? 'checked="checked"' : '';
+    $create_thumbnail_yes = ($new_attach['img_create_thumbnail'] !== '0') ? 'checked="checked"' : '';
     $create_thumbnail_no = ($new_attach['img_create_thumbnail'] == '0') ? 'checked="checked"' : '';
 
-    $use_gd2_yes = ($new_attach['use_gd2'] != '0') ? 'checked="checked"' : '';
-    $use_gd2_no = ($new_attach['use_gd2'] == '0') ? 'checked="checked"' : '';
+    $use_gd2_yes = ($new_attach['use_gd2'] !== '0') ? 'checked="checked"' : '';
+    $use_gd2_no = ($new_attach['use_gd2'] === '0') ? 'checked="checked"' : '';
 
     // Check Thumbnail Support
     if (!is_imagick() && !@extension_loaded('gd')) {
@@ -678,18 +678,18 @@ if ($check_image_cat) {
         ->from(Tables::ATTACH_CONFIG_TABLE)
         ->fetchPairs('config_name', 'config_value');
 
-    if ($attach_config['upload_dir'][0] == '/' || ($attach_config['upload_dir'][0] != '/' && $attach_config['upload_dir'][1] == ':')) {
+    if ($attach_config['upload_dir'][0] === '/' || ($attach_config['upload_dir'][0] !== '/' && $attach_config['upload_dir'][1] === ':')) {
         $upload_dir = $attach_config['upload_dir'];
     } else {
         $upload_dir = $phpbb_root_path . $attach_config['upload_dir'];
     }
 
-    $upload_dir = $upload_dir . '/' . THUMB_DIR;
+    $upload_dir .= '/' . THUMB_DIR;
 
     $error = false;
 
     // Does the target directory exist, is it a directory and writeable. (only test if ftp upload is disabled)
-    if ((int)$attach_config['allow_ftp_upload'] == 0 && (int)$attach_config['img_create_thumbnail'] == 1) {
+    if ((int)$attach_config['allow_ftp_upload'] === 0 && (int)$attach_config['img_create_thumbnail'] === 1) {
         if (!@file_exists(@amod_realpath($upload_dir))) {
             @mkdir($upload_dir, 0755);
             @chmod($upload_dir, 0777);
@@ -788,7 +788,7 @@ if ($check_image_cat) {
     }
 }
 
-if ($mode == 'sync') {
+if ($mode === 'sync') {
     $info = '';
     @set_time_limit(0);
 
@@ -804,7 +804,7 @@ if ($mode == 'sync') {
     foreach ($topics as $topic) {
         @flush();
         echo '.';
-        if ($i % 50 == 0) {
+        if ($i % 50 === 0) {
             echo '<br />';
         }
         attachment_sync_topic($topic);
@@ -836,7 +836,7 @@ if ($mode == 'sync') {
         @flush();
         echo '.';
 
-        if ($i % 50 == 0) {
+        if ($i % 50 === 0) {
             echo '<br />';
         }
     }
@@ -859,7 +859,7 @@ if ($mode == 'sync') {
         @flush();
         echo '.';
 
-        if ($i % 50 == 0) {
+        if ($i % 50 === 0) {
             echo '<br />';
         }
 
@@ -886,7 +886,7 @@ if ($mode == 'sync') {
     foreach ($rows as $row) {
         @flush();
         echo '.';
-        if ($i % 50 == 0) {
+        if ($i % 50 === 0) {
             echo '<br />';
         }
 
@@ -904,7 +904,7 @@ if ($mode == 'sync') {
 }
 
 // Quota Limit Settings
-if ($submit && $mode == 'quota') {
+if ($submit && $mode === 'quota') {
     // Change Quota Limit
     $quota_change_list = get_var('quota_change_list', [0]);
     $quota_desc_list = get_var('quota_desc_list', ['']);
@@ -914,7 +914,7 @@ if ($submit && $mode == 'quota') {
     $allowed_list = [];
 
     for ($i = 0; $i < count($quota_change_list); $i++) {
-        $filesize_list[$i] = ($size_select_list[$i] == 'kb') ? round($filesize_list[$i] * 1024) : (($size_select_list[$i] == 'mb') ? round($filesize_list[$i] * 1048576) : $filesize_list[$i]);
+        $filesize_list[$i] = ($size_select_list[$i] === 'kb') ? round($filesize_list[$i] * 1024) : (($size_select_list[$i] === 'mb') ? round($filesize_list[$i] * 1048576) : $filesize_list[$i]);
 
         dibi::update(Tables::ATTACH_QUOTA_LIMITS_TABLE, ['quota_desc' => $quota_desc_list[$i], 'quota_limit' => $filesize_list[$i]])
             ->where('[quota_limit_id] = %i', $quota_change_list[$i])
@@ -942,14 +942,14 @@ if ($submit && $mode == 'quota') {
 
     $add = isset($_POST['add_quota_check']);
 
-    if ($quota_desc != '' && $add) {
+    if ($quota_desc !== '' && $add) {
         // check Quota Description
         $rows = dibi::select(['quota_desc'])
             ->from(Tables::ATTACH_QUOTA_LIMITS_TABLE)
             ->fetchAll();
 
         foreach ($rows as $row) {
-            if ($row->quota_desc == $quota_desc) {
+            if ($row->quota_desc === $quota_desc) {
                 $error = true;
 
                 if (isset($error_msg)) {
@@ -960,7 +960,7 @@ if ($submit && $mode == 'quota') {
         }
 
         if (!$error) {
-            $filesize = ($size_select == 'kb') ? round($filesize * 1024) : (($size_select == 'mb') ? round($filesize * 1048576) : $filesize);
+            $filesize = ($size_select === 'kb') ? round($filesize * 1024) : (($size_select === 'mb') ? round($filesize * 1048576) : $filesize);
 
             dibi::insert(Tables::ATTACH_QUOTA_LIMITS_TABLE, ['quota_desc' => $quota_desc, 'quota_limit' => $filesize])->execute();
         }
@@ -975,7 +975,7 @@ if ($submit && $mode == 'quota') {
 
 }
 
-if ($mode == 'quota') {
+if ($mode === 'quota') {
     $template->setFileNames(
         [
             'body' => 'admin/attach_quota_body.tpl'
@@ -1036,7 +1036,7 @@ if ($mode == 'quota') {
     }
 }
 
-if ($mode == 'quota' && $e_mode == 'view_quota') {
+if ($mode === 'quota' && $e_mode === 'view_quota') {
     $quota_id = get_var('quota_id', 0);
 
     if (!$quota_id) {
@@ -1070,12 +1070,12 @@ if ($mode == 'quota' && $e_mode == 'view_quota') {
 
 
     foreach ($rows as $row) {
-        if ($row->quota_type == QUOTA_UPLOAD_LIMIT) {
+        if ($row->quota_type === QUOTA_UPLOAD_LIMIT) {
             $template->assignBlockVars('users_upload_row', [
                     'USER_ID' => $row->user_id,
                     'USERNAME' => $row->username]
             );
-        } else if ($row->quota_type == QUOTA_PM_LIMIT) {
+        } else if ($row->quota_type === QUOTA_PM_LIMIT) {
             $template->assignBlockVars('users_pm_row', [
                     'USER_ID' => $row->user_id,
                     'USERNAME' => $row->username]
@@ -1094,12 +1094,12 @@ if ($mode == 'quota' && $e_mode == 'view_quota') {
         ->fetchAll();
 
     foreach ($rows as $row) {
-        if ($row->quota_type == QUOTA_UPLOAD_LIMIT) {
+        if ($row->quota_type === QUOTA_UPLOAD_LIMIT) {
             $template->assignBlockVars('groups_upload_row', [
                     'GROUP_ID' => $row->group_id,
                     'GROUPNAME' => $row->group_name]
             );
-        } else if ($row->quota_type == QUOTA_PM_LIMIT) {
+        } else if ($row->quota_type === QUOTA_PM_LIMIT) {
             $template->assignBlockVars('groups_pm_row', [
                     'GROUP_ID' => $row->group_id,
                     'GROUPNAME' => $row->group_name]
