@@ -17,7 +17,7 @@ News:
 - added DB Maintenance mod
 - improved admin index (my own improved Advanced Admin Index Stats)
 - improved show size of files (from phpBB3)
-- using <label> tag for inputs
+- using label tag for inputs
 - language select has fixed selected attribute
 - removed icq, aim, msnm, yim
 - improved groups management in admin
