@@ -1,5 +1,6 @@
 - clone this repo
 - run composer install
+- run install script
 
 
 News:
