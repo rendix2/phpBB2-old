@@ -835,6 +835,10 @@ $lang['Empty_db_user_name'] = 'Datasase user name is empty.';
 $lang['Last_login'] = 'Last login';
 $lang['Delete_auto_login'] = 'The auto login key was successfully removed.';
 
+// Begin Thanks Mod
+$lang['use_thank'] = 'Allow to Thank posts';
+// End Thanks Mod
+
 //
 // That's all Folks!
 // -------------------------------------------------

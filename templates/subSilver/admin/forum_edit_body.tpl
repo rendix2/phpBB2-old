@@ -36,7 +36,14 @@
 	  </td>
 	  <td class="row2"><select name="forumstatus" id="forumstatus">{S_STATUS_LIST}</select></td>
 	</tr>
-	<tr> 
+	  <tr>
+		  <td class="row1">{L_FORUM_THANK}</td>
+		  <td class="row2">
+			  <input type="radio" name="forumthank" value="1" {THANK_ENABLE} />{L_YES}&nbsp; &nbsp;
+			  <input type="radio" name="forumthank" value="0" {THANK_DISABLE} />{L_NO}
+          </td>
+	  </tr>
+	<tr>
 	  <td class="row1">{L_AUTO_PRUNE}</td>
 	  <td class="row2"><table cellspacing="0" cellpadding="1" border="0">
 		  <tr> 

@@ -275,3 +275,6 @@ INSERT IGNORE INTO phpbb_config (config_name, config_value) VALUES ('dbmtnc_rebu
 INSERT IGNORE INTO phpbb_config (config_name, config_value) VALUES ('dbmtnc_rebuildcfg_timeoverwrite', '0');
 INSERT IGNORE INTO phpbb_config (config_name, config_value) VALUES ('dbmtnc_disallow_postcounter', '0');
 INSERT IGNORE INTO phpbb_config (config_name, config_value) VALUES ('dbmtnc_disallow_rebuild', '0');
+
+
+ALTER TABLE `phpbb_forums` ADD `forum_thank` TINYINT(1) DEFAULT '0' NOT NULL;

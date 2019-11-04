@@ -425,6 +425,37 @@ function create_date($format, $time, $time_zone)
     return $started->format($format);
 }
 
+
+/**
+ * @param $num_items
+ * @param $per_page
+ * @param $start_item
+ * @return int|string
+ */
+function get_page($num_items, $per_page, $start_item)
+{
+
+    $total_pages = ceil($num_items / $per_page);
+
+    if ($total_pages == 1) {
+        return '1';
+        exit;
+    }
+
+    $on_page = floor($start_item / $per_page) + 1;
+    $page_string = '';
+
+    for ($i = 0; $i < $total_pages + 1; $i++) {
+        if ($i == $on_page) {
+            $page_string = $i;
+        }
+
+    }
+
+    return $page_string;
+}
+
+
 //
 // Pagination routine, generates
 // page number sequence

@@ -220,6 +220,13 @@ CREATE TABLE [phpbb_smilies] (
 ) ON [PRIMARY]
 GO
 
+CREATE TABLE [phpbb_thanks] (
+    [topic_id]    [INT] (11) NOT NULL,
+    [user_id]     [INT] (11) NOT NULL,
+    [thanks_time] [INT] (11) NOT NULL
+) ON [PRIMARY ];
+GO
+
 CREATE TABLE [phpbb_themes] (
 	[themes_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[template_name] [varchar] (30) NOT NULL ,
@@ -528,6 +535,13 @@ ALTER TABLE [phpbb_smilies] WITH NOCHECK ADD
 	)  ON [PRIMARY]
 GO
 
+ALTER TABLE [phpbb_thanks] WITH NOCHECK ADD
+    CONSTRAINT [phpbb_thanks] PRIMARY KEY  CLUSTERED
+    (
+    [user_id], [topic_id]
+    )  ON [PRIMARY]
+GO
+
 ALTER TABLE [phpbb_themes] WITH NOCHECK ADD
 	CONSTRAINT [PK_phpbb_themes] PRIMARY KEY  CLUSTERED
 	(
@@ -732,6 +746,9 @@ GO
 GO
 
  CREATE  INDEX [IX_phpbb_topics] ON [phpbb_topics]([forum_id], [topic_type], [topic_first_post_id], [topic_last_post_id]) ON [PRIMARY]
+GO
+
+ CREATE  INDEX [IX_thanks_topic] ON [phpbb_thanks]([topic_id], [user_id]) ON [PRIMARY]
 GO
 
  CREATE  INDEX [IX_phpbb_topics_watch] ON [phpbb_topics_watch]([topic_id], [user_id]) ON [PRIMARY]

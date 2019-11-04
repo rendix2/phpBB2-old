@@ -236,6 +236,10 @@ switch ($mode) {
 			// Got all required info so go ahead and start deleting everything
 			//
 
+            dibi::delete(Tables::THANKS_TABLE)
+                ->where('[topic_id] IN %in', $topicIds)
+                ->execute();
+
             dibi::delete(Tables::TOPICS_TABLE)
                 ->where('topic_id IN %in OR topic_moved_id IN %in', $topicIds, $topicIds)
                 ->execute();

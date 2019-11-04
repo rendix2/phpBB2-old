@@ -572,6 +572,10 @@ class PostHelper
                     ->where('topic_id = %i OR topic_moved_id = %i', $topicId, $topicId)
                     ->execute();
 
+                dibi::delete(Tables::THANKS_TABLE)
+                    ->where('[topic_id] = %i', $topicId)
+                    ->execute();
+
                 dibi::delete(Tables::TOPICS_WATCH_TABLE)
                     ->where('topic_id = %i', $topicId)
                     ->execute();

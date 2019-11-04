@@ -350,6 +350,16 @@ CREATE TABLE phpbb_smilies (
    PRIMARY KEY (smilies_id)
 );
 
+# --------------------------------------------------------
+#
+# Table structure for table 'phpbb_thanks'
+#
+CREATE TABLE `phpbb_thanks` (
+    `topic_id`    MEDIUMINT(8) NOT NULL,
+    `user_id`     MEDIUMINT(8) NOT NULL,
+    `thanks_time` INT(11)      NOT NULL,
+    PRIMARY KEY (topic_id, user_id)
+);
 
 # --------------------------------------------------------
 #

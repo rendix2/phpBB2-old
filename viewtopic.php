@@ -136,7 +136,7 @@ if ($postId) {
                 't.topic_vote', 't.topic_last_post_id', 'f.forum_name', 'f.forum_status', 'f.forum_id', 'f.auth_view',
                 'f.auth_read', 'f.auth_post', 'f.auth_reply', 'f.auth_edit', 'f.auth_delete', 'f.auth_sticky',
                 'f.auth_announce', 'f.auth_pollcreate', 'f.auth_vote', 'f.auth_attachments',
-                'f.auth_download', 't.topic_attachment'
+                'f.auth_download', 't.topic_attachment', 'forum_thank'
     ];
 
     $forum_topic_data = dibi::select($columns)
@@ -185,7 +185,7 @@ if ($postId) {
                 't.topic_vote', 't.topic_last_post_id', 'f.forum_name', 'f.forum_status', 'f.forum_id', 'f.auth_view',
                 'f.auth_read', 'f.auth_post', 'f.auth_reply', 'f.auth_edit', 'f.auth_delete', 'f.auth_sticky',
                 'f.auth_announce', 'f.auth_pollcreate', 'f.auth_vote', 'f.auth_attachments',
-                'f.auth_download', 't.topic_attachment'
+                'f.auth_download', 'forum_thank', 't.topic_attachment'
     ];
 
     $forum_topic_data = dibi::select($columns)
@@ -205,6 +205,8 @@ if (!$forum_topic_data) {
 attach_setup_viewtopic_auth($order_sql, $sql);
 
 $forumId = (int)$forum_topic_data->forum_id;
+
+$show_thanks = ($forum_topic_data->forum_thank == FORUM_THANKABLE) ? FORUM_THANKABLE : FORUM_UNTHANKABLE;
 
 //
 // Start session management
@@ -535,12 +537,18 @@ $replyTopicUrl        = Session::appendSid('posting.php?mode=reply&amp;' . POST_
 $viewForumUrl         = Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forumId");
 $viewPreviousTopicUrl = Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topicId&amp;view=previous");
 $viewNextTopicUrl     = Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topicId&amp;view=next");
+$thank_topic_url      = Session::appendSid("posting.php?mode=thank&amp;" . POST_TOPIC_URL . "=$topicId");
 
 $replyImage = $forum_topic_data->forum_status === FORUM_LOCKED || $forum_topic_data->topic_status === TOPIC_LOCKED ? $images['reply_locked'] : $images['reply_new'];
 $reply_alt  = $forum_topic_data->forum_status === FORUM_LOCKED || $forum_topic_data->topic_status === TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['Reply_to_topic'];
 
 $postImage = $forum_topic_data->forum_status === FORUM_LOCKED ? $images['post_locked'] : $images['post_new'];
 $postAlt   = $forum_topic_data->forum_status === FORUM_LOCKED ? $lang['Forum_locked'] : $lang['Post_new_topic'];
+
+$thankImage = $images['thanks'];
+$thank_alt = $lang['thanks_alt'];
+// End Thanks Mod
+
 
 //
 // Set a cookie for this topic
@@ -632,6 +640,7 @@ if ($canWatchTopic) {
 // I get annoyed when I lose my highlight after the first page.
 //
 $pagination = $highLight !== '' ? generate_pagination('viewtopic.php?' . POST_TOPIC_URL . "=$topicId&amp;postdays=$postDays&amp;postorder=$postOrder&amp;highlight=$highLight", $totalReplies, $board_config['posts_per_page'], $start) : generate_pagination('viewtopic.php?' . POST_TOPIC_URL . "=$topicId&amp;postdays=$postDays&amp;postorder=$postOrder", $totalReplies, $board_config['posts_per_page'], $start);
+$current_page = get_page($totalReplies, $board_config['posts_per_page'], $start);
 
 //
 // Send vars to template
@@ -829,6 +838,62 @@ init_display_post_attachments($forum_topic_data['topic_attachment']);
 dibi::update(Tables::TOPICS_TABLE, ['topic_views%sql' => 'topic_views + 1'])
     ->where('topic_id = %i', $topicId)
     ->execute();
+
+// Begin Thanks Mod
+//
+// Get topic thanks
+//
+if ($show_thanks === FORUM_THANKABLE) {
+    $thanks = dibi::select(['u.user_id', 'u.username', 't.thanks_time'])
+        ->from(Tables::THANKS_TABLE)
+        ->as('t')
+        ->innerJoin(Tables::USERS_TABLE)
+        ->as('u')
+        ->on('[t.user_id] = [u.user_id]')
+        ->where('[topic_id] = %i', $topicId)
+        ->fetchAll();
+
+    $total_thank = count($thanks);
+
+    $thanksString = '';
+    $thanked = false;
+
+    foreach ($thanks as $thank) {
+        // Get thanks date
+        $thanksDate = create_date($board_config['default_dateformat'], $thank['thanks_time'], $board_config['board_timezone']);
+
+        // Make thanker profile link
+        $profileLink = Session::appendSid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$thank->user_id");
+
+        $thanksString .= '<a href="' . $profileLink . '">' . $thank['username'] . '</a> (' . $thanksDate . '), ';
+
+        if ($userdata['user_id'] === $thank['user_id']) {
+            $thanked = true;
+        }
+    }
+
+    $author = dibi::select(['t.topic_poster', 'u.user_id', 'u.username'])
+        ->from(Tables::TOPICS_TABLE)
+        ->as('t')
+        ->innerJoin(Tables::USERS_TABLE)
+        ->as('u')
+        ->on('[t.topic_poster] = [u.user_id]')
+        ->where('[topic_id] = %i', $topicId)
+        ->fetch();
+
+    $thanksString .= "".$lang['thanks_to']." $author->username ".$lang['thanks_end']."";
+
+    // Create button switch
+    if ($userdata['user_id'] !== $author->user_id && !$thanked) {
+        $template->assignBlockVars('thanks_button', [
+            'THANK_IMG' => $thankImage,
+            'U_THANK_TOPIC' => $thank_topic_url,
+            'L_THANK_TOPIC' => $thank_alt
+        ]);
+    }
+
+}
+// End Thanks Mod
 
 //
 // Okay, let's do the loop, yeah come on baby let's do the loop
@@ -1169,6 +1234,20 @@ foreach ($posts as $i => $post) {
             'U_POST_ID'   => $post->post_id
         ]
     );
+
+    // Begin Thanks Mod
+    if($show_thanks === FORUM_THANKABLE && $i === 0 && (int)$current_page === 1 && $total_thank > 0) {
+        $template->assignBlockVars('postrow.thanks',
+            [
+                'THANKFUL' => $lang['thankful'],
+                'THANKED' => $lang['thanked'],
+                'HIDE' => $lang['hide'],
+                'THANKS_TOTAL' => $total_thank,
+                'THANKS' => $thanksString
+            ]
+        );
+    }
+    // End Thanks Mod
 
     display_post_attachments($post->post_id, $post->post_attachment);
 }

@@ -332,6 +332,16 @@ CREATE TABLE phpbb_smilies (
    CONSTRAINT phpbb_smilies_pkey PRIMARY KEY (smilies_id)
 );
 
+/* --------------------------------------------------------
+  Table structure for table phpbb_thanks
+-------------------------------------------------------- */
+CREATE TABLE `phpbb_thanks` (
+    topic_id MEDIUMINT(8) NOT NULL,
+    user_id MEDIUMINT(8) NOT NULL,
+    thanks_time INT(11) NOT NULL,
+    CONSTRAINT phpbb_template_cache PRIMARY KEY (topic_id, user_id)
+);
+
 
 /* --------------------------------------------------------
   Table structure for table phpbb_themes
