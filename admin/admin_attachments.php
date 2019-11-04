@@ -72,7 +72,7 @@ foreach ($rows as $row) {
     }
 
     if (!$quota_size && !$submit && $config_name === 'attachment_quota') {
-        $quota_size = ($attach_config[$config_name] >= 1048576) ? 'mb' : (($attach_config[$config_name] >== 1024) ? 'kb' : 'b');
+        $quota_size = ($attach_config[$config_name] >= 1048576) ? 'mb' : (($attach_config[$config_name] >= 1024) ? 'kb' : 'b');
     }
 
     if (!$pm_size && !$submit && $config_name === 'max_filesize_pm') {
