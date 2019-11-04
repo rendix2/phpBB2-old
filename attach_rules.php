@@ -58,7 +58,7 @@ $nothing = true;
 foreach ($rows as $row) {
     $auth_cache = trim($row->forum_permissions);
 
-    $permit = ($privmsg) ? true : ((is_forum_authed($auth_cache, $forum_id)) || trim($row->forum_permissions) == '');
+    $permit = ($privmsg) ? true : ((is_forum_authed($auth_cache, $forum_id)) || trim($row->forum_permissions) === '');
 
     if ($permit) {
         $nothing = false;
@@ -73,7 +73,7 @@ foreach ($rows as $row) {
             $det_filesize = round($det_filesize / 1024 * 100) / 100;
         }
 
-        $max_filesize = ($det_filesize == 0) ? $lang['Unlimited'] : $det_filesize . ' ' . $size_lang;
+        $max_filesize = ($det_filesize === 0) ? $lang['Unlimited'] : $det_filesize . ' ' . $size_lang;
 
         $template->assignBlockVars('group_row',
             [

@@ -14,6 +14,10 @@
 
 /**
  * Read Long Int (4 Bytes) from File
+ *
+ * @param $fp
+ *
+ * @return int
  */
 function read_longint($fp)
 {
@@ -29,7 +33,9 @@ function read_longint($fp)
 
 /**
  * Read Word (2 Bytes) from File - Note: It's an Intel Word
- */
+ * @param $fp
+ * @return float|int
+*/
 function read_word($fp)
 {
     $data = fread($fp, 2);
@@ -39,7 +45,9 @@ function read_word($fp)
 
 /**
  * Read Byte
- */
+ * @param $fp
+ * @return int
+*/
 function read_byte($fp)
 {
     $data = fread($fp, 1);
@@ -49,12 +57,14 @@ function read_byte($fp)
 
 /**
  * Get Image Dimensions
- */
+ * @param $file
+ * @return array|false
+*/
 function image_getdimension($file)
 {
     $size = @getimagesize($file);
 
-    if ($size[0] != 0 || $size[1] != 0) {
+    if ($size[0] !== 0 || $size[1] !== 0) {
         return $size;
     }
 
@@ -69,7 +79,7 @@ function image_getdimension($file)
     // BMP - IMAGE
 
     $tmp_str = fread($fp, 2);
-    if ($tmp_str == 'BM') {
+    if ($tmp_str === 'BM') {
         $length = read_longint($fp);
 
         if ($length <= 6) {
@@ -78,7 +88,7 @@ function image_getdimension($file)
 
         if (!$error) {
             $i = read_longint($fp);
-            if ($i != 0) {
+            if ($i !== 0) {
                 $error = true;
             }
         }
@@ -86,7 +96,7 @@ function image_getdimension($file)
         if (!$error) {
             $i = read_longint($fp);
 
-            if ($i != 0x3E && $i != 0x76 && $i != 0x436 && $i != 0x36) {
+            if ($i !== 0x3E && $i !== 0x76 && $i !== 0x436 && $i !== 0x36) {
                 $error = true;
             }
         }
@@ -122,19 +132,19 @@ function image_getdimension($file)
 
     $tmp_str = fread($fp, 3);
 
-    if ($tmp_str == 'GIF') {
+    if ($tmp_str === 'GIF') {
         $tmp_str = fread($fp, 3);
         $width = read_word($fp);
         $height = read_word($fp);
 
         $info_byte = fread($fp, 1);
         $info_byte = ord($info_byte);
-        if (($info_byte & 0x80) != 0x80 && ($info_byte & 0x80) != 0) {
+        if (($info_byte & 0x80) !== 0x80 && ($info_byte & 0x80) !== 0) {
             $error = true;
         }
 
         if (!$error) {
-            if (($info_byte & 8) != 0) {
+            if (($info_byte & 8) !== 0) {
                 $error = true;
             }
 
@@ -167,7 +177,7 @@ function image_getdimension($file)
 
     if (!$error) {
         $tmp_str = fread($fp, 4);
-        if ($tmp_str == 'JFIF') {
+        if ($tmp_str === 'JFIF') {
             $o_byte = fread($fp, 1);
             if ((int)$o_byte != 0) {
                 $error = true;
@@ -177,7 +187,7 @@ function image_getdimension($file)
                 $str = fread($fp, 2);
                 $b = read_byte($fp);
 
-                if ($b != 0 && $b != 1 && $b != 2) {
+                if ($b !== 0 && $b !== 1 && $b !== 2) {
                     $error = true;
                 }
             }
@@ -213,10 +223,12 @@ function image_getdimension($file)
 
     $tmp_str = fread($fp, 3);
 
-    if ((ord($tmp_str[0]) == 10) && (ord($tmp_str[1]) == 0 || ord($tmp_str[1]) == 2 || ord($tmp_str[1]) == 3 || ord($tmp_str[1]) == 4 || ord($tmp_str[1]) == 5) && (ord($tmp_str[2]) == 1)) {
+    if ((ord($tmp_str[0]) === 10) && (ord($tmp_str[1]) === 0 || ord($tmp_str[1]) === 2 || ord($tmp_str[1]) === 3 || ord($tmp_str[1]) === 4 || ord($tmp_str[1]) === 5) && (ord($tmp_str[2]) === 1)) {
         $b = fread($fp, 1);
+        $ordB = ord($b);
 
-        if (ord($b) != 1 && ord($b) != 2 && ord($b) != 4 && ord($b) != 8 && ord($b) != 24) {
+
+        if ($ordB !== 1 && $ordB !== 2 && $ordB !== 4 && $ordB !== 8 && $ordB !== 24) {
             $error = true;
         }
 
@@ -228,7 +240,7 @@ function image_getdimension($file)
             $tmp_str = fread($fp, 52);
 
             $b = fread($fp, 1);
-            if ($b != 0) {
+            if ($b !== 0) {
                 $error = true;
             }
         }
@@ -267,13 +279,17 @@ define('swf_tag_identify', chr(0x46) . chr(0x57) . chr(0x53));
 
 /**
  * Get flash bits
- */
+ * @param $buffer
+ * @param $pos
+ * @param $count
+ * @return int
+*/
 function swf_bits($buffer, $pos, $count)
 {
     $result = 0;
 
     for ($loop = $pos; $loop < $pos + $count; $loop++) {
-        $result = $result + ((((ord($buffer[(int)($loop / 8)])) >> (7 - ($loop % 8))) & 0x01) << ($count - ($loop - $pos) - 1));
+        $result += ((((ord($buffer[(int)($loop / 8)])) >> (7 - ($loop % 8))) & 0x01) << ($count - ($loop - $pos) - 1));
     }
 
     return $result;
@@ -281,10 +297,12 @@ function swf_bits($buffer, $pos, $count)
 
 /**
  * decompress flash contents
- */
+ * @param $buffer
+ * @return string
+*/
 function swf_decompress($buffer)
 {
-    if ((function_exists('gzuncompress')) && (substr($buffer, 0, 3) == swf_tag_compressed) && (ord(substr($buffer, 3, 1)) >= 6)) {
+    if ((function_exists('gzuncompress')) && (substr($buffer, 0, 3) === swf_tag_compressed) && (ord(substr($buffer, 3, 1)) >= 6)) {
         // Only decompress relevant Informations
         $output = 'F';
         $output .= substr($buffer, 1, 7);
@@ -298,12 +316,14 @@ function swf_decompress($buffer)
 
 /**
  * Get flash dimension
- */
+ * @param $file
+ * @return array|false
+*/
 function swf_getdimension($file)
 {
     $size = @getimagesize($file);
 
-    if ($size[0] != 0 || $size[1] != 0) {
+    if ($size[0] !== 0 || $size[1] !== 0) {
         return $size;
     }
 
@@ -321,8 +341,8 @@ function swf_getdimension($file)
     // Decompress if file is a Flash MX compressed file
     $buffer = fread($fp, 1024);
 
-    if (substr($buffer, 0, 3) == swf_tag_identify || substr($buffer, 0, 3) == swf_tag_compressed) {
-        if (substr($buffer, 0, 3) == swf_tag_compressed) {
+    if (substr($buffer, 0, 3) === swf_tag_identify || substr($buffer, 0, 3) === swf_tag_compressed) {
+        if (substr($buffer, 0, 3) === swf_tag_compressed) {
             fclose($fp);
             $fp = @fopen($file, 'rb');
             $buffer = fread($fp, filesize($file));

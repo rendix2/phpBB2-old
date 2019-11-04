@@ -312,14 +312,11 @@ else
             $error = true; 
             $error_msg = 'Unrecognised DBMS.'; 
         break; 
-    } 
-     
-    if ($error === true && $error_msg !== '')
-    { 
-        echo '<br /><b>ERROR:</b> ' . $error_msg . '<br />'; 
-    } 
-    else 
-    { 
+    }
+
+    if ($error === true && $error_msg !== '') {
+        echo '<br /><b>ERROR:</b> ' . $error_msg . '<br />';
+    } else {
         echo '<a name="what"><h3><u>What you entered</u></h3></a>'; 
         echo 'Database Type: <b>' . $db['choice']  . '</b><br />'; 
         echo 'Database Server Hostname / DSN: <b>' . $dbhost . '</b><br />'; 
@@ -374,39 +371,34 @@ else
             $all_connected = true;
         }
 
-        /* Create a config file if checked and if the connection went OK */ 
-        if (isset($_POST['generate_config']) && $_POST['generate_config'] === true)
-        { 
+        /* Create a config file if checked and if the connection went OK */
+        if (isset($_POST['generate_config']) && $_POST['generate_config'] === true) {
             echo '<a name="config"><h3><u>Config file</u></h3></a>';
 
-            if ($all_connected !== true)
-            { 
-                echo 'The database has not been successfully connected to so no config file has been generated.<br />'; 
-            } 
-            else 
-            { 
+            if ($all_connected !== true) {
+                echo 'The database has not been successfully connected to so no config file has been generated.<br />';
+            } else {
                 echo 'Either copy the <b>19</b> lines below and save them as <u>Config.php</u> or click on the <u>Download</u> button below. Then upload the file to your phpBB2 root directory (phpBB2/ by default). Make sure that there is nothing (this includes blank spaces) after the <u>?></u>.<br /><br />';
 
-                /* Create our config file */ 
+                /* Create our config file */
                 echo '<form action="' . htmlspecialchars($_SERVER['PHP_SELF']) . '" method="post"><table cellspacing="1" cellpadding="3" border="0"><tr><td class="code">';
                 echo make_config(Config::DBMS, $dbhost, $dbname, $dbuser, $dbpasswd, $table_prefix);
-                echo '</td></tr></table>'; 
+                echo '</td></tr></table>';
                 echo '<input type="hidden" name="dbms" value="' . Config::DBMS . '" />';
-                echo '<input type="hidden" name="dbhost" value="' . $dbhost . '" />'; 
-                echo '<input type="hidden" name="dbname" value="' . $dbname . '" />'; 
-                echo '<input type="hidden" name="dbuser" value="' . $dbuser . '" />'; 
-                echo '<input type="hidden" name="dbpasswd" value="' . $dbpasswd . '" />'; 
-                echo '<input type="hidden" name="table_prefix" value="' . $table_prefix . '" />'; 
-                echo '<input type="hidden" name="download_config" value="true" />'; 
-                echo '<br /><input type="submit" name="submit_download_config" value="Download" class="mainoption" /><br />'; 
-            } 
-        } 
+                echo '<input type="hidden" name="dbhost" value="' . $dbhost . '" />';
+                echo '<input type="hidden" name="dbname" value="' . $dbname . '" />';
+                echo '<input type="hidden" name="dbuser" value="' . $dbuser . '" />';
+                echo '<input type="hidden" name="dbpasswd" value="' . $dbpasswd . '" />';
+                echo '<input type="hidden" name="table_prefix" value="' . $table_prefix . '" />';
+                echo '<input type="hidden" name="download_config" value="true" />';
+                echo '<br /><input type="submit" name="submit_download_config" value="Download" class="mainoption" /><br />';
+            }
+        }
 
-        /* close the connection */ 
-        if ($all_connected == true) 
-        { 
-            $db['close']; 
-        } 
+        /* close the connection */
+        if ($all_connected == true) {
+            $db['close'];
+        }
     } 
 } 
 

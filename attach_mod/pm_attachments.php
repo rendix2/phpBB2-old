@@ -52,6 +52,10 @@ class attach_pm extends attach_parent
 
     /**
      * Insert an Attachment into a private message
+     *
+     * @param $a_privmsgs_id
+     *
+     * @throws \Dibi\Exception
      */
     public function insert_attachment_pm($a_privmsgs_id)
     {
@@ -64,7 +68,7 @@ class attach_pm extends attach_parent
             $a_privmsgs_id = (int)$privmsg_sent_id;
         }
 
-        if ($a_privmsgs_id && ($mode == 'post' || $mode == 'reply' || $mode == 'edit') && (int)$attach_config['allow_pm_attach']) {
+        if ($a_privmsgs_id && ($mode === 'post' || $mode === 'reply' || $mode === 'edit') && (int)$attach_config['allow_pm_attach']) {
             $this->do_insert_attachment('attach_list', 'pm', $a_privmsgs_id);
             $this->do_insert_attachment('last_attachment', 'pm', $a_privmsgs_id);
 
@@ -78,12 +82,16 @@ class attach_pm extends attach_parent
 
     /**
      * Duplicate Attachment for sent PM
-     */
+     * @param $switch_attachment
+     * @param $original_privmsg_id
+     * @param $new_privmsg_id
+     * @throws \Dibi\Exception
+*/
     public function duplicate_attachment_pm($switch_attachment, $original_privmsg_id, $new_privmsg_id)
     {
         global $privmsg, $folder;
 
-        if (($privmsg['privmsgs_type'] == PRIVMSGS_NEW_MAIL || $privmsg['privmsgs_type'] == PRIVMSGS_UNREAD_MAIL) && $folder == 'inbox' && (int)$switch_attachment == 1) {
+        if (($privmsg['privmsgs_type'] === PRIVMSGS_NEW_MAIL || $privmsg['privmsgs_type'] === PRIVMSGS_UNREAD_MAIL) && $folder === 'inbox' && (int)$switch_attachment === 1) {
             $rows = dibi::select(['*'])
                 ->from(Tables::ATTACH_ATTACHMENT_TABLE)
                 ->where('[privmsgs_id] = %i', (int)$original_privmsg_id)
@@ -113,7 +121,9 @@ class attach_pm extends attach_parent
 
     /**
      * Delete Attachments out of selected Private Message(s)
-     */
+     * @param $mark_list
+     * @throws \Dibi\Exception
+*/
     public function delete_all_pm_attachments($mark_list)
     {
         global $confirm, $delete_all;
@@ -130,7 +140,7 @@ class attach_pm extends attach_parent
     {
         global $folder, $attach_config, $board_config, $template, $lang, $userdata, $db;
 
-        if (!$attach_config['allow_pm_attach'] && $userdata['user_level'] != ADMIN) {
+        if (!$attach_config['allow_pm_attach'] && $userdata['user_level'] !== ADMIN) {
             return;
         }
 
@@ -162,13 +172,15 @@ class attach_pm extends attach_parent
 
     /**
      * For Private Messaging
-     */
+     * @param $mode
+     * @throws \Dibi\Exception
+*/
     public function privmsgs_attachment_mod($mode)
     {
         global $attach_config, $template, $lang, $userdata, $phpbb_root_path, $db;
         global $confirm, $delete, $delete_all, $post_id, $privmsgs_id, $privmsg_id, $submit, $refresh, $mark_list, $folder;
 
-        if ($folder != 'outbox') {
+        if ($folder !== 'outbox') {
             $this->display_attach_box_limits();
         }
 
@@ -185,7 +197,7 @@ class attach_pm extends attach_parent
 
         $post_id = $privmsgs_id;
 
-        $result = $this->handle_attachments($mode, PAGE_PRIVMSGS);
+        $result = $this->handle_attachments($mode);
 
         if ($result === false) {
             return;
@@ -207,7 +219,7 @@ class attach_pm extends attach_parent
             }
         }
 
-        if ($submit || $refresh || $mode != '') {
+        if ($submit || $refresh || $mode !== '') {
             $this->display_attachment_bodies();
         }
     }
@@ -215,14 +227,15 @@ class attach_pm extends attach_parent
 
 /**
  * Entry Point
- */
+ * @param $mode
+*/
 function execute_privmsgs_attachment_handling($mode)
 {
     global $attachment_mod;
 
     $attachment_mod['pm'] = new attach_pm();
 
-    if ($mode != 'read') {
+    if ($mode !== 'read') {
         $attachment_mod['pm']->privmsgs_attachment_mod($mode);
     }
 }

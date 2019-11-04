@@ -53,7 +53,7 @@ class attach_parent
         $this->attachment_extension_list = get_var('extension_list', ['']);
         $this->attachment_mimetype_list = get_var('mimetype_list', ['']);
 
-        $this->filename = (isset($_FILES['fileupload']) && isset($_FILES['fileupload']['name']) && $_FILES['fileupload']['name'] != 'none') ? trim(stripslashes($_FILES['fileupload']['name'])) : '';
+        $this->filename = (isset($_FILES['fileupload'], $_FILES['fileupload']['name']) && $_FILES['fileupload']['name'] !== 'none') ? trim(stripslashes($_FILES['fileupload']['name'])) : '';
 
         $this->attachment_list = get_var('attachment_list', ['']);
         $this->attachment_thumbnail_list = get_var('attach_thumbnail_list', [0]);
@@ -61,6 +61,9 @@ class attach_parent
 
     /**
      * Get Quota Limits
+     *
+     * @param     $userdata_quota
+     * @param int $user_id
      */
     public function get_quota_limits($userdata_quota, $user_id = 0)
     {
@@ -80,13 +83,13 @@ class attach_parent
 //		$priority = 'group;user';
         $priorities = 'user;group';
 
-        if ($userdata_quota['user_level'] == ADMIN) {
+        if ($userdata_quota['user_level'] === ADMIN) {
             $attach_config['pm_filesize_limit'] = 0; // Unlimited
             $attach_config['upload_filesize_limit'] = 0; // Unlimited
             return;
         }
 
-        if ($this->page == PAGE_PRIVMSGS) {
+        if ($this->page === PAGE_PRIVMSGS) {
             $quota_type = QUOTA_PM_LIMIT;
             $limit_type = 'pm_filesize_limit';
             $default = 'max_filesize_pm';
@@ -104,7 +107,7 @@ class attach_parent
         $found = false;
 
         foreach ($priorities as $priority) {
-            if (($priority == 'group') && (!$found)) {
+            if (($priority === 'group') && (!$found)) {
                 // Get Group Quota, if we find one, we have our quota
                 $group_id = dibi::select('u.group_id')
                     ->from(Tables::USERS_GROUPS_TABLE)
@@ -137,7 +140,7 @@ class attach_parent
                 }
             }
 
-            if ($priority == 'user' && !$found) {
+            if ($priority === 'user' && !$found) {
                 // Get User Quota, if the user is not in a group or the group has no quotas
                 $quota_limit = dibi::select('l.quota_limit')
                     ->from(Tables::ATTACH_QUOTA_TABLE)
@@ -160,9 +163,9 @@ class attach_parent
 
         if (!$found) {
             // Set Default Quota Limit
-            $quota_id = ($quota_type == QUOTA_UPLOAD_LIMIT) ? $attach_config['default_upload_quota'] : $attach_config['default_pm_quota'];
+            $quota_id = ($quota_type === QUOTA_UPLOAD_LIMIT) ? $attach_config['default_upload_quota'] : $attach_config['default_pm_quota'];
 
-            if ($quota_id == 0) {
+            if ($quota_id === 0) {
                 $attach_config[$limit_type] = $attach_config[$default];
             } else {
                 $quota_limit = dibi::select('quota_limit')
@@ -179,7 +182,7 @@ class attach_parent
         }
 
         // Never exceed the complete Attachment Upload Quota
-        if ($quota_type == QUOTA_UPLOAD_LIMIT) {
+        if ($quota_type === QUOTA_UPLOAD_LIMIT) {
             if ($attach_config[$limit_type] > $attach_config[$default]) {
                 $attach_config[$limit_type] = $attach_config[$default];
             }
@@ -189,6 +192,9 @@ class attach_parent
     /**
      * Handle all modes... (intern)
      * @private
+     * @param $mode
+     * @return bool
+     * @throws \Dibi\Exception
      */
     public function handle_attachments($mode)
     {
@@ -200,18 +206,18 @@ class attach_parent
         //
 
         // Some adjustments for PM's
-        if ($this->page == PAGE_PRIVMSGS) {
+        if ($this->page === PAGE_PRIVMSGS) {
             global $privmsg_id;
 
             $postId = $privmsg_id;
 
-            if ($mode == 'post') {
+            if ($mode === 'post') {
                 $mode = 'newtopic';
-            } else if ($mode == 'edit') {
+            } else if ($mode === 'edit') {
                 $mode = 'editpost';
             }
 
-            if ($userdata['user_level'] == ADMIN) {
+            if ($userdata['user_level'] === ADMIN) {
                 $is_auth['auth_attachments'] = 1;
                 $max_attachments = ADMIN_MAX_ATTACHMENTS;
             } else {
@@ -221,7 +227,7 @@ class attach_parent
 
             $sql_id = 'privmsgs_id';
         } else {
-            if ($userdata['user_level'] == ADMIN) {
+            if ($userdata['user_level'] === ADMIN) {
                 $max_attachments = ADMIN_MAX_ATTACHMENTS;
             } else {
                 $max_attachments = (int)$attach_config['max_attachments'];
@@ -249,8 +255,8 @@ class attach_parent
         $actual_list = get_var('attachment_list', ['']);
 
         foreach ($actual_list as $i => $attachmentFileName) {
-            if ($actual_id_list[$i] != 0) {
-                if (!in_array($actual_id_list[$i], $allowed_attach_ids)) {
+            if ($actual_id_list[$i] !== 0) {
+                if (!in_array($actual_id_list[$i], $allowed_attach_ids, true)) {
                     message_die(CRITICAL_ERROR, 'You tried to change an attachment you do not have access to', '');
                 }
             } else {
@@ -278,20 +284,20 @@ class attach_parent
         }
 
         // Get Attachments
-        if ($this->page == PAGE_PRIVMSGS) {
+        if ($this->page === PAGE_PRIVMSGS) {
             $attachments = get_attachments_from_pm($postId);
         } else {
             $attachments = get_attachments_from_post($postId);
         }
 
-        if ($this->page == PAGE_PRIVMSGS) {
-            if ($userdata['user_level'] == ADMIN) {
+        if ($this->page === PAGE_PRIVMSGS) {
+            if ($userdata['user_level'] === ADMIN) {
                 $auth = true;
             } else {
                 $auth = ((int)$attach_config['allow_pm_attach']) ? true : false;
             }
 
-            if (count($attachments) == 1) {
+            if (count($attachments) === 1) {
                 $template->assignBlockVars('switch_attachments', []);
 
                 $template->assignVars([
@@ -308,7 +314,7 @@ class attach_parent
             $auth = $is_auth['auth_edit'] || $is_auth['auth_mod'];
         }
 
-        if (!$submit && $mode == 'editpost' && $auth) {
+        if (!$submit && $mode === 'editpost' && $auth) {
             if (!$refresh && !$preview && !$error && !isset($_POST['del_poll_option'])) {
                 foreach ($attachments as $attachment) {
                     $this->attachment_list[] = $attachment->physical_filename;
@@ -326,11 +332,11 @@ class attach_parent
 
         $this->num_attachments = count($this->attachment_list);
 
-        if ($submit && $mode != 'vote') {
-            if ($mode == 'newtopic' || $mode == 'reply' || $mode == 'editpost') {
-                if ($this->filename != '') {
+        if ($submit && $mode !== 'vote') {
+            if ($mode === 'newtopic' || $mode === 'reply' || $mode === 'editpost') {
+                if ($this->filename !== '') {
                     if ($this->num_attachments < (int)$max_attachments) {
-                        $this->upload_attachment($this->page);
+                        $this->upload_attachment();
 
                         if (!$error && $this->post_attach) {
                             array_unshift($this->attachment_list, $this->attach_filename);
@@ -401,26 +407,24 @@ class attach_parent
 
                 // restore values :)
                 if (isset($_POST['attachment_list'])) {
-                    for ($i = 0; $i < count($actual_list); $i++) {
+                    foreach ($actual_list as $i => $attachFileName) {
                         $restore = false;
                         $del_thumb = false;
 
                         if ($delete_thumbnail) {
-                            if (!isset($_POST['del_thumbnail'][$actual_list[$i]])) {
-                                $restore = true;
-                            } else {
+                            if (isset($_POST['del_thumbnail'][$attachFileName])) {
                                 $del_thumb = true;
+                            } else {
+                                $restore = true;
                             }
                         }
 
-                        if ($delete_attachment) {
-                            if (!isset($_POST['del_attachment'][$actual_list[$i]])) {
-                                $restore = true;
-                            }
+                        if ($delete_attachment && !isset($_POST['del_attachment'][$attachFileName])) {
+                            $restore = true;
                         }
 
                         if ($restore) {
-                            $this->attachment_list[] = $actual_list[$i];
+                            $this->attachment_list[] = $attachFileName;
                             $this->attachment_comment_list[] = $actual_comment_list[$i];
                             $this->attachment_filename_list[] = $actual_filename_list[$i];
                             $this->attachment_extension_list[] = $actual_extension_list[$i];
@@ -431,18 +435,18 @@ class attach_parent
                             $this->attachment_thumbnail_list[] = $actual_thumbnail_list[$i];
                         } else if (!$del_thumb) {
                             // delete selected attachment
-                            if ($actual_id_list[$i] == '0') {
-                                unlink_attach($actual_list[$i]);
+                            if ($actual_id_list[$i] === '0') {
+                                unlink_attach($attachFileName);
 
-                                if ($actual_thumbnail_list[$i] == 1) {
-                                    unlink_attach($actual_list[$i], MODE_THUMBNAIL);
+                                if ($actual_thumbnail_list[$i] === 1) {
+                                    unlink_attach($attachFileName, MODE_THUMBNAIL);
                                 }
                             } else {
                                 delete_attachment([$postId], $actual_id_list[$i], $this->page);
                             }
                         } else if ($del_thumb) {
                             // delete selected thumbnail
-                            $this->attachment_list[] = $actual_list[$i];
+                            $this->attachment_list[] = $attachFileName;
                             $this->attachment_comment_list[] = $actual_comment_list[$i];
                             $this->attachment_filename_list[] = $actual_filename_list[$i];
                             $this->attachment_extension_list[] = $actual_extension_list[$i];
@@ -452,8 +456,8 @@ class attach_parent
                             $this->attachment_id_list[] = $actual_id_list[$i];
                             $this->attachment_thumbnail_list[] = 0;
 
-                            if ($actual_id_list[$i] == 0) {
-                                unlink_attach($actual_list[$i], MODE_THUMBNAIL);
+                            if ($actual_id_list[$i] === 0) {
+                                unlink_attach($attachFileName, MODE_THUMBNAIL);
                             } else {
                                 dibi::update(Tables::ATTACH_ATTACHMENTS_DESC_TABLE, ['thumbnail' => 0])
                                     ->where('[attach_id] = %i', $actual_id_list[$i])
@@ -468,13 +472,13 @@ class attach_parent
 
                     $this->attachment_comment_list = [];
 
-                    for ($i = 0; $i < count($this->attachment_list); $i++) {
+                    foreach ($this->attachment_list as $i => $value) {
                         $this->attachment_comment_list[$i] = $actual_comment_list[$i];
                     }
                 }
 
                 if ($update_attachment) {
-                    if ($this->filename == '') {
+                    if ($this->filename === '') {
                         $error = true;
 
                         if (!empty($error_msg)) {
@@ -484,7 +488,7 @@ class attach_parent
                         $error_msg .= $lang['Error_empty_add_attachbox'];
                     }
 
-                    $this->upload_attachment($this->page);
+                    $this->upload_attachment();
 
                     if (!$error) {
                         $actual_list = get_var('attachment_list', ['']);
@@ -493,9 +497,9 @@ class attach_parent
                         $attachment_id = 0;
                         $actual_element = 0;
 
-                        for ($i = 0; $i < count($actual_id_list); $i++) {
-                            if (isset($_POST['update_attachment'][$actual_id_list[$i]])) {
-                                $attachment_id = (int)$actual_id_list[$i];
+                        foreach ($actual_id_list as $i => $attachmentId) {
+                            if (isset($_POST['update_attachment'][$attachmentId])) {
+                                $attachment_id = (int)$attachmentId;
                                 $actual_element = $i;
                             }
                         }
@@ -514,7 +518,7 @@ class attach_parent
                             $error_msg .= $lang['Error_missing_old_entry'];
                         }
 
-                        $comment = (trim($this->file_comment) == '') ? trim($row->comment) : trim($this->file_comment);
+                        $comment = (trim($this->file_comment) === '') ? trim($row->comment) : trim($this->file_comment);
 
                         // Update Entry
                         $sql_ary = [
@@ -533,10 +537,10 @@ class attach_parent
                             ->execute();
 
                         // Delete the Old Attachment
-                        unlink_attach($row['physical_filename']);
+                        unlink_attach($row->physical_filename);
 
-                        if ((int)$row['thumbnail'] == 1) {
-                            unlink_attach($row['physical_filename'], MODE_THUMBNAIL);
+                        if ((int)$row->thumbnail === 1) {
+                            unlink_attach($row->physical_filename, MODE_THUMBNAIL);
                         }
 
                         // Make sure it is displayed
@@ -553,9 +557,9 @@ class attach_parent
                     }
                 }
 
-                if (($add_attachment || $preview) && $this->filename != '') {
+                if (($add_attachment || $preview) && $this->filename !== '') {
                     if ($this->num_attachments < (int)$max_attachments) {
-                        $this->upload_attachment($this->page);
+                        $this->upload_attachment();
 
                         if (!$error) {
                             array_unshift($this->attachment_list, $this->attach_filename);
@@ -586,6 +590,11 @@ class attach_parent
 
     /**
      * Basic Insert Attachment Handling for all Message Types
+     * @param $mode
+     * @param $message_type
+     * @param $message_id
+     * @return bool
+     * @throws \Dibi\Exception
      */
     public function do_insert_attachment($mode, $message_type, $message_id)
     {
@@ -593,7 +602,7 @@ class attach_parent
             return false;
         }
 
-        if ($message_type == 'pm') {
+        if ($message_type === 'pm') {
             global $userdata, $to_userdata;
 
             $post_id = 0;
@@ -601,7 +610,7 @@ class attach_parent
             $user_id_1 = (int)$userdata['user_id'];
             $user_id_2 = (int)$to_userdata['user_id'];
             $sql_id = 'privmsgs_id';
-        } else if ($message_type = 'post') {
+        } else if ($message_type === 'post') {
             global $post_info, $userdata;
 
             $post_id = (int)$message_id;
@@ -615,8 +624,8 @@ class attach_parent
             }
         }
 
-        if ($mode == 'attach_list') {
-            for ($i = 0; $i < count($this->attachment_list); $i++) {
+        if ($mode === 'attach_list') {
+            foreach ($this->attachment_list as $i => $attachmentId) {
                 if ($this->attachment_id_list[$i]) {
                     // Check if the attachment id is connected to the message
                     $row = dibi::select('attach_id')
@@ -663,7 +672,7 @@ class attach_parent
             return true;
         }
 
-        if ($mode == 'last_attachment') {
+        if ($mode === 'last_attachment') {
             if ($this->post_attach && !isset($_POST['update_attachment'])) {
                 // insert attachment into db, here the user submited it directly
                 $sql_ary = [
@@ -706,17 +715,17 @@ class attach_parent
 
         if ((int)$attach_config['show_apcp']) {
             if (!empty($_POST['add_attachment_box'])) {
-                $value_add = ($this->add_attachment_body == 0) ? 1 : 0;
+                $value_add = ($this->add_attachment_body === 0) ? 1 : 0;
                 $this->add_attachment_body = $value_add;
             } else {
-                $value_add = ($this->add_attachment_body == 0) ? 0 : 1;
+                $value_add = ($this->add_attachment_body === 0) ? 0 : 1;
             }
 
             if (!empty($_POST['posted_attachments_box'])) {
-                $value_posted = ($this->posted_attachments_body == 0) ? 1 : 0;
+                $value_posted = ($this->posted_attachments_body === 0) ? 1 : 0;
                 $this->posted_attachments_body = $value_posted;
             } else {
-                $value_posted = ($this->posted_attachments_body == 0) ? 0 : 1;
+                $value_posted = ($this->posted_attachments_body === 0) ? 0 : 1;
             }
             $template->assignBlockVars('show_apcp', []);
         } else {
@@ -731,7 +740,7 @@ class attach_parent
         $s_hidden = '<input type="hidden" name="add_attachment_body" value="' . $value_add . '" />';
         $s_hidden .= '<input type="hidden" name="posted_attachments_body" value="' . $value_posted . '" />';
 
-        if ($this->page == PAGE_PRIVMSGS) {
+        if ($this->page === PAGE_PRIVMSGS) {
             $u_rules_id = 0;
         } else {
             $u_rules_id = $forum_id;
@@ -759,7 +768,7 @@ class attach_parent
                 $template->assignBlockVars('switch_posted_attachments', []);
             }
 
-            for ($i = 0; $i < count($this->attachment_list); $i++) {
+            foreach ($this->attachment_list as $i => $attachmentId) {
                 $hidden = '<input type="hidden" name="attachment_list[]" value="' . $this->attachment_list[$i] . '" />';
                 $hidden .= '<input type="hidden" name="filename_list[]" value="' . $this->attachment_filename_list[$i] . '" />';
                 $hidden .= '<input type="hidden" name="extension_list[]" value="' . $this->attachment_extension_list[$i] . '" />';
@@ -769,7 +778,7 @@ class attach_parent
                 $hidden .= '<input type="hidden" name="attach_id_list[]" value="' . $this->attachment_id_list[$i] . '" />';
                 $hidden .= '<input type="hidden" name="attach_thumbnail_list[]" value="' . $this->attachment_thumbnail_list[$i] . '" />';
 
-                if (!$this->posted_attachments_body || count($this->attachment_list) == 0) {
+                if (!$this->posted_attachments_body || count($this->attachment_list) === 0) {
                     $hidden .= '<input type="hidden" name="comment_list[]" value="' . $this->attachment_comment_list[$i] . '" />';
                 }
 
@@ -814,8 +823,8 @@ class attach_parent
                 ]
             );
 
-            for ($i = 0; $i < count($this->attachment_list); $i++) {
-                if ($this->attachment_id_list[$i] == 0) {
+            foreach ($this->attachment_list as $i => $attachmentId) {
+                if ($this->attachment_id_list[$i] === 0) {
                     $download_link = $upload_dir . '/' . basename($this->attachment_list[$i]);
                 } else {
                     $download_link = Session::appendSid($phpbb_root_path . 'download.php?id=' . $this->attachment_id_list[$i]);
@@ -831,7 +840,7 @@ class attach_parent
                 );
 
                 // Thumbnail there ? And is the User Admin or Mod ? Then present the 'Delete Thumbnail' Button
-                if ((int)$this->attachment_thumbnail_list[$i] == 1 && ((isset($is_auth['auth_mod']) && $is_auth['auth_mod']) || $userdata['user_level'] == ADMIN)) {
+                if ((int)$this->attachment_thumbnail_list[$i] === 1 && ((isset($is_auth['auth_mod']) && $is_auth['auth_mod']) || $userdata['user_level'] === ADMIN)) {
                     $template->assignBlockVars('attach_row.switch_thumbnail', []);
                 }
 
@@ -851,14 +860,14 @@ class attach_parent
     {
         global $error, $error_msg, $lang, $attach_config, $userdata, $upload_dir, $forum_id;
 
-        $this->post_attach = $this->filename != '';
+        $this->post_attach = $this->filename !== '';
 
         if ($this->post_attach) {
             $r_file = trim(basename(htmlspecialchars($this->filename)));
             $file = $_FILES['fileupload']['tmp_name'];
             $this->type = $_FILES['fileupload']['type'];
 
-            if (isset($_FILES['fileupload']['size']) && $_FILES['fileupload']['size'] == 0) {
+            if (isset($_FILES['fileupload']['size']) && $_FILES['fileupload']['size'] === 0) {
                 message_die(GENERAL_ERROR, 'Tried to upload empty file');
             }
 
@@ -893,7 +902,7 @@ class attach_parent
             }
 
             // check php upload-size
-            if (!$error && $file == 'none') {
+            if (!$error && $file === 'none') {
                 $error = true;
                 if (!empty($error_msg)) {
                     $error_msg .= '<br />';
@@ -902,7 +911,7 @@ class attach_parent
 
                 $max_size = @$ini_val('upload_max_filesize');
 
-                if ($max_size == '') {
+                if ($max_size === '') {
                     $error_msg .= $lang['Attachment_php_size_na'];
                 } else {
                     $error_msg .= sprintf($lang['Attachment_php_size_overrun'], $max_size);
@@ -910,7 +919,7 @@ class attach_parent
             }
 
             // Check Extension
-            if (!$error && (int)$row['allow_group'] == 0) {
+            if (!$error && (int)$row['allow_group'] === 0) {
                 $error = true;
                 if (!empty($error_msg)) {
                     $error_msg .= '<br />';
@@ -919,7 +928,7 @@ class attach_parent
             }
 
             // Check Forum Permissions
-            if (!$error && $this->page != PAGE_PRIVMSGS && $userdata['user_level'] != ADMIN && !is_forum_authed($auth_cache, $forum_id) && trim($auth_cache) != '') {
+            if (!$error && $this->page !== PAGE_PRIVMSGS && $userdata['user_level'] !== ADMIN && !is_forum_authed($auth_cache, $forum_id) && trim($auth_cache) !== '') {
                 $error = true;
                 if (!empty($error_msg)) {
                     $error_msg .= '<br />';
@@ -942,7 +951,10 @@ class attach_parent
                 // To re-add cryptic filenames, change this variable to true
                 $cryptic = false;
 
-                if (!$cryptic) {
+                if ($cryptic) {
+                    $u_id = ((int)$userdata['user_id'] === ANONYMOUS) ? 0 : (int)$userdata['user_id'];
+                    $this->attach_filename = $u_id . '_' . $this->filetime . '.' . $this->extension;
+                } else {
                     $this->attach_filename = html_entity_decode(trim(stripslashes($this->attach_filename)));
                     $this->attach_filename = delete_extension($this->attach_filename);
                     $this->attach_filename = str_replace([' ', '-'], ['_', '_'], $this->attach_filename);
@@ -958,7 +970,7 @@ class attach_parent
                     $new_filename = $this->attach_filename;
 
                     if (!$new_filename) {
-                        $u_id = ((int)$userdata['user_id'] == ANONYMOUS) ? 0 : (int)$userdata['user_id'];
+                        $u_id = ((int)$userdata['user_id'] === ANONYMOUS) ? 0 : (int)$userdata['user_id'];
                         $new_filename = $u_id . '_' . $this->filetime . '.' . $this->extension;
                     }
 
@@ -967,13 +979,10 @@ class attach_parent
                     } while (physical_filename_already_stored($this->attach_filename));
 
                     unset($new_filename);
-                } else {
-                    $u_id = ((int)$userdata['user_id'] == ANONYMOUS) ? 0 : (int)$userdata['user_id'];
-                    $this->attach_filename = $u_id . '_' . $this->filetime . '.' . $this->extension;
                 }
 
                 // Do we have to create a thumbnail ?
-                if ($cat_id == IMAGE_CAT && (int)$attach_config['img_create_thumbnail']) {
+                if ($cat_id === IMAGE_CAT && (int)$attach_config['img_create_thumbnail']) {
                     $this->thumbnail = 1;
                 }
             }
@@ -985,7 +994,9 @@ class attach_parent
 
             // Upload Attachment
             if (!$error) {
-                if (!((int)$attach_config['allow_ftp_upload'])) {
+                if (((int)$attach_config['allow_ftp_upload'])) {
+                    $upload_mode = 'ftp';
+                } else {
                     // Descide the Upload method
                     $ini_val = (PHP_VERSION >= '4.0.0') ? 'ini_get' : 'get_cfg_var';
 
@@ -1002,8 +1013,6 @@ class attach_parent
                     } else {
                         $upload_mode = 'copy';
                     }
-                } else {
-                    $upload_mode = 'ftp';
                 }
 
                 // Ok, upload the Attachment
@@ -1014,13 +1023,13 @@ class attach_parent
 
             // Now, check filesize parameters
             if (!$error) {
-                if ($upload_mode != 'ftp' && !$this->filesize) {
+                if ($upload_mode !== 'ftp' && !$this->filesize) {
                     $this->filesize = (int)@filesize($upload_dir . '/' . $this->attach_filename);
                 }
             }
 
             // Check image type
-            if ($cat_id == IMAGE_CAT || strpos($this->type, 'image/') === 0) {
+            if ($cat_id === IMAGE_CAT || strpos($this->type, 'image/') === 0) {
                 $img_info = @getimagesize($upload_dir . '/' . $this->attach_filename);
 
                 // Do not display as image if we are not able to retrieve the info
@@ -1057,7 +1066,7 @@ class attach_parent
                             $error_msg .= '<br />';
                         }
                         $error_msg .= sprintf($lang['General_upload_error'], './' . $upload_dir . '/' . $this->attach_filename);
-                    } else if (!in_array($this->extension, $types[$img_info[2]])) {
+                    } else if (!in_array($this->extension, $types[$img_info[2]], true)) {
                         $error = true;
                         if (!empty($error_msg)) {
                             $error_msg .= '<br />';
@@ -1069,10 +1078,10 @@ class attach_parent
             }
 
             // Check Image Size, if it's an image
-            if (!$error && $userdata['user_level'] != ADMIN && $cat_id == IMAGE_CAT) {
+            if (!$error && $userdata['user_level'] !== ADMIN && $cat_id === IMAGE_CAT) {
                 list($width, $height) = image_getdimension($upload_dir . '/' . $this->attach_filename);
 
-                if ($width != 0 && $height != 0 && (int)$attach_config['img_max_width'] != 0 && (int)$attach_config['img_max_height'] != 0) {
+                if ($width !== 0 && $height !== 0 && (int)$attach_config['img_max_width'] !== 0 && (int)$attach_config['img_max_height'] !== 0) {
                     if ($width > (int)$attach_config['img_max_width'] || $height > (int)$attach_config['img_max_height']) {
                         $error = true;
                         if (!empty($error_msg)) {
@@ -1084,7 +1093,7 @@ class attach_parent
             }
 
             // check Filesize
-            if (!$error && $allowed_filesize != 0 && $this->filesize > $allowed_filesize && $userdata['user_level'] != ADMIN) {
+            if (!$error && $allowed_filesize !== 0 && $this->filesize > $allowed_filesize && $userdata['user_level'] !== ADMIN) {
                 $size_lang = ($allowed_filesize >= 1048576) ? $lang['MB'] : (($allowed_filesize >= 1024) ? $lang['KB'] : $lang['Bytes']);
 
                 if ($allowed_filesize >= 1048576) {
@@ -1119,7 +1128,7 @@ class attach_parent
             $this->get_quota_limits($userdata);
 
             // Check our user quota
-            if ($this->page != PAGE_PRIVMSGS) {
+            if ($this->page !== PAGE_PRIVMSGS) {
                 if ($attach_config['upload_filesize_limit']) {
                     $attach_ids = dibi::select('attach_id')
                         ->from(Tables::ATTACH_ATTACHMENT_TABLE)
@@ -1159,7 +1168,7 @@ class attach_parent
             }
 
             // If we are at Private Messaging, check our PM Quota
-            if ($this->page == PAGE_PRIVMSGS) {
+            if ($this->page === PAGE_PRIVMSGS) {
                 if ($attach_config['pm_filesize_limit']) {
                     $total_filesize = get_total_attach_pm_filesize('from_user', $userdata['user_id']);
 
@@ -1175,7 +1184,7 @@ class attach_parent
                 $to_user = (isset($_POST['username'])) ? $_POST['username'] : '';
 
                 // Check Receivers PM Quota
-                if (!empty($to_user) && $userdata['user_level'] != ADMIN) {
+                if (!empty($to_user) && $userdata['user_level'] !== ADMIN) {
                     $u_data = get_userdata($to_user, true);
 
                     $user_id = (int)$u_data['user_id'];
@@ -1203,7 +1212,16 @@ class attach_parent
         }
     }
 
-    // Copy the temporary attachment to the right location (copy, move_uploaded_file or ftp)
+    /**
+     * Copy the temporary attachment to the right location (copy, move_uploaded_file or ftp)
+     *
+     * @param $upload_mode
+     * @param $file
+     */
+    /**
+     * @param $upload_mode
+     * @param $file
+     */
     public function move_uploaded_attachment($upload_mode, $file)
     {
         global $error, $error_msg, $lang, $upload_dir;
@@ -1250,8 +1268,8 @@ class attach_parent
                 break;
         }
 
-        if (!$error && $this->thumbnail == 1) {
-            if ($upload_mode == 'ftp') {
+        if (!$error && $this->thumbnail === 1) {
+            if ($upload_mode === 'ftp') {
                 $source = $file;
                 $dest_file = THUMB_DIR . '/t_' . basename($this->attach_filename);
             } else {
@@ -1308,13 +1326,15 @@ class attach_posting extends attach_parent
 
     /**
      * Insert an Attachment into a Post (this is the second function called from posting.php)
+     * @param $post_id
+     * @throws \Dibi\Exception
      */
     public function insert_attachment($post_id)
     {
         global $is_auth, $mode, $userdata, $error, $error_msg;
 
         // Insert Attachment ?
-        if (!empty($post_id) && ($mode == 'newtopic' || $mode == 'reply' || $mode == 'editpost') && $is_auth['auth_attachments']) {
+        if (!empty($post_id) && ($mode === 'newtopic' || $mode === 'reply' || $mode === 'editpost') && $is_auth['auth_attachments']) {
             $this->do_insert_attachment('attach_list', 'post', $post_id);
             $this->do_insert_attachment('last_attachment', 'post', $post_id);
 
@@ -1356,7 +1376,7 @@ class attach_posting extends attach_parent
             return;
         }
 
-        if ($confirm && ($delete || $mode == 'delete' || $mode == 'editpost') && ($is_auth['auth_delete'] || $is_auth['auth_mod'])) {
+        if ($confirm && ($delete || $mode === 'delete' || $mode === 'editpost') && ($is_auth['auth_delete'] || $is_auth['auth_mod'])) {
             if ($postId) {
                 delete_attachment([$postId]);
             }

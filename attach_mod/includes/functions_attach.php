@@ -18,6 +18,12 @@ use Dibi\Fluent;
  * html_entity_decode replacement (from php manual)
  */
 if (!function_exists('html_entity_decode')) {
+    /**
+     * @param     $given_html
+     * @param int $quote_style
+     *
+     * @return string
+     */
     function html_entity_decode($given_html, $quote_style = ENT_QUOTES)
     {
         $trans_table = array_flip(get_html_translation_table(HTML_SPECIALCHARS, $quote_style));
@@ -28,6 +34,10 @@ if (!function_exists('html_entity_decode')) {
 
 /**
  * A simple dectobase64 function
+ *
+ * @param $number
+ *
+ * @return mixed|string|void
  */
 function base64_pack($number)
 {
@@ -57,7 +67,9 @@ function base64_pack($number)
 
 /**
  * base64todec function
- */
+ * @param $string
+ * @return float|int
+*/
 function base64_unpack($string)
 {
     $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+-';
@@ -80,7 +92,9 @@ function base64_unpack($string)
 /**
  * Per Forum based Extension Group Permissions (Encode Number) -> Theoretically up to 158 Forums saveable. :)
  * We are using a base of 64, but splitting it to one-char and two-char numbers. :)
- */
+ * @param $auth_array
+ * @return string
+*/
 function auth_pack($auth_array)
 {
     $one_char_encoding = '#';
@@ -90,10 +104,10 @@ function auth_pack($auth_array)
 
     for ($i = 0; $i < count($auth_array); $i++) {
         $val = base64_pack((int)$auth_array[$i]);
-        if (strlen($val) == 1 && !$one_char) {
+        if (strlen($val) === 1 && !$one_char) {
             $auth_cache .= $one_char_encoding;
             $one_char = true;
-        } else if (strlen($val) == 2 && !$two_char) {
+        } else if (strlen($val) === 2 && !$two_char) {
             $auth_cache .= $two_char_encoding;
             $two_char = true;
         }
@@ -106,7 +120,9 @@ function auth_pack($auth_array)
 
 /**
  * Reverse the auth_pack process
- */
+ * @param $auth_cache
+ * @return array
+*/
 function auth_unpack($auth_cache)
 {
     $one_char_encoding = '#';
@@ -115,12 +131,15 @@ function auth_unpack($auth_cache)
     $auth = [];
     $auth_len = 1;
 
-    for ($pos = 0; $pos < strlen($auth_cache); $pos += $auth_len) {
+    $condition = $pos < strlen($auth_cache);
+
+    for ($pos = 0; $condition; $pos += $auth_len) {
         $forum_auth = substr($auth_cache, $pos, 1);
-        if ($forum_auth == $one_char_encoding) {
+
+        if ($forum_auth === $one_char_encoding) {
             $auth_len = 1;
             continue;
-        } else if ($forum_auth == $two_char_encoding) {
+        } else if ($forum_auth === $two_char_encoding) {
             $auth_len = 2;
             $pos--;
             continue;
@@ -135,25 +154,30 @@ function auth_unpack($auth_cache)
 
 /**
  * Used for determining if Forum ID is authed, please use this Function on all Posting Screens
- */
+ * @param $auth_cache
+ * @param $check_forum_id
+ * @return bool
+*/
 function is_forum_authed($auth_cache, $check_forum_id)
 {
     $one_char_encoding = '#';
     $two_char_encoding = '.';
 
-    if (trim($auth_cache) == '') {
+    if (trim($auth_cache) === '') {
         return true;
     }
 
     $auth = [];
     $auth_len = 1;
 
-    for ($pos = 0; $pos < strlen($auth_cache); $pos += $auth_len) {
+    $condition = $pos < strlen($auth_cache);
+
+    for ($pos = 0; $condition; $pos += $auth_len) {
         $forum_auth = substr($auth_cache, $pos, 1);
-        if ($forum_auth == $one_char_encoding) {
+        if ($forum_auth === $one_char_encoding) {
             $auth_len = 1;
             continue;
-        } else if ($forum_auth == $two_char_encoding) {
+        } else if ($forum_auth === $two_char_encoding) {
             $auth_len = 2;
             $pos--;
             continue;
@@ -161,7 +185,7 @@ function is_forum_authed($auth_cache, $check_forum_id)
 
         $forum_auth = substr($auth_cache, $pos, $auth_len);
         $forum_id = (int)base64_unpack($forum_auth);
-        if ($forum_id == $check_forum_id) {
+        if ($forum_id === $check_forum_id) {
             return true;
         }
     }
@@ -170,14 +194,16 @@ function is_forum_authed($auth_cache, $check_forum_id)
 
 /**
  * Init FTP Session
- */
+ * @param bool $mode
+ * @return false|resource
+*/
 function attach_init_ftp($mode = false)
 {
     global $lang, $attach_config;
 
-    $server = (trim($attach_config['ftp_server']) == '') ? 'localhost' : trim($attach_config['ftp_server']);
+    $server = (trim($attach_config['ftp_server']) === '') ? 'localhost' : trim($attach_config['ftp_server']);
 
-    $ftp_path = ($mode == MODE_THUMBNAIL) ? trim($attach_config['ftp_path']) . '/' . THUMB_DIR : trim($attach_config['ftp_path']);
+    $ftp_path = ($mode === MODE_THUMBNAIL) ? trim($attach_config['ftp_path']) . '/' . THUMB_DIR : trim($attach_config['ftp_path']);
 
     $conn_id = @ftp_connect($server);
 
@@ -206,32 +232,27 @@ function attach_init_ftp($mode = false)
 
 /**
  * Deletes an Attachment
- */
+ * @param      $filename
+ * @param bool $mode
+ * @return bool
+*/
 function unlink_attach($filename, $mode = false)
 {
     global $upload_dir, $attach_config, $lang;
 
     $filename = basename($filename);
 
-    if (!(int)$attach_config['allow_ftp_upload']) {
-        if ($mode == MODE_THUMBNAIL) {
-            $filename = $upload_dir . '/' . THUMB_DIR . '/t_' . $filename;
-        } else {
-            $filename = $upload_dir . '/' . $filename;
-        }
-
-        $deleted = @unlink($filename);
-    } else {
+    if ((int)$attach_config['allow_ftp_upload']) {
         $conn_id = attach_init_ftp($mode);
 
-        if ($mode == MODE_THUMBNAIL) {
+        if ($mode === MODE_THUMBNAIL) {
             $filename = 't_' . $filename;
         }
 
         $res = @ftp_delete($conn_id, $filename);
         if (!$res) {
             if (ATTACH_DEBUG) {
-                $add = ($mode == MODE_THUMBNAIL) ? '/' . THUMB_DIR : '';
+                $add = ($mode === MODE_THUMBNAIL) ? '/' . THUMB_DIR : '';
                 message_die(GENERAL_ERROR, sprintf($lang['Ftp_error_delete'], $attach_config['ftp_path'] . $add));
             }
 
@@ -241,6 +262,14 @@ function unlink_attach($filename, $mode = false)
         @ftp_close($conn_id);
 
         $deleted = true;
+    } else {
+        if ($mode === MODE_THUMBNAIL) {
+            $filename = $upload_dir . '/' . THUMB_DIR . '/t_' . $filename;
+        } else {
+            $filename = $upload_dir . '/' . $filename;
+        }
+
+        $deleted = @unlink($filename);
     }
 
     return $deleted;
@@ -248,7 +277,12 @@ function unlink_attach($filename, $mode = false)
 
 /**
  * FTP File to Location
- */
+ * @param      $source_file
+ * @param      $dest_file
+ * @param      $mimetype
+ * @param bool $disable_error_mode
+ * @return bool
+*/
 function ftp_file($source_file, $dest_file, $mimetype, $disable_error_mode = false)
 {
     global $attach_config, $lang, $error, $error_msg;
@@ -284,32 +318,26 @@ function ftp_file($source_file, $dest_file, $mimetype, $disable_error_mode = fal
 
 /**
  * Check if Attachment exist
- */
+ * @param $filename
+ * @return bool
+*/
 function attachment_exists($filename)
 {
     global $upload_dir, $attach_config;
 
     $filename = basename($filename);
 
-    if (!(int)$attach_config['allow_ftp_upload']) {
-        if (!@file_exists(@amod_realpath($upload_dir . '/' . $filename))) {
-            return false;
-        } else {
-            return true;
-        }
-    } else {
+    if ((int)$attach_config['allow_ftp_upload']) {
         $found = false;
 
         $conn_id = attach_init_ftp();
 
-        $file_listing = [];
-
         $file_listing = @ftp_rawlist($conn_id, $filename);
 
         for ($i = 0, $size = count($file_listing); $i < $size; $i++) {
-            if (ereg("([-d])[rwxst-]{9}.* ([0-9]*) ([a-zA-Z]+[0-9: ]*[0-9]) ([0-9]{2}:[0-9]{2}) (.+)", $file_listing[$i], $regs)) {
-                if ($regs[1] == 'd') {
-                    $dirinfo[0] = 1;    // Directory == 1
+            if (preg_match("#([-d])[rwxst-]{9}.* ([0-9]*) ([a-zA-Z]+[0-9: ]*[0-9]) ([0-9]{2}:[0-9]{2}) (.+)#", $file_listing[$i], $regs)) {
+                if ($regs[1] === 'd') {
+                    $dirinfo[0] = 1;    // Directory === 1
                 }
                 $dirinfo[1] = $regs[2]; // Size
                 $dirinfo[2] = $regs[3]; // Date
@@ -317,7 +345,7 @@ function attachment_exists($filename)
                 $dirinfo[4] = $regs[5]; // Time
             }
 
-            if ($dirinfo[0] != 1 && $dirinfo[4] == $filename) {
+            if ($dirinfo[0] !== 1 && $dirinfo[4] === $filename) {
                 $found = true;
             }
         }
@@ -325,38 +353,35 @@ function attachment_exists($filename)
         @ftp_close($conn_id);
 
         return $found;
+    } else {
+        return @file_exists(@amod_realpath($upload_dir . '/' . $filename));
     }
 }
 
 /**
  * Check if Thumbnail exist
- */
+ * @param $filename
+ * @return bool
+*/
 function thumbnail_exists($filename)
 {
     global $upload_dir, $attach_config;
 
     $filename = basename($filename);
 
-    if (!(int)$attach_config['allow_ftp_upload']) {
-        if (!@file_exists(@amod_realpath($upload_dir . '/' . THUMB_DIR . '/t_' . $filename))) {
-            return false;
-        } else {
-            return true;
-        }
-    } else {
+    if ((int)$attach_config['allow_ftp_upload']) {
         $found = false;
 
         $conn_id = attach_init_ftp(MODE_THUMBNAIL);
-
-        $file_listing = [];
 
         $filename = 't_' . $filename;
         $file_listing = @ftp_rawlist($conn_id, $filename);
 
         for ($i = 0, $size = count($file_listing); $i < $size; $i++) {
-            if (ereg("([-d])[rwxst-]{9}.* ([0-9]*) ([a-zA-Z]+[0-9: ]*[0-9]) ([0-9]{2}:[0-9]{2}) (.+)", $file_listing[$i], $regs)) {
-                if ($regs[1] == 'd') {
-                    $dirinfo[0] = 1;    // Directory == 1
+            if (preg_match("#([-d])[rwxst-]{9}.* ([0-9]*) ([a-zA-Z]+[0-9: ]*[0-9]) ([0-9]{2}:[0-9]{2}) (.+)#",
+                $file_listing[$i], $regs)) {
+                if ($regs[1] === 'd') {
+                    $dirinfo[0] = 1;    // Directory === 1
                 }
                 $dirinfo[1] = $regs[2]; // Size
                 $dirinfo[2] = $regs[3]; // Date
@@ -364,7 +389,7 @@ function thumbnail_exists($filename)
                 $dirinfo[4] = $regs[5]; // Time
             }
 
-            if ($dirinfo[0] != 1 && $dirinfo[4] == $filename) {
+            if ($dirinfo[0] !== 1 && $dirinfo[4] === $filename) {
                 $found = true;
             }
         }
@@ -372,15 +397,19 @@ function thumbnail_exists($filename)
         @ftp_close($conn_id);
 
         return $found;
+    } else {
+        return @file_exists(@amod_realpath($upload_dir . '/' . THUMB_DIR . '/t_' . $filename));
     }
 }
 
 /**
  * Physical Filename stored already ?
- */
+ * @param $filename
+ * @return bool
+*/
 function physical_filename_already_stored($filename)
 {
-    if ($filename == '') {
+    if ($filename === '') {
         return false;
     }
 
@@ -396,12 +425,15 @@ function physical_filename_already_stored($filename)
 
 /**
  * Determine if an Attachment exist in a post/pm
- */
+ * @param     $post_id
+ * @param int $page
+ * @return bool
+*/
 function attachment_exists_db($post_id, $page = 0)
 {
     $post_id = (int)$post_id;
 
-    if ($page == PAGE_PRIVMSGS) {
+    if ($page === PAGE_PRIVMSGS) {
         $sql_id = 'privmsgs_id';
     } else {
         $sql_id = 'post_id';
@@ -421,7 +453,9 @@ function attachment_exists_db($post_id, $page = 0)
 
 /**
  * get all attachments from a post (could be an post array too)
- */
+ * @param $post_id_array
+ * @return array
+*/
 function get_attachments_from_post($post_id_array)
 {
     global $db, $attach_config;
@@ -441,11 +475,11 @@ function get_attachments_from_post($post_id_array)
 
     //$post_id_array = implode(', ', array_map('intval', $post_id_array));
 
-    if ($post_id_array == '') {
+    if ($post_id_array === '') {
         return $attachments;
     }
 
-    $display_order = ((int)$attach_config['display_order'] == 0) ? 'DESC' : 'ASC';
+    $display_order = ((int)$attach_config['display_order'] === 0) ? 'DESC' : 'ASC';
 
     return $attachments = dibi::select(['a.post_id', 'd.*'])
         ->from(Tables::ATTACH_ATTACHMENT_TABLE)
@@ -460,7 +494,9 @@ function get_attachments_from_post($post_id_array)
 
 /**
  * get all attachments from a pm
- */
+ * @param $privmsgs_id_array
+ * @return array
+*/
 function get_attachments_from_pm($privmsgs_id_array)
 {
     global $attach_config;
@@ -480,11 +516,11 @@ function get_attachments_from_pm($privmsgs_id_array)
 
     //$privmsgs_id_array = implode(', ', array_map('intval', $privmsgs_id_array));
 
-    if ($privmsgs_id_array == '') {
+    if ($privmsgs_id_array === '') {
         return $attachments;
     }
 
-    $display_order = ((int)$attach_config['display_order'] == 0) ? 'DESC' : 'ASC';
+    $display_order = ((int)$attach_config['display_order'] === 0) ? 'DESC' : 'ASC';
 
     return dibi::select(['a.privmsgs_id', 'd.*'])
         ->from(Tables::ATTACH_ATTACHMENT_TABLE)
@@ -499,7 +535,9 @@ function get_attachments_from_pm($privmsgs_id_array)
 
 /**
  * Count Filesize of Attachments in Database based on the attachment id
- */
+ * @param $attach_ids
+ * @return int|mixed
+*/
 function get_total_attach_filesize($attach_ids)
 {
     if (!is_array($attach_ids) || !count($attach_ids)) {
@@ -515,13 +553,16 @@ function get_total_attach_filesize($attach_ids)
 
 /**
  * Count Filesize for Attachments in Users PM Boxes (Do not count the SENT Box)
- */
+ * @param $direction
+ * @param $user_id
+ * @return int|mixed
+*/
 function get_total_attach_pm_filesize($direction, $user_id)
 {
-    if ($direction != 'from_user' && $direction != 'to_user') {
+    if ($direction !== 'from_user' && $direction !== 'to_user') {
         return 0;
     } else {
-        $user_sql = ($direction == 'from_user') ? '(a.user_id_1 = ' . (int)$user_id . ')' : '(a.user_id_2 = ' . (int)$user_id . ')';
+        $user_sql = ($direction === 'from_user') ? '(a.user_id_1 = ' . (int)$user_id . ')' : '(a.user_id_2 = ' . (int)$user_id . ')';
     }
 
     $attach_id = dibi::select(['a.attach_id'])
@@ -546,7 +587,7 @@ function get_total_attach_pm_filesize($direction, $user_id)
 
     $pm_filesize_total = 0;
 
-    if ($num_rows == 0) {
+    if ($num_rows === 0) {
         return 0;
     }
 
@@ -571,7 +612,9 @@ function get_extension_informations()
 
 /**
  * Sync Topic (includes/functions_admin.php)
- */
+ * @param $topic_id
+ * @throws \Dibi\Exception
+*/
 function attachment_sync_topic($topic_id)
 {
     if (!$topic_id) {
@@ -617,7 +660,9 @@ function attachment_sync_topic($topic_id)
 
 /**
  * Get Extension
- */
+ * @param $filename
+ * @return false|string
+*/
 function get_extension($filename)
 {
     if (!stristr($filename, '.')) {
@@ -637,7 +682,9 @@ function get_extension($filename)
 
 /**
  * Delete Extension
- */
+ * @param $filename
+ * @return false|string
+*/
 function delete_extension($filename)
 {
     return substr($filename, 0, strrpos(strtolower(trim($filename)), '.'));
@@ -645,7 +692,10 @@ function delete_extension($filename)
 
 /**
  * Check if a user is within Group
- */
+ * @param $user_id
+ * @param $group_id
+ * @return bool
+*/
 function user_in_group($user_id, $group_id)
 {
     $user_id = (int)$user_id;
@@ -671,7 +721,9 @@ function user_in_group($user_id, $group_id)
 
 /**
  * Realpath replacement for attachment mod
- */
+ * @param $path
+ * @return false|string
+*/
 function amod_realpath($path)
 {
     return (function_exists('realpath')) ? realpath($path) : $path;
@@ -683,13 +735,17 @@ function amod_realpath($path)
  * Set variable, used by {@link get_var the get_var function}
  *
  * @private
- */
+ * @param      $result
+ * @param      $var
+ * @param      $type
+ * @param bool $multibyte
+*/
 function _set_var(&$result, $var, $type, $multibyte = false)
 {
     settype($var, $type);
     $result = $var;
 
-    if ($type == 'string') {
+    if ($type === 'string') {
         $result = trim(htmlspecialchars(str_replace(["\r\n", "\r", '\xFF'], ["\n", "\n", ' '], $result)));
         // 2.0.x is doing addslashes on all variables
         $result = stripslashes($result);
@@ -703,7 +759,11 @@ function _set_var(&$result, $var, $type, $multibyte = false)
  * get_var
  *
  * Used to get passed variable
- */
+ * @param      $var_name
+ * @param      $default
+ * @param bool $multibyte
+ * @return array|mixed
+*/
 function get_var($var_name, $default, $multibyte = false)
 {
     $request_var = (isset($_POST[$var_name])) ? $_POST : $_GET;
@@ -714,12 +774,12 @@ function get_var($var_name, $default, $multibyte = false)
 
     $var = $request_var[$var_name];
 
-    if (!is_array($default)) {
-        $type = gettype($default);
-    } else {
+    if (is_array($default)) {
         list($key_type, $type) = each($default);
         $type = gettype($type);
         $key_type = gettype($key_type);
+    } else {
+        $type = gettype($default);
     }
 
     if (is_array($var)) {
@@ -747,10 +807,12 @@ function get_var($var_name, $default, $multibyte = false)
 
 /**
  * Escaping SQL
- */
+ * @param $text
+ * @return mixed|string
+*/
 function attach_mod_sql_escape($text)
 {
-    switch (SQL_LAYER) {
+    switch (Config::DBMS) {
         case 'postgresql':
             return pg_escape_string($text);
             break;
@@ -770,10 +832,20 @@ function attach_mod_sql_escape($text)
     }
 }
 
+/**
+ * @param Fluent $fluent
+ * @param string $mode
+ * @param string $view
+ * @param int    $start
+ * @param string $sort_order
+ * @param array  $board_config
+ *
+ * @return Fluent
+ */
 function getOrderBy(Fluent $fluent, $mode, $view, $start, $sort_order, $board_config)
 {
     // Set Order
-    if ($view == 'username') {
+    if ($view === 'username') {
         switch ($mode) {
             case 'username':
                 $fluent->orderBy('u.username', $sort_order);
@@ -793,7 +865,7 @@ function getOrderBy(Fluent $fluent, $mode, $view, $start, $sort_order, $board_co
                 $sort_order = 'DESC';
                 break;
         }
-    } else if ($view == 'attachments') {
+    } else if ($view === 'attachments') {
         switch ($mode) {
             case 'filename':
                 $fluent->orderBy('a.real_filename', $sort_order);

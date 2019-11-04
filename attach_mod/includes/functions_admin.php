@@ -14,6 +14,13 @@
 
 /**
  * Set/Change Quotas
+ *
+ * @param     $mode
+ * @param     $id
+ * @param     $quota_type
+ * @param int $quota_limit_id
+ *
+ * @throws \Dibi\Exception
  */
 function process_quota_settings($mode, $id, $quota_type, $quota_limit_id = 0)
 {
@@ -21,7 +28,7 @@ function process_quota_settings($mode, $id, $quota_type, $quota_limit_id = 0)
     $quota_type = (int)$quota_type;
     $quota_limit_id = (int)$quota_limit_id;
 
-    if ($mode == 'user') {
+    if ($mode === 'user') {
         if (!$quota_limit_id) {
             dibi::delete(Tables::ATTACH_QUOTA_TABLE)
                 ->where('[user_id] = %i', $id)
@@ -35,7 +42,12 @@ function process_quota_settings($mode, $id, $quota_type, $quota_limit_id = 0)
                 ->where('[quota_type] = %i', $quota_type)
                 ->fetch();
 
-            if (!$checkQuota) {
+            if ($checkQuota) {
+                dibi::update(Tables::ATTACH_QUOTA_TABLE, ['quota_limit_id' => $quota_limit_id])
+                    ->where('[user_id] = %i', $id)
+                    ->where('[quota_type] = %i', $quota_type)
+                    ->execute();
+            } else {
                 $sql_ary = [
                     'user_id' => (int)$id,
                     'group_id' => 0,
@@ -44,20 +56,10 @@ function process_quota_settings($mode, $id, $quota_type, $quota_limit_id = 0)
                 ];
 
                 dibi::insert(Tables::ATTACH_QUOTA_TABLE, $sql_ary)->execute();
-            } else {
-                dibi::update(Tables::ATTACH_QUOTA_TABLE, ['quota_limit_id' => $quota_limit_id])
-                    ->where('[user_id] = %i', $id)
-                    ->where('[quota_type] = %i', $quota_type)
-                    ->execute();
             }
         }
-    } else if ($mode == 'group') {
+    } else if ($mode === 'group') {
         if (!$quota_limit_id) {
-            dibi::delete(Tables::ATTACH_QUOTA_TABLE)
-                ->where('[group_id] = %i', $id)
-                ->where('[quota_type] = %i', $quota_type)
-                ->execute();
-        } else {
             // Check if user is already entered
             $check = dibi::select('group_id')
                 ->from(Tables::ATTACH_QUOTA_TABLE)
@@ -80,21 +82,31 @@ function process_quota_settings($mode, $id, $quota_type, $quota_limit_id = 0)
 
                 dibi::insert(Tables::ATTACH_QUOTA_TABLE, $insertData)->execute();
             }
+        } else {
+            dibi::delete(Tables::ATTACH_QUOTA_TABLE)
+                ->where('[group_id] = %i', $id)
+                ->where('[quota_type] = %i', $quota_type)
+                ->execute();
         }
     }
 }
 
 /**
  * sort multi-dimensional Array
- */
+ * @param     $sort_array
+ * @param     $key
+ * @param     $sort_order
+ * @param int $pre_string_sort
+ * @return mixed
+*/
 function sort_multi_array($sort_array, $key, $sort_order, $pre_string_sort = 0)
 {
     $last_element = count($sort_array) - 1;
 
-    if (!$pre_string_sort) {
-        $string_sort = !is_numeric($sort_array[$last_element - 1][$key]);
-    } else {
+    if ($pre_string_sort) {
         $string_sort = $pre_string_sort;
+    } else {
+        $string_sort = !is_numeric($sort_array[$last_element - 1][$key]);
     }
 
     for ($i = 0; $i < $last_element; $i++) {
@@ -105,12 +117,12 @@ function sort_multi_array($sort_array, $key, $sort_order, $pre_string_sort = 0)
 
             // do checks based on key
             $switch = false;
-            if (!$string_sort) {
-                if (($sort_order == 'DESC' && (int)$sort_array[$j][$key] < (int)$sort_array[$j + 1][$key]) || ($sort_order == 'ASC' && (int)$sort_array[$j][$key] > (int)$sort_array[$j + 1][$key])) {
+            if ($string_sort) {
+                if (($sort_order === 'DESC' && strcasecmp($sort_array[$j][$key], $sort_array[$j + 1][$key]) < 0) || ($sort_order === 'ASC' && strcasecmp($sort_array[$j][$key], $sort_array[$j + 1][$key]) > 0)) {
                     $switch = true;
                 }
             } else {
-                if (($sort_order == 'DESC' && strcasecmp($sort_array[$j][$key], $sort_array[$j + 1][$key]) < 0) || ($sort_order == 'ASC' && strcasecmp($sort_array[$j][$key], $sort_array[$j + 1][$key]) > 0)) {
+                if (($sort_order === 'DESC' && (int)$sort_array[$j][$key] < (int)$sort_array[$j + 1][$key]) || ($sort_order === 'ASC' && (int)$sort_array[$j][$key] > (int)$sort_array[$j + 1][$key])) {
                     $switch = true;
                 }
             }
@@ -128,7 +140,9 @@ function sort_multi_array($sort_array, $key, $sort_order, $pre_string_sort = 0)
 
 /**
  * See if a post or pm really exist
- */
+ * @param $attach_id
+ * @return bool
+*/
 function entry_exists($attach_id)
 {
     $attach_id = (int)$attach_id;
@@ -146,12 +160,12 @@ function entry_exists($attach_id)
     $exists = false;
 
     for ($i = 0; $i < $num_ids; $i++) {
-        if ((int)$ids[$i]['post_id'] != 0) {
+        if ((int)$ids[$i]['post_id'] !== 0) {
             $res = dibi::select(['post_id'])
                 ->from(Tables::POSTS_TABLE)
                 ->where('[post_id] = %i', (int)$ids[$i]['post_id'])
                 ->fetch();
-        } else if ((int)$ids[$i]['privmsgs_id'] != 0) {
+        } else if ((int)$ids[$i]['privmsgs_id'] !== 0) {
             $res = dibi::select(['post_id'])
                 ->from(Tables::PRIVATE_MESSAGE_TABLE)
                 ->where('[privmsgs_id] = %i', (int)$ids[$i]['privmsgs_id'])
@@ -176,7 +190,33 @@ function collect_attachments()
 
     $file_attachments = [];
 
-    if (!(int)$attach_config['allow_ftp_upload']) {
+    if ((int)$attach_config['allow_ftp_upload']) {
+        $conn_id = attach_init_ftp();
+
+        $file_listing = @ftp_rawlist($conn_id, '');
+
+        if (!$file_listing) {
+            message_die(GENERAL_ERROR, 'Unable to get Raw File Listing. Please be sure the LIST command is enabled at your FTP Server.');
+        }
+
+        for ($i = 0; $i < count($file_listing); $i++) {
+            if (preg_match("#([-d])[rwxst-]{9}.* ([0-9]*) ([a-zA-Z]+[0-9: ]*[0-9]) ([0-9]{2}:[0-9]{2}) (.+)#", $file_listing[$i], $regs)) {
+                if ($regs[1] === 'd') {
+                    $dirinfo[0] = 1;    // Directory === 1
+                }
+                $dirinfo[1] = $regs[2]; // Size
+                $dirinfo[2] = $regs[3]; // Date
+                $dirinfo[3] = $regs[4]; // Filename
+                $dirinfo[4] = $regs[5]; // Time
+            }
+
+            if ($dirinfo[0] !== 1 && $dirinfo[4] != 'index.php' && $dirinfo[4] != '.htaccess') {
+                $file_attachments[] = trim($dirinfo[4]);
+            }
+        }
+
+        @ftp_close($conn_id);
+    } else {
         if ($dir = @opendir($upload_dir)) {
             while ($file = @readdir($dir)) {
                 if ($file != 'index.php' && $file != '.htaccess' && !is_dir($upload_dir . '/' . $file) && !is_link($upload_dir . '/' . $file)) {
@@ -188,34 +228,6 @@ function collect_attachments()
         } else {
             message_die(GENERAL_ERROR, 'Is Safe Mode Restriction in effect? The Attachment Mod seems to be unable to collect the Attachments within the upload Directory. Try to use FTP Upload to circumvent this error. Another reason could be that the directory ' . $upload_dir . ' does not exist.');
         }
-    } else {
-        $conn_id = attach_init_ftp();
-
-        $file_listing = [];
-
-        $file_listing = @ftp_rawlist($conn_id, '');
-
-        if (!$file_listing) {
-            message_die(GENERAL_ERROR, 'Unable to get Raw File Listing. Please be sure the LIST command is enabled at your FTP Server.');
-        }
-
-        for ($i = 0; $i < count($file_listing); $i++) {
-            if (ereg("([-d])[rwxst-]{9}.* ([0-9]*) ([a-zA-Z]+[0-9: ]*[0-9]) ([0-9]{2}:[0-9]{2}) (.+)", $file_listing[$i], $regs)) {
-                if ($regs[1] == 'd') {
-                    $dirinfo[0] = 1;    // Directory == 1
-                }
-                $dirinfo[1] = $regs[2]; // Size
-                $dirinfo[2] = $regs[3]; // Date
-                $dirinfo[3] = $regs[4]; // Filename
-                $dirinfo[4] = $regs[5]; // Time
-            }
-
-            if ($dirinfo[0] != 1 && $dirinfo[4] != 'index.php' && $dirinfo[4] != '.htaccess') {
-                $file_attachments[] = trim($dirinfo[4]);
-            }
-        }
-
-        @ftp_close($conn_id);
     }
 
     return $file_attachments;
@@ -230,23 +242,8 @@ function get_formatted_dirsize()
 
     $upload_dir_size = 0;
 
-    if (!(int)$attach_config['allow_ftp_upload']) {
-        if ($dirname = @opendir($upload_dir)) {
-            while ($file = @readdir($dirname)) {
-                if ($file != 'index.php' && $file != '.htaccess' && !is_dir($upload_dir . '/' . $file) && !is_link($upload_dir . '/' . $file)) {
-                    $upload_dir_size += @filesize($upload_dir . '/' . $file);
-                }
-            }
-            @closedir($dirname);
-        } else {
-            $upload_dir_size = $lang['Not_available'];
-            return $upload_dir_size;
-        }
-    } else {
+    if ((int)$attach_config['allow_ftp_upload']) {
         $conn_id = attach_init_ftp();
-
-        $file_listing = [];
-
         $file_listing = @ftp_rawlist($conn_id, '');
 
         if (!$file_listing) {
@@ -255,9 +252,9 @@ function get_formatted_dirsize()
         }
 
         for ($i = 0; $i < count($file_listing); $i++) {
-            if (ereg("([-d])[rwxst-]{9}.* ([0-9]*) ([a-zA-Z]+[0-9: ]*[0-9]) ([0-9]{2}:[0-9]{2}) (.+)", $file_listing[$i], $regs)) {
-                if ($regs[1] == 'd') {
-                    $dirinfo[0] = 1;    // Directory == 1
+            if (preg_match("#([-d])[rwxst-]{9}.* ([0-9]*) ([a-zA-Z]+[0-9: ]*[0-9]) ([0-9]{2}:[0-9]{2}) (.+)#", $file_listing[$i], $regs)) {
+                if ($regs[1] === 'd') {
+                    $dirinfo[0] = 1;    // Directory === 1
                 }
                 $dirinfo[1] = $regs[2]; // Size
                 $dirinfo[2] = $regs[3]; // Date
@@ -271,6 +268,18 @@ function get_formatted_dirsize()
         }
 
         @ftp_close($conn_id);
+    } else {
+        if ($dirname = @opendir($upload_dir)) {
+            while ($file = @readdir($dirname)) {
+                if ($file != 'index.php' && $file != '.htaccess' && !is_dir($upload_dir . '/' . $file) && !is_link($upload_dir . '/' . $file)) {
+                    $upload_dir_size += @filesize($upload_dir . '/' . $file);
+                }
+            }
+            @closedir($dirname);
+        } else {
+            $upload_dir_size = $lang['Not_available'];
+            return $upload_dir_size;
+        }
     }
 
     if ($upload_dir_size >= 1048576) {
@@ -278,34 +287,32 @@ function get_formatted_dirsize()
     } else if ($upload_dir_size >= 1024) {
         $upload_dir_size = round($upload_dir_size / 1024 * 100) / 100 . ' ' . $lang['KB'];
     } else {
-        $upload_dir_size = $upload_dir_size . ' ' . $lang['Bytes'];
+        $upload_dir_size .= ' ' . $lang['Bytes'];
     }
 
     return $upload_dir_size;
 }
 
-/*
-* Build SQL-Statement for the search feature
-*/
+/**
+ * Build SQL-Statement for the search feature
+ *
+ * @param string $order_by
+ * @param int $total_rows
+ *
+ * @return array
+ */
 function search_attachments($order_by, &$total_rows)
 {
-    // Get submitted Vars
-    $search_vars = [
-        'search_keyword_fname',
-        'search_keyword_comment',
-        'search_author',
-        'search_size_smaller',
-        'search_size_greater',
-        'search_count_smaller',
-        'search_count_greater',
-        'search_days_greater',
-        'search_forum',
-        'search_cat'
-    ];
-
-    for ($i = 0; $i < count($search_vars); $i++) {
-        $$search_vars[$i] = get_var($search_vars[$i], '');
-    }
+    $search_keyword_fname = get_var('search_keyword_fname', '');
+    $search_keyword_comment = get_var('search_keyword_comment', '');
+    $search_author = get_var('search_author', '');
+    $search_size_smaller = get_var('search_size_smaller', '');
+    $search_size_greater = get_var('search_size_greater', '');
+    $search_count_smaller = get_var('search_count_smaller', '');
+    $search_count_greater = get_var('search_count_greater', '');
+    $search_days_greater = get_var('search_days_greater', '');
+    $search_forum = get_var('search_forum', '');
+    $search_cat = get_var('search_cat', '');
 
     $attachments = dibi::select(['a.*', 't.post_id', 'p.post_time', 'p.topic_id'])
         ->from(Tables::ATTACH_ATTACHMENT_TABLE)
@@ -318,7 +325,7 @@ function search_attachments($order_by, &$total_rows)
         ->on('[t.post_id] = [p.post_id]');
 
     // Author name search
-    if ($search_author != '') {
+    if ($search_author !== '') {
         // Bring in line with 2.0.x expected username
         $search_author = addslashes(html_entity_decode($search_author));
         $search_author = stripslashes(phpbb_clean_username($search_author));
@@ -351,38 +358,34 @@ function search_attachments($order_by, &$total_rows)
     }
 
     // Search Keyword
-    if ($search_keyword_fname != '') {
+    if ($search_keyword_fname !== '') {
         $match_word = str_replace('*', '%', $search_keyword_fname);
 
         $attachments->where('[a.real_filename] LIKE %~like~', $match_word);
     }
 
-    if ($search_keyword_comment != '') {
+    if ($search_keyword_comment !== '') {
         $match_word = str_replace('*', '%', $search_keyword_comment);
 
         $attachments->where('[a.real_filename] LIKE %~like~', $match_word);
     }
 
     // Search Download Count
-    if ($search_count_smaller != '' || $search_count_greater != '') {
-        if ($search_count_smaller != '') {
-            $attachments->where('[a.download_count] < %i', $search_count_smaller);
-        } else if ($search_count_greater != '') {
-            $attachments->where('[a.download_count] > %i', $search_count_greater);
-        }
+    if ($search_count_smaller !== '') {
+        $attachments->where('[a.download_count] < %i', $search_count_smaller);
+    } else if ($search_count_greater !== '') {
+        $attachments->where('[a.download_count] > %i', $search_count_greater);
     }
 
     // Search Filesize
-    if ($search_size_smaller != '' || $search_size_greater != '') {
-        if ($search_size_smaller != '') {
-            $attachments->where('[a.filesize] < %i', $search_size_smaller);
-        } else if ($search_size_greater != '') {
-            $attachments->where('[a.filesize] > %i', $search_size_greater);
-        }
+    if ($search_size_smaller !== '') {
+        $attachments->where('[a.filesize] < %i', $search_size_smaller);
+    } else if ($search_size_greater !== '') {
+        $attachments->where('[a.filesize] > %i', $search_size_greater);
     }
 
     // Search Attachment Time
-    if ($search_days_greater != '') {
+    if ($search_days_greater !== '') {
         $attachments->where('[a.filetime] < %i', (time() - ((int)$search_days_greater * 86400)));
     }
 
@@ -409,7 +412,7 @@ function search_attachments($order_by, &$total_rows)
     $num_attach = $db->sql_numrows($result);
     $db->sql_freeresult($result);
 
-    if ($num_attach == 0) {
+    if ($num_attach === 0) {
         message_die(GENERAL_MESSAGE, $lang['No_attach_search_match']);
     }
 
@@ -426,7 +429,11 @@ function search_attachments($order_by, &$total_rows)
 
 /**
  * perform LIMIT statement on arrays
- */
+ * @param $array
+ * @param $start
+ * @param $pagelimit
+ * @return array
+*/
 function limit_array($array, $start, $pagelimit)
 {
     // array from start - start+pagelimit

@@ -254,7 +254,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 		$passwd_sql = [];
 
         if ($board_config['complex_acp_pw'] && !empty($acp_password)) {
-            if (!empty($password) && $password == $acp_password) {
+            if (!empty($password) && $password === $acp_password) {
                 $error = true;
                 $error_msg .= ((isset($error_msg)) ? '<br />' : '') . $lang['ACP_Password_match_pw'];
             } else {

@@ -66,13 +66,13 @@ $url = trim($site[0]);
 
 if ($url != '')
 {
-	$allowed = ($allow_deny_order == ALLOWED_DENIED) ? false : true;
+	$allowed = ($allow_deny_order === ALLOWED_DENIED) ? false : true;
 	
 	for ($i = 0; $i < count($sites); $i++)
 	{
 		if (strstr($url, $sites[$i]))
 		{
-			$allowed = ($allow_deny_order == ALLOWED_DENIED) ? true : false;
+			$allowed = ($allow_deny_order === ALLOWED_DENIED) ? true : false;
 			break;
 		}
 	}
@@ -82,7 +82,7 @@ else
 	$allowed = true;
 }
 
-if ($allowed == false)
+if ($allowed === false)
 {
 	message_die(GENERAL_MESSAGE, $lang['Denied_Message']);
 }
@@ -98,7 +98,7 @@ function send_file_to_browser($attachment, $upload_dir)
 {
     global $HTTP_USER_AGENT, $lang, $attach_config;
 
-    $filename = ($upload_dir == '') ? $attachment['physical_filename'] : $upload_dir . '/' . $attachment['physical_filename'];
+    $filename = ($upload_dir === '') ? $attachment->physical_filename : $upload_dir . '/' . $attachment->physical_filename;
 
     $gotit = false;
 
@@ -120,22 +120,22 @@ function send_file_to_browser($attachment, $upload_dir)
         $HTTP_USER_AGENT = '';
     }
 
-    if (ereg('Opera(/| )([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version)) {
+    if (preg_match('#Opera(/| )([0-9].[0-9]{1,2})#', $HTTP_USER_AGENT, $log_version)) {
         $browser_version = $log_version[2];
         $browser_agent = 'opera';
-    } else if (ereg('MSIE ([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version)) {
+    } else if (preg_match('#MSIE ([0-9].[0-9]{1,2})#', $HTTP_USER_AGENT, $log_version)) {
         $browser_version = $log_version[1];
         $browser_agent = 'ie';
-    } else if (ereg('OmniWeb/([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version)) {
+    } else if (preg_match('#OmniWeb/([0-9].[0-9]{1,2})#', $HTTP_USER_AGENT, $log_version)) {
         $browser_version = $log_version[1];
         $browser_agent = 'omniweb';
-    } else if (ereg('Netscape([0-9]{1})', $HTTP_USER_AGENT, $log_version)) {
+    } else if (preg_match('#Netscape([0-9]{1})#', $HTTP_USER_AGENT, $log_version)) {
         $browser_version = $log_version[1];
         $browser_agent = 'netscape';
-    } else if (ereg('Mozilla/([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version)) {
+    } else if (preg_match('#Mozilla/([0-9].[0-9]{1,2})#', $HTTP_USER_AGENT, $log_version)) {
         $browser_version = $log_version[1];
         $browser_agent = 'mozilla';
-    } else if (ereg('Konqueror/([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version)) {
+    } else if (preg_match('#Konqueror/([0-9].[0-9]{1,2})#', $HTTP_USER_AGENT, $log_version)) {
         $browser_version = $log_version[1];
         $browser_agent = 'konqueror';
     } else {
@@ -145,8 +145,8 @@ function send_file_to_browser($attachment, $upload_dir)
 
     // Correct the mime type - we force application/octetstream for all files, except images
     // Please do not change this, it is a security precaution
-    if (!strstr($attachment['mimetype'], 'image')) {
-        $attachment['mimetype'] = ($browser_agent == 'ie' || $browser_agent == 'opera') ? 'application/octetstream' : 'application/octet-stream';
+    if (!strstr($attachment->mimetype, 'image')) {
+        $attachment->mimetype = ($browser_agent === 'ie' || $browser_agent === 'opera') ? 'application/octetstream' : 'application/octet-stream';
     }
 
     // Now the tricky part... let's dance
@@ -155,10 +155,10 @@ function send_file_to_browser($attachment, $upload_dir)
     header('Pragma: public');
 //	header('Content-Transfer-Encoding: none');
 
-    $real_filename = html_entity_decode(basename($attachment['real_filename']));
+    $real_filename = html_entity_decode(basename($attachment->real_filename));
 
     // Send out the Headers
-    header('Content-Type: ' . $attachment['mimetype'] . '; name="' . $real_filename . '"');
+    header('Content-Type: ' . $attachment->mimetype . '; name="' . $real_filename . '"');
     header('Content-Disposition: attachment; filename="' . $real_filename . '"');
 
     unset($real_filename);
@@ -183,7 +183,7 @@ function send_file_to_browser($attachment, $upload_dir)
         @unlink($tmp_filename);
 
         $mode = FTP_BINARY;
-        if ((preg_match("/text/i", $attachment['mimetype'])) || (preg_match("/html/i", $attachment['mimetype']))) {
+        if ((preg_match("/text/i", $attachment->mimetype)) || (preg_match("/html/i", $attachment->mimetype))) {
             $mode = FTP_ASCII;
         }
 
@@ -243,13 +243,12 @@ $authorised = false;
 
 $auth_pages = dibi::select('*')
     ->from(Tables::ATTACH_ATTACHMENT_TABLE)
-    ->where('[attach_id] = %i', $attachment['attach_id'])
+    ->where('[attach_id] = %i', $attachment->attach_id)
     ->fetchAll();
-
 
 $num_auth_pages = count($auth_pages);
 
-for ($i = 0; $i < $num_auth_pages && $authorised == false; $i++) {
+for ($i = 0; $i < $num_auth_pages && $authorised === false; $i++) {
     $auth_pages[$i]['post_id'] = (int)$auth_pages[$i]['post_id'];
 
     if ($auth_pages[$i]['post_id'] != 0) {
@@ -265,7 +264,7 @@ for ($i = 0; $i < $num_auth_pages && $authorised == false; $i++) {
             $authorised = true;
         }
     } else {
-        if (((int)$attach_config['allow_pm_attach']) && (($userdata['user_id'] == $auth_pages[$i]['user_id_2']) || ($userdata['user_id'] == $auth_pages[$i]['user_id_1'])) || ($userdata['user_level'] == ADMIN)) {
+        if (((int)$attach_config['allow_pm_attach']) && (($userdata['user_id'] === $auth_pages[$i]['user_id_2']) || ($userdata['user_id'] === $auth_pages[$i]['user_id_1'])) || ($userdata['user_level'] === ADMIN)) {
             $authorised = true;
         }
     }
@@ -296,43 +295,43 @@ foreach ($rows as $row) {
 }
 
 // disallowed ?
-if (!in_array($attachment['extension'], $allowed_extensions) && $userdata['user_level'] != ADMIN) {
-    message_die(GENERAL_MESSAGE, sprintf($lang['Extension_disabled_after_posting'], $attachment['extension']));
+if (!in_array($attachment->extension, $allowed_extensions) && $userdata['user_level'] != ADMIN) {
+    message_die(GENERAL_MESSAGE, sprintf($lang['Extension_disabled_after_posting'], $attachment->extension));
 }
 
-$download_mode = (int)$download_mode[$attachment['extension']];
+$download_mode = (int)$download_mode[$attachment->extension];
 
 if ($thumbnail) {
-    $attachment['physical_filename'] = THUMB_DIR . '/t_' . $attachment['physical_filename'];
+    $attachment->physical_filename = THUMB_DIR . '/t_' . $attachment->physical_filename;
 }
 
 // Update download count
 if (!$thumbnail) {
     dibi::update(Tables::ATTACH_ATTACHMENTS_DESC_TABLE, ['download_count%sql' => 'download_count + 1'])
-        ->where('[attach_id] = %i', $attachment['attach_id'])
+        ->where('[attach_id] = %i', $attachment->attach_id)
         ->execute();
 }
 
 // Determine the 'presenting'-method
-if ($download_mode == PHYSICAL_LINK) {
+if ($download_mode === PHYSICAL_LINK) {
     $server_protocol = ($board_config['cookie_secure']) ? 'https://' : 'http://';
     $server_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['server_name']));
     $server_port = ($board_config['server_port'] <> 80) ? ':' . trim($board_config['server_port']) : '';
     $script_name = preg_replace('/^\/?(.*?)\/?$/', '/\1', trim($board_config['script_path']));
 
-    if ($script_name[strlen($script_name)] != '/') {
+    if ($script_name[strlen($script_name)] !== '/') {
         $script_name .= '/';
     }
 
     if ((int)$attach_config['allow_ftp_upload']) {
-        if (trim($attach_config['download_path']) == '') {
+        if (trim($attach_config['download_path']) === '') {
             message_die(GENERAL_ERROR, 'Physical Download not possible with the current Attachment Setting');
         }
 
-        $url = trim($attach_config['download_path']) . '/' . $attachment['physical_filename'];
+        $url = trim($attach_config['download_path']) . '/' . $attachment->physical_filename;
         $redirect_path = $url;
     } else {
-        $url = $upload_dir . '/' . $attachment['physical_filename'];
+        $url = $upload_dir . '/' . $attachment->physical_filename;
 //		$url = preg_replace('/^\/?(.*?\/)?$/', '\1', trim($url));
         $redirect_path = $server_protocol . $server_name . $server_port . $script_name . $url;
     }

@@ -16,13 +16,17 @@
  */
 if (!defined('IN_PHPBB')) {
     die('Hacking attempt');
-    exit;
 }
 
 $imagick = '';
 
 /**
  * Calculate the needed size for Thumbnail
+ *
+ * @param $width
+ * @param $height
+ *
+ * @return array
  */
 function get_img_size_format($width, $height)
 {
@@ -49,7 +53,7 @@ function is_imagick()
 {
     global $imagick, $attach_config;
 
-    if ($attach_config['img_imagick'] != '') {
+    if ($attach_config['img_imagick'] !== '') {
         $imagick = $attach_config['img_imagick'];
         return true;
     } else {
@@ -59,7 +63,9 @@ function is_imagick()
 
 /**
  * Get supported image types
- */
+ * @param $type
+ * @return array
+*/
 function get_supported_image_types($type)
 {
     if (@extension_loaded('gd')) {
@@ -98,7 +104,11 @@ function get_supported_image_types($type)
 
 /**
  * Create thumbnail
- */
+ * @param $source
+ * @param $new_file
+ * @param $mimetype
+ * @return bool
+*/
 function create_thumbnail($source, $new_file, $mimetype)
 {
     global $attach_config, $imagick;
@@ -128,13 +138,13 @@ function create_thumbnail($source, $new_file, $mimetype)
         $tmp_path[count($tmp_path) - 1] = '';
         $tmp_path = implode('/', $tmp_path);
 
-        if ($tmp_path == '') {
+        if ($tmp_path === '') {
             $tmp_path = '/tmp';
         }
 
         $value = trim($tmp_path);
 
-        if ($value[strlen($value) - 1] == '/') {
+        if ($value[strlen($value) - 1] === '/') {
             $value[strlen($value) - 1] = ' ';
         }
 
@@ -173,7 +183,7 @@ function create_thumbnail($source, $new_file, $mimetype)
                     break;
             }
 
-            if ($type['version'] == 1 || !$attach_config['use_gd2']) {
+            if ($type['version'] === 1 || !$attach_config['use_gd2']) {
                 $new_image = imagecreate($new_width, $new_height);
                 imagecopyresized($new_image, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
             } else {

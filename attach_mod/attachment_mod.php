@@ -32,6 +32,10 @@ if (defined('ATTACH_INSTALL')) {
 
 /**
  * wrapper function for determining the correct language directory
+ *
+ * @param string $language_file
+ *
+ * @return
  */
 function attach_mod_get_lang($language_file)
 {
@@ -39,16 +43,16 @@ function attach_mod_get_lang($language_file)
 
     $language = $board_config['default_lang'];
 
-    if (!file_exists($phpbb_root_path . 'language/lang_' . $language . '/' . $language_file . '.php')) {
+    if (file_exists($phpbb_root_path . 'language/lang_' . $language . '/' . $language_file . '.php')) {
+        return $language;
+    } else {
         $language = $attach_config['board_lang'];
 
-        if (!file_exists($phpbb_root_path . 'language/lang_' . $language . '/' . $language_file . '.php')) {
-            message_die(GENERAL_MESSAGE, 'Attachment Mod language file does not exist: language/lang_' . $language . '/' . $language_file . '.php');
-        } else {
+        if (file_exists($phpbb_root_path . 'language/lang_' . $language . '/' . $language_file . '.php')) {
             return $language;
+        } else {
+            message_die(GENERAL_MESSAGE, 'Attachment Mod language file does not exist: language/lang_' . $language . '/' . $language_file . '.php');
         }
-    } else {
-        return $language;
     }
 }
 
@@ -62,13 +66,15 @@ function include_attach_lang()
     // from some reason its important to make it work :O
     global $lang;
 
+    $sep = DIRECTORY_SEPARATOR;
+
     // Include Language
     $language = attach_mod_get_lang('lang_main_attach');
-    require_once($phpbb_root_path . 'language/lang_' . $language . '/lang_main_attach.php');
+    require_once($phpbb_root_path . 'language' . $sep . 'lang_' . $language . $sep . 'lang_main_attach.php');
 
     if (defined('IN_ADMIN')) {
         $language = attach_mod_get_lang('lang_admin_attach');
-        require_once($phpbb_root_path . 'language/lang_' . $language . '/lang_admin_attach.php');
+        require_once($phpbb_root_path . 'language' . $sep . 'lang_' . $language . $sep . 'lang_admin_attach.php');
     }
 }
 
@@ -110,10 +116,10 @@ require_once $phpbb_root_path . 'attach_mod' . $sep . 'posting_attachments.php';
 // PM Attachments Class
 require_once $phpbb_root_path . 'attach_mod' . $sep . 'pm_attachments.php';
 
-if (!(int)$attach_config['allow_ftp_upload']) {
-    $upload_dir = $attach_config['upload_dir'];
-} else {
+if ((int)$attach_config['allow_ftp_upload']) {
     $upload_dir = $attach_config['download_path'];
+} else {
+    $upload_dir = $attach_config['upload_dir'];
 }
 
 ?>

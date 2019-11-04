@@ -14,6 +14,8 @@
 
 /**
  * Include the FAQ-File (faq.php)
+ *
+ * @param $lang_file
  */
 function attach_faq_include($lang_file)
 {
@@ -25,7 +27,7 @@ function attach_faq_include($lang_file)
 
     $sep = DIRECTORY_SEPARATOR;
 
-    if ($lang_file == 'lang_faq') {
+    if ($lang_file === 'lang_faq') {
         $language = attach_mod_get_lang('lang_faq_attach');
         require_once($phpbb_root_path . 'language ' . $sep . 'lang_' . $language . $sep . 'lang_faq_attach.php');
     }
@@ -33,6 +35,9 @@ function attach_faq_include($lang_file)
 
 /**
  * Setup Basic Authentication (includes/auth.php)
+ * @param $type
+ * @param $auth_fields
+ * @param $a_sql
  */
 function attach_setup_basic_auth($type, &$auth_fields, &$a_sql)
 {
@@ -61,6 +66,9 @@ function attach_setup_basic_auth($type, &$auth_fields, &$a_sql)
 
 /**
  * Setup Forum Authentication (admin/admin_forumauth.php)
+ * @param $simple_auth_ary
+ * @param $forum_auth_fields
+ * @param $field_names
  */
 function attach_setup_forum_auth(&$simple_auth_ary, &$forum_auth_fields, &$field_names)
 {
@@ -94,6 +102,9 @@ function attach_setup_forum_auth(&$simple_auth_ary, &$forum_auth_fields, &$field
 
 /**
  * Setup Usergroup Authentication (admin/admin_ug_auth.php)
+ * @param $forum_auth_fields
+ * @param $auth_field_match
+ * @param $field_names
  */
 function attach_setup_usergroup_auth(&$forum_auth_fields, &$auth_field_match, &$field_names)
 {
@@ -112,6 +123,8 @@ function attach_setup_usergroup_auth(&$forum_auth_fields, &$auth_field_match, &$
 
 /**
  * Setup Viewtopic Authentication for f_access (viewtopic.php:includes/topic_review.php)
+ * @param $order_sql
+ * @param $sql
  */
 function attach_setup_viewtopic_auth(&$order_sql, &$sql)
 {
@@ -121,6 +134,8 @@ function attach_setup_viewtopic_auth(&$order_sql, &$sql)
 
 /**
  * Setup s_auth_can in viewforum and viewtopic (viewtopic.php/viewforum.php)
+ * @param $is_auth
+ * @param $s_auth_can
  */
 function attach_build_auth_levels($is_auth, &$s_auth_can)
 {
@@ -140,6 +155,9 @@ function attach_build_auth_levels($is_auth, &$s_auth_can)
 
 /**
  * Called from admin_users.php and admin_groups.php in order to process Quota Settings (admin/admin_users.php:admin/admin_groups.php)
+ * @param      $admin_mode
+ * @param bool $submit
+ * @param      $mode
  */
 function attachment_quota_settings($admin_mode, $submit = false, $mode)
 {
@@ -150,14 +168,14 @@ function attachment_quota_settings($admin_mode, $submit = false, $mode)
     // Make sure constants got included
     require_once $phpbb_root_path . 'attach_mod' . $sep . 'includes' . $sep . 'constants.php';
 
-    if (!(int)$attach_config['allow_ftp_upload']) {
-        if ($attach_config['upload_dir'][0] == '/' || ($attach_config['upload_dir'][0] != '/' && $attach_config['upload_dir'][1] == ':')) {
+    if ((int)$attach_config['allow_ftp_upload']) {
+        $upload_dir = $attach_config['download_path'];
+    } else {
+        if ($attach_config['upload_dir'][0] === '/' || ($attach_config['upload_dir'][0] !== '/' && $attach_config['upload_dir'][1] === ':')) {
             $upload_dir = $attach_config['upload_dir'];
         } else {
             $upload_dir = $phpbb_root_path . $attach_config['upload_dir'];
         }
-    } else {
-        $upload_dir = $attach_config['download_path'];
     }
 
     require_once $phpbb_root_path . 'attach_mod' . $sep . 'includes' . $sep . 'functions_selects.php';
@@ -165,11 +183,11 @@ function attachment_quota_settings($admin_mode, $submit = false, $mode)
 
     $user_id = 0;
 
-    if ($admin_mode == 'user') {
+    if ($admin_mode === 'user') {
         // We overwrite submit here... to be sure
         $submit = isset($_POST['submit']);
 
-        if (!$submit && $mode != 'save') {
+        if (!$submit && $mode !== 'save') {
             $user_id = get_var(POST_USERS_URL, 0);
             $u_name = get_var('username', '');
 
@@ -194,7 +212,7 @@ function attachment_quota_settings($admin_mode, $submit = false, $mode)
         }
     }
 
-    if ($admin_mode == 'user' && !$submit && $mode != 'save') {
+    if ($admin_mode === 'user' && !$submit && $mode !== 'save') {
         // Show the contents
 
         $rows = dibi::select(['quota_limit_id', 'quota_type'])
@@ -206,9 +224,9 @@ function attachment_quota_settings($admin_mode, $submit = false, $mode)
 
         if (count($rows)) {
             foreach ($rows as $row) {
-                if ($row['quota_type'] == QUOTA_UPLOAD_LIMIT) {
+                if ($row['quota_type'] === QUOTA_UPLOAD_LIMIT) {
                     $upload_quota = $row['quota_limit_id'];
-                } else if ($row['quota_type'] == QUOTA_PM_LIMIT) {
+                } else if ($row['quota_type'] === QUOTA_PM_LIMIT) {
                     $pm_quota = $row['quota_limit_id'];
                 }
             }
@@ -228,10 +246,10 @@ function attachment_quota_settings($admin_mode, $submit = false, $mode)
         );
     }
 
-    if ($admin_mode == 'user' && $submit && $_POST['deleteuser']) {
+    if ($admin_mode === 'user' && $submit && $_POST['deleteuser']) {
         process_quota_settings($admin_mode, $user_id, QUOTA_UPLOAD_LIMIT, 0);
         process_quota_settings($admin_mode, $user_id, QUOTA_PM_LIMIT, 0);
-    } else if ($admin_mode == 'user' && $submit && $mode == 'save') {
+    } else if ($admin_mode === 'user' && $submit && $mode === 'save') {
         // Get the contents
         $upload_quota = get_var('user_upload_quota', 0);
         $pm_quota = get_var('user_pm_quota', 0);
@@ -240,11 +258,11 @@ function attachment_quota_settings($admin_mode, $submit = false, $mode)
         process_quota_settings($admin_mode, $user_id, QUOTA_PM_LIMIT, $pm_quota);
     }
 
-    if ($admin_mode == 'group' && $mode == 'newgroup') {
+    if ($admin_mode === 'group' && $mode === 'newgroup') {
         return;
     }
 
-    if ($admin_mode == 'group' && !$submit && isset($_POST['edit'])) {
+    if ($admin_mode === 'group' && !$submit && isset($_POST['edit'])) {
         // Get group id again, we do not trust phpBB here, Mods may be installed ;)
         $group_id = get_var(POST_GROUPS_URL, 0);
 
@@ -258,9 +276,9 @@ function attachment_quota_settings($admin_mode, $submit = false, $mode)
 
         if (count($rows)) {
             foreach ($rows as $row) {
-                if ($row->quota_type == QUOTA_UPLOAD_LIMIT) {
+                if ($row->quota_type === QUOTA_UPLOAD_LIMIT) {
                     $upload_quota = $row->quota_limit_id;
-                } else if ($row->quota_type == QUOTA_PM_LIMIT) {
+                } else if ($row->quota_type === QUOTA_PM_LIMIT) {
                     $pm_quota = $row->quota_limit_id;
                 }
             }
@@ -279,12 +297,12 @@ function attachment_quota_settings($admin_mode, $submit = false, $mode)
         );
     }
 
-    if ($admin_mode == 'group' && $submit && isset($_POST['group_delete'])) {
+    if ($admin_mode === 'group' && $submit && isset($_POST['group_delete'])) {
         $group_id = get_var(POST_GROUPS_URL, 0);
 
         process_quota_settings($admin_mode, $group_id, QUOTA_UPLOAD_LIMIT, 0);
         process_quota_settings($admin_mode, $group_id, QUOTA_PM_LIMIT, 0);
-    } else if ($admin_mode == 'group' && $submit) {
+    } else if ($admin_mode === 'group' && $submit) {
         $group_id = get_var(POST_GROUPS_URL, 0);
 
         // Get the contents
@@ -300,6 +318,8 @@ function attachment_quota_settings($admin_mode, $submit = false, $mode)
  * Called from usercp_viewprofile, displays the User Upload Quota Box, Upload Stats and a Link to the User Attachment Control Panel
  * Groups are able to be grabbed, but it's not used within the Attachment Mod. ;)
  * (includes/usercp_viewprofile.php)
+ * @param     $user_id
+ * @param int $group_id
  */
 function display_upload_attach_box_limits($user_id, $group_id = 0)
 {
@@ -309,7 +329,7 @@ function display_upload_attach_box_limits($user_id, $group_id = 0)
         return;
     }
 
-    if ($userdata['user_level'] != ADMIN && $userdata['user_id'] != $user_id) {
+    if ($userdata['user_level'] !== ADMIN && $userdata['user_id'] !== $user_id) {
         return;
     }
 
@@ -348,7 +368,7 @@ function display_upload_attach_box_limits($user_id, $group_id = 0)
             // Set Default Quota Limit
             $quota_id = (int)$attach_config['default_upload_quota'];
 
-            if ($quota_id == 0) {
+            if ($quota_id === 0) {
                 $attach_config['upload_filesize_limit'] = $attach_config['attachment_quota'];
             } else {
                 $row = dibi::select('quota_limit')
@@ -357,7 +377,7 @@ function display_upload_attach_box_limits($user_id, $group_id = 0)
                     ->fetch();
 
                 if ($row) {
-                    $attach_config['upload_filesize_limit'] = $row['quota_limit'];
+                    $attach_config['upload_filesize_limit'] = $row->quota_limit;
                 } else {
                     $attach_config['upload_filesize_limit'] = $attach_config['attachment_quota'];
                 }
@@ -371,13 +391,13 @@ function display_upload_attach_box_limits($user_id, $group_id = 0)
         }
     }
 
-    if (!$attach_config['upload_filesize_limit']) {
-        $upload_filesize_limit = $attach_config['attachment_quota'];
-    } else {
+    if ($attach_config['upload_filesize_limit']) {
         $upload_filesize_limit = $attach_config['upload_filesize_limit'];
+    } else {
+        $upload_filesize_limit = $attach_config['attachment_quota'];
     }
 
-    if ($upload_filesize_limit == 0) {
+    if ($upload_filesize_limit === 0) {
         $user_quota = $lang['Unlimited'];
     } else {
         $size_lang = ($upload_filesize_limit >= 1048576) ? $lang['MB'] : (($upload_filesize_limit >= 1024) ? $lang['KB'] : $lang['Bytes']);
@@ -447,6 +467,8 @@ function display_upload_attach_box_limits($user_id, $group_id = 0)
  * admin/index.php:
  *        perform_attach_pageregister($onlinerow_reg[$i]['user_session_page'], true);
  *        perform_attach_pageregister($onlinerow_guest[$i]['session_page'], true);
+ * @param      $session_page
+ * @param bool $in_admin
  */
 function perform_attach_pageregister($session_page, $in_admin = false)
 {

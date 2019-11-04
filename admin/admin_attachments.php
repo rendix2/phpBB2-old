@@ -607,7 +607,7 @@ if ($mode === 'cats') {
     $display_inlined_no = ($new_attach['img_display_inlined'] === '0') ? 'checked="checked"' : '';
 
     $create_thumbnail_yes = ($new_attach['img_create_thumbnail'] !== '0') ? 'checked="checked"' : '';
-    $create_thumbnail_no = ($new_attach['img_create_thumbnail'] == '0') ? 'checked="checked"' : '';
+    $create_thumbnail_no = ($new_attach['img_create_thumbnail'] === '0') ? 'checked="checked"' : '';
 
     $use_gd2_yes = ($new_attach['use_gd2'] !== '0') ? 'checked="checked"' : '';
     $use_gd2_no = ($new_attach['use_gd2'] === '0') ? 'checked="checked"' : '';

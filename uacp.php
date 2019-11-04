@@ -24,7 +24,7 @@ $sid = get_var('sid', '');
 $userdata = init_userprefs(PAGE_PROFILE);
 
 // session id check
-if ($sid == '' || $sid != $userdata['session_id']) {
+if ($sid === '' || $sid !== $userdata['session_id']) {
 	message_die(GENERAL_ERROR, 'Invalid_session');
 }
 
@@ -37,7 +37,7 @@ if (!$user_id) {
 
 $profiledata = get_userdata($user_id);
 
-if ($profiledata['user_id'] != $userdata['user_id'] && $userdata['user_level'] != ADMIN) {
+if ($profiledata['user_id'] !== $userdata['user_id'] && $userdata['user_level'] != ADMIN) {
 	message_die(GENERAL_MESSAGE, $lang['Not_Authorised']);
 }
 
@@ -53,7 +53,7 @@ require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $language . $sep .
 
 $start = get_var('start', 0);
 $sort_order = get_var('order', 'ASC');
-$sort_order = ($sort_order == 'ASC') ? 'ASC' : 'DESC';
+$sort_order = ($sort_order === 'ASC') ? 'ASC' : 'DESC';
 $mode = get_var('mode', '');
 
 $mode_types = [
@@ -80,14 +80,14 @@ if (count($mode_types) > 0) {
 	$select_sort_mode = '<select name="mode">';
 
 	foreach ($mode_types as $value => $text ) {
-		$selected = ($mode == $value) ? ' selected="selected"' : '';
+		$selected = ($mode === $value) ? ' selected="selected"' : '';
 		$select_sort_mode .= '<option value="' . $value . '"' . $selected . '>' . $text . '</option>';
 	}
 	$select_sort_mode .= '</select>';
 }
 
 $select_sort_order = '<select name="order">';
-if ($sort_order == 'ASC') {
+if ($sort_order === 'ASC') {
 	$select_sort_order .= '<option value="ASC" selected="selected">' . $lang['Sort_Ascending'] . '</option><option value="DESC">' . $lang['Sort_Descending'] . '</option>';
 } else {
 	$select_sort_order .= '<option value="ASC">' . $lang['Sort_Ascending'] . '</option><option value="DESC" selected="selected">' . $lang['Sort_Descending'] . '</option>';
@@ -294,25 +294,25 @@ if (count($attachments) > 0) {
                 if ($row) {
                     $privmsgs_type = $row->privmsgs_type;
 
-                    if ($privmsgs_type == PRIVMSGS_READ_MAIL || $privmsgs_type == PRIVMSGS_NEW_MAIL || $privmsgs_type == PRIVMSGS_UNREAD_MAIL) {
-                        if ($row->privmsgs_to_userid == $profiledata['user_id']) {
+                    if ($privmsgs_type === PRIVMSGS_READ_MAIL || $privmsgs_type === PRIVMSGS_NEW_MAIL || $privmsgs_type === PRIVMSGS_UNREAD_MAIL) {
+                        if ($row->privmsgs_to_userid === $profiledata['user_id']) {
                             $desc = $lang['Private_Message'] . ' (' . $lang['Inbox'] . ')';
                         }
-                    } else if ($privmsgs_type == PRIVMSGS_SENT_MAIL) {
-                        if ($row->privmsgs_from_userid == $profiledata['user_id']) {
+                    } else if ($privmsgs_type === PRIVMSGS_SENT_MAIL) {
+                        if ($row->privmsgs_from_userid === $profiledata['user_id']) {
                             $desc = $lang['Private_Message'] . ' (' . $lang['Sentbox'] . ')';
                         }
-                    } else if ($privmsgs_type == PRIVMSGS_SAVED_OUT_MAIL) {
-                        if ($row->privmsgs_from_userid == $profiledata['user_id']) {
+                    } else if ($privmsgs_type === PRIVMSGS_SAVED_OUT_MAIL) {
+                        if ($row->privmsgs_from_userid === $profiledata['user_id']) {
                             $desc = $lang['Private_Message'] . ' (' . $lang['Savebox'] . ')';
                         }
-                    } else if ($privmsgs_type == PRIVMSGS_SAVED_IN_MAIL) {
-                        if ($row->privmsgs_to_userid == $profiledata['user_id']) {
+                    } else if ($privmsgs_type === PRIVMSGS_SAVED_IN_MAIL) {
+                        if ($row->privmsgs_to_userid === $profiledata['user_id']) {
                             $desc = $lang['Private_Message'] . ' (' . $lang['Savebox'] . ')';
                         }
                     }
 
-                    if ($desc != '') {
+                    if ($desc !== '') {
                         $post_titles[] = $desc;
                     }
 				}
@@ -324,7 +324,7 @@ if (count($attachments) > 0) {
             $delete_box = '<input type="checkbox" name="delete_id_list[]" value="' . (int)$attachment->attach_id . '" />';
 
             foreach ($delete_id_list as $attachId) {
-                if ($attachId == $attachment->attach_id) {
+                if ($attachId === $attachment->attach_id) {
                     $delete_box = '<input type="checkbox" name="delete_id_list[]" value="' . (int)$attachment->attach_id . '" checked="checked" />';
                     break;
                 }
