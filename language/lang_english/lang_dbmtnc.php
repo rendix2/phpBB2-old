@@ -114,6 +114,13 @@ $mtnc[] = [
 	0
 ];
 $mtnc[] = [
+	'thanks',
+	'Check thanks table',
+	'This will check the thanks table for errors.',
+	'Unknown users or topics with thanks will be deleted. Proceed?',
+	0
+];
+$mtnc[] = [
 	'check_config',
 	'Check configuration table',
 	'This will check the configuration table for missing entries.',
@@ -291,11 +298,18 @@ $lang['Dbmtnc_config_updated'] = 'Configuration Updated Successfully';
 $lang['Click_return_dbmtnc_config'] = 'Click %sHere%s to return to configuration';
 // check_user
 $lang['Checking_user_tables'] = 'Checking user and group tables';
+$lang['Checking_thanks'] = 'Checking thanks table';
 $lang['Checking_missing_anonymous'] = 'Checking for missing anonymous account';
+$lang['Checking_missing_thankers'] = 'Checking for missing thankful users';
+$lang['Checking_missing_thank_topic'] = 'Checking for missing topics with thanks';
 $lang['Anonymous_recreated'] = 'Anonymous account recreated';
 $lang['Checking_incorrect_pending_information'] = 'Checking for incorrect pending information';
 $lang['Updating_invalid_pendig_user'] = 'Updated invalid pending information of one user';
 $lang['Updating_invalid_pendig_users'] = 'Updated invalid pending information of %d users';
+$lang['Deleting_invalid_thanker'] = 'Deleting invalid thanker %d';
+$lang['Deleting_invalid_thankers'] = 'Deleting invalid %d thankers (%s)';
+$lang['Deleting_invalid_thank_topic'] = 'Deleting invalid topic %d';
+$lang['Deleting_invalid_thank_topics'] = 'Deleting invalid %d topics (%s)';
 $lang['Updating_pending_information'] = 'Updating pending information of single user groups';
 $lang['Checking_missing_user_groups'] = 'Checking for users with multiple or no single user group';
 $lang['Found_multiple_SUG'] = 'Found users with multiple single user groups';

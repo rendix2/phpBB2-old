@@ -107,6 +107,10 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
                 ->where('group_id = %i', $row->group_id)
                 ->execute();
 
+            dibi::delete(Tables::THANKS_TABLE)
+                ->where('[user_id] = %i', $user_id)
+                ->execute();
+
             dibi::delete(Tables::TOPICS_WATCH_TABLE)
                 ->where('user_id = %i', $user_id)
                 ->execute();

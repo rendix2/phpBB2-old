@@ -411,6 +411,75 @@ switch($mode_id) {
 
                 $template->pparse('body');
 				break;
+            case 'thanks': // Check thanks
+                echo('<h1>' . $lang['Checking_thanks'] . "</h1>\n");
+                lock_db();
+
+                // Check for missing thankers
+                echo('<p class="gen"><b>' . $lang['Checking_missing_thankers'] . "</b></p>\n");
+
+                $unknownUsers = dibi::select('user_id')
+                    ->from(Tables::THANKS_TABLE)
+                    ->where('[user_id] NOT IN',
+                        dibi::select('user_id')
+                            ->from(Tables::USERS_TABLE)
+                    )
+                    ->fetchPairs(null, 'user_id');
+
+                $countUnknownUsers = count($unknownUsers);
+
+                if ($countUnknownUsers) {
+                    dibi::delete(Tables::THANKS_TABLE)
+                        ->where('[user_id] IN %in', $unknownUsers)
+                        ->execute();
+
+                    if ($countUnknownUsers === 1) {
+                        $db_updated = true;
+                        echo('<p class="gen">' . sprintf($lang['Deleting_invalid_thanker'], $unknownUsers[0]) . "</p>\n");
+                    } elseif ($countUnknownUsers > 1) {
+                        $db_updated = true;
+
+                        $unknownUsersList = implode(', ', $unknownUsers);
+                        echo('<p class="gen">' . sprintf($lang['Deleting_invalid_thankers'], $countUnknownUsers, $unknownUsersList) . "</p>\n");
+                    }
+                } else {
+                    echo($lang['Nothing_to_do']);
+                }
+
+                // Check for missing thanked topics
+                echo('<p class="gen"><b>' . $lang['Checking_missing_thank_topic'] . "</b></p>\n");
+
+                $unknownTopics = dibi::select('topic_id')
+                    ->from(Tables::THANKS_TABLE)
+                    ->where('[topic_id] NOT IN',
+                        dibi::select('topic_id')
+                            ->from(Tables::TOPICS_TABLE)
+                    )
+                    ->fetchPairs(null, 'topic_id');
+
+                $countUnknownTopics = count($unknownTopics);
+
+                if ($countUnknownTopics) {
+                    dibi::delete(Tables::THANKS_TABLE)
+                        ->where('[topic_id] IN %in', $unknownTopics)
+                        ->execute();
+
+                    if ($countUnknownTopics === 1) {
+                        $db_updated = true;
+                        echo('<p class="gen">' . sprintf($lang['Deleting_invalid_thank_topic'], $unknownTopics[0]) . "</p>\n");
+                    } elseif ($countUnknownTopics > 1) {
+                        $db_updated = true;
+
+                        $unknownTopicsList = implode(', ', $unknownTopics);
+                        echo('<p class="gen">' . sprintf($lang['Deleting_invalid_thank_topics'], $countUnknownTopics, $unknownTopicsList) . "</p>\n");
+                    }
+                } else {
+                    echo($lang['Nothing_to_do']);
+                }
+
+                lock_db(true);
+
+                break;
 			case 'check_user': // Check user tables
 				echo('<h1>' . $lang['Checking_user_tables'] . "</h1>\n");
 				lock_db();
