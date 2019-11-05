@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 use Nette\Caching\Cache;
+use phpBB2\Sync;
 
 /***************************************************************************
  *
@@ -441,7 +442,7 @@ $totalPosts = count($posts);
 if (!$totalPosts) {
     require_once $phpbb_root_path . 'includes' . $sep . 'functions_admin.php';
 
-    sync('topic', $topicId);
+    Sync::oneTopic($topicId);
 
     message_die(GENERAL_MESSAGE, $lang['No_posts_topic']);
 }
@@ -463,7 +464,7 @@ if ($forum_topic_data->topic_replies + 1 < $start + $totalPosts)  {
 if ($resync) {
     require_once $phpbb_root_path . 'includes' . $sep . 'functions_admin.php';
 
-    sync('topic', $topicId);
+    Sync::oneTopic($topicId);
 
     $totalReplies = dibi::select('COUNT(post_id)')
         ->as('total')

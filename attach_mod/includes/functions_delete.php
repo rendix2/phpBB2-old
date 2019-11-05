@@ -8,6 +8,8 @@
  *
  */
 
+use phpBB2\Sync;
+
 /**
  * All Attachment Functions processing the Deletion Process
  */
@@ -218,7 +220,7 @@ function delete_attachment($post_id_array = 0, $attach_id_array = 0, $page = 0, 
                 ->fetchPairs(null, 'topic_id');
 
             foreach ($topics as $topic) {
-                attachment_sync_topic($topic);
+                Sync::attachTopic($topic);
             }
         }
     }

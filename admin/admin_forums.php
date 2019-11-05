@@ -11,6 +11,7 @@
  ***************************************************************************/
 
 use Dibi\Row;
+use phpBB2\Sync;
 
 /***************************************************************************
  *
@@ -600,7 +601,7 @@ if (!empty($mode)) {
                     ->where('forum_id = %i', $from_id)
                     ->execute();
 
-				sync('forum', $to_id);
+				Sync::oneForum($to_id);
 			}
 
             // Alter Mod level if appropriate - 2.0.4
@@ -789,7 +790,7 @@ if (!empty($mode)) {
 			break;
 
 		case 'forum_sync':
-			sync('forum', (int)$_GET[POST_FORUM_URL]);
+			Sync::oneForum((int)$_GET[POST_FORUM_URL]);
 			$show_index = true;
 
 			break;

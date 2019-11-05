@@ -10,6 +10,8 @@
  *
  ***************************************************************************/
 
+use phpBB2\Sync;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -277,7 +279,7 @@ switch ($mode) {
                 ->where('topic_id IN %in', $topicIds)
                 ->execute();
 
-			sync('forum', $forumId);
+			Sync::oneForum($forumId);
 
             if (!empty($topicId)) {
                 $redirectPage = 'viewforum.php?' . POST_FORUM_URL . "=$forumId&amp;sid=" . $userdata['session_id'];
@@ -395,8 +397,8 @@ switch ($mode) {
 				}
 
 				// Sync the forum indexes
-				sync('forum', $new_forum_id);
-				sync('forum', $old_forum_id);
+				Sync::oneForum($new_forum_id);
+				Sync::oneForum($old_forum_id);
 
 				$message = $lang['Topics_Moved'] . '<br /><br />';
 
@@ -618,10 +620,11 @@ switch ($mode) {
                         ->execute();
                 }
 
-				sync('topic', $new_topic_id);
-				sync('topic', $topicId);
-				sync('forum', $new_forum_id);
-				sync('forum', $forumId);
+                Sync::oneTopic($new_topic_id);
+                Sync::oneTopic($topicId);
+
+                Sync::oneForum($new_forum_id);
+                Sync::oneForum($forumId);
 
                 $template->assignVars(
                     [

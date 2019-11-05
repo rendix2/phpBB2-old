@@ -9,6 +9,7 @@
  */
 
 use Nette\Caching\Cache;
+use phpBB2\Sync;
 
 /**
  */
@@ -807,7 +808,7 @@ if ($mode === 'sync') {
         if ($i % 50 === 0) {
             echo '<br />';
         }
-        attachment_sync_topic($topic);
+        Sync::attachTopic($topic);
         $i++;
     }
 
