@@ -98,7 +98,7 @@ SET IDENTITY_INSERT phpbb_categories OFF;
 /*
   -- Forums
 */
-INSERT INTO phpbb_forums (forum_id, cat_id, forum_name, forum_desc, forum_status, forum_order, forum_posts, forum_topics, forum_last_post_id, prune_next, prune_enable, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_announce, auth_sticky, auth_pollcreate, auth_vote, auth_attachments) VALUES (1, 1, 'Test Forum 1', 'This is just a test forum, nothing special here.', '', 1, 1, 1, 1, '', 1, '', '', 1, 1, 1, 1, 3, 3, 1, 1, 3);
+INSERT INTO phpbb_forums (forum_id, cat_id, forum_name, forum_desc, forum_status, forum_order, forum_posts, forum_topics, forum_thanks, forum_last_post_id, prune_next, prune_enable, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_announce, auth_sticky, auth_pollcreate, auth_vote, auth_attachments) VALUES (1, 1, 'Test Forum 1', 'This is just a test forum, nothing special here.', '', 1, 1, 0, 1, 1, '', 1, '', '', 1, 1, 1, 1, 3, 3, 1, 1, 3);
 
 -- Languages
 INSERT INTO phpbb_languages (lang_name) VALUES('english');
@@ -277,4 +277,4 @@ INSERT IGNORE INTO phpbb_config (config_name, config_value) VALUES ('dbmtnc_disa
 INSERT IGNORE INTO phpbb_config (config_name, config_value) VALUES ('dbmtnc_disallow_rebuild', '0');
 
 
-ALTER TABLE `phpbb_forums` ADD `forum_thank` TINYINT(1) DEFAULT '0' NOT NULL;
+ALTER TABLE `phpbb_forums` ADD `forum_thank_enable` TINYINT(1) DEFAULT '0' NOT NULL;

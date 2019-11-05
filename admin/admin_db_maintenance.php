@@ -515,6 +515,7 @@ switch($mode_id) {
                         'user_style' => null,
                         'user_posts' => 0,
                         'user_topics' => 0,
+                        'user_thanks' => 0,
                         'user_attachsig' => 0,
                         'user_allowsmile' => 1,
                         'user_allowhtml' => 1,
@@ -3054,6 +3055,77 @@ switch($mode_id) {
 					echo($lang['Nothing_to_do']);
 				}
 
+                // Updating thanks data of forums
+                echo('<p class="gen"><b>' . $lang['Synchronize_forum_thank_data'] . "</b></p>\n");
+
+                $rows = dibi::select(['f.forum_id', 'f.forum_name', 'f.forum_thanks'])
+                    ->select('COUNT(th.topic_id)')
+                    ->as('new_thanks')
+                    ->from(Tables::FORUMS_TABLE)
+                    ->as('f')
+                    ->innerJoin(Tables::TOPICS_TABLE)
+                    ->as('t')
+                    ->on('[t.forum_id] = [f.forum_id]')
+                    ->innerJoin(Tables::THANKS_TABLE)
+                    ->as('th')
+                    ->on('[t.topic_id] = [th.topic_id]')
+                    ->groupBy('f.forum_id')
+                    ->having('[new_thanks] <> [f.forum_thanks]')
+                    ->fetchAll();
+
+                $forumsManager = new ForumsManager();
+
+                foreach ($rows as $row) {
+                    if (!$list_open) {
+                        echo('<p class="gen">' . $lang['Synchronizing_forums'] . ":</p>\n");
+                        echo("<font class=\"gen\"><ul>\n");
+                        $list_open = true;
+                    }
+
+                    if ($row->forum_thanks !== $row->new_thanks) {
+                        echo('<li>' . sprintf($lang['Synchronizing_forum'], $row->forum_id, htmlspecialchars($row->forum_name)) . "</li>\n");
+
+                        $forumsManager->updateByPrimary($row->forum_id, ['forum_thanks' => $row->new_thanks]);
+                    }
+                }
+
+                if ($list_open) {
+                    echo("</ul></font>\n");
+                    $list_open = false;
+                } else {
+                    echo($lang['Nothing_to_do']);
+                }
+
+                // Updating forums without a thanks
+                echo('<p class="gen"><b>' . $lang['Synchronize_forum_data_wo_thank'] . "</b></p>\n");
+
+                $result_array = dibi::select('f.forum_id')
+                    ->from(Tables::FORUMS_TABLE)
+                    ->as('f')
+                    ->leftJoin(Tables::TOPICS_TABLE)
+                    ->as('t')
+                    ->on('[f.forum_id] = [t.forum_id]')
+                    ->leftJoin(Tables::THANKS_TABLE)
+                    ->as('th')
+                    ->on('[t.topic_id] = [th.topic_id]')
+                    ->where('[t.forum_id] IS NULL')
+                    ->where('[f.forum_thanks] <> %i', 0)
+                    ->fetchPairs(null, 'forum_id');
+
+                if (count($result_array)) {
+                    $record_list = implode(',', $result_array);
+
+                    $affected_rows = $forumsManager->updateByPrimarys($result_array, ['forum_thanks' => 0]);
+
+                    if ($affected_rows == 1) {
+                        echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
+                    } elseif ($affected_rows > 1) {
+                        echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
+                    }
+                } elseif (!$db_updated) {
+                    echo($lang['Nothing_to_do']);
+                }
+
 				if ($function == 'synchronize_post_direct') {
 					if ($db_state == 0) {
 						lock_db(true, true, true);
@@ -3156,7 +3228,7 @@ switch($mode_id) {
                     ->where('u.user_id <> %i', ANONYMOUS)
                     ->groupBy('u.user_id')
                     ->groupBy('u.username')
-                    ->groupBy('u.user_posts')
+                    ->groupBy('u.user_topics')
                     ->fetchAll();
 
                 $result_array = [];
@@ -3204,6 +3276,74 @@ switch($mode_id) {
                     dibi::update(Tables::USERS_TABLE, ['user_topics' => 0])
                         ->where('user_id = %i', $row->user_id)
                         ->execute();
+                }
+
+                if ($list_open) {
+                    echo("</ul></font>\n");
+                    $list_open = false;
+                } else {
+                    echo($lang['Nothing_to_do']);
+                }
+
+                echo('<p class="gen"><b>' . $lang['Synchronize_user_thanks_counter'] . "</b></p>\n");
+
+                $usersManager = new UsersManager();
+
+                $rows = dibi::select(['u.user_id', 'u.username', 'u.user_thanks'])
+                    ->select('COUNT(t.topic_id)')
+                    ->as('new_counter')
+                    ->from(Tables::USERS_TABLE)
+                    ->as('u')
+                    ->innerJoin(Tables::THANKS_TABLE)
+                    ->as('t')
+                    ->on('[u.user_id] = [t.user_id]')
+                    ->where('u.user_id <> %i', ANONYMOUS)
+                    ->groupBy('u.user_id')
+                    ->groupBy('u.username')
+                    ->groupBy('u.user_thanks')
+                    ->fetchAll();
+
+                $result_array = [];
+
+                foreach ($rows as $row) {
+                    $result_array[] = $row->user_id;
+
+                    if ($row->new_counter !== $row->user_thanks) {
+                        if (!$list_open) {
+                            echo('<p class="gen">' . $lang['Synchronizing_users'] . ":</p>\n");
+                            echo("<font class=\"gen\"><ul>\n");
+                            $list_open = true;
+                        }
+
+                        echo('<li>' . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row->username), $row->user_id, $row->user_thanks, $row->new_counter) . "</li>\n");
+
+                        $usersManager->updateByPrimary($row->user_id, ['user_thanks' => $row->new_counter]);
+                    }
+                }
+
+                // All other users
+                if (count($result_array)) {
+                    $rows = dibi::select(['user_id', 'username', 'user_thanks'])
+                        ->from(Tables::USERS_TABLE)
+                        ->where('[user_id] NOT IN %in', $result_array)
+                        ->where('[user_thanks] <> %i', 0)
+                        ->fetchAll();
+                } else {
+                    $rows = dibi::select(['user_id', 'username', 'user_thanks'])
+                        ->from(Tables::USERS_TABLE)
+                        ->where('[user_thanks] <> %i', 0)
+                        ->fetchAll();
+                }
+
+                foreach ($rows as $row) {
+                    if (!$list_open) {
+                        echo('<p class="gen">' . $lang['Synchronizing_users'] . ":</p>\n");
+                        echo("<font class=\"gen\"><ul>\n");
+                        $list_open = true;
+                    }
+                    echo('<li>' . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row->username), $row->user_id, $row->user_thanks, 0) . "</li>\n");
+
+                    $usersManager->updateByPrimary($row->user_id, ['user_thanks' => 0]);
                 }
 
                 if ($list_open) {

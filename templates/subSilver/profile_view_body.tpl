@@ -28,6 +28,24 @@
 			<td valign="top" align="right" nowrap="nowrap"><span class="gen">{L_TOTAL_TOPICS}:&nbsp;</span></td>
 			<td valign="top"><b><span class="gen">{TOPICS}</span></b><br /><span class="genmed">[{TOPIC_PERCENT_STATS} / {TOPIC_DAY_STATS}]</span> <br /><span class="genmed"><a href="{U_SEARCH_USER_TOPICS}" class="genmed">{L_SEARCH_USER_TOPICS}</a></span></td>
 		</tr>
+
+			<tr>
+				<td valign="top" align="right" nowrap="nowrap">
+					<span class="gen">{L_TOTAL_THANKS}:&nbsp;</span>
+				</td>
+				<td valign="top">
+					<b>
+						<span class="gen">{THANKS}</span>
+					</b>
+					<br/>
+					<span class="genmed">[{THANK_PERCENT_STATS} / {THANK_DAY_STATS}]</span>
+					<br/>
+					<span class="genmed">
+						<a href="{U_SEARCH_USER_THANKS}" class="genmed">{L_SEARCH_USER_THANKS}</a>
+					</span>
+				</td>
+			</tr>
+
 		<tr>
 		  <td valign="middle" align="right" nowrap="nowrap"><span class="gen">{L_LOCATION}:&nbsp;</span></td>
 		  <td><b><span class="gen">{LOCATION}</span></b></td>

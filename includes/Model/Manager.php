@@ -1,8 +1,12 @@
 <?php
 
-
 use Dibi\Fluent;
 
+/**
+ * Class Manager
+ *
+ * @author
+ */
 class Manager
 {
 

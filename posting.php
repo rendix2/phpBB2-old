@@ -585,6 +585,12 @@ if (($delete || $pollDelete || $mode === 'delete') && !$confirm) {
 
         dibi::insert(Tables::THANKS_TABLE, $thanksData)->execute();
 
+        $usersManager = new UsersManager();
+        $usersManager->updateByPrimary($userdata['user_id'], ['user_thanks%sql' => 'user_thanks + 1']);
+
+        $forumsManager = new ForumsManager();
+        $forumsManager->updateByPrimary($forumId, ['forum_thanks%sql' => 'forum_thanks + 1']);
+
         $message = $lang['thanks_add'];
     }
 

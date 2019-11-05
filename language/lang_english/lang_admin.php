@@ -77,6 +77,7 @@ $lang['Number_forums'] = 'Number of forums';
 $lang['Number_categories'] = 'Number of categories';
 $lang['Posts_per_day'] = 'Posts per day';
 $lang['Number_topics'] = 'Number of topics';
+$lang['Number_thanks'] = 'Number of thanks';
 $lang['Topics_per_day'] = 'Topics per day';
 $lang['Number_users'] = 'Number of users';
 $lang['Number_themes'] = 'Number of themes';

@@ -39,8 +39,8 @@
 	  <tr>
 		  <td class="row1">{L_FORUM_THANK}</td>
 		  <td class="row2">
-			  <input type="radio" name="forumthank" value="1" {THANK_ENABLE} />{L_YES}&nbsp; &nbsp;
-			  <input type="radio" name="forumthank" value="0" {THANK_DISABLE} />{L_NO}
+			  <input type="radio" name="forum_thank_enable" value="1" {THANK_ENABLE} />{L_YES}&nbsp; &nbsp;
+			  <input type="radio" name="forum_thank_enable" value="0" {THANK_DISABLE} />{L_NO}
           </td>
 	  </tr>
 	<tr>

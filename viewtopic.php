@@ -136,7 +136,7 @@ if ($postId) {
                 't.topic_vote', 't.topic_last_post_id', 'f.forum_name', 'f.forum_status', 'f.forum_id', 'f.auth_view',
                 'f.auth_read', 'f.auth_post', 'f.auth_reply', 'f.auth_edit', 'f.auth_delete', 'f.auth_sticky',
                 'f.auth_announce', 'f.auth_pollcreate', 'f.auth_vote', 'f.auth_attachments',
-                'f.auth_download', 't.topic_attachment', 'forum_thank'
+                'f.auth_download', 't.topic_attachment', 'forum_thank_enable'
     ];
 
     $forum_topic_data = dibi::select($columns)
@@ -185,7 +185,7 @@ if ($postId) {
                 't.topic_vote', 't.topic_last_post_id', 'f.forum_name', 'f.forum_status', 'f.forum_id', 'f.auth_view',
                 'f.auth_read', 'f.auth_post', 'f.auth_reply', 'f.auth_edit', 'f.auth_delete', 'f.auth_sticky',
                 'f.auth_announce', 'f.auth_pollcreate', 'f.auth_vote', 'f.auth_attachments',
-                'f.auth_download', 'forum_thank', 't.topic_attachment'
+                'f.auth_download', 'forum_thank_enable', 't.topic_attachment'
     ];
 
     $forum_topic_data = dibi::select($columns)
@@ -206,7 +206,7 @@ attach_setup_viewtopic_auth($order_sql, $sql);
 
 $forumId = (int)$forum_topic_data->forum_id;
 
-$show_thanks = ($forum_topic_data->forum_thank == FORUM_THANKABLE) ? FORUM_THANKABLE : FORUM_UNTHANKABLE;
+$show_thanks = ($forum_topic_data->forum_thank_enable == FORUM_THANKABLE) ? FORUM_THANKABLE : FORUM_UNTHANKABLE;
 
 //
 // Start session management

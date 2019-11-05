@@ -146,7 +146,7 @@ $mtnc[] = ['--', '', '', '', 0];
 $mtnc[] = [
 	'synchronize_post',
 	'Synchronize forums and topics',
-	'This will synchronize the post counters and the post data in the forums and topics.',
+	'This will synchronize the counters and the post data in the forums and topics.',
 	'This command will take some ammount of time to complete. If your server does not allow the usage of the set_time_limit() command, this command may be interruped by PHP. No data will get lost by this but some data may not be updated. Proceed?',
 	0
 ];
@@ -457,12 +457,15 @@ $lang['Synchronize_forum_topic_data'] = 'Synchronizing topic-data of forums';
 $lang['Synchronizing_forums'] = 'Updating forums';
 $lang['Synchronizing_forum'] = 'Updating forum %d (%s)';
 $lang['Synchronize_forum_data_wo_topic'] = 'Synchronizing forums without any topic';
+$lang['Synchronize_forum_data_wo_thank'] = 'Synchronizing forums without any thank';
 $lang['Synchronize_forum_post_data'] = 'Synchronizing post-data of forums';
 $lang['Synchronize_forum_data_wo_post'] = 'Synchronizing forums without any post';
+$lang['Synchronize_forum_thank_data'] = 'Synchronizing thank-data of forums';
 // synchronize_user
 $lang['Synchronize_post_counters'] = 'Synchronizing post counters';
 $lang['Synchronize_user_post_counter'] = 'Synchronizing post counter of users';
 $lang['Synchronize_user_topic_counter'] = 'Synchronizing topic counter of users';
+$lang['Synchronize_user_thanks_counter'] = 'Synchronizing thank counter of users';
 $lang['Synchronizing_user_counter'] = 'Updating user %s (%d): %d -&gt; %d';
 // synchronize_mod_state
 $lang['Synchronize_moderators'] = 'Synchronizing moderator status in user table';

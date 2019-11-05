@@ -572,10 +572,6 @@ class PostHelper
                     ->where('topic_id = %i OR topic_moved_id = %i', $topicId, $topicId)
                     ->execute();
 
-                dibi::delete(Tables::THANKS_TABLE)
-                    ->where('[topic_id] = %i', $topicId)
-                    ->execute();
-
                 dibi::delete(Tables::TOPICS_WATCH_TABLE)
                     ->where('topic_id = %i', $topicId)
                     ->execute();
@@ -583,6 +579,21 @@ class PostHelper
                 dibi::update(Tables::USERS_TABLE, ['user_topics%sql' => 'user_topics - 1'])
                     ->where('user_id = %i', $postData['poster_id'])
                     ->execute();
+
+                $usersManager = new UsersManager();
+                $thanksManager = new ThanksManager();
+                $forumsManager = new ForumsManager();
+
+                $thanks = $thanksManager->getByTopicId($topicId);
+                $usersToUpdate = [];
+
+                foreach ($thanks as $thank) {
+                    $usersToUpdate[] = $thank->user_id;
+                }
+
+                $usersManager->updateByPrimarys($usersToUpdate, ['user_thanks%sql' => 'user_thanks - 1']);
+                $forumsManager->updateByPrimary($forumId, ['forum_thanks%sql' => 'forum_thanks - ' . count($usersToUpdate)]);
+                $thanksManager->deleteByTopicId($topicId);
             }
 
             SearchHelper::removeSearchPost([$postId]);

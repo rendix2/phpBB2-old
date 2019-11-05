@@ -198,6 +198,8 @@ switch ($mode) {
 				message_die(GENERAL_MESSAGE, $lang['None_selected']);
 			}
 
+			$usersManager = new UsersManager();
+
             $topicAuthors = dibi::select('topic_poster')
                 ->select('COUNT(topic_id)')
                 ->as('topics')
@@ -225,6 +227,18 @@ switch ($mode) {
                 dibi::update(Tables::USERS_TABLE, ['user_posts%sql' => 'user_posts - ' . $poster->posts])
                     ->where('user_id = %i', $poster->poster_id)
                     ->execute();
+            }
+
+			$thankers = dibi::select('user_id')
+                ->select('COUNT(user_id)')
+                ->as('thanks')
+                ->from(Tables::THANKS_TABLE)
+                ->where('[topic_id] IN %in', $topicIds)
+                ->groupBy('user_id')
+                ->fetchAll();
+
+			foreach ($thankers as $thanker) {
+			    $usersManager->updateByPrimary($thanker->user_id, ['user_thanks%sql' => 'user_thanks - '. $thanker->thanks]);
             }
 
             $postIds = dibi::select('post_id')

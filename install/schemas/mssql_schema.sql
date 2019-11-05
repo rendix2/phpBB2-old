@@ -78,6 +78,7 @@ CREATE TABLE [phpbb_forums] (
 	[forum_status] [smallint] NOT NULL ,
 	[forum_order] [int] NOT NULL ,
 	[forum_posts] [int] NOT NULL ,
+	[forum_thanks] [int] NOT NULL ,
 	[forum_topics] [smallint] NOT NULL ,
 	[forum_last_post_id] [int] NOT NULL ,
 	[prune_next] [int] NULL ,
@@ -353,6 +354,7 @@ CREATE TABLE [phpbb_users] (
 	[user_level] [smallint] NOT NULL ,
 	[user_posts] [int] NOT NULL ,
 	[user_topics] [int] NOT NULL ,
+	[user_thanks] [int] NOT NULL ,
 	[user_timezone] [varchar] (100) NOT NULL ,
 	[user_style] [int] NULL ,
 	[user_lang] [varchar] (255) NULL ,
@@ -609,6 +611,7 @@ GO
 ALTER TABLE [phpbb_forums] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_forums_forum_posts] DEFAULT (0) FOR [forum_posts],
 	CONSTRAINT [DF_phpbb_forums_forum_topics] DEFAULT (0) FOR [forum_topics],
+	CONSTRAINT [DF_phpbb_forums_forum_thanks] DEFAULT (0) FOR [forum_thanks],
 	CONSTRAINT [DF_phpbb_forums_forum_last_post_id] DEFAULT (0) FOR [forum_last_post_id],
 	CONSTRAINT [DF_phpbb_forums_prune_enable] DEFAULT (0) FOR [prune_enable],
 	CONSTRAINT [DF_phpbb_forums_auth_view] DEFAULT (0) FOR [auth_view],

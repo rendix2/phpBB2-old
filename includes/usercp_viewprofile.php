@@ -27,19 +27,13 @@ if (!defined('IN_PHPBB')) {
 	die('Hacking attempt');
 }
 
-if (!isset($_GET[POST_USERS_URL])) {
+if (!isset($_GET[POST_USERS_URL]) || !is_numeric($_GET[POST_USERS_URL]) || $_GET[POST_USERS_URL] === ANONYMOUS) {
     message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
 }
 
-if (!is_numeric($_GET[POST_USERS_URL])) {
-    message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
-}
+$usersManager = new UsersManager();
 
-if ($_GET[POST_USERS_URL] === ANONYMOUS) {
-    message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
-}
-
-$profileData = get_userdata($_GET[POST_USERS_URL]);
+$profileData = $usersManager->getByPrimaryKey($_GET[POST_USERS_URL]);
 
 if (!$profileData) {
 	message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
@@ -86,6 +80,7 @@ $memberdays = $memberdays->diff($regdate)->days;
 
 $postsPerDay  = $profileData->user_posts / $memberdays;
 $topicsPerDay = $profileData->user_topics / $memberdays;
+$thanksPerDay = $profileData->user_thanks / $memberdays;
 
 // Get the users percentage of total posts
 if ($profileData->user_posts !== 0) {
@@ -101,6 +96,15 @@ if ($profileData->user_topics !== 0) {
     $percentageTopics= $totalTopics ? min(100, ($profileData->user_topics / $totalTopics) * 100) : 0;
 } else {
     $percentageTopics = 0;
+}
+
+// Get the users percentage of total thanks
+if ($profileData->user_thanks !== 0) {
+    $thanksManager = new ThanksManager();
+
+    $percentageThanks = $totalTopics ? min(100, ($profileData->user_topics / $thanksManager->getAllCount()) * 100) : 0;
+} else {
+    $percentageThanks = 0;
 }
 
 $avatarImage = '';
@@ -209,6 +213,9 @@ $template->assignVars(
         'TOPIC_DAY_STATS' => sprintf($lang['User_topic_day_stats'], $topicsPerDay),
         'TOPIC_PERCENT_STATS' => sprintf($lang['User_post_pct_stats'], $percentageTopics),
 
+        'THANKS' => $profileData->user_thanks,
+        'THANK_DAY_STATS' => sprintf($lang['User_thank_day_stats'], $thanksPerDay),
+        'THANK_PERCENT_STATS' => sprintf($lang['User_post_pct_stats'], $percentageThanks),
 
         'SEARCH_IMG' => $searchImage,
         'SEARCH' => $search,
@@ -239,6 +246,7 @@ $template->assignVars(
         'L_JOINED' => $lang['Joined'],
         'L_TOTAL_POSTS' => $lang['Total_posts'],
         'L_TOTAL_TOPICS' => $lang['Total_topics'],
+        'L_TOTAL_THANKS' => $lang['Total_thanks'],
         'L_SEARCH_USER_POSTS' => sprintf($lang['Search_user_posts'], $profileData->username),
         'L_SEARCH_USER_TOPICS' => sprintf($lang['Search_user_topics'], $profileData->username),
         'L_CONTACT' => $lang['Contact'],

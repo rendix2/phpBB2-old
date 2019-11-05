@@ -84,7 +84,7 @@ INSERT INTO phpbb_categories (cat_id, cat_title, cat_order) VALUES (1, 'Test cat
 
 
 # -- Forums
-INSERT INTO phpbb_forums (forum_name, forum_desc, cat_id, forum_order, forum_posts, forum_topics, forum_last_post_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_announce, auth_sticky, auth_pollcreate, auth_vote, auth_attachments) VALUES ('Test Forum 1', 'This is just a test forum.', 1, 10, 1, 1, 1, 0, 0, 1, 1, 1, 1, 3, 3, 1, 1, 3);
+INSERT INTO phpbb_forums (forum_name, forum_desc, cat_id, forum_order, forum_posts, forum_topics, forum_thanks, forum_last_post_id, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_announce, auth_sticky, auth_pollcreate, auth_vote, auth_attachments) VALUES ('Test Forum 1', 'This is just a test forum.', 1, 10, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 3, 3, 1, 1, 3);
 
 -- Languages
 INSERT INTO phpbb_languages (lang_name) VALUES('english');
@@ -213,4 +213,4 @@ INSERT IGNORE INTO phpbb_config (config_name, config_value) VALUES ('dbmtnc_rebu
 INSERT IGNORE INTO phpbb_config (config_name, config_value) VALUES ('dbmtnc_disallow_postcounter', '0');
 INSERT IGNORE INTO phpbb_config (config_name, config_value) VALUES ('dbmtnc_disallow_rebuild', '0');
 
-ALTER TABLE `phpbb_forums` ADD `forum_thank` TINYINT(1) DEFAULT '0' NOT NULL;
+ALTER TABLE `phpbb_forums` ADD `forum_thank_enable` TINYINT(1) DEFAULT '0' NOT NULL;
