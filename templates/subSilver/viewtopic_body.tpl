@@ -14,8 +14,7 @@
                 <a href="{U_POST_NEW_TOPIC}">
 					<img src="{POST_IMG}" border="0" alt="{L_POST_NEW_TOPIC}" align="middle"/></a>&nbsp;&nbsp;&nbsp;
 				<a href="{U_POST_REPLY_TOPIC}">
-					<img src="{REPLY_IMG}" border="0" alt="{L_POST_REPLY_TOPIC}" align="middle"/>
-				</a>
+					<img src="{REPLY_IMG}" border="0" alt="{L_POST_REPLY_TOPIC}" align="middle"/></a>
 
                 <!-- BEGIN thanks_button -->
                 &nbsp;&nbsp;&nbsp;
@@ -114,8 +113,7 @@
 			<a href="{U_POST_NEW_TOPIC}">
 				<img src="{POST_IMG}" border="0" alt="{L_POST_NEW_TOPIC}" align="middle" /></a>&nbsp;&nbsp;&nbsp;
 			<a href="{U_POST_REPLY_TOPIC}">
-				<img src="{REPLY_IMG}" border="0" alt="{L_POST_REPLY_TOPIC}" align="middle" />
-			</a>
+				<img src="{REPLY_IMG}" border="0" alt="{L_POST_REPLY_TOPIC}" align="middle" /></a>
 
 			<!-- BEGIN thanks_button -->
 			&nbsp;&nbsp;&nbsp;
