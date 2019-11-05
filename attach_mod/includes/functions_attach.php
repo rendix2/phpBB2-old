@@ -611,54 +611,6 @@ function get_extension_informations()
 }
 
 /**
- * Sync Topic (includes/functions_admin.php)
- * @param $topic_id
- * @throws \Dibi\Exception
-*/
-function attachment_sync_topic($topic_id)
-{
-    if (!$topic_id) {
-        return;
-    }
-
-    $topic_id = (int)$topic_id;
-
-    $post_ids = dibi::select('post_id')
-        ->from(Tables::POSTS_TABLE)
-        ->where('[topic_id] = %i', $topic_id)
-        ->groupBy('post_id')
-        ->fetchPairs(null, 'post_id');
-
-    if (!count($post_ids)) {
-        return;
-    }
-
-    $checkAttach = dibi::select('attach_id')
-        ->from(Tables::ATTACH_ATTACHMENT_TABLE)
-        ->where('[post_id] IN %in', $post_ids)
-        ->fetch();
-
-    $set_id = $checkAttach === false ? 0 : 1;
-
-    dibi::update(Tables::TOPICS_TABLE, ['topic_attachment' => $set_id])
-        ->where('[topic_id] = %i', $topic_id)
-        ->execute();
-
-    foreach ($post_ids as $post_id) {
-        $checkAttach = dibi::select('attach_id')
-            ->from(Tables::ATTACH_ATTACHMENT_TABLE)
-            ->where('[post_id] = %i', $post_id)
-            ->fetch();
-
-        $set_id = $checkAttach === false ? 0 : 1;
-
-        dibi::update(Tables::POSTS_TABLE, ['post_attachment' => $set_id])
-            ->where('[post_id] = %i', $post_id)
-            ->execute();
-    }
-}
-
-/**
  * Get Extension
  * @param $filename
  * @return false|string

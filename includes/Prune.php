@@ -1,5 +1,7 @@
 <?php
 
+use phpBB2\Sync;
+
 /**
  * Class Prune
  *
@@ -23,7 +25,7 @@ class Prune
             ->fetchAll();
 
         foreach ($topics as $topic) {
-            sync('topic', $topic->topic_id);
+            Sync::oneTopic($topic->topic_id);
         }
 
         //
@@ -157,7 +159,7 @@ class Prune
                 ->getTimestamp();
 
             self::run($forumId, $pruneDate);
-            sync('forum', $forumId);
+            Sync::oneForum($forumId);
 
             dibi::update(Tables::FORUMS_TABLE, ['prune_next' => $nextPrune])
                 ->where('forum_id = %i', $forumId)

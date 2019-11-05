@@ -10,6 +10,8 @@
 *
 ****************************************************************************/
 
+use phpBB2\Sync;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -83,7 +85,7 @@ if (isset($_POST['doprune'])) {
     foreach ($forums as $forum) {
         $prune_result = Prune::run($forum->forum_id, $prune_date->getTimestamp());
 
-        sync('forum', $forum->forum_id);
+        Sync::oneForum($forum->forum_id);
 
         $row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
         $row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
