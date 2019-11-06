@@ -396,6 +396,7 @@ $columns = [
     'u.user_id',
     'u.user_posts',
     'u.user_topics',
+    'u.user_thanks',
     'u.user_from',
     'u.user_website',
     'u.user_email',
@@ -907,6 +908,7 @@ foreach ($posts as $i => $post) {
 
     $posterPosts  = $post->user_id !== ANONYMOUS ? $lang['Posts'] . ': ' . $post->user_posts   : '';
     $posterTopics = $post->user_id !== ANONYMOUS ? $lang['Topics'] . ': ' . $post->user_topics : '';
+    $posterThanks = $post->user_id !== ANONYMOUS ? $lang['Thanks'] . ': ' . $post->user_thanks: '';
 
 	$posterFrom = $post->user_from && $post->user_id !== ANONYMOUS ? $lang['Location'] . ': ' . htmlspecialchars($post->user_from, ENT_QUOTES) : '';
 
@@ -1185,6 +1187,7 @@ foreach ($posts as $i => $post) {
             'POSTER_JOINED'  => $posterJoined,
             'POSTER_POSTS'   => $posterPosts,
             'POSTER_TOPICS'  => $posterTopics,
+            'POSTER_THANKS'  => $posterThanks,
             'POSTER_FROM'    => $posterFrom,
             'POSTER_AVATAR'  => $posterAvatar,
 
