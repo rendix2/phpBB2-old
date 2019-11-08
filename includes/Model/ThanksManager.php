@@ -12,6 +12,18 @@ class ThanksManager extends CrudManager
     /**
      * @param int $topicId
      *
+     * @return mixed
+     */
+    public function getCountByTopicId($topicId)
+    {
+        return $this->selectCountFluent()
+            ->where('[topic_id] = %i', $topicId)
+            ->fetchSingle();
+    }
+
+    /**
+     * @param int $topicId
+     *
      * @return Row[]
      */
     public function getByTopicId($topicId)

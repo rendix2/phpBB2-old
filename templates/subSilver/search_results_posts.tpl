@@ -22,10 +22,12 @@
   </tr>
   <tr> 
 	<td width="150" align="left" valign="top" class="row1" rowspan="2"><span class="name"><b>{searchresults.POSTER_NAME}</b><br />{searchresults.POSTER_ONLINE}<br /></span><br />
-	  <br />
-	  <span class="postdetails">{L_REPLIES}: <b>{searchresults.TOPIC_REPLIES}</b><br />
-	  {L_VIEWS}: <b>{searchresults.TOPIC_VIEWS}</b></span><br />
-	</td>
+        <span class="postdetails">
+          {L_REPLIES}: <b>{searchresults.TOPIC_REPLIES}</b><br/>
+          {L_THANKS}: <b>{searchresults.TOPIC_THANKS}</b><br/>
+            {L_VIEWS}: <b>{searchresults.TOPIC_VIEWS}</b>
+      </span><br />
+    </td>
 	<td width="100%" valign="top" class="row1"><img src="{searchresults.MINI_POST_IMG}" width="12" height="9" alt="{searchresults.L_MINI_POST_ALT}" title="{searchresults.L_MINI_POST_ALT}" border="0" /><span class="postdetails">{L_FORUM}:&nbsp;<b><a href="{searchresults.U_FORUM}" class="postdetails">{searchresults.FORUM_NAME}</a></b>&nbsp; &nbsp;{L_POSTED}: {searchresults.POST_DATE}&nbsp; &nbsp;{L_SUBJECT}: <b><a href="{searchresults.U_POST}">{searchresults.POST_SUBJECT}</a></b></span></td>
   </tr>
   <tr>

@@ -318,6 +318,7 @@ CREATE TABLE [phpbb_topics] (
 	[topic_time] [int] NOT NULL ,
 	[topic_views] [int] NOT NULL ,
 	[topic_replies] [int] NOT NULL ,
+	[topic_thanks] [int] NOT NULL ,
 	[topic_status] [smallint] NOT NULL ,
 	[topic_type] [smallint] NOT NULL ,
 	[topic_vote] [smallint] NOT NULL ,
@@ -652,6 +653,7 @@ GO
 ALTER TABLE [phpbb_topics] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_topics_topic_views] DEFAULT (0) FOR [topic_views],
 	CONSTRAINT [DF_phpbb_topics_topic_replies] DEFAULT (0) FOR [topic_replies],
+	CONSTRAINT [DF_phpbb_topics_topic_thanks] DEFAULT (0) FOR [topic_thanks],
 	CONSTRAINT [DF_phpbb_topics_topic_status] DEFAULT (0) FOR [topic_status],
 	CONSTRAINT [DF_phpbb_topics_topic_type] DEFAULT (0) FOR [topic_type],
 	CONSTRAINT [DF_phpbb_topics_topic_vote] DEFAULT (0) FOR [topic_vote],

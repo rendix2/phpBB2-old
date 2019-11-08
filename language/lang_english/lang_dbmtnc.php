@@ -447,9 +447,13 @@ $lang['Indexing_finished'] = 'Rebuilding the index was finished succesfully';
 // synchronize_post
 $lang['Synchronize_posts'] = 'Synchronizing post data';
 $lang['Synchronize_topic_data'] = 'Synchronizing topics';
+$lang['Synchronize_topic_thank_data'] = 'Synchronizing topics with thanks';
+$lang['Synchronize_topic_thank_data2'] = 'Synchronizing topics with/without thanks';
 $lang['Synchronizing_topics'] = 'Updating topics';
 $lang['Synchronizing_topic'] = 'Updating topic %d (%s)';
+$lang['Synchronizing_topic_thank'] = 'Updating topic thanks';
 $lang['Synchronize_moved_topic_data'] = 'Synchronizing moved topics';
+$lang['Synchronize_thanks_topic_data'] = 'Synchronizing thanks topic data';
 $lang['Inconsistencies_found'] = 'Inconsistencies in your database were found. Please %scheck the post and topic tables%s';
 $lang['Synchronizing_moved_topics'] = 'Updating moved topics';
 $lang['Synchronizing_moved_topic'] = 'Updating moved topic %d -&gt; %d (%s)';

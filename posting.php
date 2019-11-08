@@ -591,6 +591,9 @@ if (($delete || $pollDelete || $mode === 'delete') && !$confirm) {
         $forumsManager = new ForumsManager();
         $forumsManager->updateByPrimary($forumId, ['forum_thanks%sql' => 'forum_thanks + 1']);
 
+        $topicsManager = new TopicsManager();
+        $topicsManager->updateByPrimary($topicId, ['topic_thanks%sql' => 'topic_thanks + 1']);
+
         $message = $lang['thanks_add'];
     }
 

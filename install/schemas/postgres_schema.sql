@@ -445,6 +445,7 @@ CREATE TABLE phpbb_topics (
    topic_time int4 DEFAULT '0' NOT NULL,
    topic_views int4 DEFAULT '0' NOT NULL,
    topic_replies int4 DEFAULT '0' NOT NULL,
+   topic_thanks int4 DEFAULT '0' NOT NULL,
    topic_status int2 DEFAULT '0' NOT NULL,
    topic_vote int2 DEFAULT '0' NOT NULL,
    topic_type int2 DEFAULT '0' NOT NULL,

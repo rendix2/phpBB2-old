@@ -2917,6 +2917,79 @@ switch($mode_id) {
 					echo($lang['Nothing_to_do']);
 				}
 
+                $thanksManager = new ThanksManager();
+                $topicsManager = new TopicsManager();
+
+                // Updating normal topics
+                echo('<p class="gen"><b>' . $lang['Synchronize_topic_thank_data'] . "</b></p>\n");
+
+                $rows = dibi::select(['t.topic_id', 't.topic_title', 't.topic_thanks'])
+                    ->select('COUNT(th.topic_id)')
+                    ->as('new_thanks')
+                    ->from(Tables::TOPICS_TABLE)
+                    ->as('t')
+                    ->innerJoin(Tables::THANKS_TABLE)
+                    ->as('th')
+                    ->on('[t.topic_id] = [th.topic_id]')
+                    ->groupBy('t.topic_id')
+                    ->fetchAll();
+
+                foreach ($rows as $row) {
+                    if ($row->topic_thanks !== $row->new_thanks) {
+                        if (!$list_open) {
+                            echo('<p class="gen">' . $lang['Synchronizing_topics'] . ":</p>\n");
+                            echo("<font class=\"gen\"><ul>\n");
+                            $list_open = true;
+                        }
+
+                        echo('<li>' . sprintf($lang['Synchronizing_topic'], $row->topic_id, htmlspecialchars($row->topic_title)) . "</li>\n");
+
+                        $topicsManager->updateByPrimary($row->topic_id, ['topic_thanks' => $row->topic_thanks]);
+                    }
+                }
+
+                if ($list_open) {
+                    echo("</ul></font>\n");
+                    $list_open = false;
+                } else {
+                    echo($lang['Nothing_to_do']);
+                }
+
+                echo('<p class="gen"><b>' . $lang['Synchronize_topic_thank_data2'] . "</b></p>\n");
+
+                // Updating moved topics
+                $rows = dibi::select(['t.topic_id', 't.topic_title', 't.topic_thanks'])
+                    ->select('COUNT(th.topic_id)')
+                    ->as('new_thanks')
+                    ->from(Tables::TOPICS_TABLE)
+                    ->as('t')
+                    ->leftJoin(Tables::THANKS_TABLE)
+                    ->as('th')
+                    ->on('[t.topic_id] = [th.topic_id]')
+                    ->groupBy('t.topic_id')
+                    ->having('[new_thanks] <> [t.topic_thanks]')
+                    ->fetchAll();
+
+                foreach ($rows as $row) {
+                    // Getting data for original topic
+                    if (!$list_open) {
+                        echo('<p class="gen">' . $lang['Synchronizing_topic_thank'] . ":</p>\n");
+                        echo("<font class=\"gen\"><ul>\n");
+
+                        $list_open = true;
+                    }
+                    echo('<li>' . sprintf($lang['Synchronizing_topic'], $row->topic_id, htmlspecialchars($row->topic_title)) . "</li>\n");
+
+                    $topicsManager->updateByPrimary($row->topic_id, ['topic_thanks' => $row->new_thanks]);
+                }
+
+                if ($list_open) {
+                    echo("</ul></font>\n");
+                    $list_open = false;
+                } else {
+                    echo($lang['Nothing_to_do']);
+                }
+
 				// Updating topic data of forums
 				echo('<p class="gen"><b>' . $lang['Synchronize_forum_topic_data'] . "</b></p>\n");
 

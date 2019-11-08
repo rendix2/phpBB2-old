@@ -394,6 +394,7 @@ switch ($mode) {
                             'topic_vote' => $topic->topic_vote,
                             'topic_views' => $topic->topic_views,
                             'topic_replies' => $topic->topic_replies,
+                            'topic_thanks' => $topic->topic_thanks,
                             'topic_first_post_id' => $topic->topic_first_post_id,
                             'topic_last_post_id' => $topic->topic_last_post_id,
                             'topic_moved_id' => $topic->topic_id,
@@ -923,6 +924,7 @@ switch ($mode) {
                 'L_UNLOCK'         => $lang['Unlock'],
                 'L_TOPICS'         => $lang['Topics'],
                 'L_REPLIES'        => $lang['Replies'],
+                'L_THANKS'         => $lang['Thanks'],
                 'L_LASTPOST'       => $lang['Last_Post'],
 
                 'U_VIEW_FORUM'    => Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forumId"),
@@ -1016,6 +1018,7 @@ switch ($mode) {
                     'TOPIC_TYPE'       => $topic_type,
                     'TOPIC_TITLE'      => $topic_title,
                     'REPLIES'          => $row->topic_replies,
+                    'THANKS'          => $row->topic_thanks,
                     'LAST_POST_TIME'   => $last_post_time,
                     'TOPIC_ID'         => $topicId,
                     'TOPIC_ATTACHMENT_IMG' => topic_attachment_image($row['topic_attachment']),
