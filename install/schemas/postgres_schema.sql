@@ -124,6 +124,7 @@ CREATE TABLE phpbb_forums (
    forum_order int4 DEFAULT '1' NOT NULL,
    forum_posts int4 DEFAULT '0' NOT NULL,
    forum_topics int4 DEFAULT '0' NOT NULL,
+   forum_thanks int4 DEFAULT '0' NOT NULL,
    forum_last_post_id int4 DEFAULT '0' NOT NULL,
    prune_enable int2 DEFAULT '0' NOT NULL,
    prune_next int,
@@ -332,6 +333,16 @@ CREATE TABLE phpbb_smilies (
    CONSTRAINT phpbb_smilies_pkey PRIMARY KEY (smilies_id)
 );
 
+/* --------------------------------------------------------
+  Table structure for table phpbb_thanks
+-------------------------------------------------------- */
+CREATE TABLE `phpbb_thanks` (
+    topic_id MEDIUMINT(8) NOT NULL,
+    user_id MEDIUMINT(8) NOT NULL,
+    thanks_time INT(11) NOT NULL,
+    CONSTRAINT phpbb_template_cache PRIMARY KEY (topic_id, user_id)
+);
+
 
 /* --------------------------------------------------------
   Table structure for table phpbb_themes
@@ -434,6 +445,7 @@ CREATE TABLE phpbb_topics (
    topic_time int4 DEFAULT '0' NOT NULL,
    topic_views int4 DEFAULT '0' NOT NULL,
    topic_replies int4 DEFAULT '0' NOT NULL,
+   topic_thanks int4 DEFAULT '0' NOT NULL,
    topic_status int2 DEFAULT '0' NOT NULL,
    topic_vote int2 DEFAULT '0' NOT NULL,
    topic_type int2 DEFAULT '0' NOT NULL,
@@ -498,6 +510,7 @@ CREATE TABLE phpbb_users (
    user_style int4,
    user_posts int4 DEFAULT '0' NOT NULL,
    user_topics int4 DEFAULT '0' NOT NULL,
+   user_thanks int4 DEFAULT '0' NOT NULL,
    user_new_privmsg int2 DEFAULT '0' NOT NULL,
    user_unread_privmsg int2 DEFAULT '0' NOT NULL,
    user_last_privmsg int4 DEFAULT '0' NOT NULL,

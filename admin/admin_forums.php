@@ -242,6 +242,7 @@ if (!empty($mode)) {
 				$forumname = $row->forum_name;
 				$forumdesc = $row->forum_desc;
 				$forumstatus = $row->forum_status;
+                $forumThank = $row->forum_thank_enable;
 
 				//
 				// start forum prune stuff.
@@ -267,6 +268,7 @@ if (!empty($mode)) {
 
 				$forumdesc = '';
 				$forumstatus = FORUM_UNLOCKED;
+                $forumThank = FORUM_UNTHANKABLE;
 				$forum_id = '';
 				$prune_enabled = '';
 			}
@@ -283,6 +285,11 @@ if (!empty($mode)) {
 
 			$statuslist = '<option value="' . FORUM_UNLOCKED . "\" $forumunlocked>" . $lang['Status_unlocked'] . "</option>\n";
 			$statuslist .= '<option value="' . FORUM_LOCKED . "\" $forumlocked>" . $lang['Status_locked'] . "</option>\n";
+
+            // Begin Thank Mod
+            $thank_yes = ($forumThank) ? 'checked="checked"' : '';
+            $thank_no = (!$forumThank) ? 'checked="checked"' : '';
+            // End Thank Mod
 
             $s_hidden_fields = '<input type="hidden" name="mode" value="' . $newmode . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
 
@@ -304,11 +311,17 @@ if (!empty($mode)) {
                     'L_CATEGORY'          => $lang['Category'],
                     'L_FORUM_DESCRIPTION' => $lang['Forum_desc'],
                     'L_FORUM_STATUS'      => $lang['Forum_status'],
+                    'L_FORUM_THANK'       => $lang['use_thank'],
+                    'L_YES'               => $lang['Yes'],
+                    'L_NO'                => $lang['No'],
                     'L_AUTO_PRUNE'        => $lang['Forum_pruning'],
                     'L_ENABLED'           => $lang['Enabled'],
                     'L_PRUNE_DAYS'        => $lang['prune_days'],
                     'L_PRUNE_FREQ'        => $lang['prune_freq'],
                     'L_DAYS'              => $lang['Days'],
+
+                    'THANK_ENABLE' => $thank_yes,
+                    'THANK_DISABLE' => $thank_no,
 
                     'PRUNE_DAYS'  => isset($pr_row['prune_days']) ? $pr_row->prune_days : 7,
                     'PRUNE_FREQ'  => isset($pr_row['prune_freq']) ? $pr_row->prune_freq : 1,
@@ -348,6 +361,7 @@ if (!empty($mode)) {
             $forum_auth_ary['forum_order'] = $next_order;
             $forum_auth_ary['forum_status'] = (int)$_POST['forumstatus'];
             $forum_auth_ary['prune_enable'] = (int)$_POST['prune_enable'];
+            $forum_auth_ary['forum_thank_enable'] = (int)$_POST['forum_thank_enable'];
 
 			// There is no problem having duplicate forum names so we won't check for it.
             $forums_id = dibi::insert(Tables::FORUMS_TABLE, $forum_auth_ary)->execute(dibi::IDENTIFIER);
@@ -384,7 +398,8 @@ if (!empty($mode)) {
                 'cat_id'       => (int)$_POST[POST_CAT_URL],
                 'forum_desc'   => $_POST['forumdesc'],
                 'forum_status' => (int)$_POST['forumstatus'],
-                'prune_enable' => (int)$_POST['prune_enable']
+                'prune_enable' => (int)$_POST['prune_enable'],
+                'forum_thank_enable'  => (int)$_POST['forum_thank_enable']
             ];
 
 			dibi::update(Tables::FORUMS_TABLE, $update_data)
@@ -875,9 +890,11 @@ if ($category_count) {
                 'CAT_ID'   => $cat_id,
                 'CAT_DESC' => htmlspecialchars($category->cat_title, ENT_QUOTES),
 
-                'L_POSTS'  => $lang['Number_posts'],
                 'L_FORUM_NAME'  => $lang['Forum_name'],
+
+                'L_POSTS'  => $lang['Number_posts'],
                 'L_TOPICS' => $lang['Number_topics'],
+                'L_THANKS' => $lang['Number_thanks'],
 
                 'U_CAT_EDIT'      => Session::appendSid('admin_forums.php?mode=editcat&amp;' . POST_CAT_URL . "=$cat_id"),
                 'U_CAT_DELETE'    => Session::appendSid('admin_forums.php?mode=deletecat&amp;' . POST_CAT_URL . "=$cat_id"),
@@ -914,6 +931,7 @@ if ($category_count) {
                         'ROW_CLASS'  => $row_class,
                         'NUM_TOPICS' => $forum->forum_topics,
                         'NUM_POSTS'  => $forum->forum_posts,
+                        'NUM_THANKS'  => $forum->forum_thanks,
 
                         'U_VIEWFORUM'         => Session::appendSid($phpbb_root_path . 'viewforum.php?' . POST_FORUM_URL . "=$forum_id"),
                         'U_FORUM_EDIT'        => Session::appendSid('admin_forums.php?mode=editforum&amp;' . POST_FORUM_URL . "=$forum_id"),

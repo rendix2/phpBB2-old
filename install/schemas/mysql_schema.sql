@@ -141,6 +141,7 @@ CREATE TABLE phpbb_forums (
    forum_order mediumint(8) UNSIGNED DEFAULT '1' NOT NULL,
    forum_posts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    forum_topics mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   forum_thanks mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    forum_last_post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    prune_next int(11),
    prune_enable tinyint(1) DEFAULT '0' NOT NULL,
@@ -350,6 +351,16 @@ CREATE TABLE phpbb_smilies (
    PRIMARY KEY (smilies_id)
 );
 
+# --------------------------------------------------------
+#
+# Table structure for table 'phpbb_thanks'
+#
+CREATE TABLE `phpbb_thanks` (
+    `topic_id`    MEDIUMINT(8) NOT NULL,
+    `user_id`     MEDIUMINT(8) NOT NULL,
+    `thanks_time` INT(11)      NOT NULL,
+    PRIMARY KEY (topic_id, user_id)
+);
 
 # --------------------------------------------------------
 #
@@ -455,6 +466,7 @@ CREATE TABLE phpbb_topics (
    topic_time int(11) DEFAULT '0' NOT NULL,
    topic_views mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    topic_replies mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   topic_thanks mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    topic_status tinyint(3) DEFAULT '0' NOT NULL,
    topic_vote tinyint(1) DEFAULT '0' NOT NULL,
    topic_type tinyint(3) DEFAULT '0' NOT NULL,
@@ -501,6 +513,7 @@ CREATE TABLE phpbb_users (
    user_level tinyint(4) DEFAULT '0',
    user_posts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    user_topics int(8) UNSIGNED DEFAULT '0' NOT NULL,
+   user_thanks int(11) UNSIGNED DEFAULT '0' NOT NULL,
    user_timezone varchar(50) DEFAULT 'Europe/Berlin' NOT NULL,
    user_style tinyint(4),
    user_lang varchar(255),

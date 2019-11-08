@@ -18,6 +18,7 @@
 	<th class="thTop" nowrap="nowrap">&nbsp;{L_TOPICS}&nbsp;</th>
 	<th class="thTop" nowrap="nowrap">&nbsp;{L_AUTHOR}&nbsp;</th>
 	<th class="thTop" nowrap="nowrap">&nbsp;{L_REPLIES}&nbsp;</th>
+	<th class="thTop" nowrap="nowrap">&nbsp;{L_THANKS}&nbsp;</th>
 	<th class="thTop" nowrap="nowrap">&nbsp;{L_VIEWS}&nbsp;</th>
 	<th class="thCornerR" nowrap="nowrap">&nbsp;{L_LASTPOST}&nbsp;</th>
   </tr>
@@ -28,12 +29,14 @@
 	<td class="row2"><span class="topictitle">{searchresults.NEWEST_POST_IMG}{searchresults.TOPIC_TYPE}<a href="{searchresults.U_VIEW_TOPIC}" class="topictitle">{searchresults.TOPIC_TITLE}</a></span><br /><span class="gensmall">{searchresults.GOTO_PAGE}</span></td>
 	<td class="row1" align="center" valign="middle"><span class="name">{searchresults.TOPIC_AUTHOR}</span></td>
 	<td class="row2" align="center" valign="middle"><span class="postdetails">{searchresults.REPLIES}</span></td>
+	<td class="row2" align="center" valign="middle"><span class="postdetails">{searchresults.THANKS}</span></td>
 	<td class="row1" align="center" valign="middle"><span class="postdetails">{searchresults.VIEWS}</span></td>
 	<td class="row2" align="center" valign="middle" nowrap="nowrap"><span class="postdetails">{searchresults.LAST_POST_TIME}<br />{searchresults.LAST_POST_AUTHOR} {searchresults.LAST_POST_IMG}</span></td>
   </tr>
   <!-- END searchresults -->
   <tr> 
-	<td class="catBottom" colspan="7" height="28" valign="middle">&nbsp; </td>
+	<td class="catBottom" colspan="8
+" height="28" valign="middle">&nbsp; </td>
   </tr>
 </table>
 

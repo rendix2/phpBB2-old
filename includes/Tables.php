@@ -123,6 +123,11 @@ class Tables
     /**
      * @var string
      */
+    const THANKS_TABLE = self::PREFIX . 'thanks';
+
+    /**
+     * @var string
+     */
     const THEMES_TABLE = self::PREFIX . 'themes';
 
     /**

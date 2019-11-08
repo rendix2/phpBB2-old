@@ -61,6 +61,9 @@ define('GROUP_HIDDEN', 2);
 define('FORUM_UNLOCKED', 0);
 define('FORUM_LOCKED', 1);
 
+// Forum Thanks state
+define('FORUM_UNTHANKABLE', 0);
+define('FORUM_THANKABLE', 1);
 
 // Topic status
 define('TOPIC_UNLOCKED', 0);

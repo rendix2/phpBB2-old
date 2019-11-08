@@ -1,6 +1,6 @@
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0">
-  <tr> 
+  <tr>
 	<td align="left" valign="bottom" colspan="2"><a class="maintitle" href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a><br />
 	  <span class="gensmall"><b>{PAGINATION}</b><br />
 	  &nbsp; </span></td>
@@ -8,11 +8,29 @@
 </table>
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0">
-  <tr> 
-	<td align="left" valign="bottom" nowrap="nowrap"><span class="nav"><a href="{U_POST_NEW_TOPIC}"><img src="{POST_IMG}" border="0" alt="{L_POST_NEW_TOPIC}" align="middle" /></a>&nbsp;&nbsp;&nbsp;<a href="{U_POST_REPLY_TOPIC}"><img src="{REPLY_IMG}" border="0" alt="{L_POST_REPLY_TOPIC}" align="middle" /></a></span></td>
-	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="{U_INDEX}" class="nav">{L_INDEX}</a> 
-	  -> <a href="{U_VIEW_FORUM}" class="nav">{FORUM_NAME}</a></span></td>
-  </tr>
+	<tr>
+		<td align="left" valign="bottom" nowrap="nowrap">
+            <span class="nav">
+                <a href="{U_POST_NEW_TOPIC}">
+					<img src="{POST_IMG}" border="0" alt="{L_POST_NEW_TOPIC}" align="middle"/></a>&nbsp;&nbsp;&nbsp;
+				<a href="{U_POST_REPLY_TOPIC}">
+					<img src="{REPLY_IMG}" border="0" alt="{L_POST_REPLY_TOPIC}" align="middle"/></a>
+
+                <!-- BEGIN thanks_button -->
+                &nbsp;&nbsp;&nbsp;
+                <a href="{thanks_button.U_THANK_TOPIC}">
+                    <img src="{thanks_button.THANK_IMG}" border="0" alt="{thanks_button.L_THANK_TOPIC}" align="middle" />
+                </a>
+                <!-- END thanks_button -->
+            </span>
+		</td>
+		<td align="left" valign="middle" width="100%">
+            <span class="nav">&nbsp;&nbsp;&nbsp;
+                <a href="{U_INDEX}" class="nav">{L_INDEX}</a> ->
+                <a href="{U_VIEW_FORUM}" class="nav">{FORUM_NAME}</a>
+            </span>
+		</td>
+	</tr>
 </table>
 
 <table class="forumline" width="100%" cellspacing="1" cellpadding="3" border="0">
@@ -26,7 +44,7 @@
 	</tr>
 	<!-- BEGIN postrow -->
 	<tr> 
-		<td width="150" align="left" valign="top" class="{postrow.ROW_CLASS}"><span class="name"><a name="{postrow.U_POST_ID}"></a><b>{postrow.POSTER_NAME}</b></span><br /><span class="postdetails">{postrow.POSTER_RANK}<br />{postrow.RANK_IMAGE}{postrow.POSTER_AVATAR}<br /><br />{postrow.POSTER_ONLINE}<br />{postrow.POSTER_JOINED}<br />{postrow.POSTER_POSTS}<br />{postrow.POSTER_TOPICS}<br />{postrow.POSTER_FROM}</span><br /></td>
+		<td width="150" align="left" valign="top" class="{postrow.ROW_CLASS}"><span class="name"><a name="{postrow.U_POST_ID}"></a><b>{postrow.POSTER_NAME}</b></span><br /><span class="postdetails">{postrow.POSTER_RANK}<br />{postrow.RANK_IMAGE}{postrow.POSTER_AVATAR}<br /><br />{postrow.POSTER_ONLINE}<br />{postrow.POSTER_JOINED}<br />{postrow.POSTER_POSTS}<br />{postrow.POSTER_TOPICS}<br />{postrow.POSTER_THANKS}<br />{postrow.POSTER_FROM}</span><br /></td>
 		<td class="{postrow.ROW_CLASS}" width="100%" height="28" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0">
 			<tr>
 				<td width="100%"><a href="{postrow.U_MINI_POST}"><img src="{postrow.MINI_POST_IMG}" width="12" height="9" alt="{postrow.L_MINI_POST_ALT}" title="{postrow.L_MINI_POST_ALT}" border="0" /></a><span class="postdetails">{L_POSTED}: {postrow.POST_DATE}<span class="gen">&nbsp;</span>&nbsp; &nbsp;{L_POST_SUBJECT}: {postrow.POST_SUBJECT}</span></td>
@@ -52,9 +70,32 @@
 			</table>
 		</td>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
 	</tr>
+
+	<!-- BEGIN thanks -->
+	<tr>
+		<td colspan="2" class="row2">
+			<table class="forumline" cellspacing="1" cellpadding="3" border="0" width="100%">
+				<tr>
+					<th class="thLeft">{postrow.thanks.THANKFUL}</th>
+				</tr>
+				<tr>
+					<td class="row2" valign="top" align="left">
+						<span id="hide_thank" style="display: block;" class="gensmall">
+						<a href="javascript: void(0);" onclick="document.all.show_thank.style.display = 'block';document.all.hide_thank.style.display = 'none'">{postrow.thanks.THANKS_TOTAL}</a> {postrow.thanks.THANKED}
+						</span>
+						<span id="show_thank" style="display: none;" class="gensmall">
+							{postrow.thanks.THANKS}&nbsp;
+							<br /><br /><div align="right"><a href="javascript: void(0);" onClick="document.all.show_thank.style.display = 'none';document.all.hide_thank.style.display = 'block'">[ {postrow.thanks.HIDE} ]</a></div>
+						</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<!-- END thanks -->
 	<!-- END postrow -->
 	<tr align="center"> 
 		<td class="catBottom" colspan="2" height="28"><table cellspacing="0" cellpadding="0" border="0">
@@ -66,11 +107,25 @@
 </table>
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
-  <tr> 
-	<td align="left" valign="middle" nowrap="nowrap"><span class="nav"><a href="{U_POST_NEW_TOPIC}"><img src="{POST_IMG}" border="0" alt="{L_POST_NEW_TOPIC}" align="middle" /></a>&nbsp;&nbsp;&nbsp;<a href="{U_POST_REPLY_TOPIC}"><img src="{REPLY_IMG}" border="0" alt="{L_POST_REPLY_TOPIC}" align="middle" /></a></span></td>
-	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="{U_INDEX}" class="nav">{L_INDEX}</a> 
+  <tr>
+	<td align="left" valign="middle" nowrap="nowrap">
+		<span class="nav">
+			<a href="{U_POST_NEW_TOPIC}">
+				<img src="{POST_IMG}" border="0" alt="{L_POST_NEW_TOPIC}" align="middle" /></a>&nbsp;&nbsp;&nbsp;
+			<a href="{U_POST_REPLY_TOPIC}">
+				<img src="{REPLY_IMG}" border="0" alt="{L_POST_REPLY_TOPIC}" align="middle" /></a>
+
+			<!-- BEGIN thanks_button -->
+			&nbsp;&nbsp;&nbsp;
+			<a href="{thanks_button.U_THANK_TOPIC}">
+				<img src="{thanks_button.THANK_IMG}" border="0" alt="{thanks_button.L_THANK_TOPIC}" align="middle" />
+			</a>
+			<!-- END thanks_button -->
+		</span>
+	</td>
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="{U_INDEX}" class="nav">{L_INDEX}</a>
 	  -> <a href="{U_VIEW_FORUM}" class="nav">{FORUM_NAME}</a></span></td>
-	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">{S_TIMEZONE}</span><br /><span class="nav">{PAGINATION}</span> 
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">{S_TIMEZONE}</span><br /><span class="nav">{PAGINATION}</span>
 	  </td>
   </tr>
   <tr>

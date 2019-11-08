@@ -417,6 +417,7 @@ $template->assignVars(
 
         'L_TOPICS'              => $lang['Topics'],
         'L_REPLIES'             => $lang['Replies'],
+        'L_THANKS'              => $lang['Thanks'],
         'L_VIEWS'               => $lang['Views'],
         'L_POSTS'               => $lang['Posts'],
         'L_LASTPOST'            => $lang['Last_Post'],
@@ -605,6 +606,7 @@ if ($totalBaseTopics) {
                 'TOPIC_AUTHOR'     => $topicAuthor,
                 'GOTO_PAGE'        => $gotoPage,
                 'REPLIES'          => $replies,
+                'THANKS'           => $topic->topic_thanks,
                 'NEWEST_POST_IMG'  => $newest_post_img,
                 'TOPIC_ATTACHMENT_IMG' => topic_attachment_image($topic->topic_attachment),
                 'TOPIC_TITLE'      => $topicTitle,

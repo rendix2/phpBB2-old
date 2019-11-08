@@ -78,6 +78,7 @@ CREATE TABLE [phpbb_forums] (
 	[forum_status] [smallint] NOT NULL ,
 	[forum_order] [int] NOT NULL ,
 	[forum_posts] [int] NOT NULL ,
+	[forum_thanks] [int] NOT NULL ,
 	[forum_topics] [smallint] NOT NULL ,
 	[forum_last_post_id] [int] NOT NULL ,
 	[prune_next] [int] NULL ,
@@ -220,6 +221,13 @@ CREATE TABLE [phpbb_smilies] (
 ) ON [PRIMARY]
 GO
 
+CREATE TABLE [phpbb_thanks] (
+    [topic_id]    [INT] (11) NOT NULL,
+    [user_id]     [INT] (11) NOT NULL,
+    [thanks_time] [INT] (11) NOT NULL
+) ON [PRIMARY ];
+GO
+
 CREATE TABLE [phpbb_themes] (
 	[themes_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[template_name] [varchar] (30) NOT NULL ,
@@ -310,6 +318,7 @@ CREATE TABLE [phpbb_topics] (
 	[topic_time] [int] NOT NULL ,
 	[topic_views] [int] NOT NULL ,
 	[topic_replies] [int] NOT NULL ,
+	[topic_thanks] [int] NOT NULL ,
 	[topic_status] [smallint] NOT NULL ,
 	[topic_type] [smallint] NOT NULL ,
 	[topic_vote] [smallint] NOT NULL ,
@@ -346,6 +355,7 @@ CREATE TABLE [phpbb_users] (
 	[user_level] [smallint] NOT NULL ,
 	[user_posts] [int] NOT NULL ,
 	[user_topics] [int] NOT NULL ,
+	[user_thanks] [int] NOT NULL ,
 	[user_timezone] [varchar] (100) NOT NULL ,
 	[user_style] [int] NULL ,
 	[user_lang] [varchar] (255) NULL ,
@@ -528,6 +538,13 @@ ALTER TABLE [phpbb_smilies] WITH NOCHECK ADD
 	)  ON [PRIMARY]
 GO
 
+ALTER TABLE [phpbb_thanks] WITH NOCHECK ADD
+    CONSTRAINT [phpbb_thanks] PRIMARY KEY  CLUSTERED
+    (
+    [user_id], [topic_id]
+    )  ON [PRIMARY]
+GO
+
 ALTER TABLE [phpbb_themes] WITH NOCHECK ADD
 	CONSTRAINT [PK_phpbb_themes] PRIMARY KEY  CLUSTERED
 	(
@@ -595,6 +612,7 @@ GO
 ALTER TABLE [phpbb_forums] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_forums_forum_posts] DEFAULT (0) FOR [forum_posts],
 	CONSTRAINT [DF_phpbb_forums_forum_topics] DEFAULT (0) FOR [forum_topics],
+	CONSTRAINT [DF_phpbb_forums_forum_thanks] DEFAULT (0) FOR [forum_thanks],
 	CONSTRAINT [DF_phpbb_forums_forum_last_post_id] DEFAULT (0) FOR [forum_last_post_id],
 	CONSTRAINT [DF_phpbb_forums_prune_enable] DEFAULT (0) FOR [prune_enable],
 	CONSTRAINT [DF_phpbb_forums_auth_view] DEFAULT (0) FOR [auth_view],
@@ -635,6 +653,7 @@ GO
 ALTER TABLE [phpbb_topics] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_topics_topic_views] DEFAULT (0) FOR [topic_views],
 	CONSTRAINT [DF_phpbb_topics_topic_replies] DEFAULT (0) FOR [topic_replies],
+	CONSTRAINT [DF_phpbb_topics_topic_thanks] DEFAULT (0) FOR [topic_thanks],
 	CONSTRAINT [DF_phpbb_topics_topic_status] DEFAULT (0) FOR [topic_status],
 	CONSTRAINT [DF_phpbb_topics_topic_type] DEFAULT (0) FOR [topic_type],
 	CONSTRAINT [DF_phpbb_topics_topic_vote] DEFAULT (0) FOR [topic_vote],
@@ -732,6 +751,9 @@ GO
 GO
 
  CREATE  INDEX [IX_phpbb_topics] ON [phpbb_topics]([forum_id], [topic_type], [topic_first_post_id], [topic_last_post_id]) ON [PRIMARY]
+GO
+
+ CREATE  INDEX [IX_thanks_topic] ON [phpbb_thanks]([topic_id], [user_id]) ON [PRIMARY]
 GO
 
  CREATE  INDEX [IX_phpbb_topics_watch] ON [phpbb_topics_watch]([topic_id], [user_id]) ON [PRIMARY]

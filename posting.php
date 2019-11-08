@@ -182,6 +182,9 @@ switch ($mode) {
     case 'topicreview':
         $is_auth_type = 'auth_read';
         break;
+    case 'thank':
+        $is_auth_type = 'auth_read';
+        break;
     default:
         message_die(GENERAL_MESSAGE, $lang['No_post_mode']);
         break;
@@ -205,6 +208,7 @@ switch ($mode) {
             ->fetch();
         break;
 
+    case 'thank':
     case 'reply':
     case 'vote':
         if (empty($topicId)) {
@@ -315,7 +319,7 @@ if ($post_info) {
 
     if ($post_info->forum_status === FORUM_LOCKED && !$is_auth['auth_mod']) {
         message_die(GENERAL_MESSAGE, $lang['Forum_locked']);
-    } elseif ($mode !== 'newtopic' && $post_info->topic_status === TOPIC_LOCKED && !$is_auth['auth_mod']) {
+    } elseif ($mode !== 'newtopic' && $mode !== 'thank' && $post_info->topic_status === TOPIC_LOCKED && !$is_auth['auth_mod']) {
         message_die(GENERAL_MESSAGE, $lang['Topic_locked']);
     }
 
@@ -413,6 +417,7 @@ if (!$is_auth[$is_auth_type]) {
         case 'newtopic':
             $redirect = 'mode=newtopic&' . POST_FORUM_URL . '=' . $forumId;
             break;
+        case 'thank':
         case 'reply':
         case 'topicreview':
             $redirect = 'mode=reply&' . POST_TOPIC_URL . '=' . $topicId;
@@ -535,6 +540,70 @@ if (($delete || $pollDelete || $mode === 'delete') && !$confirm) {
     $template->pparse('confirm_body');
 
     PageHelper::footer($template, $userdata, $lang, $gen_simple_header);
+} else if ($mode === 'thank') {
+    $topicId = (int)$_GET[POST_TOPIC_URL];
+
+    if (empty($topicId)) {
+        message_die(GENERAL_MESSAGE, 'No topic Selected');
+    }
+
+    if (!($userdata['session_logged_in'])) {
+        $message = $lang['thanks_not_logged'];
+        $message .= '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . Session::appendSid("viewtopic.php?" . POST_TOPIC_URL . "=$topicId") . '">', '</a>');
+        message_die(GENERAL_MESSAGE, $message);
+    }
+
+    // Check if user is the topic starter
+    $topic_starter_check = dibi::select('topic_poster')
+        ->from(Tables::TOPICS_TABLE)
+        ->where('[topic_id] = %i', $topicId)
+        ->where('[topic_poster] = %i', $userdata['user_id'])
+        ->fetch();
+
+    if ($topic_starter_check) {
+        $message = $lang['t_starter'];
+        $message .= '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . Session::appendSid("viewtopic.php?" . POST_TOPIC_URL . "=$topicId") . '">', '</a>');
+        message_die(GENERAL_MESSAGE, $message);
+    }
+
+    // Check if user had thanked before
+    $thankfull_check = dibi::select('topic_id')
+        ->from(Tables::THANKS_TABLE)
+        ->where('[topic_id] = %i', $topicId)
+        ->where('[user_id] = %i', $userdata['user_id'])
+        ->fetch();
+
+    if ($thankfull_check) {
+        $message = $lang['thanked_before'];
+    } else {
+        // Insert thanks if he/she hasn't
+        $thanksData = [
+            'topic_id' => $topicId,
+            'user_id' => $userdata['user_id'],
+            'thanks_time' => time()
+        ];
+
+        dibi::insert(Tables::THANKS_TABLE, $thanksData)->execute();
+
+        $usersManager = new UsersManager();
+        $usersManager->updateByPrimary($userdata['user_id'], ['user_thanks%sql' => 'user_thanks + 1']);
+
+        $forumsManager = new ForumsManager();
+        $forumsManager->updateByPrimary($forumId, ['forum_thanks%sql' => 'forum_thanks + 1']);
+
+        $topicsManager = new TopicsManager();
+        $topicsManager->updateByPrimary($topicId, ['topic_thanks%sql' => 'topic_thanks + 1']);
+
+        $message = $lang['thanks_add'];
+    }
+
+    $template->assignVars([
+            'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid("viewtopic.php?" . POST_TOPIC_URL . "=$topicId") . '">']
+    );
+
+    $message .= '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . Session::appendSid("viewtopic.php?" . POST_TOPIC_URL . "=$topicId") . '">', '</a>');
+
+    message_die(GENERAL_MESSAGE, $message);
 } elseif ($mode === 'vote') {
     //
     // Vote in a poll

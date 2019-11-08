@@ -1,9 +1,13 @@
 <?php
 
-
 use Dibi\Result;
 use Dibi\Row;
 
+/**
+ * Class CrudManager
+ *
+ * @author rendix2
+ */
 class CrudManager extends Manager
 {
 
@@ -17,7 +21,19 @@ class CrudManager extends Manager
     {
         return $this->updateFluent($data)
             ->where('%n = %i', $this->getPrimaryKey(), $primaryKey)
-            ->execute();
+            ->execute(dibi::AFFECTED_ROWS);
+    }
+
+    /**
+     * @param array $primaryKeys
+     * @param array $data
+     * @return Result|int
+     */
+    public function updateByPrimarys(array $primaryKeys, array  $data)
+    {
+        return $this->updateFluent($data)
+            ->where('%n IN %in', $this->getPrimaryKey(), $primaryKeys)
+            ->execute(dibi::AFFECTED_ROWS);
     }
 
     /**
@@ -44,4 +60,11 @@ class CrudManager extends Manager
             ->fetch();
     }
 
+    /**
+     * @return mixed
+     */
+    public function getAllCount()
+    {
+        return $this->selectCountFluent()->fetchSingle();
+    }
 }

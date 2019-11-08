@@ -52,6 +52,7 @@ $lang['Forum'] = 'Forum';
 $lang['Category'] = 'Category';
 $lang['Topic'] = 'Topic';
 $lang['Topics'] = 'Topics';
+$lang['Thanks'] = 'Thanks';
 $lang['Replies'] = 'Replies';
 $lang['Views'] = 'Views';
 $lang['Post'] = 'Post';
@@ -527,6 +528,11 @@ $lang['User_topic_pct_stats'] = '%.2f%% of total'; // 1.25% of total
 $lang['User_topic_day_stats'] = '%.2f topics per day'; // 1.5 posts per day
 $lang['Search_user_topics'] = 'Find all topics by %s'; // Find all posts by username
 
+$lang['Total_thanks'] = 'Total thanks';
+$lang['User_thank_pct_stats'] = '%.2f%% of total'; // 1.25% of total
+$lang['User_thank_day_stats'] = '%.2f thanks per day'; // 1.5 posts per day
+$lang['Search_user_topics'] = 'Find all thanks by %s'; // Find all posts by username
+
 $lang['No_user_id_specified'] = 'Sorry, but that user does not exist.';
 $lang['Wrong_Profile'] = 'You cannot modify a profile that is not your own.';
 
@@ -667,6 +673,7 @@ $lang['Sort_Username'] = 'Username';
 $lang['Sort_Location'] = 'Location';
 $lang['Sort_Posts'] = 'Total posts';
 $lang['Sort_Topics'] = 'Total topics';
+$lang['Sort_Thanks'] = 'Total thanks';
 $lang['Sort_Email'] = 'Email';
 $lang['Sort_Website'] = 'Website';
 $lang['Sort_Online'] = 'Online status';
@@ -1036,6 +1043,20 @@ $lang['User_email_invalid'] = 'User email is not valid.';
 $lang['Online'] = 'Online';
 $lang['Offline'] = 'Offline';
 $lang['Hidden'] = 'Hidden';
+
+// Begin Thanks Mod
+$lang['thankful'] = 'Thankful People';
+$lang['thanks_to'] = 'Thanks';
+$lang['thanks_end'] = 'for his/her post';
+$lang['thanks_alt'] = 'Thank Post';
+$lang['thanked_before'] = 'You have already thanked this topic';
+$lang['thanks_add'] = 'Your thanks has been given';
+$lang['thanks_not_logged'] = 'You need to log in to thank someone\'s post';
+$lang['thanked'] = 'user(s) is/are thankful for this post.';
+$lang['hide'] = 'Hide';
+$lang['t_starter'] = 'You cannot thank yourself';
+$lang['thank_no_exist'] = 'Forum thank information doesn\'t exists';
+// End Thanks Mod
 
 
 //

@@ -200,6 +200,8 @@ switch ($mode) {
 				message_die(GENERAL_MESSAGE, $lang['None_selected']);
 			}
 
+			$usersManager = new UsersManager();
+
             $topicAuthors = dibi::select('topic_poster')
                 ->select('COUNT(topic_id)')
                 ->as('topics')
@@ -229,6 +231,18 @@ switch ($mode) {
                     ->execute();
             }
 
+			$thankers = dibi::select('user_id')
+                ->select('COUNT(user_id)')
+                ->as('thanks')
+                ->from(Tables::THANKS_TABLE)
+                ->where('[topic_id] IN %in', $topicIds)
+                ->groupBy('user_id')
+                ->fetchAll();
+
+			foreach ($thankers as $thanker) {
+			    $usersManager->updateByPrimary($thanker->user_id, ['user_thanks%sql' => 'user_thanks - '. $thanker->thanks]);
+            }
+
             $postIds = dibi::select('post_id')
                 ->from(Tables::POSTS_TABLE)
                 ->where('topic_id IN %in', $topicIds)
@@ -237,6 +251,10 @@ switch ($mode) {
 			//
 			// Got all required info so go ahead and start deleting everything
 			//
+
+            dibi::delete(Tables::THANKS_TABLE)
+                ->where('[topic_id] IN %in', $topicIds)
+                ->execute();
 
             dibi::delete(Tables::TOPICS_TABLE)
                 ->where('topic_id IN %in OR topic_moved_id IN %in', $topicIds, $topicIds)
@@ -378,6 +396,7 @@ switch ($mode) {
                             'topic_vote' => $topic->topic_vote,
                             'topic_views' => $topic->topic_views,
                             'topic_replies' => $topic->topic_replies,
+                            'topic_thanks' => $topic->topic_thanks,
                             'topic_first_post_id' => $topic->topic_first_post_id,
                             'topic_last_post_id' => $topic->topic_last_post_id,
                             'topic_moved_id' => $topic->topic_id,
@@ -908,6 +927,7 @@ switch ($mode) {
                 'L_UNLOCK'         => $lang['Unlock'],
                 'L_TOPICS'         => $lang['Topics'],
                 'L_REPLIES'        => $lang['Replies'],
+                'L_THANKS'         => $lang['Thanks'],
                 'L_LASTPOST'       => $lang['Last_Post'],
 
                 'U_VIEW_FORUM'    => Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forumId"),
@@ -1001,6 +1021,7 @@ switch ($mode) {
                     'TOPIC_TYPE'       => $topic_type,
                     'TOPIC_TITLE'      => $topic_title,
                     'REPLIES'          => $row->topic_replies,
+                    'THANKS'          => $row->topic_thanks,
                     'LAST_POST_TIME'   => $last_post_time,
                     'TOPIC_ID'         => $topicId,
                     'TOPIC_ATTACHMENT_IMG' => topic_attachment_image($row['topic_attachment']),

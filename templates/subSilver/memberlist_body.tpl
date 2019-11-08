@@ -18,6 +18,7 @@
 	  <th class="thTop" nowrap="nowrap">{L_JOINED}</th>
 	  <th class="thTop" nowrap="nowrap">{L_POSTS}</th>
 	  <th class="thTop" nowrap="nowrap">{L_TOPICS}</th>
+	  <th class="thTop" nowrap="nowrap">{L_THANKS}</th>
 	  <th class="thCornerR" nowrap="nowrap">{L_WEBSITE}</th>
 	</tr>
 	<!-- BEGIN memberrow -->
@@ -30,11 +31,12 @@
 	  <td class="{memberrow.ROW_CLASS}" align="center" valign="middle"><span class="gensmall">{memberrow.JOINED}</span></td>
 	  <td class="{memberrow.ROW_CLASS}" align="center" valign="middle"><span class="gen">{memberrow.POSTS}</span></td>
 	  <td class="{memberrow.ROW_CLASS}" align="center" valign="middle"><span class="gen">{memberrow.TOPICS}</span></td>
+	  <td class="{memberrow.ROW_CLASS}" align="center" valign="middle"><span class="gen">{memberrow.THANKS}</span></td>
 	  <td class="{memberrow.ROW_CLASS}" align="center">&nbsp;{memberrow.WWW_IMG}&nbsp;</td>
 	</tr>
 	<!-- END memberrow -->
 	<tr> 
-	  <td class="catBottom" colspan="9" height="28">&nbsp;</td>
+	  <td class="catBottom" colspan="10" height="28">&nbsp;</td>
 	</tr>
   </table>
   <table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">
