@@ -192,7 +192,7 @@ $lang['Number_pms_attach'] = 'Total Number of Attachments in Private Messages';
 
 // Control Panel -> Attachments
 $lang['Statistics_for_user'] = 'Attachment Statistics for %s'; // replace %s with username
-$lang['Size_in_kb'] = 'Size (KB)';
+$lang['Size'] = 'Size';
 $lang['Downloads'] = 'Downloads';
 $lang['Post_time'] = 'Post Time';
 $lang['Posted_in_topic'] = 'Posted in Topic';

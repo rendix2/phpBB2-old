@@ -420,20 +420,9 @@ function display_attachments_preview($attachment_list, $attachment_filesize_list
         for ($i = 0, $size = count($attachment_list); $i < $size; $i++) {
             $filename = $upload_dir . '/' . basename($attachment_list[$i]);
             $thumb_filename = $upload_dir . '/' . THUMB_DIR . '/t_' . basename($attachment_list[$i]);
-
-            $filesize = $attachment_filesize_list[$i];
-            $size_lang =  ($filesize >= 1048576) ? $lang['MB'] : (($filesize >= 1024) ? $lang['KB'] : $lang['Bytes']);
-
-            if ($filesize >= 1048576) {
-                $filesize = (round((round($filesize / 1048576 * 100) / 100), 2));
-            } else if ($filesize >= 1024) {
-                $filesize = (round((round($filesize / 1024 * 100) / 100), 2));
-            }
-
+            $filesize = get_formatted_filesize($attachment_filesize_list[$i]);
             $display_name = $attachment_filename_list[$i];
-            $comment = $attachment_comment_list[$i];
-            $comment = str_replace("\n", '<br />', $comment);
-
+            $comment = nl2br($attachment_comment_list[$i]);
             $extension = $attachment_extension_list[$i];
 
             $denied = false;
@@ -503,7 +492,6 @@ function display_attachments_preview($attachment_list, $attachment_filesize_list
                             'DOWNLOAD_NAME' => $display_name,
                             'IMG_SRC' => $filename,
                             'FILESIZE' => $filesize,
-                            'SIZE_VAR' => $size_lang,
                             'COMMENT' => $comment,
                             'L_DOWNLOADED_VIEWED' => $lang['Viewed']
                         ]
@@ -518,7 +506,6 @@ function display_attachments_preview($attachment_list, $attachment_filesize_list
                             'IMG_SRC' => $filename,
                             'IMG_THUMB_SRC' => $thumb_filename,
                             'FILESIZE' => $filesize,
-                            'SIZE_VAR' => $size_lang,
                             'COMMENT' => $comment,
                             'L_DOWNLOADED_VIEWED' => $lang['Viewed']
                         ]
@@ -532,7 +519,6 @@ function display_attachments_preview($attachment_list, $attachment_filesize_list
                             'U_DOWNLOAD_LINK' => $filename,
                             'DOWNLOAD_NAME' => $display_name,
                             'FILESIZE' => $filesize,
-                            'SIZE_VAR' => $size_lang,
                             'COMMENT' => $comment,
                             'L_DOWNLOADED_VIEWED' => $lang['Viewed']
                         ]
@@ -548,7 +534,6 @@ function display_attachments_preview($attachment_list, $attachment_filesize_list
                             'U_DOWNLOAD_LINK' => $filename,
                             'DOWNLOAD_NAME' => $display_name,
                             'FILESIZE' => $filesize,
-                            'SIZE_VAR' => $size_lang,
                             'COMMENT' => $comment,
                             'L_DOWNLOADED_VIEWED' => $lang['Viewed'],
                             'WIDTH' => $width,
@@ -576,7 +561,6 @@ function display_attachments_preview($attachment_list, $attachment_filesize_list
 
                             'DOWNLOAD_NAME' => $display_name,
                             'FILESIZE' => $filesize,
-                            'SIZE_VAR' => $size_lang,
                             'COMMENT' => $comment,
                             'L_DOWNLOADED_VIEWED' => $lang['Downloaded'],
                             'TARGET_BLANK' => $target_blank
@@ -625,18 +609,10 @@ function display_attachments($post_id)
             $upload_image = '<img src="' . $upload_icons[$attachments['_' . $post_id][$i]['extension']] . '" alt="" border="0" />';
         }
 
-        $filesize = $attachments['_' . $post_id][$i]['filesize'];
-        $size_lang = ($filesize >= 1048576) ? $lang['MB'] : (($filesize >= 1024) ? $lang['KB'] : $lang['Bytes']);
-
-        if ($filesize >= 1048576) {
-            $filesize = (round((round($filesize / 1048576 * 100) / 100), 2));
-        } else if ($filesize >= 1024) {
-            $filesize = (round((round($filesize / 1024 * 100) / 100), 2));
-        }
+        $filesize = get_formatted_filesize($attachments['_' . $post_id][$i]['filesize']);
 
         $display_name = $attachments['_' . $post_id][$i]['real_filename'];
-        $comment = $attachments['_' . $post_id][$i]['comment'];
-        $comment = str_replace("\n", '<br />', $comment);
+        $comment = nl2br($attachments['_' . $post_id][$i]['comment']);
 
         $denied = false;
 
@@ -728,7 +704,6 @@ function display_attachments($post_id)
 
                         'IMG_SRC' => $img_source,
                         'FILESIZE' => $filesize,
-                        'SIZE_VAR' => $size_lang,
                         'COMMENT' => $comment,
                         'L_DOWNLOADED_VIEWED' => $lang['Viewed'],
                         'L_DOWNLOAD_COUNT' => sprintf($lang['Download_number'], $attachments['_' . $post_id][$i]['download_count'])]
@@ -769,7 +744,6 @@ function display_attachments($post_id)
                         'IMG_SRC' => Session::appendSid($phpbb_root_path . 'download.php?id=' . $attachments['_' . $post_id][$i]['attach_id']),
                         'IMG_THUMB_SRC' => $thumb_source,
                         'FILESIZE' => $filesize,
-                        'SIZE_VAR' => $size_lang,
                         'COMMENT' => $comment,
                         'L_DOWNLOADED_VIEWED' => $lang['Viewed'],
                         'L_DOWNLOAD_COUNT' => sprintf($lang['Download_number'], $attachments['_' . $post_id][$i]['download_count'])
@@ -787,7 +761,6 @@ function display_attachments($post_id)
 //					'U_DOWNLOAD_LINK' => append_sid($phpbb_root_path . 'download.' . $phpEx . '?id=' . $attachments['_' . $post_id][$i]['attach_id']),
                         'DOWNLOAD_NAME' => $display_name,
                         'FILESIZE' => $filesize,
-                        'SIZE_VAR' => $size_lang,
                         'COMMENT' => $comment,
                         'L_DOWNLOADED_VIEWED' => $lang['Viewed'],
                         'L_DOWNLOAD_COUNT' => sprintf($lang['Download_number'], $attachments['_' . $post_id][$i]['download_count'])
@@ -811,7 +784,6 @@ function display_attachments($post_id)
 
                         'DOWNLOAD_NAME' => $display_name,
                         'FILESIZE' => $filesize,
-                        'SIZE_VAR' => $size_lang,
                         'COMMENT' => $comment,
                         'L_DOWNLOADED_VIEWED' => $lang['Viewed'],
                         'L_DOWNLOAD_COUNT' => sprintf($lang['Download_number'], $attachments['_' . $post_id][$i]['download_count']),
@@ -838,7 +810,6 @@ function display_attachments($post_id)
 
                         'DOWNLOAD_NAME' => $display_name,
                         'FILESIZE' => $filesize,
-                        'SIZE_VAR' => $size_lang,
                         'COMMENT' => $comment,
                         'TARGET_BLANK' => $target_blank,
 

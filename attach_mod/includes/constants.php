@@ -30,12 +30,7 @@ define('IMAGE_CAT', 1);
 define('STREAM_CAT', 2);
 define('SWF_CAT', 3);
 
-// Pages
-define('PAGE_UACP', -1210);
-define('PAGE_RULES', -1214);
-
 // Misc
-define('MEGABYTE', 1024);
 define('ADMIN_MAX_ATTACHMENTS', 50); // Maximum Attachments in Posts or PM's for Admin Users
 define('THUMB_DIR', 'thumbs');
 define('MODE_THUMBNAIL', 1);

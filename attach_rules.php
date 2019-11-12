@@ -8,8 +8,6 @@
  *
  */
 
-/**
- */
 if (defined('IN_PHPBB')) {
     die('Hacking attempt');
 }
@@ -21,12 +19,11 @@ $phpbb_root_path = '.' . $sep;
 
 require_once $phpbb_root_path . 'common.php';
 
-$forum_id = get_var('f', 0);
+$forum_id = get_var(POST_FORUM_URL, 0);
 $privmsg = !$forum_id;
 
 // Start Session Management
-// TODO PAGE_INDEX is not so good....
-$userdata = init_userprefs(PAGE_INDEX);
+$userdata = init_userprefs(PAGE_RULES);
 
 // Display the allowed Extension Groups and Upload Size
 if ($privmsg) {
@@ -51,7 +48,6 @@ $rows = dibi::select(['group_id', 'group_name', 'max_filesize', 'forum_permissio
     ->fetchAll();
 
 $allowed_filesize = [];
-$num_rows = count($rows);
 
 // Ok, only process those Groups allowed within this forum
 $nothing = true;
@@ -62,37 +58,27 @@ foreach ($rows as $row) {
 
     if ($permit) {
         $nothing = false;
-        $group_name = $row->group_name;
         $f_size = (int)trim($row->max_filesize);
+
         $det_filesize = (!$f_size) ? $_max_filesize : $f_size;
-        $size_lang = ($det_filesize >= 1048576) ? $lang['MB'] : (($det_filesize >= 1024) ? $lang['KB'] : $lang['Bytes']);
-
-        if ($det_filesize >= 1048576) {
-            $det_filesize = round($det_filesize / 1048576 * 100) / 100;
-        } else if ($det_filesize >= 1024) {
-            $det_filesize = round($det_filesize / 1024 * 100) / 100;
-        }
-
-        $max_filesize = ($det_filesize === 0) ? $lang['Unlimited'] : $det_filesize . ' ' . $size_lang;
+        $max_filesize = ($det_filesize === 0) ? $lang['Unlimited'] : get_formatted_filesize($det_filesize);
 
         $template->assignBlockVars('group_row',
             [
-                'GROUP_RULE_HEADER' => sprintf($lang['Group_rule_header'], $group_name, $max_filesize)
+                'GROUP_RULE_HEADER' => sprintf($lang['Group_rule_header'], $row->group_name, $max_filesize)
             ]
         );
 
-        $e_rows = dibi::select('extension')
+        $extensions = dibi::select('extension')
             ->from(Tables::ATTACH_EXTENSION_TABLE)
             ->where('[group_id] = %i', $row->group_id)
             ->orderBy('extension', dibi::ASC)
             ->fetchAll();
 
-        $e_num_rows = count($e_rows);
-
-        for ($j = 0; $j < $e_num_rows; $j++) {
+        foreach ($extensions as $extension) {
             $template->assignBlockVars('group_row.extension_row',
                 [
-                    'EXTENSION' => $e_rows[$j]['extension']
+                    'EXTENSION' => $extension->extension
                 ]
             );
         }

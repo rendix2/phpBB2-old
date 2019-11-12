@@ -8,8 +8,6 @@
 *
 */
 
-/**
-*/
 $sep = DIRECTORY_SEPARATOR;
 
 define('IN_PHPBB', true);
@@ -21,7 +19,7 @@ require_once $phpbb_root_path . 'common.php';
 $sid = get_var('sid', '');
 
 // Start session management
-$userdata = init_userprefs(PAGE_PROFILE);
+$userdata = init_userprefs(PAGE_UACP);
 
 // session id check
 if ($sid === '' || $sid !== $userdata['session_id']) {
@@ -173,7 +171,7 @@ $template->assignVars(
         'L_FILENAME' => $lang['File_name'],
         'L_FILECOMMENT' => $lang['File_comment_cp'],
         'L_EXTENSION' => $lang['Extension'],
-        'L_SIZE' => $lang['Size_in_kb'],
+        'L_SIZE' => $lang['Sort_Size'],
         'L_DOWNLOADS' => $lang['Downloads'],
         'L_POST_TIME' => $lang['Post_time'],
         'L_POSTED_IN_TOPIC' => $lang['Posted_in_topic'],
@@ -246,7 +244,7 @@ if ($num_attach_ids > 0) {
 }
 
 if (count($attachments) > 0) {
-    foreach ($attachments as $attachment) {
+    foreach ($attachments as $i => $attachment) {
         $row_color = (!($i % 2)) ? $theme['td_color1'] : $theme['td_color2'];
         $row_class = (!($i % 2)) ? $theme['td_class1'] : $theme['td_class2'];
 
@@ -335,8 +333,6 @@ if (count($attachments) > 0) {
 			$hidden_field = '<input type="hidden" name="attach_id_list[]" value="' . (int) $attachment->attach_id . '" />';
 			$hidden_field .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
-			$comment = str_replace("\n", '<br />', $attachment->comment);
-
             $template->assignBlockVars('attachrow',
                 [
                     'ROW_NUMBER' => $i + ($start + 1),
@@ -344,9 +340,9 @@ if (count($attachments) > 0) {
                     'ROW_CLASS' => $row_class,
 
                     'FILENAME' => $attachment->real_filename,
-                    'COMMENT' => $comment,
+                    'COMMENT' => nl2br($attachment->comment),
                     'EXTENSION' => $attachment->extension,
-                    'SIZE' => round(($attachment->filesize / MEGABYTE), 2),
+                    'SIZE' => get_formatted_filesize($attachment->filesize),
                     'DOWNLOAD_COUNT' => $attachment->download_count,
                     'POST_TIME' => create_date($board_config['default_dateformat'], $attachment->filetime, $board_config['board_timezone']),
                     'POST_TITLE' => $post_titles,

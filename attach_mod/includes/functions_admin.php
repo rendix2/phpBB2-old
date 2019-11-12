@@ -8,6 +8,8 @@
  *
  */
 
+use Nette\Utils\Finder;
+
 /**
  * All Attachment Functions only needed in Admin
  */
@@ -268,28 +270,27 @@ function get_formatted_dirsize()
 
         @ftp_close($conn_id);
     } else {
-        if ($dirname = @opendir($upload_dir)) {
-            while ($file = @readdir($dirname)) {
-                if ($file != 'index.php' && $file != '.htaccess' && !is_dir($upload_dir . '/' . $file) && !is_link($upload_dir . '/' . $file)) {
-                    $upload_dir_size += @filesize($upload_dir . '/' . $file);
-                }
+        $attachments = Finder::findFiles('*')
+            ->in($upload_dir)
+            ->exclude('index.php')
+            ->exclude('.htaccess');
+
+        if (count($attachments)) {
+            $attachmentDirSize = 0;
+
+            /**
+             * @var SplFileInfo $attachment
+             */
+            foreach ($attachments as $attachment) {
+                $attachmentDirSize += $attachment->getSize();
             }
-            @closedir($dirname);
+
+            return get_formatted_filesize($attachmentDirSize);
         } else {
-            $upload_dir_size = $lang['Not_available'];
-            return $upload_dir_size;
+            // Couldn't open Avatar dir.
+            return $lang['Not_available'];
         }
     }
-
-    if ($upload_dir_size >= 1048576) {
-        $upload_dir_size = round($upload_dir_size / 1048576 * 100) / 100 . ' ' . $lang['MB'];
-    } else if ($upload_dir_size >= 1024) {
-        $upload_dir_size = round($upload_dir_size / 1024 * 100) / 100 . ' ' . $lang['KB'];
-    } else {
-        $upload_dir_size .= ' ' . $lang['Bytes'];
-    }
-
-    return $upload_dir_size;
 }
 
 /**

@@ -349,9 +349,11 @@ class attach_parent
                         }
                     } else {
                         $error = true;
+
                         if (!empty($error_msg)) {
                             $error_msg .= '<br />';
                         }
+
                         $error_msg .= sprintf($lang['Too_many_attachments'], (int)$max_attachments);
                     }
                 }
@@ -498,9 +500,11 @@ class attach_parent
 
                         if (!$row) {
                             $error = true;
+
                             if (!empty($error_msg)) {
                                 $error_msg .= '<br />';
                             }
+
                             $error_msg .= $lang['Error_missing_old_entry'];
                         }
 
@@ -562,9 +566,11 @@ class attach_parent
                         }
                     } else {
                         $error = true;
+
                         if (!empty($error_msg)) {
                             $error_msg .= '<br />';
                         }
+
                         $error_msg .= sprintf($lang['Too_many_attachments'], (int)$max_attachments);
                     }
                 }
@@ -881,18 +887,22 @@ class attach_parent
             // check Filename
             if (preg_match("#[\\/:*?\"<>|]#i", $this->filename)) {
                 $error = true;
+
                 if (!empty($error_msg)) {
                     $error_msg .= '<br />';
                 }
+
                 $error_msg .= sprintf($lang['Invalid_filename'], htmlspecialchars($this->filename));
             }
 
             // check php upload-size
             if (!$error && $file === 'none') {
                 $error = true;
+
                 if (!empty($error_msg)) {
                     $error_msg .= '<br />';
                 }
+
                 $ini_val = (PHP_VERSION >= '4.0.0') ? 'ini_get' : 'get_cfg_var';
 
                 $max_size = @$ini_val('upload_max_filesize');
@@ -907,18 +917,22 @@ class attach_parent
             // Check Extension
             if (!$error && (int)$row['allow_group'] === 0) {
                 $error = true;
+
                 if (!empty($error_msg)) {
                     $error_msg .= '<br />';
                 }
+
                 $error_msg .= sprintf($lang['Disallowed_extension'], htmlspecialchars($this->extension));
             }
 
             // Check Forum Permissions
             if (!$error && $this->page !== PAGE_PRIVMSGS && $userdata['user_level'] !== ADMIN && !is_forum_authed($auth_cache, $forum_id) && trim($auth_cache) !== '') {
                 $error = true;
+
                 if (!empty($error_msg)) {
                     $error_msg .= '<br />';
                 }
+
                 $error_msg .= sprintf($lang['Disallowed_extension_within_forum'], htmlspecialchars($this->extension));
             }
 
@@ -1021,9 +1035,11 @@ class attach_parent
                 // Do not display as image if we are not able to retrieve the info
                 if ($img_info === false) {
                     $error = true;
+
                     if (!empty($error_msg)) {
                         $error_msg .= '<br />';
                     }
+
                     $error_msg .= sprintf($lang['General_upload_error'], './' . $upload_dir . '/' . $this->attach_filename);
                 } else {
                     // check file type
@@ -1048,15 +1064,19 @@ class attach_parent
 
                     if (!isset($types[$img_info[2]])) {
                         $error = true;
+
                         if (!empty($error_msg)) {
                             $error_msg .= '<br />';
                         }
+
                         $error_msg .= sprintf($lang['General_upload_error'], './' . $upload_dir . '/' . $this->attach_filename);
                     } else if (!in_array($this->extension, $types[$img_info[2]], true)) {
                         $error = true;
+
                         if (!empty($error_msg)) {
                             $error_msg .= '<br />';
                         }
+
                         $error_msg .= sprintf($lang['General_upload_error'], './' . $upload_dir . '/' . $this->attach_filename);
                         $error_msg .= "<br />Filetype mismatch: expected {$types[$img_info[2]][0]} but {$this->extension} given.";
                     }
@@ -1070,9 +1090,11 @@ class attach_parent
                 if ($width !== 0 && $height !== 0 && (int)$attach_config['img_max_width'] !== 0 && (int)$attach_config['img_max_height'] !== 0) {
                     if ($width > (int)$attach_config['img_max_width'] || $height > (int)$attach_config['img_max_height']) {
                         $error = true;
+
                         if (!empty($error_msg)) {
                             $error_msg .= '<br />';
                         }
+
                         $error_msg .= sprintf($lang['Error_imagesize'], (int)$attach_config['img_max_width'], (int)$attach_config['img_max_height']);
                     }
                 }
@@ -1080,19 +1102,13 @@ class attach_parent
 
             // check Filesize
             if (!$error && $allowed_filesize !== 0 && $this->filesize > $allowed_filesize && $userdata['user_level'] !== ADMIN) {
-                $size_lang = ($allowed_filesize >= 1048576) ? $lang['MB'] : (($allowed_filesize >= 1024) ? $lang['KB'] : $lang['Bytes']);
-
-                if ($allowed_filesize >= 1048576) {
-                    $allowed_filesize = round($allowed_filesize / 1048576 * 100) / 100;
-                } else if ($allowed_filesize >= 1024) {
-                    $allowed_filesize = round($allowed_filesize / 1024 * 100) / 100;
-                }
-
                 $error = true;
+
                 if (!empty($error_msg)) {
                     $error_msg .= '<br />';
                 }
-                $error_msg .= sprintf($lang['Attachment_too_big'], $allowed_filesize, $size_lang);
+
+                $error_msg .= sprintf($lang['Attachment_too_big'], get_formatted_filesize($allowed_filesize));
             }
 
             // Check our complete quota
@@ -1102,11 +1118,13 @@ class attach_parent
                     ->from(Tables::ATTACH_ATTACHMENTS_DESC_TABLE)
                     ->fetchSingle();
 
-                if (($total_filesize + $this->filesize) > $attach_config['attachment_quota']) {
+                if (($total_filesize + $this->filesize) > $attach_config['attachment_quota'] && $userdata['user_level'] !== ADMIN) {
                     $error = true;
+
                     if (!empty($error_msg)) {
                         $error_msg .= '<br />';
                     }
+
                     $error_msg .= $lang['Attach_quota_reached'];
                 }
             }
@@ -1135,20 +1153,13 @@ class attach_parent
                     }
 
                     if (($total_filesize + $this->filesize) > $attach_config['upload_filesize_limit']) {
-                        $upload_filesize_limit = $attach_config['upload_filesize_limit'];
-                        $size_lang = ($upload_filesize_limit >= 1048576) ? $lang['MB'] : (($upload_filesize_limit >= 1024) ? $lang['KB'] : $lang['Bytes']);
-
-                        if ($upload_filesize_limit >= 1048576) {
-                            $upload_filesize_limit = round($upload_filesize_limit / 1048576 * 100) / 100;
-                        } else if ($upload_filesize_limit >= 1024) {
-                            $upload_filesize_limit = round($upload_filesize_limit / 1024 * 100) / 100;
-                        }
-
                         $error = true;
+
                         if (!empty($error_msg)) {
                             $error_msg .= '<br />';
                         }
-                        $error_msg .= sprintf($lang['User_upload_quota_reached'], $upload_filesize_limit, $size_lang);
+
+                        $error_msg .= sprintf($lang['User_upload_quota_reached'], get_total_attach_filesize($attach_config['upload_filesize_limit']));
                     }
                 }
             }
@@ -1160,9 +1171,11 @@ class attach_parent
 
                     if (($total_filesize + $this->filesize) > $attach_config['pm_filesize_limit']) {
                         $error = true;
+
                         if (!empty($error_msg)) {
                             $error_msg .= '<br />';
                         }
+
                         $error_msg .= $lang['Attach_quota_sender_pm_reached'];
                     }
                 }
@@ -1181,9 +1194,11 @@ class attach_parent
 
                         if (($total_filesize + $this->filesize) > $attach_config['pm_filesize_limit']) {
                             $error = true;
+
                             if (!empty($error_msg)) {
                                 $error_msg .= '<br />';
                             }
+
                             $error_msg .= sprintf($lang['Attach_quota_receiver_pm_reached'], $to_user);
                         }
                     }
@@ -1222,9 +1237,11 @@ class attach_parent
                 if (!@copy($file, $upload_dir . '/' . basename($this->attach_filename))) {
                     if (!@move_uploaded_file($file, $upload_dir . '/' . basename($this->attach_filename))) {
                         $error = true;
+
                         if (!empty($error_msg)) {
                             $error_msg .= '<br />';
                         }
+
                         $error_msg .= sprintf($lang['General_upload_error'], './' . $upload_dir . '/' . $this->attach_filename);
                         return;
                     }
@@ -1238,9 +1255,11 @@ class attach_parent
                 if (!@move_uploaded_file($file, $upload_dir . '/' . basename($this->attach_filename))) {
                     if (!@copy($file, $upload_dir . '/' . basename($this->attach_filename))) {
                         $error = true;
+
                         if (!empty($error_msg)) {
                             $error_msg .= '<br />';
                         }
+
                         $error_msg .= sprintf($lang['General_upload_error'], './' . $upload_dir . '/' . $this->attach_filename);
                         return;
                     }

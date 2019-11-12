@@ -39,7 +39,7 @@ table.attachtable	{ font: normal 12px Verdana, Arial, Helvetica, sans-serif; col
 	</tr>
 	<tr>
 		<td width="15%" class="attachrow"><span class="genmed">&nbsp;{L_FILESIZE}:</span></td>
-		<td width="75%" class="attachrow"><span class="genmed">&nbsp;{postrow.attach.cat_stream.FILESIZE} {postrow.attach.cat_stream.SIZE_VAR}</td>
+		<td width="75%" class="attachrow"><span class="genmed">&nbsp;{postrow.attach.cat_stream.FILESIZE}</td>
 	</tr>
 	<tr>
 		<td width="15%" class="attachrow"><span class="genmed">&nbsp;{postrow.attach.cat_stream.L_DOWNLOADED_VIEWED}:</span></td>
@@ -82,7 +82,7 @@ table.attachtable	{ font: normal 12px Verdana, Arial, Helvetica, sans-serif; col
 	</tr>
 	<tr>
 		<td width="15%" class="attachrow"><span class="genmed">&nbsp;{L_FILESIZE}:</span></td>
-		<td width="75%" class="attachrow"><span class="genmed">&nbsp;{postrow.attach.cat_swf.FILESIZE} {postrow.attach.cat_swf.SIZE_VAR}</td>
+		<td width="75%" class="attachrow"><span class="genmed">&nbsp;{postrow.attach.cat_swf.FILESIZE}</td>
 	</tr>
 	<tr>
 		<td width="15%" class="attachrow"><span class="genmed">&nbsp;{postrow.attach.cat_swf.L_DOWNLOADED_VIEWED}:</span></td>
@@ -122,7 +122,7 @@ table.attachtable	{ font: normal 12px Verdana, Arial, Helvetica, sans-serif; col
 	</tr>
 	<tr>
 		<td width="15%" class="attachrow"><span class="genmed">&nbsp;{L_FILESIZE}:</span></td>
-		<td width="75%" class="attachrow"><span class="genmed">&nbsp;{postrow.attach.cat_images.FILESIZE} {postrow.attach.cat_images.SIZE_VAR}</td>
+		<td width="75%" class="attachrow"><span class="genmed">&nbsp;{postrow.attach.cat_images.FILESIZE}</td>
 	</tr>
 	<tr>
 		<td width="15%" class="attachrow"><span class="genmed">&nbsp;{postrow.attach.cat_images.L_DOWNLOADED_VIEWED}:</span></td>
@@ -152,7 +152,7 @@ table.attachtable	{ font: normal 12px Verdana, Arial, Helvetica, sans-serif; col
 	</tr>
 	<tr>
 		<td width="15%" class="attachrow"><span class="genmed">&nbsp;{L_FILESIZE}:</span></td>
-		<td width="75%" class="attachrow"><span class="genmed">&nbsp;{postrow.attach.cat_thumb_images.FILESIZE} {postrow.attach.cat_thumb_images.SIZE_VAR}</td>
+		<td width="75%" class="attachrow"><span class="genmed">&nbsp;{postrow.attach.cat_thumb_images.FILESIZE}</td>
 	</tr>
 	<tr>
 		<td width="15%" class="attachrow"><span class="genmed">&nbsp;{postrow.attach.cat_thumb_images.L_DOWNLOADED_VIEWED}:</span></td>
@@ -187,7 +187,7 @@ table.attachtable	{ font: normal 12px Verdana, Arial, Helvetica, sans-serif; col
 	</tr>
 	<tr>
 		<td width="15%" class="attachrow"><span class="genmed">&nbsp;{L_FILESIZE}:</span></td>
-		<td width="75%" class="attachrow"><span class="genmed">&nbsp;{postrow.attach.attachrow.FILESIZE} {postrow.attach.attachrow.SIZE_VAR}</td>
+		<td width="75%" class="attachrow"><span class="genmed">&nbsp;{postrow.attach.attachrow.FILESIZE}</td>
 	</tr>
 	<tr>
 		<td width="15%" class="attachrow"><span class="genmed">&nbsp;{postrow.attach.attachrow.L_DOWNLOADED_VIEWED}:</span></td>

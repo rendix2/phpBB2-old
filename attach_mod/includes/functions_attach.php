@@ -802,9 +802,7 @@ function getOrderBy(Fluent $fluent, $mode, $view, $start, $sort_order, $board_co
                 break;
 
             default:
-                $fluent->orderBy('u.total_attachments', $sort_order);
-                $mode = 'attachments';
-                $sort_order = 'DESC';
+                $fluent->orderBy('total_attachments', $sort_order);
                 break;
         }
     } else if ($view === 'attachments') {

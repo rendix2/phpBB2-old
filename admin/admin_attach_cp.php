@@ -93,6 +93,7 @@ if ($view === 'username') {
     $view = 'stats';
     $mode_types_text = [];
     $sort_order = 'ASC';
+    $mode_types = [];
 }
 
 
@@ -116,7 +117,7 @@ foreach ($view_types as $value => $text) {
 
 $select_view .= '</select>';
 
-if (count($mode_types_text) > 0) {
+if (count($mode_types) > 0) {
     $select_sort_mode = '<select name="mode">';
 
     foreach ($mode_types as $value => $text) {
@@ -229,16 +230,6 @@ if ($submit_change && $view === 'attachments') {
 if ($view === 'stats') {
     $template->setFileNames(['body' => 'admin/attach_cp_body.tpl']);
 
-    $upload_dir_size = get_formatted_dirsize();
-
-    if ($attach_config['attachment_quota'] >= 1048576) {
-        $attachment_quota = round($attach_config['attachment_quota'] / 1048576 * 100) / 100 . ' ' . $lang['MB'];
-    } else if ($attach_config['attachment_quota'] >= 1024) {
-        $attachment_quota = round($attach_config['attachment_quota'] / 1024 * 100) / 100 . ' ' . $lang['KB'];
-    } else {
-        $attachment_quota = $attach_config['attachment_quota'] . ' ' . $lang['Bytes'];
-    }
-
     $number_of_attachments = dibi::select('COUNT(*)')
         ->as('total')
         ->from(Tables::ATTACH_ATTACHMENTS_DESC_TABLE)
@@ -287,8 +278,8 @@ if ($view === 'stats') {
             'L_NUMBER_OF_TOPICS' => $lang['Number_topics_attach'],
             'L_NUMBER_OF_USERS' => $lang['Number_users_attach'],
 
-            'TOTAL_FILESIZE' => $upload_dir_size,
-            'ATTACH_QUOTA' => $attachment_quota,
+            'TOTAL_FILESIZE' => get_formatted_dirsize(),
+            'ATTACH_QUOTA' => get_formatted_filesize($attach_config['attachment_quota']),
             'NUMBER_OF_ATTACHMENTS' => $number_of_attachments,
             'NUMBER_OF_POSTS' => $number_of_posts,
             'NUMBER_OF_PMS' => $number_of_pms,
@@ -371,7 +362,7 @@ if ($view === 'username') {
             'L_SELECT_SORT_METHOD' => $lang['Select_sort_method'],
             'L_ORDER' => $lang['Order'],
             'L_USERNAME' => $lang['Username'],
-            'L_TOTAL_SIZE' => $lang['Size_in_kb'],
+            'L_TOTAL_SIZE' => $lang['Size'],
             'L_ATTACHMENTS' => $lang['Attachments'],
 
             'S_MODE_SELECT' => $select_sort_mode,
@@ -427,7 +418,7 @@ if ($view === 'username') {
             $members = limit_array($members, $start, $board_config['topics_per_page']);
         }
 
-        foreach ($members as $member) {
+        foreach ($members as $i => $member) {
             $row_color = (!($i % 2)) ? $theme['td_color1'] : $theme['td_color2'];
             $row_class = (!($i % 2)) ? $theme['td_class1'] : $theme['td_class2'];
 
@@ -438,7 +429,7 @@ if ($view === 'username') {
                     'ROW_CLASS' => $row_class,
                     'USERNAME' => $member->username,
                     'TOTAL_ATTACHMENTS' => $member->total_attachments,
-                    'TOTAL_SIZE' => round(($member->total_size / MEGABYTE), 2),
+                    'TOTAL_SIZE' => get_formatted_filesize($member->total_size),
                     'U_VIEW_MEMBER' => Session::appendSid('admin_attach_cp.php?view=attachments&amp;uid=' . $member->user_id)
                 ]
             );
@@ -470,7 +461,7 @@ if ($view === 'attachments') {
             'L_FILENAME' => $lang['File_name'],
             'L_FILECOMMENT' => $lang['File_comment_cp'],
             'L_EXTENSION' => $lang['Extension'],
-            'L_SIZE' => $lang['Size_in_kb'],
+            'L_SIZE' => $lang['Size'],
             'L_DOWNLOADS' => $lang['Downloads'],
             'L_POST_TIME' => $lang['Post_time'],
             'L_POSTED_IN_TOPIC' => $lang['Posted_in_topic'],
@@ -531,7 +522,8 @@ if ($view === 'attachments') {
         $attachments = search_attachments($order_by, $total_rows);
     } else {
         $attachments = dibi::select('a.*')
-            ->from(Tables::ATTACH_ATTACHMENTS_DESC_TABLE);
+            ->from(Tables::ATTACH_ATTACHMENTS_DESC_TABLE)
+            ->as('a');
 
         $attachments = getOrderBy($attachments, $mode, $view, $start, $sort_order, $board_config);
         $attachments = $attachments->fetchAll();
@@ -552,7 +544,7 @@ if ($view === 'attachments') {
     */
 
     if (count($attachments) > 0) {
-        foreach ($attachments as $attachment) {
+        foreach ($attachments as $i => $attachment) {
             $delete_box = '<input type="checkbox" name="delete_id_list[]" value="' . (int)$attachment->attach_id . '" />';
 
             foreach ($delete_id_list as $attachId) {
@@ -583,7 +575,7 @@ if ($view === 'attachments') {
                         ->as('t')
                         ->innerJoin(Tables::POSTS_TABLE)
                         ->as('p')
-                        ->innerJoin('[p.topic_id] = [t.topic_id]')
+                        ->on('[p.topic_id] = [t.topic_id]')
                         ->where('[p.post_id] = %i', $ids[$j]['post_id'])
                         ->groupBy('t.topic_id')
                         ->groupBy('t.topic_title')
@@ -614,7 +606,7 @@ if ($view === 'attachments') {
                     'FILENAME' => $attachment->real_filename,
                     'COMMENT' => $attachment->comment,
                     'EXTENSION' => $attachment->extension,
-                    'SIZE' => round(($attachment->filesize / MEGABYTE), 2),
+                    'SIZE' => get_formatted_filesize($attachment->filesize),
                     'DOWNLOAD_COUNT' => $attachment->download_count,
                     'POST_TIME' => create_date($board_config['default_dateformat'], $attachment->filetime, $board_config['board_timezone']),
                     'POST_TITLE' => $post_titles,

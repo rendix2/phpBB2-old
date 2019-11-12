@@ -33,8 +33,7 @@ function group_select($select_name, $default_group = 0)
     $group_select = '<select name="' . $select_name . '">';
 
     if ($num_rows > 0) {
-        $group_name[$num_rows]['group_id'] = 0;
-        $group_name[$num_rows]['group_name'] = $lang['Not_assigned'];
+        $group_name[$num_rows] = $lang['Not_assigned'];
 
         $i = 0;
 

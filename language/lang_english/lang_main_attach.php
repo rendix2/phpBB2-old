@@ -60,7 +60,7 @@ $lang['Attachment_php_size_na'] = 'The Attachment is too big.<br />Couldn\'t get
 $lang['Attachment_php_size_overrun'] = 'The Attachment is too big.<br />Maximum Upload Size: %d MB.<br />Please note that this Size is defined in php.ini, this means it\'s set by PHP and the Attachment Mod can not override this value.'; // replace %d with ini_get('upload_max_filesize')
 $lang['Disallowed_extension'] = 'The Extension %s is not allowed'; // replace %s with extension (e.g. .php) 
 $lang['Disallowed_extension_within_forum'] = 'You are not allowed to post Files with the Extension %s within this Forum'; // replace %s with the Extension
-$lang['Attachment_too_big'] = 'The Attachment is too big.<br />Max Size: %d %s'; // replace %d with maximum file size, %s with size var
+$lang['Attachment_too_big'] = 'The Attachment is too big.<br />Max Size: %s'; // replace %d with maximum file size, %s with size var
 $lang['Attach_quota_reached'] = 'Sorry, but the maximum filesize for all Attachments is reached. Please contact the Board Administrator if you have questions.';
 $lang['Too_many_attachments'] = 'Attachment cannot be added, since the max. number of %d Attachments in this post was achieved'; // replace %d with maximum number of attachments
 $lang['Error_imagesize'] = 'The Attachment/Image must be less than %d pixels wide and %d pixels high'; 
@@ -107,7 +107,7 @@ $lang['Note_user_empty_group_permissions'] = 'NOTE:<br />You are normally allowe
 // Quota Variables
 $lang['Upload_quota'] = 'Upload Quota';
 $lang['Pm_quota'] = 'PM Quota';
-$lang['User_upload_quota_reached'] = 'Sorry, you have reached your maximum Upload Quota Limit of %d %s'; // replace %d with Size, %s with Size Lang (MB for example)
+$lang['User_upload_quota_reached'] = 'Sorry, you have reached your maximum Upload Quota Limit of %s'; // replace %d with Size, %s with Size Lang (MB for example)
 
 // User Attachment Control Panel
 $lang['User_acp_title'] = 'User ACP';

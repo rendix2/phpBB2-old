@@ -334,19 +334,7 @@ function display_upload_attach_box_limits($user_id, $group_id = 0)
         $upload_filesize_limit = $attach_config['attachment_quota'];
     }
 
-    if ($upload_filesize_limit === 0) {
-        $user_quota = $lang['Unlimited'];
-    } else {
-        $size_lang = ($upload_filesize_limit >= 1048576) ? $lang['MB'] : (($upload_filesize_limit >= 1024) ? $lang['KB'] : $lang['Bytes']);
-
-        if ($upload_filesize_limit >= 1048576) {
-            $user_quota = (round($upload_filesize_limit / 1048576 * 100) / 100) . ' ' . $size_lang;
-        } else if ($upload_filesize_limit >= 1024) {
-            $user_quota = (round($upload_filesize_limit / 1024 * 100) / 100) . ' ' . $size_lang;
-        } else {
-            $user_quota = ($upload_filesize_limit) . ' ' . $size_lang;
-        }
-    }
+    $user_quota = $upload_filesize_limit === 0 ? $lang['Unlimited'] : get_formatted_filesize($upload_filesize_limit);
 
     // Get all attach_id's the specific user posted, but only uploads to the board and not Private Messages
     $attach_ids = dibi::select('attach_id')
@@ -357,15 +345,8 @@ function display_upload_attach_box_limits($user_id, $group_id = 0)
         ->fetchPairs(null, 'attach_id');
 
     $upload_filesize = (count($attach_ids) > 0) ? get_total_attach_filesize($attach_ids) : 0;
-    $size_lang = ($upload_filesize >= 1048576) ? $lang['MB'] : (($upload_filesize >= 1024) ? $lang['KB'] : $lang['Bytes']);
 
-    if ($upload_filesize >= 1048576) {
-        $user_uploaded = (round($upload_filesize / 1048576 * 100) / 100) . ' ' . $size_lang;
-    } else if ($upload_filesize >= 1024) {
-        $user_uploaded = (round($upload_filesize / 1024 * 100) / 100) . ' ' . $size_lang;
-    } else {
-        $user_uploaded = ($upload_filesize) . ' ' . $size_lang;
-    }
+    $user_uploaded = get_formatted_filesize($upload_filesize);
 
     $upload_limit_pct = ($upload_filesize_limit > 0) ? round(($upload_filesize / $upload_filesize_limit) * 100) : 0;
     $upload_limit_img_length = ($upload_filesize_limit > 0) ? round(($upload_filesize / $upload_filesize_limit) * $board_config['privmsg_graphic_length']) : 0;
@@ -373,8 +354,6 @@ function display_upload_attach_box_limits($user_id, $group_id = 0)
     if ($upload_limit_pct > 100) {
         $upload_limit_img_length = $board_config['privmsg_graphic_length'];
     }
-
-    $upload_limit_remain = ($upload_filesize_limit > 0) ? $upload_filesize_limit - $upload_filesize : 100;
 
     $l_box_size_status = sprintf($lang['Upload_percent_profile'], $upload_limit_pct);
 

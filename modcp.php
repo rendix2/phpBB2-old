@@ -1024,7 +1024,7 @@ switch ($mode) {
                     'THANKS'          => $row->topic_thanks,
                     'LAST_POST_TIME'   => $last_post_time,
                     'TOPIC_ID'         => $topicId,
-                    'TOPIC_ATTACHMENT_IMG' => topic_attachment_image($row['topic_attachment']),
+                    'TOPIC_ATTACHMENT_IMG' => topic_attachment_image($row->topic_attachment),
 
                     'L_TOPIC_FOLDER_ALT' => $folder_alt
                 ]
