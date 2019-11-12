@@ -631,29 +631,29 @@ switch($mode) {
 	<p><?php echo $lang['Repairing_tables'] ?>:</p>
 	<ul>
 <?php
-					foreach ($tables as $table) {
-						$tablename = Config::TABLE_PREFIX . $table;
+                    $tables = Tables::getTables();
 
-						$row = dibi::query('REPAIR TABLE %n', $tablename)->fetch();
+					foreach ($tables as $table) {
+						$row = dibi::query('REPAIR TABLE %n', $table)->fetch();
 
 						if ($row) {
 							if ($row->Msg_type == 'status') {
 ?>
-		<li><?php echo "$tablename: " . $lang['Table_OK']?></li>
+		<li><?php echo "$table: " . $lang['Table_OK']?></li>
 <?php
 							} else {//  We got an error
 								// Check whether the error results from HEAP-table type
 
-								$row2 = dibi::query('SHOW TABLE STATUS LIKE %~like~', $tablename)->fetch();
+								$row2 = dibi::query('SHOW TABLE STATUS LIKE %~like~', $table)->fetch();
 
 								if ((isset($row2->Type) && $row2->Type === 'HEAP') || (isset($row2->Engine) && ($row2->Engine === 'HEAP' || $row2->Engine === 'MEMORY'))) {
 									// Table is from HEAP-table type
 ?>
-		<li><?php echo "$tablename: " . $lang['Table_HEAP_info']?></li>
+		<li><?php echo "$table: " . $lang['Table_HEAP_info']?></li>
 <?php
 								} else {
 ?>
-		<li><?php echo "<b>$tablename:</b> " . htmlspecialchars($row->Msg_text)?></li>
+		<li><?php echo "<b>$table:</b> " . htmlspecialchars($row->Msg_text)?></li>
 <?php
 								}
 							}

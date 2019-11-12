@@ -116,10 +116,6 @@ require_once $phpbb_root_path . 'attach_mod' . $sep . 'posting_attachments.php';
 // PM Attachments Class
 require_once $phpbb_root_path . 'attach_mod' . $sep . 'pm_attachments.php';
 
-if ((int)$attach_config['allow_ftp_upload']) {
-    $upload_dir = $attach_config['download_path'];
-} else {
-    $upload_dir = $attach_config['upload_dir'];
-}
+$upload_dir = (int)$attach_config['allow_ftp_upload'] ? $attach_config['download_path'] : $attach_config['upload_dir'];
 
 ?>

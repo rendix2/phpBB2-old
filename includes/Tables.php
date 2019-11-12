@@ -214,4 +214,20 @@ class Tables
      * @var string
      */
     const ATTACH_FORBIDEN_EXTENSIONS_TABLE = self::PREFIX . 'forbidden_extensions';
+
+    /**
+     * returns List of tables used
+     *
+     * @return array
+     * @throws ReflectionException
+     */
+    public static function getTables()
+    {
+        $reflectionClass = new ReflectionClass(self::class);
+        $constants = $reflectionClass->getConstants();
+
+        unset($constants['PREFIX']);
+
+        return $constants;
+    }
 }

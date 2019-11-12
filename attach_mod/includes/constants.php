@@ -49,8 +49,4 @@ define('QUOTA_PM_LIMIT', 2);
 
 define('ATTACH_VERSION', '2.4.5');
 
-
-// Additional Constants
-
-
 ?>

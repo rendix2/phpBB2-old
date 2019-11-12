@@ -3645,23 +3645,23 @@ switch($mode_id) {
 				echo("<font class=\"gen\"><ul>\n");
 				$list_open = true;
 
-				foreach ($tables as $table) {
-					$tablename = Config::TABLE_PREFIX . $table;
+				$tables = Tables::getTables();
 
-                    $row = dibi::query('CHECK TABLE %n', $tablename)->fetch();
+				foreach ($tables as $table) {
+                    $row = dibi::query('CHECK TABLE %n', $table)->fetch();
 
                     if ($row) {
                         if ($row->Msg_type === 'status') {
-                            echo("<li>$tablename: " . $lang['Table_OK'] . "</li>\n");
+                            echo("<li>$table: " . $lang['Table_OK'] . "</li>\n");
                         } else { //  We got an error
 							// Check whether the error results from HEAP-table type
-                            $row2 = dibi::query('SHOW TABLE STATUS LIKE %~like~', $tablename)->fetch();
+                            $row2 = dibi::query('SHOW TABLE STATUS LIKE %~like~', $table)->fetch();
 
                             if ((isset($row2->Type) && $row2->Type == 'HEAP') || (isset($row2->Engine) && ($row2->Engine == 'HEAP' || $row2->Engine == 'MEMORY'))) {
 								// Table is from HEAP-table type
-								echo("<li>$tablename: " . $lang['Table_HEAP_info'] . "</li>\n");
+								echo("<li>$table: " . $lang['Table_HEAP_info'] . "</li>\n");
                             } else {
-                                echo("<li><b>$tablename:</b> " . htmlspecialchars($row->Msg_text) . "</li>\n");
+                                echo("<li><b>$table:</b> " . htmlspecialchars($row->Msg_text) . "</li>\n");
                             }
 						}
 					}
@@ -3684,23 +3684,23 @@ switch($mode_id) {
 
 				$list_open = true;
 
-				foreach ($tables as $table) {
-					$tablename = Config::TABLE_PREFIX . $table;
+				$tables = Tables::getTables();
 
-                    $row = dibi::query('REPAIR TABLE %n', $tablename)->fetch();
+				foreach ($tables as $table) {
+                    $row = dibi::query('REPAIR TABLE %n', $table)->fetch();
 
                     if ($row) {
                         if ($row->Msg_type == 'status') {
-                            echo("<li>$tablename: " . $lang['Table_OK'] . "</li>\n");
+                            echo("<li>$table: " . $lang['Table_OK'] . "</li>\n");
                         } else { //  We got an error
 							// Check whether the error results from HEAP-table type
-                            $row2 = dibi::query('SHOW TABLE STATUS LIKE %~like~', $tablename)->fetch();
+                            $row2 = dibi::query('SHOW TABLE STATUS LIKE %~like~', $table)->fetch();
 
                             if ((isset($row2->Type) && $row2->Type == 'HEAP') || (isset($row2->Engine) && ($row2->Engine == 'HEAP' || $row2->Engine == 'MEMORY'))) {
 								// Table is from HEAP-table type
-								echo("<li>$tablename: " . $lang['Table_HEAP_info'] . "</li>\n");
+								echo("<li>$table: " . $lang['Table_HEAP_info'] . "</li>\n");
 							} else {
-								echo("<li><b>$tablename:</b> " . htmlspecialchars($row->Msg_text) . "</li>\n");
+								echo("<li><b>$table:</b> " . htmlspecialchars($row->Msg_text) . "</li>\n");
 							}
 						}
 					}
@@ -3718,24 +3718,24 @@ switch($mode_id) {
 				echo("<font class=\"gen\"><ul>\n");
                 $list_open = true;
 
-				foreach ($tables as $table) {
-					$tablename = Config::TABLE_PREFIX . $table;
+                $tables = Tables::getTables();
 
-					$row = dibi::query('OPTIMIZE TABLE %n', $tablename)->fetch();
+				foreach ($tables as $table) {
+					$row = dibi::query('OPTIMIZE TABLE %n', $table)->fetch();
 
                     if ($row) {
                         if ($row->Msg_type == 'status') {
-                            echo("<li>$tablename: " . $lang['Table_OK'] . "</li>\n");
+                            echo("<li>$table: " . $lang['Table_OK'] . "</li>\n");
                         } else {//  We got an error
                             // Check whether the error results from HEAP-table type
 
-                            $row2 = dibi::query('SHOW TABLE STATUS LIKE %~like~', $tablename)->fetch();
+                            $row2 = dibi::query('SHOW TABLE STATUS LIKE %~like~', $table)->fetch();
 
                             if ((isset($row2->Type) && $row2->Type == 'HEAP') || (isset($row2->Engine) && ($row2->Engine == 'HEAP' || $row2->Engine == 'MEMORY'))) {
                                 // Table is from HEAP-table type
-                                echo("<li>$tablename: " . $lang['Table_HEAP_info'] . "</li>\n");
+                                echo("<li>$table: " . $lang['Table_HEAP_info'] . "</li>\n");
                             } else {
-                                echo("<li><b>$tablename:</b> " . htmlspecialchars($row->Msg_text) . "</li>\n");
+                                echo("<li><b>$table:</b> " . htmlspecialchars($row->Msg_text) . "</li>\n");
                             }
                         }
 					}

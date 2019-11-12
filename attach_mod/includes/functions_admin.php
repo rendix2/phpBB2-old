@@ -339,21 +339,6 @@ function search_attachments($order_by, &$total_rows)
             ->fetchPairs(null, 'user_id');
 
         $attachments->where('[t.user_id_1] IN %in', $rows);
-
-        /*
-        $matching_userids = '';
-        if ($row = $db->sql_fetchrow($result)) {
-            do {
-                $matching_userids .= (($matching_userids != '') ? ', ' : '') . (int)$row['user_id'];
-            } while ($row = $db->sql_fetchrow($result));
-
-            $db->sql_freeresult($result);
-        } else {
-            message_die(GENERAL_MESSAGE, $lang['No_attach_search_match']);
-        }
-
-        $where_sql[] = ' (t.user_id_1 IN (' . $matching_userids . ')) ';
-        */
     }
 
     // Search Keyword

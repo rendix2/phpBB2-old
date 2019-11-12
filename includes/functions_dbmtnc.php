@@ -21,42 +21,6 @@ use Nette\Utils\Finder;
  *
  ***************************************************************************/
 
-// List of tables used
-$tables = [
-    'auth_access',
-    'banlist',
-    'categories',
-    'config',
-    'confirm',
-    'disallow',
-    'forums',
-    'forum_prune',
-    'groups',
-    'languages',
-    'posts',
-    'posts_text',
-    'privmsgs',
-    'privmsgs_text',
-    'ranks',
-    'search_results',
-    'search_wordlist',
-    'search_wordmatch',
-    'sessions',
-    'sessions_keys',
-    'smilies',
-    'template_cache',
-    'themes',
-    'themes_name',
-    'topics',
-    'topics_watch',
-    'user_group',
-    'users',
-    'vote_desc',
-    'vote_results',
-    'vote_voters',
-    'words'
-];
-
 // List of configuration data required
 $config_data = [
     'dbmtnc_disallow_postcounter',
@@ -179,7 +143,6 @@ if ($phpbb_version[0] === 0 && $phpbb_version[1] >= 20) {
 if ($phpbb_version[0] === 0 && $phpbb_version[1] >= 21) {
     $default_config['search_min_chars'] = '3';
 }
-sort($tables);
 
 //
 // Function for updating the config_table
@@ -354,8 +317,6 @@ function getmicrotime()
 //
 function get_table_statistic()
 {
-	global $tables;
-
 	$stat['all']['count'] = 0;
 	$stat['all']['records'] = 0;
 	$stat['all']['size'] = 0;
@@ -368,18 +329,14 @@ function get_table_statistic()
 
 	$rows = dibi::query('SHOW TABLE STATUS')->fetchAll();
 
-	$prefixedTables = [];
-
-	foreach ($tables as  $key => $table) {
-	    $prefixedTables[$key] = Config::TABLE_PREFIX . $table;
-    }
+	$tables = Tables::getTables();
 
     foreach ($rows as $row) {
         $stat['all']['count']++;
         $stat['all']['records'] += (int)$row->Rows;
         $stat['all']['size']    += (int)$row->Data_length + (int)$row->Index_length;
 
-        if (!in_array($row->Name, $prefixedTables, true)) {
+        if (!in_array($row->Name, $tables, true)) {
             $stat['advanced']['count']++;
             $stat['advanced']['records'] += (int)$row->Rows;
             $stat['advanced']['size']    += (int)$row->Data_length + (int)$row->Index_length;
