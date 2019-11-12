@@ -570,29 +570,23 @@ function get_total_attach_pm_filesize($direction, $user_id)
         ->as('a')
         ->innerJoin(Tables::PRIVATE_MESSAGE_TABLE)
         ->as('p')
-        ->on('[a.privmsgs_id] = [p.privmsgs_id]')
-        ->where('[a.privmsgs_id] <> %i', 0)
+        ->on('[a.privmsgs_id] = [p.privmsgs_id]');
+
+    if ($direction === 'from_user') {
+        $attach_id->where('[a.user_id_1] = %i', $user_id);
+    } else {
+        $attach_id->where('[a.user_id_2] = %i', $user_id);
+    }
+
+    $attach_id->where('[a.privmsgs_id] <> %i', 0)
         ->where('[p.privmsgs_type] <> %i', PRIVMSGS_SENT_MAIL)
         ->fetchPairs(null, 'attach_id');
 
-    /*
-    $sql = 'SELECT a.attach_id
-        FROM ' . ATTACHMENTS_TABLE . ' a, ' . PRIVMSGS_TABLE . " p
-        WHERE $user_sql
-            AND a.privmsgs_id <> 0 AND a.privmsgs_id = p.privmsgs_id
-            AND p.privmsgs_type <> " . PRIVMSGS_SENT_MAIL;
-    */
-
-    $num_rows = count($attach_id);
-
-    $pm_filesize_total = 0;
-
-    if ($num_rows === 0) {
+    if (count($attach_id) === 0) {
         return 0;
     }
 
-    $pm_filesize_total = get_total_attach_filesize($attach_id);
-    return $pm_filesize_total;
+    return get_total_attach_filesize($attach_id);
 }
 
 /**
@@ -625,11 +619,7 @@ function get_extension($filename)
     $extension[0] = ' ';
     $extension = strtolower(trim($extension));
 
-    if (is_array($extension)) {
-        return '';
-    } else {
-        return $extension;
-    }
+    return is_array($extension) ? '' : $extension;
 }
 
 /**

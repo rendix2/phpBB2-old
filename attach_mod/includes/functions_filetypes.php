@@ -139,6 +139,7 @@ function image_getdimension($file)
 
         $info_byte = fread($fp, 1);
         $info_byte = ord($info_byte);
+
         if (($info_byte & 0x80) !== 0x80 && ($info_byte & 0x80) !== 0) {
             $error = true;
         }
@@ -155,6 +156,7 @@ function image_getdimension($file)
 
     if (!$error) {
         fclose($fp);
+
         return [
             $width,
             $height,
@@ -177,6 +179,7 @@ function image_getdimension($file)
 
     if (!$error) {
         $tmp_str = fread($fp, 4);
+
         if ($tmp_str === 'JFIF') {
             $o_byte = fread($fp, 1);
             if ((int)$o_byte != 0) {

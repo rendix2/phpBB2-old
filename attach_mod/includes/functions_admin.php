@@ -156,19 +156,18 @@ function entry_exists($attach_id)
         ->where('[attach_id] = %i', $attach_id)
         ->fetchAll();
 
-    $num_ids = count($ids);
     $exists = false;
 
-    for ($i = 0; $i < $num_ids; $i++) {
-        if ((int)$ids[$i]['post_id'] !== 0) {
+    foreach ($ids as $id) {
+        if ((int)$id->post_id !== 0) {
             $res = dibi::select(['post_id'])
                 ->from(Tables::POSTS_TABLE)
-                ->where('[post_id] = %i', (int)$ids[$i]['post_id'])
+                ->where('[post_id] = %i', $id->post_id)
                 ->fetch();
-        } else if ((int)$ids[$i]['privmsgs_id'] !== 0) {
+        } else if ((int)$id->privmsgs_id !== 0) {
             $res = dibi::select(['post_id'])
                 ->from(Tables::PRIVATE_MESSAGE_TABLE)
-                ->where('[privmsgs_id] = %i', (int)$ids[$i]['privmsgs_id'])
+                ->where('[privmsgs_id] = %i', $id->privmsgs_id)
                 ->fetch();
         }
 
