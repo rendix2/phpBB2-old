@@ -203,8 +203,6 @@ if (!$forum_topic_data) {
     message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
 }
 
-attach_setup_viewtopic_auth($order_sql, $sql);
-
 $forumId = (int)$forum_topic_data->forum_id;
 
 $show_thanks = ($forum_topic_data->forum_thank_enable == FORUM_THANKABLE) ? FORUM_THANKABLE : FORUM_UNTHANKABLE;

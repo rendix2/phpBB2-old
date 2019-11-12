@@ -194,6 +194,10 @@ function getForumLocation($sessionPage, array $lang)
             return $lang['Viewing_FAQ'];
         case PAGE_RANKS:
             return $lang['Viewing_ranks'];
+        case PAGE_UACP:
+            return $lang['User_acp_title'];
+        case PAGE_RULES:
+            return $lang['Rules_page'];
         default:
             return $lang['Forum_index'];
     }

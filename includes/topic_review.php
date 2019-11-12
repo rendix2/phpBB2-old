@@ -76,9 +76,6 @@ function topic_review($topic_id, $is_inline_review)
         if (!$forum) {
             message_die(GENERAL_MESSAGE, 'Topic_post_not_exist');
         }
-
-        $tmp = '';
-        attach_setup_viewtopic_auth($tmp, $sql);
 		
 		//
 		// Start session management

@@ -34,37 +34,6 @@ function attach_faq_include($lang_file)
 }
 
 /**
- * Setup Basic Authentication (includes/auth.php)
- * @param $type
- * @param $auth_fields
- * @param $a_sql
- */
-function attach_setup_basic_auth($type, &$auth_fields, &$a_sql)
-{
-    switch ($type) {
-        case Auth::AUTH_ALL:
-            $a_sql[] = 'a.auth_attachments';
-            $a_sql[] = 'a.auth_download';
-            $auth_fields[] = 'auth_attachments';
-            $auth_fields[] = 'auth_download';
-            break;
-
-        case Auth::AUTH_ATTACH:
-            $a_sql = ['a.auth_attachments'];
-            $auth_fields = ['auth_attachments'];
-            break;
-
-        case Auth::AUTH_DOWNLOAD:
-            $a_sql = ['a.auth_download'];
-            $auth_fields = ['auth_download'];
-            break;
-
-        default:
-            break;
-    }
-}
-
-/**
  * Setup Forum Authentication (admin/admin_forumauth.php)
  * @param $simple_auth_ary
  * @param $forum_auth_fields
@@ -98,38 +67,6 @@ function attach_setup_forum_auth(&$simple_auth_ary, &$forum_auth_fields, &$field
 
     $forum_auth_fields[] = 'auth_download';
     $field_names['auth_download'] = $lang['Auth_download'];
-}
-
-/**
- * Setup Usergroup Authentication (admin/admin_ug_auth.php)
- * @param $forum_auth_fields
- * @param $auth_field_match
- * @param $field_names
- */
-function attach_setup_usergroup_auth(&$forum_auth_fields, &$auth_field_match, &$field_names)
-{
-    global $lang;
-
-    // Post Attachments
-    $forum_auth_fields[] = 'auth_attachments';
-    $auth_field_match['auth_attachments'] = Auth::AUTH_ATTACH;
-    $field_names['auth_attachments'] = $lang['Auth_attach'];
-
-    // Download Attachments
-    $forum_auth_fields[] = 'auth_download';
-    $auth_field_match['auth_download'] = Auth::AUTH_DOWNLOAD;
-    $field_names['auth_download'] = $lang['Auth_download'];
-}
-
-/**
- * Setup Viewtopic Authentication for f_access (viewtopic.php:includes/topic_review.php)
- * @param $order_sql
- * @param $sql
- */
-function attach_setup_viewtopic_auth(&$order_sql, &$sql)
-{
-    $order_sql = str_replace('f.auth_attachments', 'f.auth_attachments, f.auth_download, t.topic_attachment', $order_sql);
-    $sql = str_replace('f.auth_attachments', 'f.auth_attachments, f.auth_download, t.topic_attachment', $sql);
 }
 
 /**
@@ -457,34 +394,5 @@ function display_upload_attach_box_limits($user_id, $group_id = 0)
     );
 }
 
-/**
- * Function responsible for viewonline (within viewonline.php and the admin index page)
- * not included in vanilla attachment mod
- *
- * added directly after the switch statement
- * viewonline.php:
- *        perform_attach_pageregister($row['session_page']);
- * admin/index.php:
- *        perform_attach_pageregister($onlinerow_reg[$i]['user_session_page'], true);
- *        perform_attach_pageregister($onlinerow_guest[$i]['session_page'], true);
- * @param      $session_page
- * @param bool $in_admin
- */
-function perform_attach_pageregister($session_page, $in_admin = false)
-{
-    global $location, $location_url, $lang;
-
-    switch ($session_page) {
-        case (PAGE_UACP):
-            $location = $lang['User_acp_title'];
-            $location_url = ($in_admin) ? 'index.php?pane=right' : 'index.php';
-            break;
-
-        case (PAGE_RULES):
-            $location = $lang['Rules_page'];
-            $location_url = ($in_admin) ? 'index.php?pane=right' : 'index.php';
-            break;
-    }
-}
 
 ?>

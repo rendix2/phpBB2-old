@@ -137,8 +137,8 @@ class Auth
 
         switch ($type) {
             case self::AUTH_ALL:
-                $authSql      = ['a.auth_view', 'a.auth_read', 'a.auth_post', 'a.auth_reply', 'a.auth_edit', 'a.auth_delete', 'a.auth_sticky', 'a.auth_announce', 'a.auth_vote', 'a.auth_pollcreate'];
-                $authFields = ['auth_view', 'auth_read', 'auth_post', 'auth_reply', 'auth_edit', 'auth_delete', 'auth_sticky', 'auth_announce', 'auth_vote', 'auth_pollcreate'];
+                $authSql      = ['a.auth_view', 'a.auth_read', 'a.auth_post', 'a.auth_reply', 'a.auth_edit', 'a.auth_delete', 'a.auth_sticky', 'a.auth_announce', 'a.auth_vote', 'a.auth_pollcreate', 'a.auth_attachments', 'a.auth_download'];
+                $authFields = ['auth_view', 'auth_read', 'auth_post', 'auth_reply', 'auth_edit', 'auth_delete', 'auth_sticky', 'auth_announce', 'auth_vote', 'auth_pollcreate', 'auth_attachments', 'auth_download'];
                 break;
 
             case self::AUTH_VIEW:
@@ -191,14 +191,19 @@ class Auth
                 $authFields = ['auth_vote'];
                 break;
 
+            case self::AUTH_DOWNLOAD:
+                $authSql = ['a.auth_download'];
+                $authFields = ['auth_download'];
+                break;
+
             case self::AUTH_ATTACH:
+                $authSql = ['a.auth_attachments'];
+                $authFields = ['auth_attachments'];
                 break;
 
             default:
                 break;
         }
-
-        attach_setup_basic_auth($type, $authFields, $authSql);
 
         //
         // If f_access has been passed, or auth is needed to return an array of forums

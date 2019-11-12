@@ -73,7 +73,9 @@ $forum_auth_fields = [
     'auth_sticky',
     'auth_announce',
     'auth_vote',
-    'auth_pollcreate'
+    'auth_pollcreate',
+    'auth_attachments',
+    'auth_download',
 ];
 
 $auth_field_match = [
@@ -86,7 +88,9 @@ $auth_field_match = [
     'auth_sticky'     => Auth::AUTH_STICKY,
     'auth_announce'   => Auth::AUTH_ANNOUNCE,
     'auth_vote'       => Auth::AUTH_VOTE,
-    'auth_pollcreate' => Auth::AUTH_POLL_CREATE
+    'auth_pollcreate' => Auth::AUTH_POLL_CREATE,
+    'auth_attachments' => Auth::AUTH_ATTACH,
+    'auth_download'    => Auth::AUTH_DOWNLOAD,
 ];
 
 $field_names = [
@@ -99,10 +103,10 @@ $field_names = [
     'auth_sticky'     => $lang['Sticky'],
     'auth_announce'   => $lang['Announce'],
     'auth_vote'       => $lang['Vote'],
-    'auth_pollcreate' => $lang['Pollcreate']
+    'auth_pollcreate' => $lang['Pollcreate'],
+    'auth_attachments' => $lang['Auth_attach'],
+    'auth_download'    => $lang['Auth_download'],
 ];
-
-attach_setup_usergroup_auth($forum_auth_fields, $auth_field_match, $field_names);
 
 if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'group' && $group_id))) {
 	$user_level = '';

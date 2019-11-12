@@ -177,6 +177,14 @@ foreach ($rows as $row) {
                     $location = $lang['Viewing_ranks'];
                     $locationUrl = 'ranks.php';
                     break;
+                case PAGE_UACP:
+                    $location = $lang['User_acp_title'];
+                    $locationUrl = 'index.php';
+                    break;
+                case PAGE_RULES:
+                    $location = $lang['Rules_page'];
+                    $locationUrl = 'index.php';
+                    break;
 				default:
 					$location    = $lang['Forum_index'];
 					$locationUrl = 'index.php';
