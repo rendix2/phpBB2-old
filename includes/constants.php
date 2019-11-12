@@ -138,41 +138,4 @@ define('PAGE_TOPIC_OFFSET', 5000);
  */
 define('ONLINE_TIME_DIFF', 300);
 
-
-// Table names
-
-define('CONFIRM_TABLE', Config::TABLE_PREFIX.'confirm');
-define('AUTH_ACCESS_TABLE', Config::TABLE_PREFIX.'auth_access');
-define('BANLIST_TABLE', Config::TABLE_PREFIX.'banlist');
-define('CATEGORIES_TABLE', Config::TABLE_PREFIX.'categories');
-define('CONFIG_TABLE', Config::TABLE_PREFIX.'config');
-define('DISALLOW_TABLE', Config::TABLE_PREFIX.'disallow');
-define('FORUMS_TABLE', Config::TABLE_PREFIX.'forums');
-define('GROUPS_TABLE', Config::TABLE_PREFIX.'groups');
-define('POSTS_TABLE', Config::TABLE_PREFIX.'posts');
-define('POSTS_TEXT_TABLE', Config::TABLE_PREFIX.'posts_text');
-define('PRIVMSGS_TABLE', Config::TABLE_PREFIX.'privmsgs');
-define('PRIVMSGS_TEXT_TABLE', Config::TABLE_PREFIX.'privmsgs_text');
-define('PRIVMSGS_IGNORE_TABLE', Config::TABLE_PREFIX.'privmsgs_ignore');
-define('PRUNE_TABLE', Config::TABLE_PREFIX.'forum_prune');
-define('RANKS_TABLE', Config::TABLE_PREFIX.'ranks');
-define('SEARCH_TABLE', Config::TABLE_PREFIX.'search_results');
-define('SEARCH_WORD_TABLE', Config::TABLE_PREFIX.'search_wordlist');
-define('SEARCH_MATCH_TABLE', Config::TABLE_PREFIX.'search_wordmatch');
-define('SESSIONS_TABLE', Config::TABLE_PREFIX.'sessions');
-define('SESSIONS_KEYS_TABLE', Config::TABLE_PREFIX.'sessions_keys');
-define('SMILIES_TABLE', Config::TABLE_PREFIX.'smilies');
-define('TEMPLATE_CACHE_TABLE', Config::TABLE_PREFIX . 'template_cache');
-define('THEMES_TABLE', Config::TABLE_PREFIX.'themes');
-define('THEMES_NAME_TABLE', Config::TABLE_PREFIX.'themes_name');
-define('TOPICS_TABLE', Config::TABLE_PREFIX.'topics');
-define('TOPICS_WATCH_TABLE', Config::TABLE_PREFIX.'topics_watch');
-define('USER_GROUP_TABLE', Config::TABLE_PREFIX.'user_group');
-define('USERS_TABLE', Config::TABLE_PREFIX.'users');
-define('WORDS_TABLE', Config::TABLE_PREFIX.'words');
-define('VOTE_DESC_TABLE', Config::TABLE_PREFIX.'vote_desc');
-define('VOTE_RESULTS_TABLE', Config::TABLE_PREFIX.'vote_results');
-define('VOTE_USERS_TABLE', Config::TABLE_PREFIX.'vote_voters');
-
-
 ?>
