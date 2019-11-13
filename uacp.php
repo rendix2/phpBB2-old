@@ -108,7 +108,7 @@ if ($confirm && count($delete_id_list)) {
             ->fetch();
 
         if ($row) {
-            if ($row['post_id'] != 0) {
+            if ($row->post_id != 0) {
                 delete_attachment(0, (int)$attachId);
             } else {
                 delete_attachment(0, (int)$attachId, PAGE_PRIVMSGS, (int)$profiledata['user_id']);
@@ -272,7 +272,7 @@ if (count($attachments) > 0) {
                     ->groupBy('t.topic_title')
                     ->fetch();
 
-                $post_title = $row['topic_title'];
+                $post_title = $row->topic_title;
 
                 if (strlen($post_title) > 32) {
                     $post_title = substr($post_title, 0, 30) . '...';

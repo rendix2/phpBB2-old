@@ -31,12 +31,7 @@ function process_quota_settings($mode, $id, $quota_type, $quota_limit_id = 0)
     $quota_limit_id = (int)$quota_limit_id;
 
     if ($mode === 'user') {
-        if (!$quota_limit_id) {
-            dibi::delete(Tables::ATTACH_QUOTA_TABLE)
-                ->where('[user_id] = %i', $id)
-                ->where('[quota_type] = %i', $quota_type)
-                ->execute();
-        } else {
+        if ($quota_limit_id) {
             // Check if user is already entered
             $checkQuota = dibi::select('user_id')
                 ->from(Tables::ATTACH_QUOTA_TABLE)
@@ -59,9 +54,19 @@ function process_quota_settings($mode, $id, $quota_type, $quota_limit_id = 0)
 
                 dibi::insert(Tables::ATTACH_QUOTA_TABLE, $sql_ary)->execute();
             }
+        } else {
+            dibi::delete(Tables::ATTACH_QUOTA_TABLE)
+                ->where('[user_id] = %i', $id)
+                ->where('[quota_type] = %i', $quota_type)
+                ->execute();
         }
     } else if ($mode === 'group') {
-        if (!$quota_limit_id) {
+        if ($quota_limit_id) {
+            dibi::delete(Tables::ATTACH_QUOTA_TABLE)
+                ->where('[group_id] = %i', $id)
+                ->where('[quota_type] = %i', $quota_type)
+                ->execute();
+        } else {
             // Check if user is already entered
             $check = dibi::select('group_id')
                 ->from(Tables::ATTACH_QUOTA_TABLE)
@@ -84,11 +89,6 @@ function process_quota_settings($mode, $id, $quota_type, $quota_limit_id = 0)
 
                 dibi::insert(Tables::ATTACH_QUOTA_TABLE, $insertData)->execute();
             }
-        } else {
-            dibi::delete(Tables::ATTACH_QUOTA_TABLE)
-                ->where('[group_id] = %i', $id)
-                ->where('[quota_type] = %i', $quota_type)
-                ->execute();
         }
     }
 }
@@ -414,15 +414,17 @@ function search_attachments($order_by, &$total_rows)
 
 /**
  * perform LIMIT statement on arrays
- * @param $array
- * @param $start
- * @param $pagelimit
+ * @param array$array
+ * @param int $start
+ * @param int $pagelimit
  * @return array
 */
 function limit_array($array, $start, $pagelimit)
 {
+    $count = count($array);
+
     // array from start - start+pagelimit
-    $limit = (count($array) < ($start + $pagelimit)) ? count($array) : $start + $pagelimit;
+    $limit = ($count < ($start + $pagelimit)) ? $count : $start + $pagelimit;
 
     $limit_array = [];
 

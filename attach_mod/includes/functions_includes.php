@@ -151,7 +151,6 @@ function attachment_quota_settings($admin_mode, $submit = false, $mode)
 
     if ($admin_mode === 'user' && !$submit && $mode !== 'save') {
         // Show the contents
-
         $rows = dibi::select(['quota_limit_id', 'quota_type'])
             ->from(Tables::ATTACH_QUOTA_TABLE)
             ->where('[user_id] = %i', $user_id)
@@ -161,10 +160,10 @@ function attachment_quota_settings($admin_mode, $submit = false, $mode)
 
         if (count($rows)) {
             foreach ($rows as $row) {
-                if ($row['quota_type'] === QUOTA_UPLOAD_LIMIT) {
-                    $upload_quota = $row['quota_limit_id'];
-                } else if ($row['quota_type'] === QUOTA_PM_LIMIT) {
-                    $pm_quota = $row['quota_limit_id'];
+                if ($row->quota_type === QUOTA_UPLOAD_LIMIT) {
+                    $upload_quota = $row->quota_limit_id;
+                } else if ($row->quota_type === QUOTA_PM_LIMIT) {
+                    $pm_quota = $row->quota_limit_id;
                 }
             }
         } else {

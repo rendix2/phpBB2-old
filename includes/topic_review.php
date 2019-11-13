@@ -208,7 +208,7 @@ function topic_review($topic_id, $is_inline_review)
                 ]
             );
 
-            display_review_attachments($row['post_id'], $row['post_attachment'], $is_auth);
+            display_review_attachments($post->post_id, $post->post_attachment, $is_auth);
 		}
 	} else {
 		message_die(GENERAL_MESSAGE, 'Topic_post_not_exist', '', __LINE__, __FILE__);

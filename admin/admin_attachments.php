@@ -63,8 +63,8 @@ $rows = dibi::select('*')
     ->fetchAll();
 
 foreach ($rows as $row) {
-    $config_name = $row['config_name'];
-    $config_value = $row['config_value'];
+    $config_name = $row->config_name;
+    $config_value = $row->config_value;
 
     $new_attach[$config_name] = get_var($config_name, trim($attach_config[$config_name]));
 
@@ -475,9 +475,9 @@ if ($mode === 'shadow') {
 
     $i = 0;
     foreach ($rows as $row) {
-        $table_attachments['attach_id'][$i] = (int)$row['attach_id'];
-        $table_attachments['physical_filename'][$i] = basename($row['physical_filename']);
-        $table_attachments['comment'][$i] = $row['comment'];
+        $table_attachments['attach_id'][$i] = (int)$row->attach_id;
+        $table_attachments['physical_filename'][$i] = basename($row->physical_filename);
+        $table_attachments['comment'][$i] = $row->comment;
         $i++;
     }
 
@@ -595,12 +595,12 @@ if ($mode === 'cats') {
         ->fetchAll();
 
     foreach ($rows as $row) {
-        if ($row['cat_id'] === IMAGE_CAT) {
-            $s_assigned_group_images[] = $row['group_name'];
-        } else if ($row['cat_id'] === STREAM_CAT) {
-            $s_assigned_group_streams[] = $row['group_name'];
-        } else if ($row['cat_id'] === SWF_CAT) {
-            $s_assigned_group_flash[] = $row['group_name'];
+        if ($row->cat_id === IMAGE_CAT) {
+            $s_assigned_group_images[] = $row->group_name;
+        } else if ($row->cat_id === STREAM_CAT) {
+            $s_assigned_group_streams[] = $row->group_name;
+        } else if ($row->cat_id === SWF_CAT) {
+            $s_assigned_group_flash[] = $row->group_name;
         }
     }
 
@@ -864,11 +864,11 @@ if ($mode === 'sync') {
             echo '<br />';
         }
 
-        if (!thumbnail_exists(basename($row['physical_filename']))) {
-            $info .= sprintf($lang['Sync_thumbnail_resetted'], $row['physical_filename']) . '<br />';
+        if (!thumbnail_exists(basename($row->physical_filename))) {
+            $info .= sprintf($lang['Sync_thumbnail_resetted'], $row->physical_filename) . '<br />';
 
             dibi::update(Tables::ATTACH_ATTACHMENTS_DESC_TABLE, ['thumbnail' => 0])
-                ->where('[attach_id] = %i', $row['attach_id'])
+                ->where('[attach_id] = %i', $row->attach_id)
                 ->execute();
         }
         $i++;
@@ -891,9 +891,9 @@ if ($mode === 'sync') {
             echo '<br />';
         }
 
-        if (thumbnail_exists(basename($row['physical_filename']))) {
-            $info .= sprintf($lang['Sync_thumbnail_resetted'], $row['physical_filename']) . '<br />';
-            unlink_attach(basename($row['physical_filename']), MODE_THUMBNAIL);
+        if (thumbnail_exists(basename($row->physical_filename))) {
+            $info .= sprintf($lang['Sync_thumbnail_resetted'], $row->physical_filename) . '<br />';
+            unlink_attach(basename($row->physical_filename), MODE_THUMBNAIL);
         }
         $i++;
     }

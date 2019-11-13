@@ -257,8 +257,7 @@ for ($i = 0; $i < $num_auth_pages && $authorised === false; $i++) {
             ->where('[post_id] = %i', $auth_pages[$i]['post_id'])
             ->fetch();
 
-        $forum_id = $row['forum_id'];
-        $is_auth = Auth::authorize(Auth::AUTH_ALL, $forum_id, $userdata);
+        $is_auth = Auth::authorize(Auth::AUTH_ALL, $row->forum_id, $userdata);
 
         if ($is_auth['auth_download']) {
             $authorised = true;

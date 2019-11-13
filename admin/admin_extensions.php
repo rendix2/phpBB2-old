@@ -709,28 +709,26 @@ if ($e_mode === 'perm' && $group) {
         ->where('[auth_attachments] < %i', Auth::AUTH_ADMIN)
         ->fetchAll();
 
+    $rows2 = dibi::select('forum_permissions')
+        ->from(Tables::ATTACH_EXTENSION_GROUPS_TABLE)
+        ->where('[allow_group] = %i', 1)
+        ->orderBy('group_name', dibi::ASC)
+        ->fetchAll();
+
     foreach ($rows as $row) {
-        $forum_id = $row['forum_id'];
-
-        $rows2 = dibi::select('forum_permissions')
-            ->from(Tables::ATTACH_EXTENSION_GROUPS_TABLE)
-            ->where('[allow_group] = %i', 1)
-            ->orderBy('group_name', dibi::ASC)
-            ->fetchAll();
-
         $found_forum = false;
 
         foreach ($rows2 as $row2) {
             $allowed_forums = auth_unpack(trim($row2->forum_permissions));
 
-            if (in_array($forum_id, $allowed_forums) || trim($row2->forum_permissions) === '') {
+            if (in_array($row->forum_id, $allowed_forums) || trim($row2->forum_permissions) === '') {
                 $found_forum = true;
                 break;
             }
         }
 
         if (!$found_forum) {
-            $empty_perm_forums[$forum_id] = $row['forum_name'];
+            $empty_perm_forums[$row->forum_id] = $row->forum_name;
         }
     }
 

@@ -110,11 +110,36 @@ if (!$attach_config) {
 // Functions for displaying Attachment Things
 require_once $phpbb_root_path . 'attach_mod' . $sep . 'displaying.php';
 
-// Posting Attachments Class (HAVE TO BE BEFORE PM)
-require_once $phpbb_root_path . 'attach_mod' . $sep . 'posting_attachments.php';
+/**
+ * Entry Point
+ *
+ * Posting Attachments Class (HAVE TO BE BEFORE PM)
+ */
+function execute_posting_attachment_handling()
+{
+    global $attachment_mod;
 
-// PM Attachments Class
-require_once $phpbb_root_path . 'attach_mod' . $sep . 'pm_attachments.php';
+    $attachment_mod['posting'] = new attach_posting();
+    $attachment_mod['posting']->posting_attachment_mod();
+}
+
+/**
+ * Entry Point
+ *
+ * PM Attachments Class
+ *
+ * @param string $mode
+ */
+function execute_privmsgs_attachment_handling($mode)
+{
+    global $attachment_mod;
+
+    $attachment_mod['pm'] = new attach_pm();
+
+    if ($mode !== 'read') {
+        $attachment_mod['pm']->privmsgs_attachment_mod($mode);
+    }
+}
 
 $upload_dir = (int)$attach_config['allow_ftp_upload'] ? $attach_config['download_path'] : $attach_config['upload_dir'];
 

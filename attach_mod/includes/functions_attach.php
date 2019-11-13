@@ -15,24 +15,6 @@ use Dibi\Fluent;
  */
 
 /**
- * html_entity_decode replacement (from php manual)
- */
-if (!function_exists('html_entity_decode')) {
-    /**
-     * @param     $given_html
-     * @param int $quote_style
-     *
-     * @return string
-     */
-    function html_entity_decode($given_html, $quote_style = ENT_QUOTES)
-    {
-        $trans_table = array_flip(get_html_translation_table(HTML_SPECIALCHARS, $quote_style));
-        $trans_table['&#39;'] = "'";
-        return (strtr($given_html, $trans_table));
-    }
-}
-
-/**
  * A simple dectobase64 function
  *
  * @param $number
@@ -102,8 +84,8 @@ function auth_pack($auth_array)
     $one_char = $two_char = false;
     $auth_cache = '';
 
-    for ($i = 0; $i < count($auth_array); $i++) {
-        $val = base64_pack((int)$auth_array[$i]);
+    foreach ($auth_array as $authValue) {
+        $val = base64_pack((int)$authValue);
         if (strlen($val) === 1 && !$one_char) {
             $auth_cache .= $one_char_encoding;
             $one_char = true;
@@ -317,48 +299,6 @@ function ftp_file($source_file, $dest_file, $mimetype, $disable_error_mode = fal
 }
 
 /**
- * Check if Attachment exist
- * @param $filename
- * @return bool
-*/
-function attachment_exists($filename)
-{
-    global $upload_dir, $attach_config;
-
-    $filename = basename($filename);
-
-    if ((int)$attach_config['allow_ftp_upload']) {
-        $found = false;
-
-        $conn_id = attach_init_ftp();
-
-        $file_listing = @ftp_rawlist($conn_id, $filename);
-
-        for ($i = 0, $size = count($file_listing); $i < $size; $i++) {
-            if (preg_match("#([-d])[rwxst-]{9}.* ([0-9]*) ([a-zA-Z]+[0-9: ]*[0-9]) ([0-9]{2}:[0-9]{2}) (.+)#", $file_listing[$i], $regs)) {
-                if ($regs[1] === 'd') {
-                    $dirinfo[0] = 1;    // Directory === 1
-                }
-                $dirinfo[1] = $regs[2]; // Size
-                $dirinfo[2] = $regs[3]; // Date
-                $dirinfo[3] = $regs[4]; // Filename
-                $dirinfo[4] = $regs[5]; // Time
-            }
-
-            if ($dirinfo[0] !== 1 && $dirinfo[4] === $filename) {
-                $found = true;
-            }
-        }
-
-        @ftp_close($conn_id);
-
-        return $found;
-    } else {
-        return @file_exists(@amod_realpath($upload_dir . '/' . $filename));
-    }
-}
-
-/**
  * Check if Thumbnail exist
  * @param $filename
  * @return bool
@@ -431,13 +371,7 @@ function physical_filename_already_stored($filename)
 */
 function attachment_exists_db($post_id, $page = 0)
 {
-    $post_id = (int)$post_id;
-
-    if ($page === PAGE_PRIVMSGS) {
-        $sql_id = 'privmsgs_id';
-    } else {
-        $sql_id = 'post_id';
-    }
+    $sql_id = $page === PAGE_PRIVMSGS ? 'privmsgs_id' : 'post_id';
 
     $check = dibi::select(['attach_id'])
         ->from(Tables::ATTACH_ATTACHMENT_TABLE)
@@ -458,7 +392,7 @@ function attachment_exists_db($post_id, $page = 0)
 */
 function get_attachments_from_post($post_id_array)
 {
-    global $db, $attach_config;
+    global $attach_config;
 
     $attachments = [];
 

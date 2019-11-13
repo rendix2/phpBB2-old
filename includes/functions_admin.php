@@ -113,7 +113,7 @@ function get_database_size()
 
             if ($row) {
                 // Azure stats are stored elsewhere
-                if (strpos($row['mssql_version'], 'SQL Azure') !== false) {
+                if (strpos($row->mssql_version, 'SQL Azure') !== false) {
                     $databaseSize = dibi::select('((SUM(size) * 8.0) * 1024.0)')->as('dbsize')
                         ->from('sys.dm_db_partition_stats')
                         ->fetchSingle();
@@ -133,7 +133,7 @@ function get_database_size()
                 ->where('proname = %s', 'pg_database_size')
                 ->fetch();
 
-            if ($row['proname'] === 'pg_database_size') {
+            if ($row->proname === 'pg_database_size') {
                 $database = dibi::getDatabaseInfo()->getName();
 
                 if (strpos($database, '.') !== false) {

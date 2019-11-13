@@ -880,9 +880,9 @@ class attach_parent
                 ->where('[e.extension] = %s', $this->extension)
                 ->fetch();
 
-            $allowed_filesize = ($row['max_filesize']) ? $row['max_filesize'] : $attach_config['max_filesize'];
-            $cat_id = (int)$row['cat_id'];
-            $auth_cache = trim($row['forum_permissions']);
+            $allowed_filesize = ($row->max_filesize) ? $row->max_filesize : $attach_config['max_filesize'];
+            $cat_id = (int)$row->cat_id;
+            $auth_cache = trim($row->forum_permissions);
 
             // check Filename
             if (preg_match("#[\\/:*?\"<>|]#i", $this->filename)) {
@@ -915,7 +915,7 @@ class attach_parent
             }
 
             // Check Extension
-            if (!$error && (int)$row['allow_group'] === 0) {
+            if (!$error && (int)$row->allow_group === 0) {
                 $error = true;
 
                 if (!empty($error_msg)) {

@@ -200,9 +200,9 @@ function init_display_post_attachments($switch_attachment)
 
     $post_id_array = [];
 
-    for ($i = 0; $i < $totalPosts; $i++) {
-        if ($posts[$i]['post_attachment'] === 1) {
-            $post_id_array[] = (int)$posts[$i]['post_id'];
+    foreach ($posts as $post) {
+        if ($post->post_attachment === 1) {
+            $post_id_array[] = (int)$post->post_id;
         }
     }
 
@@ -382,7 +382,6 @@ function init_display_review_attachments($is_auth)
     init_display_template('reviewbody', '{postrow.ATTACHMENTS}');
 
     init_complete_extensions_data();
-
 }
 
 /**

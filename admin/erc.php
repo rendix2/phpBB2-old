@@ -1001,11 +1001,11 @@ switch($mode) {
 						$new_state = $row2 ? MOD : USER;
 
 						dibi::update(Tables::USERS_TABLE, ['user_level' => $new_state])
-						    ->where('user_id = %i', $row['user_id'])
+						    ->where('user_id = %i', $row->user_id)
 						    ->execute();
 
 ?>
-	<li><?php echo htmlspecialchars($row['username']) ?></li>
+	<li><?php echo htmlspecialchars($row->username) ?></li>
 <?php
 					}
 				}

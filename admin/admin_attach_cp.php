@@ -304,7 +304,7 @@ if ($view === 'search') {
 
     $s_forums = '';
     foreach ($rows as $row) {
-        $s_forums .= '<option value="' . $row['forum_id'] . '">' . $row->forum_name . '</option>';
+        $s_forums .= '<option value="' . $row->forum_id . '">' . $row->forum_name . '</option>';
 
         if (empty($list_cat[$row->cat_id])) {
             $list_cat[$row->cat_id] = $row->cat_title;
