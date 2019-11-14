@@ -289,10 +289,8 @@ if ($check_upload) {
 }
 
 // Management
-if ($submit && $mode === 'manage') {
-    if (!$error) {
-        message_die(GENERAL_MESSAGE, $lang['Attach_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_attachments.php?mode=manage') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>'));
-    }
+if ($submit && $mode === 'manage' && !$error) {
+    message_die(GENERAL_MESSAGE, $lang['Attach_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_attachments.php?mode=manage') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>'));
 }
 
 if ($mode === 'manage') {
@@ -311,7 +309,8 @@ if ($mode === 'manage') {
         $template->assignBlockVars('switch_ftp', []);
     }
 
-    $template->assignVars([
+    $template->assignVars(
+        [
             'L_MANAGE_TITLE' => $lang['Attach_settings'],
             'L_MANAGE_EXPLAIN' => $lang['Manage_attachments_explain'],
             'L_ATTACHMENT_SETTINGS' => $lang['Attach_settings'],
@@ -403,7 +402,8 @@ if ($mode === 'manage') {
             'DISPLAY_ORDER_ASC' => $display_order_yes,
             'DISPLAY_ORDER_DESC' => $display_order_no,
             'SHOW_APCP_YES' => $show_apcp_yes,
-            'SHOW_APCP_NO' => $show_apcp_no]
+            'SHOW_APCP_NO' => $show_apcp_no
+        ]
     );
 }
 
@@ -440,9 +440,7 @@ if ($mode === 'shadow') {
     @set_time_limit(0);
 
     // Shadow Attachments
-    $template->setFileNames([
-            'body' => 'admin/attach_shadow.tpl']
-    );
+    $template->setFileNames(['body' => 'admin/attach_shadow.tpl']);
 
     $shadow_attachments = [];
     $shadow_row = [];
@@ -548,8 +546,6 @@ if ($mode === 'shadow') {
             }
         }
     }
-
-
 }
 
 foreach ($shadow_attachments as $shadow_attachment) {
@@ -571,10 +567,8 @@ for ($i = 0; $i < count($shadow_row['attach_id']); $i++) {
     );
 }
 
-if ($submit && $mode === 'cats') {
-    if (!$error) {
-        message_die(GENERAL_MESSAGE, $lang['Attach_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_attachments.php?mode=cats') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>'));
-    }
+if ($submit && $mode === 'cats' && !$error) {
+    message_die(GENERAL_MESSAGE, $lang['Attach_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_attachments.php?mode=cats') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>'));
 }
 
 if ($mode === 'cats') {
@@ -620,7 +614,8 @@ if ($mode === 'cats') {
         $template->assignBlockVars('switch_thumbnail_support', []);
     }
 
-    $template->assignVars([
+    $template->assignVars(
+        [
             'L_MANAGE_CAT_TITLE' => $lang['Manage_categories'],
             'L_MANAGE_CAT_EXPLAIN' => $lang['Manage_categories_explain'],
             'L_SETTINGS_CAT_IMAGES' => $lang['Settings_cat_images'],
@@ -668,7 +663,8 @@ if ($mode === 'cats') {
             'USE_GD2_NO' => $use_gd2_no,
 
             'S_ASSIGNED_GROUP_IMAGES' => implode(', ', $s_assigned_group_images),
-            'S_ATTACH_ACTION' => Session::appendSid('admin_attachments.php?mode=cats')]
+            'S_ATTACH_ACTION' => Session::appendSid('admin_attachments.php?mode=cats')
+        ]
     );
 }
 
@@ -718,7 +714,7 @@ if ($check_image_cat) {
         }
     } else if ((int)$attach_config['allow_ftp_upload'] && (int)$attach_config['img_create_thumbnail']) {
         // Check FTP Settings
-        $server = (empty($attach_config['ftp_server'])) ? 'localhost' : $attach_config['ftp_server'];
+        $server = empty($attach_config['ftp_server']) ? 'localhost' : $attach_config['ftp_server'];
 
         $conn_id = @ftp_connect($server);
 
@@ -805,9 +801,11 @@ if ($mode === 'sync') {
     foreach ($topics as $topic) {
         @flush();
         echo '.';
+
         if ($i % 50 === 0) {
             echo '<br />';
         }
+
         Sync::attachTopic($topic);
         $i++;
     }
@@ -843,7 +841,7 @@ if ($mode === 'sync') {
     }
 
     echo '<br /><br />';
-    echo (isset($lang['Sync_thumbnails'])) ? $lang['Sync_thumbnails'] : 'Sync Thumbnails';
+    echo isset($lang['Sync_thumbnails']) ? $lang['Sync_thumbnails'] : 'Sync Thumbnails';
 
     // Sync Thumbnails (if a thumbnail is no longer there, delete it)
     // Get all Posts/PM's with the Thumbnail Flag set
@@ -956,6 +954,7 @@ if ($submit && $mode === 'quota') {
                 if (isset($error_msg)) {
                     $error_msg .= '<br />';
                 }
+
                 $error_msg .= sprintf($lang['Quota_limit_exist'], $extension_group);
             }
         }
@@ -973,15 +972,10 @@ if ($submit && $mode === 'quota') {
 
         message_die(GENERAL_MESSAGE, $message);
     }
-
 }
 
 if ($mode === 'quota') {
-    $template->setFileNames(
-        [
-            'body' => 'admin/attach_quota_body.tpl'
-        ]
-    );
+    $template->setFileNames(['body' => 'admin/attach_quota_body.tpl']);
 
     $max_add_filesize = $attach_config['max_filesize'];
     $size = ($max_add_filesize >= 1048576) ? 'mb' : (($max_add_filesize >= 1024) ? 'kb' : 'b');
@@ -1069,17 +1063,20 @@ if ($mode === 'quota' && $e_mode === 'view_quota') {
         ->where('[q.user_id] <> %i', 0)
         ->fetchAll();
 
-
     foreach ($rows as $row) {
         if ($row->quota_type === QUOTA_UPLOAD_LIMIT) {
-            $template->assignBlockVars('users_upload_row', [
+            $template->assignBlockVars('users_upload_row',
+                [
                     'USER_ID' => $row->user_id,
-                    'USERNAME' => $row->username]
+                    'USERNAME' => $row->username
+                ]
             );
         } else if ($row->quota_type === QUOTA_PM_LIMIT) {
-            $template->assignBlockVars('users_pm_row', [
+            $template->assignBlockVars('users_pm_row',
+                [
                     'USER_ID' => $row->user_id,
-                    'USERNAME' => $row->username]
+                    'USERNAME' => $row->username
+                ]
             );
         }
     }
@@ -1096,14 +1093,18 @@ if ($mode === 'quota' && $e_mode === 'view_quota') {
 
     foreach ($rows as $row) {
         if ($row->quota_type === QUOTA_UPLOAD_LIMIT) {
-            $template->assignBlockVars('groups_upload_row', [
+            $template->assignBlockVars('groups_upload_row',
+                [
                     'GROUP_ID' => $row->group_id,
-                    'GROUPNAME' => $row->group_name]
+                    'GROUPNAME' => $row->group_name
+                ]
             );
         } else if ($row->quota_type === QUOTA_PM_LIMIT) {
-            $template->assignBlockVars('groups_pm_row', [
+            $template->assignBlockVars('groups_pm_row',
+                [
                     'GROUP_ID' => $row->group_id,
-                    'GROUPNAME' => $row->group_name]
+                    'GROUPNAME' => $row->group_name
+                ]
             );
         }
     }

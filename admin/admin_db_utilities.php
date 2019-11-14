@@ -92,6 +92,7 @@ if (isset($_GET['perform']) || isset($_POST['perform'])) {
 				if ($backup_file_tmpname === '' || $backup_file_name === '') {
 					message_die(GENERAL_MESSAGE, $lang['Restore_Error_no_file']);
 				}
+
 				//
 				// If I file was actually uploaded, check to make sure that we
 				// are actually passed the name of an uploaded file, and not

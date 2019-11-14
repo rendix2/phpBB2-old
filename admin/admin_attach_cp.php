@@ -96,7 +96,6 @@ if ($view === 'username') {
     $mode_types = [];
 }
 
-
 // Pagination ?
 $do_pagination = $view !== 'stats' && $view !== 'search';
 
@@ -129,17 +128,18 @@ if (count($mode_types) > 0) {
 }
 
 $select_sort_order = '<select name="order">';
+
 if ($sort_order === 'ASC') {
     $select_sort_order .= '<option value="ASC" selected="selected">' . $lang['Sort_Ascending'] . '</option><option value="DESC">' . $lang['Sort_Descending'] . '</option>';
 } else {
     $select_sort_order .= '<option value="ASC">' . $lang['Sort_Ascending'] . '</option><option value="DESC" selected="selected">' . $lang['Sort_Descending'] . '</option>';
 }
+
 $select_sort_order .= '</select>';
 
 $submit_change = isset($_POST['submit_change']);
 $delete = isset($_POST['delete']);
 $delete_id_list = get_var('delete_id_list', array(0));
-
 $confirm = isset($_POST['confirm']);
 
 if ($confirm && count($delete_id_list) > 0) {
@@ -303,6 +303,7 @@ if ($view === 'search') {
         ->fetchAll();
 
     $s_forums = '';
+
     foreach ($rows as $row) {
         $s_forums .= '<option value="' . $row->forum_id . '">' . $row->forum_name . '</option>';
 
@@ -528,8 +529,8 @@ if ($view === 'attachments') {
         $attachments = getOrderBy($attachments, $mode, $view, $start, $sort_order, $board_config);
         $attachments = $attachments->fetchAll();
     }
-    $num_attach = count($attachments);
 
+    $num_attach = count($attachments);
 
     /*
     if (!$search_based) {

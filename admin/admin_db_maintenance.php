@@ -82,8 +82,8 @@ if (isset($_POST['mode']) && $_POST['mode'] === 'perform') {
 if ($mode_id === 'start' || $mode_id === 'perform') {
     $board_config['gzip_compress'] = false;
 }
-if ($function !== 'perform_rebuild') // Don't send header when rebuilding the search index
-{
+
+if ($function !== 'perform_rebuild') {// Don't send header when rebuilding the search index
     require_once '.' . $sep . 'page_header_admin.php';
 }
 
@@ -99,6 +99,7 @@ switch($mode_id) {
 		if ($function === '') {
 			message_die(GENERAL_ERROR, $lang['no_function_specified']);
 		}
+
 		$warning_message_defined = false;
 
         foreach ($mtnc as $value) {
@@ -114,11 +115,7 @@ switch($mode_id) {
 			$s_hidden_fields = '<input type="hidden" name="mode" value="perform" />';
 			$s_hidden_fields .= '<input type="hidden" name="function" value="' . $function . '" />';
 
-            $template->setFileNames(
-                [
-                    'body' => 'admin/dbmtnc_confirm_body.tpl'
-                ]
-            );
+            $template->setFileNames(['body' => 'admin/dbmtnc_confirm_body.tpl']);
 
             $template->assignVars(
                 [
@@ -157,11 +154,7 @@ switch($mode_id) {
 
 		switch($function) {
             case 'statistic': // Statistics
-                $template->setFileNames(
-                    [
-                        'body' => 'admin/dbmtnc_statistic_body.tpl'
-                    ]
-                );
+                $template->setFileNames(['body' => 'admin/dbmtnc_statistic_body.tpl']);
 
                 // Get board statistics
                 $total_topics = get_db_stat('topiccount');
@@ -327,11 +320,7 @@ switch($mode_id) {
 					message_die(GENERAL_MESSAGE, $message);
 				}
 
-                $template->setFileNames(
-                    [
-                        'body' => 'admin/dbmtnc_config_body.tpl'
-                    ]
-                );
+                $template->setFileNames(['body' => 'admin/dbmtnc_config_body.tpl']);
 
                 $template->assignVars(
                     [
@@ -494,8 +483,7 @@ switch($mode_id) {
 
                 if ($checkAnonymous === ANONYMOUS) {
                     echo($lang['Nothing_to_do']);
-                } else // anonymous user does not exist
-                {
+                } else {// anonymous user does not exist
                     // Recreate entry
 
                     $insertData = [
@@ -607,6 +595,7 @@ switch($mode_id) {
                     if ($row->group_count !== 0) {
                         $multiple_groups[] = $row->user_id;
                     }
+
                     $missing_groups[] = $row->user_id;
                 }
 
@@ -699,6 +688,7 @@ switch($mode_id) {
                         echo("<font class=\"gen\"><ul>\n");
                         $list_open = true;
                     }
+
                     echo('<li>' . htmlspecialchars($row->group_name) . ' (' . $row->group_id . ")</li>\n");
 
                     dibi::update(Tables::GROUPS_TABLE, ['group_moderator' => $userdata['user_id']])
@@ -869,6 +859,7 @@ switch($mode_id) {
                         echo("<font class=\"gen\"><ul>\n");
                         $list_open = true;
                     }
+
                     echo('<li>' . htmlspecialchars($row->username) . ' (' . $row->user_id . ")</li>\n");
                     $result_array[] = $row->user_id;
                 }
@@ -1198,6 +1189,7 @@ switch($mode_id) {
                         echo("<font class=\"gen\"><ul>\n");
                         $list_open = true;
                     }
+
                     echo('<li>' . htmlspecialchars($row->forum_name) . ' (' . $row->forum_id . ")</li>\n");
                     $result_array[] = $row->forum_id;
                 }
@@ -1206,6 +1198,7 @@ switch($mode_id) {
                     echo("</ul></font>\n");
                     $list_open = false;
                 }
+
                 if (count($result_array)) {
                     $record_list = implode(',', $result_array);
                     $new_cat     = create_cat();
@@ -1254,6 +1247,7 @@ switch($mode_id) {
                     echo("</ul></font>\n");
                     $list_open = false;
                 }
+
                 if (count($result_array)) {
                     $record_list = implode(',', $result_array);
                     echo('<p class="gen">' . $lang['Deleting_Posts'] . " </p>\n");
@@ -1338,6 +1332,7 @@ switch($mode_id) {
                     echo("</ul></font>\n");
                     $list_open = false;
                 }
+
                 if (count($result_array)) {
                     $record_list = implode(',', $result_array);
                     $new_forum   = create_forum();
@@ -1474,6 +1469,7 @@ switch($mode_id) {
                         echo("<font class=\"gen\"><ul>\n");
                         $list_open = true;
                     }
+
                     echo('<li>' . sprintf($lang['Setting_post_forum'], $row->post_id, htmlspecialchars($row->p_forum_name), $row->p_forum_id, htmlspecialchars($row->t_forum_name), $row->t_forum_id) . "</li>\n");
 
                     dibi::update(Tables::POSTS_TABLE, ['forum_id' => $row->t_forum_id])
@@ -1572,6 +1568,7 @@ switch($mode_id) {
                         echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
                     }
                 }
+
 				// Check for normal topics with move information
                 $affected_rows = dibi::update(Tables::TOPICS_TABLE, ['topic_moved_id' => 0])
                     ->where('topic_moved_id <> %i', 0)
@@ -1630,6 +1627,7 @@ switch($mode_id) {
                                 $affected_rows) . "</p>\n");
                     }
                 }
+
                 // Forums with pruning enabled and no prune settings
                 $result_array = dibi::select('f.forum_id')
                     ->from(Tables::FORUMS_TABLE)
@@ -1767,6 +1765,7 @@ switch($mode_id) {
                 } else {
                     lock_db(true);
                 }
+
 				break;
 			case 'check_vote': // Check vote tables
 				echo('<h1>' . $lang['Checking_vote_tables'] . "</h1>\n");
@@ -1938,6 +1937,7 @@ switch($mode_id) {
 
 				// Check for vote results without a vote
                 echo('<p class="gen"><b>' . $lang['Checking_results_wo_vote'] . "</b></p>\n");
+
                 $rows = dibi::select(['vr.vote_id', 'vr.vote_option_id', 'vr.vote_option_text', 'vr.vote_result'])
                     ->from(Tables::VOTE_RESULTS_TABLE)
                     ->as('vr')
@@ -2250,6 +2250,7 @@ switch($mode_id) {
                         echo("<font class=\"gen\"><ul>\n");
                         $list_open = true;
                     }
+
                     echo('<li>' . sprintf($lang['Synchronizing_user'], htmlspecialchars($row->username), $row->user_id) . "</li>\n");
 
                     dibi::update(Tables::USERS_TABLE, ['user_new_privmsg' => 0])
@@ -2289,6 +2290,7 @@ switch($mode_id) {
                             echo("<font class=\"gen\"><ul>\n");
                             $list_open = true;
                         }
+
                         echo('<li>' . sprintf($lang['Synchronizing_user'], htmlspecialchars($row->username), $row->user_id) . "</li>\n");
 
                         dibi::update(Tables::USERS_TABLE, ['user_unread_privmsg' => $row->new_counter])
@@ -2317,6 +2319,7 @@ switch($mode_id) {
                         echo("<font class=\"gen\"><ul>\n");
                         $list_open = true;
                     }
+
                     echo('<li>' . sprintf($lang['Synchronizing_user'], htmlspecialchars($row->username), $row->user_id) . "</li>\n");
 
                     dibi::update(Tables::USERS_TABLE, ['user_unread_privmsg' => 0])
@@ -2356,6 +2359,7 @@ switch($mode_id) {
 				if (!empty($_SERVER['SERVER_PORT']) || !empty($_ENV['SERVER_PORT'])) {
 					$default_config['server_port'] = !empty($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : $_ENV['SERVER_PORT'];
 				}
+
 				$default_config['script_path'] = str_replace('admin', '', dirname($_SERVER['PHP_SELF']));
 
                 $startDate = dibi::select('MIN(topic_time)')
@@ -2382,6 +2386,7 @@ switch($mode_id) {
                             echo("<font class=\"gen\"><ul>\n");
                             $list_open = true;
                         }
+
                         echo("<li><b>$key:</b> $value</li>\n");
 
                         dibi::insert(Tables::CONFIG_TABLE, ['config_name' => $key, 'config_value' => $value])
@@ -2586,8 +2591,7 @@ switch($mode_id) {
 				$db_state = isset($_GET['db_state']) ? (int)$_GET['db_state'] : 0;
 
 				// Identify PHP version and time limit configuration
-                if (PHP_VERSION >= '4.0.5' && ($board_config['dbmtnc_rebuildcfg_php3only'] == 0)) // Handle PHP beffore 4.0.5 as PHP 3 since array_search is not available
-                {
+                if (PHP_VERSION >= '4.0.5' && ($board_config['dbmtnc_rebuildcfg_php3only'] == 0)) { // Handle PHP beffore 4.0.5 as PHP 3 since array_search is not available
                     $php_ver = 4;
                     // try to reset time limit
                     $reset_allowed = true;
@@ -2831,6 +2835,7 @@ switch($mode_id) {
 						echo("<font class=\"gen\"><ul>\n");
 						$list_open = true;
 					}
+
 					echo('<li>' . sprintf($lang['Synchronizing_topic'], $row->topic_id, htmlspecialchars($row->topic_title)) . "</li>\n");
 
 					$updateData = [
@@ -2893,6 +2898,7 @@ switch($mode_id) {
 
 								$list_open = true;
 							}
+
 							echo('<li>' . sprintf($lang['Synchronizing_moved_topic'], $row->topic_id, $row->topic_moved_id, htmlspecialchars($row->topic_title)) . "</li>\n");
 
 							$updateData = [
@@ -2978,6 +2984,7 @@ switch($mode_id) {
 
                         $list_open = true;
                     }
+
                     echo('<li>' . sprintf($lang['Synchronizing_topic'], $row->topic_id, htmlspecialchars($row->topic_title)) . "</li>\n");
 
                     $topicsManager->updateByPrimary($row->topic_id, ['topic_thanks' => $row->new_thanks]);
@@ -3085,6 +3092,7 @@ switch($mode_id) {
 						echo("<font class=\"gen\"><ul>\n");
                         $list_open = true;
 					}
+
 					echo('<li>' . sprintf($lang['Synchronizing_forum'], $row->forum_id, htmlspecialchars($row->forum_name)) . "</li>\n");
 
 					dibi::update(Tables::FORUMS_TABLE, ['forum_posts' => $row->new_posts, 'forum_last_post_id' => $row->new_last_post_id])
@@ -3344,6 +3352,7 @@ switch($mode_id) {
                         echo("<font class=\"gen\"><ul>\n");
                         $list_open = true;
                     }
+
                     echo('<li>' . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row->username), $row->user_id, $row->user_topics, 0) . "</li>\n");
 
                     dibi::update(Tables::USERS_TABLE, ['user_topics' => 0])
@@ -3451,6 +3460,7 @@ switch($mode_id) {
                 } else {
                     $moderator_list = '0';
                 }
+
 				echo('<p class="gen">' . $lang['Done'] . "</p>\n");
 
 				// Checking non moderators
@@ -3497,6 +3507,7 @@ switch($mode_id) {
 						echo("<font class=\"gen\"><ul>\n");
 						$list_open = true;
 					}
+
 					echo('<li>' . sprintf($lang['Changing_moderator_status'], htmlspecialchars($row->username), $row->user_id) . "</li>\n");
 
 					dibi::update(Tables::USERS_TABLE, ['user_level' => MOD])
@@ -3822,11 +3833,7 @@ switch($mode_id) {
 		ob_start();
 		break;
 	default:
-        $template->setFileNames(
-            [
-                'body' => 'admin/dbmtnc_list_body.tpl'
-            ]
-        );
+        $template->setFileNames(['body' => 'admin/dbmtnc_list_body.tpl']);
 
         $template->assignVars(
             [

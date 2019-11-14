@@ -55,7 +55,6 @@ $e_mode = get_var('e_mode', '');
 $submit = isset($_POST['submit']);
 
 // Get Attachment Config
-// Get Attachment Config
 $cache = new Cache($storage, Tables::ATTACH_CONFIG_TABLE);
 $key = Tables::ATTACH_CONFIG_TABLE;
 
@@ -227,14 +226,17 @@ if ($mode === 'extensions') {
 
         foreach ($extension_rows as $i => $extension_row) {
             if ($submit) {
-                $template->assignBlockVars('extension_row', [
+                $template->assignBlockVars('extension_row',
+                    [
                         'EXT_ID' => $extension_row->ext_id,
                         'EXTENSION' => $extension_row->extension,
                         'EXTENSION_EXPLAIN' => $extension_explain_list[$i],
-                        'S_GROUP_SELECT' => group_select('group_select[]', $group_select_list[$i])]
+                        'S_GROUP_SELECT' => group_select('group_select[]', $group_select_list[$i])
+                    ]
                 );
             } else {
-                $template->assignBlockVars('extension_row', [
+                $template->assignBlockVars('extension_row',
+                    [
                         'EXT_ID' => $extension_row->ext_id,
                         'EXTENSION' => $extension_row->extension,
                         'EXTENSION_EXPLAIN' => $extension_row->comment,
@@ -269,7 +271,7 @@ if ($submit && $mode === 'groups') {
     }
 
     for ($i = 0; $i < count($group_change_list); $i++) {
-        $allowed = (isset($allowed_list[$i])) ? 1 : 0;
+        $allowed = isset($allowed_list[$i]);
 
         $filesize_list[$i] = ($size_select_list[$i] === 'kb') ? round($filesize_list[$i] * 1024) : (($size_select_list[$i] === 'mb') ? round($filesize_list[$i] * 1048576) : $filesize_list[$i]);
 
@@ -372,7 +374,8 @@ if ($mode === 'groups') {
 
     $viewgroup = get_var(POST_GROUPS_URL, 0);
 
-    $template->assignVars([
+    $template->assignVars(
+        [
             'L_EXTENSION_GROUPS_TITLE' => $lang['Manage_extension_groups'],
             'L_EXTENSION_GROUPS_EXPLAIN' => $lang['Manage_extension_groups_explain'],
             'L_EXTENSION_GROUP' => $lang['Extension_group'],
@@ -395,7 +398,8 @@ if ($mode === 'groups') {
             'S_ADD_DOWNLOAD_MODE' => download_select('add_download_mode'),
             'S_SELECT_CAT' => category_select('add_category'),
             'S_CANCEL_ACTION' => Session::appendSid("admin_extensions.php?mode=groups"),
-            'S_ATTACH_ACTION' => Session::appendSid("admin_extensions.php?mode=groups")]
+            'S_ATTACH_ACTION' => Session::appendSid("admin_extensions.php?mode=groups")
+        ]
     );
 
     $extension_groups = dibi::select('*')
@@ -418,7 +422,8 @@ if ($mode === 'groups') {
 
         $s_allowed = ($extension_group->allow_group === 1) ? 'checked="checked"' : '';
 
-        $template->assignBlockVars('grouprow', [
+        $template->assignBlockVars('grouprow',
+            [
                 'GROUP_ID' => $extension_group->group_id,
                 'EXTENSION_GROUP' => $extension_group->group_name,
                 'UPLOAD_ICON' => $extension_group->upload_icon,
@@ -431,7 +436,8 @@ if ($mode === 'groups') {
                 'MAX_FILESIZE' => $extension_group->max_filesize,
                 'CAT_BOX' => ($viewgroup === $extension_group->group_id) ? $lang['Decollapse'] : $lang['Collapse'],
                 'U_VIEWGROUP' => ($viewgroup === $extension_group->group_id) ? Session::appendSid("admin_extensions.php?mode=groups") : Session::appendSid("admin_extensions.php?mode=groups&" . POST_GROUPS_URL . "=" . $extension_group->group_id),
-                'U_FORUM_PERMISSIONS' => Session::appendSid("admin_extensions.php?mode=$mode&amp;e_mode=perm&amp;e_group=" . $extension_group->group_id)]
+                'U_FORUM_PERMISSIONS' => Session::appendSid("admin_extensions.php?mode=$mode&amp;e_mode=perm&amp;e_group=" . $extension_group->group_id)
+            ]
         );
 
         if ($viewgroup && $viewgroup === $extension_group->group_id) {
@@ -441,9 +447,11 @@ if ($mode === 'groups') {
                 ->fetchAll();
 
             foreach ($extensions as $extension) {
-                $template->assignBlockVars('grouprow.extensionrow', [
+                $template->assignBlockVars('grouprow.extensionrow',
+                    [
                         'EXPLANATION' => $extension->comment,
-                        'EXTENSION' => $extension->extension]
+                        'EXTENSION' => $extension->extension
+                    ]
                 );
             }
         }
@@ -503,8 +511,7 @@ if ($submit && $mode === 'forbidden') {
         }
 
         if (!$error) {
-            dibi::insert(Tables::ATTACH_FORBIDEN_EXTENSIONS_TABLE, ['extension' => $extension])
-                ->execute();
+            dibi::insert(Tables::ATTACH_FORBIDEN_EXTENSIONS_TABLE, ['extension' => $extension])->execute();
         }
     }
 
@@ -517,11 +524,10 @@ if ($submit && $mode === 'forbidden') {
 }
 
 if ($mode === 'forbidden') {
-    $template->setFileNames([
-            'body' => 'admin/attach_forbidden_extensions.tpl']
-    );
+    $template->setFileNames(['body' => 'admin/attach_forbidden_extensions.tpl']);
 
-    $template->assignVars([
+    $template->assignVars(
+        [
             'S_ATTACH_ACTION' => Session::appendSid('admin_extensions.php?mode=forbidden'),
 
             'L_EXTENSIONS_TITLE' => $lang['Manage_forbidden_extensions'],
@@ -529,7 +535,8 @@ if ($mode === 'forbidden') {
             'L_EXTENSION' => $lang['Extension'],
             'L_ADD_NEW' => $lang['Add_new'],
             'L_SUBMIT' => $lang['Submit'],
-            'L_DELETE' => $lang['Delete']]
+            'L_DELETE' => $lang['Delete']
+        ]
     );
 
     $extensionRows = dibi::select('*')
@@ -538,9 +545,11 @@ if ($mode === 'forbidden') {
         ->fetchAll();
 
     foreach ($extensionRows as $extensionRow) {
-        $template->assignBlockVars('extensionrow', [
+        $template->assignBlockVars('extensionrow',
+            [
                 'EXTENSION_ID' => $extensionRow->ext_id,
-                'EXTENSION_NAME' => $extensionRow->extension]
+                'EXTENSION_NAME' => $extensionRow->extension
+            ]
         );
     }
 }
@@ -633,9 +642,7 @@ if ($delete_forum && $e_mode === 'perm' && $group) {
 
 // Display the Group Permissions Box for configuring it
 if ($e_mode === 'perm' && $group) {
-    $template->setFileNames([
-            'perm_box' => 'admin/extension_groups_permissions.tpl']
-    );
+    $template->setFileNames(['perm_box' => 'admin/extension_groups_permissions.tpl']);
 
     $row = dibi::select(['group_name', 'forum_permissions'])
         ->from(Tables::ATTACH_EXTENSION_GROUPS_TABLE)
