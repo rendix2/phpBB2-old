@@ -9,7 +9,7 @@ use Tables;
 /**
  * Class Sync
  *
- * @author rendix2@seznam.cz
+ * @author rendix2
  */
 class Sync
 {

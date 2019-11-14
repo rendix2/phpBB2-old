@@ -2,6 +2,7 @@
 
 namespace phpBB2\Models;
 
+use dibi;
 use Dibi\Result;
 use Dibi\Row;
 
@@ -9,13 +10,14 @@ use Dibi\Row;
  * Class CrudManager
  *
  * @author rendix2
+ * @package phpBB2\Models
  */
 class CrudManager extends Manager
 {
 
     /**
-     * @param $primaryKey
-     * @param array $data
+     * @param string $primaryKey
+     * @param array  $data
      *
      * @return Result|int
      */

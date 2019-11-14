@@ -3,10 +3,10 @@
 namespace phpBB2\Models;
 
 /**
- * Class TopicsManager
+ * Class SessionsManager
  *
  * @author rendix2
  */
-class TopicsManager extends CrudManager
+class SessionsManager extends CrudManager
 {
 }

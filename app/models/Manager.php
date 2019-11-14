@@ -2,12 +2,15 @@
 
 namespace phpBB2\Models;
 
+use Config;
+use dibi;
 use Dibi\Fluent;
 
 /**
  * Class Manager
  *
- * @author
+ * @author rendix2
+ * @package phpBB2\Models
  */
 class Manager
 {

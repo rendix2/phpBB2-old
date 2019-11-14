@@ -2,12 +2,15 @@
 
 namespace phpBB2\Models;
 
+use dibi;
 use Dibi\Row;
+use Tables;
 
 /**
  * Class ThanksManager
  *
  * @author rendix2
+ * @package phpBB2\Models
  */
 class ThanksManager extends CrudManager
 {
@@ -47,6 +50,12 @@ class ThanksManager extends CrudManager
             ->fetchAll();
     }
 
+    /**
+     * @param int $topicId
+     *
+     * @return \Dibi\Result|int
+     * @throws \Dibi\Exception
+     */
     public function deleteByTopicId($topicId)
     {
         return dibi::delete(Tables::THANKS_TABLE)

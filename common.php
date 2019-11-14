@@ -59,7 +59,7 @@ $configurator->createRobotLoader()
     ->addDirectory(__DIR__)
     ->register();
 
-$configurator->addConfig(__DIR__ . $sep . 'config' . $sep . 'config.neon');
+$configurator->addConfig(__DIR__ . $sep . 'app' . $sep . 'config' . $sep . 'config.neon');
 $container = $configurator->createContainer();
 
 //

@@ -1,0 +1,36 @@
+tracy:
+    strictMode: false
+
+session:
+    autoStart: smart
+    debugger: true
+
+services:
+    # model layer => managers
+    BanlistManager: phpBB2\Models\BanlistManager
+    CategoriesManager: phpBB2\Models\CategoriesManager
+    ConfigManager: phpBB2\Models\ConfigManager
+    ConfirmManager: phpBB2\Models\ConfirmManager
+    DissalowManager: phpBB2\Models\DissalowManager
+    ForumsManager: phpBB2\Models\ForumsManager
+    ForumPruneManager: phpBB2\Models\ForumPruneManager
+    GroupsManager: phpBB2\Models\GroupsManager
+    LanguagesManager: phpBB2\Models\LanguagesManager
+    PostsManager: phpBB2\Models\PostsManager
+    PostsTextManager: phpBB2\Models\PostsTextManager
+    RanksManager: phpBB2\Models\RanksManager
+    SessionsManager: phpBB2\Models\SessionsManager
+    SessionsKeysManager: phpBB2\Models\SessionsKeysManager
+    SmiliesManager: phpBB2\Models\SmiliesManager
+    TemplateCacheManager: phpBB2\Models\TemplateCacheManager
+    ThanksManager: phpBB2\Models\ThanksManager
+    ThemesManager: phpBB2\Models\ThemesManager
+    ThemesNameManager: phpBB2\Models\ThemesNameManager
+    TopicsManager: phpBB2\Models\TopicsManager
+    TopicsWatchManager: phpBB2\Models\TopicsWatchManager
+    UsersManager: phpBB2\Models\UsersManager
+    UserGroupManager: phpBB2\Models\UserGroupManager
+    VoteDescManager: phpBB2\Models\VoteDescManager
+    VoteResultsManager: phpBB2\Models\VoteResultsManager
+    VoteVotersManager: phpBB2\Models\VoteVotersManager
+    WordsManager: phpBB2\Models\WordsManager
