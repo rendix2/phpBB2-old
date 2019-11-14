@@ -43,6 +43,7 @@ News:
 - Fix message_die for multiple errors MOD
 - Auth consts
 - attachmemt mod
+- nette DI Container
   
 Conventions for template:  
 - L_ is a language variable
