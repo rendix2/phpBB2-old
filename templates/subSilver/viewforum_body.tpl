@@ -34,7 +34,7 @@
 			{topicrow.GOTO_PAGE}
 		  </span>
 	  </td>
-		<td class="row3" align="center" valign="middle">
+		<td class="row2" align="center" valign="middle">
 			<span class="name">{topicrow.TOPIC_AUTHOR}</span>
 		</td>
 	  <td class="row2" align="center" valign="middle">

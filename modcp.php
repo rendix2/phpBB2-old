@@ -928,6 +928,7 @@ switch ($mode) {
                 'L_TOPICS'         => $lang['Topics'],
                 'L_REPLIES'        => $lang['Replies'],
                 'L_THANKS'         => $lang['Thanks'],
+                'L_AUTHOR'         => $lang['Author'],
                 'L_LASTPOST'       => $lang['Last_Post'],
 
                 'U_VIEW_FORUM'    => Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forumId"),
@@ -1021,7 +1022,8 @@ switch ($mode) {
                     'TOPIC_TYPE'       => $topic_type,
                     'TOPIC_TITLE'      => $topic_title,
                     'REPLIES'          => $row->topic_replies,
-                    'THANKS'          => $row->topic_thanks,
+                    'THANKS'           => $row->topic_thanks,
+                    'AUTHOR'           => $row->username,
                     'LAST_POST_TIME'   => $last_post_time,
                     'TOPIC_ID'         => $topicId,
                     'TOPIC_ATTACHMENT_IMG' => topic_attachment_image($row->topic_attachment),
