@@ -1,5 +1,6 @@
 - clone this repo
 - run composer install
+- create log dir in root 
 - run install script
 
 
@@ -42,6 +43,7 @@ News:
 - Fix message_die for multiple errors MOD
 - Auth consts
 - attachmemt mod
+- nette DI Container
   
 Conventions for template:  
 - L_ is a language variable
