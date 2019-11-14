@@ -3,7 +3,7 @@
 use Dibi\Bridges\Tracy\Panel;
 use Nette\Caching\Cache;
 use Nette\Caching\Storages\FileStorage;
-use Nette\Loaders\RobotLoader;
+use Nette\Configurator;
 use Tracy\Debugger;
 
 /***************************************************************************
@@ -51,19 +51,16 @@ $sep = DIRECTORY_SEPARATOR;
 
 require_once $phpbb_root_path . 'vendor' . $sep . 'autoload.php';
 
-$loader = new RobotLoader();
+$configurator = new Configurator();
+$configurator->enableTracy(__DIR__ . $sep . 'log');
+$configurator->setTempDirectory(__DIR__ . $sep . 'temp');
 
-// Add directories for RobotLoader to index
-$loader->addDirectory(__DIR__ . $sep . 'includes');
+$configurator->createRobotLoader()
+    ->addDirectory(__DIR__)
+    ->register();
 
-// And set caching to the 'temp' directory
-$loader->setTempDirectory(__DIR__ . $sep . 'temp' . $sep . 'cache' . $sep . 'Nette.RobotLoader');
-$loader->register(); // Run the RobotLoader
-
-/**
- * enable working with session.... it was STILL MISSING
- */
-session_start();
+$configurator->addConfig(__DIR__ . $sep . 'config' . $sep . 'config.neon');
+$container = $configurator->createContainer();
 
 //
 // Define some basic configuration arrays this also prevents

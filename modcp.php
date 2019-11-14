@@ -200,7 +200,7 @@ switch ($mode) {
 				message_die(GENERAL_MESSAGE, $lang['None_selected']);
 			}
 
-			$usersManager = new UsersManager();
+			$usersManager = $container->getService('UsersManager');
 
             $topicAuthors = dibi::select('topic_poster')
                 ->select('COUNT(topic_id)')

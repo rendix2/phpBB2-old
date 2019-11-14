@@ -31,7 +31,7 @@ if (!isset($_GET[POST_USERS_URL]) || !is_numeric($_GET[POST_USERS_URL]) || $_GET
     message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
 }
 
-$usersManager = new UsersManager();
+$usersManager = $container->getService('UsersManager');
 
 $profileData = $usersManager->getByPrimaryKey($_GET[POST_USERS_URL]);
 
@@ -100,7 +100,7 @@ if ($profileData->user_topics !== 0) {
 
 // Get the users percentage of total thanks
 if ($profileData->user_thanks !== 0) {
-    $thanksManager = new ThanksManager();
+    $thanksManager = $container->getService('ThanksManager');
 
     $percentageThanks = $totalTopics ? min(100, ($profileData->user_topics / $thanksManager->getAllCount()) * 100) : 0;
 } else {

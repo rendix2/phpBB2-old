@@ -1,5 +1,7 @@
 <?php
 
+namespace phpBB2\Models;
+
 use Dibi\Result;
 use Dibi\Row;
 

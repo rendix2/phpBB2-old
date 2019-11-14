@@ -2923,8 +2923,8 @@ switch($mode_id) {
 					echo($lang['Nothing_to_do']);
 				}
 
-                $thanksManager = new ThanksManager();
-                $topicsManager = new TopicsManager();
+                $thanksManager = $container->getService('ThanksManager');
+                $topicsManager = $container->getService('TopicsManager');
 
                 // Updating normal topics
                 echo('<p class="gen"><b>' . $lang['Synchronize_topic_thank_data'] . "</b></p>\n");
@@ -3154,7 +3154,7 @@ switch($mode_id) {
                     ->having('[new_thanks] <> [f.forum_thanks]')
                     ->fetchAll();
 
-                $forumsManager = new ForumsManager();
+                $forumsManager = $container->getService('ForumsManager');
 
                 foreach ($rows as $row) {
                     if (!$list_open) {
@@ -3369,7 +3369,7 @@ switch($mode_id) {
 
                 echo('<p class="gen"><b>' . $lang['Synchronize_user_thanks_counter'] . "</b></p>\n");
 
-                $usersManager = new UsersManager();
+                $usersManager = $container->getService('UsersManager');
 
                 $rows = dibi::select(['u.user_id', 'u.username', 'u.user_thanks'])
                     ->select('COUNT(t.topic_id)')

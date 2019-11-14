@@ -557,6 +557,7 @@ class PostHelper
         &$pollId
     ) {
         global $lang;
+        global $container;
 
         if ($mode !== 'poll_delete') {
             dibi::delete(Tables::POSTS_TABLE)
@@ -580,9 +581,9 @@ class PostHelper
                     ->where('user_id = %i', $postData['poster_id'])
                     ->execute();
 
-                $usersManager = new UsersManager();
-                $thanksManager = new ThanksManager();
-                $forumsManager = new ForumsManager();
+                $usersManager = $container->getService('UsersManager');
+                $thanksManager = $container->getService('ThanksManager');
+                $forumsManager = $container->getService('ForumsManager');
 
                 $thanks = $thanksManager->getByTopicId($topicId);
                 $usersToUpdate = [];
