@@ -1,5 +1,6 @@
 - clone this repo
 - run composer install
+- create log dir in root 
 - run install script
 
 
