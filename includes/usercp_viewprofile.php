@@ -202,6 +202,7 @@ $template->assignVars(
     [
         'USERNAME' => $profileData->username,
         'JOINED' => create_date($lang['DATE_FORMAT'], $profileData->user_regdate, $board_config['board_timezone']),
+        'LAST_VISIT' => create_date($lang['DATE_FORMAT'], $profileData->user_session_time, $board_config['board_timezone']),
         'POSTER_RANK' => htmlspecialchars($posterRank, ENT_QUOTES),
         'RANK_IMAGE' => $rankImage,
 
@@ -244,6 +245,7 @@ $template->assignVars(
         'L_AVATAR' => $lang['Avatar'],
         'L_POSTER_RANK' => $lang['Poster_rank'],
         'L_JOINED' => $lang['Joined'],
+        'L_LAST_VISIT' => $lang['Last_visit'],
         'L_TOTAL_POSTS' => $lang['Total_posts'],
         'L_TOTAL_TOPICS' => $lang['Total_topics'],
         'L_TOTAL_THANKS' => $lang['Total_thanks'],

@@ -20,6 +20,10 @@
 		  <td valign="middle" align="right" nowrap="nowrap"><span class="gen">{L_JOINED}:&nbsp;</span></td>
 		  <td width="100%"><b><span class="gen">{JOINED}</span></b></td>
 		</tr>
+			<tr>
+				<td valign="middle" align="right" nowrap="nowrap"><span class="gen">{L_LAST_VISIT}:&nbsp;</span></td>
+				<td width="100%"><b><span class="gen">{LAST_VISIT}</span></b></td>
+			</tr>
 		<tr> 
 		  <td valign="top" align="right" nowrap="nowrap"><span class="gen">{L_TOTAL_POSTS}:&nbsp;</span></td>
 		  <td valign="top"><b><span class="gen">{POSTS}</span></b><br /><span class="genmed">[{POST_PERCENT_STATS} / {POST_DAY_STATS}]</span> <br /><span class="genmed"><a href="{U_SEARCH_USER_POSTS}" class="genmed">{L_SEARCH_USER_POSTS}</a></span></td>

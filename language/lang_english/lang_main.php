@@ -93,6 +93,7 @@ $lang['Next'] = 'Next';
 $lang['Previous'] = 'Previous';
 $lang['Goto_page'] = 'Goto page';
 $lang['Joined'] = 'Joined';
+$lang['Last_visit'] = 'Last visit';
 $lang['IP_Address'] = 'IP Address';
 
 $lang['Select_forum'] = 'Select a forum';
