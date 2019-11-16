@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 use Nette\Caching\Cache;
+use phpBB2\Models\UsersManager;
 use phpBB2\Sync;
 
 /***************************************************************************
@@ -250,6 +251,11 @@ if ($postId) {
 if ($userdata['session_logged_in']) {
 	$canWatchTopic = true;
 
+    /**
+     * @var UsersManager $userManager
+     */
+	$userManager = $container->getService('UsersManager');
+
 	$row = dibi::select('notify_status')
         ->from(Tables::TOPICS_WATCH_TABLE)
         ->where('topic_id = %i', $topicId)
@@ -268,6 +274,8 @@ if ($userdata['session_logged_in']) {
                     ->where('topic_id = %i', $topicId)
                     ->where('user_id = %i', $userdata['user_id'])
                     ->execute();
+
+                $userManager->updateByPrimary($userdata['user_id'], ['user_topic_watches%sql' => 'user_topic_watches - 1']);
 			}
 
             $template->assignVars(
@@ -304,9 +312,11 @@ if ($userdata['session_logged_in']) {
                     'notify_status' => 0
                 ];
 
-				dibi::insert(Tables::TOPICS_WATCH_TABLE, $insertData)
+                dibi::insert(Tables::TOPICS_WATCH_TABLE, $insertData)
                     ->setFlag($sqlPriority)
                     ->execute();
+
+                $userManager->updateByPrimary($userdata['user_id'], ['user_topic_watches%sql' => 'user_topic_watches + 1']);
 			}
 
             $template->assignVars(
@@ -396,6 +406,7 @@ $columns = [
     'u.user_posts',
     'u.user_topics',
     'u.user_thanks',
+    'u.user_topic_watches',
     'u.user_from',
     'u.user_website',
     'u.user_email',
@@ -908,6 +919,7 @@ foreach ($posts as $i => $post) {
     $posterPosts  = $post->user_id !== ANONYMOUS ? $lang['Posts'] . ': ' . $post->user_posts   : '';
     $posterTopics = $post->user_id !== ANONYMOUS ? $lang['Topics'] . ': ' . $post->user_topics : '';
     $posterThanks = $post->user_id !== ANONYMOUS ? $lang['Thanks'] . ': ' . $post->user_thanks: '';
+    $posterTopicWatches = $post->user_id !== ANONYMOUS ? $lang['Topic_watches'] . ': ' . $post->user_topic_watches: '';
 
 	$posterFrom = $post->user_from && $post->user_id !== ANONYMOUS ? $lang['Location'] . ': ' . htmlspecialchars($post->user_from, ENT_QUOTES) : '';
 
@@ -1187,6 +1199,7 @@ foreach ($posts as $i => $post) {
             'POSTER_POSTS'   => $posterPosts,
             'POSTER_TOPICS'  => $posterTopics,
             'POSTER_THANKS'  => $posterThanks,
+            'POSTER_TOPIC_WATCHES'  => $posterTopicWatches,
             'POSTER_FROM'    => $posterFrom,
             'POSTER_AVATAR'  => $posterAvatar,
 

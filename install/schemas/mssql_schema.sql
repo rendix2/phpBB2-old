@@ -355,6 +355,7 @@ CREATE TABLE [phpbb_users] (
 	[user_level] [smallint] NOT NULL ,
 	[user_posts] [int] NOT NULL ,
 	[user_topics] [int] NOT NULL ,
+	[user_topic_watches] [int] NOT NULL ,
 	[user_thanks] [int] NOT NULL ,
 	[user_timezone] [varchar] (100) NOT NULL ,
 	[user_style] [int] NULL ,
@@ -663,6 +664,9 @@ GO
 ALTER TABLE [phpbb_users] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_users_user_level] DEFAULT (0) FOR [user_level],
 	CONSTRAINT [DF_phpbb_users_user_posts] DEFAULT (0) FOR [user_posts],
+	CONSTRAINT [DF_phpbb_users_user_topics] DEFAULT (0) FOR [user_topics],
+	CONSTRAINT [DF_phpbb_users_user_thanks] DEFAULT (0) FOR [user_thanks],
+	CONSTRAINT [DF_phpbb_users_user_topic_watches] DEFAULT (0) FOR [user_topic_watches],
 	CONSTRAINT [DF_phpbb_users_user_session_time] DEFAULT (0) FOR [user_session_time],
 	CONSTRAINT [DF_phpbb_users_user_session_page] DEFAULT (0) FOR [user_session_page],
 	CONSTRAINT [DF_phpbb_users_user_lastvisit] DEFAULT (0) FOR [user_lastvisit],

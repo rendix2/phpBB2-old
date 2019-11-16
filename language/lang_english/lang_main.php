@@ -53,6 +53,7 @@ $lang['Category'] = 'Category';
 $lang['Topic'] = 'Topic';
 $lang['Topics'] = 'Topics';
 $lang['Thanks'] = 'Thanks';
+$lang['Topic_watches'] = 'Topic watches';
 $lang['Replies'] = 'Replies';
 $lang['Views'] = 'Views';
 $lang['Post'] = 'Post';
@@ -529,10 +530,15 @@ $lang['User_topic_pct_stats'] = '%.2f%% of total'; // 1.25% of total
 $lang['User_topic_day_stats'] = '%.2f topics per day'; // 1.5 posts per day
 $lang['Search_user_topics'] = 'Find all topics by %s'; // Find all posts by username
 
+//thanks
 $lang['Total_thanks'] = 'Total thanks';
-$lang['User_thank_pct_stats'] = '%.2f%% of total'; // 1.25% of total
 $lang['User_thank_day_stats'] = '%.2f thanks per day'; // 1.5 posts per day
-$lang['Search_user_topics'] = 'Find all thanks by %s'; // Find all posts by username
+$lang['Search_user_thanks'] = 'Find all thanks by %s'; // Find all posts by username
+
+// topics watches
+$lang['Total_topics_watches'] = 'Total topics watches';
+$lang['User_topic_watch_day_stats'] = '%.2f topic watch per day'; // 1.5 posts per day
+$lang['Search_user_topics_watches'] = 'Find all topic watches by %s'; // Find all posts by username
 
 $lang['No_user_id_specified'] = 'Sorry, but that user does not exist.';
 $lang['Wrong_Profile'] = 'You cannot modify a profile that is not your own.';
@@ -675,6 +681,7 @@ $lang['Sort_Location'] = 'Location';
 $lang['Sort_Posts'] = 'Total posts';
 $lang['Sort_Topics'] = 'Total topics';
 $lang['Sort_Thanks'] = 'Total thanks';
+$lang['Sort_Topics_watches'] = 'Topic watches';
 $lang['Sort_Email'] = 'Email';
 $lang['Sort_Website'] = 'Website';
 $lang['Sort_Online'] = 'Online status';

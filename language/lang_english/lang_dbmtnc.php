@@ -153,7 +153,7 @@ $mtnc[] = [
 $mtnc[] = [
 	'synchronize_user',
 	'Synchronize user counters',
-	'This will synchronize the post and topic counters for the users.',
+	'This will synchronize counters for the users.',
 	'<b>Attention:</b> pruned posts are normaly not substracted from the post counter. When running this command, the pruned posts will be substracted from the counter and cannot be restored. Proceed?',
 	6
 ];
@@ -470,6 +470,7 @@ $lang['Synchronize_post_counters'] = 'Synchronizing post counters';
 $lang['Synchronize_user_post_counter'] = 'Synchronizing post counter of users';
 $lang['Synchronize_user_topic_counter'] = 'Synchronizing topic counter of users';
 $lang['Synchronize_user_thanks_counter'] = 'Synchronizing thank counter of users';
+$lang['Synchronize_user_topics_watches_counter'] = 'Synchronizing topic watch counter of users';
 $lang['Synchronizing_user_counter'] = 'Updating user %s (%d): %d -&gt; %d';
 // synchronize_mod_state
 $lang['Synchronize_moderators'] = 'Synchronizing moderator status in user table';

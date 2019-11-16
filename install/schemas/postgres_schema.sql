@@ -511,6 +511,7 @@ CREATE TABLE phpbb_users (
    user_posts int4 DEFAULT '0' NOT NULL,
    user_topics int4 DEFAULT '0' NOT NULL,
    user_thanks int4 DEFAULT '0' NOT NULL,
+   user_topic_watches int4 DEFAULT '0' NOT NULL,
    user_new_privmsg int2 DEFAULT '0' NOT NULL,
    user_unread_privmsg int2 DEFAULT '0' NOT NULL,
    user_last_privmsg int4 DEFAULT '0' NOT NULL,

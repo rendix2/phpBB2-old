@@ -61,6 +61,7 @@ $modeTypes = [
     'posts'    => $lang['Sort_Posts'],
     'topics'   => $lang['Sort_Topics'],
     'thanks'   => $lang['Sort_Thanks'],
+    'topics_watches' => $lang['Sort_Topics_watches'],
     'email'    => $lang['Sort_Email'],
     'website'  => $lang['Sort_Website'],
     'topten'   => $lang['Sort_Top_Ten'],
@@ -108,6 +109,7 @@ $template->assignVars(
         'L_POSTS'              => $lang['Posts'],
         'L_TOPICS'             => $lang['Topics'],
         'L_THANKS'             => $lang['Thanks'],
+        'L_TOPICS_WATCHES'     => $lang['Topic_watches'],
         'L_PM'                 => $lang['Private_Message'],
 
         'S_MODE_SELECT'  => $selectSortMode,
@@ -123,6 +125,7 @@ $columns = [
     'user_posts',
     'user_topics',
     'user_thanks',
+    'user_topic_watches',
     'user_regdate',
     'user_from',
     'user_website',
@@ -167,6 +170,11 @@ switch ($mode) {
         break;
     case 'thanks':
         $users->orderBy('user_thanks', $sortOrder)
+            ->limit($board_config['members_per_page'])
+            ->offset($start);
+        break;
+    case 'topics_watches':
+        $users->orderBy('user_topic_watches', $sortOrder)
             ->limit($board_config['members_per_page'])
             ->offset($start);
         break;
@@ -275,15 +283,21 @@ foreach ($users as $i => $user) {
             'POSTS' => $user->user_posts ? $user->user_posts : 0,
             'TOPICS' => $user->user_topics ? $user->user_topics : 0,
             'THANKS' => $user->user_thanks ? $user->user_thanks : 0,
+            'TOPIC_WATCHES' => $user->user_topic_watches ? $user->user_topic_watches : 0,
+
             'AVATAR_IMG' => $posterAvatar,
             'PROFILE_IMG' => $profileImage,
+
             'PROFILE' => $profile,
             'SEARCH_IMG' => $searchImage,
+
             'SEARCH' => $search,
             'PM_IMG' => $pmImage,
             'PM' => $pm,
+
             'EMAIL_IMG' => $emailImage,
             'EMAIL' => $email,
+
             'WWW_IMG' => $wwwImage,
             'WWW' => $www,
 

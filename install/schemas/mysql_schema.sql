@@ -514,6 +514,7 @@ CREATE TABLE phpbb_users (
    user_posts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    user_topics int(8) UNSIGNED DEFAULT '0' NOT NULL,
    user_thanks int(11) UNSIGNED DEFAULT '0' NOT NULL,
+   user_topic_watches int(11) UNSIGNED DEFAULT '0' NOT NULL,
    user_timezone varchar(50) DEFAULT 'Europe/Berlin' NOT NULL,
    user_style tinyint(4),
    user_lang varchar(255),

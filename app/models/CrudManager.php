@@ -53,6 +53,17 @@ class CrudManager extends Manager
     }
 
     /**
+     * @param array $ids
+     * @return Result|int
+     */
+    public function deleteByIds(array $ids)
+    {
+        return $this->deleteFluent()
+            ->where('%n IN %in', $this->getPrimaryKey(), $ids)
+            ->execute();
+    }
+
+    /**
      * @param $primaryKey
      *
      * @return Row|false

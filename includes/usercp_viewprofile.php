@@ -81,6 +81,7 @@ $memberdays = $memberdays->diff($regdate)->days;
 $postsPerDay  = $profileData->user_posts / $memberdays;
 $topicsPerDay = $profileData->user_topics / $memberdays;
 $thanksPerDay = $profileData->user_thanks / $memberdays;
+$topicWatchesPerDay = $profileData->user_topic_watches / $memberdays;
 
 // Get the users percentage of total posts
 if ($profileData->user_posts !== 0) {
@@ -102,9 +103,23 @@ if ($profileData->user_topics !== 0) {
 if ($profileData->user_thanks !== 0) {
     $thanksManager = $container->getService('ThanksManager');
 
-    $percentageThanks = $totalTopics ? min(100, ($profileData->user_topics / $thanksManager->getAllCount()) * 100) : 0;
+    $thanksCount = $thanksManager->getAllCount();
+
+    $percentageThanks = $thanksCount ? min(100, ($profileData->user_thanks / $thanksCount) * 100) : 0;
 } else {
     $percentageThanks = 0;
+}
+
+// Get the users percentage of total thanks
+if ($profileData->user_topic_watches !== 0) {
+    $topicsWatchesCount = dibi::select('COUNT(*)')
+        ->as('count')
+        ->from(Tables::TOPICS_WATCH_TABLE)
+        ->fetchSingle();
+
+    $percentageTopicsWatches = $topicsWatchesCount ? min(100, ($profileData->user_topic_watches / $topicsWatchesCount) * 100) : 0;
+} else {
+    $percentageTopicsWatches = 0;
 }
 
 $avatarImage = '';
@@ -218,6 +233,10 @@ $template->assignVars(
         'THANK_DAY_STATS' => sprintf($lang['User_thank_day_stats'], $thanksPerDay),
         'THANK_PERCENT_STATS' => sprintf($lang['User_post_pct_stats'], $percentageThanks),
 
+        'TOPICS_WATCHES' => $profileData->user_topic_watches,
+        'TOPICS_WATCH_DAY_STATS' => sprintf($lang['User_topic_watch_day_stats'], $topicWatchesPerDay),
+        'TOPICS_WATCHES_PERCENT_STATS' => sprintf($lang['User_post_pct_stats'], $percentageTopicsWatches),
+
         'SEARCH_IMG' => $searchImage,
         'SEARCH' => $search,
 
@@ -249,8 +268,11 @@ $template->assignVars(
         'L_TOTAL_POSTS' => $lang['Total_posts'],
         'L_TOTAL_TOPICS' => $lang['Total_topics'],
         'L_TOTAL_THANKS' => $lang['Total_thanks'],
+        'L_TOTAL_TOPICS_WATCHES' => $lang['Total_topics_watches'],
         'L_SEARCH_USER_POSTS' => sprintf($lang['Search_user_posts'], $profileData->username),
         'L_SEARCH_USER_TOPICS' => sprintf($lang['Search_user_topics'], $profileData->username),
+        'L_SEARCH_USER_THANKS' => sprintf($lang['Search_user_thanks'], $profileData->username),
+        'L_SEARCH_USER_TOPICS_WATCHES' => sprintf($lang['Search_user_topics_watches'], $profileData->username),
         'L_CONTACT' => $lang['Contact'],
         'L_EMAIL_ADDRESS' => $lang['Email_address'],
         'L_EMAIL' => $lang['Email'],
@@ -262,6 +284,8 @@ $template->assignVars(
 
         'U_SEARCH_USER_POSTS' => Session::appendSid('search.php?search_author=' . $u_search_author . '&amp;show_results=posts'),
         'U_SEARCH_USER_TOPICS' => Session::appendSid('search.php?search_author=' . $u_search_author . '&amp;show_results=topics'),
+        'U_SEARCH_USER_THANKS' => Session::appendSid('search.php?search_author=' . $u_search_author . '&amp;show_results=thanks'),
+        'U_SEARCH_USER_TOPICS_WATCHES' => Session::appendSid('search.php?search_author=' . $u_search_author . '&amp;show_results=topics_watches'),
 
         'S_PROFILE_ACTION' => Session::appendSid('profile.php')
     ]

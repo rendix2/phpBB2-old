@@ -504,6 +504,7 @@ switch($mode_id) {
                         'user_posts' => 0,
                         'user_topics' => 0,
                         'user_thanks' => 0,
+                        'user_topic_watches' => 0,
                         'user_attachsig' => 0,
                         'user_allowsmile' => 1,
                         'user_allowhtml' => 1,
@@ -3225,7 +3226,6 @@ switch($mode_id) {
 
 				// Updating new pm counter
 
-				// TODO ADD recount for topics counter!
 				echo('<p class="gen"><b>' . $lang['Synchronize_user_post_counter'] . "</b></p>\n");
 
 				$rows = dibi::select(['u.user_id', 'u.username', 'u.user_posts'])
@@ -3295,6 +3295,8 @@ switch($mode_id) {
                 } else {
                     echo($lang['Nothing_to_do']);
                 }
+
+                // sync user topic counter
 
                 echo('<p class="gen"><b>' . $lang['Synchronize_user_topic_counter'] . "</b></p>\n");
 
@@ -3367,6 +3369,8 @@ switch($mode_id) {
                     echo($lang['Nothing_to_do']);
                 }
 
+                // sync user thanks counter
+
                 echo('<p class="gen"><b>' . $lang['Synchronize_user_thanks_counter'] . "</b></p>\n");
 
                 $usersManager = $container->getService('UsersManager');
@@ -3426,6 +3430,76 @@ switch($mode_id) {
                     echo('<li>' . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row->username), $row->user_id, $row->user_thanks, 0) . "</li>\n");
 
                     $usersManager->updateByPrimary($row->user_id, ['user_thanks' => 0]);
+                }
+
+                if ($list_open) {
+                    echo("</ul></font>\n");
+                    $list_open = false;
+                } else {
+                    echo($lang['Nothing_to_do']);
+                }
+
+                // sync user topic watches counter
+
+                echo('<p class="gen"><b>' . $lang['Synchronize_user_topics_watches_counter'] . "</b></p>\n");
+
+                $usersManager = $container->getService('UsersManager');
+
+                $rows = dibi::select(['u.user_id', 'u.username', 'u.user_topic_watches'])
+                    ->select('COUNT(t.topic_id)')
+                    ->as('new_counter')
+                    ->from(Tables::USERS_TABLE)
+                    ->as('u')
+                    ->innerJoin(Tables::TOPICS_WATCH_TABLE)
+                    ->as('t')
+                    ->on('[u.user_id] = [t.user_id]')
+                    ->where('u.user_id <> %i', ANONYMOUS)
+                    ->groupBy('u.user_id')
+                    ->groupBy('u.username')
+                    ->groupBy('u.user_topic_watches')
+                    ->fetchAll();
+
+                $result_array = [];
+
+                foreach ($rows as $row) {
+                    $result_array[] = $row->user_id;
+
+                    if ($row->new_counter !== $row->user_topic_watches) {
+                        if (!$list_open) {
+                            echo('<p class="gen">' . $lang['Synchronizing_users'] . ":</p>\n");
+                            echo("<font class=\"gen\"><ul>\n");
+                            $list_open = true;
+                        }
+
+                        echo('<li>' . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row->username), $row->user_id, $row->user_topic_watches, $row->new_counter) . "</li>\n");
+
+                        $usersManager->updateByPrimary($row->user_id, ['user_topic_watches' => $row->new_counter]);
+                    }
+                }
+
+                // All other users
+                if (count($result_array)) {
+                    $rows = dibi::select(['user_id', 'username', 'user_topic_watches'])
+                        ->from(Tables::USERS_TABLE)
+                        ->where('[user_id] NOT IN %in', $result_array)
+                        ->where('[user_topic_watches] <> %i', 0)
+                        ->fetchAll();
+                } else {
+                    $rows = dibi::select(['user_id', 'username', 'user_topic_watches'])
+                        ->from(Tables::USERS_TABLE)
+                        ->where('[user_topic_watches] <> %i', 0)
+                        ->fetchAll();
+                }
+
+                foreach ($rows as $row) {
+                    if (!$list_open) {
+                        echo('<p class="gen">' . $lang['Synchronizing_users'] . ":</p>\n");
+                        echo("<font class=\"gen\"><ul>\n");
+                        $list_open = true;
+                    }
+                    echo('<li>' . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row->username), $row->user_id, $row->user_topic_watches, 0) . "</li>\n");
+
+                    $usersManager->updateByPrimary($row->user_id, ['user_topic_watches' => 0]);
                 }
 
                 if ($list_open) {

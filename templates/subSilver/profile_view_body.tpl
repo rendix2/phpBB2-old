@@ -50,6 +50,23 @@
 				</td>
 			</tr>
 
+			<tr>
+				<td valign="top" align="right" nowrap="nowrap">
+					<span class="gen">{L_TOTAL_TOPICS_WATCHES}:&nbsp;</span>
+				</td>
+				<td valign="top">
+					<b>
+						<span class="gen">{TOPICS_WATCHES}</span>
+					</b>
+					<br/>
+					<span class="genmed">[{TOPICS_WATCHES} / {TOPICS_WATCH_DAY_STATS}]</span>
+					<br/>
+					<span class="genmed">
+						<a href="{U_SEARCH_USER_TOPICS_WATCHES}" class="genmed">{L_SEARCH_USER_TOPICS_WATCHES}</a>
+					</span>
+				</td>
+			</tr>
+
 		<tr>
 		  <td valign="middle" align="right" nowrap="nowrap"><span class="gen">{L_LOCATION}:&nbsp;</span></td>
 		  <td><b><span class="gen">{LOCATION}</span></b></td>
