@@ -549,7 +549,7 @@ if (($delete || $pollDelete || $mode === 'delete') && !$confirm) {
 
     if (!($userdata['session_logged_in'])) {
         $message = $lang['thanks_not_logged'];
-        $message .= '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . Session::appendSid("viewtopic.php?" . POST_TOPIC_URL . "=$topicId") . '">', '</a>');
+        $message .= '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topicId") . '">', '</a>');
         message_die(GENERAL_MESSAGE, $message);
     }
 
@@ -562,7 +562,7 @@ if (($delete || $pollDelete || $mode === 'delete') && !$confirm) {
 
     if ($topic_starter_check) {
         $message = $lang['t_starter'];
-        $message .= '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . Session::appendSid("viewtopic.php?" . POST_TOPIC_URL . "=$topicId") . '">', '</a>');
+        $message .= '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topicId") . '">', '</a>');
         message_die(GENERAL_MESSAGE, $message);
     }
 
@@ -598,10 +598,10 @@ if (($delete || $pollDelete || $mode === 'delete') && !$confirm) {
     }
 
     $template->assignVars([
-            'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid("viewtopic.php?" . POST_TOPIC_URL . "=$topicId") . '">']
+            'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topicId") . '">']
     );
 
-    $message .= '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . Session::appendSid("viewtopic.php?" . POST_TOPIC_URL . "=$topicId") . '">', '</a>');
+    $message .= '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topicId") . '">', '</a>');
 
     message_die(GENERAL_MESSAGE, $message);
 } elseif ($mode === 'vote') {

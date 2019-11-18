@@ -89,10 +89,8 @@ class attach_posting extends attach_parent
             return;
         }
 
-        if ($confirm && ($delete || $mode === 'delete' || $mode === 'editpost') && ($is_auth['auth_delete'] || $is_auth['auth_mod'])) {
-            if ($postId) {
-                delete_attachment([$postId]);
-            }
+        if ($confirm && ($delete || $mode === 'delete' || $mode === 'editpost') && ($is_auth['auth_delete'] || $is_auth['auth_mod']) && $postId) {
+            delete_attachment([$postId]);
         }
 
         $this->display_attachment_bodies();

@@ -548,7 +548,7 @@ $replyTopicUrl        = Session::appendSid('posting.php?mode=reply&amp;' . POST_
 $viewForumUrl         = Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forumId");
 $viewPreviousTopicUrl = Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topicId&amp;view=previous");
 $viewNextTopicUrl     = Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topicId&amp;view=next");
-$thank_topic_url      = Session::appendSid("posting.php?mode=thank&amp;" . POST_TOPIC_URL . "=$topicId");
+$thank_topic_url      = Session::appendSid('posting.php?mode=thank&amp;' . POST_TOPIC_URL . "=$topicId");
 
 $replyImage = $forum_topic_data->forum_status === FORUM_LOCKED || $forum_topic_data->topic_status === TOPIC_LOCKED ? $images['reply_locked'] : $images['reply_new'];
 $reply_alt  = $forum_topic_data->forum_status === FORUM_LOCKED || $forum_topic_data->topic_status === TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['Reply_to_topic'];
@@ -874,7 +874,7 @@ if ($show_thanks === FORUM_THANKABLE) {
         $thanksDate = create_date($board_config['default_dateformat'], $thank['thanks_time'], $board_config['board_timezone']);
 
         // Make thanker profile link
-        $profileLink = Session::appendSid("profile.php?mode=viewprofile&amp;" . POST_USERS_URL . "=$thank->user_id");
+        $profileLink = Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$thank->user_id");
 
         $thanksString .= '<a href="' . $profileLink . '">' . $thank['username'] . '</a> (' . $thanksDate . '), ';
 
@@ -892,7 +892,7 @@ if ($show_thanks === FORUM_THANKABLE) {
         ->where('[topic_id] = %i', $topicId)
         ->fetch();
 
-    $thanksString .= "".$lang['thanks_to']." $author->username ".$lang['thanks_end']."";
+    $thanksString .= '' . $lang['thanks_to']." $author->username ". $lang['thanks_end']. '';
 
     // Create button switch
     if ($userdata['user_id'] !== $author->user_id && !$thanked) {

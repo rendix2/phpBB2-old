@@ -572,12 +572,8 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
         $auth_access_count[$row->forum_id]++;
     }
 
-    if ($mode === 'user') {
-        if ($ug_info[0]->user_level === ADMIN && $ug_info[0]->user_id !== ANONYMOUS) {
-            $is_admin = 1;
-        } else {
-            $is_admin = 0;
-        }
+    if (($mode === 'user') && $ug_info[0]->user_level === ADMIN && $ug_info[0]->user_id !== ANONYMOUS) {
+        $is_admin = 1;
     } else {
         $is_admin = 0;
     }

@@ -658,7 +658,7 @@ function check_authorisation($die = true)
                 $allow_access = false;
             } else {
                 if ($row->user_acp_password) {
-                    $allow_access = password_verify($board_password, $row->user_password) && $row->user_active && $row->user_level === ADMIN;
+                    $allow_access = password_verify($board_password, $row->user_acp_password) && $row->user_active && $row->user_level === ADMIN;
                 } else {
                     $allow_access = password_verify($board_password, $row->user_password) && $row->user_active && $row->user_level === ADMIN;
                 }

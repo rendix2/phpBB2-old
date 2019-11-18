@@ -160,10 +160,8 @@ if ($mode === 'edit') {// OK, lets edit this ranks
 	//
 	// The rank image has to be a jpg, gif or png
 	//
-	if ($rankImage !== '') {
-		if (!preg_match("/(\.gif|\.png|\.jpg)$/is", $rankImage)) {
-			$rankImage = '';
-		}
+	if (($rankImage !== '') && !preg_match("/(\.gif|\.png|\.jpg)$/is", $rankImage)) {
+		$rankImage = '';
 	}
 
 	$cache = new Cache($storage, Tables::RANKS_TABLE);

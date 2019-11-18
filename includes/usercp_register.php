@@ -761,11 +761,9 @@ PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme,
 
 make_jumpbox('viewforum.php');
 
-if ($mode === 'editprofile') {
-	if ($userId !== $userdata['user_id']) {
-		$error = true;
-		$errorMessage = $lang['Wrong_Profile'];
-	}
+if (($mode === 'editprofile') && $userId !== $userdata['user_id']) {
+    $error = true;
+    $errorMessage = $lang['Wrong_Profile'];
 }
 
 if (isset($_POST['avatargallery']) && !$error) {
@@ -1017,27 +1015,33 @@ if (isset($_POST['avatargallery']) && !$error) {
 	// of the templates to 'fake' an IF...ELSE...ENDIF solution
 	// it works well :)
 	//
-    if ($mode !== 'register') {
-        if ($userdata['user_allowavatar'] && ($board_config['allow_avatar_upload'] || $board_config['allow_avatar_local'] || $board_config['allow_avatar_remote'])) {
-			$template->assignBlockVars('switch_avatar_block', [] );
+    if (
+        $mode !== 'register' &&
+        $userdata['user_allowavatar'] &&
+            (
+                $board_config['allow_avatar_upload'] ||
+                $board_config['allow_avatar_local'] ||
+                $board_config['allow_avatar_remote']
+            )
+    ) {
+        $template->assignBlockVars('switch_avatar_block', [] );
 
-            if ($board_config['allow_avatar_upload'] && file_exists(@phpbb_realpath('.' . $sep . $board_config['avatar_path']))) {
-                if ($form_enctype !== '') {
-                    $template->assignBlockVars('switch_avatar_block.switch_avatar_local_upload', []);
-                }
-
-                $template->assignBlockVars('switch_avatar_block.switch_avatar_remote_upload', []);
+        if ($board_config['allow_avatar_upload'] && file_exists(@phpbb_realpath('.' . $sep . $board_config['avatar_path']))) {
+            if ($form_enctype !== '') {
+                $template->assignBlockVars('switch_avatar_block.switch_avatar_local_upload', []);
             }
 
-            if ($board_config['allow_avatar_remote']) {
-                $template->assignBlockVars('switch_avatar_block.switch_avatar_remote_link', []);
-            }
+            $template->assignBlockVars('switch_avatar_block.switch_avatar_remote_upload', []);
+        }
 
-            if ($board_config['allow_avatar_local'] && file_exists(@phpbb_realpath('.' . $sep . $board_config['avatar_gallery_path']))) {
-                $template->assignBlockVars('switch_avatar_block.switch_avatar_local_gallery', []);
-            }
-		}
-	}
+        if ($board_config['allow_avatar_remote']) {
+            $template->assignBlockVars('switch_avatar_block.switch_avatar_remote_link', []);
+        }
+
+        if ($board_config['allow_avatar_local'] && file_exists(@phpbb_realpath('.' . $sep . $board_config['avatar_gallery_path']))) {
+            $template->assignBlockVars('switch_avatar_block.switch_avatar_local_gallery', []);
+        }
+    }
 }
 
 $template->pparse('body');

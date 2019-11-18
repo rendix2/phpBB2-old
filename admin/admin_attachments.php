@@ -299,8 +299,8 @@ if ($mode === 'manage') {
     $yes_no_switches = ['disable_mod', 'allow_pm_attach', 'allow_ftp_upload', 'attachment_topic_review', 'display_order', 'show_apcp', 'ftp_pasv_mode'];
 
     foreach ($yes_no_switches as $variable) {
-        eval("\$" . $variable . "_yes = ( \$new_attach['" . $variable . "'] != '0' ) ? 'checked=\"checked\"' : '';");
-        eval("\$" . $variable . "_no = ( \$new_attach['" . $variable . "'] == '0' ) ? 'checked=\"checked\"' : '';");
+        eval('$' . $variable . "_yes = ( \$new_attach['" . $variable . "'] != '0' ) ? 'checked=\"checked\"' : '';");
+        eval('$' . $variable . "_no = ( \$new_attach['" . $variable . "'] == '0' ) ? 'checked=\"checked\"' : '';");
     }
 
     if (!function_exists('ftp_connect')) {
@@ -471,12 +471,10 @@ if ($mode === 'shadow') {
         ->orderBy('attach_id')
         ->fetchAll();
 
-    $i = 0;
     foreach ($rows as $row) {
-        $table_attachments['attach_id'][$i] = (int)$row->attach_id;
-        $table_attachments['physical_filename'][$i] = basename($row->physical_filename);
-        $table_attachments['comment'][$i] = $row->comment;
-        $i++;
+        $table_attachments['attach_id'][] = (int)$row->attach_id;
+        $table_attachments['physical_filename'][] = basename($row->physical_filename);
+        $table_attachments['comment'][] = $row->comment;
     }
 
     $assign_attachments = dibi::select('attach_id')
@@ -493,57 +491,52 @@ if ($mode === 'shadow') {
     // Now determine the needed Informations
 
     // Go through all Files on the filespace and see if all are stored within the DB
-    for ($i = 0; $i < count($file_attachments); $i++) {
+    foreach ($file_attachments as &$fileAttachment) {
         if (count($table_attachments['attach_id']) > 0) {
-            if ($file_attachments[$i] !== '') {
-                if (!in_array(trim($file_attachments[$i]), $table_attachments['physical_filename'], true)) {
-                    $shadow_attachments[] = trim($file_attachments[$i]);
-                    // Delete this file from the file_attachments to not have double assignments in next steps
-                    $file_attachments[$i] = '';
-                }
+            if ($fileAttachment !== '' && !in_array(trim($fileAttachment), $table_attachments['physical_filename'], true)) {
+                $shadow_attachments[] = trim($fileAttachment);// Delete this file from the file_attachments to not have double assignments in next steps
+                $fileAttachment = '';
             }
-        } else {
-            if ($file_attachments[$i] !== '') {
-                $shadow_attachments[] = trim($file_attachments[$i]);
-                // Delete this file from the file_attachments to not have double assignments in next steps
-                $file_attachments[$i] = '';
-            }
+        } elseif ($fileAttachment !== '') {
+            $shadow_attachments[] = trim($fileAttachment);
+            // Delete this file from the file_attachments to not have double assignments in next steps
+            $fileAttachment = '';
         }
     }
 
+    unset($fileAttachment);
+
     // Now look for Attachment ID's defined for posts or topics but not defined at the Attachments Description Table
-    for ($i = 0; $i < count($assign_attachments); $i++) {
-        if (!in_array($assign_attachments[$i], $table_attachments['attach_id'], true)) {
-            $shadow_row['attach_id'][] = $assign_attachments[$i];
-            $shadow_row['physical_filename'][] = $assign_attachments[$i];
+    foreach ($assign_attachments as $assignAttachment) {
+        if (!in_array($assignAttachment, $table_attachments['attach_id'], true)) {
+            $shadow_row['attach_id'][] = $assignAttachment;
+            $shadow_row['physical_filename'][] = $assignAttachment;
             $shadow_row['comment'][] = $lang['Empty_file_entry'];
         }
     }
 
     // Go through the Database and get those Files not stored at the Filespace
-    for ($i = 0; $i < count($table_attachments['attach_id']); $i++) {
-        if ($table_attachments['physical_filename'][$i] !== '') {
-            if (!in_array(trim($table_attachments['physical_filename'][$i]), $file_attachments, true)) {
-                $shadow_row['attach_id'][] = $table_attachments['attach_id'][$i];
-                $shadow_row['physical_filename'][] = trim($table_attachments['physical_filename'][$i]);
-                $shadow_row['comment'][] = $table_attachments['comment'][$i];
+    foreach ($table_attachments['attach_id'] as $i => $tableAttachment) {
+        $inArray = in_array(trim($table_attachments['physical_filename'][$i]), $file_attachments, true);
 
-                // Delete this entry from the table_attachments, to not interfere with the next step
-                $table_attachments['attach_id'][$i] = 0;
-                $table_attachments['physical_filename'][$i] = '';
-                $table_attachments['comment'][$i] = '';
-            }
+        if (($table_attachments['physical_filename'][$i] !== '') && !$inArray) {
+            $shadow_row['attach_id'][] = $table_attachments['attach_id'][$i];
+            $shadow_row['physical_filename'][] = trim($table_attachments['physical_filename'][$i]);
+            $shadow_row['comment'][] = $table_attachments['comment'][$i];
+
+            // Delete this entry from the table_attachments, to not interfere with the next step
+            $table_attachments['attach_id'][$i] = 0;
+            $table_attachments['physical_filename'][$i] = '';
+            $table_attachments['comment'][$i] = '';
         }
     }
 
     // Now look at the missing posts and PM's
-    for ($i = 0; $i < count($table_attachments['attach_id']); $i++) {
-        if ($table_attachments['attach_id'][$i]) {
-            if (!entry_exists($table_attachments['attach_id'][$i])) {
-                $shadow_row['attach_id'][] = $table_attachments['attach_id'][$i];
-                $shadow_row['physical_filename'][] = trim($table_attachments['physical_filename'][$i]);
-                $shadow_row['comment'][] = $table_attachments['comment'][$i];
-            }
+    foreach ($table_attachments['attach_id'] as $i => $tableAttachment) {
+        if ($table_attachments['attach_id'][$i] && !entry_exists($table_attachments['attach_id'][$i])) {
+            $shadow_row['attach_id'][] = $table_attachments['attach_id'][$i];
+            $shadow_row['physical_filename'][] = trim($table_attachments['physical_filename'][$i]);
+            $shadow_row['comment'][] = $table_attachments['comment'][$i];
         }
     }
 }
@@ -559,7 +552,7 @@ foreach ($shadow_attachments as $shadow_attachment) {
     );
 }
 
-for ($i = 0; $i < count($shadow_row['attach_id']); $i++) {
+foreach ($shadow_row['attach_id'] as $i => $shadowRow) {
     $template->assignBlockVars('table_shadow_row', [
             'ATTACH_ID' => $shadow_row['attach_id'][$i],
             'ATTACH_FILENAME' => basename($shadow_row['physical_filename'][$i]),
@@ -898,8 +891,6 @@ if ($mode === 'sync') {
 
     @flush();
     die('<br /><br /><br />' . $lang['Attach_sync_finished'] . '<br /><br />' . $info);
-
-    exit;
 }
 
 // Quota Limit Settings

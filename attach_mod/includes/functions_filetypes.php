@@ -144,11 +144,8 @@ function image_getdimension($file)
             $error = true;
         }
 
-        if (!$error) {
-            if (($info_byte & 8) !== 0) {
-                $error = true;
-            }
-
+        if (!$error && ($info_byte & 8) !== 0) {
+            $error = true;
         }
     } else {
         $error = true;

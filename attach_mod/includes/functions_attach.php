@@ -273,7 +273,7 @@ function ftp_file($source_file, $dest_file, $mimetype, $disable_error_mode = fal
 
     // Binary or Ascii ?
     $mode = FTP_BINARY;
-    if (preg_match("/text/i", $mimetype) || preg_match("/html/i", $mimetype)) {
+    if (preg_match('/text/i', $mimetype) || preg_match('/html/i', $mimetype)) {
         $mode = FTP_ASCII;
     }
 
@@ -318,7 +318,7 @@ function thumbnail_exists($filename)
         $file_listing = @ftp_rawlist($conn_id, $filename);
 
         for ($i = 0, $size = count($file_listing); $i < $size; $i++) {
-            if (preg_match("#([-d])[rwxst-]{9}.* ([0-9]*) ([a-zA-Z]+[0-9: ]*[0-9]) ([0-9]{2}:[0-9]{2}) (.+)#",
+            if (preg_match('#([-d])[rwxst-]{9}.* ([0-9]*) ([a-zA-Z]+[0-9: ]*[0-9]) ([0-9]{2}:[0-9]{2}) (.+)#',
                 $file_listing[$i], $regs)) {
                 if ($regs[1] === 'd') {
                     $dirinfo[0] = 1;    // Directory === 1

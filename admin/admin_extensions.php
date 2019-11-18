@@ -172,7 +172,7 @@ if ($submit && $mode === 'extensions') {
     }
 
     if (!$error) {
-        $message = $lang['Attach_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_extensions.php?mode=extensions') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid("index.php?pane=right") . '">', '</a>');
+        $message = $lang['Attach_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_extensions.php?mode=extensions') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
         message_die(GENERAL_MESSAGE, $message);
     }
@@ -195,8 +195,8 @@ if ($mode === 'extensions') {
             'L_CANCEL' => $lang['Cancel'],
             'L_SUBMIT' => $lang['Submit'],
 
-            'S_CANCEL_ACTION' => Session::appendSid("admin_extensions.php?mode=extensions"),
-            'S_ATTACH_ACTION' => Session::appendSid("admin_extensions.php?mode=extensions")
+            'S_CANCEL_ACTION' => Session::appendSid('admin_extensions.php?mode=extensions'),
+            'S_ATTACH_ACTION' => Session::appendSid('admin_extensions.php?mode=extensions')
         ]
     );
 
@@ -262,15 +262,15 @@ if ($submit && $mode === 'groups') {
 
     $allowed_list = [];
 
-    for ($i = 0; $i < count($group_allowed_list); $i++) {
-        for ($j = 0; $j < count($group_change_list); $j++) {
-            if ($group_allowed_list[$i] === $group_change_list[$j]) {
+    foreach ($group_allowed_list as $groupAllowedValue) {
+        foreach ($group_change_list as $groupChangedValue) {
+            if ($groupAllowedValue === $groupChangedValue) {
                 $allowed_list[$j] = 1;
             }
         }
     }
 
-    for ($i = 0; $i < count($group_change_list); $i++) {
+    foreach ($group_change_list as $groupChangedValue) {
         $allowed = isset($allowed_list[$i]);
 
         $filesize_list[$i] = ($size_select_list[$i] === 'kb') ? round($filesize_list[$i] * 1024) : (($size_select_list[$i] === 'mb') ? round($filesize_list[$i] * 1048576) : $filesize_list[$i]);
@@ -285,7 +285,7 @@ if ($submit && $mode === 'groups') {
         ];
 
         dibi::update(Tables::ATTACH_EXTENSION_GROUPS_TABLE, $sql_ary)
-            ->where('[group_id] = %i', $group_change_list[$i])
+            ->where('[group_id] = %i', $groupChangedValue)
             ->execute();
     }
 
@@ -350,7 +350,7 @@ if ($submit && $mode === 'groups') {
     }
 
     if (!$error) {
-        $message = $lang['Attach_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid("admin_extensions.php?mode=groups") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid("index.php?pane=right") . '">', '</a>');
+        $message = $lang['Attach_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_extensions.php?mode=groups') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
         message_die(GENERAL_MESSAGE, $message);
     }
@@ -397,8 +397,8 @@ if ($mode === 'groups') {
             'S_FILESIZE' => size_select('add_size_select', $size),
             'S_ADD_DOWNLOAD_MODE' => download_select('add_download_mode'),
             'S_SELECT_CAT' => category_select('add_category'),
-            'S_CANCEL_ACTION' => Session::appendSid("admin_extensions.php?mode=groups"),
-            'S_ATTACH_ACTION' => Session::appendSid("admin_extensions.php?mode=groups")
+            'S_CANCEL_ACTION' => Session::appendSid('admin_extensions.php?mode=groups'),
+            'S_ATTACH_ACTION' => Session::appendSid('admin_extensions.php?mode=groups')
         ]
     );
 
@@ -435,7 +435,7 @@ if ($mode === 'groups') {
 
                 'MAX_FILESIZE' => $extension_group->max_filesize,
                 'CAT_BOX' => ($viewgroup === $extension_group->group_id) ? $lang['Decollapse'] : $lang['Collapse'],
-                'U_VIEWGROUP' => ($viewgroup === $extension_group->group_id) ? Session::appendSid("admin_extensions.php?mode=groups") : Session::appendSid("admin_extensions.php?mode=groups&" . POST_GROUPS_URL . "=" . $extension_group->group_id),
+                'U_VIEWGROUP' => ($viewgroup === $extension_group->group_id) ? Session::appendSid('admin_extensions.php?mode=groups') : Session::appendSid('admin_extensions.php?mode=groups&' . POST_GROUPS_URL . '=' . $extension_group->group_id),
                 'U_FORUM_PERMISSIONS' => Session::appendSid("admin_extensions.php?mode=$mode&amp;e_mode=perm&amp;e_group=" . $extension_group->group_id)
             ]
         );
@@ -516,7 +516,7 @@ if ($submit && $mode === 'forbidden') {
     }
 
     if (!$error) {
-        $message = $lang['Attach_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid("admin_extensions.php?mode=forbidden") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid("index.php?pane=right") . '">', '</a>');
+        $message = $lang['Attach_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_extensions.php?mode=forbidden') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
         message_die(GENERAL_MESSAGE, $message);
     }

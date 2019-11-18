@@ -201,7 +201,7 @@ function collect_attachments()
         }
 
         for ($i = 0; $i < count($file_listing); $i++) {
-            if (preg_match("#([-d])[rwxst-]{9}.* ([0-9]*) ([a-zA-Z]+[0-9: ]*[0-9]) ([0-9]{2}:[0-9]{2}) (.+)#", $file_listing[$i], $regs)) {
+            if (preg_match('#([-d])[rwxst-]{9}.* ([0-9]*) ([a-zA-Z]+[0-9: ]*[0-9]) ([0-9]{2}:[0-9]{2}) (.+)#', $file_listing[$i], $regs)) {
                 if ($regs[1] === 'd') {
                     $dirinfo[0] = 1;    // Directory === 1
                 }
@@ -253,7 +253,7 @@ function get_formatted_dirsize()
         }
 
         for ($i = 0; $i < count($file_listing); $i++) {
-            if (preg_match("#([-d])[rwxst-]{9}.* ([0-9]*) ([a-zA-Z]+[0-9: ]*[0-9]) ([0-9]{2}:[0-9]{2}) (.+)#", $file_listing[$i], $regs)) {
+            if (preg_match('#([-d])[rwxst-]{9}.* ([0-9]*) ([a-zA-Z]+[0-9: ]*[0-9]) ([0-9]{2}:[0-9]{2}) (.+)#', $file_listing[$i], $regs)) {
                 if ($regs[1] === 'd') {
                     $dirinfo[0] = 1;    // Directory === 1
                 }
