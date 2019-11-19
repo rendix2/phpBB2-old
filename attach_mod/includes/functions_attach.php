@@ -28,7 +28,7 @@ function base64_pack($number)
 
     if ($number > 4096) {
         return;
-    } else if ($number < $base) {
+    } elseif ($number < $base) {
         return $chars[$number];
     }
 
@@ -86,6 +86,7 @@ function auth_pack($auth_array)
 
     foreach ($auth_array as $authValue) {
         $val = base64_pack((int)$authValue);
+
         if (strlen($val) === 1 && !$one_char) {
             $auth_cache .= $one_char_encoding;
             $one_char = true;
@@ -112,10 +113,9 @@ function auth_unpack($auth_cache)
 
     $auth = [];
     $auth_len = 1;
+    $cacheLength = strlen($auth_cache);
 
-    $condition = $pos < strlen($auth_cache);
-
-    for ($pos = 0; $condition; $pos += $auth_len) {
+    for ($pos = 0; $pos < $cacheLength; $pos += $auth_len) {
         $forum_auth = substr($auth_cache, $pos, 1);
 
         if ($forum_auth === $one_char_encoding) {
@@ -156,6 +156,7 @@ function is_forum_authed($auth_cache, $check_forum_id)
 
     for ($pos = 0; $condition; $pos += $auth_len) {
         $forum_auth = substr($auth_cache, $pos, 1);
+
         if ($forum_auth === $one_char_encoding) {
             $auth_len = 1;
             continue;
@@ -167,6 +168,7 @@ function is_forum_authed($auth_cache, $check_forum_id)
 
         $forum_auth = substr($auth_cache, $pos, $auth_len);
         $forum_id = (int)base64_unpack($forum_auth);
+
         if ($forum_id === $check_forum_id) {
             return true;
         }
@@ -284,7 +286,7 @@ function ftp_file($source_file, $dest_file, $mimetype, $disable_error_mode = fal
         if (!empty($error_msg)) {
             $error_msg .= '<br />';
         }
-        $error_msg = sprintf($lang['Ftp_error_upload'], $attach_config['ftp_path']) . '<br />';
+        $error_msg .= sprintf($lang['Ftp_error_upload'], $attach_config['ftp_path']) . '<br />';
         @ftp_close($conn_id);
         return false;
     }
@@ -407,8 +409,6 @@ function get_attachments_from_post($post_id_array)
         $post_id_array[] = $post_id;
     }
 
-    //$post_id_array = implode(', ', array_map('intval', $post_id_array));
-
     if ($post_id_array === '') {
         return $attachments;
     }
@@ -447,8 +447,6 @@ function get_attachments_from_pm($privmsgs_id_array)
         $privmsgs_id_array = [];
         $privmsgs_id_array[] = $privmsgs_id;
     }
-
-    //$privmsgs_id_array = implode(', ', array_map('intval', $privmsgs_id_array));
 
     if ($privmsgs_id_array === '') {
         return $attachments;
@@ -495,8 +493,6 @@ function get_total_attach_pm_filesize($direction, $user_id)
 {
     if ($direction !== 'from_user' && $direction !== 'to_user') {
         return 0;
-    } else {
-        $user_sql = ($direction === 'from_user') ? '(a.user_id_1 = ' . (int)$user_id . ')' : '(a.user_id_2 = ' . (int)$user_id . ')';
     }
 
     $attach_id = dibi::select(['a.attach_id'])
