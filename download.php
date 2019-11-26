@@ -104,7 +104,7 @@ function send_file_to_browser($attachment, $upload_dir)
 
     if (!(int)$attach_config['allow_ftp_upload']) {
         if (@!file_exists(@amod_realpath($filename))) {
-            message_die(GENERAL_ERROR, $lang['Error_no_attachment'] . '<br /><br /><b>404 File Not Found:</b> The File <i>' . $filename . "</i> does not exist.");
+            message_die(GENERAL_ERROR, $lang['Error_no_attachment'] . '<br /><br /><b>404 File Not Found:</b> The File <i>' . $filename . '</i> does not exist.');
         } else {
             $gotit = true;
         }
@@ -183,7 +183,7 @@ function send_file_to_browser($attachment, $upload_dir)
         @unlink($tmp_filename);
 
         $mode = FTP_BINARY;
-        if ((preg_match("/text/i", $attachment->mimetype)) || (preg_match("/html/i", $attachment->mimetype))) {
+        if ((preg_match('/text/i', $attachment->mimetype)) || (preg_match('/html/i', $attachment->mimetype))) {
             $mode = FTP_ASCII;
         }
 

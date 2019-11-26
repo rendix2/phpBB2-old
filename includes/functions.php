@@ -659,10 +659,8 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 	// Get SQL error if we are debugging. Do this as soon as possible to prevent 
 	// subsequent queries from overwriting the status of sql_error()
 	//
-    if (DEBUG && ($msg_code === GENERAL_ERROR || $msg_code === CRITICAL_ERROR)) {
-        if ($err_line !== '' && $err_file !== '') {
-            $debug_text .= '<br /><br />Line : ' . $err_line . '<br />File : ' . basename($err_file);
-        }
+    if (DEBUG && ($msg_code === GENERAL_ERROR || $msg_code === CRITICAL_ERROR) && $err_line !== '' && $err_file !== '') {
+        $debug_text .= '<br /><br />Line : ' . $err_line . '<br />File : ' . basename($err_file);
     }
 
     if (empty($userdata) && ($msg_code === GENERAL_MESSAGE || $msg_code === GENERAL_ERROR)) {
@@ -748,10 +746,8 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 	// prevents debug info being output for general messages should DEBUG be
 	// set true by accident (preventing confusion for the end user!)
     //
-    if (DEBUG && ($msg_code === GENERAL_ERROR || $msg_code === CRITICAL_ERROR)) {
-        if ($debug_text !== '') {
-            $msg_text .= $debug_text . '<br /><br /><b><u>DEBUG MODE</u></b>';
-        }
+    if (DEBUG && ($msg_code === GENERAL_ERROR || $msg_code === CRITICAL_ERROR) && $debug_text !== '') {
+        $msg_text .= $debug_text . '<br /><br /><b><u>DEBUG MODE</u></b>';
     }
 
     if ($msg_code !== CRITICAL_ERROR) {

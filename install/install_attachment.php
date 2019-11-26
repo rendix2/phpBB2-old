@@ -21,7 +21,7 @@ require_once $phpbb_root_path . 'common.php';
 init_userprefs(PAGE_INDEX);
 
 if (Config::DBMS === 'oracle' || Config::DBMS === 'msaccess') {
-    message_die(GENERAL_ERROR, "This Mod does not support Oracle and MsAccess Databases.");
+    message_die(GENERAL_ERROR, 'This Mod does not support Oracle and MsAccess Databases.');
 }
 
 /**
@@ -37,13 +37,13 @@ function query_($sql_query)
     $sql_count = count($sql_query);
 
     for ($i = 0; $i < $sql_count; $i++) {
-        echo "Running :: " . $sql_query[$i];
+        echo 'Running :: ' . $sql_query[$i];
         flush();
 
         if (!($result = $db->sql_query($sql_query[$i]))) {
             $errored = true;
             $error = $db->sql_error();
-            echo " -> <b>FAILED</b> ---> <u>" . $error['message'] . "</u><br /><br />\n\n";
+            echo ' -> <b>FAILED</b> ---> <u>' . $error['message'] . "</u><br /><br />\n\n";
         } else {
             echo " -> <b><span class=\"ok\">COMPLETED</span></b><br /><br />\n\n";
         }
@@ -59,36 +59,36 @@ function query_($sql_query)
 require_once($phpbb_root_path . 'includes/sql_parse.php');
 
 $available_dbms = [
-    "mysql" => [
-        "SCHEMA" => "attach_mysql",
-        "DELIM" => ";",
-        "DELIM_BASIC" => ";",
-        "COMMENTS" => "remove_remarks"
+    'mysql'      => [
+        'SCHEMA'      => 'attach_mysql',
+        'DELIM'       => ';',
+        'DELIM_BASIC' => ';',
+        'COMMENTS'    => 'remove_remarks'
     ],
-    "mysql4" => [
-        "SCHEMA" => "attach_mysql",
-        "DELIM" => ";",
-        "DELIM_BASIC" => ";",
-        "COMMENTS" => "remove_remarks"
+    'mysql4'     => [
+        'SCHEMA'      => 'attach_mysql',
+        'DELIM'       => ';',
+        'DELIM_BASIC' => ';',
+        'COMMENTS'    => 'remove_remarks'
     ],
-    "mssql" => [
-        "SCHEMA" => "attach_mssql",
-        "DELIM" => "GO",
-        "DELIM_BASIC" => ";",
-        "COMMENTS" => "remove_comments"
+    'mssql'      => [
+        'SCHEMA'      => 'attach_mssql',
+        'DELIM'       => 'GO',
+        'DELIM_BASIC' => ';',
+        'COMMENTS'    => 'remove_comments'
     ],
-    "mssql-odbc" => [
-        "SCHEMA" => "attach_mssql",
-        "DELIM" => "GO",
-        "DELIM_BASIC" => ";",
-        "COMMENTS" => "remove_comments"
+    'mssql-odbc' => [
+        'SCHEMA'      => 'attach_mssql',
+        'DELIM'       => 'GO',
+        'DELIM_BASIC' => ';',
+        'COMMENTS'    => 'remove_comments'
     ],
-    "postgres" => [
-        "LABEL" => "PostgreSQL 7.x",
-        "SCHEMA" => "attach_postgres",
-        "DELIM" => ";",
-        "DELIM_BASIC" => ";",
-        "COMMENTS" => "remove_comments"
+    'postgres'   => [
+        'LABEL'       => 'PostgreSQL 7.x',
+        'SCHEMA'      => 'attach_postgres',
+        'DELIM'       => ';',
+        'DELIM_BASIC' => ';',
+        'COMMENTS'    => 'remove_comments'
     ]
 ];
 
@@ -182,7 +182,7 @@ $sql_query = @fread(@fopen($dbms_schema, 'rb'), @filesize($dbms_schema));
 $sql_query = preg_replace('/phpbb_/', $table_prefix, $sql_query);
 
 if (strpos($sql_query, 'attach_quota') === false) {
-    die("<br />PLEASE UPLOAD THE CORRECT DATABASE SCHEMA FILES...<br />If you have done so, run the Installer again.<br />");
+    die('<br />PLEASE UPLOAD THE CORRECT DATABASE SCHEMA FILES...<br />If you have done so, run the Installer again.<br />');
 }
 
 // Make an additional check for the files directory to be writable
@@ -218,13 +218,13 @@ $errored = false;
 // from update_to_rc3.php
 //
 for ($i = 0; $i < $sql_count; $i++) {
-    echo "Running :: " . $sql_query[$i];
+    echo 'Running :: ' . $sql_query[$i];
     flush();
 
     if (!($result = dibi::query($sql_query[$i]))) {
         $errored = true;
         //$error = $db->sql_error();
-        echo " -> <b>FAILED</b> ---> <u>" . $error['message'] . "</u><br /><br />\n\n";
+        echo ' -> <b>FAILED</b> ---> <u>' . $error['message'] . "</u><br /><br />\n\n";
     } else {
         echo " -> <b><span class=\"ok\">COMPLETED</span></b><br /><br />\n\n";
     }
@@ -236,7 +236,7 @@ $sql_query = @fread(@fopen($dbms_basic, 'rb'), @filesize($dbms_basic));
 $sql_query = preg_replace('/phpbb_/', $table_prefix, $sql_query);
 
 if ((strstr($sql_query, 'attach_config')) && (strstr($sql_query, 'attach_desc'))) {
-    die("<br />PLEASE UPLOAD THE CORRECT DATABASE SCHEMA FILES...<br />If you have done so, run the Installer again.<br />");
+    die('<br />PLEASE UPLOAD THE CORRECT DATABASE SCHEMA FILES...<br />If you have done so, run the Installer again.<br />');
 }
 
 $sql_query = $remove_remarks($sql_query);
@@ -245,13 +245,13 @@ $sql_query = split_sql_file($sql_query, $delimiter_basic);
 $sql_count = count($sql_query);
 
 for ($i = 0; $i < $sql_count; $i++) {
-    echo "Running :: " . $sql_query[$i];
+    echo 'Running :: ' . $sql_query[$i];
     flush();
 
     if (!($result = $db->sql_query($sql_query[$i]))) {
         $errored = true;
         $error = $db->sql_error();
-        echo " -> <b>FAILED</b> ---> <u>" . $error['message'] . "</u><br /><br />\n\n";
+        echo ' -> <b>FAILED</b> ---> <u>' . $error['message'] . "</u><br /><br />\n\n";
     } else {
         echo " -> <b><span class=\"ok\">COMPLETED</span></b><br /><br />\n\n";
     }
@@ -261,15 +261,15 @@ for ($i = 0; $i < $sql_count; $i++) {
 $message = '';
 
 if ($errored) {
-    $message .= "<br />Some queries failed.<br />This is sometimes due to tables already there (from a previous installation), therefore please READ the errors and warnings and use common sense in interpreting them. Support is offered at <a href=\"http://www.opentools.de/\" target=\"_blank\">opentools.de</a> for questions you might have regarding those errors/warnings.";
+    $message .= '<br />Some queries failed.<br />This is sometimes due to tables already there (from a previous installation), therefore please READ the errors and warnings and use common sense in interpreting them. Support is offered at <a href="http://www.opentools.de/" target="_blank">opentools.de</a> for questions you might have regarding those errors/warnings.';
 } else {
-    $message .= "<br />Attachment Mod Tables generated successfully.";
+    $message .= '<br />Attachment Mod Tables generated successfully.';
 }
 
 echo "\n<br />\n<b>COMPLETE!</b><br />\n";
-echo $message . "<br />";
+echo $message . '<br />';
 echo "<br /><b>NOW REMOVE THE INSTALL AND CONTRIB DIRECTORIES</b><br />\n";
-echo "</body>";
-echo "</html>";
+echo '</body>';
+echo '</html>';
 
 ?>

@@ -168,10 +168,8 @@ class attach_parent
         }
 
         // Never exceed the complete Attachment Upload Quota
-        if ($quota_type === QUOTA_UPLOAD_LIMIT) {
-            if ($attach_config[$limit_type] > $attach_config[$default]) {
-                $attach_config[$limit_type] = $attach_config[$default];
-            }
+        if (($quota_type === QUOTA_UPLOAD_LIMIT) && $attach_config[$limit_type] > $attach_config[$default]) {
+            $attach_config[$limit_type] = $attach_config[$default];
         }
     }
 
@@ -300,19 +298,17 @@ class attach_parent
             $auth = $is_auth['auth_edit'] || $is_auth['auth_mod'];
         }
 
-        if (!$submit && $mode === 'editpost' && $auth) {
-            if (!$refresh && !$preview && !$error && !isset($_POST['del_poll_option'])) {
-                foreach ($attachments as $attachment) {
-                    $this->attachment_list[] = $attachment->physical_filename;
-                    $this->attachment_comment_list[] = $attachment->comment;
-                    $this->attachment_filename_list[] = $attachment->real_filename;
-                    $this->attachment_extension_list[] = $attachment->extension;
-                    $this->attachment_mimetype_list[] = $attachment->mimetype;
-                    $this->attachment_filesize_list[] = $attachment->filesize;
-                    $this->attachment_filetime_list[] = $attachment->filetime;
-                    $this->attachment_id_list[] = $attachment->attach_id;
-                    $this->attachment_thumbnail_list[] = $attachment->thumbnail;
-                }
+        if (!$submit && $mode === 'editpost' && $auth && !$refresh && !$preview && !$error && !isset($_POST['del_poll_option'])) {
+            foreach ($attachments as $attachment) {
+                $this->attachment_list[] = $attachment->physical_filename;
+                $this->attachment_comment_list[] = $attachment->comment;
+                $this->attachment_filename_list[] = $attachment->real_filename;
+                $this->attachment_extension_list[] = $attachment->extension;
+                $this->attachment_mimetype_list[] = $attachment->mimetype;
+                $this->attachment_filesize_list[] = $attachment->filesize;
+                $this->attachment_filetime_list[] = $attachment->filetime;
+                $this->attachment_id_list[] = $attachment->attach_id;
+                $this->attachment_thumbnail_list[] = $attachment->thumbnail;
             }
         }
 
@@ -664,32 +660,30 @@ class attach_parent
             return true;
         }
 
-        if ($mode === 'last_attachment') {
-            if ($this->post_attach && !isset($_POST['update_attachment'])) {
-                // insert attachment into db, here the user submited it directly
-                $sql_ary = [
-                    'physical_filename' => (string)basename($this->attach_filename),
-                    'real_filename' => (string)basename($this->filename),
-                    'comment' => (string)$this->file_comment,
-                    'extension' => (string)strtolower($this->extension),
-                    'mimetype' => (string)strtolower($this->type),
-                    'filesize' => (int)$this->filesize,
-                    'filetime' => (int)$this->filetime,
-                    'thumbnail' => (int)$this->thumbnail
-                ];
+        if (($mode === 'last_attachment') && $this->post_attach && !isset($_POST['update_attachment'])) {
+            // insert attachment into db, here the user submited it directly
+            $sql_ary = [
+                'physical_filename' => (string)basename($this->attach_filename),
+                'real_filename' => (string)basename($this->filename),
+                'comment' => (string)$this->file_comment,
+                'extension' => (string)strtolower($this->extension),
+                'mimetype' => (string)strtolower($this->type),
+                'filesize' => (int)$this->filesize,
+                'filetime' => (int)$this->filetime,
+                'thumbnail' => (int)$this->thumbnail
+            ];
 
-                $attach_id = dibi::insert(Tables::ATTACH_ATTACHMENTS_DESC_TABLE, $sql_ary)->execute(dibi::IDENTIFIER);
+            $attach_id = dibi::insert(Tables::ATTACH_ATTACHMENTS_DESC_TABLE, $sql_ary)->execute(dibi::IDENTIFIER);
 
-                $sql_ary = [
-                    'attach_id' => (int)$attach_id,
-                    'post_id' => (int)$post_id,
-                    'privmsgs_id' => (int)$privmsgs_id,
-                    'user_id_1' => (int)$user_id_1,
-                    'user_id_2' => (int)$user_id_2
-                ];
+            $sql_ary = [
+                'attach_id' => (int)$attach_id,
+                'post_id' => (int)$post_id,
+                'privmsgs_id' => (int)$privmsgs_id,
+                'user_id_1' => (int)$user_id_1,
+                'user_id_2' => (int)$user_id_2
+            ];
 
-                dibi::insert(Tables::ATTACH_ATTACHMENT_TABLE, $sql_ary)->execute();
-            }
+            dibi::insert(Tables::ATTACH_ATTACHMENT_TABLE, $sql_ary)->execute();
         }
     }
 
@@ -964,7 +958,7 @@ class attach_parent
                     // Remove non-latin characters
                     $this->attach_filename = preg_replace("/([\xC2\xC3])([\x80-\xBF])/e", "chr(ord('\\1')<<6&0xC0|ord('\\2')&0x3F)", $this->attach_filename);
                     $this->attach_filename = rawurlencode($this->attach_filename);
-                    $this->attach_filename = preg_replace("/(%[0-9A-F]{1,2})/i", '', $this->attach_filename);
+                    $this->attach_filename = preg_replace('/(%[0-9A-F]{1,2})/i', '', $this->attach_filename);
                     $this->attach_filename = trim($this->attach_filename);
 
                     $new_filename = $this->attach_filename;
@@ -1022,10 +1016,8 @@ class attach_parent
             }
 
             // Now, check filesize parameters
-            if (!$error) {
-                if ($upload_mode !== 'ftp' && !$this->filesize) {
-                    $this->filesize = (int)@filesize($upload_dir . '/' . $this->attach_filename);
-                }
+            if (!$error && $upload_mode !== 'ftp' && !$this->filesize) {
+                $this->filesize = (int)@filesize($upload_dir . '/' . $this->attach_filename);
             }
 
             // Check image type
@@ -1132,35 +1124,33 @@ class attach_parent
             $this->get_quota_limits($userdata);
 
             // Check our user quota
-            if ($this->page !== PAGE_PRIVMSGS) {
-                if ($attach_config['upload_filesize_limit']) {
-                    $attach_ids = dibi::select('attach_id')
-                        ->from(Tables::ATTACH_ATTACHMENT_TABLE)
-                        ->where('[user_id_1] = %i', $userdata['user_id'])
-                        ->where('[privmsgs_id] = %i', 0)
-                        ->groupBy('attach_id')
-                        ->fetchPairs(null, 'attach_id');
+            if (($this->page !== PAGE_PRIVMSGS) && $attach_config['upload_filesize_limit']) {
+                $attach_ids = dibi::select('attach_id')
+                    ->from(Tables::ATTACH_ATTACHMENT_TABLE)
+                    ->where('[user_id_1] = %i', $userdata['user_id'])
+                    ->where('[privmsgs_id] = %i', 0)
+                    ->groupBy('attach_id')
+                    ->fetchPairs(null, 'attach_id');
 
-                    if (count($attach_ids)) {
-                        // Now get the total filesize
-                        $total_filesize = dibi::select('SUM(filesize)')
-                            ->as('total')
-                            ->from(Tables::ATTACH_ATTACHMENTS_DESC_TABLE)
-                            ->where('[attach_id] IN %in', $attach_ids)
-                            ->fetchSingle();
-                    } else {
-                        $total_filesize = 0;
+                if (count($attach_ids)) {
+                    // Now get the total filesize
+                    $total_filesize = dibi::select('SUM(filesize)')
+                        ->as('total')
+                        ->from(Tables::ATTACH_ATTACHMENTS_DESC_TABLE)
+                        ->where('[attach_id] IN %in', $attach_ids)
+                        ->fetchSingle();
+                } else {
+                    $total_filesize = 0;
+                }
+
+                if (($total_filesize + $this->filesize) > $attach_config['upload_filesize_limit']) {
+                    $error = true;
+
+                    if (!empty($error_msg)) {
+                        $error_msg .= '<br />';
                     }
 
-                    if (($total_filesize + $this->filesize) > $attach_config['upload_filesize_limit']) {
-                        $error = true;
-
-                        if (!empty($error_msg)) {
-                            $error_msg .= '<br />';
-                        }
-
-                        $error_msg .= sprintf($lang['User_upload_quota_reached'], get_total_attach_filesize($attach_config['upload_filesize_limit']));
-                    }
+                    $error_msg .= sprintf($lang['User_upload_quota_reached'], get_total_attach_filesize($attach_config['upload_filesize_limit']));
                 }
             }
 

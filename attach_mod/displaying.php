@@ -54,12 +54,12 @@ function init_complete_extensions_data()
 
     $allowed_extensions = [];
 
-    for ($i = 0, $size = count($extension_informations); $i < $size; $i++) {
-        $extension = strtolower(trim($extension_informations[$i]['extension']));
+    foreach ($extension_informations as $extensionInformation) {
+        $extension = strtolower(trim($extensionInformation->extension));
         $allowed_extensions[] = $extension;
-        $display_categories[$extension] = (int)$extension_informations[$i]['cat_id'];
-        $download_modes[$extension] = (int)$extension_informations[$i]['download_mode'];
-        $upload_icons[$extension] = trim($extension_informations[$i]['upload_icon']);
+        $display_categories[$extension] = (int)$extensionInformation->cat_id;
+        $download_modes[$extension] = (int)$extensionInformation->download_mode;
+        $upload_icons[$extension] = trim($extensionInformation->upload_icon);
     }
 }
 
@@ -219,8 +219,8 @@ function init_display_post_attachments($switch_attachment)
 
     @reset($attachments);
 
-    for ($i = 0; $i < $num_rows; $i++) {
-        $attachments['_' . $rows[$i]['post_id']][] = $rows[$i];
+    foreach ($rows as $row) {
+        $attachments['_' . $row->post_id][] = $row;
     }
 
     init_display_template('body', '{postrow.ATTACHMENTS}');
@@ -416,9 +416,9 @@ function display_attachments_preview($attachment_list, $attachment_filesize_list
             ]
         );
 
-        for ($i = 0, $size = count($attachment_list); $i < $size; $i++) {
-            $filename = $upload_dir . '/' . basename($attachment_list[$i]);
-            $thumb_filename = $upload_dir . '/' . THUMB_DIR . '/t_' . basename($attachment_list[$i]);
+        foreach ($attachment_list as $i => $attachmentValue) {
+            $filename = $upload_dir . '/' . basename($attachmentValue);
+            $thumb_filename = $upload_dir . '/' . THUMB_DIR . '/t_' . basename($attachmentValue);
             $filesize = get_formatted_filesize($attachment_filesize_list[$i]);
             $display_name = $attachment_filename_list[$i];
             $comment = nl2br($attachment_comment_list[$i]);
@@ -595,33 +595,33 @@ function display_attachments($post_id)
 
     $template->assignBlockVars('postrow.attach', []);
 
-    for ($i = 0; $i < $num_attachments; $i++) {
+    foreach ($attachments['_' . $post_id] as $i => $attachment) {
+        bdump($attachment);
         // Some basic things...
-        $filename = $upload_dir . '/' . basename($attachments['_' . $post_id][$i]['physical_filename']);
-        $thumbnail_filename = $upload_dir . '/' . THUMB_DIR . '/t_' . basename($attachments['_' . $post_id][$i]['physical_filename']);
+        $filename = $upload_dir . '/' . basename($attachment->physical_filename);
+        $thumbnail_filename = $upload_dir . '/' . THUMB_DIR . '/t_' . basename($attachment->physical_filename);
 
         $upload_image = '';
 
-        if ($attach_config['upload_img'] !== '' && trim($upload_icons[$attachments['_' . $post_id][$i]['extension']]) === '') {
+        if ($attach_config['upload_img'] !== '' && trim($upload_icons[$attachment->extension]) === '') {
             $upload_image = '<img src="' . $attach_config['upload_img'] . '" alt="" border="0" />';
-        } else if (trim($upload_icons[$attachments['_' . $post_id][$i]['extension']]) !== '') {
-            $upload_image = '<img src="' . $upload_icons[$attachments['_' . $post_id][$i]['extension']] . '" alt="" border="0" />';
+        } else if (trim($upload_icons[$attachment->extension]) !== '') {
+            $upload_image = '<img src="' . $upload_icons[$attachment->extension] . '" alt="" border="0" />';
         }
 
-        $filesize = get_formatted_filesize($attachments['_' . $post_id][$i]['filesize']);
-
-        $display_name = $attachments['_' . $post_id][$i]['real_filename'];
-        $comment = nl2br($attachments['_' . $post_id][$i]['comment']);
+        $filesize = get_formatted_filesize($attachment->filesize);
+        $display_name = $attachment->real_filename;
+        $comment = nl2br($attachment->comment);
 
         $denied = false;
 
         // Admin is allowed to view forbidden Attachments, but the error-message is displayed too to inform the Admin
-        if (!in_array($attachments['_' . $post_id][$i]['extension'], $allowed_extensions, true)) {
+        if (!in_array($attachment->extension, $allowed_extensions, true)) {
             $denied = true;
 
             $template->assignBlockVars('postrow.attach.denyrow',
                 [
-                    'L_DENIED' => sprintf($lang['Extension_disabled_after_posting'], $attachments['_' . $post_id][$i]['extension'])
+                    'L_DENIED' => sprintf($lang['Extension_disabled_after_posting'], $attachment->extension)
                 ]
             );
         }
@@ -644,11 +644,11 @@ function display_attachments($post_id)
             $thumbnail = false;
             $link = false;
 
-            if ((int)$display_categories[$attachments['_' . $post_id][$i]['extension']] === STREAM_CAT) {
+            if ((int)$display_categories[$attachment->extension] === STREAM_CAT) {
                 $stream = true;
-            } else if ((int)$display_categories[$attachments['_' . $post_id][$i]['extension']] === SWF_CAT) {
+            } else if ((int)$display_categories[$attachment->extension] === SWF_CAT) {
                 $swf = true;
-            } else if ((int)$display_categories[$attachments['_' . $post_id][$i]['extension']] === IMAGE_CAT && (int)$attach_config['img_display_inlined']) {
+            } else if ((int)$display_categories[$attachment->extension] === IMAGE_CAT && (int)$attach_config['img_display_inlined']) {
                 if ((int)$attach_config['img_link_width'] !== 0 || (int)$attach_config['img_link_height'] !== 0) {
                     list($width, $height) = image_getdimension($filename);
 
@@ -664,7 +664,7 @@ function display_attachments($post_id)
                 }
             }
 
-            if ((int)$display_categories[$attachments['_' . $post_id][$i]['extension']] === IMAGE_CAT && $attachments['_' . $post_id][$i]['thumbnail'] === 1) {
+            if ((int)$display_categories[$attachment->extension] === IMAGE_CAT && $attachment->thumbnail === 1) {
                 $thumbnail = true;
                 $image = false;
             }
@@ -677,17 +677,17 @@ function display_attachments($post_id)
                 // Images
                 // NOTE: If you want to use the download.php everytime an image is displayed inlined, replace the
                 // Section between BEGIN and END with (Without the // of course):
-                //	$img_source = append_sid($phpbb_root_path . 'download.' . $phpEx . '?id=' . $attachments['_' . $post_id][$i]['attach_id']);
+                //	$img_source = append_sid($phpbb_root_path . 'download.' . $phpEx . '?id=' . $attachment->attach_id);
                 //	$download_link = true;
                 //
                 //
                 if ((int)$attach_config['allow_ftp_upload'] && trim($attach_config['download_path']) === '') {
-                    $img_source = Session::appendSid($phpbb_root_path . 'download.php?id=' . $attachments['_' . $post_id][$i]['attach_id']);
+                    $img_source = Session::appendSid($phpbb_root_path . 'download.php?id=' . $attachment->attach_id);
                     $download_link = true;
                 } else {
                     // Check if we can reach the file or if it is stored outside of the webroot
                     if ($attach_config['upload_dir'][0] === '/' || ($attach_config['upload_dir'][0] !== '/' && $attach_config['upload_dir'][1] === ':')) {
-                        $img_source = Session::appendSid($phpbb_root_path . 'download.php?id=' . $attachments['_' . $post_id][$i]['attach_id']);
+                        $img_source = Session::appendSid($phpbb_root_path . 'download.php?id=' . $attachment->attach_id);
                         $download_link = true;
                     } else {
                         // BEGIN
@@ -705,13 +705,13 @@ function display_attachments($post_id)
                         'FILESIZE' => $filesize,
                         'COMMENT' => $comment,
                         'L_DOWNLOADED_VIEWED' => $lang['Viewed'],
-                        'L_DOWNLOAD_COUNT' => sprintf($lang['Download_number'], $attachments['_' . $post_id][$i]['download_count'])]
+                        'L_DOWNLOAD_COUNT' => sprintf($lang['Download_number'], $attachment->download_count)]
                 );
 
                 // Directly Viewed Image ... update the download count
                 if (!$download_link) {
                     dibi::update(Tables::ATTACH_ATTACHMENTS_DESC_TABLE, ['download_count%sql' => 'download_count + 1'])
-                        ->where('[attach_id] = %i', (int)$attachments['_' . $post_id][$i]['attach_id'])
+                        ->where('[attach_id] = %i', $attachment->attach_id)
                         ->execute();
                 }
             }
@@ -720,14 +720,14 @@ function display_attachments($post_id)
                 // Images, but display Thumbnail
                 // NOTE: If you want to use the download.php everytime an thumnmail is displayed inlined, replace the
                 // Section between BEGIN and END with (Without the // of course):
-                //	$thumb_source = append_sid($phpbb_root_path . 'download.' . $phpEx . '?id=' . $attachments['_' . $post_id][$i]['attach_id'] . '&thumb=1');
+                //	$thumb_source = append_sid($phpbb_root_path . 'download.' . $phpEx . '?id=' . $attachment->attach_id . '&thumb=1');
                 //
                 if ((int)$attach_config['allow_ftp_upload'] && trim($attach_config['download_path']) === '') {
-                    $thumb_source = Session::appendSid($phpbb_root_path . 'download.php?id=' . $attachments['_' . $post_id][$i]['attach_id'] . '&thumb=1');
+                    $thumb_source = Session::appendSid($phpbb_root_path . 'download.php?id=' . $attachment->attach_id . '&thumb=1');
                 } else {
                     // Check if we can reach the file or if it is stored outside of the webroot
                     if ($attach_config['upload_dir'][0] === '/' || ($attach_config['upload_dir'][0] !== '/' && $attach_config['upload_dir'][1] === ':')) {
-                        $thumb_source = Session::appendSid($phpbb_root_path . 'download.php?id=' . $attachments['_' . $post_id][$i]['attach_id'] . '&thumb=1');
+                        $thumb_source = Session::appendSid($phpbb_root_path . 'download.php?id=' . $attachment->attach_id . '&thumb=1');
                     } else {
                         // BEGIN
                         $thumb_source = $thumbnail_filename;
@@ -740,12 +740,12 @@ function display_attachments($post_id)
                         'DOWNLOAD_NAME' => $display_name,
                         'S_UPLOAD_IMAGE' => $upload_image,
 
-                        'IMG_SRC' => Session::appendSid($phpbb_root_path . 'download.php?id=' . $attachments['_' . $post_id][$i]['attach_id']),
+                        'IMG_SRC' => Session::appendSid($phpbb_root_path . 'download.php?id=' . $attachment->attach_id),
                         'IMG_THUMB_SRC' => $thumb_source,
                         'FILESIZE' => $filesize,
                         'COMMENT' => $comment,
                         'L_DOWNLOADED_VIEWED' => $lang['Viewed'],
-                        'L_DOWNLOAD_COUNT' => sprintf($lang['Download_number'], $attachments['_' . $post_id][$i]['download_count'])
+                        'L_DOWNLOAD_COUNT' => sprintf($lang['Download_number'], $attachment->download_count)
                     ]
                 );
             }
@@ -757,18 +757,18 @@ function display_attachments($post_id)
                         'U_DOWNLOAD_LINK' => $filename,
                         'S_UPLOAD_IMAGE' => $upload_image,
 
-//					'U_DOWNLOAD_LINK' => append_sid($phpbb_root_path . 'download.' . $phpEx . '?id=' . $attachments['_' . $post_id][$i]['attach_id']),
+//					'U_DOWNLOAD_LINK' => append_sid($phpbb_root_path . 'download.' . $phpEx . '?id=' . $attachment->attach_id),
                         'DOWNLOAD_NAME' => $display_name,
                         'FILESIZE' => $filesize,
                         'COMMENT' => $comment,
                         'L_DOWNLOADED_VIEWED' => $lang['Viewed'],
-                        'L_DOWNLOAD_COUNT' => sprintf($lang['Download_number'], $attachments['_' . $post_id][$i]['download_count'])
+                        'L_DOWNLOAD_COUNT' => sprintf($lang['Download_number'], $attachment->download_count)
                     ]
                 );
 
                 // Viewed/Heared File ... update the download count (download.php is not called here)
                 dibi::update(Tables::ATTACH_ATTACHMENTS_DESC_TABLE, ['download_count%sql' => 'download_count + 1'])
-                    ->where('[attach_id] = %i', (int)$attachments['_' . $post_id][$i]['attach_id'])
+                    ->where('[attach_id] = %i',$attachment->attach_id)
                     ->execute();
             }
 
@@ -785,7 +785,7 @@ function display_attachments($post_id)
                         'FILESIZE' => $filesize,
                         'COMMENT' => $comment,
                         'L_DOWNLOADED_VIEWED' => $lang['Viewed'],
-                        'L_DOWNLOAD_COUNT' => sprintf($lang['Download_number'], $attachments['_' . $post_id][$i]['download_count']),
+                        'L_DOWNLOAD_COUNT' => sprintf($lang['Download_number'], $attachment->download_count),
                         'WIDTH' => $width,
                         'HEIGHT' => $height
                     ]
@@ -794,17 +794,17 @@ function display_attachments($post_id)
                 // Viewed/Heared File ... update the download count (download.php is not called here)
 
                 dibi::update(Tables::ATTACH_ATTACHMENTS_DESC_TABLE, ['download_count%sql' => 'download_count + 1'])
-                    ->where('[attach_id] = %i', (int)$attachments['_' . $post_id][$i]['attach_id'])
+                    ->where('[attach_id] = %i', (int)$attachment->attach_id)
                     ->execute();
             }
 
             if ($link) {
-                $target_blank = 'target="_blank"'; //( (intval($display_categories[$attachments['_' . $post_id][$i]['extension']]) === IMAGE_CAT) ) ? 'target="_blank"' : '';
+                $target_blank = 'target="_blank"'; //( (intval($display_categories[$attachment->extension]) === IMAGE_CAT) ) ? 'target="_blank"' : '';
 
                 // display attachment
                 $template->assignBlockVars('postrow.attach.attachrow',
                     [
-                        'U_DOWNLOAD_LINK' => Session::appendSid($phpbb_root_path . 'download.php?id=' . $attachments['_' . $post_id][$i]['attach_id']),
+                        'U_DOWNLOAD_LINK' => Session::appendSid($phpbb_root_path . 'download.php?id=' . $attachment->attach_id),
                         'S_UPLOAD_IMAGE' => $upload_image,
 
                         'DOWNLOAD_NAME' => $display_name,
@@ -813,7 +813,7 @@ function display_attachments($post_id)
                         'TARGET_BLANK' => $target_blank,
 
                         'L_DOWNLOADED_VIEWED' => $lang['Downloaded'],
-                        'L_DOWNLOAD_COUNT' => sprintf($lang['Download_number'], $attachments['_' . $post_id][$i]['download_count'])
+                        'L_DOWNLOAD_COUNT' => sprintf($lang['Download_number'], $attachment->download_count)
                     ]
                 );
             }

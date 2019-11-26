@@ -198,10 +198,8 @@ class attach_pm extends attach_parent
                 exit;
             }
 
-            if (count($mark_list)) {
-                if (($this->pm_delete_attachments || $confirm) && !$delete_all) {
-                    delete_attachment($mark_list, 0, PAGE_PRIVMSGS);
-                }
+            if (count($mark_list) && ($this->pm_delete_attachments || $confirm) && !$delete_all) {
+                delete_attachment($mark_list, 0, PAGE_PRIVMSGS);
             }
         }
 

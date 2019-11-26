@@ -69,11 +69,9 @@ foreach ($config_data as $value) {
 //
 // Get form-data if specified and override old settings
 //
-if (isset($_POST['mode']) && $_POST['mode'] === 'perform') {
-    if (isset($_POST['confirm'])) {
-        $mode_id  = 'perform';
-        $function = isset($_POST['function']) ? htmlspecialchars(trim($_POST['function'])) : '';
-    }
+if (isset($_POST['mode']) && $_POST['mode'] === 'perform' && isset($_POST['confirm'])) {
+    $mode_id  = 'perform';
+    $function = isset($_POST['function']) ? htmlspecialchars(trim($_POST['function'])) : '';
 }
 
 //

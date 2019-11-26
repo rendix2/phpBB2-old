@@ -591,7 +591,7 @@ $lang['rpd_success'] = 'Board configuration updated successful.';
 $lang['cct_success'] = 'Config table checked successful.';
 $lang['rcd_success'] = 'Cookie data updated successful.';
 $lang['rld_success'] = 'The language data was updated successful.';
-$lang['rld_failed'] = "The required language files (lang_main.php and lang_admin.php) do not exist.";
+$lang['rld_failed'] = 'The required language files (lang_main.php and lang_admin.php) do not exist.';
 $lang['rtd_restore_success'] = 'The default style was restored successful.';
 $lang['rtd_success'] = 'The style data was updated successful.';
 $lang['dgc_success'] = 'The GZip compression was disabled successful.';
@@ -602,9 +602,9 @@ $lang['cbl_success_anonymous'] = 'The ban list and the disallowed users were cle
 $lang['raa_success'] = 'All admins were removed successful.';
 $lang['mua_success'] = 'The selected user has now admin privileges.';
 $lang['mua_failed'] = '<b>Error:</b> The selected user does not exist or already has admin privileges.';
-$lang['rcp_success'] = "Copy the text to a text file, rename it to <b>Config.php</b> and upload it to the root directory of the forum. Please
+$lang['rcp_success'] = 'Copy the text to a text file, rename it to <b>Config.php</b> and upload it to the root directory of the forum. Please
 	ensure that there is no character (including spaces and line feeds) before the <b>&lt;?php</b> and after the <b>?&gt;</b>.<br />
-	You can also %sdownload%s the file to your computer.";
+	You can also %sdownload%s the file to your computer.';
 // Text for success messages
 $lang['Removing_admins'] = 'Removing admins';
 // Help Text

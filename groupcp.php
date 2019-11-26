@@ -351,10 +351,8 @@ if (isset($_POST['groupstatus']) && $groupId) {
 	// Did the group moderator get here through an email?
 	// If so, check to see if they are logged in.
 	//
-    if (isset($_GET['validate'])) {
-        if (!$userdata['session_logged_in']) {
-            redirect(Session::appendSid('login.php?redirect=groupcp.php&' . POST_GROUPS_URL . "=$groupId", true));
-        }
+    if (isset($_GET['validate']) && !$userdata['session_logged_in']) {
+        redirect(Session::appendSid('login.php?redirect=groupcp.php&' . POST_GROUPS_URL . "=$groupId", true));
     }
 
 	//
@@ -1045,108 +1043,106 @@ if (isset($_POST['groupstatus']) && $groupId) {
 	// We've displayed the members who belong to the group, now we 
 	// do that pending memebers... 
 	//
-    if ($isModerator) {
-		//
-		// Users pending in ONLY THIS GROUP (which is moderated by this user)
-		//
-        if ($modgroup_pending_count) {
-            foreach ($modgroup_pending_list as $modgroup_pending_value) {
-				$username = $modgroup_pending_value->username;
-				$user_id = $modgroup_pending_value->user_id;
+    //
+    // Users pending in ONLY THIS GROUP (which is moderated by this user)
+    //
+    if ($isModerator && $modgroup_pending_count) {
+        foreach ($modgroup_pending_list as $modgroup_pending_value) {
+            $username = $modgroup_pending_value->username;
+            $user_id = $modgroup_pending_value->user_id;
 
-				generate_user_info(
-				    $modgroup_pending_value,
-                    $board_config['default_dateformat'],
-                    $isModerator,
-                    $from,
-                    $posts,
-                    $topics,
-                    $joined,
-                    $poster_avatar,
-                    $profileImage,
-                    $profile,
-                    $searchImage,
-                    $search,
-                    $pmImage,
-                    $pm,
-                    $emailImage,
-                    $email,
-                    $wwwImage,
-                    $www
-                );
+            generate_user_info(
+                $modgroup_pending_value,
+                $board_config['default_dateformat'],
+                $isModerator,
+                $from,
+                $posts,
+                $topics,
+                $joined,
+                $poster_avatar,
+                $profileImage,
+                $profile,
+                $searchImage,
+                $search,
+                $pmImage,
+                $pm,
+                $emailImage,
+                $email,
+                $wwwImage,
+                $www
+            );
 
-                // <!-- BEGIN Another Online/Offline indicator -->
-                if (!$modgroup_pending_value->user_allow_viewonline && $userdata['user_level'] === ADMIN || $modgroup_pending_value->user_allow_viewonline) {
-                    $expiry_time = time() - ONLINE_TIME_DIFF;
+            // <!-- BEGIN Another Online/Offline indicator -->
+            if (!$modgroup_pending_value->user_allow_viewonline && $userdata['user_level'] === ADMIN || $modgroup_pending_value->user_allow_viewonline) {
+                $expiry_time = time() - ONLINE_TIME_DIFF;
 
-                    if ($modgroup_pending_value->user_session_time >= $expiry_time) {
-                        $user_onlinestatus = '<img src="' . $images['Online'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" />';
+                if ($modgroup_pending_value->user_session_time >= $expiry_time) {
+                    $user_onlinestatus = '<img src="' . $images['Online'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" />';
 
-                        if (!$modgroup_pending_value->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
-                            $user_onlinestatus = '<img src="' . $images['Hidden_Admin'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
-                        }
-                    } else {
-                        $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
-
-                        if (!$modgroup_pending_value->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
-                            $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
-                        }
+                    if (!$modgroup_pending_value->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                        $user_onlinestatus = '<img src="' . $images['Hidden_Admin'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
                     }
                 } else {
                     $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
+
+                    if (!$modgroup_pending_value->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                        $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
+                    }
                 }
-                // <!-- END Another Online/Offline indicator -->
-
-				$rowColor = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-				$rowClass = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
-
-				$user_select = '<input type="checkbox" name="member[]" value="' . $user_id . '">';
-
-                $template->assignBlockVars('pending_members_row',
-                    [
-                        'ROW_CLASS'      => $rowClass,
-                        'ROW_COLOR'      => '#' . $rowColor,
-                        'USERNAME'       => $username,
-
-                        // <!-- BEGIN Another Online/Offline indicator -->
-                        'ONLINESTATUS' => $user_onlinestatus,
-                        // <!-- END Another Online/Offline indicator -->
-
-                        'FROM'           => $from,
-                        'JOINED'         => $joined,
-                        'POSTS'          => $posts,
-                        'USER_ID'        => $user_id,
-                        'AVATAR_IMG'     => $poster_avatar,
-                        'PROFILE_IMG'    => $profileImage,
-                        'PROFILE'        => $profile,
-                        'SEARCH_IMG'     => $searchImage,
-                        'SEARCH'         => $search,
-                        'PM_IMG'         => $pmImage,
-                        'PM'             => $pm,
-                        'EMAIL_IMG'      => $emailImage,
-                        'EMAIL'          => $email,
-                        'WWW_IMG'        => $wwwImage,
-                        'WWW'            => $www,
-
-                        'U_VIEWPROFILE' => Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$user_id")
-                    ]
-                );
+            } else {
+                $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
             }
+            // <!-- END Another Online/Offline indicator -->
 
-			$template->assignBlockVars('switch_pending_members', [] );
+            $rowColor = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+            $rowClass = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
-            $template->assignVars(
+            $user_select = '<input type="checkbox" name="member[]" value="' . $user_id . '">';
+
+            $template->assignBlockVars('pending_members_row',
                 [
-                    'L_SELECT'           => $lang['Select'],
-                    'L_APPROVE_SELECTED' => $lang['Approve_selected'],
-                    'L_DENY_SELECTED'    => $lang['Deny_selected']
+                    'ROW_CLASS'      => $rowClass,
+                    'ROW_COLOR'      => '#' . $rowColor,
+                    'USERNAME'       => $username,
+
+                    // <!-- BEGIN Another Online/Offline indicator -->
+                    'ONLINESTATUS' => $user_onlinestatus,
+                    // <!-- END Another Online/Offline indicator -->
+
+                    'FROM'           => $from,
+                    'JOINED'         => $joined,
+                    'POSTS'          => $posts,
+                    'USER_ID'        => $user_id,
+                    'AVATAR_IMG'     => $poster_avatar,
+                    'PROFILE_IMG'    => $profileImage,
+                    'PROFILE'        => $profile,
+                    'SEARCH_IMG'     => $searchImage,
+                    'SEARCH'         => $search,
+                    'PM_IMG'         => $pmImage,
+                    'PM'             => $pm,
+                    'EMAIL_IMG'      => $emailImage,
+                    'EMAIL'          => $email,
+                    'WWW_IMG'        => $wwwImage,
+                    'WWW'            => $www,
+
+                    'U_VIEWPROFILE' => Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . "=$user_id")
                 ]
             );
+        }
 
-            $template->assignVarFromHandle('PENDING_USER_BOX', 'pendinginfo');
-		
-		}
-	}
+        $template->assignBlockVars('switch_pending_members', [] );
+
+        $template->assignVars(
+            [
+                'L_SELECT'           => $lang['Select'],
+                'L_APPROVE_SELECTED' => $lang['Approve_selected'],
+                'L_DENY_SELECTED'    => $lang['Deny_selected']
+            ]
+        );
+
+        $template->assignVarFromHandle('PENDING_USER_BOX', 'pendinginfo');
+
+    }
 
     if ($isModerator) {
         $template->assignBlockVars('switch_mod_option', []);
