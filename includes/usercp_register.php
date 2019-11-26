@@ -120,6 +120,7 @@ if (
     $newPassword     = !empty($_POST['new_password'])     ? trim($_POST['new_password'])             : '';
     $confirmPassword = !empty($_POST['password_confirm']) ? trim($_POST['password_confirm'])         : '';
     $signature       = !empty($_POST['signature'])        ? trim($_POST['signature'])                : '';
+    $userLanguage    = !empty($_POST['language'])         ? trim($_POST['language'])                 : '';
 
 	$signature = isset($signature) ? str_replace('<br />', "\n", $signature) : '';
 	$signature_bbcode_uid = '';

@@ -234,7 +234,7 @@ class Select
     {
         $languages = dibi::select('*')
             ->from(Tables::LANGUAGES_TABLE)
-            ->fetchPairs('lang_id', 'lang_name');
+            ->fetchPairs('lang_name', 'lang_name');
 
         $default = mb_strtolower($default);
         $langValues = '';
