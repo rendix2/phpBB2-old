@@ -153,22 +153,7 @@
 		<tr>
 			<th class="thSides" colspan="2">{L_PREFERENCES}</th>
 		</tr>
-		<tr>
-			<td class="row1">
-				<span class="gen">{L_PUBLIC_VIEW_EMAIL}</span>
-			</td>
-			<td class="row2">
-				<input type="radio" name="viewemail" id="viewemail_1" value="1" {VIEW_EMAIL_YES} />
-				<label for="viewemail_1">
-					<span class="gen">{L_YES}</span>
-				</label>
 
-				<input type="radio" name="viewemail" id="viewemail_0" value="0" {VIEW_EMAIL_NO} />
-				<label for="viewemail_0">
-					<span class="gen">{L_NO}</span>
-				</label>
-			</td>
-		</tr>
 		<tr>
 			<td class="row1">
 				<span class="gen">{L_HIDE_USER}</span>
@@ -185,6 +170,7 @@
 				</label>
 			</td>
 		</tr>
+
 		<tr>
 			<td class="row1">
 				<span class="gen">{L_NOTIFY_ON_REPLY}</span>

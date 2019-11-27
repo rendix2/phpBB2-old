@@ -330,7 +330,6 @@ class AvatarHelper
      * @param string       $occupation
      * @param string       $interests
      * @param string       $signature
-     * @param bool         $viewEmail
      * @param bool         $notifyPm
      * @param bool         $popupPm
      * @param bool         $notifyReply
@@ -367,7 +366,6 @@ class AvatarHelper
         &$occupation,
         &$interests,
         &$signature,
-        &$viewEmail,
         &$notifyPm,
         &$popupPm,
         &$notifyReply,
@@ -501,7 +499,6 @@ class AvatarHelper
             'occupation',
             'interests',
             'signature',
-            'viewEmail',
             'notifyPm',
             'popupPm',
             'notifyReply',

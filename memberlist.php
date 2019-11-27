@@ -121,7 +121,6 @@ $template->assignVars(
 $columns = [
     'username',
     'user_id',
-    'user_viewemail',
     'user_posts',
     'user_topics',
     'user_thanks',
@@ -240,8 +239,8 @@ foreach ($users as $i => $user) {
     }
     // <!-- END Another Online/Offline indicator -->
 
-    if (!empty($user->user_viewemail) || $userdata['user_level'] === ADMIN) {
-        $emailUrl    = $board_config['board_email_form'] ? Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL . '=' . $user->user_id) : 'mailto:' . $user->user_email;
+    if ($board_config['board_email_form'] || $userdata['user_level'] === ADMIN) {
+        $emailUrl    = Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL . '=' . $user->user_id);
         $emailImage = '<a href="' . $emailUrl . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
         $email      = '<a href="' . $emailUrl . '">' . $lang['Send_email'] . '</a>';
     } else {

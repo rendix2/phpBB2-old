@@ -165,8 +165,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 
 		Validator::optionalFields( $website, $location, $occupation, $interests, $signature);
 
-		$viewemail       = isset($_POST['viewemail'])   ? (bool)$_POST['viewemail']   : 0;
-        $allowviewonline = isset($_POST['hideonline'])  ? (bool)$_POST['hideonline']  : true;
+		$allowviewonline = isset($_POST['hideonline'])  ? (bool)$_POST['hideonline']  : true;
         $notifyreply     = isset($_POST['notifyreply']) ? (bool)$_POST['notifyreply'] : 0;
         $notifypm        = isset($_POST['notifypm'])    ? (bool)$_POST['notifypm']    : true;
         $popuppm         = isset($_POST['popup_pm'])    ? (bool)$_POST['popup_pm']    : true;
@@ -587,7 +586,6 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
                 'user_from'    => $location,
                 'user_interests' => $interests,
                 'user_sig'       => $signature,
-                'user_viewemail' => $viewemail,
                 'user_attachsig' => $attachsig,
                 'user_sig_bbcode_uid' => $signature_bbcode_uid,
                 'user_allowsmile' => $allowsmilies,
@@ -691,7 +689,6 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 		$signature = ($this_userdata->user_sig_bbcode_uid !== '') ? preg_replace('#:' . $this_userdata->user_sig_bbcode_uid . '#si', '', $this_userdata->user_sig) : $this_userdata->user_sig;
 		$signature = preg_replace(PostHelper::$htmlEntitiesMatch, PostHelper::$htmlEntitiesReplace, $signature);
 
-		$viewemail = $this_userdata->user_viewemail;
 		$notifypm = $this_userdata->user_notify_pm;
 		$popuppm = $this_userdata->user_popup_pm;
 		$notifyreply = $this_userdata->user_notify;
@@ -726,7 +723,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 
             $template->setFileNames(['body' => 'admin/user_avatar_gallery.tpl']);
 
-            AvatarHelper::displayAvatarGallery($mode, $_POST['avatargallery'], $user_id, $email, $current_email, $coppa, $username, $new_password, $cur_password, $password_confirm, $website, $location, $occupation, $interests, $signature, $viewemail, $notifypm, $popuppm, $notifyreply, $attachsig, $allowhtml, $allowbbcode, $allowsmilies, $allowviewonline, $user_style, $user_lang, $user_timezone, $user_dateformat, $userdata['session_id'], true, $template, $user_status, $user_allowavatar, $user_allowpm, $user_rank);
+            AvatarHelper::displayAvatarGallery($mode, $_POST['avatargallery'], $user_id, $email, $current_email, $coppa, $username, $new_password, $cur_password, $password_confirm, $website, $location, $occupation, $interests, $signature, $notifypm, $popuppm, $notifyreply, $attachsig, $allowhtml, $allowbbcode, $allowsmilies, $allowviewonline, $user_style, $user_lang, $user_timezone, $user_dateformat, $userdata['session_id'], true, $template, $user_status, $user_allowavatar, $user_allowpm, $user_rank);
         }
     } else {
 		$s_hidden_fields = '<input type="hidden" name="mode" value="save" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';
@@ -782,8 +779,6 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
                 'LOCATION' => htmlspecialchars($location, ENT_QUOTES),
                 'WEBSITE' => htmlspecialchars($website, ENT_QUOTES),
                 'SIGNATURE' => str_replace('<br />', "\n", $signature),
-                'VIEW_EMAIL_YES' => $viewemail ? 'checked="checked"' : '',
-                'VIEW_EMAIL_NO' => !$viewemail ? 'checked="checked"' : '',
                 'HIDE_USER_YES' => !$allowviewonline ? 'checked="checked"' : '',
                 'HIDE_USER_NO' => $allowviewonline ? 'checked="checked"' : '',
                 'NOTIFY_PM_YES' => $notifypm ? 'checked="checked"' : '',
@@ -865,7 +860,6 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
                 'L_NOTIFY_ON_REPLY' => $lang['Always_notify'],
                 'L_POPUP_ON_PRIVMSG' => $lang['Popup_on_privmsg'],
                 'L_PREFERENCES' => $lang['Preferences'],
-                'L_PUBLIC_VIEW_EMAIL' => $lang['Public_view_email'],
                 'L_ITEMS_REQUIRED' => $lang['Items_required'],
                 'L_REGISTRATION_INFO' => $lang['Registration_info'],
                 'L_PROFILE_INFO' => $lang['Profile_info'],
@@ -923,7 +917,6 @@ else
             'U_SEARCH_USER' => Session::appendSid('./../search.php?mode=searchuser'),
 
             'S_USER_ACTION' => Session::appendSid('admin_users.php'),
-            'S_USER_SELECT' => $select_list
         ]
     );
     $template->pparse('body');

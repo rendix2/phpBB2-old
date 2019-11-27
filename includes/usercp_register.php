@@ -129,7 +129,6 @@ if (
 	// empty strings if they fail.
 	Validator::optionalFields($website, $location, $occupation, $interests, $signature);
 
-    $viewEmail       = isset($_POST['viewemail'])   ? (bool)$_POST['hideonline']  : 0;
     $allowViewOnline = isset($_POST['hideonline'])  ? (bool)!$_POST['hideonline'] : true;
     $notifyReply     = isset($_POST['notifyreply']) ? (bool)$_POST['notifyreply'] : 0;
     $notifyPm        = isset($_POST['notifypm'])    ? (bool)$_POST['notifypm']    : true;
@@ -447,7 +446,6 @@ if (isset($_POST['submit'])) {
                 'user_interests'        => $interests,
                 'user_sig'              => $signature,
                 'user_sig_bbcode_uid'   => $signature_bbcode_uid,
-                'user_viewemail'        => $viewEmail,
                 'user_attachsig'        => $attachSignature,
                 'user_allowsmile'       => $allowSmileys,
                 'user_allowhtml'        => $allowHtml,
@@ -558,7 +556,6 @@ if (isset($_POST['submit'])) {
                 'user_sig_bbcode_uid' => $signature_bbcode_uid,
                 //'user_avatar' => null, // TODO $avatar_sql,
                 //'user_avatar_type' => null, // TODO $avatar_sql,
-                'user_viewemail' => $viewEmail,
                 'user_attachsig' => $attachSignature,
                 'user_allowsmile' => $allowSmileys,
                 'user_allowhtml' => $allowHtml,
@@ -736,7 +733,6 @@ if ($error) {
 	$signature_bbcode_uid = $userdata['user_sig_bbcode_uid'];
 	$signature = ($signature_bbcode_uid !== '') ? preg_replace("/:(([a-z0-9]+:)?)$signature_bbcode_uid(=|\])/si", '\\3', $userdata['user_sig']) : $userdata['user_sig'];
 
-	$viewEmail = $userdata['user_viewemail'];
 	$notifyPm = $userdata['user_notify_pm'];
 	$popupPm = $userdata['user_popup_pm'];
 	$notifyReply = $userdata['user_notify'];
@@ -774,7 +770,7 @@ if (isset($_POST['avatargallery']) && !$error) {
 
     $allowViewOnline = !$allowViewOnline;
 
-	AvatarHelper::displayAvatarGallery($mode, $avatarCategory, $userId, $email, $current_email, $coppa, $userName,$newPassword, $currentPassword, $confirmPassword, $website, $location, $occupation, $interests, $signature, $viewEmail, $notifyPm, $popupPm, $notifyReply, $attachSignature, $allowHtml, $allowbbcode, $allowSmileys, $allowViewOnline, $userStyle, $userLanguage, $userTimeZone, $userDateFormat, $userdata['session_id'], false, $template, $userActive, $allow_avatar, $allow_pm);
+	AvatarHelper::displayAvatarGallery($mode, $avatarCategory, $userId, $email, $current_email, $coppa, $userName,$newPassword, $currentPassword, $confirmPassword, $website, $location, $occupation, $interests, $signature,  $notifyPm, $popupPm, $notifyReply, $attachSignature, $allowHtml, $allowbbcode, $allowSmileys, $allowViewOnline, $userStyle, $userLanguage, $userTimeZone, $userDateFormat, $userdata['session_id'], false, $template, $userActive, $allow_avatar, $allow_pm);
 } else {
     if (!isset($coppa)) {
         $coppa = false;
@@ -906,9 +902,6 @@ if (isset($_POST['avatargallery']) && !$error) {
             'WEBSITE'          => htmlspecialchars($website, ENT_QUOTES),
             'SIGNATURE'        => str_replace('<br />', "\n", $signature),
 
-            'VIEW_EMAIL_YES' => $viewEmail ? 'checked="checked"' : '',
-            'VIEW_EMAIL_NO'  => !$viewEmail ? 'checked="checked"' : '',
-
             'HIDE_USER_YES' => !$allowViewOnline ? 'checked="checked"' : '',
             'HIDE_USER_NO'  => $allowViewOnline ? 'checked="checked"' : '',
 
@@ -991,7 +984,6 @@ if (isset($_POST['avatargallery']) && !$error) {
             'L_POPUP_ON_PRIVMSG'         => $lang['Popup_on_privmsg'],
             'L_POPUP_ON_PRIVMSG_EXPLAIN' => $lang['Popup_on_privmsg_explain'],
             'L_PREFERENCES'              => $lang['Preferences'],
-            'L_PUBLIC_VIEW_EMAIL'        => $lang['Public_view_email'],
             'L_ITEMS_REQUIRED'           => $lang['Items_required'],
             'L_REGISTRATION_INFO'        => $lang['Registration_info'],
             'L_PROFILE_INFO'             => $lang['Profile_info'],

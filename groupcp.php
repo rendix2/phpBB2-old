@@ -75,8 +75,8 @@ function generate_user_info(
 		}
 	}
 
-	if (!empty($row->user_viewemail) || $group_mod) {
-		$emailUri = $board_config['board_email_form'] ? Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL .'=' . $row->user_id) : 'mailto:' . $row->user_email;
+	if ($board_config['board_email_form'] || $group_mod) {
+		$emailUri = Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL .'=' . $row->user_id);
 
 		$emailImage = '<a href="' . $emailUri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
 		$email = '<a href="' . $emailUri . '">' . $lang['Send_email'] . '</a>';
@@ -653,7 +653,6 @@ if (isset($_POST['groupstatus']) && $groupId) {
     $columns = [
         'username',
         'user_id',
-        'user_viewemail',
         'user_posts',
         'user_topics',
         'user_regdate',
@@ -678,7 +677,6 @@ if (isset($_POST['groupstatus']) && $groupId) {
     $columns = [
         'u.username',
         'u.user_id',
-        'u.user_viewemail',
         'u.user_posts',
         'u.user_topics',
         'u.user_regdate',
@@ -723,7 +721,6 @@ if (isset($_POST['groupstatus']) && $groupId) {
 	$columns = [
 	    'u.username',
         'u.user_id',
-        'u.user_viewemail',
         'u.user_posts',
         'u.user_topics',
         'u.user_regdate',

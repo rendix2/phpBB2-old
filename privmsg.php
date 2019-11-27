@@ -173,7 +173,6 @@ if ($mode === 'newpm') {
         'u.user_website',
         'u.user_email',
         'u.user_regdate',
-        'u.user_viewemail',
         'u.user_rank',
         'u.user_sig',
         'u.user_avatar',
@@ -563,8 +562,8 @@ if ($mode === 'newpm') {
 	$pm_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
 	$pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
 
-	if (!empty($privmsg->user_viewemail) || $userdata['user_level'] === ADMIN) {
-		$email_uri = $board_config['board_email_form'] ? Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL .'=' . $user_id_from) : 'mailto:' . $privmsg->user_email;
+	if ($board_config['board_email_form']|| $userdata['user_level'] === ADMIN) {
+		$email_uri = Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL .'=' . $user_id_from);
 
 		$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
 		$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';

@@ -525,7 +525,6 @@ CREATE TABLE phpbb_users (
    user_login_tries smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
    user_last_login_try int(11) DEFAULT '0' NOT NULL,
    user_emailtime int(11),
-   user_viewemail tinyint(1),
    user_attachsig tinyint(1),
    user_allowhtml tinyint(1) DEFAULT '1',
    user_allowbbcode tinyint(1) DEFAULT '1',

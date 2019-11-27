@@ -411,7 +411,6 @@ $columns = [
     'u.user_website',
     'u.user_email',
     'u.user_regdate',
-    'u.user_viewemail',
     'u.user_rank',
     'u.user_sig',
     'u.user_sig_bbcode_uid',
@@ -1022,8 +1021,8 @@ foreach ($posts as $i => $post) {
 		$pmImage      = '<a href="' . $temporaryUrl . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
 		$pm           = '<a href="' . $temporaryUrl . '">' . $lang['Send_private_message'] . '</a>';
 
-        if (!empty($post->user_viewemail) || $is_auth['auth_mod']) {
-			$email_uri = $board_config['board_email_form'] ? Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL .'=' . $posterId) : 'mailto:' . $post->user_email;
+        if ($board_config['board_email_form'] || $is_auth['auth_mod']) {
+			$email_uri = Session::appendSid('profile.php?mode=email&amp;' . POST_USERS_URL .'=' . $posterId);
 
 			$emailImage = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
 			$email      = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';

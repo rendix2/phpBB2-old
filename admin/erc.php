@@ -941,7 +941,6 @@ switch($mode) {
                         'user_from' => '',
                         'user_interests' => '',
                         'user_sig' => '',
-                        'user_viewemail' => 0,
                         'user_style' => null,
                         'user_posts' => 0,
                         'user_topics' => 0,

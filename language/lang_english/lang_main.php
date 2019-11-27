@@ -565,7 +565,6 @@ $lang['Date_format'] = 'Date format';
 $lang['Date_format_explain'] = 'The syntax used is identical to the PHP <a href=\'http://www.php.net/date\' target=\'_other\'>date()</a> function.';
 $lang['Signature'] = 'Signature';
 $lang['Signature_explain'] = 'This is a block of text that can be added to posts you make. There is a %d character limit';
-$lang['Public_view_email'] = 'Always show my e-mail address';
 
 $lang['Current_password'] = 'Current password';
 $lang['New_password'] = 'New password';
@@ -647,6 +646,7 @@ $lang['Password_activated'] = 'Your account has been re-activated. To log in, pl
 $lang['Send_email_msg'] = 'Send an e-mail message';
 $lang['No_user_specified'] = 'No user was specified';
 $lang['User_prevent_email'] = 'This user does not wish to receive e-mail. Try sending them a private message.';
+$lang['Board_prevent_email'] = 'This board does not wish to send e-mail. Try sending them a private message.';
 $lang['User_not_exist'] = 'That user does not exist';
 $lang['CC_email'] = 'Send a copy of this e-mail to yourself';
 $lang['Email_message_desc'] = 'This message will be sent as plain text, so do not include any HTML or BBCode. The return address for this message will be set to your e-mail address.';

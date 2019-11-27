@@ -96,14 +96,14 @@ function get_config()
 }
 
 // Get Attachment Config
-$cache = new Cache($storage, Tables::ATTACH_CONFIG_TABLE);
+$attachCache = new Cache($storage, Tables::ATTACH_CONFIG_TABLE);
 $key = Tables::ATTACH_CONFIG_TABLE;
 
-$attach_config = $cache->load($key);
+$attach_config = $attachCache->load($key);
 
 if (!$attach_config) {
     $attach_config = get_config();
-    $cache->save($key, $attach_config);
+    $attachCache->save($key, $attach_config);
 }
 
 // Please do not change the include-order, it is valuable for proper execution.
