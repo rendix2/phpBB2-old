@@ -137,7 +137,6 @@ if ($phpbb_version[0] === 0 && $phpbb_version[1] >= 19) {
 
 if ($phpbb_version[0] === 0 && $phpbb_version[1] >= 20) {
     $default_config['search_flood_interval'] = '15';
-    $default_config['rand_seed'] = '0';
 }
 
 if ($phpbb_version[0] === 0 && $phpbb_version[1] >= 21) {

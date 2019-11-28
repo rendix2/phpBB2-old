@@ -237,16 +237,6 @@ function bbencode_second_pass($text, $uid)
 // Need to initialize the random numbers only ONCE
 mt_srand( (double) microtime() * 1000000);
 
-function make_bbcode_uid()
-{
-	// Unique ID for this message..
-
-	$uid = dss_rand();
-	$uid = substr($uid, 0, BBCODE_UID_LEN);
-
-	return $uid;
-}
-
 function bbencode_first_pass($text, $uid)
 {
 	// pad it with a space so we can distinguish between false and matching the 1st char (index 0).

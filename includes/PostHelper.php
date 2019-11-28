@@ -1,6 +1,7 @@
 <?php
 
 use Nette\Caching\Cache;
+use Nette\Utils\Random;
 
 /**
  * Class PostHelper
@@ -127,7 +128,7 @@ class PostHelper
 
         // Check message
         if (!empty($message)) {
-            $bbcode_uid = $bbcodeOn ? make_bbcode_uid() : '';
+            $bbcode_uid = $bbcodeOn ? Random::generate(BBCODE_UID_LEN) : '';
             $message = self::prepareMessage(trim($message), $htmlOn, $bbcodeOn, $smiliesOn, $bbcode_uid);
         } elseif ($mode !== 'delete' && $mode !== 'poll_delete')  {
             $errorMessage .= !empty($errorMessage) ? '<br />' . $lang['Empty_message'] : $lang['Empty_message'];

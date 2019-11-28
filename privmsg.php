@@ -11,6 +11,8 @@
  *
  ***************************************************************************/
 
+use Nette\Utils\Random;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -1132,7 +1134,7 @@ if ($mode === 'newpm') {
                 $bbcode_uid = 0;
 
                 if ($bbcode_on) {
-                    $bbcode_uid = make_bbcode_uid();
+                    $bbcode_uid = Random::generate(BBCODE_UID_LEN);
                 }
 
                 $privmsg_message = PostHelper::prepareMessage($_POST['message'], $html_on, $bbcode_on, $smilies_on, $bbcode_uid);
@@ -1501,7 +1503,7 @@ if ($mode === 'newpm') {
 		obtain_word_list($orig_word, $replacement_word);
 
         if ($bbcode_on) {
-			$bbcode_uid = make_bbcode_uid();
+			$bbcode_uid = Random::generate(BBCODE_UID_LEN);
 		}
 
         $previewMessage = stripslashes(PostHelper::prepareMessage($privmsg_message, $html_on, $bbcode_on, $smilies_on, $bbcode_uid));

@@ -88,7 +88,7 @@ class Session
                     ->on('k.user_id = u.user_id')
                     ->where('u.user_id = %i', (int) $userId)
                     ->where('u.user_active = %i', 1)
-                    ->where('k.key_id = %s', hash('sha512',$sessionData['autologinid']))
+                    ->where('k.key_id = %s', hash('sha512', $sessionData['autologinid']))
                     ->fetch();
 
                 $userData = $userData->toArray();
@@ -232,7 +232,7 @@ class Session
             // Regenerate the auto-login key
             //
             if ($enableAutoLogin) {
-                $auto_login_key = dss_rand() . dss_rand();
+                $auto_login_key = Random::generate(64);
 
                 if (isset($sessionData['autologinid']) && (string) $sessionData['autologinid'] !== '') {
                     $updateData = [
@@ -628,7 +628,7 @@ class Session
         $deleteSession->execute();
 
         if ($key_sql) {
-            $autoLoginKey = dss_rand() . dss_rand();
+            $autoLoginKey = Random::generate(64);
             $currentTime = time();
 
             $update_data = [

@@ -11,6 +11,8 @@
  *
  ***************************************************************************/
 
+use Nette\Utils\Random;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -47,11 +49,11 @@ if (isset($_POST['submit'])) {
         message_die(GENERAL_MESSAGE, $lang['No_send_account_inactive']);
     }
 
-    $userActivationKey = gen_rand_string(true);
+    $userActivationKey = Random::generate(25);
     $keyLength         = 54 - mb_strlen($serverUrl); // TODO $serverUrl does not exist!
     $keyLength         = $keyLength > 6 ? $keyLength : 6;
     $userActivationKey = substr($userActivationKey, 0, $keyLength);
-    $userPassword      = gen_rand_string(false);
+    $userPassword      = Random::generate(12);
 
     $updateData = [
         'user_newpasswd' => password_hash($userPassword, PASSWORD_BCRYPT),

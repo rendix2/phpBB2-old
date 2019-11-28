@@ -384,7 +384,7 @@ if (isset($_POST['submit'])) {
 		}
 
         if (!isset($signature_bbcode_uid) || $signature_bbcode_uid === '') {
-			$signature_bbcode_uid = $allowbbcode ? make_bbcode_uid() : '';
+			$signature_bbcode_uid = $allowbbcode ? Random::generate(BBCODE_UID_LEN) : '';
 		}
 		$signature = PostHelper::prepareMessage($signature, $allowHtml, $allowbbcode, $allowSmileys, $signature_bbcode_uid);
 	}
@@ -427,7 +427,7 @@ if (isset($_POST['submit'])) {
             if ($email !== $userdata['user_email'] && $board_config['require_activation'] !== USER_ACTIVATION_NONE && $userdata['user_level'] !== ADMIN) {
 				$userActive = 0;
 
-				$userActivationKey = gen_rand_string(true);
+				$userActivationKey = Random::generate(25);
 				$keyLength         = 54 - mb_strlen($serverUrl);
 				$keyLength         = $keyLength > 6 ? $keyLength : 6;
 				$userActivationKey = substr($userActivationKey, 0, $keyLength);
@@ -578,7 +578,7 @@ if (isset($_POST['submit'])) {
             $insertData = array_merge($insertData, $avatarData);
 
             if ($board_config['require_activation'] === USER_ACTIVATION_SELF || $board_config['require_activation'] === USER_ACTIVATION_ADMIN || $coppa) {
-				$userActivationKey = gen_rand_string(true);
+				$userActivationKey = Random::generate(25);
 				$keyLength         = 54 - mb_strlen($serverUrl);
 				$keyLength         = $keyLength > 6 ? $keyLength : 6;
 				$userActivationKey = substr($userActivationKey, 0, $keyLength);
@@ -863,7 +863,7 @@ if (isset($_POST['avatargallery']) && !$error) {
 
 		// Generate the required confirmation code
 		// NB 0 (zero) could get confused with O (the letter) so we make change it
-		$code = dss_rand();
+		$code = Random::generate(45);
 		$code = substr(str_replace('0', 'Z', mb_strtoupper(base_convert($code, 16, 35))), 2, 6);
 
         $confirmId = mb_substr(hash('sha512', Random::generate(32)), 0, 32);

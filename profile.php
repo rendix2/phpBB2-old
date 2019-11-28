@@ -49,19 +49,6 @@ $scriptName = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['script_p
 $scriptName = $scriptName !== '' ? $scriptName . '/profile.php' : 'profile.php';
 $serverUrl  = getServerUrl($board_config, $scriptName);
 
-// -----------------------
-// Page specific functions
-//
-function gen_rand_string($hash)
-{
-	$rand_str = dss_rand();
-
-	return $hash ? md5($rand_str) : substr($rand_str, 0, 8);
-}
-//
-// End page specific functions
-// ---------------------------
-
 //
 // Start of program proper
 //

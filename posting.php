@@ -11,6 +11,8 @@
  *
  ***************************************************************************/
 
+use Nette\Utils\Random;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -796,7 +798,7 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg !== '') {
 		$replacement_word = [];
 		obtain_word_list($orig_word, $replacement_word);
 
-		$bbcode_uid = $bbcode_on ? make_bbcode_uid() : '';
+		$bbcode_uid = $bbcode_on ? Random::generate(BBCODE_UID_LEN) : '';
         $previewMessage = stripslashes(PostHelper::prepareMessage(addslashes(PostHelper::unPrepareMessage($message)), $html_on, $bbcode_on, $smilies_on, $bbcode_uid));
         $previewSubject = $subject;
         $previewUserName = $username;

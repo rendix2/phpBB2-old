@@ -11,6 +11,8 @@
  *
  ***************************************************************************/
 
+use Nette\Utils\Random;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -332,7 +334,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 
 			// Only create a new bbcode_uid when there was no uid yet.
             if ($allowbbcode) {
-				$signature_bbcode_uid = make_bbcode_uid();
+				$signature_bbcode_uid = Random::generate(BBCODE_UID_LEN);
 			}
 
 			$signature = PostHelper::prepareMessage($signature, $allowhtml, $allowbbcode, $allowsmilies, $signature_bbcode_uid);

@@ -72,7 +72,6 @@ $userdata = [];
 $theme = [];
 $images = [];
 $lang = [];
-$dss_seeded = false;
 $gen_simple_header = false;
 
 if (file_exists($phpbb_root_path . 'Config.php')) {

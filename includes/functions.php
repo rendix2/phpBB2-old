@@ -71,36 +71,6 @@ function phpbb_clean_username($username)
 }
 
 /**
-* Our own generator of random values
-* This uses a constantly changing value as the base for generating the values
-* The board wide setting is updated once per page if this code is called
-* With thanks to Anthrax101 for the inspiration on this one
-* Added in phpBB 2.0.20
-*/
-function dss_rand()
-{
-	global $board_config, $dss_seeded;
-	global $storage;
-
-	$val = $board_config['rand_seed'] . microtime();
-	$val = md5($val);
-	$board_config['rand_seed'] = md5($board_config['rand_seed'] . $val . 'a');
-
-    if ($dss_seeded !== true) {
-        dibi::update(Tables::CONFIG_TABLE, ['config_value' => $board_config['rand_seed']])
-            ->where('config_name = %s', 'rand_seed')
-            ->execute();
-
-        $cache = new Cache($storage, Tables::CONFIG_TABLE);
-        $cache->remove(Tables::CONFIG_TABLE);
-
-        $dss_seeded = true;
-    }
-
-	return substr($val, 4, 16);
-}
-
-/**
  *
  * Get Userdata, $user can be username or user_id. If force_str is true, the username will be forced.
  *
@@ -425,7 +395,6 @@ function create_date($format, $time, $time_zone)
     return $started->format($format);
 }
 
-
 /**
  * @param $num_items
  * @param $per_page
@@ -454,7 +423,6 @@ function get_page($num_items, $per_page, $start_item)
 
     return $page_string;
 }
-
 
 //
 // Pagination routine, generates
