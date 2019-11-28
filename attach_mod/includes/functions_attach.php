@@ -545,9 +545,9 @@ function get_extension($filename)
         return '';
     }
 
-    $extension = strrchr(strtolower($filename), '.');
+    $extension = strrchr(mb_strtolower($filename), '.');
     $extension[0] = ' ';
-    $extension = strtolower(trim($extension));
+    $extension = mb_strtolower(trim($extension));
 
     return is_array($extension) ? '' : $extension;
 }
@@ -559,7 +559,7 @@ function get_extension($filename)
 */
 function delete_extension($filename)
 {
-    return substr($filename, 0, strrpos(strtolower(trim($filename)), '.'));
+    return substr($filename, 0, strrpos(mb_strtolower(trim($filename)), '.'));
 }
 
 /**

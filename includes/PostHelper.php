@@ -927,13 +927,13 @@ class PostHelper
             return '';
         }
 
-        $allowedHtmlTags = preg_split('/, */', strtolower($board_config['allow_html_tags']));
+        $allowedHtmlTags = preg_split('/, */', mb_strtolower($board_config['allow_html_tags']));
         $disallowedAttributes = '/^(?:style|on)/i';
 
         // Check if this is an end tag
         preg_match('/<[^\w\/]*\/[\W]*(\w+)/', $tag[0], $matches);
         if (count($matches)) {
-            if (in_array(strtolower($matches[1]), $allowedHtmlTags, true)) {
+            if (in_array(mb_strtolower($matches[1]), $allowedHtmlTags, true)) {
                 return '</' . $matches[1] . '>';
             } else {
                 return htmlspecialchars('</' . $matches[1] . '>');
@@ -941,7 +941,7 @@ class PostHelper
         }
 
         // Check if this is an allowed tag
-        if (in_array(strtolower($tag[1]), $allowedHtmlTags, true)) {
+        if (in_array(mb_strtolower($tag[1]), $allowedHtmlTags, true)) {
             $attributes = '';
 
             if (!empty($tag[2])) {
@@ -956,7 +956,7 @@ class PostHelper
                 }
             }
 
-            if (in_array(strtolower($tag[1]), $allowedHtmlTags, true)) {
+            if (in_array(mb_strtolower($tag[1]), $allowedHtmlTags, true)) {
                 return '<' . $tag[1] . $attributes . '>';
             } else {
                 return htmlspecialchars('<' . $tag[1] . $attributes . '>');

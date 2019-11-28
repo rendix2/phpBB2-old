@@ -52,7 +52,7 @@ class SearchHelper
             '!'  => ' '
         ];
 
-        $entry = ' ' . strip_tags(strtolower($entry)) . ' ';
+        $entry = ' ' . strip_tags(mb_strtolower($entry)) . ' ';
 
         if ($mode === 'post') {
             // Replace line endings by a space
@@ -96,7 +96,7 @@ class SearchHelper
 
         if (!empty($synonyms)) {
             foreach ($synonyms as &$synonym) {
-                list($replace_synonym, $match_synonym) = explode(' ', strtolower(trim($synonym)));
+                list($replace_synonym, $match_synonym) = explode(' ', mb_strtolower(trim($synonym)));
 
                 if ($mode === 'post' || ( $match_synonym !== 'not' && $match_synonym !== 'and' && $match_synonym !== 'or' )) {
                     $entry =  str_replace(' ' . trim($match_synonym) . ' ', ' ' . trim($replace_synonym) . ' ', $entry);

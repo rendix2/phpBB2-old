@@ -2343,7 +2343,7 @@ switch($mode_id) {
 				// Update config data to match current configuration
                 if (!empty($_SERVER['SERVER_PROTOCOL']) || !empty($_ENV['SERVER_PROTOCOL'])) {
                     $protocol = !empty($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : $_ENV['SERVER_PROTOCOL'];
-                    if (strtolower(substr($protocol, 0, 5)) == 'https') {
+                    if (mb_strtolower(substr($protocol, 0, 5)) == 'https') {
                         $default_config['cookie_secure'] = '1';
                     }
                 }
@@ -2683,11 +2683,11 @@ switch($mode_id) {
                         $empty_array = []; // We'll need this array for passing it to the clean_words function
 						// Convert arrays
                         for ($i = 0; $i < count($stopword_array); $i++) {
-                            $stopword_array[$i] = trim(strtolower($stopword_array[$i]));
+                            $stopword_array[$i] = trim(mb_strtolower($stopword_array[$i]));
                         }
 						$result_array = array([], []);
 						for ($i = 0; $i < count($synonym_array); $i++) {
-							list($replace_synonym, $match_synonym) = split(' ', trim(strtolower($synonym_array[$i])));
+							list($replace_synonym, $match_synonym) = split(' ', trim(mb_strtolower($synonym_array[$i])));
 							$result_array[0][] = trim($replace_synonym);
 							$result_array[1][] = trim($match_synonym);
 						}

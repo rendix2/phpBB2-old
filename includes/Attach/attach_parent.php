@@ -511,8 +511,8 @@ class attach_parent
                             'physical_filename' => (string)basename($this->attach_filename),
                             'real_filename' => (string)basename($this->filename),
                             'comment' => (string)$comment,
-                            'extension' => (string)strtolower($this->extension),
-                            'mimetype' => (string)strtolower($this->type),
+                            'extension' => (string)mb_strtolower($this->extension),
+                            'mimetype' => (string)mb_strtolower($this->type),
                             'filesize' => (int)$this->filesize,
                             'filetime' => (int)$this->filetime,
                             'thumbnail' => (int)$this->thumbnail
@@ -636,8 +636,8 @@ class attach_parent
                         'physical_filename' => (string)basename($this->attachment_list[$i]),
                         'real_filename' => (string)basename($this->attachment_filename_list[$i]),
                         'comment' => (string)$this->attachment_comment_list[$i],
-                        'extension' => (string)strtolower($this->attachment_extension_list[$i]),
-                        'mimetype' => (string)strtolower($this->attachment_mimetype_list[$i]),
+                        'extension' => (string)mb_strtolower($this->attachment_extension_list[$i]),
+                        'mimetype' => (string)mb_strtolower($this->attachment_mimetype_list[$i]),
                         'filesize' => (int)$this->attachment_filesize_list[$i],
                         'filetime' => (int)$this->attachment_filetime_list[$i],
                         'thumbnail' => (int)$this->attachment_thumbnail_list[$i]
@@ -666,8 +666,8 @@ class attach_parent
                 'physical_filename' => (string)basename($this->attach_filename),
                 'real_filename' => (string)basename($this->filename),
                 'comment' => (string)$this->file_comment,
-                'extension' => (string)strtolower($this->extension),
-                'mimetype' => (string)strtolower($this->type),
+                'extension' => (string)mb_strtolower($this->extension),
+                'mimetype' => (string)mb_strtolower($this->type),
                 'filesize' => (int)$this->filesize,
                 'filetime' => (int)$this->filetime,
                 'thumbnail' => (int)$this->thumbnail
@@ -859,8 +859,8 @@ class attach_parent
 
             // Opera add the name to the mime type
             $this->type = (strstr($this->type, '; name')) ? str_replace(strstr($this->type, '; name'), '', $this->type) : $this->type;
-            $this->type = strtolower($this->type);
-            $this->extension = strtolower(get_extension($this->filename));
+            $this->type = mb_strtolower($this->type);
+            $this->extension = mb_strtolower(get_extension($this->filename));
 
             $this->filesize = @filesize($file);
             $this->filesize = (int)$this->filesize;
@@ -940,7 +940,7 @@ class attach_parent
                 $this->filename = $r_file;
 
                 // physical filename
-                $this->attach_filename = strtolower($this->filename);
+                $this->attach_filename = mb_strtolower($this->filename);
 
                 // To re-add cryptic filenames, change this variable to true
                 $cryptic = false;

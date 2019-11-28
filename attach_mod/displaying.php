@@ -55,7 +55,7 @@ function init_complete_extensions_data()
     $allowed_extensions = [];
 
     foreach ($extension_informations as $extensionInformation) {
-        $extension = strtolower(trim($extensionInformation->extension));
+        $extension = mb_strtolower(trim($extensionInformation->extension));
         $allowed_extensions[] = $extension;
         $display_categories[$extension] = (int)$extensionInformation->cat_id;
         $download_modes[$extension] = (int)$extensionInformation->download_mode;

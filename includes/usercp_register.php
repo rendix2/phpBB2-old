@@ -360,7 +360,7 @@ if (isset($_POST['submit'])) {
 			// Error is already triggered, since one field is empty.
             $error = true;
         } elseif ($userName !== $userdata['username'] || $mode === 'register') {
-            if (strtolower($userName) !== strtolower($userdata['username']) || $mode === 'register') {
+            if (mb_strtolower($userName) !== smb_trtolower($userdata['username']) || $mode === 'register') {
 				$result = Validator::userName($userName, $lang, $userdata);
 
                 if ($result['error']) {
@@ -886,7 +886,7 @@ if (isset($_POST['avatargallery']) && !$error) {
 	// Let's do an overall check for settings/versions which would prevent
 	// us from doing file uploads....
 	//
-	$form_enctype = ( @ini_get('file_uploads') === '0' || strtolower(@ini_get('file_uploads')) === 'off' || PHP_VERSION === '4.0.4pl1' || !$board_config['allow_avatar_upload'] || ( PHP_VERSION < '4.0.3' && @ini_get('open_basedir') !== '' ) ) ? '' : 'enctype="multipart/form-data"';
+	$form_enctype = ( @ini_get('file_uploads') === '0' || mb_strtolower(@ini_get('file_uploads')) === 'off' || PHP_VERSION === '4.0.4pl1' || !$board_config['allow_avatar_upload'] || ( PHP_VERSION < '4.0.3' && @ini_get('open_basedir') !== '' ) ) ? '' : 'enctype="multipart/form-data"';
 
     $template->assignVars(
         [

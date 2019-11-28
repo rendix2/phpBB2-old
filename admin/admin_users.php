@@ -235,14 +235,14 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
         if (stripslashes($username) !== $this_userdata['username']) {
             unset($rename_user);
 
-            if (stripslashes(strtolower($username)) !== strtolower($this_userdata['username'])) {
+            if (stripslashes(mb_strtolower($username)) !== mb_strtolower($this_userdata['username'])) {
                 //TODO maybe user $this_userdata instead userdata!!
                 $result = Validator::userName($username, $lang, $userdata);
 
                 if ($result['error']) {
 					$error = true;
 					$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $result['error_msg'];
-                } elseif (strtolower(str_replace("\\'", "''", $username)) === strtolower($userdata['username'])) {
+                } elseif (mb_strtolower(str_replace("\\'", "''", $username)) === mb_strtolower($userdata['username'])) {
 					$error = true;
 					$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Username_taken'];
 				}

@@ -109,6 +109,7 @@ if ($submit && $mode === 'extensions') {
 
     // Add Extension ?
     $extension = get_var('add_extension', '');
+    $lowerExtension = mb_strtolower(trim($extension));
     $extension_explain = get_var('add_extension_explain', '');
     $extension_group = get_var('add_group_select', 0);
 
@@ -129,14 +130,14 @@ if ($submit && $mode === 'extensions') {
                 ->fetchAll();
 
             foreach ($rows as $row) {
-                if (strtolower(trim($row->extension)) === strtolower(trim($extension))) {
+                if (mb_strtolower(trim($row->extension)) === $lowerExtension) {
                     $error = true;
 
                     if (isset($error_msg)) {
                         $error_msg .= '<br />';
                     }
 
-                    $error_msg .= sprintf($lang['Extension_exist'], strtolower(trim($extension)));
+                    $error_msg .= sprintf($lang['Extension_exist'], $lowerExtension);
                 }
             }
 
@@ -147,14 +148,14 @@ if ($submit && $mode === 'extensions') {
                     ->fetchAll();
 
                 foreach ($rows as $row) {
-                    if (strtolower(trim($row->extension)) === strtolower(trim($extension))) {
+                    if (mb_strtolower(trim($row->extension)) === $lowerExtension) {
                         $error = true;
 
                         if (isset($error_msg)) {
                             $error_msg .= '<br />';
                         }
 
-                        $error_msg .= sprintf($lang['Unable_add_forbidden_extension'], strtolower(trim($extension)));
+                        $error_msg .= sprintf($lang['Unable_add_forbidden_extension'], $lowerExtension);
                     }
                 }
             }
@@ -162,7 +163,7 @@ if ($submit && $mode === 'extensions') {
             if (!$error) {
                 $sql_ary = [
                     'group_id' => (int)$extension_group,
-                    'extension' => (string)strtolower($extension),
+                    'extension' => (string)mb_strtolower($extension),
                     'comment' => (string)$extension_explain
                 ];
 
@@ -498,7 +499,7 @@ if ($submit && $mode === 'forbidden') {
                 ->fetchPairs(null, 'extension');
 
             foreach ($extensions as $extensionValue) {
-                if (strtolower(trim($extensionValue)) === strtolower(trim($extension))) {
+                if (mb_strtolower(trim($extensionValue)) === mb_strtolower(trim($extension))) {
                     $error = true;
 
                     if (isset($error_msg)) {

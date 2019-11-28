@@ -345,7 +345,7 @@ switch($mode) {
 
 				if (!empty($_SERVER['SERVER_PROTOCOL']) || !empty($_ENV['SERVER_PROTOCOL'])) {
 					$protocol = !empty($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : $_ENV['SERVER_PROTOCOL'];
-					$secure_rec = ( strtolower(substr($protocol, 0 , 5)) === 'https' ) ? '1' : '0';
+					$secure_rec = mb_strtolower(substr($protocol, 0 , 5)) === 'https' ? '1' : '0';
 				} else {
 					$secure_rec = '0';
 				}
@@ -671,7 +671,7 @@ switch($mode) {
 				if (!empty($_SERVER['SERVER_PROTOCOL']) || !empty($_ENV['SERVER_PROTOCOL'])) {
 					$protocol = !empty($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : $_ENV['SERVER_PROTOCOL'];
 
-					if (strtolower(substr($protocol, 0 , 5)) === 'https') {
+					if (mb_strtolower(substr($protocol, 0 , 5)) === 'https') {
 						$default_config['cookie_secure'] = '1';
 					}
 				}
