@@ -119,7 +119,7 @@ class TemplateStandard extends BaseTemplate
 
 		// Check if it's an absolute or relative path.
 		if (substr($filename, 0, 1) !== '/') {
-       		$filename = ($rp_filename = phpbb_realpath($this->root . $sep . $filename)) ? $rp_filename : $filename;
+       		$filename = ($rp_filename = realpath($this->root . $sep . $filename)) ? $rp_filename : $filename;
 		}
 
 		if (!file_exists($filename)) {

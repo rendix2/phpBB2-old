@@ -211,7 +211,7 @@ function guess_lang()
 		foreach ($accept_languages as $accept_language) {
 			foreach ($match_lang as $lang => $match) {
 				if (preg_match('#' . $match . '#i', trim($accept_language))) {
-                    if (file_exists(@phpbb_realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $lang))) {
+                    if (file_exists(@realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $lang))) {
 						return $lang;
 					}
 				}
@@ -379,7 +379,7 @@ if (!empty($_POST['server_port'])) {
 }
 
 // Open Config.php ... if it exists
-if (@file_exists(@phpbb_realpath('Config.php'))) {
+if (@file_exists(@realpath('Config.php'))) {
     require_once $phpbb_root_path . 'Config.php';
 }
 

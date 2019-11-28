@@ -99,7 +99,7 @@ if (isset($_GET['perform']) || isset($_POST['perform'])) {
 				// a hackers attempt at getting us to process a local system
 				// file.
 				//
-				if (file_exists(phpbb_realpath($backup_file_tmpname))) {
+				if (file_exists(realpath($backup_file_tmpname))) {
 					dibi::loadFile($backup_file_tmpname);
 				} else {
 					message_die(GENERAL_ERROR, $lang['Restore_Error_uploading']);

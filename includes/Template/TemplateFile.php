@@ -97,7 +97,7 @@ class TemplateFile extends BaseTemplate {
 		}
 
         $sep = DIRECTORY_SEPARATOR;
-		$realCacheRootPath = phpbb_realpath($phpbb_root_path . $this->cacheRoot);
+		$realCacheRootPath = realpath($phpbb_root_path . $this->cacheRoot);
 
 		// check if exists cache root dir
 		if (!file_exists($phpbb_root_path . $this->cacheRoot)) {
@@ -105,14 +105,14 @@ class TemplateFile extends BaseTemplate {
 		    FileSystem::createDir($phpbb_root_path . $this->cacheRoot);
 
 		    // recount path
-            $realCacheRootPath = phpbb_realpath($phpbb_root_path . $this->cacheRoot);
+            $realCacheRootPath = realpath($phpbb_root_path . $this->cacheRoot);
         }
 
 		// last key in $dirs is template name
 		$dirs = explode($sep, $dir);
 		$dirsCount = count($dirs);
 
-		$this->root     = phpbb_realpath($dir);
+		$this->root     = realpath($dir);
         $this->cacheDir = $realCacheRootPath . $sep . $dirs[$dirsCount - 1] . $sep;
 
 		// check if exists template cache dir
@@ -268,7 +268,7 @@ class TemplateFile extends BaseTemplate {
 
 		// Check if it's an absolute or relative path.
 		if (substr($filename, 0, 1) !== '/') {
-            $filename = phpbb_realpath($this->root . $sep . $filename);
+            $filename = realpath($this->root . $sep . $filename);
 		}
 
 		if (!file_exists($filename)) {

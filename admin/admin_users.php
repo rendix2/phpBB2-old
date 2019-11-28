@@ -354,7 +354,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 			if ($this_userdata['user_avatar_type'] === USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] !== '') {
                 $path = $phpbb_root_path . $board_config['avatar_path'] . $sep . $this_userdata['user_avatar'];
 
-				if (@file_exists(@phpbb_realpath($path))) {
+				if (@file_exists(@realpath($path))) {
                     @unlink($path);
 				}
 			}
@@ -376,7 +376,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 			}
 
 			if ($user_avatar_loc !== null) {
-				if (file_exists(@phpbb_realpath($user_avatar_loc)) && preg_match('#.jpg$|.gif$|.png$#', $user_avatar_name)) {
+				if (file_exists(@realpath($user_avatar_loc)) && preg_match('#.jpg$|.gif$|.png$#', $user_avatar_name)) {
 					if ($user_avatar_size <= $board_config['avatar_filesize'] && $user_avatar_size > 0) {
 						$error_type = false;
 
@@ -415,7 +415,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 								if ($this_userdata['user_avatar_type'] === USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] !== '') {
                                     $path = $phpbb_root_path . $board_config['avatar_path'] . $sep . $this_userdata['user_avatar'];
 
-									if (@file_exists(@phpbb_realpath($path))) {
+									if (@file_exists(@realpath($path))) {
 										@unlink($path);
 									}
 								}
@@ -513,7 +513,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 										    $path = $phpbb_root_path . $board_config['avatar_path'] . $sep . $this_userdata['user_avatar'];
 
 
-											if (file_exists(@phpbb_realpath($path))) {
+											if (file_exists(@realpath($path))) {
 												@unlink($path);
 											}
 										}
@@ -882,7 +882,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
             ]
 		);
 
-        if (file_exists(@phpbb_realpath($phpbb_root_path . $board_config['avatar_path'])) && ($board_config['allow_avatar_upload'] === '1')) {
+        if (file_exists(@realpath($phpbb_root_path . $board_config['avatar_path'])) && ($board_config['allow_avatar_upload'] === '1')) {
             if ($form_enctype !== '') {
                 $template->assignBlockVars('avatar_local_upload', []);
             }
@@ -890,7 +890,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
             $template->assignBlockVars('avatar_remote_upload', []);
         }
 
-        if (file_exists(@phpbb_realpath($phpbb_root_path . $board_config['avatar_gallery_path'])) && ($board_config['allow_avatar_local'] === '1')) {
+        if (file_exists(@realpath($phpbb_root_path . $board_config['avatar_gallery_path'])) && ($board_config['allow_avatar_local'] === '1')) {
             $template->assignBlockVars('avatar_local_gallery', []);
         }
 

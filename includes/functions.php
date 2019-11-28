@@ -212,7 +212,7 @@ function init_userprefs($pageId)
         $default_lang = ltrim(basename(rtrim($board_config['default_lang'])), "'");
     }
 
-    if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $default_lang . $sep . 'lang_main.php'))) {
+    if (!file_exists(@realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $default_lang . $sep . 'lang_main.php'))) {
         $cache = new Cache($storage, Tables::CONFIG_TABLE);
         $cache->remove(Tables::CONFIG_TABLE);
 
@@ -226,7 +226,7 @@ function init_userprefs($pageId)
 			$default_lang = 'english';
 		}
 
-        if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $default_lang . $sep . 'lang_main.php'))) {
+        if (!file_exists(@realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $default_lang . $sep . 'lang_main.php'))) {
             message_die(CRITICAL_ERROR, 'Could not locate valid language pack');
         }
 	}
@@ -259,7 +259,7 @@ function init_userprefs($pageId)
     require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'lang_main.php';
 
 	if (defined('IN_ADMIN')) {
-        if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'lang_admin.php'))) {
+        if (!file_exists(@realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'lang_admin.php'))) {
 			$board_config['default_lang'] = 'english';
 		}
 
@@ -354,7 +354,7 @@ function setupStyle($style)
 			message_die(CRITICAL_ERROR, "Could not open $templateName template config file", '', __LINE__, __FILE__);
 		}
 
-        $imgLang = file_exists(@phpbb_realpath($phpbb_root_path . $currentTemplatePath . $sep . 'images' . $sep . 'lang_' . $board_config['default_lang'])) ? $board_config['default_lang'] : 'english';
+        $imgLang = file_exists(@realpath($phpbb_root_path . $currentTemplatePath . $sep . 'images' . $sep . 'lang_' . $board_config['default_lang'])) ? $board_config['default_lang'] : 'english';
 
 		foreach ($images as $key => $value) {
 			if (!is_array($value)) {
@@ -747,19 +747,6 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
     }
 
     exit;
-}
-
-//
-// This function is for compatibility with PHP 4.x's realpath()
-// function.  In later versions of PHP, it needs to be called
-// to do checks with some functions.  Older versions of PHP don't
-// seem to need this, so we'll just return the original value.
-// dougk_ff7 <October 5, 2002>
-function phpbb_realpath($path)
-{
-	global $phpbb_root_path;
-
-	return (!@function_exists('realpath') || !@realpath($phpbb_root_path . 'includes/functions.php')) ? $path : @realpath($path);
 }
 
 /**

@@ -600,7 +600,7 @@ function language_select($default, $select_name = 'language', $file_to_check = '
      * @var SplFileInfo $file
      */
     foreach ($files as $file) {
-        if (is_file(@phpbb_realpath($phpbb_root_path . $dirname . $sep . $file->getFilename() . $sep . 'lang_' . $file_to_check . '.php'))) {
+        if (is_file(@realpath($phpbb_root_path . $dirname . $sep . $file->getFilename() . $sep . 'lang_' . $file_to_check . '.php'))) {
             $filename = trim(str_replace('lang_', '', $file->getFilename()));
             $displayName = preg_replace('/^(.*?)_(.*)$/', "\\1 [ \\2 ]", $filename);
             $displayName = preg_replace("/\[(.*?)_(.*)\]/", "[ \\1 - \\2 ]", $displayName);

@@ -205,10 +205,10 @@ class Emailer
 		if (empty($this->tpl_msg[$template_lang . $template_file])) {
             $tpl_file = $phpbb_root_path . 'language' . $sep . 'lang_' . $template_lang . $sep . 'email' . $sep . $template_file . '.tpl';
 
-			if (!@file_exists(@phpbb_realpath($tpl_file))) {
+			if (!@file_exists(@realpath($tpl_file))) {
                 $tpl_file = $phpbb_root_path . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'email' . $sep . $template_file . '.tpl';
 
-				if (!@file_exists(@phpbb_realpath($tpl_file)))
+				if (!@file_exists(@realpath($tpl_file)))
 				{
 					message_die(GENERAL_ERROR, 'Could not find email template file :: ' . $template_file, '', __LINE__, __FILE__);
 				}
@@ -467,7 +467,7 @@ class Emailer
 	//
 	private function encodeFile($sourceFile)
 	{
-		if (is_readable(phpbb_realpath($sourceFile))) {
+		if (is_readable(realpath($sourceFile))) {
 		    $fd = fopen($sourceFile, 'rb');
 			$contents = fread($fd, filesize($sourceFile));
 	        $encoded = $this->myChunkSplit(base64_encode($contents));

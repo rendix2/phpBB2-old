@@ -55,7 +55,7 @@ class AvatarHelper
 
         $avatarFile = basename($avatarFile);
 
-        $fileExists = @file_exists(@phpbb_realpath('.' . $sep . $board_config['avatar_path'] . $sep . $avatarFile));
+        $fileExists = @file_exists(@realpath('.' . $sep . $board_config['avatar_path'] . $sep . $avatarFile));
 
         if ($avatarType === USER_AVATAR_UPLOAD && $avatarFile !== '' && $fileExists) {
             @unlink('.' . $sep . $board_config['avatar_path'] . $sep . $avatarFile);
@@ -91,7 +91,7 @@ class AvatarHelper
         }
 
         $filePath   = $board_config['avatar_gallery_path'] . $sep . $avatarCategory . $sep . $avatarFileName;
-        $fileExists = file_exists(@phpbb_realpath($filePath));
+        $fileExists = file_exists(@realpath($filePath));
 
         if ($fileExists && $mode === 'editprofile') {
             return ['user_avatar' => $avatarCategory . $sep . $avatarFileName, 'user_avatar_type' => USER_AVATAR_GALLERY];
@@ -219,7 +219,7 @@ class AvatarHelper
                 $error        = true;
                 $errorMessage = !empty($errorMessage) ? $errorMessage . '<br />' . $l_avatar_size : $l_avatar_size;
             }
-        } elseif (file_exists(@phpbb_realpath($avatarFileName)) && preg_match('/\.(jpg|jpeg|gif|png)$/i', $avatarRealName)) {
+        } elseif (file_exists(@realpath($avatarFileName)) && preg_match('/\.(jpg|jpeg|gif|png)$/i', $avatarRealName)) {
             if ($avatarFileSize <= $board_config['avatar_filesize'] && $avatarFileSize > 0) {
                 preg_match('#image\/[x\-]*([a-z]+)#', $avatarFileType, $avatarFileType);
                 $avatarFileType = $avatarFileType[1];

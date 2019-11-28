@@ -1021,7 +1021,7 @@ if (isset($_POST['avatargallery']) && !$error) {
     ) {
         $template->assignBlockVars('switch_avatar_block', [] );
 
-        if ($board_config['allow_avatar_upload'] && file_exists(@phpbb_realpath('.' . $sep . $board_config['avatar_path']))) {
+        if ($board_config['allow_avatar_upload'] && file_exists(@realpath('.' . $sep . $board_config['avatar_path']))) {
             if ($form_enctype !== '') {
                 $template->assignBlockVars('switch_avatar_block.switch_avatar_local_upload', []);
             }
@@ -1033,7 +1033,7 @@ if (isset($_POST['avatargallery']) && !$error) {
             $template->assignBlockVars('switch_avatar_block.switch_avatar_remote_link', []);
         }
 
-        if ($board_config['allow_avatar_local'] && file_exists(@phpbb_realpath('.' . $sep . $board_config['avatar_gallery_path']))) {
+        if ($board_config['allow_avatar_local'] && file_exists(@realpath('.' . $sep . $board_config['avatar_gallery_path']))) {
             $template->assignBlockVars('switch_avatar_block.switch_avatar_local_gallery', []);
         }
     }
