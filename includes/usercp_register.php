@@ -11,6 +11,8 @@
  *
  ***************************************************************************/
 
+use Nette\Utils\Random;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -360,7 +362,7 @@ if (isset($_POST['submit'])) {
 			// Error is already triggered, since one field is empty.
             $error = true;
         } elseif ($userName !== $userdata['username'] || $mode === 'register') {
-            if (mb_strtolower($userName) !== smb_trtolower($userdata['username']) || $mode === 'register') {
+            if (mb_strtolower($userName) !== mb_strtolower($userdata['username']) || $mode === 'register') {
 				$result = Validator::userName($userName, $lang, $userdata);
 
                 if ($result['error']) {
@@ -864,7 +866,7 @@ if (isset($_POST['avatargallery']) && !$error) {
 		$code = dss_rand();
 		$code = substr(str_replace('0', 'Z', mb_strtoupper(base_convert($code, 16, 35))), 2, 6);
 
-		$confirmId = md5(uniqid($user_ip, true));
+        $confirmId = mb_substr(hash('sha512', Random::generate(32)), 0, 32);
 
 		$confirm_insert_data = [
             'confirm_id' => $confirmId,

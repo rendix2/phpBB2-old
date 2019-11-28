@@ -1,5 +1,7 @@
 <?php
 
+use Nette\Utils\Random;
+
 /**
  * Class Session
  *
@@ -193,7 +195,7 @@ class Session
             ->execute();
 
         if (!$result || !dibi::getAffectedRows()) {
-            $sessionId = md5(dss_rand());
+            $sessionId = mb_substr(hash('sha512', Random::generate(32)), 0, 32);
 
             $insertData = [
                 'session_id' => $sessionId,
