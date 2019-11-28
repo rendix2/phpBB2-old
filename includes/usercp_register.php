@@ -864,7 +864,7 @@ if (isset($_POST['avatargallery']) && !$error) {
 		$code = dss_rand();
 		$code = substr(str_replace('0', 'Z', mb_strtoupper(base_convert($code, 16, 35))), 2, 6);
 
-		$confirmId = md5(uniqid($user_ip));
+		$confirmId = md5(uniqid($user_ip, true));
 
 		$confirm_insert_data = [
             'confirm_id' => $confirmId,

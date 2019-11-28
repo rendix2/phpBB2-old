@@ -201,7 +201,7 @@ class AvatarHelper
                 $avatarData = substr($avatarData, mb_strlen($avatarData) - $avatarFileSize, $avatarFileSize);
 
                 $tmpPath = '.' . $sep . $board_config['avatar_path'] . $sep . 'tmp';
-                $tmpFileName = tempnam($tmpPath, uniqid(rand()) . '-');
+                $tmpFileName = tempnam($tmpPath, uniqid(rand(), true) . '-');
 
                 $fptr = @fopen($tmpFileName, 'wb');
                 $bytesWritten = @fwrite($fptr, $avatarData, $avatarFileSize);
@@ -275,7 +275,7 @@ class AvatarHelper
         }
 
         if ($width > 0 && $height > 0 && $width <= $board_config['avatar_max_width'] && $height <= $board_config['avatar_max_height']) {
-            $newFileName = uniqid(rand()) . $imgType;
+            $newFileName = uniqid(rand(), true) . $imgType;
 
             if ($mode === 'editprofile' && $currentType === USER_AVATAR_UPLOAD && $currentAvatar !== '') {
                 self::userAvatarDelete($currentType, $currentAvatar);
