@@ -29,10 +29,10 @@ if (Config::DBMS === 'oracle' || Config::DBMS === 'msaccess') {
  */
 function query_($sql_query)
 {
-    global $table_prefix, $remove_remarks, $delimiter, $db;
+    global $table_prefix;
 
     $errored = false;
-    $sql_query = preg_replace('/phpbb_/', $table_prefix, $sql_query);
+    $sql_query = str_replace('phpbb_', $table_prefix, $sql_query);
 
     $sql_count = count($sql_query);
 
@@ -40,20 +40,16 @@ function query_($sql_query)
         echo 'Running :: ' . $sql_query[$i];
         flush();
 
-        if (!($result = $db->sql_query($sql_query[$i]))) {
-            $errored = true;
-            $error = $db->sql_error();
-            echo ' -> <b>FAILED</b> ---> <u>' . $error['message'] . "</u><br /><br />\n\n";
-        } else {
+        try {
+            dibi::query($sql_query[$i]);
             echo " -> <b><span class=\"ok\">COMPLETED</span></b><br /><br />\n\n";
+        } catch (\Dibi\Exception $e) {
+            $errored = true;
+            echo ' -> <b>FAILED</b> ---> <u>' . $e->getMessage() . "</u><br /><br />\n\n";
         }
     }
 
-    if ($errored) {
-        return false;
-    } else {
-        return true;
-    }
+    return $errored;
 }
 
 require_once($phpbb_root_path . 'includes/sql_parse.php');

@@ -28,7 +28,6 @@ if (!defined('IN_PHPBB')) {
 //define('DEBUG', 1); // Debugging on
 define('DEBUG', 1); // Debugging off
 
-
 // User Levels <- Do not change the values of USER or ADMIN
 define('DELETED', -1);
 define('ANONYMOUS', -1);
@@ -36,7 +35,6 @@ define('ANONYMOUS', -1);
 define('USER', 0);
 define('ADMIN', 1);
 define('MOD', 2);
-
 
 // User related
 define('USER_ACTIVATION_NONE', 0);
@@ -56,7 +54,6 @@ define('GROUP_OPEN', 0);
 define('GROUP_CLOSED', 1);
 define('GROUP_HIDDEN', 2);
 
-
 // Forum state
 define('FORUM_UNLOCKED', 0);
 define('FORUM_LOCKED', 1);
@@ -72,25 +69,17 @@ define('TOPIC_MOVED', 2);
 define('TOPIC_WATCH_NOTIFIED', 1);
 define('TOPIC_WATCH_UN_NOTIFIED', 0);
 
-
 // Topic types
 define('POST_NORMAL', 0);
 define('POST_STICKY', 1);
 define('POST_ANNOUNCE', 2);
 define('POST_GLOBAL_ANNOUNCE', 3);
 
-
-// SQL codes
-define('BEGIN_TRANSACTION', 1);
-define('END_TRANSACTION', 2);
-
-
 // Error codes
 define('GENERAL_MESSAGE', 200);
 define('GENERAL_ERROR', 202);
 define('CRITICAL_MESSAGE', 203);
 define('CRITICAL_ERROR', 204);
-
 
 // Private messaging
 define('PRIVMSGS_READ_MAIL', 0);
@@ -99,7 +88,6 @@ define('PRIVMSGS_SENT_MAIL', 2);
 define('PRIVMSGS_SAVED_IN_MAIL', 3);
 define('PRIVMSGS_SAVED_OUT_MAIL', 4);
 define('PRIVMSGS_UNREAD_MAIL', 5);
-
 
 // URL PARAMETERS
 define('POST_TOPIC_URL', 't');
@@ -115,7 +103,6 @@ define('POST_SESSION_USER_URL', 's');
 // Session parameters
 define('SESSION_METHOD_COOKIE', 100);
 define('SESSION_METHOD_GET', 101);
-
 
 // Page numbers for session handling
 define('PAGE_INDEX', 0);

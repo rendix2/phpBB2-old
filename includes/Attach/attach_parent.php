@@ -53,7 +53,7 @@ class attach_parent
      */
     public function get_quota_limits($userdata_quota, $user_id = 0)
     {
-        global $attach_config, $db;
+        global $attach_config;
 
         //
         // Define Filesize Limits (Prepare Quota Settings)
@@ -182,7 +182,7 @@ class attach_parent
      */
     public function handle_attachments($mode)
     {
-        global $is_auth, $attach_config, $refresh, $post_id, $submit, $preview, $error, $error_msg, $lang, $template, $userdata, $db;
+        global $is_auth, $attach_config, $refresh, $post_id, $submit, $preview, $error, $error_msg, $lang, $template, $userdata;
         global $postId;
 
         //

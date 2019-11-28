@@ -188,7 +188,7 @@ function display_assign_link($post_id)
 */
 function init_display_post_attachments($switch_attachment)
 {
-    global $attach_config, $is_auth, $template, $lang, $posts, $totalPosts, $attachments, $forum_row, $forum_topic_data;
+    global $attach_config, $is_auth, $template, $lang, $posts, $attachments, $forum_row, $forum_topic_data;
 
     if (empty($forum_topic_data) && !empty($forum_row)) {
         $switch_attachment = $forum_row['topic_attachment'];

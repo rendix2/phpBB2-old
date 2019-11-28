@@ -19,7 +19,7 @@
  */
 function attach_faq_include($lang_file)
 {
-    global $phpbb_root_path, $board_config, $faq, $attach_config;
+    global $phpbb_root_path, $attach_config;
 
     if ((int)$attach_config['disable_mod']) {
         return;

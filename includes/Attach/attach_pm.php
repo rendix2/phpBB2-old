@@ -124,7 +124,7 @@ class attach_pm extends attach_parent
      */
     public function display_attach_box_limits()
     {
-        global $folder, $attach_config, $board_config, $template, $lang, $userdata, $db;
+        global $folder, $attach_config, $board_config, $template, $lang, $userdata;
 
         if (!$attach_config['allow_pm_attach'] && $userdata['user_level'] !== ADMIN) {
             return;
@@ -163,7 +163,7 @@ class attach_pm extends attach_parent
      */
     public function privmsgs_attachment_mod($mode)
     {
-        global $attach_config, $template, $lang, $userdata, $phpbb_root_path, $db;
+        global $attach_config, $template, $lang, $userdata, $phpbb_root_path;
         global $confirm, $delete, $delete_all, $post_id, $privmsgs_id, $privmsg_id, $submit, $refresh, $mark_list, $folder;
 
         if ($folder !== 'outbox') {
