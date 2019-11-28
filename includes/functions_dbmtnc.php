@@ -505,39 +505,6 @@ function catch_error($errno, $errstr)
 }
 
 //
-// Gets the ID of a word or creates it
-//
-function get_word_id($word)
-{
-	global $stopword_array, $synonym_array;
-
-	// Check whether word is in stopword array
-    if (in_array($word, $stopword_array, true)) {
-        return null;
-    }
-    if (in_array($word, $synonym_array[1], true)) {
-        $key  = array_search($word, $synonym_array[1], true);
-        $word = $synonym_array[0][$key];
-    }
-
-    $row = dibi::select(['word_id', 'word_common'])
-        ->from(Tables::SEARCH_WORD_TABLE)
-        ->where('word_text = %s', $word)
-        ->fetch();
-
-    if ($row) { // Word was found
-        if ($row->word_common) {// Common word
-            return null;
-        } else {// Not a common word
-            return $row->word_id;
-        }
-    } else { // Word was not found
-        return dibi::insert(Tables::SEARCH_WORD_TABLE, ['word_text' => $word, 'word_common' => 0])
-            ->execute(dibi::IDENTIFIER);
-    }
-}
-
-//
 // Resets the auto increment for a table
 //
 function set_autoincrement($table, $column, $length, $unsigned = true)
