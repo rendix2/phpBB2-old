@@ -1920,7 +1920,7 @@ switch($mode_id) {
                         ->where('topic_id IN %in', $result_array)
                         ->execute(dibi::AFFECTED_ROWS);
 
-                    if ($affected_rows == 1) {
+                    if ($affected_rows === 1) {
                         $db_updated = true;
                         echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
                     } elseif ($affected_rows > 1) {
@@ -2008,7 +2008,7 @@ switch($mode_id) {
                             ->execute(dibi::AFFECTED_ROWS);
                     }
 
-                    if ($affected_rows == 1) {
+                    if ($affected_rows === 1) {
                         echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
                     } elseif ($affected_rows > 1) {
                         echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
@@ -2097,7 +2097,7 @@ switch($mode_id) {
                         ->where('privmsgs_text_id IN %in', $result_array)
                         ->execute(dibi::AFFECTED_ROWS);
 
-                    if ($affected_rows == 1) {
+                    if ($affected_rows === 1) {
                         echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
                     } elseif ($affected_rows > 1) {
                         echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
@@ -2343,7 +2343,7 @@ switch($mode_id) {
 				// Update config data to match current configuration
                 if (!empty($_SERVER['SERVER_PROTOCOL']) || !empty($_ENV['SERVER_PROTOCOL'])) {
                     $protocol = !empty($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : $_ENV['SERVER_PROTOCOL'];
-                    if (mb_strtolower(substr($protocol, 0, 5)) == 'https') {
+                    if (mb_strtolower(substr($protocol, 0, 5)) === 'https') {
                         $default_config['cookie_secure'] = '1';
                     }
                 }
@@ -2449,7 +2449,7 @@ switch($mode_id) {
                             ->execute(dibi::AFFECTED_ROWS);
                     }
 
-                    if ($affected_rows == 1) {
+                    if ($affected_rows === 1) {
                         echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
                     } elseif ($affected_rows > 1) {
                         echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
@@ -2503,7 +2503,7 @@ switch($mode_id) {
                         ->execute(dibi::AFFECTED_ROWS);
                 }
 
-                if ($affected_rows == 1) {
+                if ($affected_rows === 1) {
                     echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
                 } elseif ($affected_rows > 1) {
                     echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
@@ -2589,7 +2589,7 @@ switch($mode_id) {
 				$db_state = isset($_GET['db_state']) ? (int)$_GET['db_state'] : 0;
 
 				// Identify PHP version and time limit configuration
-                if (PHP_VERSION >= '4.0.5' && ($board_config['dbmtnc_rebuildcfg_php3only'] == 0)) { // Handle PHP beffore 4.0.5 as PHP 3 since array_search is not available
+                if (PHP_VERSION >= '4.0.5' && ($board_config['dbmtnc_rebuildcfg_php3only'] === 0)) { // Handle PHP beffore 4.0.5 as PHP 3 since array_search is not available
                     $php_ver = 4;
                     // try to reset time limit
                     $reset_allowed = true;
@@ -2611,7 +2611,7 @@ switch($mode_id) {
 				}
 
 				// Calculate posts to process
-				$posts_to_index = (int)(($execution_time - 5) * (($php_ver == 4) ? $board_config['dbmtnc_rebuildcfg_php4pps'] : $board_config['dbmtnc_rebuildcfg_php3pps']));
+				$posts_to_index = (int)(($execution_time - 5) * (($php_ver === 4) ? $board_config['dbmtnc_rebuildcfg_php4pps'] : $board_config['dbmtnc_rebuildcfg_php3pps']));
 
 				if ($posts_to_index < $board_config['dbmtnc_rebuildcfg_minposts']) {
 					$posts_to_index = $board_config['dbmtnc_rebuildcfg_minposts'];
@@ -2640,7 +2640,7 @@ switch($mode_id) {
 					
 					echo('<p class="gen">' . $lang['Indexing_finished'] . ".</p>\n");
 
-					if ($db_state == 0) {
+					if ($db_state === 0) {
 						lock_db(true, true, true);
 					} else {
 						echo('<p class="gen"><b>' . $lang['Unlock_db'] . "</b></p>\n");
@@ -2703,7 +2703,7 @@ switch($mode_id) {
 			case 'synchronize_post_direct': // Run directly
 				echo('<h1>' . $lang['Synchronize_posts'] . "</h1>\n");
 
-				if ($function == 'synchronize_post_direct') {
+				if ($function === 'synchronize_post_direct') {
 					$db_state = isset($_GET['db_state']) ? (int)$_GET['db_state'] : 1;
 				} else {
 					lock_db();
@@ -2957,7 +2957,7 @@ switch($mode_id) {
 						->where('forum_id IN %in', $result_array)
 						->execute(dibi::AFFECTED_ROWS);
 
-					if ($affected_rows == 1) {
+					if ($affected_rows === 1) {
                         $db_updated = true;
 						echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
 					} elseif ($affected_rows > 1) {
@@ -3030,7 +3030,7 @@ switch($mode_id) {
 						->where('forum_id IN %in', $result_array)
 						->execute(dibi::AFFECTED_ROWS);
 
-					if ($affected_rows == 1) {
+					if ($affected_rows === 1) {
 						echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
 					} elseif ($affected_rows > 1) {
 						echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
@@ -3101,7 +3101,7 @@ switch($mode_id) {
 
                     $affected_rows = $forumsManager->updateByPrimarys($result_array, ['forum_thanks' => 0]);
 
-                    if ($affected_rows == 1) {
+                    if ($affected_rows === 1) {
                         echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
                     } elseif ($affected_rows > 1) {
                         echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
@@ -3110,8 +3110,8 @@ switch($mode_id) {
                     echo($lang['Nothing_to_do']);
                 }
 
-				if ($function == 'synchronize_post_direct') {
-					if ($db_state == 0) {
+				if ($function === 'synchronize_post_direct') {
+					if ($db_state === 0) {
 						lock_db(true, true, true);
 					} else {
 						echo('<p class="gen"><b>' . $lang['Unlock_db'] . "</b></p>\n");
@@ -3514,7 +3514,7 @@ switch($mode_id) {
 					->where('post_time > %i', $time)
 					->execute(dibi::AFFECTED_ROWS);
 
-                if ($affected_rows == 1) {
+                if ($affected_rows === 1) {
                     echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
                 } elseif ($affected_rows > 1) {
                     echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
@@ -3529,7 +3529,7 @@ switch($mode_id) {
 					->where('privmsgs_date > %i', $time)
 					->execute(dibi::AFFECTED_ROWS);
 
-                if ($affected_rows == 1) {
+                if ($affected_rows === 1) {
                     echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
                 } elseif ($affected_rows > 1) {
                     echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
@@ -3544,7 +3544,7 @@ switch($mode_id) {
 					->where('user_emailtime > %i', $time)
 					->execute(dibi::AFFECTED_ROWS);
 
-                if ($affected_rows == 1) {
+                if ($affected_rows === 1) {
                     echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
                 } elseif ($affected_rows > 1) {
                     echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
@@ -3553,14 +3553,14 @@ switch($mode_id) {
                 }
 
 				// Checking user table (last login attempt)
-                if ($phpbb_version[0] == 0 && $phpbb_version[1] >= 19) {
+                if ($phpbb_version[0] === 0 && $phpbb_version[1] >= 19) {
 					echo('<p class="gen"><b>' . $lang['Checking_login_dates'] . "</b></p>\n");
 
 					$affected_rows = dibi::update(Tables::USERS_TABLE, ['user_last_login_try' => $time])
 						->where('user_last_login_try > %i', $time)
 						->execute(dibi::AFFECTED_ROWS);
 
-					if ($affected_rows == 1) {
+					if ($affected_rows === 1) {
 						echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
 					} elseif ($affected_rows > 1) {
 						echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
@@ -3570,7 +3570,7 @@ switch($mode_id) {
 				}
 
 				// Checking search table (search time)
-                if ($phpbb_version[0] == 0 && $phpbb_version[1] >= 20) {
+                if ($phpbb_version[0] === 0 && $phpbb_version[1] >= 20) {
                     echo('<p class="gen"><b>' . $lang['Checking_search_dates'] . "</b></p>\n");
 
 
@@ -3578,7 +3578,7 @@ switch($mode_id) {
 						->where('search_time > %i', $time)
 						->execute(dibi::AFFECTED_ROWS);
 
-					if ($affected_rows == 1) {
+					if ($affected_rows === 1) {
 						echo('<p class="gen">' . sprintf($lang['Affected_row'], $affected_rows) . "</p>\n");
 					} elseif ($affected_rows > 1) {
 						echo('<p class="gen">' . sprintf($lang['Affected_rows'], $affected_rows) . "</p>\n");
@@ -3644,7 +3644,7 @@ switch($mode_id) {
 							// Check whether the error results from HEAP-table type
                             $row2 = dibi::query('SHOW TABLE STATUS LIKE %~like~', $table)->fetch();
 
-                            if ((isset($row2->Type) && $row2->Type == 'HEAP') || (isset($row2->Engine) && ($row2->Engine == 'HEAP' || $row2->Engine == 'MEMORY'))) {
+                            if ((isset($row2->Type) && $row2->Type === 'HEAP') || (isset($row2->Engine) && ($row2->Engine === 'HEAP' || $row2->Engine === 'MEMORY'))) {
 								// Table is from HEAP-table type
 								echo("<li>$table: " . $lang['Table_HEAP_info'] . "</li>\n");
                             } else {
@@ -3677,13 +3677,13 @@ switch($mode_id) {
                     $row = dibi::query('REPAIR TABLE %n', $table)->fetch();
 
                     if ($row) {
-                        if ($row->Msg_type == 'status') {
+                        if ($row->Msg_type === 'status') {
                             echo("<li>$table: " . $lang['Table_OK'] . "</li>\n");
                         } else { //  We got an error
 							// Check whether the error results from HEAP-table type
                             $row2 = dibi::query('SHOW TABLE STATUS LIKE %~like~', $table)->fetch();
 
-                            if ((isset($row2->Type) && $row2->Type == 'HEAP') || (isset($row2->Engine) && ($row2->Engine == 'HEAP' || $row2->Engine == 'MEMORY'))) {
+                            if ((isset($row2->Type) && $row2->Type === 'HEAP') || (isset($row2->Engine) && ($row2->Engine === 'HEAP' || $row2->Engine === 'MEMORY'))) {
 								// Table is from HEAP-table type
 								echo("<li>$table: " . $lang['Table_HEAP_info'] . "</li>\n");
 							} else {
@@ -3711,14 +3711,14 @@ switch($mode_id) {
 					$row = dibi::query('OPTIMIZE TABLE %n', $table)->fetch();
 
                     if ($row) {
-                        if ($row->Msg_type == 'status') {
+                        if ($row->Msg_type === 'status') {
                             echo("<li>$table: " . $lang['Table_OK'] . "</li>\n");
                         } else {//  We got an error
                             // Check whether the error results from HEAP-table type
 
                             $row2 = dibi::query('SHOW TABLE STATUS LIKE %~like~', $table)->fetch();
 
-                            if ((isset($row2->Type) && $row2->Type == 'HEAP') || (isset($row2->Engine) && ($row2->Engine == 'HEAP' || $row2->Engine == 'MEMORY'))) {
+                            if ((isset($row2->Type) && $row2->Type === 'HEAP') || (isset($row2->Engine) && ($row2->Engine === 'HEAP' || $row2->Engine === 'MEMORY'))) {
                                 // Table is from HEAP-table type
                                 echo("<li>$table: " . $lang['Table_HEAP_info'] . "</li>\n");
                             } else {

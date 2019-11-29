@@ -386,7 +386,7 @@ switch($mode) {
 					<td><?php echo $lang[($secure_cur === '1') ? 'secure_yes' : 'secure_no' ]; ?></td>
 					<td>&nbsp;</td>
 					<td><input type="radio" name="secure_select" value="1"<?php echo ( $secure_cur !== $secure_rec ) ? ' checked="checked"' : '' ?> /></td>
-					<td><input type="radio" name="secure" value="1"<?php echo ( $secure_rec === '1' ) ? ' checked="checked"' : '' ?> /><?php echo $lang['secure_yes']; ?><input type="radio" name="secure" value="0"<?php echo ( $secure_rec == '0' ) ? ' checked="checked"' : '' ?> /><?php echo $lang['secure_no']; ?></td>
+					<td><input type="radio" name="secure" value="1"<?php echo ( $secure_rec === '1' ) ? ' checked="checked"' : '' ?> /><?php echo $lang['secure_yes']; ?><input type="radio" name="secure" value="0"<?php echo ( $secure_rec === '0' ) ? ' checked="checked"' : '' ?> /><?php echo $lang['secure_no']; ?></td>
 				</tr>
 				<tr>
 					<td><b><?php echo $lang['domain']; ?></b></td>
@@ -637,7 +637,7 @@ switch($mode) {
 						$row = dibi::query('REPAIR TABLE %n', $table)->fetch();
 
 						if ($row) {
-							if ($row->Msg_type == 'status') {
+							if ($row->Msg_type === 'status') {
 ?>
 		<li><?php echo "$table: " . $lang['Table_OK']?></li>
 <?php

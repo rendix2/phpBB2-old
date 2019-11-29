@@ -179,7 +179,7 @@ function image_getdimension($file)
 
         if ($tmp_str === 'JFIF') {
             $o_byte = fread($fp, 1);
-            if ((int)$o_byte != 0) {
+            if ((int)$o_byte !== 0) {
                 $error = true;
             }
 

@@ -27,7 +27,7 @@ $userdata = init_userprefs(PAGE_RULES);
 
 // Display the allowed Extension Groups and Upload Size
 if ($privmsg) {
-    $auth['auth_attachments'] = ($userdata['user_level'] != ADMIN) ? (int)$attach_config['allow_pm_attach'] : true;
+    $auth['auth_attachments'] = ($userdata['user_level'] !== ADMIN) ? (int)$attach_config['allow_pm_attach'] : true;
     $auth['auth_view'] = true;
     $_max_filesize = $attach_config['max_filesize_pm'];
 } else {
