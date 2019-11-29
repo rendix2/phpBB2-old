@@ -794,48 +794,48 @@ if ($mode === 'searchuser') {
 
             if ($show_results === 'posts') {
                 if (isset($return_chars)) {
-					$bbcode_uid = $search_set->bbcode_uid;
+                    $bbcode_uid = $search_set->bbcode_uid;
 
-					//
-					// If the board has HTML off but the post has HTML
-					// on then we process it, else leave it alone
-					//
+                    //
+                    // If the board has HTML off but the post has HTML
+                    // on then we process it, else leave it alone
+                    //
                     if ($return_chars === -1) { // there was !== -1
-						$message = strip_tags($message);
-						$message = preg_replace("/\[.*?:$bbcode_uid:?.*?\]/si", '', $message);
-						$message = preg_replace('/\[url\]|\[\/url\]/si', '', $message);
-						$message = mb_strlen($message) > $return_chars ? mb_substr($message, 0, $return_chars) . ' ...' : $message;
-					} else {
+                        $message = strip_tags($message);
+                        $message = preg_replace("/\[.*?:$bbcode_uid:?.*?\]/si", '', $message);
+                        $message = preg_replace('/\[url\]|\[\/url\]/si', '', $message);
+                        $message = mb_strlen($message) > $return_chars ? mb_substr($message, 0, $return_chars) . ' ...' : $message;
+                    } else {
                         if (!$board_config['allow_html'] && $search_set->user_allowhtml) {
                             $message = preg_replace('#(<)([\/]?.*?)(>)#is', '&lt;\\2&gt;', $message);
                         }
 
                         if ($bbcode_uid !== '') {
-							$message = $board_config['allow_bbcode'] ? bbencode_second_pass($message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
-						}
+                            $message = $board_config['allow_bbcode'] ? bbencode_second_pass($message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
+                        }
 
-						$message = make_clickable($message);
+                        $message = make_clickable($message);
 
                         if ($highlight_active) {
                             if (preg_match('/<.*>/', $message)) {
                                 $message = preg_replace($highlight_match, '<!-- #sh -->\1<!-- #eh -->', $message);
 
-								$end_html = 0;
-								$start_html = 1;
-								$temp_message = '';
-								$message = ' ' . $message . ' ';
+                                $end_html = 0;
+                                $start_html = 1;
+                                $temp_message = '';
+                                $message = ' ' . $message . ' ';
 
                                 while ($start_html = mb_strpos($message, '<', $start_html)) {
-									$grab_length = $start_html - $end_html - 1;
-									$temp_message .= mb_substr($message, $end_html + 1, $grab_length);
+                                    $grab_length = $start_html - $end_html - 1;
+                                    $temp_message .= mb_substr($message, $end_html + 1, $grab_length);
 
                                     if ($end_html = mb_strpos($message, '>', $start_html)) {
-										$length = $end_html - $start_html + 1;
-										$hold_string = mb_substr($message, $start_html, $length);
+                                        $length = $end_html - $start_html + 1;
+                                        $hold_string = mb_substr($message, $start_html, $length);
 
                                         if (strrpos(' ' . $hold_string, '<') !== 1) {
-											$end_html = $start_html + 1;
-											$end_counter = 1;
+                                            $end_html = $start_html + 1;
+                                            $end_counter = 1;
 
                                             while ($end_counter && $end_html < mb_strlen($message)) {
                                                 $searchedChar = mb_substr($message, $end_html, 1);
@@ -849,51 +849,51 @@ if ($mode === 'searchuser') {
                                                 $end_html++;
                                             }
 
-											$length = $end_html - $start_html + 1;
-											$hold_string = mb_substr($message, $start_html, $length);
-											$hold_string = str_replace('<!-- #sh -->', '', $hold_string);
-											$hold_string = str_replace('<!-- #eh -->', '', $hold_string);
-										} elseif ($hold_string === '<!-- #sh -->') {
-											$hold_string = str_replace('<!-- #sh -->', '<span style="color:#' . $theme['fontcolor3'] . '"><b>', $hold_string);
+                                            $length = $end_html - $start_html + 1;
+                                            $hold_string = mb_substr($message, $start_html, $length);
+                                            $hold_string = str_replace('<!-- #sh -->', '', $hold_string);
+                                            $hold_string = str_replace('<!-- #eh -->', '', $hold_string);
+                                        } elseif ($hold_string === '<!-- #sh -->') {
+                                            $hold_string = str_replace('<!-- #sh -->', '<span style="color:#' . $theme['fontcolor3'] . '"><b>', $hold_string);
                                         } elseif ($hold_string === '<!-- #eh -->') {
                                             $hold_string = str_replace('<!-- #eh -->', '</b></span>', $hold_string);
                                         }
 
-										$temp_message .= $hold_string;
+                                        $temp_message .= $hold_string;
 
-										$start_html += $length;
+                                        $start_html += $length;
                                     } else {
                                         $start_html = mb_strlen($message);
                                     }
-								}
+                                }
 
-								$grab_length = mb_strlen($message) - $end_html - 1;
-								$temp_message .= mb_substr($message, $end_html + 1, $grab_length);
+                                $grab_length = mb_strlen($message) - $end_html - 1;
+                                $temp_message .= mb_substr($message, $end_html + 1, $grab_length);
 
-								$message = trim($temp_message);
-							} else {
-								$message = preg_replace($highlight_match, '<span style="color:#' . $theme['fontcolor3'] . '"><b>\1</b></span>', $message);
-							}
-						}
-					}
+                                $message = trim($temp_message);
+                            } else {
+                                $message = preg_replace($highlight_match, '<span style="color:#' . $theme['fontcolor3'] . '"><b>\1</b></span>', $message);
+                            }
+                        }
+                    }
 
                     if ($count_orig_word) {
-						$topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
-						$post_subject = $search_set->post_subject !== '' ? preg_replace($orig_word, $replacement_word, $search_set->post_subject) : $topic_title;
+                        $topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
+                        $post_subject = $search_set->post_subject !== '' ? preg_replace($orig_word, $replacement_word, $search_set->post_subject) : $topic_title;
 
-						$message = preg_replace($orig_word, $replacement_word, $message);
-					} else {
-						$post_subject = $search_set->post_subject !== '' ? $search_set->post_subject : $topic_title;
-					}
+                        $message = preg_replace($orig_word, $replacement_word, $message);
+                    } else {
+                        $post_subject = $search_set->post_subject !== '' ? $search_set->post_subject : $topic_title;
+                    }
 
-					if ($board_config['allow_smilies'] && $search_set->enable_smilies) {
-						$message = smilies_pass($message);
-					}
+                    if ($board_config['allow_smilies'] && $search_set->enable_smilies) {
+                        $message = smilies_pass($message);
+                    }
 
-					$message = nl2br($message);
-				}
+                    $message = nl2br($message);
+                }
 
-				$poster = $search_set->user_id !== ANONYMOUS ? '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $search_set->user_id) . '">' : '';
+                $poster = $search_set->user_id !== ANONYMOUS ? '<a href="' . Session::appendSid('profile.php?mode=viewprofile&amp;' . POST_USERS_URL . '=' . $search_set->user_id) . '">' : '';
 
                 if ($search_set->user_id !== ANONYMOUS) {
                     $poster .= $search_set->username;
@@ -905,7 +905,7 @@ if ($mode === 'searchuser') {
                     }
                 }
 
-				$poster .= $search_set->user_id !== ANONYMOUS ? '</a>' : '';
+                $poster .= $search_set->user_id !== ANONYMOUS ? '</a>' : '';
 
                 if ($userdata['session_logged_in'] && $search_set->post_time > $userdata['user_lastvisit']) {
                     if (isset($trackingTopics[$topic_id], $trackingForums[$forum_id])) {
