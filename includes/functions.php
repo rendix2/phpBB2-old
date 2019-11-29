@@ -143,7 +143,7 @@ function make_jumpbox($action, $match_forum_id = 0)
 				foreach ($forums as $forum) {
 					if ($forum->cat_id === $category->cat_id && $forum->auth_view <= Auth::AUTH_REG) {
 
-//					if ($forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $is_auth[$forum_rows[$j]['forum_id']]['auth_view'] )
+//					if ($forum_rows[$j]['cat_id'] === $category_rows[$i]['cat_id'] && $is_auth[$forum_rows[$j]['forum_id']]['auth_view'] )
 //					{
 						$selected = $forum->forum_id === $match_forum_id ? 'selected="selected"' : '';
 						$boxstring_forums .=  '<option value="' . $forum->forum_id . '"' . $selected . '>' . htmlspecialchars($forum->forum_name, ENT_QUOTES) . '</option>';
@@ -406,7 +406,7 @@ function get_page($num_items, $per_page, $start_item)
 
     $total_pages = ceil($num_items / $per_page);
 
-    if ($total_pages == 1) {
+    if ($total_pages === 1) {
         return '1';
         exit;
     }
@@ -415,7 +415,7 @@ function get_page($num_items, $per_page, $start_item)
     $page_string = '';
 
     for ($i = 0; $i < $total_pages + 1; $i++) {
-        if ($i == $on_page) {
+        if ($i === $on_page) {
             $page_string = $i;
         }
 

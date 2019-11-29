@@ -261,7 +261,7 @@ class Session
                 $sessionData['autologinid'] = '';
             }
 
-            //		$sessiondata['autologinid'] = (!$admin) ? (( $enable_autologin && $sessionmethod == SESSION_METHOD_COOKIE ) ? $auto_login_key : '') : $sessiondata['autologinid'];
+            // $sessiondata['autologinid'] = (!$admin) ? (( $enable_autologin && $sessionmethod === SESSION_METHOD_COOKIE ) ? $auto_login_key : '') : $sessiondata['autologinid'];
             $sessionData['userid'] = $userId;
         }
 

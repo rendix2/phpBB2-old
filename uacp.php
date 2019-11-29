@@ -35,7 +35,7 @@ if (!$user_id) {
 
 $profiledata = get_userdata($user_id);
 
-if ($profiledata['user_id'] !== $userdata['user_id'] && $userdata['user_level'] != ADMIN) {
+if ($profiledata['user_id'] !== $userdata['user_id'] && $userdata['user_level'] !== ADMIN) {
 	message_die(GENERAL_MESSAGE, $lang['Not_Authorised']);
 }
 
@@ -108,7 +108,7 @@ if ($confirm && count($delete_id_list)) {
             ->fetch();
 
         if ($row) {
-            if ($row->post_id != 0) {
+            if ($row->post_id !== 0) {
                 delete_attachment(0, (int)$attachId);
             } else {
                 delete_attachment(0, (int)$attachId, PAGE_PRIVMSGS, (int)$profiledata['user_id']);
@@ -260,7 +260,7 @@ if (count($attachments) > 0) {
 		$num_ids = count($ids);
 
         for ($j = 0; $j < $num_ids; $j++) {
-            if ($ids[$j]['post_id'] != 0) {
+            if ($ids[$j]['post_id'] !== 0) {
                 $row = dibi::select('t.topic_title')
                     ->from(Tables::TOPICS_TABLE)
                     ->as('t')

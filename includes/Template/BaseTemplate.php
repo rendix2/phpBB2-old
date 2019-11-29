@@ -24,9 +24,9 @@ abstract class BaseTemplate
      * the compiled templates.
      * ...
      * This will end up being a multi-dimensional array like this:
-     * $this->_tpldata[block.][iteration#][child.][iteration#][child2.][iteration#][variablename] == value
+     * $this->_tpldata[block.][iteration#][child.][iteration#][child2.][iteration#][variablename] === value
      * if it's a root-level variable, it'll be like this:
-     * $this->_tpldata[.][0][varname] == value
+     * $this->_tpldata[.][0][varname] === value
      *
      * @var array $_tpldata
      */

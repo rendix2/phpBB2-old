@@ -206,7 +206,7 @@ if (!$forum_topic_data) {
 
 $forumId = (int)$forum_topic_data->forum_id;
 
-$show_thanks = ($forum_topic_data->forum_thank_enable == FORUM_THANKABLE) ? FORUM_THANKABLE : FORUM_UNTHANKABLE;
+$show_thanks = ($forum_topic_data->forum_thank_enable === FORUM_THANKABLE) ? FORUM_THANKABLE : FORUM_UNTHANKABLE;
 
 //
 // Start session management

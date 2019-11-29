@@ -299,8 +299,8 @@ if ($mode === 'manage') {
     $yes_no_switches = ['disable_mod', 'allow_pm_attach', 'allow_ftp_upload', 'attachment_topic_review', 'display_order', 'show_apcp', 'ftp_pasv_mode'];
 
     foreach ($yes_no_switches as $variable) {
-        eval('$' . $variable . "_yes = ( \$new_attach['" . $variable . "'] != '0' ) ? 'checked=\"checked\"' : '';");
-        eval('$' . $variable . "_no = ( \$new_attach['" . $variable . "'] == '0' ) ? 'checked=\"checked\"' : '';");
+        eval('$' . $variable . "_yes = ( \$new_attach['" . $variable . "'] !== '0' ) ? 'checked=\"checked\"' : '';");
+        eval('$' . $variable . "_no = ( \$new_attach['" . $variable . "'] === '0' ) ? 'checked=\"checked\"' : '';");
     }
 
     if (!function_exists('ftp_connect')) {

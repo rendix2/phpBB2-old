@@ -616,7 +616,7 @@ if ($view === 'attachments') {
                     'S_HIDDEN' => $hidden_field,
                     'U_VIEW_ATTACHMENT' => Session::appendSid($phpbb_root_path . 'download.php?id=' . $attachments[$i]['attach_id'])
                 ]
-//				'U_VIEW_POST' => ($attachments[$i]['post_id'] != 0) ? Session::appendSid("../viewtopic." . $phpEx . "?" . POST_POST_URL . "=" . $attachments[$i]['post_id'] . "#" . $attachments[$i]['post_id']) : '')
+//				'U_VIEW_POST' => ($attachments[$i]['post_id'] !== 0) ? Session::appendSid("../viewtopic." . $phpEx . "?" . POST_POST_URL . "=" . $attachments[$i]['post_id'] . "#" . $attachments[$i]['post_id']) : '')
             );
 
         }

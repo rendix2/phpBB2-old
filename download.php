@@ -64,7 +64,7 @@ $site = explode('?', $HTTP_SERVER_VARS['HTTP_REFERER']);
 $url = trim($site[0]);
 //$url = $HTTP_HOST;
 
-if ($url != '')
+if ($url !== '')
 {
 	$allowed = ($allow_deny_order === ALLOWED_DENIED) ? false : true;
 	
@@ -223,7 +223,7 @@ if (!$download_id) {
     message_die(GENERAL_ERROR, $lang['No_attachment_selected']);
 }
 
-if ($attach_config['disable_mod'] && $userdata['user_level'] != ADMIN) {
+if ($attach_config['disable_mod'] && $userdata['user_level'] !== ADMIN) {
     message_die(GENERAL_MESSAGE, $lang['Attachment_feature_disabled']);
 }
 
@@ -251,7 +251,7 @@ $num_auth_pages = count($auth_pages);
 for ($i = 0; $i < $num_auth_pages && $authorised === false; $i++) {
     $auth_pages[$i]['post_id'] = (int)$auth_pages[$i]['post_id'];
 
-    if ($auth_pages[$i]['post_id'] != 0) {
+    if ($auth_pages[$i]['post_id'] !== 0) {
         $row = dibi::select('forum_id')
             ->from(Tables::POSTS_TABLE)
             ->where('[post_id] = %i', $auth_pages[$i]['post_id'])
@@ -294,7 +294,7 @@ foreach ($rows as $row) {
 }
 
 // disallowed ?
-if (!in_array($attachment->extension, $allowed_extensions) && $userdata['user_level'] != ADMIN) {
+if (!in_array($attachment->extension, $allowed_extensions) && $userdata['user_level'] !== ADMIN) {
     message_die(GENERAL_MESSAGE, sprintf($lang['Extension_disabled_after_posting'], $attachment->extension));
 }
 
