@@ -198,13 +198,13 @@ if ($mode === 'searchuser') {
 			} else {
 				$search_author = str_replace('*', '%', trim($search_author));
 
-				if (( strpos($search_author, '%') !== false ) && ( strlen(str_replace('%', '', $search_author)) < $board_config['search_min_chars'] )) {
+				if (( mb_strpos($search_author, '%') !== false ) && ( mb_strlen(str_replace('%', '', $search_author)) < $board_config['search_min_chars'] )) {
 					$search_author = '';
 				}
 
                 $user_ids = dibi::select('user_id')
                     ->from(Tables::USERS_TABLE)
-                    ->where('username LIKE %~like~', $search_author)
+                    ->where('[username] LIKE %~like~', $search_author)
                     ->fetchPairs(null, 'user_id');
 
                 if (!count($user_ids)) {
@@ -213,7 +213,7 @@ if ($mode === 'searchuser') {
 
                 $search_ids = dibi::select('post_id')
                     ->from(Tables::POSTS_TABLE)
-                    ->where('poster_id IN %in', $user_ids);
+                    ->where('[poster_id] IN %in', $user_ids);
 
                 if ($search_time) {
                     $search_ids->where('post_time >= %i', $search_time);
@@ -230,7 +230,7 @@ if ($mode === 'searchuser') {
 
 			$split_search = [];
 			$stripped_keywords = stripslashes($search_keywords);
-			$split_search = ( !strstr($multibyte_charset, $lang['ENCODING']) ) ?  SearchHelper::splitWords(SearchHelper::cleanWords('search', $stripped_keywords, $stopword_array, $synonym_array), 'search') : explode(' ', $search_keywords);
+			$split_search = !strstr($multibyte_charset, $lang['ENCODING']) ?  SearchHelper::splitWords(SearchHelper::cleanWords('search', $stripped_keywords, $stopword_array, $synonym_array), 'search') : explode(' ', $search_keywords);
 			unset($stripped_keywords);
 
 			$word_count = 0;
@@ -240,7 +240,7 @@ if ($mode === 'searchuser') {
 			$result_list = [];
 
             foreach ($split_search as $split_search_value) {
-                if (strlen(str_replace(['*', '%'], '', trim($split_search_value))) < $board_config['search_min_chars']) {
+                if (mb_strlen(str_replace(['*', '%'], '', trim($split_search_value))) < $board_config['search_min_chars']) {
                     $split_search_value = '';
 					continue;
 				}
@@ -263,7 +263,7 @@ if ($mode === 'searchuser') {
                             $current_match_type = 'and';
                         }
 
-						if (false === strpos($multibyte_charset, $lang['ENCODING'])) {
+						if (false === mb_strpos($multibyte_charset, $lang['ENCODING'])) {
 							$match_word = str_replace('*', '%', $split_search_value);
 
 							// TODO THERE WAS LIKE 'awwdawd' WITHOUT LIKE '%%'
@@ -272,9 +272,9 @@ if ($mode === 'searchuser') {
                                 ->as('w')
                                 ->innerJoin(Tables::SEARCH_MATCH_TABLE)
                                 ->as('m')
-                                ->on('m.word_id = w.word_id')
-                                ->where('w.word_text LIKE %~like~', $match_word)
-                                ->where('w.word_common <> %i', 1);
+                                ->on('[m.word_id] = [w.word_id]')
+                                ->where('[w.word_text] LIKE %~like~', $match_word)
+                                ->where('[w.word_common] <> %i', 1);
 
                             if (!$search_fields) {
                                 $post_ids->where('m.title_match = %i', 0);
@@ -288,11 +288,11 @@ if ($mode === 'searchuser') {
                             if ($search_fields) {
                                 $post_ids = dibi::select('post_id')
                                     ->from(Tables::POSTS_TEXT_TABLE)
-                                    ->where('post_text LIKE ~%like~ OR post_subject LIKE %~like~', $match_word, $match_word);
+                                    ->where('[post_text] LIKE ~%like~ OR [post_subject] LIKE %~like~', $match_word, $match_word);
                             } else {
                                 $post_ids = dibi::select('post_id')
                                     ->from(Tables::POSTS_TEXT_TABLE)
-                                    ->where('post_text LIKE %like', $match_word);
+                                    ->where('[post_text] LIKE %like', $match_word);
                             }
 
                             $post_ids = $post_ids->fetchPairs(null, 'post_id');
@@ -377,7 +377,7 @@ if ($mode === 'searchuser') {
         if ($search_author !== '') {
 			$search_author = str_replace('*', '%', trim($search_author));
 
-			if (( strpos($search_author, '%') !== false ) && ( strlen(str_replace('%', '', $search_author)) < $board_config['search_min_chars'] )) {
+			if (( mb_strpos($search_author, '%') !== false ) && ( mb_strlen(str_replace('%', '', $search_author)) < $board_config['search_min_chars'] )) {
 				$search_author = '';
 			}
 		}
@@ -396,7 +396,7 @@ if ($mode === 'searchuser') {
                     if ($search_author === '' && $auth_sql === '') {
                         $search_ids = dibi::select('topic_id')
                             ->from(Tables::POSTS_TABLE)
-                            ->where('post_id IN %in', $search_id_chunk);
+                            ->where('[post_id] IN %in', $search_id_chunk);
 
                         if ($search_time) {
                             $search_ids->where('post_time >= %i', $search_time);
@@ -415,26 +415,26 @@ if ($mode === 'searchuser') {
                             $search_ids->innerJoin(Tables::USERS_TABLE)
                                 ->as('u')
                                 ->on('u.user_id = p.poster_id')
-                                ->where('u.user_id IN %in', $user_ids);
+                                ->where('[u.user_id] IN %in', $user_ids);
 
                             if ($search_time) {
-                                $search_ids->where('p.post_time >= %i', $search_time);
+                                $search_ids->where('[p.post_time] >= %i', $search_time);
                             }
                         }
 
                         if ($auth_sql !== '') {
                             $search_ids->from(Tables::FORUMS_TABLE)
                                 ->as('f')
-                                ->where('f.forum_id = p.forum_id');
+                                ->where('[f.forum_id] = [p.forum_id]');
 
                             if ($search_time) {
-                                $search_ids->where('p.post_time >= %i', $search_time);
+                                $search_ids->where('[p.post_time] >= %i', $search_time);
                             }
 
                             $search_ids->where($auth_sql);
                         }
 
-                        $search_ids = $search_ids->where('p.post_id IN %in', $search_id_chunk)
+                        $search_ids = $search_ids->where('[p.post_id] IN %in', $search_id_chunk)
                             ->groupBy('p.topic_id')
                         ->fetchPairs(null, 'topic_id');
 					}
@@ -451,10 +451,10 @@ if ($mode === 'searchuser') {
                     if ($search_author === '' && $auth_sql === '') {
                         $search_ids = dibi::select('post_id')
                             ->from(Tables::POSTS_TABLE)
-                            ->where('post_id IN %in', $search_id_chunk);
+                            ->where('[post_id] IN %in', $search_id_chunk);
 
                         if ($search_time) {
-                            $search_ids->where('post_time >= %i', $search_time);
+                            $search_ids->where('[post_time] >= %i', $search_time);
                         }
 
                         $search_ids = $search_ids->fetchPairs(null, 'post_id');
@@ -466,7 +466,7 @@ if ($mode === 'searchuser') {
                         if ($auth_sql !== '') {
                             $search_ids->from(Tables::FORUMS_TABLE)
                                 ->as('f')
-                                ->where('f.forum_id = p.forum_id')
+                                ->where('[f.forum_id] = [p.forum_id]')
                                 ->where($auth_sql);
                         }
 
@@ -474,14 +474,14 @@ if ($mode === 'searchuser') {
                         if ($search_author !== '') {
                             $search_ids->from(Tables::USERS_TABLE)
                                 ->as('u')
-                                ->where('u.user_id = p.poster_id')
-                                ->where('u.username LIKE %~like~', $search_author);
+                                ->where('[u.user_id] = [p.poster_id]')
+                                ->where('[u.username] LIKE %~like~', $search_author);
                         }
 
-                        $search_ids->where('p.post_id IN %in', $search_id_chunk);
+                        $search_ids->where('[p.post_id] IN %in', $search_id_chunk);
 
                         if ($search_time) {
-                            $search_ids->where('p.post_time >= %i', $search_time);
+                            $search_ids->where('[p.post_time] >= %i', $search_time);
                         }
 
                         $search_ids = $search_ids->fetchPairs(null, 'post_id');
@@ -498,16 +498,16 @@ if ($mode === 'searchuser') {
                     ->as('t')
                     ->innerJoin(Tables::FORUMS_TABLE)
                     ->as('f')
-                    ->on('t.forum_id = f.forum_id')
-                    ->where('t.topic_replies = %i', 0)
-                    ->where('t.topic_moved_id = %i', 0)
+                    ->on('[t.forum_id] = [f.forum_id]')
+                    ->where('[t.topic_replies] = %i', 0)
+                    ->where('[t.topic_moved_id] = %i', 0)
                     ->where($auth_sql)
                     ->fetchPairs(null, 'topic_id');
 			} else {
                 $search_ids = dibi::select('topic_id')
                     ->from(Tables::TOPICS_TABLE)
-                    ->where('topic_replies = %i', 0)
-                    ->where('topic_moved_id = %i', 0)
+                    ->where('[topic_replies] = %i', 0)
+                    ->where('[topic_moved_id] = %i', 0)
                     ->fetchPairs(null, 'topic_id');
 			}
 
@@ -527,7 +527,7 @@ if ($mode === 'searchuser') {
 		// Delete old data from the search result table
 		//
         dibi::delete(Tables::SEARCH_TABLE)
-            ->where('search_time < %i', $current_time - (int)$board_config['session_length'])
+            ->where('[search_time] < %i', $current_time - (int)$board_config['session_length'])
             ->execute();
 
 		//
@@ -548,10 +548,10 @@ if ($mode === 'searchuser') {
 		// - to include or not to include
 		/*
 		$max_result_length = 60000;
-		if (strlen($search_results) > $max_result_length)
+		if (mb_strlen($search_results) > $max_result_length)
 		{
-			$search_results = substr($search_results, 0, $max_result_length);
-			$search_results = substr($search_results, 0, strrpos($search_results, ','));
+			$search_results = mb_substr($search_results, 0, $max_result_length);
+			$search_results = mb_substr($search_results, 0, strrpos($search_results, ','));
 			$total_match_count = count(explode(', ', $search_results));
 		}
 		*/
@@ -577,7 +577,7 @@ if ($mode === 'searchuser') {
         ];
 
 		dibi::update(Tables::SEARCH_TABLE, $update_data)
-            ->where('session_id = %s', $userdata['session_id'])
+            ->where('[session_id] = %s', $userdata['session_id'])
             ->execute();
 
         if (!dibi::getAffectedRows()) {
@@ -586,7 +586,6 @@ if ($mode === 'searchuser') {
                 'session_id' => $userdata['session_id'],
                 'search_time' => $current_time,
                 'search_array' => $result_array
-
             ];
 
             dibi::insert(Tables::SEARCH_TABLE, $insert_data)->execute();
@@ -597,8 +596,8 @@ if ($mode === 'searchuser') {
 		if ($search_id) {
             $row = dibi::select('search_array')
                 ->from(Tables::SEARCH_TABLE)
-                ->where('search_id = %i', $search_id)
-                ->where('session_id = %s', $userdata['session_id'])
+                ->where('[search_id] = %i', $search_id)
+                ->where('[session_id] = %s', $userdata['session_id'])
                 ->fetch();
 
             $search_data = unserialize($row->search_array);
@@ -632,6 +631,7 @@ if ($mode === 'searchuser') {
                 'u.user_sig_bbcode_uid',
                 'u.user_allow_viewonline',
                 'u.user_session_time',
+                'u.user_allowhtml'
             ];
 
             $search_sets = dibi::select($columns)
@@ -639,17 +639,17 @@ if ($mode === 'searchuser') {
                 ->as('f')
                 ->innerJoin(Tables::POSTS_TABLE)
                 ->as('p')
-                ->on('f.forum_id = p.forum_id')
+                ->on('[f.forum_id] = [p.forum_id]')
                 ->innerJoin(Tables::TOPICS_TABLE)
                 ->as('t')
-                ->on('p.topic_id = t.topic_id')
+                ->on('[p.topic_id] = [t.topic_id]')
                 ->innerJoin(Tables::USERS_TABLE)
                 ->as('u')
-                ->on('p.poster_id = u.user_id')
+                ->on('[p.poster_id] = [u.user_id]')
                 ->innerJoin(Tables::POSTS_TEXT_TABLE)
                 ->as('pt')
-                ->on('pt.post_id = p.post_id')
-                ->where('p.post_id IN %in', $search_ids);
+                ->on('[pt.post_id] = [p.post_id]')
+                ->where('[p.post_id] IN %in', $search_ids);
 		} else {
             $columns = [
                 't.*',
@@ -800,11 +800,11 @@ if ($mode === 'searchuser') {
 					// If the board has HTML off but the post has HTML
 					// on then we process it, else leave it alone
 					//
-                    if ($return_chars !== -1) {
+                    if ($return_chars === -1) { // there was !== -1
 						$message = strip_tags($message);
 						$message = preg_replace("/\[.*?:$bbcode_uid:?.*?\]/si", '', $message);
 						$message = preg_replace('/\[url\]|\[\/url\]/si', '', $message);
-						$message = mb_strlen($message) > $return_chars ? substr($message, 0, $return_chars) . ' ...' : $message;
+						$message = mb_strlen($message) > $return_chars ? mb_substr($message, 0, $return_chars) . ' ...' : $message;
 					} else {
                         if (!$board_config['allow_html'] && $search_set->user_allowhtml) {
                             $message = preg_replace('#(<)([\/]?.*?)(>)#is', '&lt;\\2&gt;', $message);
@@ -818,29 +818,31 @@ if ($mode === 'searchuser') {
 
                         if ($highlight_active) {
                             if (preg_match('/<.*>/', $message)) {
-								$message = preg_replace($highlight_match, '<!-- #sh -->\1<!-- #eh -->', $message);
+                                $message = preg_replace($highlight_match, '<!-- #sh -->\1<!-- #eh -->', $message);
 
 								$end_html = 0;
 								$start_html = 1;
 								$temp_message = '';
 								$message = ' ' . $message . ' ';
 
-                                while ($start_html = strpos($message, '<', $start_html)) {
+                                while ($start_html = mb_strpos($message, '<', $start_html)) {
 									$grab_length = $start_html - $end_html - 1;
-									$temp_message .= substr($message, $end_html + 1, $grab_length);
+									$temp_message .= mb_substr($message, $end_html + 1, $grab_length);
 
-                                    if ($end_html = strpos($message, '>', $start_html)) {
+                                    if ($end_html = mb_strpos($message, '>', $start_html)) {
 										$length = $end_html - $start_html + 1;
-										$hold_string = substr($message, $start_html, $length);
+										$hold_string = mb_substr($message, $start_html, $length);
 
                                         if (strrpos(' ' . $hold_string, '<') !== 1) {
 											$end_html = $start_html + 1;
 											$end_counter = 1;
 
-                                            while ($end_counter && $end_html < strlen($message)) {
-                                                if (substr($message, $end_html, 1) === '>') {
+                                            while ($end_counter && $end_html < mb_strlen($message)) {
+                                                $searchedChar = mb_substr($message, $end_html, 1);
+
+                                                if ($searchedChar === '>') {
                                                     $end_counter--;
-                                                } elseif (substr($message, $end_html, 1) === '<') {
+                                                } elseif ($searchedChar === '<') {
                                                     $end_counter++;
                                                 }
 
@@ -848,7 +850,7 @@ if ($mode === 'searchuser') {
                                             }
 
 											$length = $end_html - $start_html + 1;
-											$hold_string = substr($message, $start_html, $length);
+											$hold_string = mb_substr($message, $start_html, $length);
 											$hold_string = str_replace('<!-- #sh -->', '', $hold_string);
 											$hold_string = str_replace('<!-- #eh -->', '', $hold_string);
 										} elseif ($hold_string === '<!-- #sh -->') {
@@ -861,12 +863,12 @@ if ($mode === 'searchuser') {
 
 										$start_html += $length;
                                     } else {
-                                        $start_html = strlen($message);
+                                        $start_html = mb_strlen($message);
                                     }
 								}
 
-								$grab_length = strlen($message) - $end_html - 1;
-								$temp_message .= substr($message, $end_html + 1, $grab_length);
+								$grab_length = mb_strlen($message) - $end_html - 1;
+								$temp_message .= mb_substr($message, $end_html + 1, $grab_length);
 
 								$message = trim($temp_message);
 							} else {
@@ -906,10 +908,12 @@ if ($mode === 'searchuser') {
 				$poster .= $search_set->user_id !== ANONYMOUS ? '</a>' : '';
 
                 if ($userdata['session_logged_in'] && $search_set->post_time > $userdata['user_lastvisit']) {
-                    if (!empty($trackingTopics[$topic_id]) && !empty($trackingForums[$forum_id])) {
+                    if (isset($trackingTopics[$topic_id], $trackingForums[$forum_id])) {
                         $topic_last_read = $trackingTopics[$topic_id] > $trackingForums[$forum_id] ? $trackingTopics[$topic_id] : $trackingForums[$forum_id];
-                    } elseif (!empty($trackingTopics[$topic_id]) || !empty($trackingForums[$forum_id])) {
+                    } elseif (isset($trackingTopics[$topic_id]) || isset($trackingForums[$forum_id])) {
                         $topic_last_read = !empty($trackingTopics[$topic_id]) ? $trackingTopics[$topic_id] : $trackingForums[$forum_id];
+                    } else {
+                        $topic_last_read = 0;
                     }
 
                     if ($search_set->post_time > $topic_last_read) {
