@@ -430,7 +430,7 @@ if (isset($_POST['submit'])) {
 				$userActivationKey = Random::generate(25);
 				$keyLength         = 54 - mb_strlen($serverUrl);
 				$keyLength         = $keyLength > 6 ? $keyLength : 6;
-				$userActivationKey = substr($userActivationKey, 0, $keyLength);
+				$userActivationKey = mb_substr($userActivationKey, 0, $keyLength);
 
                 if ($userdata['session_logged_in']) {
                     Session::end($userdata['session_id'], $userdata['user_id']);
@@ -493,7 +493,7 @@ if (isset($_POST['submit'])) {
                     $emailer->assignVars(
                         [
                             'SITENAME'  => $board_config['sitename'],
-                            'USERNAME'  => preg_replace(PostHelper::$unHtmlSpecialCharsMatch, PostHelper::$unHtmlSpecialCharsReplace, substr(str_replace("\'", "'", $userName), 0, 25)),
+                            'USERNAME'  => preg_replace(PostHelper::$unHtmlSpecialCharsMatch, PostHelper::$unHtmlSpecialCharsReplace, mb_substr(str_replace("\'", "'", $userName), 0, 25)),
                             'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
 
                             'U_ACTIVATE' => $serverUrl . '?mode=activate&' . POST_USERS_URL . '=' . $userId . '&act_key=' . $userActivationKey
@@ -517,7 +517,7 @@ if (isset($_POST['submit'])) {
 
                         $emailer->assignVars(
                             [
-                                'USERNAME'  => preg_replace(PostHelper::$unHtmlSpecialCharsMatch, PostHelper::$unHtmlSpecialCharsReplace, substr(str_replace("\'", "'", $userName), 0, 25)),
+                                'USERNAME'  => preg_replace(PostHelper::$unHtmlSpecialCharsMatch, PostHelper::$unHtmlSpecialCharsReplace, mb_substr(str_replace("\'", "'", $userName), 0, 25)),
                                 'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
 
                                 'U_ACTIVATE' => $serverUrl . '?mode=activate&' . POST_USERS_URL . '=' . $userId . '&act_key=' . $userActivationKey
@@ -637,7 +637,7 @@ if (isset($_POST['submit'])) {
                     [
                         'SITENAME'    => $board_config['sitename'],
                         'WELCOME_MSG' => sprintf($lang['Welcome_subject'], $board_config['sitename']),
-                        'USERNAME'    => preg_replace(PostHelper::$unHtmlSpecialCharsMatch, PostHelper::$unHtmlSpecialCharsReplace, substr(str_replace("\'", "'", $userName), 0, 25)),
+                        'USERNAME'    => preg_replace(PostHelper::$unHtmlSpecialCharsMatch, PostHelper::$unHtmlSpecialCharsReplace, mb_substr(str_replace("\'", "'", $userName), 0, 25)),
                         'PASSWORD'    => $confirmPassword,
                         'EMAIL_SIG'   => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
 
@@ -655,7 +655,7 @@ if (isset($_POST['submit'])) {
                     [
                         'SITENAME'    => $board_config['sitename'],
                         'WELCOME_MSG' => sprintf($lang['Welcome_subject'], $board_config['sitename']),
-                        'USERNAME'    => preg_replace(PostHelper::$unHtmlSpecialCharsMatch, PostHelper::$unHtmlSpecialCharsReplace, substr(str_replace("\'", "'", $userName), 0, 25)),
+                        'USERNAME'    => preg_replace(PostHelper::$unHtmlSpecialCharsMatch, PostHelper::$unHtmlSpecialCharsReplace, mb_substr(str_replace("\'", "'", $userName), 0, 25)),
                         'PASSWORD'    => $confirmPassword,
                         'EMAIL_SIG'   => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
 
@@ -683,7 +683,7 @@ if (isset($_POST['submit'])) {
 
                     $emailer->assignVars(
                         [
-                            'USERNAME'  => preg_replace(PostHelper::$unHtmlSpecialCharsMatch, PostHelper::$unHtmlSpecialCharsReplace, substr(str_replace("\'", "'", $userName), 0, 25)),
+                            'USERNAME'  => preg_replace(PostHelper::$unHtmlSpecialCharsMatch, PostHelper::$unHtmlSpecialCharsReplace, mb_substr(str_replace("\'", "'", $userName), 0, 25)),
                             'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
 
                             'U_ACTIVATE' => $serverUrl . '?mode=activate&' . POST_USERS_URL . '=' . $userId . '&act_key=' . $userActivationKey
@@ -864,7 +864,7 @@ if (isset($_POST['avatargallery']) && !$error) {
 		// Generate the required confirmation code
 		// NB 0 (zero) could get confused with O (the letter) so we make change it
 		$code = Random::generate(45);
-		$code = substr(str_replace('0', 'Z', mb_strtoupper(base_convert($code, 16, 35))), 2, 6);
+		$code = mb_substr(str_replace('0', 'Z', mb_strtoupper(base_convert($code, 16, 35))), 2, 6);
 
         $confirmId = mb_substr(hash('sha512', Random::generate(32)), 0, 32);
 

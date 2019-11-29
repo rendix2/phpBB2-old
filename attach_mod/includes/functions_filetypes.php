@@ -302,11 +302,11 @@ function swf_bits($buffer, $pos, $count)
 */
 function swf_decompress($buffer)
 {
-    if ((function_exists('gzuncompress')) && (substr($buffer, 0, 3) === swf_tag_compressed) && (ord(substr($buffer, 3, 1)) >= 6)) {
+    if ((function_exists('gzuncompress')) && (mb_substr($buffer, 0, 3) === swf_tag_compressed) && (ord(mb_substr($buffer, 3, 1)) >= 6)) {
         // Only decompress relevant Informations
         $output = 'F';
-        $output .= substr($buffer, 1, 7);
-        $output .= gzuncompress(substr($buffer, 8));
+        $output .= mb_substr($buffer, 1, 7);
+        $output .= gzuncompress(mb_substr($buffer, 8));
 
         return $output;
     } else {
@@ -341,8 +341,10 @@ function swf_getdimension($file)
     // Decompress if file is a Flash MX compressed file
     $buffer = fread($fp, 1024);
 
-    if (substr($buffer, 0, 3) === swf_tag_identify || substr($buffer, 0, 3) === swf_tag_compressed) {
-        if (substr($buffer, 0, 3) === swf_tag_compressed) {
+    $subString = mb_substr($buffer, 0, 3) ;
+
+    if ($subString === swf_tag_identify || $subString === swf_tag_compressed) {
+        if ($subString === swf_tag_compressed) {
             fclose($fp);
             $fp = @fopen($file, 'rb');
             $buffer = fread($fp, filesize($file));

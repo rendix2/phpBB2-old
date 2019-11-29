@@ -170,7 +170,7 @@ abstract class BaseTemplate
     protected function generateBlockVarRef($namespace, $varname, $concat = null)
     {
         // Strip the trailing period.
-        $namespace = substr($namespace, 0, -1);
+        $namespace = mb_substr($namespace, 0, -1);
 
         // Get a reference to the data block for this namespace.
         $varref = $this->generateBlockDataRef($namespace, true);

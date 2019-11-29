@@ -88,7 +88,7 @@ class CSRF
         $hash = hash('sha512', uniqid('afsdfhfg', true));
         $start = mt_rand(0, 5);
         $finish = mt_rand($start, $start + 25);
-        $token =  substr($hash, $start, $finish);
+        $token =  mb_substr($hash, $start, $finish);
 
         $_SESSION[self::TOKEN_NAME] = $token;
 

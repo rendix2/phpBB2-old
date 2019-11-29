@@ -1506,7 +1506,7 @@ switch($mode_id) {
 						$enable_smilies = $board_config['allow_smilies'];
 					}
 					$enable_bbcode = ($board_config['allow_bbcode'] && $row->bbcode_uid !== '') ? 1 : 0;
-					echo('<li>' . sprintf($lang['Recreating_post'], $row->post_id, $lang['New_topic_name'], $lang['New_forum_name'], substr(htmlspecialchars(strip_tags($row->post_text)), 0, 30)) . "</li>\n");
+					echo('<li>' . sprintf($lang['Recreating_post'], $row->post_id, $lang['New_topic_name'], $lang['New_forum_name'], mb_substr(htmlspecialchars(strip_tags($row->post_text)), 0, 30)) . "</li>\n");
 
 					$insertData = [
 					    'post_id' => $row->post_id,
@@ -2343,7 +2343,7 @@ switch($mode_id) {
 				// Update config data to match current configuration
                 if (!empty($_SERVER['SERVER_PROTOCOL']) || !empty($_ENV['SERVER_PROTOCOL'])) {
                     $protocol = !empty($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : $_ENV['SERVER_PROTOCOL'];
-                    if (mb_strtolower(substr($protocol, 0, 5)) === 'https') {
+                    if (mb_strtolower(mb_substr($protocol, 0, 5)) === 'https') {
                         $default_config['cookie_secure'] = '1';
                     }
                 }

@@ -173,7 +173,7 @@ class TemplateDatabase extends BaseTemplate
         $sep = DIRECTORY_SEPARATOR;
 
         // Check if it's an absolute or relative path.
-        if (substr($filename, 0, 1) !== '/') {
+        if (mb_substr($filename, 0, 1) !== '/') {
             $filename = $this->root . $sep . $filename;
         }
 
@@ -275,7 +275,7 @@ class TemplateDatabase extends BaseTemplate
 						$namespace = implode('.', $block_names);
 
 						// strip leading period from root level..
-						$namespace = substr($namespace, 2);
+						$namespace = mb_substr($namespace, 2);
 
 						// Get a reference to the data array for this block that depends on the
 						// current indices of all parent blocks.
@@ -310,7 +310,7 @@ class TemplateDatabase extends BaseTemplate
 						$namespace = implode('.', $block_names);
 
 						// strip leading period from root level..
-						$namespace = substr($namespace, 2);
+						$namespace = mb_substr($namespace, 2);
 
 						// Get a reference to the data array for this block that depends on the
 						// current indices of all parent blocks.

@@ -29,7 +29,7 @@ function loginFailed(BaseTemplate $template, array $lang)
     $redirect = !empty($_POST['redirect']) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : '';
     $redirect = str_replace('?', '&', $redirect);
 
-    if (false !== strpos(urldecode($redirect), "\n") || false !== strpos(urldecode($redirect), "\r") || false !== strpos(urldecode($redirect), ';url')) {
+    if (false !== mb_strpos(urldecode($redirect), "\n") || false !== mb_strpos(urldecode($redirect), "\r") || false !== mb_strpos(urldecode($redirect), ';url')) {
         message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
     }
 

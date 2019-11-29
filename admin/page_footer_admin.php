@@ -66,7 +66,7 @@ if ($do_gzip_compress) {
 	$gzip_crc = crc32($gzip_contents);
 
 	$gzip_contents = gzcompress($gzip_contents, 9);
-	$gzip_contents = substr($gzip_contents, 0, -4);
+	$gzip_contents = mb_substr($gzip_contents, 0, -4);
 
 	echo "\x1f\x8b\x08\x00\x00\x00\x00\x00";
 	echo $gzip_contents;

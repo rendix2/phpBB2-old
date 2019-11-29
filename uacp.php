@@ -275,7 +275,7 @@ if (count($attachments) > 0) {
                 $post_title = $row->topic_title;
 
                 if (strlen($post_title) > 32) {
-                    $post_title = substr($post_title, 0, 30) . '...';
+                    $post_title = mb_substr($post_title, 0, 30) . '...';
                 }
 
                 $view_topic = Session::appendSid($phpbb_root_path . 'viewtopic.php?' . POST_POST_URL . '=' . $ids[$j]['post_id'] . '#' . $ids[$j]['post_id']);

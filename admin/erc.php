@@ -345,7 +345,7 @@ switch($mode) {
 
 				if (!empty($_SERVER['SERVER_PROTOCOL']) || !empty($_ENV['SERVER_PROTOCOL'])) {
 					$protocol = !empty($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : $_ENV['SERVER_PROTOCOL'];
-					$secure_rec = mb_strtolower(substr($protocol, 0 , 5)) === 'https' ? '1' : '0';
+					$secure_rec = mb_strtolower(mb_substr($protocol, 0 , 5)) === 'https' ? '1' : '0';
 				} else {
 					$secure_rec = '0';
 				}
@@ -671,7 +671,7 @@ switch($mode) {
 				if (!empty($_SERVER['SERVER_PROTOCOL']) || !empty($_ENV['SERVER_PROTOCOL'])) {
 					$protocol = !empty($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : $_ENV['SERVER_PROTOCOL'];
 
-					if (mb_strtolower(substr($protocol, 0 , 5)) === 'https') {
+					if (mb_strtolower(mb_substr($protocol, 0 , 5)) === 'https') {
 						$default_config['cookie_secure'] = '1';
 					}
 				}
@@ -791,7 +791,7 @@ switch($mode) {
 				check_authorisation();
 				$new_lang   = isset($_POST['new_lang']) ? str_replace("\\'", "''", $_POST['new_lang']) : '';
 				$board_user = isset($_POST['board_user']) ? trim(htmlspecialchars($_POST['board_user'])) : '';
-				$board_user = substr(str_replace("\\'", "'", $board_user), 0, 25);
+				$board_user = mb_substr(str_replace("\\'", "'", $board_user), 0, 25);
 				$board_user = str_replace("'", "\\'", $board_user);
 
 				if (is_file(@realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $new_lang . $sep . 'lang_main.php')) && is_file(@realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $new_lang . $sep .'lang_admin.php'))){
@@ -817,7 +817,7 @@ switch($mode) {
 				$method = isset($_POST['method']) ? htmlspecialchars($_POST['method']) : '';
 				$new_style = isset($_POST['new_style']) ? (int) $_POST['new_style'] : 0;
 				$board_user = isset($_POST['board_user']) ? trim(htmlspecialchars($_POST['board_user'])) : '';
-				$board_user = substr(str_replace("\\'", "'", $board_user), 0, 25);
+				$board_user = mb_substr(str_replace("\\'", "'", $board_user), 0, 25);
 				$board_user = str_replace("'", "\\'", $board_user);
 
 				if ($method === 'recreate_theme') {
@@ -972,7 +972,7 @@ switch($mode) {
 				// Get userdata to check for current user
 				$auth_method = isset($_POST['auth_method']) ? htmlspecialchars($_POST['auth_method']) : '';
 				$board_user = isset($_POST['board_user']) ? trim(htmlspecialchars($_POST['board_user'])) : '';
-				$board_user = substr(str_replace("\\'", "'", $board_user), 0, 25);
+				$board_user = mb_substr(str_replace("\\'", "'", $board_user), 0, 25);
 
 				$rows = dibi::select(['user_id', 'username'])
 				->from(Tables::USERS_TABLE)

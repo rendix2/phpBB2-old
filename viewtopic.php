@@ -1155,10 +1155,10 @@ foreach ($posts as $i => $post) {
 		$postSubject = preg_replace($orig_word, $replacement_word, $postSubject);
 
 		if ($userSignature !== '') {
-			$userSignature = str_replace('\"', '"', substr(@preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "@preg_replace(\$orig_word, \$replacement_word, '\\0')", '>' . $userSignature . '<'), 1, -1));
+			$userSignature = str_replace('\"', '"', mb_substr(@preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "@preg_replace(\$orig_word, \$replacement_word, '\\0')", '>' . $userSignature . '<'), 1, -1));
 		}
 
-		$message = str_replace('\"', '"', substr(@preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "@preg_replace(\$orig_word, \$replacement_word, '\\0')", '>' . $message . '<'), 1, -1));
+		$message = str_replace('\"', '"', mb_substr(@preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "@preg_replace(\$orig_word, \$replacement_word, '\\0')", '>' . $message . '<'), 1, -1));
 	}
 
     if ($userSignature !== '') {

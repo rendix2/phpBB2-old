@@ -33,8 +33,8 @@ function display_compile_cache_clear($filename, $template_var)
     if ($template instanceof TemplateFile) {
         $filename = str_replace($template->getRoot(), '', $filename);
 
-        if (substr($filename, 0, 1) === '/') {
-            $filename = substr($filename, 1, strlen($filename));
+        if (mb_substr($filename, 0, 1) === '/') {
+            $filename = mb_substr($filename, 1, mb_strlen($filename));
         }
 
         if (file_exists($template->getCacheDir() . $filename . '.php')) {
@@ -96,7 +96,7 @@ function init_display_template($template_var, $replacement, $filename = 'viewtop
 
     $complete_filename = $filename;
 
-    if (substr($complete_filename, 0, 1) !== '/') {
+    if (mb_substr($complete_filename, 0, 1) !== '/') {
         $complete_filename = $template->getRoot() . '/' . $complete_filename;
     }
 

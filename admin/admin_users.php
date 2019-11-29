@@ -492,7 +492,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 							}
 
 							if (!$error && $file_size > 0 && $file_size < $board_config['avatar_filesize']) {
-								$avatar_data = substr($avatar_data, mb_strlen($avatar_data) - $file_size, $file_size);
+								$avatar_data = mb_substr($avatar_data, mb_strlen($avatar_data) - $file_size, $file_size);
 
 								$tmp_filename = tempnam ('/tmp', $this_userdata['user_id'] . '-');
 								$fptr = @fopen($tmp_filename, 'wb');

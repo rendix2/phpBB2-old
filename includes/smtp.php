@@ -29,13 +29,13 @@ define('SMTP_INCLUDED', 1);
 function server_parse($socket, $response, $line = __LINE__) 
 {
 	$server_response = '';
-	while (substr($server_response, 3, 1) !== ' ') {
+	while (mb_substr($server_response, 3, 1) !== ' ') {
 		if (!($server_response = fgets($socket, 256))) {
 			message_die(GENERAL_ERROR, "Couldn't get mail server response codes", '', $line, __FILE__);
 		} 
 	} 
 
-	if (!(substr($server_response, 0, 3) === $response)) {
+	if (!(mb_substr($server_response, 0, 3) === $response)) {
 		message_die(GENERAL_ERROR, "Ran into problems sending Mail. Response: $server_response", '', $line, __FILE__);
 	} 
 }

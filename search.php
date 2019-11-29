@@ -897,12 +897,10 @@ if ($mode === 'searchuser') {
 
                 if ($search_set->user_id !== ANONYMOUS) {
                     $poster .= $search_set->username;
+                } else if ($search_set->post_username !== '') {
+                    $poster .= $search_set->post_username;
                 } else {
-                    if ($search_set->post_username !== '') {
-                        $poster .= $search_set->post_username;
-                    } else {
-                        $poster .= $lang['Guest'];
-                    }
+                    $poster .= $lang['Guest'];
                 }
 
                 $poster .= $search_set->user_id !== ANONYMOUS ? '</a>' : '';
@@ -1105,12 +1103,10 @@ if ($mode === 'searchuser') {
 
                 if ($search_set->user_id !== ANONYMOUS) {
                     $topic_author .= $search_set->username;
+                } else if ($search_set->post_username !== '') {
+                    $topic_author .= $search_set->post_username;
                 } else {
-                    if ($search_set->post_username !== '') {
-                        $topic_author .= $search_set->post_username;
-                    } else {
-                        $topic_author .= $lang['Guest'];
-                    }
+                    $topic_author .= $lang['Guest'];
                 }
 
 				$topic_author .= $search_set->user_id !== ANONYMOUS ? '</a>' : '';

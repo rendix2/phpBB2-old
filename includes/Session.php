@@ -152,7 +152,7 @@ class Session
         // check if banned :)
         if ($userId !== ANONYMOUS) {
             $ban_email = $userData['user_email'];
-            $ban_email2 = substr( $userData['user_email'], strpos($userData['user_email'], '@'));
+            $ban_email2 = mb_substr( $userData['user_email'], strpos($userData['user_email'], '@'));
 
             $ban_info = dibi::select(['ban_ip', 'ban_userid', 'ban_email'])
                 ->from(Tables::BAN_LIST_TABLE)
@@ -373,8 +373,8 @@ class Session
                 // bits ... I've been told (by vHiker) this should alleviate problems with
                 // load balanced et al proxies while retaining some reliance on IP security.
                 //
-                $ip_check_s = substr($userData['session_ip'], 0, 6);
-                $ip_check_u = substr($user_ip, 0, 6);
+                $ip_check_s = mb_substr($userData['session_ip'], 0, 6);
+                $ip_check_u = mb_substr($user_ip, 0, 6);
 
                 if ($ip_check_s === $ip_check_u) {
                     $SID = $sessionMethod === SESSION_METHOD_GET || defined('IN_ADMIN') ? 'sid=' . $sessionId : '';

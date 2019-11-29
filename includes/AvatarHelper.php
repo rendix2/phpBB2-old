@@ -116,7 +116,7 @@ class AvatarHelper
             $avatarFileName = 'http://' . $avatarFileName;
         }
 
-        $avatarFileName = substr($avatarFileName, 0, 100);
+        $avatarFileName = mb_substr($avatarFileName, 0, 100);
 
         if (!preg_match("#^((ht|f)tp://)([^ \?&=\#\"\n\r\t<]*?(\.(jpg|jpeg|gif|png))$)#is", $avatarFileName)) {
             $error        = true;
@@ -198,7 +198,7 @@ class AvatarHelper
             $avatarFileType = $fileData2[1];
 
             if (!$error && $avatarFileSize > 0 && $avatarFileSize < $board_config['avatar_filesize']) {
-                $avatarData = substr($avatarData, mb_strlen($avatarData) - $avatarFileSize, $avatarFileSize);
+                $avatarData = mb_substr($avatarData, mb_strlen($avatarData) - $avatarFileSize, $avatarFileSize);
 
                 $tmpPath = '.' . $sep . $board_config['avatar_path'] . $sep . 'tmp';
                 $tmpFileName = tempnam($tmpPath, uniqid(rand(), true) . '-');

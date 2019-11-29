@@ -135,9 +135,9 @@ function bbencode_second_pass($text, $uid)
 	$text = ' ' . $text;
 
 	// First: If there isn't a "[" and a "]" in the message, don't bother.
-	if (! (strpos($text, '[') && strpos($text, ']'))) {
+	if (! (mb_strpos($text, '[') && mb_strpos($text, ']'))) {
 		// Remove padding, return.
-		$text = substr($text, 1);
+		$text = mb_substr($text, 1);
 		return $text;
 	}
 
@@ -228,7 +228,7 @@ function bbencode_second_pass($text, $uid)
 	$text = preg_replace($patterns, $replacements, $text);
 
 	// Remove our padding from the string..
-	$text = substr($text, 1);
+	$text = mb_substr($text, 1);
 
 	return $text;
 
@@ -282,7 +282,7 @@ function bbencode_first_pass($text, $uid)
 	$text = preg_replace("#\[img\]((http|ftp|https|ftps)://)([^ \?&=\#\"\n\r\t<]*?(\.(jpg|jpeg|gif|png)))\[/img\]#sie", "'[img:$uid]\\1' . str_replace(' ', '%20', '\\3') . '[/img:$uid]'", $text);
 
 	// Remove our padding from the string..
-	return substr($text, 1);
+	return mb_substr($text, 1);
 
 } // bbencode_first_pass()
 
@@ -358,7 +358,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 	// Start at the 2nd char of the string, looking for opening tags.
 	$curr_pos = 1;
 	while ($curr_pos && ($curr_pos < mb_strlen($text))) {
-		$curr_pos = strpos($text, '[', $curr_pos);
+		$curr_pos = mb_strpos($text, '[', $curr_pos);
 
 		// If not found, $curr_pos will be 0, and the loop will end.
 		if ($curr_pos) {
@@ -370,7 +370,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 
 			for ($i = 0; $i < $open_tag_count; $i++) {
 				// Grab everything until the first "]"...
-				$possible_start = substr($text, $curr_pos, strpos($text, ']', $curr_pos + 1) - $curr_pos + 1);
+				$possible_start = mb_substr($text, $curr_pos, strpos($text, ']', $curr_pos + 1) - $curr_pos + 1);
 
 				//
 				// We're going to try and catch usernames with "[' characters.
@@ -378,11 +378,11 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 				if (preg_match('#\[quote=\\\&quot;#si', $possible_start, $match) && !preg_match('#\[quote=\\\&quot;(.*?)\\\&quot;\]#si', $possible_start)) {
 					// OK we are in a quote tag that probably contains a ] bracket.
 					// Grab a bit more of the string to hopefully get all of it..
-                    $closePosition = strpos($text, '&quot;]', $curr_pos + 14);
+                    $closePosition = mb_strpos($text, '&quot;]', $curr_pos + 14);
 
 					if ($closePosition) {
-						if (strpos(substr($text, $curr_pos + 14, $closePosition - ($curr_pos + 14)), '[quote') === false) {
-							$possible_start = substr($text, $curr_pos, $closePosition - $curr_pos + 7);
+						if (mb_strpos(mb_substr($text, $curr_pos + 14, $closePosition - ($curr_pos + 14)), '[quote') === false) {
+							$possible_start = mb_substr($text, $curr_pos, $closePosition - $curr_pos + 7);
 						}
 					}
 				}
@@ -421,7 +421,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 				$curr_pos += mb_strlen($possible_start);
 			} else {
 				// check for a closing tag..
-				$possible_end = substr($text, $curr_pos, $close_tag_length);
+				$possible_end = mb_substr($text, $curr_pos, $close_tag_length);
 				if (0 === strcasecmp($close_tag, $possible_end)) {
 					// We have an ending tag.
 					// Check if we've already found a matching starting tag.
@@ -443,10 +443,10 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 						}
 
 						// everything before the opening tag.
-						$before_start_tag = substr($text, 0, $start_index);
+						$before_start_tag = mb_substr($text, 0, $start_index);
 
 						// everything after the opening tag, but before the closing tag.
-						$between_tags = substr($text, $start_index + $start_length, $curr_pos - $start_index - $start_length);
+						$between_tags = mb_substr($text, $start_index + $start_length, $curr_pos - $start_index - $start_length);
 
 						// Run the given function on the text between the tags..
 						if ($use_function_pointer) {
@@ -454,7 +454,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 						}
 
 						// everything after the closing tag.
-						$after_end_tag = substr($text, $curr_pos + $close_tag_length);
+						$after_end_tag = mb_substr($text, $curr_pos + $close_tag_length);
 
 						// Mark the lowest nesting level if needed.
 						if ($mark_lowest_level && ($curr_nesting_depth === 1)) {
@@ -464,8 +464,8 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
                                 $between_tags = preg_replace($code_entities_match, $code_entities_replace, $between_tags);
 							}
 
-							$text = $before_start_tag . substr($start_tag, 0, $start_length - 1) . ":$curr_nesting_depth:$uid]";
-							$text .= $between_tags . substr($close_tag_new, 0, $close_tag_new_length - 1) . ":$curr_nesting_depth:$uid]";
+							$text = $before_start_tag . mb_substr($start_tag, 0, $start_length - 1) . ":$curr_nesting_depth:$uid]";
+							$text .= $between_tags . mb_substr($close_tag_new, 0, $close_tag_new_length - 1) . ":$curr_nesting_depth:$uid]";
 						} else {
 							if ($open_tag[0] === '[code]') {
 								$text = $before_start_tag . '&#91;code&#93;';
@@ -474,9 +474,9 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 								if ($open_is_regexp) {
 									$text = $before_start_tag . $start_tag;
 								} else {
-									$text = $before_start_tag . substr($start_tag, 0, $start_length - 1) . ":$uid]";
+									$text = $before_start_tag . mb_substr($start_tag, 0, $start_length - 1) . ":$uid]";
 								}
-								$text .= $between_tags . substr($close_tag_new, 0, $close_tag_new_length - 1) . ":$uid]";
+								$text .= $between_tags . mb_substr($close_tag_new, 0, $close_tag_new_length - 1) . ":$uid]";
 							}
 						}
 
@@ -595,7 +595,7 @@ function make_clickable($text)
 	$ret = preg_replace("#(^|[\n ])([a-z0-9&\-_.]+?)@([\w\-]+\.([\w\-\.]+\.)*[\w]+)#i", "\\1<a href=\"mailto:\\2@\\3\">\\2@\\3</a>", $ret);
 
 	// Remove our padding..
-	$ret = substr($ret, 1);
+	$ret = mb_substr($ret, 1);
 
 	return $ret;
 }
@@ -669,7 +669,7 @@ function smilies_pass($message)
 
 	if (count($orig)) {
 		$message = preg_replace($orig, $repl, ' ' . $message . ' ');
-		$message = substr($message, 1, -1);
+		$message = mb_substr($message, 1, -1);
 	}
 	
 	return $message;

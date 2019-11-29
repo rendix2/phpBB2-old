@@ -11,6 +11,8 @@
  *
  ***************************************************************************/
 
+use phpBB2\Models\ForumsManager;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -58,10 +60,12 @@ if (!is_numeric($forumId)) {
     message_die(GENERAL_MESSAGE, 'Forum_not_exist');
 }
 
-$forum = dibi::select('*')
-    ->from(Tables::FORUMS_TABLE)
-    ->where('forum_id = %i', $forumId)
-    ->fetch();
+/**
+ * @var ForumsManager $forumsManager
+ */
+$forumsManager = $container->getService('ForumsManager');
+
+$forum = $forumsManager->getByPrimaryKey($forumId);
 
 //
 // If the query doesn't return any rows this isn't a valid forum. Inform

@@ -79,7 +79,7 @@ h3 {font-size:12pt;}
 
 <p>Unfortunately this only works when the users IP is constant as they browse the board. For most users this will be the case. However certain providers route their users via a cluster of proxys. In some cases, particularly AOL this results in different IPs being forwarded as the user moves between pages. We take account of this by not checking the entire IP but only the first "three quads". Again in most cases this will be fine. However again AOL uses IPs which can vary so much that checking only the first two quads results in a fairly static IP being available for session validation.</p>
 
-<p>If you are experiencing problems related to this you can make a small change to the code. Please note that reducing the IP validation length does potentially increase the risk of sessions being hijacked (this is something for you to consider, phpBB Group takes no responsibility should anything happen!). The change requires you to open the file sessions.php in the includes/ directory of the distribution. Find line 250, it contains the following <pre>$ip_check_s = substr($userdata['session_ip'], 0, 6);</pre>change this to: <pre>$ip_check_s = substr($userdata['session_ip'], 0, <b>4</b>);</pre>You need to make exactly the same change to the number 6 in the next line. Save the file (and upload it if required). This should reduce or eliminate the problem noted.</p></li>
+<p>If you are experiencing problems related to this you can make a small change to the code. Please note that reducing the IP validation length does potentially increase the risk of sessions being hijacked (this is something for you to consider, phpBB Group takes no responsibility should anything happen!). The change requires you to open the file sessions.php in the includes/ directory of the distribution. Find line 250, it contains the following <pre>$ip_check_s = mb_substr($userdata['session_ip'], 0, 6);</pre>change this to: <pre>$ip_check_s = substr($userdata['session_ip'], 0, <b>4</b>);</pre>You need to make exactly the same change to the number 6 in the next line. Save the file (and upload it if required). This should reduce or eliminate the problem noted.</p></li>
 
 <li><b>I selected X for my timezone but the time is not correct!</b></li>
 
@@ -195,7 +195,7 @@ Feel free to search our community forum for the information you require. <b>PLEA
 
 <h2><u>Copyright and disclaimer</u></h2>
 
-<p>This application is opensource software released under the <a href="http://www.gnu.org/licenses/gpl.html" target="_new">GPL</a>. Please see source code and the Docs directory for more details. This package and its contents are Copyright © 2002 <a href="http://www.phpbb.com/" target="_new">phpBB Group</a>, All Rights Reserved.</p>
+<p>This application is opensource software released under the <a href="http://www.gnu.org/licenses/gpl.html" target="_new">GPL</a>. Please see source code and the Docs directory for more details. This package and its contents are Copyright ï¿½ 2002 <a href="http://www.phpbb.com/" target="_new">phpBB Group</a>, All Rights Reserved.</p>
 <!-- END DOCUMENT -->
 
 				</td>

@@ -318,7 +318,7 @@ if ($download_mode === PHYSICAL_LINK) {
     $server_port = ($board_config['server_port'] <> 80) ? ':' . trim($board_config['server_port']) : '';
     $script_name = preg_replace('/^\/?(.*?)\/?$/', '/\1', trim($board_config['script_path']));
 
-    if ($script_name[strlen($script_name)] !== '/') {
+    if ($script_name[mb_strlen($script_name)] !== '/') {
         $script_name .= '/';
     }
 

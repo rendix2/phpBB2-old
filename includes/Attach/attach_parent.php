@@ -969,7 +969,7 @@ class attach_parent
                     }
 
                     do {
-                        $this->attach_filename = $new_filename . '_' . substr(rand(), 0, 3) . '.' . $this->extension;
+                        $this->attach_filename = $new_filename . '_' . mb_substr(rand(), 0, 3) . '.' . $this->extension;
                     } while (physical_filename_already_stored($this->attach_filename));
 
                     unset($new_filename);

@@ -826,13 +826,13 @@ if ($_GET['install'] == 1 && $validated) {
                 $templine = '';
 
                 foreach ($lines as $line) {
-                    if (substr($line, 0, 2) === '--' || $line === '') {
+                    if (mb_substr($line, 0, 2) === '--' || $line === '') {
                         continue;
                     }
 
                     $templine .= $line;
 
-                    if (substr(trim($line), -1, 1) === ';') {
+                    if (mb_substr(trim($line), -1, 1) === ';') {
                         // Perform the query
                         dibi::query($templine);
                         // Reset temp variable to empty

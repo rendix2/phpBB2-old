@@ -124,7 +124,7 @@ $sep = DIRECTORY_SEPARATOR;
 
 // append data added in later versions
 if (isset($board_config, $board_config['version'])) {
-    $phpbb_version = explode('.', substr($board_config['version'], 1));
+    $phpbb_version = explode('.', mb_substr($board_config['version'], 1));
 } else {
     // Fallback for ERC
     $phpbb_version = [0, 22];
@@ -604,7 +604,7 @@ function check_authorisation($die = true)
     $db_password    = isset($_POST['db_password']) ? $_POST['db_password'] : '';
 
     $board_user = isset($_POST['board_user']) ? trim(htmlspecialchars($_POST['board_user'])) : '';
-    $board_user = substr(str_replace("\\'", "'", $board_user), 0, 25);
+    $board_user = mb_substr(str_replace("\\'", "'", $board_user), 0, 25);
     $board_user = str_replace("'", "\\'", $board_user);
 
 	// Change authentication mode if selected option does not allow database authentication

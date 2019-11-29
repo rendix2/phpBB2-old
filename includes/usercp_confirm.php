@@ -105,7 +105,7 @@ for ($i = 0; $i < $totalHeight; $i++) {
                 $holdChars[$char] = explode("\n", chunk_split(base64_decode($_png[$char]['data']), $_png[$char]['width'] + 1, "\n"));
 			}
 
-			$image .= randomise(substr($holdChars[$char][$l], 1), $charWidths[$j]);
+			$image .= randomise(mb_substr($holdChars[$char][$l], 1), $charWidths[$j]);
 			$j++;
 		}
 

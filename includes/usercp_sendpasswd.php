@@ -52,7 +52,7 @@ if (isset($_POST['submit'])) {
     $userActivationKey = Random::generate(25);
     $keyLength         = 54 - mb_strlen($serverUrl); // TODO $serverUrl does not exist!
     $keyLength         = $keyLength > 6 ? $keyLength : 6;
-    $userActivationKey = substr($userActivationKey, 0, $keyLength);
+    $userActivationKey = mb_substr($userActivationKey, 0, $keyLength);
     $userPassword      = Random::generate(12);
 
     $updateData = [

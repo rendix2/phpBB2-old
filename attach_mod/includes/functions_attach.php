@@ -62,7 +62,7 @@ function base64_unpack($string)
 
     for ($i = 1; $i <= $length; $i++) {
         $pos = $length - $i;
-        $operand = strpos($chars, substr($string, $pos, 1));
+        $operand = strpos($chars, mb_substr($string, $pos, 1));
         $exponent = pow($base, $i - 1);
         $decValue = $operand * $exponent;
         $number += $decValue;
@@ -116,7 +116,7 @@ function auth_unpack($auth_cache)
     $cacheLength = strlen($auth_cache);
 
     for ($pos = 0; $pos < $cacheLength; $pos += $auth_len) {
-        $forum_auth = substr($auth_cache, $pos, 1);
+        $forum_auth = mb_substr($auth_cache, $pos, 1);
 
         if ($forum_auth === $one_char_encoding) {
             $auth_len = 1;
@@ -127,7 +127,7 @@ function auth_unpack($auth_cache)
             continue;
         }
 
-        $forum_auth = substr($auth_cache, $pos, $auth_len);
+        $forum_auth = mb_substr($auth_cache, $pos, $auth_len);
         $forum_id = base64_unpack($forum_auth);
         $auth[] = (int)$forum_id;
     }
@@ -155,7 +155,7 @@ function is_forum_authed($auth_cache, $check_forum_id)
     $condition = $pos < strlen($auth_cache);
 
     for ($pos = 0; $condition; $pos += $auth_len) {
-        $forum_auth = substr($auth_cache, $pos, 1);
+        $forum_auth = mb_substr($auth_cache, $pos, 1);
 
         if ($forum_auth === $one_char_encoding) {
             $auth_len = 1;
@@ -166,7 +166,7 @@ function is_forum_authed($auth_cache, $check_forum_id)
             continue;
         }
 
-        $forum_auth = substr($auth_cache, $pos, $auth_len);
+        $forum_auth = mb_substr($auth_cache, $pos, $auth_len);
         $forum_id = (int)base64_unpack($forum_auth);
 
         if ($forum_id === $check_forum_id) {
@@ -559,7 +559,7 @@ function get_extension($filename)
 */
 function delete_extension($filename)
 {
-    return substr($filename, 0, strrpos(mb_strtolower(trim($filename)), '.'));
+    return mb_substr($filename, 0, strrpos(mb_strtolower(trim($filename)), '.'));
 }
 
 /**

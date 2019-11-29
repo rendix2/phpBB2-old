@@ -302,7 +302,7 @@ class PageHelper
             $gzipCrc = crc32($gZipContents);
 
             $gZipContents = gzcompress($gZipContents, 9);
-            $gZipContents = substr($gZipContents, 0, -4);
+            $gZipContents = mb_substr($gZipContents, 0, -4);
 
             echo "\x1f\x8b\x08\x00\x00\x00\x00\x00";
             echo $gZipContents;
