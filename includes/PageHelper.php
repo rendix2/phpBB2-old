@@ -35,12 +35,12 @@ class PageHelper
 
             $userAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : getenv('HTTP_USER_AGENT');
 
-            if ($phpVersion >= '4.0.4pl1' && ( false !== strpos($userAgent, 'compatible') || false !== strpos($userAgent, 'Gecko'))) {
+            if ($phpVersion >= '4.0.4pl1' && ( false !== mb_strpos($userAgent, 'compatible') || false !== mb_strpos($userAgent, 'Gecko'))) {
                 if (extension_loaded('zlib')) {
                     ob_start('ob_gzhandler');
                 }
             } elseif ($phpVersion > '4.0') {
-                if (false !== strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip')) {
+                if (false !== mb_strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip')) {
                     if (extension_loaded('zlib')) {
                         self::$do_gzip_compress = true;
                         ob_start();
@@ -242,7 +242,7 @@ class PageHelper
 
         // Work around for "current" Apache 2 + PHP module which seems to not
         // cope with private cache control setting
-        if (!empty($_SERVER['SERVER_SOFTWARE']) && false !== strpos($_SERVER['SERVER_SOFTWARE'], 'Apache/2')) {
+        if (!empty($_SERVER['SERVER_SOFTWARE']) && false !== mb_strpos($_SERVER['SERVER_SOFTWARE'], 'Apache/2')) {
             header('Cache-Control: no-cache, pre-check=0, post-check=0');
         } else {
             header('Cache-Control: private, pre-check=0, post-check=0, max-age=0');

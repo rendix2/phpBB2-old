@@ -56,7 +56,7 @@ foreach ($configs as $config) {
     if ($config_name === 'avatar_path') {
         $new['avatar_path'] = trim($new['avatar_path']);
 
-        if (false !== strpos($new['avatar_path'], "\0") || !is_dir($phpbb_root_path . $new['avatar_path']) || !is_writable($phpbb_root_path . $new['avatar_path'])) {
+        if (false !== mb_strpos($new['avatar_path'], "\0") || !is_dir($phpbb_root_path . $new['avatar_path']) || !is_writable($phpbb_root_path . $new['avatar_path'])) {
             $new['avatar_path'] = $default_config['avatar_path'];
         }
     }

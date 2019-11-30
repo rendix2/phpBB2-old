@@ -36,12 +36,12 @@ if ($board_config['gzip_compress']) {
 
 	$useragent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : getenv('HTTP_USER_AGENT');
 
-	if ($phpver >= '4.0.4pl1' && (false !== strpos($useragent, 'compatible') || false !== strpos($useragent, 'Gecko'))) {
+	if ($phpver >= '4.0.4pl1' && (false !== mb_strpos($useragent, 'compatible') || false !== mb_strpos($useragent, 'Gecko'))) {
 		if (extension_loaded('zlib')) {
 			ob_start('ob_gzhandler');
 		}
 	} elseif ($phpver > '4.0') {
-		if (false !== strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip')) {
+		if (false !== mb_strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip')) {
 			if (extension_loaded('zlib')) {
 				$do_gzip_compress = true;
 				ob_start();
@@ -133,7 +133,7 @@ $template->assignVars(
 
 // Work around for "current" Apache 2 + PHP module which seems to not
 // cope with private cache control setting
-if (!empty($_SERVER['SERVER_SOFTWARE']) && false !== strpos($_SERVER['SERVER_SOFTWARE'], 'Apache/2')) {
+if (!empty($_SERVER['SERVER_SOFTWARE']) && false !== mb_strpos($_SERVER['SERVER_SOFTWARE'], 'Apache/2')) {
 	header('Cache-Control: no-cache, pre-check=0, post-check=0');
 } else {
 	header('Cache-Control: private, pre-check=0, post-check=0, max-age=0');

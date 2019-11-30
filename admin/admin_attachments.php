@@ -107,8 +107,8 @@ foreach ($rows as $row) {
         if ($config_name === 'ftp_server' || $config_name === 'ftp_path' || $config_name === 'download_path') {
             $value = trim($new_attach[$config_name]);
 
-            if ($value[strlen($value) - 1] === '/') {
-                $value[strlen($value) - 1] = ' ';
+            if ($value[mb_strlen($value) - 1] === '/') {
+                $value[mb_strlen($value) - 1] = ' ';
             }
 
             $new_attach[$config_name] = trim($value);

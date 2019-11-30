@@ -231,7 +231,7 @@ for ($i = 0; $i < $sql_count; $i++) {
 $sql_query = @fread(@fopen($dbms_basic, 'rb'), @filesize($dbms_basic));
 $sql_query = preg_replace('/phpbb_/', $table_prefix, $sql_query);
 
-if ((strstr($sql_query, 'attach_config')) && (strstr($sql_query, 'attach_desc'))) {
+if ((mb_strstr($sql_query, 'attach_config')) && (mb_strstr($sql_query, 'attach_desc'))) {
     die('<br />PLEASE UPLOAD THE CORRECT DATABASE SCHEMA FILES...<br />If you have done so, run the Installer again.<br />');
 }
 

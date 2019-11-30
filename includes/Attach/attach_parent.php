@@ -858,7 +858,7 @@ class attach_parent
             }
 
             // Opera add the name to the mime type
-            $this->type = (strstr($this->type, '; name')) ? str_replace(strstr($this->type, '; name'), '', $this->type) : $this->type;
+            $this->type = (mb_strstr($this->type, '; name')) ? str_replace(mb_strstr($this->type, '; name'), '', $this->type) : $this->type;
             $this->type = mb_strtolower($this->type);
             $this->extension = mb_strtolower(get_extension($this->filename));
 
@@ -1021,7 +1021,7 @@ class attach_parent
             }
 
             // Check image type
-            if ($cat_id === IMAGE_CAT || strpos($this->type, 'image/') === 0) {
+            if ($cat_id === IMAGE_CAT || mb_strpos($this->type, 'image/') === 0) {
                 $img_info = @getimagesize($upload_dir . '/' . $this->attach_filename);
 
                 // Do not display as image if we are not able to retrieve the info

@@ -145,7 +145,7 @@ function send_file_to_browser($attachment, $upload_dir)
 
     // Correct the mime type - we force application/octetstream for all files, except images
     // Please do not change this, it is a security precaution
-    if (!strstr($attachment->mimetype, 'image')) {
+    if (!mb_strstr($attachment->mimetype, 'image')) {
         $attachment->mimetype = ($browser_agent === 'ie' || $browser_agent === 'opera') ? 'application/octetstream' : 'application/octet-stream';
     }
 

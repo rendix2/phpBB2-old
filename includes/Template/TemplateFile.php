@@ -232,7 +232,7 @@ class TemplateFile extends BaseTemplate {
 	 */
 	public function assignBlockVars($blockName, $vararray)
 	{
-		if (false !== strpos($blockName, '.')) {
+		if (false !== mb_strpos($blockName, '.')) {
 			// Nested block.
 			$blocks = explode('.', $blockName);
 			$blockcount = count($blocks) - 1;

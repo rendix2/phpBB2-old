@@ -144,8 +144,8 @@ function create_thumbnail($source, $new_file, $mimetype)
 
         $value = trim($tmp_path);
 
-        if ($value[strlen($value) - 1] === '/') {
-            $value[strlen($value) - 1] = ' ';
+        if ($value[mb_strlen($value) - 1] === '/') {
+            $value[mb_strlen($value) - 1] = ' ';
         }
 
         //

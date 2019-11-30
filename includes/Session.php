@@ -152,7 +152,7 @@ class Session
         // check if banned :)
         if ($userId !== ANONYMOUS) {
             $ban_email = $userData['user_email'];
-            $ban_email2 = mb_substr( $userData['user_email'], strpos($userData['user_email'], '@'));
+            $ban_email2 = mb_substr( $userData['user_email'], mb_strpos($userData['user_email'], '@'));
 
             $ban_info = dibi::select(['ban_ip', 'ban_userid', 'ban_email'])
                 ->from(Tables::BAN_LIST_TABLE)
@@ -686,7 +686,7 @@ class Session
         global $SID;
 
         if (!empty($SID) && !preg_match('#sid=#', $url)) {
-            $url .= ( ( strpos($url, '?') !== false ) ?  ( $non_html_amp ? '&' : '&amp;' ) : '?' ) . $SID;
+            $url .= ( ( mb_strpos($url, '?') !== false ) ?  ( $non_html_amp ? '&' : '&amp;' ) : '?' ) . $SID;
         }
 
         return $url;

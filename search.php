@@ -230,7 +230,7 @@ if ($mode === 'searchuser') {
 
 			$split_search = [];
 			$stripped_keywords = stripslashes($search_keywords);
-			$split_search = !strstr($multibyte_charset, $lang['ENCODING']) ?  SearchHelper::splitWords(SearchHelper::cleanWords('search', $stripped_keywords, $stopword_array, $synonym_array), 'search') : explode(' ', $search_keywords);
+			$split_search = !mb_strstr($multibyte_charset, $lang['ENCODING']) ?  SearchHelper::splitWords(SearchHelper::cleanWords('search', $stripped_keywords, $stopword_array, $synonym_array), 'search') : explode(' ', $search_keywords);
 			unset($stripped_keywords);
 
 			$word_count = 0;

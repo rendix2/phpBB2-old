@@ -88,7 +88,7 @@ function get_database_size()
                     foreach ($tables as $table) {
                         if ((isset($table->Type) && $table->Type !== 'MRG_MyISAM') || (isset($table->Engine) && ($table->Engine === 'MyISAM' || $table->Engine === 'InnoDB' || $table->Engine === 'Aria'))) {
                             if (Config::TABLE_PREFIX !== '') {
-                                if (strpos($table->Name, Config::TABLE_PREFIX) !== false) {
+                                if (mb_strpos($table->Name, Config::TABLE_PREFIX) !== false) {
                                     $databaseSize += $table->Data_length + $table->Index_length;
                                 }
                             } else {
@@ -113,7 +113,7 @@ function get_database_size()
 
             if ($row) {
                 // Azure stats are stored elsewhere
-                if (strpos($row->mssql_version, 'SQL Azure') !== false) {
+                if (mb_strpos($row->mssql_version, 'SQL Azure') !== false) {
                     $databaseSize = dibi::select('((SUM(size) * 8.0) * 1024.0)')->as('dbsize')
                         ->from('sys.dm_db_partition_stats')
                         ->fetchSingle();
@@ -136,7 +136,7 @@ function get_database_size()
             if ($row->proname === 'pg_database_size') {
                 $database = dibi::getDatabaseInfo()->getName();
 
-                if (strpos($database, '.') !== false) {
+                if (mb_strpos($database, '.') !== false) {
                     list($database, ) = explode('.', $database);
                 }
 

@@ -758,7 +758,7 @@ function redirect($url)
 
 	dibi::disconnect();
 
-	if (false !== strpos(urldecode($url), "\n") || false !== strpos(urldecode($url), "\r") || false !== strpos(urldecode($url), ';url')) {
+	if (false !== mb_strpos(urldecode($url), "\n") || false !== mb_strpos(urldecode($url), "\r") || false !== mb_strpos(urldecode($url), ';url')) {
 		message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
 	}
 

@@ -131,7 +131,7 @@ abstract class BaseTemplate
      */
     public function assignBlockVars($blockName, $vararray)
     {
-        if (false !== strpos($blockName, '.')) {
+        if (false !== mb_strpos($blockName, '.')) {
             // Nested block.
             $blocks = explode('.', $blockName);
             $blockCount = count($blocks) - 1;

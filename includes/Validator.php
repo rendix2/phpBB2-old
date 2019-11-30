@@ -71,7 +71,7 @@ class Validator
         }
 
         // Don't allow " and ALT-255 in username.
-        if (false !== strpos($username, '"') || false !== strpos($username, '&quot;') || false !== strpos($username, chr(160)) || false !== strpos($username, chr(173))) {
+        if (false !== mb_strpos($username, '"') || false !== mb_strpos($username, '&quot;') || false !== mb_strpos($username, chr(160)) || false !== mb_strpos($username, chr(173))) {
             return ['error' => true, 'error_msg' => $lang['Username_invalid']];
         }
 

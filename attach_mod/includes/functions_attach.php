@@ -24,7 +24,7 @@ use Dibi\Fluent;
 function base64_pack($number)
 {
     $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+-';
-    $base = strlen($chars);
+    $base = mb_strlen($chars);
 
     if ($number > 4096) {
         return;
@@ -55,14 +55,14 @@ function base64_pack($number)
 function base64_unpack($string)
 {
     $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+-';
-    $base = strlen($chars);
+    $base = mb_strlen($chars);
 
-    $length = strlen($string);
+    $length = mb_strlen($string);
     $number = 0;
 
     for ($i = 1; $i <= $length; $i++) {
         $pos = $length - $i;
-        $operand = strpos($chars, mb_substr($string, $pos, 1));
+        $operand = mb_strpos($chars, mb_substr($string, $pos, 1));
         $exponent = pow($base, $i - 1);
         $decValue = $operand * $exponent;
         $number += $decValue;
@@ -87,10 +87,10 @@ function auth_pack($auth_array)
     foreach ($auth_array as $authValue) {
         $val = base64_pack((int)$authValue);
 
-        if (strlen($val) === 1 && !$one_char) {
+        if (mb_strlen($val) === 1 && !$one_char) {
             $auth_cache .= $one_char_encoding;
             $one_char = true;
-        } else if (strlen($val) === 2 && !$two_char) {
+        } else if (mb_strlen($val) === 2 && !$two_char) {
             $auth_cache .= $two_char_encoding;
             $two_char = true;
         }
@@ -113,7 +113,7 @@ function auth_unpack($auth_cache)
 
     $auth = [];
     $auth_len = 1;
-    $cacheLength = strlen($auth_cache);
+    $cacheLength = mb_strlen($auth_cache);
 
     for ($pos = 0; $pos < $cacheLength; $pos += $auth_len) {
         $forum_auth = mb_substr($auth_cache, $pos, 1);
@@ -152,7 +152,7 @@ function is_forum_authed($auth_cache, $check_forum_id)
     $auth = [];
     $auth_len = 1;
 
-    $condition = $pos < strlen($auth_cache);
+    $condition = $pos < mb_strlen($auth_cache);
 
     for ($pos = 0; $condition; $pos += $auth_len) {
         $forum_auth = mb_substr($auth_cache, $pos, 1);

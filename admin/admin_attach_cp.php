@@ -582,7 +582,7 @@ if ($view === 'attachments') {
                         ->groupBy('t.topic_title')
                         ->fetchSingle();
 
-                    if (strlen($post_title) > 32) {
+                    if (mb_strlen($post_title) > 32) {
                         $post_title = mb_substr($post_title, 0, 30) . '...';
                     }
 
