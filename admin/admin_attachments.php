@@ -153,10 +153,10 @@ $select_pm_size_mode = size_select('pm_size', $pm_size);
 if ($search_imagick) {
     $imagick = '';
 
-    if (eregi('convert', $imagick)) {
+    if (false !== strpos($imagick, "convert")) {
         return true;
     } else if ($imagick !== 'none') {
-        if (!eregi('WIN', PHP_OS)) {
+        if (false === strpos(PHP_OS, "WIN")) {
             $retval = @exec('whereis convert');
             $paths = explode(' ', $retval);
 
@@ -169,7 +169,7 @@ if ($search_imagick) {
                     }
                 }
             }
-        } else if (eregi('WIN', PHP_OS)) {
+        } else if (false !== strpos(PHP_OS, "WIN")) {
             $path = 'c:/imagemagick/convert.exe';
 
             if (@file_exists(@amod_realpath($path))) {
