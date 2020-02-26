@@ -10,10 +10,10 @@ $phpbb_root_path = '.' . $sep . '..' . $sep;
 
 require_once '.' . $sep . 'pagestart.php';
 
+$mode = '';
+
 if (isset($_POST[POST_MODE]) || isset($_GET[POST_MODE])) {
     $mode = isset($_POST[POST_MODE]) ? $_POST[POST_MODE] : $_GET[POST_MODE];
-} else {
-    $mode = '';
 }
 
 switch ($mode) {
@@ -28,7 +28,7 @@ switch ($mode) {
         break;
 
     case '':
-    default :
+    default:
 
     $databaseLanguages = dibi::select('*')
         ->from(Tables::SESSIONS_AUTO_LOGIN_KEYS_TABLE)

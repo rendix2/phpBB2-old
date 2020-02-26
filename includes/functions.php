@@ -569,7 +569,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
     //+MOD: Fix message_die for multiple errors MOD
     static $msg_history;
 
-    if( !isset($msg_history) ) {
+    if( !isset($msg_history)) {
         $msg_history = [];
     }
 

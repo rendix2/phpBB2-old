@@ -77,7 +77,7 @@ $select_sort_mode = $select_sort_order = '';
 if (count($mode_types) > 0) {
 	$select_sort_mode = '<select name="mode">';
 
-	foreach ($mode_types as $value => $text ) {
+	foreach ($mode_types as $value => $text) {
 		$selected = ($mode === $value) ? ' selected="selected"' : '';
 		$select_sort_mode .= '<option value="' . $value . '"' . $selected . '>' . $text . '</option>';
 	}

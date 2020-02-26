@@ -173,12 +173,10 @@ function throw_error($msg_text = '', $err_line = '', $err_file = '')
 	// Get SQL error if we are debugging. Do this as soon as possible to prevent
 	// subsequent queries from overwriting the status of sql_error()
 	//
-    if (DEBUG) {
-        if ($err_line !== '' && $err_file !== '') {
-            $debug_text = '</br /><br />Line : ' . $err_line . '<br />File : ' . $err_file;
-        }
-    } else {
-        $debug_text = '';
+    $debug_text = '';
+
+    if (DEBUG && $err_line !== '' && $err_file !== '') {
+        $debug_text = '</br /><br />Line : ' . $err_line . '<br />File : ' . $err_file;
     }
 
 	//

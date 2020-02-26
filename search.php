@@ -39,23 +39,23 @@ $userdata = init_userprefs(PAGE_SEARCH);
 //
 // Define initial vars
 //
+$mode = '';
+
 if (isset($_POST[POST_MODE]) || isset($_GET[POST_MODE])) {
     $mode = isset($_POST[POST_MODE]) ? $_POST[POST_MODE] : $_GET[POST_MODE];
-} else {
-    $mode = '';
 }
+
+$search_keywords = '';
 
 if (isset($_POST['search_keywords']) || isset($_GET['search_keywords'])) {
     $search_keywords = isset($_POST['search_keywords']) ? $_POST['search_keywords'] : $_GET['search_keywords'];
-} else {
-    $search_keywords = '';
 }
+
+$search_author = '';
 
 if (isset($_POST['search_author']) || isset($_GET['search_author'])) {
     $search_author = isset($_POST['search_author']) ? $_POST['search_author'] : $_GET['search_author'];
     $search_author = phpbb_clean_username($search_author);
-} else {
-    $search_author = '';
 }
 
 $search_id = isset($_GET['search_id']) ? $_GET['search_id'] : '';
@@ -245,7 +245,7 @@ if ($mode === 'searchuser') {
 					continue;
 				}
 
-				switch ( $split_search_value) {
+				switch ($split_search_value) {
 					case 'and':
 						$current_match_type = 'and';
 						break;

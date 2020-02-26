@@ -158,9 +158,9 @@ function entry_exists($attach_id)
         ->where('[attach_id] = %i', $attach_id)
         ->fetchAll();
 
-    $exists = false;
-
     foreach ($ids as $id) {
+        $res = false;
+
         if ((int)$id->post_id !== 0) {
             $res = dibi::select(['post_id'])
                 ->from(Tables::POSTS_TABLE)
@@ -174,12 +174,11 @@ function entry_exists($attach_id)
         }
 
         if ($res) {
-            $exists = true;
-            break;
+            return true;
         }
     }
 
-    return $exists;
+    return false;
 }
 
 /**
@@ -218,7 +217,9 @@ function collect_attachments()
 
         @ftp_close($conn_id);
     } else {
-        if ($dir = @opendir($upload_dir)) {
+        $dir = @opendir($upload_dir);
+
+        if ($dir) {
             while ($file = @readdir($dir)) {
                 if ($file !== 'index.php' && $file !== '.htaccess' && !is_dir($upload_dir . '/' . $file) && !is_link($upload_dir . '/' . $file)) {
                     $file_attachments[] = trim($file);

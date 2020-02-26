@@ -71,6 +71,7 @@ $move    = isset($_POST['move']);
 $lock    = isset($_POST['lock']);
 $unlock  = isset($_POST['unlock']);
 $confirm = isset($_POST['confirm']);
+$mode    = '';
 
 if (isset($_POST[POST_MODE]) || isset($_GET[POST_MODE])) {
     $mode = isset($_POST[POST_MODE]) ? $_POST[POST_MODE] : $_GET[POST_MODE];
@@ -83,8 +84,6 @@ if (isset($_POST[POST_MODE]) || isset($_GET[POST_MODE])) {
     $mode = 'lock';
 } elseif ($unlock) {
     $mode = 'unlock';
-} else {
-    $mode = '';
 }
 
 // session id check

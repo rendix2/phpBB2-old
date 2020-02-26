@@ -88,10 +88,10 @@ if ($cancel) {
 //
 // Var definitions
 //
+$mode = '';
+
 if (!empty($_POST[POST_MODE]) || !empty($_GET[POST_MODE])) {
     $mode = !empty($_POST[POST_MODE]) ? $_POST[POST_MODE] : $_GET[POST_MODE];
-} else {
-    $mode = '';
 }
 
 $start = !empty($_GET['start']) ? (int)$_GET['start'] : 0;

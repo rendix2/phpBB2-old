@@ -31,8 +31,7 @@ define('IN_PHPBB', 1);
 $sep = DIRECTORY_SEPARATOR;
 $phpbb_root_path = '.' . $sep . '..' . $sep;
 
-$cancel = isset($_POST['cancel']);
-$no_page_header = $cancel;
+$no_page_header = $cancel = isset($_POST['cancel']);
 
 //
 // Load default header
@@ -50,11 +49,11 @@ if ($cancel) {
 //
 // Check to see what mode we should operate in.
 //
+$mode = '';
+
 if (isset($_POST[POST_MODE]) || isset($_GET[POST_MODE])) {
 	$mode = isset($_POST[POST_MODE]) ? $_POST[POST_MODE] : $_GET[POST_MODE];
 	$mode = htmlspecialchars($mode);
-} else {
-	$mode = '';
 }
 
 $delimeter  = '=+:';

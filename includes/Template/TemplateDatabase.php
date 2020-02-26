@@ -92,8 +92,8 @@ class TemplateDatabase extends BaseTemplate
 	 */
     public function pparse($handle)
 	{
-		if (empty($this->compiledCode[$handle]) ) {
-			if (!$this->loadFile($handle) ) {
+		if (empty($this->compiledCode[$handle])) {
+			if (!$this->loadFile($handle)) {
 				die("Template->pparse(): Couldn't load template file for handle $handle");
 			}
 
@@ -133,8 +133,8 @@ class TemplateDatabase extends BaseTemplate
 	 */
     public function assignVarFromHandle($varname, $handle)
 	{
-		if (empty($this->compiledCode[$handle]) ) {
-			if (!$this->loadFile($handle) ) {
+		if (empty($this->compiledCode[$handle])) {
+			if (!$this->loadFile($handle)) {
 				die("Template->pparse(): Couldn't load template file for handle $handle");
 			}
 
@@ -260,7 +260,7 @@ class TemplateDatabase extends BaseTemplate
 				$n[1] = $m[1];
 
 				// Added: dougk_ff7-Keeps templates from bombing if begin is on the same line as end.. I think. :)
-				if (preg_match('#<!-- END (.*?) -->#', $codeLine, $n) ) {
+				if (preg_match('#<!-- END (.*?) -->#', $codeLine, $n)) {
 					$block_nesting_level++;
 					$block_names[$block_nesting_level] = $m[1];
 

@@ -29,7 +29,6 @@ define('BBCODE_UID_LEN', 10);
 
 // global that holds loaded-and-prepared bbcode templates, so we only have to do
 // that stuff once.
-
 $bbcode_tpl = null;
 
 /**
@@ -47,6 +46,7 @@ function load_bbcode_template()
      * @var BaseTemplate $template
      */
 	global $template;
+
 	$tpl_filename = $template->makeFileName('bbcode.tpl');
 	$tpl = fread(fopen($tpl_filename, 'rb'), filesize($tpl_filename));
 
@@ -357,6 +357,7 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 
 	// Start at the 2nd char of the string, looking for opening tags.
 	$curr_pos = 1;
+
 	while ($curr_pos && ($curr_pos < mb_strlen($text))) {
 		$curr_pos = mb_strpos($text, '[', $curr_pos);
 

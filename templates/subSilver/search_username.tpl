@@ -3,7 +3,7 @@
 <!--
 function refresh_username(selected_username)
 {
-	if (selected_username === '-1' ) {
+	if (selected_username === '-1') {
 		return false;
 	}
 

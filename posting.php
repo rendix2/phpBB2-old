@@ -34,67 +34,67 @@ require_once $phpbb_root_path . 'includes' . $sep . 'bbcode.php';
 // Check and set various parameters
 //
 
+$submit = '';
+
 if (!empty($_POST['post']) || !empty($_GET['post'])) {
     $submit = !empty($_POST['post']) ? htmlspecialchars($_POST['post']) : htmlspecialchars($_GET['post']);
-} else {
-    $submit = '';
 }
+
+$preview = '';
 
 if (!empty($_POST['preview']) || !empty($_GET['preview'])) {
     $preview = !empty($_POST['preview']) ? htmlspecialchars($_POST['preview']) : htmlspecialchars($_GET['preview']);
-} else {
-    $preview = '';
 }
+
+$delete = '';
 
 if (!empty($_POST['delete']) || !empty($_GET['delete'])) {
     $delete = !empty($_POST['delete']) ? htmlspecialchars($_POST['delete']) : htmlspecialchars($_GET['delete']);
-} else {
-    $delete = '';
 }
+
+$pollDelete = '';
 
 if (!empty($_POST['poll_delete']) || !empty($_GET['poll_delete'])) {
     $pollDelete = !empty($_POST['poll_delete']) ? htmlspecialchars($_POST['poll_delete']) : htmlspecialchars($_GET['poll_delete']);
-} else {
-    $pollDelete = '';
 }
+
+$pollAdd = '';
 
 if (!empty($_POST['add_poll_option']) || !empty($_GET['add_poll_option'])) {
     $pollAdd = !empty($_POST['add_poll_option']) ? htmlspecialchars($_POST['add_poll_option']) : htmlspecialchars($_GET['add_poll_option']);
-} else {
-    $pollAdd = '';
 }
+
+$pollEdit = '';
 
 if (!empty($_POST['edit_poll_option']) || !empty($_GET['edit_poll_option'])) {
     $pollEdit = !empty($_POST['edit_poll_option']) ? htmlspecialchars($_POST['edit_poll_option']) : htmlspecialchars($_GET['edit_poll_option']);
-} else {
-    $pollEdit = '';
 }
+
+$mode = '';
 
 if (!empty($_POST[POST_MODE]) || !empty($_GET[POST_MODE])) {
     $mode = !empty($_POST[POST_MODE]) ? htmlspecialchars($_POST[POST_MODE]) : htmlspecialchars($_GET[POST_MODE]);
-} else {
-    $mode = '';
 }
 
 $confirm = isset($_POST['confirm']);
 $sid = isset($_POST['sid']) ? $_POST['sid'] : 0;
 
+$forumId = '';
+
 if (!empty($_POST[POST_FORUM_URL]) || !empty($_GET[POST_FORUM_URL])) {
     $forumId = !empty($_POST[POST_FORUM_URL]) ? (int)$_POST[POST_FORUM_URL] : (int)$_GET[POST_FORUM_URL];
-} else {
-    $forumId = '';
 }
+
+$topicId = '';
 
 if (!empty($_POST[POST_TOPIC_URL]) || !empty($_GET[POST_TOPIC_URL])) {
     $topicId = !empty($_POST[POST_TOPIC_URL]) ? (int)$_POST[POST_TOPIC_URL] : (int)$_GET[POST_TOPIC_URL];
-} else {
-    $topicId = '';
 }
+
+$postId = '';
 
 if (!empty($_POST[POST_POST_URL]) || !empty($_GET[POST_POST_URL])) {
     $postId = !empty($_POST[POST_POST_URL]) ? (int)$_POST[POST_POST_URL] : (int)$_GET[POST_POST_URL];
-} else {
-    $postId = '';
 }
 
 $refresh = $preview || $pollAdd || $pollEdit || $pollDelete;

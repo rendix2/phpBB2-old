@@ -140,13 +140,14 @@ $select_sort_order .= '</select>';
 $submit_change = isset($_POST['submit_change']);
 $delete = isset($_POST['delete']);
 $delete_id_list = get_var('delete_id_list', array(0));
+$delete_id_list_count = count($delete_id_list);
 $confirm = isset($_POST['confirm']);
 
-if ($confirm && count($delete_id_list) > 0) {
+if ($confirm && $delete_id_list_count > 0) {
     $attachments = [];
 
     delete_attachment(0, $delete_id_list);
-} else if ($delete && count($delete_id_list) > 0) {
+} else if ($delete && $delete_id_list_count > 0) {
     // Not confirmed, show confirmation message
     $hidden_fields = '<input type="hidden" name="view" value="' . $view . '" />';
     $hidden_fields .= '<input type="hidden" name="mode" value="' . $mode . '" />';

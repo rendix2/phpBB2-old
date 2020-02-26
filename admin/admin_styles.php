@@ -37,7 +37,7 @@ $phpbb_root_path = '.' . $sep . '..' . $sep;
 $confirm = isset($_POST['confirm']);
 $cancel  = isset($_POST['cancel']);
 
-$no_page_header = !empty($_POST['send_file']) || !empty($_POST['send_file']) || $cancel;
+$no_page_header = !empty($_POST['send_file']) || $cancel;
 
 require_once '.' . $sep . 'pagestart.php';
 
@@ -45,11 +45,11 @@ if ($cancel) {
     redirect('admin/' . Session::appendSid('admin_styles.php', true));
 }
 
+$mode = '';
+
 if (isset($_GET[POST_MODE]) || isset($_POST[POST_MODE])) {
     $mode = isset($_GET[POST_MODE]) ? $_GET[POST_MODE] : $_POST[POST_MODE];
     $mode = htmlspecialchars($mode);
-} else {
-    $mode = '';
 }
 
 switch ($mode) {
@@ -121,18 +121,19 @@ switch ($mode) {
                 $row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
                 $row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
-                $template->assignBlockVars('styles', [
-                    'ROW_CLASS'     => $row_class,
-                    'ROW_COLOR'     => '#' . $row_color,
-                    'STYLE_NAME'    => $installableTheme['style_name'],
-                    'TEMPLATE_NAME' => $installableTheme['template_name'],
+                $template->assignBlockVars('styles',
+                    [
+                        'ROW_CLASS'     => $row_class,
+                        'ROW_COLOR'     => '#' . $row_color,
+                        'STYLE_NAME'    => $installableTheme['style_name'],
+                        'TEMPLATE_NAME' => $installableTheme['template_name'],
 
-                    'U_STYLES_INSTALL' => Session::appendSid('admin_styles.php?mode=addnew&amp;style=' . urlencode($installableTheme['style_name']) . '&amp;install_to=' . urlencode($installableTheme['template_name']))
-                    ]);
-
+                        'U_STYLES_INSTALL' => Session::appendSid('admin_styles.php?mode=addnew&amp;style=' . urlencode($installableTheme['style_name']) . '&amp;install_to=' . urlencode($installableTheme['template_name']))
+                    ]
+                );
             }
-            $template->pparse('body');
 
+            $template->pparse('body');
 		}
 		break;
 	
@@ -502,7 +503,6 @@ switch ($mode) {
 
 			message_die(GENERAL_MESSAGE, $message);
         } elseif ($_POST['send_file']) {
-			
 			header('Content-Type: text/x-delimtext; name="theme_info.cfg"');
 			header('Content-disposition: attachment; filename=theme_info.cfg');
 

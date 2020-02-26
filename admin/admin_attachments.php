@@ -303,10 +303,10 @@ if ($mode === 'manage') {
         eval('$' . $variable . "_no = ( \$new_attach['" . $variable . "'] === '0' ) ? 'checked=\"checked\"' : '';");
     }
 
-    if (!function_exists('ftp_connect')) {
-        $template->assignBlockVars('switch_no_ftp', []);
-    } else {
+    if (function_exists('ftp_connect')) {
         $template->assignBlockVars('switch_ftp', []);
+    } else {
+        $template->assignBlockVars('switch_no_ftp', []);
     }
 
     $template->assignVars(
@@ -553,10 +553,12 @@ foreach ($shadow_attachments as $shadow_attachment) {
 }
 
 foreach ($shadow_row['attach_id'] as $i => $shadowRow) {
-    $template->assignBlockVars('table_shadow_row', [
+    $template->assignBlockVars('table_shadow_row',
+        [
             'ATTACH_ID' => $shadow_row['attach_id'][$i],
             'ATTACH_FILENAME' => basename($shadow_row['physical_filename'][$i]),
-            'ATTACH_COMMENT' => (trim($shadow_row['comment'][$i]) === '') ? $lang['No_file_comment_available'] : trim($shadow_row['comment'][$i])]
+            'ATTACH_COMMENT' => (trim($shadow_row['comment'][$i]) === '') ? $lang['No_file_comment_available'] : trim($shadow_row['comment'][$i])
+        ]
     );
 }
 
@@ -591,14 +593,14 @@ if ($mode === 'cats') {
         }
     }
 
-    $display_inlined_yes = ($new_attach['img_display_inlined'] !== '0') ? 'checked="checked"' : '';
-    $display_inlined_no = ($new_attach['img_display_inlined'] === '0') ? 'checked="checked"' : '';
+    $display_inlined_yes = $new_attach['img_display_inlined'] !== '0' ? 'checked="checked"' : '';
+    $display_inlined_no = $new_attach['img_display_inlined'] === '0' ? 'checked="checked"' : '';
 
-    $create_thumbnail_yes = ($new_attach['img_create_thumbnail'] !== '0') ? 'checked="checked"' : '';
-    $create_thumbnail_no = ($new_attach['img_create_thumbnail'] === '0') ? 'checked="checked"' : '';
+    $create_thumbnail_yes = $new_attach['img_create_thumbnail'] !== '0' ? 'checked="checked"' : '';
+    $create_thumbnail_no = $new_attach['img_create_thumbnail'] === '0' ? 'checked="checked"' : '';
 
-    $use_gd2_yes = ($new_attach['use_gd2'] !== '0') ? 'checked="checked"' : '';
-    $use_gd2_no = ($new_attach['use_gd2'] === '0') ? 'checked="checked"' : '';
+    $use_gd2_yes = $new_attach['use_gd2'] !== '0' ? 'checked="checked"' : '';
+    $use_gd2_no = $new_attach['use_gd2'] === '0' ? 'checked="checked"' : '';
 
     // Check Thumbnail Support
     if (!is_imagick() && !@extension_loaded('gd')) {
@@ -688,7 +690,6 @@ if ($check_image_cat) {
                 $error = true;
                 $error_msg = sprintf($lang['Directory_does_not_exist'], $upload_dir) . '<br />';
             }
-
         }
 
         if (!$error && !is_dir($upload_dir)) {
@@ -977,7 +978,8 @@ if ($mode === 'quota') {
         $max_add_filesize = round($max_add_filesize / 1024 * 100) / 100;
     }
 
-    $template->assignVars([
+    $template->assignVars(
+        [
             'L_MANAGE_QUOTAS_TITLE' => $lang['Manage_quotas'],
             'L_MANAGE_QUOTAS_EXPLAIN' => $lang['Manage_quotas_explain'],
             'L_SUBMIT' => $lang['Submit'],
@@ -993,7 +995,8 @@ if ($mode === 'quota') {
             'S_FILESIZE' => size_select('add_size_select', $size),
             'L_REMOVE_SELECTED' => $lang['Remove_selected'],
 
-            'S_ATTACH_ACTION' => Session::appendSid('admin_attachments.php?mode=quota')]
+            'S_ATTACH_ACTION' => Session::appendSid('admin_attachments.php?mode=quota')
+        ]
     );
 
     $rows = dibi::select('*')
@@ -1036,12 +1039,14 @@ if ($mode === 'quota' && $e_mode === 'view_quota') {
         ->where('[quota_limit_id] = %i', $quota_id)
         ->fetch();
 
-    $template->assignVars([
+    $template->assignVars(
+        [
             'L_QUOTA_LIMIT_DESC' => $row->quota_desc,
             'L_ASSIGNED_USERS' => $lang['Assigned_users'],
             'L_ASSIGNED_GROUPS' => $lang['Assigned_groups'],
             'L_UPLOAD_QUOTA' => $lang['Upload_quota'],
-            'L_PM_QUOTA' => $lang['Pm_quota']]
+            'L_PM_QUOTA' => $lang['Pm_quota']
+        ]
     );
 
     $rows = dibi::select(['q.user_id', 'u.username', 'q.quota_type'])

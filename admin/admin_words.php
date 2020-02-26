@@ -39,6 +39,8 @@ if ($cancel) {
     redirect('admin/' . Session::appendSid('admin_words.php', true));
 }
 
+$mode = '';
+
 if (isset($_GET[POST_MODE]) || isset($_POST[POST_MODE])) {
     $mode = isset($_GET[POST_MODE]) ? $_GET[POST_MODE] : $_POST[POST_MODE];
     $mode = htmlspecialchars($mode);
@@ -50,8 +52,6 @@ if (isset($_GET[POST_MODE]) || isset($_POST[POST_MODE])) {
         $mode = 'add';
     } elseif (isset($_POST['save'])) {
         $mode = 'save';
-    } else {
-        $mode = '';
     }
 }
 

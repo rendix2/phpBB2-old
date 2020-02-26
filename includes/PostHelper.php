@@ -957,11 +957,7 @@ class PostHelper
                 }
             }
 
-            if (in_array(mb_strtolower($tag[1]), $allowedHtmlTags, true)) {
-                return '<' . $tag[1] . $attributes . '>';
-            } else {
-                return htmlspecialchars('<' . $tag[1] . $attributes . '>');
-            }
+            return '<' . $tag[1] . $attributes . '>';
         }
         // Finally, this is not an allowed tag so strip all the attibutes and escape it
         else {

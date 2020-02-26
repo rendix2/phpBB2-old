@@ -137,67 +137,67 @@ class Auth
 
         switch ($type) {
             case self::AUTH_ALL:
-                $authSql      = ['a.auth_view', 'a.auth_read', 'a.auth_post', 'a.auth_reply', 'a.auth_edit', 'a.auth_delete', 'a.auth_sticky', 'a.auth_announce', 'a.auth_vote', 'a.auth_pollcreate', 'a.auth_attachments', 'a.auth_download'];
+                $authSql    = ['a.auth_view', 'a.auth_read', 'a.auth_post', 'a.auth_reply', 'a.auth_edit', 'a.auth_delete', 'a.auth_sticky', 'a.auth_announce', 'a.auth_vote', 'a.auth_pollcreate', 'a.auth_attachments', 'a.auth_download'];
                 $authFields = ['auth_view', 'auth_read', 'auth_post', 'auth_reply', 'auth_edit', 'auth_delete', 'auth_sticky', 'auth_announce', 'auth_vote', 'auth_pollcreate', 'auth_attachments', 'auth_download'];
                 break;
 
             case self::AUTH_VIEW:
-                $authSql      = ['a.auth_view'];
+                $authSql    = ['a.auth_view'];
                 $authFields = ['auth_view'];
                 break;
 
             case self::AUTH_READ:
-                $authSql      = ['a.auth_read'];
+                $authSql    = ['a.auth_read'];
                 $authFields = ['auth_read'];
                 break;
 
             case self::AUTH_POST:
-                $authSql      = ['a.auth_post'];
+                $authSql    = ['a.auth_post'];
                 $authFields = ['auth_post'];
                 break;
 
             case self::AUTH_REPLY:
-                $authSql      = ['a.auth_reply'];
+                $authSql    = ['a.auth_reply'];
                 $authFields = ['auth_reply'];
                 break;
 
             case self::AUTH_EDIT:
-                $authSql      = ['a.auth_edit'];
+                $authSql    = ['a.auth_edit'];
                 $authFields = ['auth_edit'];
                 break;
 
             case self::AUTH_DELETE:
-                $authSql      = ['a.auth_delete'];
+                $authSql    = ['a.auth_delete'];
                 $authFields = ['auth_delete'];
                 break;
 
             case self::AUTH_ANNOUNCE:
-                $authSql      = ['a.auth_announce'];
+                $authSql    = ['a.auth_announce'];
                 $authFields = ['auth_announce'];
                 break;
 
             case self::AUTH_STICKY:
-                $authSql      = ['a.auth_sticky'];
+                $authSql    = ['a.auth_sticky'];
                 $authFields = ['auth_sticky'];
                 break;
 
             case self::AUTH_POLL_CREATE:
-                $authSql      = ['a.auth_pollcreate'];
+                $authSql    = ['a.auth_pollcreate'];
                 $authFields = ['auth_pollcreate'];
                 break;
 
             case self::AUTH_VOTE:
-                $authSql      = ['a.auth_vote'];
+                $authSql    = ['a.auth_vote'];
                 $authFields = ['auth_vote'];
                 break;
 
             case self::AUTH_DOWNLOAD:
-                $authSql = ['a.auth_download'];
+                $authSql    = ['a.auth_download'];
                 $authFields = ['auth_download'];
                 break;
 
             case self::AUTH_ATTACH:
-                $authSql = ['a.auth_attachments'];
+                $authSql    = ['a.auth_attachments'];
                 $authFields = ['auth_attachments'];
                 break;
 

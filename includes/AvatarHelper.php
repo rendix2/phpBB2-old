@@ -170,9 +170,12 @@ class AvatarHelper
             $base_get = '/' . $url_ary[4];
             $port = !empty($url_ary[3]) ? $url_ary[3] : 80;
 
-            if (!($fsock = @fsockopen($url_ary[2], $port, $errno, $errstr))) {
+            $fsock = @fsockopen($url_ary[2], $port, $errno, $errstr);
+
+            if (!$fsock) {
                 $error        = true;
                 $errorMessage = !empty($errorMessage) ? $errorMessage . '<br />' . $lang['No_connection_URL'] : $lang['No_connection_URL'];
+
                 return [];
             }
 
@@ -191,6 +194,7 @@ class AvatarHelper
             if (!preg_match('#Content-Length\: ([0-9]+)[^ /][\s]+#i', $avatarData, $fileData1) || !preg_match('#Content-Type\: image/[x\-]*([a-z]+)[\s]+#i', $avatarData, $fileData2)) {
                 $error        = true;
                 $errorMessage = !empty($errorMessage) ? $errorMessage . '<br />' . $lang['File_no_data'] : $lang['File_no_data'];
+
                 return [];
             }
 

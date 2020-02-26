@@ -36,11 +36,11 @@ $html_entities_replace = ['&lt;', '&gt;'];
 //
 // Set mode
 //
+$mode = '';
+
 if (isset($_POST[POST_MODE]) || isset($_GET[POST_MODE])) {
     $mode = isset($_POST[POST_MODE]) ? $_POST[POST_MODE] : $_GET[POST_MODE];
     $mode = htmlspecialchars($mode);
-} else {
-    $mode = '';
 }
 
 //

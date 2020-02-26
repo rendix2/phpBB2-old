@@ -51,11 +51,11 @@ $forum_auth_ary['auth_download'] =Auth:: AUTH_REG;
 //
 // Mode setting
 //
+$mode = '';
+
 if (isset($_POST[POST_MODE]) || isset($_GET[POST_MODE])) {
     $mode = isset($_POST[POST_MODE]) ? $_POST[POST_MODE] : $_GET[POST_MODE];
     $mode = htmlspecialchars($mode);
-} else {
-    $mode = '';
 }
 
 /**
@@ -161,8 +161,7 @@ function get_list($mode, $id, $select)
  */
 function renumber_order($mode, $cat = 0)
 {
-	switch($mode)
-	{
+	switch($mode) {
 		case 'category':
 			$table = Tables::CATEGORIES_TABLE;
 			$idfield = 'cat_id';
@@ -367,7 +366,6 @@ if (!empty($mode)) {
             $forums_id = dibi::insert(Tables::FORUMS_TABLE, $forum_auth_ary)->execute(dibi::IDENTIFIER);
 
             if ($_POST['prune_enable']) {
-
 				if ($_POST['prune_days'] === '' || $_POST['prune_freq'] === '') {
 					message_die(GENERAL_MESSAGE, $lang['Set_prune_data']);
 				}

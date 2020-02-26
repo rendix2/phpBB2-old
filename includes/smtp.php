@@ -92,7 +92,9 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 
 	// Ok we have error checked as much as we can to this point let's get on
 	// it already.
-	if (!$socket = @fsockopen($board_config['smtp_host'], 25, $errno, $errstr, 20) ) {
+    $socket = @fsockopen($board_config['smtp_host'], 25, $errno, $errstr, 20);
+
+	if (!$socket) {
 		message_die(GENERAL_ERROR, "Could not connect to smtp host : $errno : $errstr", '', __LINE__, __FILE__);
 	}
 
@@ -101,7 +103,7 @@ function smtpmail($mail_to, $subject, $message, $headers = '')
 
 	// Do we want to use AUTH?, send RFC2554 EHLO, else send RFC821 HELO
 	// This improved as provided by SirSir to accomodate
-	if (!empty($board_config['smtp_username']) && !empty($board_config['smtp_password']) ) {
+	if (!empty($board_config['smtp_username']) && !empty($board_config['smtp_password'])) {
 		fwrite($socket, 'EHLO ' . $board_config['smtp_host'] . "\r\n");
 		server_parse($socket, '250', __LINE__);
 

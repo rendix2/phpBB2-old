@@ -31,28 +31,28 @@ $phpbb_root_path = '.' . $sep . '..' . $sep;
 
 require_once '.' . $sep . 'pagestart.php';
 
+$mode = '';
+
 if (!empty($_POST[POST_MODE]) || !empty($_GET[POST_MODE])) {
     $mode = !empty($_POST[POST_MODE]) ? $_POST[POST_MODE] : $_GET[POST_MODE];
-} else {
-    $mode = '';
 }
+
+$user_id = '';
 
 if (!empty($_POST[POST_USERS_URL]) || !empty($_GET[POST_USERS_URL])) {
     $user_id = !empty($_POST[POST_USERS_URL]) ? $_POST[POST_USERS_URL] : $_GET[POST_USERS_URL];
-} else {
-    $user_id = '';
 }
+
+$group_id = '';
 
 if (!empty($_POST[POST_GROUPS_URL]) || !empty($_GET[POST_GROUPS_URL])) {
     $group_id = !empty($_POST[POST_GROUPS_URL]) ? $_POST[POST_GROUPS_URL] : $_GET[POST_GROUPS_URL];
-} else {
-    $group_id = '';
 }
+
+$adv = '';
 
 if (!empty($_POST['adv']) || !empty($_GET['adv'])) {
     $adv = !empty($_POST['adv']) ? $_POST['adv'] : $_GET['adv'];
-} else {
-    $adv = '';
 }
 
 $user_id = (int)$user_id;
@@ -115,7 +115,6 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 		//
 		// Get group_id for this user_id
 		//
-
         $row = dibi::select(['g.group_id', 'u.user_level'])
             ->from(Tables::USERS_GROUPS_TABLE)
             ->as('ug')
@@ -572,7 +571,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
         $auth_access_count[$row->forum_id]++;
     }
 
-    if (($mode === 'user') && $ug_info[0]->user_level === ADMIN && $ug_info[0]->user_id !== ANONYMOUS) {
+    if ($mode === 'user' && $ug_info[0]->user_level === ADMIN && $ug_info[0]->user_id !== ANONYMOUS) {
         $is_admin = 1;
     } else {
         $is_admin = 0;
@@ -787,7 +786,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 
     $template->setFileNames(['body' => 'admin/auth_ug_body.tpl']);
 
-    $adv_switch = empty($adv) ? 1 : 0;
+    $adv_switch = empty($adv);
 	$u_ug_switch = $mode === 'user' ? POST_USERS_URL . '=' . $user_id : POST_GROUPS_URL . '=' . $group_id;
 	$switch_mode = Session::appendSid("admin_ug_auth.php?mode=$mode&amp;" . $u_ug_switch . "&amp;adv=$adv_switch");
 	$switch_mode_text = empty($adv) ? $lang['Advanced_mode'] : $lang['Simple_mode'];

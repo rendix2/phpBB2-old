@@ -30,16 +30,16 @@ $phpbb_root_path = '.' . $sep . '..' . $sep;
 
 require_once '.' . $sep . 'pagestart.php';
 
+$group_id = 0;
+
 if (isset($_POST[POST_GROUPS_URL]) || isset($_GET[POST_GROUPS_URL])) {
     $group_id = isset($_POST[POST_GROUPS_URL]) ? (int)$_POST[POST_GROUPS_URL] : (int)$_GET[POST_GROUPS_URL];
-} else {
-    $group_id = 0;
 }
+
+$mode = '';
 
 if (isset($_POST[POST_MODE]) || isset($_GET[POST_MODE])) {
     $mode = isset($_POST[POST_MODE]) ? $_POST[POST_MODE] : $_GET[POST_MODE];
-} else {
-    $mode = '';
 }
 
 //

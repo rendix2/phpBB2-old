@@ -172,8 +172,6 @@ function get_database_size()
 function getForumLocation($sessionPage, array $lang)
 {
     switch($sessionPage) {
-        case PAGE_INDEX:
-            return $lang['Forum_index'];
         case PAGE_ADMIN_INDEX:
             return $lang['Admin_index'];
         case PAGE_POSTING:
@@ -198,6 +196,7 @@ function getForumLocation($sessionPage, array $lang)
             return $lang['User_acp_title'];
         case PAGE_RULES:
             return $lang['Rules_page'];
+        case PAGE_INDEX:
         default:
             return $lang['Forum_index'];
     }

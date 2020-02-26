@@ -115,17 +115,17 @@ $scriptName = preg_replace('/^\/?(.*?)\/?$/', "\\1", trim($board_config['script_
 $scriptName = $scriptName !== '' ? $scriptName . '/groupcp.php' : 'groupcp.php';
 $serverUrl  = getServerUrl($board_config, $scriptName);
 
+$groupId = '';
+
 if (isset($_GET[POST_GROUPS_URL]) || isset($_POST[POST_GROUPS_URL])) {
     $groupId = isset($_POST[POST_GROUPS_URL]) ? (int)$_POST[POST_GROUPS_URL] : (int)$_GET[POST_GROUPS_URL];
-} else {
-    $groupId = '';
 }
+
+$mode = '';
 
 if (isset($_POST[POST_MODE]) || isset($_GET[POST_MODE])) {
     $mode = isset($_POST[POST_MODE]) ? $_POST[POST_MODE] : $_GET[POST_MODE];
     $mode = htmlspecialchars($mode);
-} else {
-    $mode = '';
 }
 
 $confirm = isset($_POST['confirm']) ? true : 0;
