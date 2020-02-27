@@ -819,7 +819,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
 	generate_user_info($group_moderator, $board_config['default_dateformat'], $isModerator, $from, $posts, $topics, $joined, $poster_avatar, $profileImage, $profile, $searchImage, $search, $pmImage, $pm, $emailImage, $email, $wwwImage, $www);
 
     // <!-- BEGIN Another Online/Offline indicator -->
-    if (!$group_moderator->user_allow_viewonline && $userdata['user_level'] === ADMIN || $group_moderator->user_allow_viewonline) {
+    if ((!$group_moderator->user_allow_viewonline && $userdata['user_level'] === ADMIN) || $group_moderator->user_allow_viewonline) {
         $expiry_time = time() - ONLINE_TIME_DIFF;
 
         if ($group_moderator->user_session_time >= $expiry_time) {
@@ -939,7 +939,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
 		generate_user_info($groupMember, $board_config['default_dateformat'], $isModerator, $from, $posts, $topics, $joined, $poster_avatar, $profileImage, $profile, $searchImage, $search, $pmImage, $pm, $emailImage, $email, $wwwImage, $www);
 
         // <!-- BEGIN Another Online/Offline indicator -->
-        if (!$groupMember->user_allow_viewonline && $userdata['user_level'] === ADMIN || $groupMember->user_allow_viewonline) {
+        if ((!$groupMember->user_allow_viewonline && $userdata['user_level'] === ADMIN) || $groupMember->user_allow_viewonline) {
             $expiry_time = time() - ONLINE_TIME_DIFF;
 
             if ($groupMember->user_session_time >= $expiry_time) {
@@ -1070,7 +1070,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
             );
 
             // <!-- BEGIN Another Online/Offline indicator -->
-            if (!$modgroup_pending_value->user_allow_viewonline && $userdata['user_level'] === ADMIN || $modgroup_pending_value->user_allow_viewonline) {
+            if ((!$modgroup_pending_value->user_allow_viewonline && $userdata['user_level'] === ADMIN) || $modgroup_pending_value->user_allow_viewonline) {
                 $expiry_time = time() - ONLINE_TIME_DIFF;
 
                 if ($modgroup_pending_value->user_session_time >= $expiry_time) {

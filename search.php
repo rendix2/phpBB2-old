@@ -927,7 +927,7 @@ if ($mode === 'searchuser') {
                 }
 
                 // <!-- BEGIN Another Online/Offline indicator -->
-                if (!$search_set->user_allow_viewonline && $userdata['user_level'] === ADMIN || $search_set->user_allow_viewonline) {
+                if ((!$search_set->user_allow_viewonline && $userdata['user_level'] === ADMIN) || $search_set->user_allow_viewonline) {
                     $expiry_time = time() - ONLINE_TIME_DIFF;
 
                     if ($search_set->user_session_time >= $expiry_time) {

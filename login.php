@@ -66,11 +66,11 @@ $userdata = init_userprefs(PAGE_LOGIN);
 // End session management
 //
 
+$sid = '';
+
 // session id check
 if (isset($_POST['sid']) || isset($_GET['sid'])) {
 	$sid = isset($_POST['sid']) ? $_POST['sid'] : $_GET['sid'];
-} else {
-	$sid = '';
 }
 
 if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) || isset($_GET['logout'])) {

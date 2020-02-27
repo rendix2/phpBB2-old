@@ -55,17 +55,17 @@ if (isset($_POST['order'])) {
 // Memberlist sorting
 //
 $modeTypes = [
-    'joined'   => $lang['Sort_Joined'],
-    'username' => $lang['Sort_Username'],
-    'location' => $lang['Sort_Location'],
-    'posts'    => $lang['Sort_Posts'],
-    'topics'   => $lang['Sort_Topics'],
-    'thanks'   => $lang['Sort_Thanks'],
+    'joined'         => $lang['Sort_Joined'],
+    'username'       => $lang['Sort_Username'],
+    'location'       => $lang['Sort_Location'],
+    'posts'          => $lang['Sort_Posts'],
+    'topics'         => $lang['Sort_Topics'],
+    'thanks'         => $lang['Sort_Thanks'],
     'topics_watches' => $lang['Sort_Topics_watches'],
-    'email'    => $lang['Sort_Email'],
-    'website'  => $lang['Sort_Website'],
-    'topten'   => $lang['Sort_Top_Ten'],
-    'online'   => $lang['Sort_Online'],
+    'email'          => $lang['Sort_Email'],
+    'website'        => $lang['Sort_Website'],
+    'topten'         => $lang['Sort_Top_Ten'],
+    'online'         => $lang['Sort_Online'],
 ];
 
 $selectSortModeValues= '';
@@ -189,7 +189,7 @@ switch ($mode) {
         break;
     case 'topten':
         $users->orderBy('user_posts', $sortOrder)
-            ->limit($board_config['members_per_page']);
+            ->limit(10);
         break;
     case 'online':
         $users->orderBy('user_session_time', $sortOrder)
@@ -218,7 +218,7 @@ foreach ($users as $i => $user) {
     }
 
     // <!-- BEGIN Another Online/Offline indicator -->
-    if (!$user->user_allow_viewonline && $userdata['user_level'] === ADMIN || $user->user_allow_viewonline) {
+    if ((!$user->user_allow_viewonline && $userdata['user_level'] === ADMIN) || $user->user_allow_viewonline) {
         $expiry_time = time() - ONLINE_TIME_DIFF;
 
         if ($user->user_session_time >= $expiry_time) {

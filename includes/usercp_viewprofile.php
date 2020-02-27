@@ -179,7 +179,7 @@ $searchImage = '<a href="' . $temp_url . '"><img src="' . $images['icon_search']
 $search      = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $profileData->username) . '</a>';
 
 // <!-- BEGIN Another Online/Offline indicator -->
-if (!$profileData->user_allow_viewonline && $userdata['user_level'] === ADMIN || $profileData->user_allow_viewonline) {
+if ((!$profileData->user_allow_viewonline && $userdata['user_level'] === ADMIN) || $profileData->user_allow_viewonline) {
     $expiry_time = time() - ONLINE_TIME_DIFF;
 
     if ($profileData->user_session_time >= $expiry_time) {

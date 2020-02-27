@@ -182,8 +182,6 @@ switch ($mode) {
         $is_auth_type = 'auth_vote';
         break;
     case 'topicreview':
-        $is_auth_type = 'auth_read';
-        break;
     case 'thank':
         $is_auth_type = 'auth_read';
         break;
@@ -436,46 +434,34 @@ if (!$is_auth[$is_auth_type]) {
 //
 // Set toggles for various options
 //
+$html_on = 0;
+
 if ($board_config['allow_html']) {
     if ($submit || $refresh) {
         $html_on = !$_POST['disable_html'];
     } else {
-        if ($userdata['user_id'] === ANONYMOUS) {
-            $html_on = $board_config['allow_html'];
-        } else {
-            $html_on = $userdata['user_allowhtml'];
-        }
+        $html_on = $userdata['user_id'] === ANONYMOUS ? $board_config['allow_html'] : $userdata['user_allowhtml'];
     }
-} else {
-    $html_on = 0;
 }
+
+$bbcode_on = 0;
 
 if ($board_config['allow_bbcode']) {
     if ($submit || $refresh) {
         $bbcode_on = !isset($_POST['disable_bbcode']);
     } else {
-        if ($userdata['user_id'] === ANONYMOUS) {
-            $bbcode_on = $board_config['allow_bbcode'];
-        } else {
-            $bbcode_on = $userdata['user_allowbbcode'];
-        }
+        $bbcode_on = $userdata['user_id'] === ANONYMOUS ? $board_config['allow_bbcode'] : $userdata['user_allowbbcode'];
     }
-} else {
-    $bbcode_on = 0;
 }
+
+$smilies_on = 0;
 
 if ($board_config['allow_smilies']) {
     if ($submit || $refresh) {
         $smilies_on = !isset($_POST['disable_smilies']);
     } else {
-        if ($userdata['user_id'] === ANONYMOUS) {
-            $smilies_on = $board_config['allow_smilies'];
-        } else {
-            $smilies_on = $userdata['user_allowsmile'];
-        }
+        $smilies_on = $userdata['user_id'] === ANONYMOUS ? $board_config['allow_smilies'] : $userdata['user_allowsmile'];
     }
-} else {
-    $smilies_on = 0;
 }
 
 if (($submit || $refresh) && $is_auth['auth_read']) {
@@ -497,11 +483,7 @@ if (($submit || $refresh) && $is_auth['auth_read']) {
 if ($submit || $refresh) {
     $attachSignature = isset($_POST['attach_sig']);
 } else {
-    if ($userdata['user_id'] === ANONYMOUS) {
-        $attachSignature = 0;
-    } else {
-        $attachSignature = $userdata['user_attachsig'];
-    }
+    $attachSignature = $userdata['user_id'] === ANONYMOUS ? 0 : $userdata['user_attachsig'];
 }
 
 execute_posting_attachment_handling();
@@ -887,7 +869,6 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg !== '') {
 		$username = $userdata['session_logged_in'] ? $userdata['username'] : '';
 		$subject = '';
 		$message = '';
-
     } elseif ($mode === 'quote' || $mode === 'editpost') {
         $pollTitle  = '';
         $pollLength = '';

@@ -42,22 +42,22 @@ require_once $phpbb_root_path . 'includes' . $sep . 'functions_admin.php';
 //
 // Obtain initial var settings
 //
+$forumId = '';
+
 if (isset($_GET[POST_FORUM_URL]) || isset($_POST[POST_FORUM_URL])) {
     $forumId = isset($_POST[POST_FORUM_URL]) ? (int)$_POST[POST_FORUM_URL] : (int)$_GET[POST_FORUM_URL];
-} else {
-    $forumId = '';
 }
+
+$postId = '';
 
 if (isset($_GET[POST_POST_URL]) || isset($_POST[POST_POST_URL])) {
     $postId = isset($_POST[POST_POST_URL]) ? (int)$_POST[POST_POST_URL] : (int)$_GET[POST_POST_URL];
-} else {
-    $postId = '';
 }
+
+$topicId = '';
 
 if (isset($_GET[POST_TOPIC_URL]) || isset($_POST[POST_TOPIC_URL])) {
     $topicId = isset($_POST[POST_TOPIC_URL]) ? (int)$_POST[POST_TOPIC_URL] : (int)$_GET[POST_TOPIC_URL];
-} else {
-    $topicId = '';
 }
 
 //
@@ -86,11 +86,11 @@ if (isset($_POST[POST_MODE]) || isset($_GET[POST_MODE])) {
     $mode = 'unlock';
 }
 
+$sid = '';
+
 // session id check
 if (!empty($_POST['sid']) || !empty($_GET['sid'])) {
     $sid = !empty($_POST['sid']) ? $_POST['sid'] : $_GET['sid'];
-} else {
-    $sid = '';
 }
 
 //

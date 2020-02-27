@@ -97,10 +97,10 @@ if (!empty($_POST[POST_MODE]) || !empty($_GET[POST_MODE])) {
 $start = !empty($_GET['start']) ? (int)$_GET['start'] : 0;
 $start = $start < 0 ? 0 : $start;
 
+$privmsg_id = '';
+
 if (isset($_POST[POST_POST_URL]) || isset($_GET[POST_POST_URL])) {
     $privmsg_id = isset($_POST[POST_POST_URL]) ? (int)$_POST[POST_POST_URL] : (int)$_GET[POST_POST_URL];
-} else {
-    $privmsg_id = '';
 }
 
 $error = false;
@@ -406,7 +406,7 @@ if ($mode === 'newpm') {
 	];
 
     // <!-- BEGIN Another Online/Offline indicator -->
-    if (!$privmsg['user_allow_viewonline'] && $userdata['user_level'] === ADMIN || $privmsg['user_allow_viewonline']) {
+    if ((!$privmsg['user_allow_viewonline'] && $userdata['user_level'] === ADMIN) || $privmsg['user_allow_viewonline']) {
         $expiry_time = time() - ONLINE_TIME_DIFF;
 
         if ($privmsg['user_session_time_1'] >= $expiry_time) {
@@ -1039,22 +1039,22 @@ if ($mode === 'newpm') {
 	//
 	// Toggles
 	//
+    $html_on = 0;
+
     if ($board_config['allow_html']) {
         $html_on = $submit || $refresh ? !isset($_POST['disable_html']) : $userdata['user_allowhtml'];
-    } else {
-        $html_on = 0;
     }
+
+    $bbcode_on = 0;
 
     if ($board_config['allow_bbcode']) {
         $bbcode_on = $submit || $refresh ? !isset($_POST['disable_bbcode']) : $userdata['user_allowbbcode'];
-    } else {
-        $bbcode_on = 0;
     }
+
+    $smilies_on = 0;
 
     if ($board_config['allow_smilies']) {
         $smilies_on = $submit || $refresh ? !isset($_POST['disable_smilies']) : $userdata['user_allowsmile'];
-    } else {
-        $smilies_on = 0;
     }
 
 	$attach_sig = $submit || $refresh ? isset($_POST['attach_sig']) : $userdata['user_attachsig'];
@@ -1149,10 +1149,8 @@ if ($mode === 'newpm') {
 		//
 		// Has admin prevented user from sending PM's?
 		//
-		if (!$userdata['user_allow_pm'] )
-		{
-			$message = $lang['Cannot_send_privmsg'];
-			message_die(GENERAL_MESSAGE, $message);
+		if (!$userdata['user_allow_pm']) {
+			message_die(GENERAL_MESSAGE, $lang['Cannot_send_privmsg']);
 		}
 
 		$msg_time = time();
@@ -1306,7 +1304,6 @@ if ($mode === 'newpm') {
 
 		message_die(GENERAL_MESSAGE, $msg);
     } elseif ($preview || $refresh || $error) {
-
 		//
 		// If we're previewing or refreshing then obtain the data
 		// passed to the script, process it a little, do some checks
@@ -1417,10 +1414,10 @@ if ($mode === 'newpm') {
 			$privmsg_message = str_replace('<br />', "\n", $privmsg_message);
 			// $privmsg_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $privmsg_message);
 
+            $user_sig = '';
+
             if ($board_config['allow_sig'] && $privmsg->privmsgs_type !== PRIVMSGS_NEW_MAIL) {
                 $user_sig = $privmsg->user_sig;
-            } else {
-                $user_sig = '';
             }
 
 			$toUserName = $privmsg->username;
@@ -2070,7 +2067,7 @@ if (count($rows)) {
 		$msg_username = $row->username;
 
         // <!-- BEGIN Another Online/Offline indicator -->
-        if (!$row->user_allow_viewonline && $userdata['user_level'] === ADMIN || $row->user_allow_viewonline) {
+        if ((!$row->user_allow_viewonline && $userdata['user_level'] === ADMIN) || $row->user_allow_viewonline) {
             $expiry_time = time() - ONLINE_TIME_DIFF;
 
             if ($row->user_session_time >= $expiry_time) {

@@ -35,7 +35,7 @@ require_once $phpbb_root_path . 'includes' . $sep . 'bbcode.php';
 //
 // Start initial var setup
 //
-$topicId = $postId = 0;
+$topicId = 0;
 
 // TODO no we will use just POST_TOPIC_URL - no 'topic'
 if (isset($_GET[POST_TOPIC_URL])) {
@@ -43,6 +43,8 @@ if (isset($_GET[POST_TOPIC_URL])) {
 } elseif (isset($_GET['topic'])) {
     $topicId = (int)$_GET['topic'];
 }
+
+$postId = 0;
 
 if (isset($_GET[POST_POST_URL])) {
     $postId = (int)$_GET[POST_POST_URL];
@@ -547,18 +549,16 @@ $replyTopicUrl        = Session::appendSid('posting.php?mode=reply&amp;' . POST_
 $viewForumUrl         = Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forumId");
 $viewPreviousTopicUrl = Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topicId&amp;view=previous");
 $viewNextTopicUrl     = Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topicId&amp;view=next");
-$thank_topic_url      = Session::appendSid('posting.php?mode=thank&amp;' . POST_TOPIC_URL . "=$topicId");
+$thankTopicUrl        = Session::appendSid('posting.php?mode=thank&amp;' . POST_TOPIC_URL . "=$topicId");
 
 $replyImage = $forum_topic_data->forum_status === FORUM_LOCKED || $forum_topic_data->topic_status === TOPIC_LOCKED ? $images['reply_locked'] : $images['reply_new'];
-$reply_alt  = $forum_topic_data->forum_status === FORUM_LOCKED || $forum_topic_data->topic_status === TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['Reply_to_topic'];
+$replyAlt   = $forum_topic_data->forum_status === FORUM_LOCKED || $forum_topic_data->topic_status === TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['Reply_to_topic'];
 
 $postImage = $forum_topic_data->forum_status === FORUM_LOCKED ? $images['post_locked'] : $images['post_new'];
 $postAlt   = $forum_topic_data->forum_status === FORUM_LOCKED ? $lang['Forum_locked'] : $lang['Post_new_topic'];
 
 $thankImage = $images['thanks'];
-$thank_alt = $lang['thanks_alt'];
-// End Thanks Mod
-
+$thankAlt   = $lang['thanks_alt'];
 
 //
 // Set a cookie for this topic
@@ -674,7 +674,7 @@ $template->assignVars(
         'L_VIEW_NEXT_TOPIC'     => $lang['View_next_topic'],
         'L_VIEW_PREVIOUS_TOPIC' => $lang['View_previous_topic'],
         'L_POST_NEW_TOPIC'      => $postAlt,
-        'L_POST_REPLY_TOPIC'    => $reply_alt,
+        'L_POST_REPLY_TOPIC'    => $replyAlt,
         'L_BACK_TO_TOP'         => $lang['Back_to_top'],
         'L_DISPLAY_POSTS'       => $lang['Display_posts'],
         'L_LOCK_TOPIC'          => $lang['Lock_topic'],
@@ -897,8 +897,8 @@ if ($show_thanks === FORUM_THANKABLE) {
     if ($userdata['user_id'] !== $author->user_id && !$thanked) {
         $template->assignBlockVars('thanks_button', [
             'THANK_IMG' => $thankImage,
-            'U_THANK_TOPIC' => $thank_topic_url,
-            'L_THANK_TOPIC' => $thank_alt
+            'U_THANK_TOPIC' => $thankTopicUrl,
+            'L_THANK_TOPIC' => $thankAlt
         ]);
     }
 
@@ -941,7 +941,7 @@ foreach ($posts as $i => $post) {
 	}
 
     // <!-- BEGIN Another Online/Offline indicator -->
-    if (!$post->user_allow_viewonline && $userdata['user_level'] === ADMIN || $post->user_allow_viewonline) {
+    if ((!$post->user_allow_viewonline && $userdata['user_level'] === ADMIN) || $post->user_allow_viewonline) {
         $expiry_time = time() - ONLINE_TIME_DIFF;
 
         if ($post->user_session_time >= $expiry_time) {

@@ -32,21 +32,21 @@ require_once $phpbb_root_path . 'common.php';
 //
 // Start initial var setup
 //
+$forumId = '';
+
 if (isset($_GET[POST_FORUM_URL]) || isset($_POST[POST_FORUM_URL])) {
     $forumId = isset($_GET[POST_FORUM_URL]) ? (int)$_GET[POST_FORUM_URL] : (int)$_POST[POST_FORUM_URL];
 } elseif (isset($_GET['forum'])) {
     $forumId = (int)$_GET['forum'];
-} else {
-    $forumId = '';
 }
 
 $start = isset($_GET['start']) ? (int)$_GET['start'] : 0;
 $start = $start < 0 ? 0 : $start;
 
+$markRead = '';
+
 if (isset($_GET['mark']) || isset($_POST['mark'])) {
     $markRead = isset($_POST['mark']) ? $_POST['mark'] : $_GET['mark'];
-} else {
-    $markRead = '';
 }
 //
 // End initial var setup
