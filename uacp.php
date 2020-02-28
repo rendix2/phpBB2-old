@@ -51,7 +51,7 @@ require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $language . $sep .
 
 $start = get_var('start', 0);
 $sort_order = get_var('order', 'ASC');
-$sort_order = ($sort_order === 'ASC') ? 'ASC' : 'DESC';
+$sort_order = $sort_order === 'ASC' ? 'ASC' : 'DESC';
 $mode = get_var('mode', '');
 
 $mode_types = [
@@ -78,7 +78,7 @@ if (count($mode_types) > 0) {
 	$select_sort_mode = '<select name="mode">';
 
 	foreach ($mode_types as $value => $text) {
-		$selected = ($mode === $value) ? ' selected="selected"' : '';
+		$selected = $mode === $value ? ' selected="selected"' : '';
 		$select_sort_mode .= '<option value="' . $value . '"' . $selected . '>' . $text . '</option>';
 	}
 	$select_sort_mode .= '</select>';
@@ -93,7 +93,7 @@ if ($sort_order === 'ASC') {
 $select_sort_order .= '</select>';
 
 $delete = isset($_POST['delete']);
-$delete_id_list = (isset($_POST['delete_id_list'])) ? array_map('intval', $_POST['delete_id_list']) : [];
+$delete_id_list = isset($_POST['delete_id_list']) ? array_map('intval', $_POST['delete_id_list']) : [];
 
 $confirm = isset($_POST['confirm']) && $_POST['confirm'];
 
@@ -245,8 +245,8 @@ if ($num_attach_ids > 0) {
 
 if (count($attachments) > 0) {
     foreach ($attachments as $i => $attachment) {
-        $row_color = (!($i % 2)) ? $theme['td_color1'] : $theme['td_color2'];
-        $row_class = (!($i % 2)) ? $theme['td_class1'] : $theme['td_class2'];
+        $rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+        $rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
 		// Is the Attachment assigned to more than one post?
 		// If it's not assigned to any post, it's an private message thingy. ;)
@@ -336,8 +336,8 @@ if (count($attachments) > 0) {
             $template->assignBlockVars('attachrow',
                 [
                     'ROW_NUMBER' => $i + ($start + 1),
-                    'ROW_COLOR' => '#' . $row_color,
-                    'ROW_CLASS' => $row_class,
+                    'ROW_COLOR' => '#' . $rowColor,
+                    'ROW_CLASS' => $rowClass,
 
                     'FILENAME' => $attachment->real_filename,
                     'COMMENT' => nl2br($attachment->comment),

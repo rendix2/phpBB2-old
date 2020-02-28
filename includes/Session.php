@@ -212,7 +212,7 @@ class Session
         }
 
         if ($userId !== ANONYMOUS) {
-            $lastVisit = ( $userData['user_session_time'] > 0 ) ? $userData['user_session_time'] : $currentTime;
+            $lastVisit = $userData['user_session_time'] > 0 ? $userData['user_session_time'] : $currentTime;
 
             if (!$isAdmin) {
                 $updateData = [

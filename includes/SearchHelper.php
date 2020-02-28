@@ -117,7 +117,7 @@ class SearchHelper
     {
         // If you experience problems with the new method, uncomment this block.
         /*
-            $rex = ( $mode === 'post' ) ? "/\b([\w��-�][\w��-�']*[\w��-�]+|[\w��-�]+?)\b/" : '/(\*?[a-z0-9��-�]+\*?)|\b([a-z0-9��-�]+)\b/';
+            $rex = $mode === 'post' ? "/\b([\w��-�][\w��-�']*[\w��-�]+|[\w��-�]+?)\b/" : '/(\*?[a-z0-9��-�]+\*?)|\b([a-z0-9��-�]+)\b/';
             preg_match_all($rex, $entry, $split_entries);
 
             return $split_entries[1];

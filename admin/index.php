@@ -109,8 +109,8 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
 		$rowCount = 0;
 
 		foreach ($actions as $action => $fileName) {
-			$rowColor = !($rowCount%2) ? $theme['td_color1'] : $theme['td_color2'];
-			$rowClass = !($rowCount%2) ? $theme['td_class1'] : $theme['td_class2'];
+			$rowColor = ($rowCount % 2) ? $theme['td_color1'] : $theme['td_color2'];
+			$rowClass = ($rowCount % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
 			$action = !empty($lang[$action]) ? $lang[$action] : str_replace('_', ' ', $action);
 

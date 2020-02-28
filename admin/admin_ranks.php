@@ -203,10 +203,10 @@ if ($mode === 'edit') {// OK, lets edit this ranks
 		$message = $lang['Rank_added'];
 	}
 
-	$message .= '<br /><br />' . sprintf($lang['Click_return_rankadmin'], '<a href="' . Session::appendSid('admin_ranks.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+	$message .= '<br /><br />' . sprintf($lang['Click_return_rankadmin'], '<a href="' . Session::appendSid('admin_ranks.php') . '">', '</a>') . '<br /><br />';
+	$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 	message_die(GENERAL_MESSAGE, $message);
-
 } elseif ($mode === 'delete') {// Ok, they want to delete their rank
 	if (isset($_POST['id']) || isset($_GET['id'])) {
 		$rankId = isset($_POST['id']) ? (int)$_POST['id'] : (int)$_GET['id'];
@@ -226,14 +226,15 @@ if ($mode === 'edit') {// OK, lets edit this ranks
 			->where('rank_id = %i', $rankId)
 			->execute();
 
-		$result = dibi::update(Tables::USERS_TABLE, ['user_rank' => 0])
+		dibi::update(Tables::USERS_TABLE, ['user_rank' => 0])
 			->where('user_rank = %i', $rankId)
 			->execute();
 
-		$message = $lang['Rank_removed'] . '<br /><br />' . sprintf($lang['Click_return_rankadmin'], '<a href="' . Session::appendSid('admin_ranks.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+		$message  = $lang['Rank_removed'] . '<br /><br />';
+		$message .= sprintf($lang['Click_return_rankadmin'], '<a href="' . Session::appendSid('admin_ranks.php') . '">', '</a>') . '<br /><br />';
+		$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 		message_die(GENERAL_MESSAGE, $message);
-
 	} elseif ($rankId && !$confirm) {
 		// Present the confirmation screen to the user
 		$template->setFileNames(['body' => 'admin/confirm_body.tpl']);
@@ -291,8 +292,8 @@ if ($mode === 'edit') {// OK, lets edit this ranks
 			$rankMin = $rankMax = '-';
 		}
 
-		$rowColor = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-		$rowClass = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+		$rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+		$rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
 		$rankIsSpecial = $specialRank ? $lang['Yes'] : $lang['No'];
 

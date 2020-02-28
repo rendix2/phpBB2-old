@@ -125,7 +125,10 @@ if (isset($_POST['submit'])) {
         $emailer->send();
 		$emailer->reset();
 
-		message_die(GENERAL_MESSAGE, $lang['Email_sent'] . '<br /><br />' . sprintf($lang['Click_return_admin_index'],  '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>'));
+		$message = $lang['Email_sent'] . '<br /><br />';
+		$message .= sprintf($lang['Click_return_admin_index'],  '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+
+		message_die(GENERAL_MESSAGE, $message);
 	}
 }
 

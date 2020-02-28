@@ -194,8 +194,8 @@ foreach ($rows as $row) {
 			$location    = $forums[$row->session_page];
 		}
 
-		$rowColor = ( $$whichCounter % 2 ) ? $theme['td_color1'] : $theme['td_color2'];
-		$rowClass = ( $$whichCounter % 2 ) ? $theme['td_class1'] : $theme['td_class2'];
+		$rowColor = ($$whichCounter % 2) ? $theme['td_color1'] : $theme['td_color2'];
+		$rowClass = ($$whichCounter % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
         $template->assignBlockVars((string)$whichRow,
             [

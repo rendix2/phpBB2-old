@@ -445,7 +445,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 		$init_page_max = $total_pages > 3 ? 3 : $total_pages;
 
 		for ($i = 1; $i < $init_page_max + 1; $i++) {
-			$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . Session::appendSid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+			$page_string .= $i === $on_page ? '<b>' . $i . '</b>' : '<a href="' . Session::appendSid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
 			if ($i <  $init_page_max) {
 				$page_string .= ', ';
@@ -705,7 +705,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
         if (defined('IN_ADMIN')) {
             require_once $phpbb_root_path . 'admin' . $sep . 'page_header_admin.php';
         } else {
-            PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+            PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $page_title, $gen_simple_header);
         }
 	}
 

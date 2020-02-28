@@ -92,7 +92,8 @@ if (isset($_POST['submit'])) {
         ]
     );
 
-    $message = $lang['Password_updated'] . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
+    $message  = $lang['Password_updated'] . '<br /><br />';
+    $message .= sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
     message_die(GENERAL_MESSAGE, $message);
 }
@@ -100,7 +101,7 @@ if (isset($_POST['submit'])) {
 //
 // Output basic page
 //
-PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $page_title, $gen_simple_header);
 
 $template->setFileNames(['body' => 'profile_send_pass.tpl']);
 make_jumpbox('viewforum.php');

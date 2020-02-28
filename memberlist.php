@@ -263,12 +263,12 @@ foreach ($users as $i => $user) {
     $searchImage = '<a href="' . $searchUrl . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $user->username) . '" title="' . sprintf($lang['Search_user_posts'], $user->username) . '" border="0" /></a>';
     $search      = '<a href="' . $searchUrl . '">' . sprintf($lang['Search_user_posts'], $user->username) . '</a>';
 
-    $rowColor = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-    $rowClass = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+    $rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+    $rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
     $template->assignBlockVars('memberrow',
         [
-            'ROW_NUMBER' => $i + ($start + 1),
+            'ROW_NUMBER' => $i + $start + 1,
             'ROW_COLOR' => '#' . $rowColor,
             'ROW_CLASS' => $rowClass,
             'USERNAME' => $user->username,

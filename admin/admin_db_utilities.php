@@ -59,7 +59,7 @@ define('VERBOSE', 0);
 if (isset($_GET['perform']) || isset($_POST['perform'])) {
 	$perform = isset($_POST['perform']) ? $_POST['perform'] : $_GET['perform'];
 
-	switch($perform) {
+	switch ($perform) {
 		case 'backup':
 			$dumper = new Mysqldump(
 				Config::DATABASE_DNS,
@@ -109,12 +109,10 @@ if (isset($_GET['perform']) || isset($_POST['perform'])) {
 
 				$template->setFileNames(['body' => 'admin/admin_message_body.tpl']);
 
-				$message = $lang['Restore_success'];
-
 				$template->assignVars(
 					[
 						'MESSAGE_TITLE' => $lang['Database_Utilities'] . ' : ' . $lang['Restore'],
-						'MESSAGE_TEXT'  => $message
+						'MESSAGE_TEXT'  => $lang['Restore_success']
 					]
 				);
 

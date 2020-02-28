@@ -156,7 +156,7 @@ function get_database_size()
             break;
     }
 
-    $databaseSize = ($databaseSize !== false) ? get_formatted_filesize($databaseSize) : $lang['Not_available'];
+    $databaseSize = $databaseSize !== false ? get_formatted_filesize($databaseSize) : $lang['Not_available'];
 
     return $databaseSize;
 }
@@ -171,7 +171,7 @@ function get_database_size()
  */
 function getForumLocation($sessionPage, array $lang)
 {
-    switch($sessionPage) {
+    switch ($sessionPage) {
         case PAGE_ADMIN_INDEX:
             return $lang['Admin_index'];
         case PAGE_POSTING:

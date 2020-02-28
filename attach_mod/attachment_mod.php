@@ -35,7 +35,7 @@ if (defined('ATTACH_INSTALL')) {
  *
  * @param string $language_file
  *
- * @return
+ * @return string
  */
 function attach_mod_get_lang($language_file)
 {
@@ -43,15 +43,19 @@ function attach_mod_get_lang($language_file)
 
     $language = $board_config['default_lang'];
 
-    if (file_exists($phpbb_root_path . 'language/lang_' . $language . '/' . $language_file . '.php')) {
+    $sep = DIRECTORY_SEPARATOR;
+
+    if (file_exists($phpbb_root_path . 'language' . $sep . 'lang_' . $language . $sep . $language_file . '.php')) {
         return $language;
     } else {
         $language = $attach_config['board_lang'];
 
-        if (file_exists($phpbb_root_path . 'language/lang_' . $language . '/' . $language_file . '.php')) {
+        if (file_exists($phpbb_root_path . 'language' . $sep . 'lang_' . $language . $sep . $language_file . '.php')) {
             return $language;
         } else {
-            message_die(GENERAL_MESSAGE, 'Attachment Mod language file does not exist: language/lang_' . $language . '/' . $language_file . '.php');
+            $message = 'Attachment Mod language file does not exist: language' . $sep . 'lang_' . $language . $sep . $language_file . '.php';
+
+            message_die(GENERAL_MESSAGE, $message);
         }
     }
 }

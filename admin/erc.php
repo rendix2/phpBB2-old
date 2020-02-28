@@ -168,7 +168,7 @@ hr	{ height: 0px; border: solid #D1D7DC 0px; border-top-width: 1px;}
 <br clear="all" />
 
 <?php
-switch($mode) {
+switch ($mode) {
 	case 'select_lang':
 ?>
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">

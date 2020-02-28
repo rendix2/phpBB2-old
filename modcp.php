@@ -544,7 +544,7 @@ switch ($mode) {
 	case 'split':
 		$page_title = $lang['Mod_CP'];
 
-        PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+        PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $page_title, $gen_simple_header);
 
         $posts = [];
 
@@ -650,7 +650,9 @@ switch ($mode) {
                     ]
                 );
 
-                $message = $lang['Topic_split'] . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . 'viewtopic.php?' . POST_TOPIC_URL . "=$topicId&amp;sid=" . $userdata['session_id'] . '">', '</a>');
+                $message  = $lang['Topic_split'] . '<br /><br />';
+                $message .= sprintf($lang['Click_return_topic'], '<a href="' . 'viewtopic.php?' . POST_TOPIC_URL . "=$topicId&amp;sid=" . $userdata['session_id'] . '">', '</a>');
+
 				message_die(GENERAL_MESSAGE, $message);
 			}
 		} else {
@@ -742,15 +744,15 @@ switch ($mode) {
 
 					$message = nl2br($message);
 
-					$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-					$row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+					$rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+					$rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
 					$checkbox = $i > 0 ? '<input type="checkbox" name="post_id_list[]" value="' . $post->post_id . '" />' : '&nbsp;';
 
                     $template->assignBlockVars('postrow',
                         [
-                            'ROW_COLOR'    => '#' . $row_color,
-                            'ROW_CLASS'    => $row_class,
+                            'ROW_COLOR'    => '#' . $rowColor,
+                            'ROW_CLASS'    => $rowClass,
                             'POSTER_NAME'  => $post->username,
                             'POST_DATE'    => create_date($board_config['default_dateformat'], $post->post_time, $board_config['board_timezone']),
                             'POST_SUBJECT' => $post_subject,
@@ -770,7 +772,7 @@ switch ($mode) {
 	case 'ip':
 		$page_title = $lang['Mod_CP'];
 
-        PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+        PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $page_title, $gen_simple_header);
 
 		$rdns_ip_num = isset($_GET['rdns']) ? $_GET['rdns'] : '';
 
@@ -842,13 +844,13 @@ switch ($mode) {
             $ip = decode_ip($row->poster_ip);
             $ip = $rdns_ip_num === $row->poster_ip || $rdns_ip_num === 'all' ? htmlspecialchars(gethostbyaddr($ip)) : $ip;
 
-            $row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-            $row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+            $rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+            $rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
             $template->assignBlockVars('iprow',
                 [
-                    'ROW_COLOR' => '#' . $row_color,
-                    'ROW_CLASS' => $row_class,
+                    'ROW_COLOR' => '#' . $rowColor,
+                    'ROW_CLASS' => $rowClass,
                     'IP'        => $ip,
                     'POSTS'     => $row->postings . ' ' . $row->postings === 1 ? $lang['Post'] : $lang['Posts'],
 
@@ -881,8 +883,8 @@ switch ($mode) {
             $id       = $row->user_id;
             $username = $id === ANONYMOUS ? $lang['Guest'] : $row->username;
 
-            $row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-            $row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+            $rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+            $rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
             if ($id === ANONYMOUS) {
                 $profile = 'modcp.php?mode=ip&amp;' . POST_POST_URL . '=' . $postId . '&amp;' . POST_TOPIC_URL . '=' . $topicId . '&amp;sid=' . $userdata['session_id'];
@@ -892,8 +894,8 @@ switch ($mode) {
 
             $template->assignBlockVars('userrow',
                 [
-                    'ROW_COLOR'      => '#' . $row_color,
-                    'ROW_CLASS'      => $row_class,
+                    'ROW_COLOR'      => '#' . $rowColor,
+                    'ROW_CLASS'      => $rowClass,
                     'USERNAME'       => $username,
                     'POSTS'          => $row->postings . ' ' . (($row->postings === 1) ? $lang['Post'] : $lang['Posts']),
                     'L_SEARCH_POSTS' => sprintf($lang['Search_user_posts'], $username),
@@ -911,7 +913,7 @@ switch ($mode) {
 	default:
 		$page_title = $lang['Mod_CP'];
 
-        PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+        PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $page_title, $gen_simple_header);
 
         $template->assignVars(
             [
@@ -1032,12 +1034,14 @@ switch ($mode) {
             );
         }
 
-        $template->assignVars([
-            'PAGINATION'  => generate_pagination('modcp.php?' . POST_FORUM_URL . "=$forumId&amp;sid=" . $userdata['session_id'], $forumTopics, $board_config['topics_per_page'], $start),
-            'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $board_config['topics_per_page']) + 1, ceil($forumTopics / $board_config['topics_per_page'])),
+        $template->assignVars(
+            [
+                'PAGINATION'  => generate_pagination('modcp.php?' . POST_FORUM_URL . "=$forumId&amp;sid=" . $userdata['session_id'], $forumTopics, $board_config['topics_per_page'], $start),
+                'PAGE_NUMBER' => sprintf($lang['Page_of'], floor($start / $board_config['topics_per_page']) + 1, ceil($forumTopics / $board_config['topics_per_page'])),
 
-            'L_GOTO_PAGE' => $lang['Goto_page']
-            ]);
+                'L_GOTO_PAGE' => $lang['Goto_page']
+            ]
+        );
 
         $template->pparse('body');
 

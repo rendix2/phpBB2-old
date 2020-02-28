@@ -153,7 +153,6 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 			// Delete any entries in auth_access, they are not required if user is becoming an
 			// admin
 			//
-
             $update_data = [
                 'auth_view' => 0,
                 'auth_read' => 0,
@@ -170,7 +169,10 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
                 ->execute();
 		}
 
-		$message = $lang['Auth_updated'] . '<br /><br />' . sprintf($lang['Click_return_userauth'], '<a href="' . Session::appendSid("admin_ug_auth.php?mode=$mode") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+		$message  = $lang['Auth_updated'] . '<br /><br />';
+		$message .= sprintf($lang['Click_return_userauth'], '<a href="' . Session::appendSid("admin_ug_auth.php?mode=$mode") . '">', '</a>') . '<br /><br />';
+		$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+
 		message_die(GENERAL_MESSAGE, $message);
 	} else {
         if ($mode === 'user' && $_POST['userlevel'] === 'user' && $user_level === ADMIN) {
@@ -202,7 +204,9 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
                     ->execute();
 			}
 
-			$message = $lang['Auth_updated'] . '<br /><br />' . sprintf($lang['Click_return_userauth'], '<a href="' . Session::appendSid("admin_ug_auth.php?mode=$mode") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+			$message  = $lang['Auth_updated'] . '<br /><br />';
+			$message .= sprintf($lang['Click_return_userauth'], '<a href="' . Session::appendSid("admin_ug_auth.php?mode=$mode") . '">', '</a>') . '<br /><br />';
+			$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 		} else {
 			$change_mod_list = isset($_POST['moderator']) ? $_POST['moderator'] : [];
 
@@ -352,8 +356,11 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
                     ->execute();
 			}
 
-			$l_auth_return = ( $mode === 'user' ) ? $lang['Click_return_userauth'] : $lang['Click_return_groupauth'];
-			$message = $lang['Auth_updated'] . '<br /><br />' . sprintf($l_auth_return, '<a href="' . Session::appendSid("admin_ug_auth.php?mode=$mode") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+			$l_auth_return = $mode === 'user' ? $lang['Click_return_userauth'] : $lang['Click_return_groupauth'];
+
+			$message  = $lang['Auth_updated'] . '<br /><br />';
+			$message .= sprintf($l_auth_return, '<a href="' . Session::appendSid("admin_ug_auth.php?mode=$mode") . '">', '</a>') . '<br /><br />';
+			$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 		}
 
 		//
@@ -589,7 +596,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 			$key = $forum_auth_field;
 			$value = $forum_access_value[$key];
 
-			switch( $value) {
+			switch ($value) {
 				case Auth::AUTH_ALL:
 				case Auth::AUTH_REG:
 					$auth_ug[$forum_id][$key] = 1;
@@ -691,18 +698,18 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 		$optionlist_mod .= $user_ary['auth_mod'] ? '<option value="1" selected="selected">' . $lang['Is_Moderator'] . '</option><option value="0">' . $lang['Not_Moderator'] . '</option>' : '<option value="1">' . $lang['Is_Moderator'] . '</option><option value="0" selected="selected">' . $lang['Not_Moderator'] . '</option>';
 		$optionlist_mod .= '</select>';
 
-        $row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
-        $row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+        $rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+        $rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
 
         $template->assignBlockVars('forums',
             [
-            'ROW_COLOR'  => '#' . $row_color,
-            'ROW_CLASS'  => $row_class,
-            'FORUM_NAME' => htmlspecialchars($forum_access[$i]['forum_name'], ENT_QUOTES),
+                'ROW_COLOR'  => '#' . $rowColor,
+                'ROW_CLASS'  => $rowClass,
+                'FORUM_NAME' => htmlspecialchars($forum_access[$i]['forum_name'], ENT_QUOTES),
 
-            'U_FORUM_AUTH' => Session::appendSid('admin_forumauth.php?f=' . $forum_access[$i]['forum_id']),
+                'U_FORUM_AUTH' => Session::appendSid('admin_forumauth.php?f=' . $forum_access[$i]['forum_id']),
 
-            'S_MOD_SELECT' => $optionlist_mod
+                'S_MOD_SELECT' => $optionlist_mod
             ]
         );
 
@@ -752,7 +759,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
     // TODO i hope we can do it in one foreach!
     if (count($names)) {
         foreach ($ug_info as $i => $ug_info_value) {
-            $ug = ($mode === 'user') ? 'group&amp;' . POST_GROUPS_URL : 'user&amp;' . POST_USERS_URL;
+            $ug = $mode === 'user' ? 'group&amp;' . POST_GROUPS_URL : 'user&amp;' . POST_USERS_URL;
 
             if (!$ug_info_value->user_pending) {
                 $t_usergroup_list .= (($t_usergroup_list !== '') ? ', ' : '') . '<a href="' . Session::appendSid("admin_ug_auth.php?mode=$ug=" . $names[$i]['id']) . '">' . htmlspecialchars($names[$i]['name'], ENT_QUOTES) . '</a>';
@@ -842,7 +849,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 	//
     require_once '.' . $sep . 'page_header_admin.php';
 
-    $template->setFileNames(['body' => ($mode === 'user') ? 'admin/user_select_body.tpl' : 'admin/auth_select_body.tpl']);
+    $template->setFileNames(['body' => $mode === 'user' ? 'admin/user_select_body.tpl' : 'admin/auth_select_body.tpl']);
 
     if ($mode === 'user') {
         $template->assignVars(

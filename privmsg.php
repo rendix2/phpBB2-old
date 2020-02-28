@@ -130,7 +130,7 @@ if ($mode === 'newpm') {
 
 	$page_title = $lang['Private_Messaging'];
 
-    PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+    PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $page_title, $gen_simple_header);
 
     $template->setFileNames(['body' => 'privmsgs_popup.tpl']);
 
@@ -210,7 +210,6 @@ if ($mode === 'newpm') {
         ->as('u2')
         ->on('u2.user_id = pm.privmsgs_to_userid')
         ->where('pm.privmsgs_id = %i', $privmsgs_id);
-
 
 	//
 	// SQL to pull appropriate message, prevents nosey people
@@ -497,7 +496,7 @@ if ($mode === 'newpm') {
 
 	$page_title = $lang['Read_pm'];
 
-    PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+    PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $page_title, $gen_simple_header);
 
 	//
 	// Load templates
@@ -706,7 +705,7 @@ if ($mode === 'newpm') {
 		//
 		// Output confirmation page
 		//
-        PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+        PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $page_title, $gen_simple_header);
 
         $template->setFileNames(['confirm_body' => 'confirm_body.tpl']);
         $template->assignVars(
@@ -728,7 +727,7 @@ if ($mode === 'newpm') {
 
 	} elseif ($confirm && $sid === $userdata['session_id']) {
 	    // check marklist
-		switch($folder) {
+		switch ($folder) {
 			case 'inbox':
                 $mark_list = dibi::select('privmsgs_id')
                     ->from(Tables::PRIVATE_MESSAGE_TABLE)
@@ -1300,9 +1299,11 @@ if ($mode === 'newpm') {
             ]
         );
 
-        $msg = $lang['Message_sent'] . '<br /><br />' . sprintf($lang['Click_return_inbox'], '<a href="' . Session::appendSid('privmsg.php?folder=inbox') . '">', '</a> ') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
+        $message  = $lang['Message_sent'] . '<br /><br />';
+        $message .= sprintf($lang['Click_return_inbox'], '<a href="' . Session::appendSid('privmsg.php?folder=inbox') . '">', '</a> ') . '<br /><br />';
+        $message .= sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
-		message_die(GENERAL_MESSAGE, $msg);
+		message_die(GENERAL_MESSAGE, $message);
     } elseif ($preview || $refresh || $error) {
 		//
 		// If we're previewing or refreshing then obtain the data
@@ -1422,7 +1423,6 @@ if ($mode === 'newpm') {
 
 			$toUserName = $privmsg->username;
 			$to_userid  = $privmsg->user_id;
-
         } elseif ($mode === 'reply' || $mode === 'quote') {
             $columns = [
                 'pm.privmsgs_subject',
@@ -1453,7 +1453,8 @@ if ($mode === 'newpm') {
 			$orig_word = $replacement_word = [];
 			obtain_word_list($orig_word, $replacement_word);
 
-			$privmsg_subject = ( ( !preg_match('/^Re:/', $privmsg->privmsgs_subject) ) ? 'Re: ' : '' ) . $privmsg->privmsgs_subject;
+			$privmsg_subject = preg_match('/^Re:/', $privmsg->privmsgs_subject) ? '' : 'Re: ';
+			$privmsg_subject .= $privmsg->privmsgs_subject;
 			$privmsg_subject = preg_replace($orig_word, $replacement_word, $privmsg_subject);
 
 			$toUserName = $privmsg->username;
@@ -1483,8 +1484,7 @@ if ($mode === 'newpm') {
 	// Has admin prevented user from sending PM's?
 	//
     if (!$userdata['user_allow_pm'] && $mode !== 'edit') {
-        $message = $lang['Cannot_send_privmsg'];
-        message_die(GENERAL_MESSAGE, $message);
+        message_die(GENERAL_MESSAGE, $lang['Cannot_send_privmsg']);
     }
 
 	//
@@ -1492,7 +1492,7 @@ if ($mode === 'newpm') {
 	//
 	$page_title = $lang['Send_private_message'];
 
-    PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+    PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $page_title, $gen_simple_header);
 
     if ($preview && !$error) {
 		$orig_word = [];
@@ -1786,14 +1786,14 @@ dibi::update(Tables::PRIVATE_MESSAGE_TABLE, ['privmsgs_type' => PRIVMSGS_UNREAD_
 // Reset PM counters
 //
 $userdata['user_new_privmsg'] = 0;
-$userdata['user_unread_privmsg'] = ( $userdata['user_new_privmsg'] + $userdata['user_unread_privmsg'] );
+$userdata['user_unread_privmsg'] = $userdata['user_new_privmsg'] + $userdata['user_unread_privmsg'];
 
 //
 // Generate page
 //
 $page_title = $lang['Private_Messaging'];
 
-PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $page_title, $gen_simple_header);
 
 //
 // Load templates
@@ -1834,7 +1834,7 @@ $sql = dibi::select($columns)
     ->innerJoin(Tables::USERS_TABLE)
     ->as('u');
 
-switch( $folder) {
+switch ($folder) {
 	case 'inbox':
         $sql_tot->where('privmsgs_to_userid = %i', $userdata['user_id'])
             ->where('privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_READ_MAIL, PRIVMSGS_UNREAD_MAIL]);
@@ -1973,9 +1973,9 @@ $post_pm = '<a href="' . $post_pm . '">' . $lang['Post_new_pm'] . '</a>';
 // Output data for inbox status
 //
 if ($folder !== 'outbox') {
-	$inbox_limit_pct = ( $board_config['max_' . $folder . '_privmsgs'] > 0 ) ? round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * 100) : 100;
-	$inbox_limit_img_length = ( $board_config['max_' . $folder . '_privmsgs'] > 0 ) ? round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * $board_config['privmsg_graphic_length']) : $board_config['privmsg_graphic_length'];
-	$inbox_limit_remain = ( $board_config['max_' . $folder . '_privmsgs'] > 0 ) ? $board_config['max_' . $folder . '_privmsgs'] - $pm_all_total : 0;
+	$inbox_limit_pct = $board_config['max_' . $folder . '_privmsgs'] > 0 ? round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * 100) : 100;
+	$inbox_limit_img_length = $board_config['max_' . $folder . '_privmsgs'] > 0 ? round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * $board_config['privmsg_graphic_length']) : $board_config['privmsg_graphic_length'];
+	$inbox_limit_remain = $board_config['max_' . $folder . '_privmsgs'] > 0 ? $board_config['max_' . $folder . '_privmsgs'] - $pm_all_total : 0;
 
 	$template->assignBlockVars('switch_box_size_notice', []);
 
@@ -2053,9 +2053,7 @@ $template->assignVars(
 $rows = $sql->fetchAll();
 
 if (count($rows)) {
-	$i = 0;
-
-	foreach ($rows as $row) {
+	foreach ($rows as $i => $row) {
 		$privmsg_id = $row->privmsgs_id;
 
 		$flag = $row->privmsgs_type;
@@ -2106,14 +2104,13 @@ if (count($rows)) {
             $msg_username = '<b>' . $msg_username . '</b>';
         }
 
-		$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-		$row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
-		$i++;
+		$rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+		$rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
         $template->assignBlockVars('listrow',
             [
-                'ROW_COLOR'          => '#' . $row_color,
-                'ROW_CLASS'          => $row_class,
+                'ROW_COLOR'          => '#' . $rowColor,
+                'ROW_CLASS'          => $rowClass,
                 'FROM'               => $msg_username . '&nbsp;' . $user_onlinestatus,
                 'SUBJECT'            => htmlspecialchars($msg_subject, ENT_QUOTES),
                 'DATE'               => $msg_date,

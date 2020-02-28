@@ -115,7 +115,7 @@ function topic_review($topic_id, $is_inline_review)
 
 		$page_title = $lang['Topic_review'] . ' - ' . $forum->topic_title;
 
-        PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+        PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $page_title, $gen_simple_header);
 
         $template->setFileNames(['reviewbody' => 'posting_topic_review.tpl']);
     }
@@ -190,8 +190,8 @@ function topic_review($topic_id, $is_inline_review)
 			// Again this will be handled by the templating
 			// code at some point
 			//
-			$rowColor = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-			$rowClass = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+			$rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+			$rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
             $template->assignBlockVars('postrow',
                 [

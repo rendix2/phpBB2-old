@@ -12,7 +12,7 @@ require_once '.' . $sep . 'pagestart.php';
 
 $template->setFileNames(['body' => 'admin/user_online.tpl']);
 
-$template->assignVars( ['L_WHO_IS_ONLINE'    => $lang['Who_is_Online']]);
+$template->assignVars(['L_WHO_IS_ONLINE' => $lang['Who_is_Online']]);
 
 //
 // Get users online information.
@@ -23,7 +23,19 @@ $time = new DateTime();
 $time->setTimezone(new DateTimeZone($user_timezone));
 $time->sub(new DateInterval('PT' . ONLINE_TIME_DIFF . 'S'));
 
-$registeredUsers = dibi::select(['u.user_id', 'u.username', 'u.user_session_time', 'u.user_session_page', 'u.user_allow_viewonline', 's.session_logged_in', 's.session_ip', 's.session_start', 'session_page'])
+$columns = [
+    'u.user_id',
+    'u.username',
+    'u.user_session_time',
+    'u.user_session_page',
+    'u.user_allow_viewonline',
+    's.session_logged_in',
+    's.session_ip',
+    's.session_start',
+    'session_page'
+];
+
+$registeredUsers = dibi::select($columns)
     ->from(Tables::USERS_TABLE)
     ->as('u')
     ->innerJoin(Tables::SESSIONS_TABLE)
@@ -60,13 +72,13 @@ if (count($registeredUsers)) {
             $location = $forums[$registeredUser->user_session_page];
         }
 
-        $row_color = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-        $row_class = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+        $rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+        $rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
         $template->assignBlockVars('reg_user_row',
             [
-                'ROW_COLOR'  => '#' . $row_color,
-                'ROW_CLASS'  => $row_class,
+                'ROW_COLOR'  => '#' . $rowColor,
+                'ROW_CLASS'  => $rowClass,
                 'USERNAME'   => $registeredUser->username,
                 'STARTED'    => create_date($board_config['default_dateformat'], $registeredUser->session_start, $board_config['board_timezone']),
                 'LASTUPDATE' => create_date($board_config['default_dateformat'], $registeredUser->user_session_time, $board_config['board_timezone']),
@@ -101,12 +113,12 @@ if (count($guestUsers)) {
             $location = $forums[$guest->session_page];
         }
 
-        $row_color = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-        $row_class = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+        $rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+        $rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
         $template->assignBlockVars('guest_user_row', [
-                'ROW_COLOR'      => '#' . $row_color,
-                'ROW_CLASS'      => $row_class,
+                'ROW_COLOR'      => '#' . $rowColor,
+                'ROW_CLASS'      => $rowClass,
                 'USERNAME'       => $lang['Guest'],
                 'STARTED'        => create_date($board_config['default_dateformat'], $guest->session_start, $board_config['board_timezone']),
                 'LASTUPDATE'     => create_date($board_config['default_dateformat'], $guest->session_time, $board_config['board_timezone']),

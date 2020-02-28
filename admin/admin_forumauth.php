@@ -143,7 +143,10 @@ if (isset($_POST['submit'])) {
             'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('admin_forumauth.php?' . POST_FORUM_URL . "=$forum_id") . '">'
         ]
     );
-    $message = $lang['Forum_auth_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumauth'],  '<a href="' . Session::appendSid('admin_forumauth.php') . '">', '</a>');
+
+    $message  = $lang['Forum_auth_updated'] . '<br /><br />';
+    $message .= sprintf($lang['Click_return_forumauth'],  '<a href="' . Session::appendSid('admin_forumauth.php') . '">', '</a>');
+
 	message_die(GENERAL_MESSAGE, $message);
 
 } // End of submit

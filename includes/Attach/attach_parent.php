@@ -39,7 +39,7 @@ class attach_parent
         $this->attachment_extension_list = get_var('extension_list', ['']);
         $this->attachment_mimetype_list = get_var('mimetype_list', ['']);
 
-        $this->filename = (isset($_FILES['fileupload'], $_FILES['fileupload']['name']) && $_FILES['fileupload']['name'] !== 'none') ? trim(stripslashes($_FILES['fileupload']['name'])) : '';
+        $this->filename = isset($_FILES['fileupload'], $_FILES['fileupload']['name']) && $_FILES['fileupload']['name'] !== 'none' ? trim(stripslashes($_FILES['fileupload']['name'])) : '';
 
         $this->attachment_list = get_var('attachment_list', ['']);
         $this->attachment_thumbnail_list = get_var('attach_thumbnail_list', [0]);
@@ -149,7 +149,7 @@ class attach_parent
 
         if (!$found) {
             // Set Default Quota Limit
-            $quota_id = ($quota_type === QUOTA_UPLOAD_LIMIT) ? $attach_config['default_upload_quota'] : $attach_config['default_pm_quota'];
+            $quota_id = $quota_type === QUOTA_UPLOAD_LIMIT ? $attach_config['default_upload_quota'] : $attach_config['default_pm_quota'];
 
             if ($quota_id === 0) {
                 $attach_config[$limit_type] = $attach_config[$default];
@@ -278,21 +278,15 @@ class attach_parent
             if ($userdata['user_level'] === ADMIN) {
                 $auth = true;
             } else {
-                $auth = ((int)$attach_config['allow_pm_attach']) ? true : false;
+                $auth = (int)$attach_config['allow_pm_attach'] ? true : false;
             }
 
             if (count($attachments) === 1) {
                 $template->assignBlockVars('switch_attachments', []);
-
-                $template->assignVars([
-                        'L_DELETE_ATTACHMENTS' => $lang['Delete_attachment']]
-                );
+                $template->assignVars(['L_DELETE_ATTACHMENTS' => $lang['Delete_attachment']]);
             } else if (count($attachments) > 0) {
                 $template->assignBlockVars('switch_attachments', []);
-
-                $template->assignVars([
-                        'L_DELETE_ATTACHMENTS' => $lang['Delete_attachments']]
-                );
+                $template->assignVars(['L_DELETE_ATTACHMENTS' => $lang['Delete_attachments']]);
             }
         } else {
             $auth = $is_auth['auth_edit'] || $is_auth['auth_mod'];
@@ -504,7 +498,7 @@ class attach_parent
                             $error_msg .= $lang['Error_missing_old_entry'];
                         }
 
-                        $comment = (trim($this->file_comment) === '') ? trim($row->comment) : trim($this->file_comment);
+                        $comment = trim($this->file_comment) === '' ? trim($row->comment) : trim($this->file_comment);
 
                         // Update Entry
                         $sql_ary = [
@@ -603,7 +597,7 @@ class attach_parent
 
             $post_id = (int)$message_id;
             $privmsgs_id = 0;
-            $user_id_1 = (isset($post_info['poster_id'])) ? (int)$post_info['poster_id'] : 0;
+            $user_id_1 = isset($post_info['poster_id']) ? (int)$post_info['poster_id'] : 0;
             $user_id_2 = 0;
             $sql_id = 'post_id';
 
@@ -701,17 +695,17 @@ class attach_parent
 
         if ((int)$attach_config['show_apcp']) {
             if (!empty($_POST['add_attachment_box'])) {
-                $value_add = ($this->add_attachment_body === 0) ? 1 : 0;
+                $value_add = $this->add_attachment_body === 0 ? 1 : 0;
                 $this->add_attachment_body = $value_add;
             } else {
-                $value_add = ($this->add_attachment_body === 0) ? 0 : 1;
+                $value_add = $this->add_attachment_body === 0 ? 0 : 1;
             }
 
             if (!empty($_POST['posted_attachments_box'])) {
-                $value_posted = ($this->posted_attachments_body === 0) ? 1 : 0;
+                $value_posted = $this->posted_attachments_body === 0 ? 1 : 0;
                 $this->posted_attachments_body = $value_posted;
             } else {
-                $value_posted = ($this->posted_attachments_body === 0) ? 0 : 1;
+                $value_posted = $this->posted_attachments_body === 0 ? 0 : 1;
             }
             $template->assignBlockVars('show_apcp', []);
         } else {
@@ -858,7 +852,7 @@ class attach_parent
             }
 
             // Opera add the name to the mime type
-            $this->type = (mb_strstr($this->type, '; name')) ? str_replace(mb_strstr($this->type, '; name'), '', $this->type) : $this->type;
+            $this->type = mb_strstr($this->type, '; name') ? str_replace(mb_strstr($this->type, '; name'), '', $this->type) : $this->type;
             $this->type = mb_strtolower($this->type);
             $this->extension = mb_strtolower(get_extension($this->filename));
 
@@ -874,7 +868,7 @@ class attach_parent
                 ->where('[e.extension] = %s', $this->extension)
                 ->fetch();
 
-            $allowed_filesize = ($row->max_filesize) ? $row->max_filesize : $attach_config['max_filesize'];
+            $allowed_filesize = $row->max_filesize ? $row->max_filesize : $attach_config['max_filesize'];
             $cat_id = (int)$row->cat_id;
             $auth_cache = trim($row->forum_permissions);
 
@@ -897,9 +891,7 @@ class attach_parent
                     $error_msg .= '<br />';
                 }
 
-                $ini_val = (PHP_VERSION >= '4.0.0') ? 'ini_get' : 'get_cfg_var';
-
-                $max_size = @$ini_val('upload_max_filesize');
+                $max_size = @ini_get('upload_max_filesize');
 
                 if ($max_size === '') {
                     $error_msg .= $lang['Attachment_php_size_na'];
@@ -946,7 +938,7 @@ class attach_parent
                 $cryptic = false;
 
                 if ($cryptic) {
-                    $u_id = ((int)$userdata['user_id'] === ANONYMOUS) ? 0 : (int)$userdata['user_id'];
+                    $u_id = (int)$userdata['user_id'] === ANONYMOUS ? 0 : (int)$userdata['user_id'];
                     $this->attach_filename = $u_id . '_' . $this->filetime . '.' . $this->extension;
                 } else {
                     $this->attach_filename = html_entity_decode(trim(stripslashes($this->attach_filename)));
@@ -964,7 +956,7 @@ class attach_parent
                     $new_filename = $this->attach_filename;
 
                     if (!$new_filename) {
-                        $u_id = ((int)$userdata['user_id'] === ANONYMOUS) ? 0 : (int)$userdata['user_id'];
+                        $u_id = (int)$userdata['user_id'] === ANONYMOUS ? 0 : (int)$userdata['user_id'];
                         $new_filename = $u_id . '_' . $this->filetime . '.' . $this->extension;
                     }
 
@@ -992,17 +984,14 @@ class attach_parent
                     $upload_mode = 'ftp';
                 } else {
                     // Descide the Upload method
-                    $ini_val = (PHP_VERSION >= '4.0.0') ? 'ini_get' : 'get_cfg_var';
 
-                    $safe_mode = @$ini_val('safe_mode');
-
-                    if (@$ini_val('open_basedir')) {
+                    if (@ini_get('open_basedir')) {
                         if (@PHP_VERSION < '4.0.3') {
                             $upload_mode = 'copy';
                         } else {
                             $upload_mode = 'move';
                         }
-                    } else if (@$ini_val('safe_mode')) {
+                    } else if (@ini_get('safe_mode')) {
                         $upload_mode = 'move';
                     } else {
                         $upload_mode = 'copy';
@@ -1170,7 +1159,7 @@ class attach_parent
                     }
                 }
 
-                $to_user = (isset($_POST['username'])) ? $_POST['username'] : '';
+                $to_user = isset($_POST['username']) ? $_POST['username'] : '';
 
                 // Check Receivers PM Quota
                 if (!empty($to_user) && $userdata['user_level'] !== ADMIN) {

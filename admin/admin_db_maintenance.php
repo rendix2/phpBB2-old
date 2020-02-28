@@ -92,7 +92,7 @@ if (Config::DBMS !== 'mysql') {
 	message_die(GENERAL_MESSAGE, $lang['dbtype_not_supported']);
 }
 
-switch($mode_id) {
+switch ($mode_id) {
 	case 'start': // Show warning message if specified
 		if ($function === '') {
 			message_die(GENERAL_ERROR, $lang['no_function_specified']);
@@ -150,7 +150,7 @@ switch($mode_id) {
 			ob_end_flush();
 		}
 
-		switch($function) {
+		switch ($function) {
             case 'statistic': // Statistics
                 $template->setFileNames(['body' => 'admin/dbmtnc_statistic_body.tpl']);
 
@@ -265,15 +265,15 @@ switch($mode_id) {
                 if (isset($_POST['submit'])) {
 					$disallow_postcounter = isset($_POST['disallow_postcounter']) ? (int)$_POST['disallow_postcounter'] : 0;
 					$disallow_rebuild = isset($_POST['disallow_rebuild']) ? (int)$_POST['disallow_rebuild'] : 0;
-					$rebuildcfg_timelimit = (isset($_POST['rebuildcfg_timelimit']) && is_numeric($_POST['rebuildcfg_timelimit'])) ? (int)$_POST['rebuildcfg_timelimit'] : 240;
-					$rebuildcfg_timeoverwrite = (isset($_POST['rebuildcfg_timeoverwrite']) && is_numeric($_POST['rebuildcfg_timeoverwrite'])) ? (int)$_POST['rebuildcfg_timeoverwrite'] : 0;
-					$rebuildcfg_maxmemory = (isset($_POST['rebuildcfg_maxmemory']) && is_numeric($_POST['rebuildcfg_maxmemory'])) ? (int)$_POST['rebuildcfg_maxmemory'] : 500;
-					$rebuildcfg_minposts = (isset($_POST['rebuildcfg_minposts']) && is_numeric($_POST['rebuildcfg_minposts'])) ? (int)$_POST['rebuildcfg_minposts'] : 3;
+					$rebuildcfg_timelimit = isset($_POST['rebuildcfg_timelimit']) && is_numeric($_POST['rebuildcfg_timelimit']) ? (int)$_POST['rebuildcfg_timelimit'] : 240;
+					$rebuildcfg_timeoverwrite = isset($_POST['rebuildcfg_timeoverwrite']) && is_numeric($_POST['rebuildcfg_timeoverwrite']) ? (int)$_POST['rebuildcfg_timeoverwrite'] : 0;
+					$rebuildcfg_maxmemory = isset($_POST['rebuildcfg_maxmemory']) && is_numeric($_POST['rebuildcfg_maxmemory']) ? (int)$_POST['rebuildcfg_maxmemory'] : 500;
+					$rebuildcfg_minposts = isset($_POST['rebuildcfg_minposts']) && is_numeric($_POST['rebuildcfg_minposts']) ? (int)$_POST['rebuildcfg_minposts'] : 3;
 					$rebuildcfg_php3only = isset($_POST['rebuildcfg_php3only']) ? (int)$_POST['rebuildcfg_php3only'] : 0;
-					$rebuildcfg_php4pps = (isset($_POST['rebuildcfg_php4pps']) && is_numeric($_POST['rebuildcfg_php4pps'])) ? (int)$_POST['rebuildcfg_php4pps'] : 8;
-					$rebuildcfg_php3pps = (isset($_POST['rebuildcfg_php3pps']) && is_numeric($_POST['rebuildcfg_php3pps'])) ? (int)$_POST['rebuildcfg_php3pps'] : 1;
-					$rebuild_pos = (isset($_POST['rebuild_pos']) && is_numeric($_POST['rebuild_pos'])) ? (int)$_POST['rebuild_pos'] : -1;
-					$rebuild_end = (isset($_POST['rebuild_end']) && is_numeric($_POST['rebuild_end'])) ? (int)$_POST['rebuild_end'] : 0;
+					$rebuildcfg_php4pps = isset($_POST['rebuildcfg_php4pps']) && is_numeric($_POST['rebuildcfg_php4pps']) ? (int)$_POST['rebuildcfg_php4pps'] : 8;
+					$rebuildcfg_php3pps = isset($_POST['rebuildcfg_php3pps']) && is_numeric($_POST['rebuildcfg_php3pps']) ? (int)$_POST['rebuildcfg_php3pps'] : 1;
+					$rebuild_pos = isset($_POST['rebuild_pos']) && is_numeric($_POST['rebuild_pos']) ? (int)$_POST['rebuild_pos'] : -1;
+					$rebuild_end = isset($_POST['rebuild_end']) && is_numeric($_POST['rebuild_end']) ? (int)$_POST['rebuild_end'] : 0;
 
                     switch (CONFIG_LEVEL) {
                         case 3: // Current search config
@@ -313,8 +313,9 @@ switch($mode_id) {
                                 update_config('dbmtnc_disallow_postcounter', $disallow_postcounter);
                             }
                     }
-					$message = $lang['Dbmtnc_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_dbmtnc_config'], '<a href="' . Session::appendSid('admin_db_maintenance.php?mode=start&function=config') . '">',
-                            '</a>');
+					$message  = $lang['Dbmtnc_config_updated'] . '<br /><br />';
+                    $message .= sprintf($lang['Click_return_dbmtnc_config'], '<a href="' . Session::appendSid('admin_db_maintenance.php?mode=start&function=config') . '">', '</a>');
+
 					message_die(GENERAL_MESSAGE, $message);
 				}
 
@@ -372,15 +373,15 @@ switch($mode_id) {
                         'L_RESET'  => $lang['Reset'],
 
                         'DISALLOW_POSTCOUNTER_YES' => $board_config['dbmtnc_disallow_postcounter'] ? 'checked="checked"' : '',
-                        'DISALLOW_POSTCOUNTER_NO'  => (!$board_config['dbmtnc_disallow_postcounter']) ? 'checked="checked"' : '',
+                        'DISALLOW_POSTCOUNTER_NO'  => !$board_config['dbmtnc_disallow_postcounter'] ? 'checked="checked"' : '',
                         'DISALLOW_REBUILD_YES'     => $board_config['dbmtnc_disallow_rebuild'] ? 'checked="checked"' : '',
-                        'DISALLOW_REBUILD_NO'      => (!$board_config['dbmtnc_disallow_rebuild']) ? 'checked="checked"' : '',
+                        'DISALLOW_REBUILD_NO'      => !$board_config['dbmtnc_disallow_rebuild'] ? 'checked="checked"' : '',
                         'REBUILDCFG_TIMELIMIT'     => (int)$board_config['dbmtnc_rebuildcfg_timelimit'],
                         'REBUILDCFG_MAXMEMORY'     => (int)$board_config['dbmtnc_rebuildcfg_maxmemory'],
                         'REBUILDCFG_TIMEOVERWRITE' => (int)$board_config['dbmtnc_rebuildcfg_timeoverwrite'],
                         'REBUILDCFG_MINPOSTS'      => (int)$board_config['dbmtnc_rebuildcfg_minposts'],
                         'REBUILDCFG_PHP3ONLY_YES'  => $board_config['dbmtnc_rebuildcfg_php3only'] ? 'checked="checked"' : '',
-                        'REBUILDCFG_PHP3ONLY_NO'   => (!$board_config['dbmtnc_rebuildcfg_php3only']) ? 'checked="checked"' : '',
+                        'REBUILDCFG_PHP3ONLY_NO'   => !$board_config['dbmtnc_rebuildcfg_php3only'] ? 'checked="checked"' : '',
                         'REBUILDCFG_PHP4PPS'       => (int)$board_config['dbmtnc_rebuildcfg_php4pps'],
                         'REBUILDCFG_PHP3PPS'       => (int)$board_config['dbmtnc_rebuildcfg_php3pps'],
                         'REBUILD_POS'              => (int)$board_config['dbmtnc_rebuild_pos'],
@@ -641,7 +642,7 @@ switch($mode_id) {
 					echo('<p class="gen">' . $lang['Recreating_SUG'] . ": $record_list</p>\n");
 
 					foreach ($missing_groups as $missingGroup) {
-						$group_name = ($missingGroup === ANONYMOUS) ? 'Anonymous' : '';
+						$group_name = $missingGroup === ANONYMOUS ? 'Anonymous' : '';
 
 						$insertData = [
 						    'group_type' => 1,
@@ -1388,7 +1389,7 @@ switch($mode_id) {
                             throw_error("Couldn't get post information!");
                         }
 
-                        $topic_title = ($row2->post_subject === '') ? $lang['Restored_topic_name'] : $row2->post_subject;
+                        $topic_title = $row2->post_subject === '' ? $lang['Restored_topic_name'] : $row2->post_subject;
 
                         // Get data from first post
                         $firstPost = dibi::select(['poster_id', 'post_time'])
@@ -1505,7 +1506,7 @@ switch($mode_id) {
 						$enable_html = $board_config['allow_html'];
 						$enable_smilies = $board_config['allow_smilies'];
 					}
-					$enable_bbcode = ($board_config['allow_bbcode'] && $row->bbcode_uid !== '') ? 1 : 0;
+					$enable_bbcode = $board_config['allow_bbcode'] && $row->bbcode_uid !== '' ? 1 : 0;
 					echo('<li>' . sprintf($lang['Recreating_post'], $row->post_id, $lang['New_topic_name'], $lang['New_forum_name'], mb_substr(htmlspecialchars(strip_tags($row->post_text)), 0, 30)) . "</li>\n");
 
 					$insertData = [
@@ -1790,7 +1791,7 @@ switch($mode_id) {
                         $list_open = true;
                     }
                     $start_time = create_date($board_config['default_dateformat'], $row->vote_start, $board_config['board_timezone']);
-                    $end_time   = ($row->vote_length === 0) ? '-' : create_date($board_config['default_dateformat'], $row->vote_start + $row->vote_length, $board_config['board_timezone']);
+                    $end_time   = $row->vote_length === 0 ? '-' : create_date($board_config['default_dateformat'], $row->vote_start + $row->vote_length, $board_config['board_timezone']);
                     echo('<li>' . sprintf($lang['Invalid_vote'], htmlspecialchars($row->vote_text), $row->vote_id, $start_time, $end_time) . "</li>\n");
                     $result_array[] = $row->vote_id;
                 }
@@ -1841,7 +1842,7 @@ switch($mode_id) {
 					}
 					$start_time = create_date($board_config['default_dateformat'], $row->vote_start,
 					$board_config['board_timezone']);
-					$end_time = ( $row->vote_length === 0 ) ? '-' : create_date($board_config['default_dateformat'], $row->vote_start->vote_length, $board_config['board_timezone']);
+					$end_time = $row->vote_length === 0 ? '-' : create_date($board_config['default_dateformat'], $row->vote_start->vote_length, $board_config['board_timezone']);
 					echo('<li>' . sprintf($lang['Invalid_vote'], htmlspecialchars($row->vote_text), $row->vote_id, $start_time, $end_time) . "</li>\n");
 					$result_array[] = $row->vote_id;
 				}

@@ -211,7 +211,7 @@ class TemplateStandard extends BaseTemplate
 
 					if ($block_nesting_level < 2) {
 						// Block is not nested.
-                        $codeLine = '$_' . $n[1] . '_count = ( isset($this->_tpldata[\'' . $n[1] . '.\']) ) ?  count($this->_tpldata[\'' . $n[1] . '.\']) : 0;';
+                        $codeLine = '$_' . $n[1] . '_count = isset($this->_tpldata[\'' . $n[1] . '.\']) ?  count($this->_tpldata[\'' . $n[1] . '.\']) : 0;';
                         $codeLine .= "\n" . 'for ($_' . $n[1] . '_i = 0; $_' . $n[1] . '_i < $_' . $n[1] . '_count; $_' . $n[1] . '_i++)';
                         $codeLine .= "\n" . '{';
 					} else {
@@ -227,7 +227,7 @@ class TemplateStandard extends BaseTemplate
 						$varref = $this->generateBlockDataRef($namespace, false);
 
 						// Create the for loop code to iterate over this block.
-                        $codeLine = '$_' . $n[1] . '_count = ( isset(' . $varref . ') ) ? count(' . $varref . ') : 0;';
+                        $codeLine = '$_' . $n[1] . '_count = isset(' . $varref . ') ? count(' . $varref . ') : 0;';
                         $codeLine .= "\n" . 'for ($_' . $n[1] . '_i = 0; $_' . $n[1] . '_i < $_' . $n[1] . '_count; $_' . $n[1] . '_i++)';
                         $codeLine .= "\n" . '{';
 					}
@@ -245,7 +245,7 @@ class TemplateStandard extends BaseTemplate
 
 					if ($block_nesting_level < 2) {
 						// Block is not nested.
-                        $codeLine = '$_' . $m[1] . '_count = ( isset($this->_tpldata[\'' . $m[1] . '.\']) ) ? count($this->_tpldata[\'' . $m[1] . '.\']) : 0;';
+                        $codeLine = '$_' . $m[1] . '_count = isset($this->_tpldata[\'' . $m[1] . '.\']) ? count($this->_tpldata[\'' . $m[1] . '.\']) : 0;';
                         $codeLine .= "\n" . 'for ($_' . $m[1] . '_i = 0; $_' . $m[1] . '_i < $_' . $m[1] . '_count; $_' . $m[1] . '_i++)';
                         $codeLine .= "\n" . '{';
 					} else {
@@ -262,7 +262,7 @@ class TemplateStandard extends BaseTemplate
 						$varref = $this->generateBlockDataRef($namespace, false);
 
 						// Create the for loop code to iterate over this block.
-                        $codeLine = '$_' . $m[1] . '_count = ( isset(' . $varref . ') ) ? count(' . $varref . ') : 0;';
+                        $codeLine = '$_' . $m[1] . '_count = isset(' . $varref . ') ? count(' . $varref . ') : 0;';
                         $codeLine .= "\n" . 'for ($_' . $m[1] . '_i = 0; $_' . $m[1] . '_i < $_' . $m[1] . '_count; $_' . $m[1] . '_i++)';
                         $codeLine .= "\n" . '{';
 					}

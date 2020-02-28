@@ -132,17 +132,17 @@ class attach_pm extends attach_parent
 
         $this->get_quota_limits($userdata);
 
-        $pm_filesize_limit = (!$attach_config['pm_filesize_limit']) ? $attach_config['attachment_quota'] : $attach_config['pm_filesize_limit'];
+        $pm_filesize_limit = !$attach_config['pm_filesize_limit'] ? $attach_config['attachment_quota'] : $attach_config['pm_filesize_limit'];
 
         $pm_filesize_total = get_total_attach_pm_filesize('to_user', (int)$userdata['user_id']);
 
-        $attach_limit_pct = ($pm_filesize_limit > 0) ? round(($pm_filesize_total / $pm_filesize_limit) * 100) : 0;
-        $attach_limit_img_length = ($pm_filesize_limit > 0) ? round(($pm_filesize_total / $pm_filesize_limit) * $board_config['privmsg_graphic_length']) : 0;
+        $attach_limit_pct = $pm_filesize_limit > 0 ? round(($pm_filesize_total / $pm_filesize_limit) * 100) : 0;
+        $attach_limit_img_length = $pm_filesize_limit > 0 ? round(($pm_filesize_total / $pm_filesize_limit) * $board_config['privmsg_graphic_length']) : 0;
 
         if ($attach_limit_pct > 100) {
             $attach_limit_img_length = $board_config['privmsg_graphic_length'];
         }
-        $attach_limit_remain = ($pm_filesize_limit > 0) ? $pm_filesize_limit - $pm_filesize_total : 100;
+        $attach_limit_remain = $pm_filesize_limit > 0 ? $pm_filesize_limit - $pm_filesize_total : 100;
 
         $l_box_size_status = sprintf($lang['Attachbox_limit'], $attach_limit_pct);
 
@@ -193,7 +193,7 @@ class attach_pm extends attach_parent
 
         if (($this->pm_delete_attachments || $delete) && count($mark_list)) {
             if (!$userdata['session_logged_in']) {
-                $header_location = (@preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE'))) ? 'Refresh: 0; URL=' : 'Location: ';
+                $header_location = @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ? 'Refresh: 0; URL=' : 'Location: ';
                 header($header_location . Session::appendSid($phpbb_root_path . 'login.php?redirect=privmsg.php&folder=inbox', true));
                 exit;
             }

@@ -62,7 +62,7 @@ function generate_user_info(
      * add this columns into selects
      */
 	if ($row->user_avatar_type && $row->user_id !== ANONYMOUS && $row->user_allowavatar) {
-		switch( $row->user_avatar_type) {
+		switch ($row->user_avatar_type) {
 			case USER_AVATAR_UPLOAD:
 				$posterAvatar = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $row->user_avatar . '" alt="" border="0" />' : '';
 				break;
@@ -156,7 +156,9 @@ if (isset($_POST['groupstatus']) && $groupId) {
             ]
         );
 
-        $message = $lang['Not_group_moderator'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
+        $message  = $lang['Not_group_moderator'] . '<br /><br />';
+        $message .= sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">', '</a>') . '<br /><br />';
+        $message .= sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
 		message_die(GENERAL_MESSAGE, $message);
 	}
@@ -171,7 +173,9 @@ if (isset($_POST['groupstatus']) && $groupId) {
         ]
     );
 
-    $message = $lang['Group_type_updated'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
+    $message  = $lang['Group_type_updated'] . '<br /><br />';
+    $message .= sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">', '</a>') . '<br /><br />';
+    $message .= sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
 	message_die(GENERAL_MESSAGE, $message);
 
@@ -209,7 +213,9 @@ if (isset($_POST['groupstatus']) && $groupId) {
                     ]
                 );
 
-                $message = $lang['Already_member_group'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
+                $message  = $lang['Already_member_group'] . '<br /><br />';
+                $message .= sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">', '</a>') . '<br /><br />';
+                $message .= sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
                 message_die(GENERAL_MESSAGE, $message);
             }
@@ -221,7 +227,9 @@ if (isset($_POST['groupstatus']) && $groupId) {
             ]
         );
 
-        $message = $lang['This_closed_group'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
+        $message  = $lang['This_closed_group'] . '<br /><br />';
+        $message .= sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">', '</a>') . '<br /><br />';
+        $message .= sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
         message_die(GENERAL_MESSAGE, $message);
     }
@@ -270,7 +278,9 @@ if (isset($_POST['groupstatus']) && $groupId) {
         ]
     );
 
-    $message = $lang['Group_joined'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
+    $message  = $lang['Group_joined'] . '<br /><br />';
+    $message .= sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">', '</a>') . '<br /><br />';
+    $message .= sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
 	message_die(GENERAL_MESSAGE, $message);
 } elseif (isset($_POST['unsub']) || isset($_POST['unsubpending']) && $groupId) {
@@ -317,7 +327,9 @@ if (isset($_POST['groupstatus']) && $groupId) {
             ]
         );
 
-        $message = $lang['Unsub_success'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
+        $message  = $lang['Unsub_success'] . '<br /><br />';
+        $message .= sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">', '</a>') . '<br /><br />';
+        $message .= sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
 		message_die(GENERAL_MESSAGE, $message);
 	} else {
@@ -428,7 +440,8 @@ if (isset($_POST['groupstatus']) && $groupId) {
                     ]
                 );
 
-                $message = $lang['Not_group_moderator'] . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
+                $message  = $lang['Not_group_moderator'] . '<br /><br />';
+                $message .= sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
 				message_die(GENERAL_MESSAGE, $message);
 			}
@@ -448,7 +461,9 @@ if (isset($_POST['groupstatus']) && $groupId) {
                         ]
                     );
 
-                    $message = $lang['Could_not_add_user'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
+                    $message  = $lang['Could_not_add_user'] . '<br /><br />';
+                    $message .= sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">', '</a>') . '<br /><br />';
+                    $message .= sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
 					message_die(GENERAL_MESSAGE, $message);
 				}
@@ -458,9 +473,12 @@ if (isset($_POST['groupstatus']) && $groupId) {
                         [
                             'META' => '<meta http-equiv="refresh" content="3;url=' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">'
 
-                        ]);
+                        ]
+                    );
 
-                    $message = $lang['Could_not_anon_user'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
+                    $message  = $lang['Could_not_anon_user'] . '<br /><br />';
+                    $message .= sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">', '</a>') . '<br /><br />';
+                    $message .= sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
 					message_die(GENERAL_MESSAGE, $message);
 				}
@@ -482,7 +500,9 @@ if (isset($_POST['groupstatus']) && $groupId) {
                         ]
                     );
 
-                    $message = $lang['User_is_member_group'] . '<br /><br />' . sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
+                    $message  = $lang['User_is_member_group'] . '<br /><br />';
+                    $message .= sprintf($lang['Click_return_group'], '<a href="' . Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId") . '">', '</a>') . '<br /><br />';
+                    $message .= sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
                     message_die(GENERAL_MESSAGE, $message);
                 } else {
@@ -842,7 +862,8 @@ if (isset($_POST['groupstatus']) && $groupId) {
 
 	$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
-	$template->assignVars([
+	$template->assignVars(
+	    [
             'L_GROUP_INFORMATION' => $lang['Group_Information'],
             'L_GROUP_NAME' => $lang['Group_name'],
             'L_GROUP_DESC' => $lang['Group_description'],
@@ -926,7 +947,8 @@ if (isset($_POST['groupstatus']) && $groupId) {
              */
             //'S_MODE_SELECT' => $select_sort_mode,
             //'S_ORDER_SELECT' => $select_sort_order,
-            'S_GROUPCP_ACTION' => Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId")]
+            'S_GROUPCP_ACTION' => Session::appendSid('groupcp.php?' . POST_GROUPS_URL . "=$groupId")
+        ]
 	);
 
 	//
@@ -961,8 +983,8 @@ if (isset($_POST['groupstatus']) && $groupId) {
         // <!-- END Another Online/Offline indicator -->
 
         if ($groupInfo->group_type !== GROUP_HIDDEN || $isGroupMember || $isModerator) {
-			$rowColor = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-			$rowClass = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+			$rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+			$rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
             $template->assignBlockVars('member_row',
                 [
@@ -1091,8 +1113,8 @@ if (isset($_POST['groupstatus']) && $groupId) {
             }
             // <!-- END Another Online/Offline indicator -->
 
-            $rowColor = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-            $rowClass = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+            $rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+            $rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
             $user_select = '<input type="checkbox" name="member[]" value="' . $user_id . '">';
 
@@ -1138,7 +1160,6 @@ if (isset($_POST['groupstatus']) && $groupId) {
         );
 
         $template->assignVarFromHandle('PENDING_USER_BOX', 'pendinginfo');
-
     }
 
     if ($isModerator) {

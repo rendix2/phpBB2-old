@@ -125,7 +125,7 @@ if ($profileData->user_topic_watches !== 0) {
 $avatarImage = '';
 
 if ($profileData->user_avatar_type && $profileData->user_allowavatar) {
-	switch($profileData->user_avatar_type) {
+	switch ($profileData->user_avatar_type) {
 		case USER_AVATAR_UPLOAD:
 			$avatarImage = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $profileData->user_avatar . '" alt="" border="0" />' : '';
 			break;

@@ -69,7 +69,7 @@ if (isset($_POST[POST_MODE]) || isset($_GET[POST_MODE])) {
  */
 function get_info($mode, $id)
 {
-	switch($mode) {
+	switch ($mode) {
 		case 'category':
 			$table = Tables::CATEGORIES_TABLE;
 			$idfield = 'cat_id';
@@ -111,7 +111,7 @@ function get_info($mode, $id)
  */
 function get_list($mode, $id, $select)
 {
-	switch($mode) {
+	switch ($mode) {
 		case 'category':
 			$table = Tables::CATEGORIES_TABLE;
 			$idfield = 'cat_id';
@@ -161,7 +161,7 @@ function get_list($mode, $id, $select)
  */
 function renumber_order($mode, $cat = 0)
 {
-	switch($mode) {
+	switch ($mode) {
 		case 'category':
 			$table = Tables::CATEGORIES_TABLE;
 			$idfield = 'cat_id';
@@ -286,8 +286,8 @@ if (!empty($mode)) {
 			$statuslist .= '<option value="' . FORUM_LOCKED . "\" $forumlocked>" . $lang['Status_locked'] . "</option>\n";
 
             // Begin Thank Mod
-            $thank_yes = ($forumThank) ? 'checked="checked"' : '';
-            $thank_no = (!$forumThank) ? 'checked="checked"' : '';
+            $thank_yes = $forumThank ? 'checked="checked"' : '';
+            $thank_no = !$forumThank ? 'checked="checked"' : '';
             // End Thank Mod
 
             $s_hidden_fields = '<input type="hidden" name="mode" value="' . $newmode . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
@@ -379,7 +379,9 @@ if (!empty($mode)) {
 				dibi::insert(Tables::PRUNE_TABLE, $insert_data)->execute();
 			}
 
-			$message = $lang['Forums_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+			$message  = $lang['Forums_updated'] . '<br /><br />';
+            $message .= sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />';
+            $message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 
@@ -440,7 +442,9 @@ if (!empty($mode)) {
 				}
 			}
 
-			$message = $lang['Forums_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+			$message  = $lang['Forums_updated'] . '<br /><br />';
+            $message .= sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />';
+            $messa   .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 
@@ -470,7 +474,9 @@ if (!empty($mode)) {
 
             dibi::insert(Tables::CATEGORIES_TABLE, $insert_data)->execute();
 
-			$message = $lang['Forums_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+			$message  = $lang['Forums_updated'] . '<br /><br />';
+			$message .= sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />';
+			$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 
@@ -515,7 +521,9 @@ if (!empty($mode)) {
                 ->where('cat_id = %i', (int)$_POST[POST_CAT_URL])
                 ->execute();
 
-			$message = $lang['Forums_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+			$message  = $lang['Forums_updated'] . '<br /><br />';
+			$message .= sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />';
+			$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 
@@ -660,7 +668,9 @@ if (!empty($mode)) {
                 ->where('forum_id = %i', $from_id)
                 ->execute();
 
-			$message = $lang['Forums_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+			$message  = $lang['Forums_updated'] . '<br /><br />';
+			$message .= sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />';
+			$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 
@@ -748,7 +758,9 @@ if (!empty($mode)) {
                 ->where('cat_id = %i', $from_id)
                 ->execute();
 
-			$message = $lang['Forums_updated'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+			$message  = $lang['Forums_updated'] . '<br /><br />';
+			$message .= sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />';
+			$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 
@@ -917,16 +929,16 @@ if ($category_count) {
 			$forum_id = $forum->forum_id;
 
 			if ($forum->cat_id === $cat_id) {
-                $row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-                $row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+                $rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+                $rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
                 $template->assignBlockVars('catrow.forumrow',
                     [
                         'FORUM_NAME' => htmlspecialchars($forum->forum_name, ENT_QUOTES),
                         'FORUM_DESC' => htmlspecialchars($forum->forum_desc, ENT_QUOTES),
 
-                        'ROW_COLOR'  => '#' . $row_color,
-                        'ROW_CLASS'  => $row_class,
+                        'ROW_COLOR'  => '#' . $rowColor,
+                        'ROW_CLASS'  => $rowClass,
                         'NUM_TOPICS' => $forum->forum_topics,
                         'NUM_POSTS'  => $forum->forum_posts,
                         'NUM_THANKS'  => $forum->forum_thanks,

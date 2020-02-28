@@ -249,7 +249,9 @@ if (isset($_POST['submit'])) {
             ->execute();
     }
 
-	$message = $lang['Ban_update_sucessful'] . '<br /><br />' . sprintf($lang['Click_return_banadmin'], '<a href="' . Session::appendSid('admin_user_ban.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+	$message  = $lang['Ban_update_sucessful'] . '<br /><br />';
+    $message .= sprintf($lang['Click_return_banadmin'], '<a href="' . Session::appendSid('admin_user_ban.php') . '">', '</a>') . '<br /><br />';
+    $message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 	message_die(GENERAL_MESSAGE, $message);
 

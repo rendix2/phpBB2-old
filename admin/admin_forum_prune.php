@@ -34,6 +34,9 @@ require_once '.' . $sep . 'pagestart.php';
 //
 // Get the forum ID for pruning
 //
+$forum_id = '';
+$forum_sql = false;
+
 if (isset($_GET[POST_FORUM_URL]) || isset($_POST[POST_FORUM_URL])) {
     $forum_id = isset($_POST[POST_FORUM_URL]) ? $_POST[POST_FORUM_URL] : $_GET[POST_FORUM_URL];
 
@@ -43,14 +46,11 @@ if (isset($_GET[POST_FORUM_URL]) || isset($_POST[POST_FORUM_URL])) {
         $forum_id = (int)$forum_id;
         $forum_sql = true;
     }
-} else {
-    $forum_id = '';
-    $forum_sql = false;
 }
+
 //
 // Get a list of forum's or the data for the forum that we are pruning.
 //
-
 $forums = dibi::select('f.*')
     ->from(Tables::FORUMS_TABLE)
     ->as('f')
@@ -82,18 +82,18 @@ if (isset($_POST['doprune'])) {
 
     $template->setFileNames(['body' => 'admin/forum_prune_result_body.tpl']);
 
-    foreach ($forums as $forum) {
+    foreach ($forums as $i => $forum) {
         $prune_result = Prune::run($forum->forum_id, $prune_date->getTimestamp());
 
         Sync::oneForum($forum->forum_id);
 
-        $row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-        $row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+        $rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+        $rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
         $template->assignBlockVars('prune_results',
             [
-                'ROW_COLOR' => '#' . $row_color,
-                'ROW_CLASS' => $row_class,
+                'ROW_COLOR' => '#' . $rowColor,
+                'ROW_CLASS' => $rowClass,
 
                 'FORUM_NAME'   => htmlspecialchars($forum->forum_name, ENT_QUOTES),
                 'FORUM_TOPICS' => $prune_result['topics'],

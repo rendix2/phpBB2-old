@@ -68,16 +68,16 @@ if (isset($_GET['show_results'])) {
     $show_results = 'posts';
 }
 
+$search_terms = 0;
+
 if (isset($_POST['search_terms'])) {
     $search_terms = $_POST['search_terms'] === 'all' ? 1 : 0;
-} else {
-    $search_terms = 0;
 }
+
+$search_fields = 0;
 
 if (isset($_POST['search_fields'])) {
     $search_fields = $_POST['search_fields'] === 'all' ? 1 : 0;
-} else {
-    $search_fields = 0;
 }
 
 $return_chars = isset($_POST['return_chars']) ? (int)$_POST['return_chars'] : 200;
@@ -362,7 +362,8 @@ if ($mode === 'searchuser') {
 
             foreach ($is_auth as $key => $value) {
                 if (!$value['auth_read']) {
-                    $ignore_forum_sql .= (($ignore_forum_sql !== '') ? ', ' : '') . $key;
+                    $ignore_forum_sql .= $ignore_forum_sql !== '' ? ', ' : '';
+                    $ignore_forum_sql .= $key;
                 }
             }
 
@@ -696,7 +697,7 @@ if ($mode === 'searchuser') {
 
 		$per_page = $show_results === 'posts' ? $board_config['posts_per_page'] : $board_config['topics_per_page'];
 
-		switch ( $sort_by) {
+		switch ($sort_by) {
 			case 1:
                 $order_by = $show_results === 'posts' ? 'pt.post_subject' : 't.topic_title';
                 $search_sets->orderBy($order_by, $sort_dir);
@@ -733,7 +734,7 @@ if ($mode === 'searchuser') {
 		//
 		$page_title = $lang['Search'];
 
-        PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+        PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $page_title, $gen_simple_header);
 
         if ($show_results === 'posts') {
             $template->setFileNames(['body' => 'search_results_posts.tpl']);
@@ -951,7 +952,6 @@ if ($mode === 'searchuser') {
                     $user_onlinestatus = '';
                 }
                 // <!-- END Another Online/Offline indicator -->
-
 
                 $template->assignBlockVars('searchresults',
                     [
@@ -1211,7 +1211,6 @@ $is_auth = Auth::authorize(Auth::AUTH_READ, Auth::AUTH_ALL, $userdata);
 $s_forums = '';
 $list_cat = [];
 
-
 // TODO use Select.php class
 // this is in some functions file now
 foreach ($result as $row) {
@@ -1297,7 +1296,7 @@ foreach ($previous_days as $previous_day_key => $previous_days_value) {
 //
 $page_title = $lang['Search'];
 
-PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $page_title, $gen_simple_header);
 
 $template->setFileNames(['body' => 'search_body.tpl']);
 make_jumpbox('viewforum.php');

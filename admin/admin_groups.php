@@ -114,7 +114,9 @@ if (isset($_POST['group_update'])) {
 			->where('group_id = %i', $group_id)
 			->execute();
 
-		$message = $lang['Updated_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . Session::appendSid('admin_groups.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+		$message  = $lang['Updated_group'] . '<br /><br />';
+		$message .= sprintf($lang['Click_return_groupsadmin'], '<a href="' . Session::appendSid('admin_groups.php') . '">', '</a>') . '<br /><br />';
+		$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 		message_die(GENERAL_MESSAGE, $message);
 	} elseif ($mode === 'new') {
@@ -136,7 +138,9 @@ if (isset($_POST['group_update'])) {
 
 		dibi::insert(Tables::USERS_GROUPS_TABLE, $user_group_insert_data)->execute();
 
-		$message = $lang['Added_new_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . Session::appendSid('admin_groups.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+		$message  = $lang['Added_new_group'] . '<br /><br />';
+		$message .= sprintf($lang['Click_return_groupsadmin'], '<a href="' . Session::appendSid('admin_groups.php') . '">', '</a>') . '<br /><br />';
+		$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 		message_die(GENERAL_MESSAGE, $message);
 	} else {
@@ -307,7 +311,9 @@ if ($mode === 'deleteUser') {
 		->where('group_id = %i', $group_id)
 		->execute();
 
-	$message = $lang['Delete_group_member'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . Session::appendSid('admin_groups.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+	$message  = $lang['Delete_group_member'] . '<br /><br />';
+	$message .= sprintf($lang['Click_return_groupsadmin'], '<a href="' . Session::appendSid('admin_groups.php') . '">', '</a>') . '<br /><br />';
+	$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 	message_die(GENERAL_MESSAGE, $message);
 }
@@ -416,7 +422,9 @@ if ($mode === 'delete') {
 		->where('group_id = %i', $group_id)
 		->execute();
 
-	$message = $lang['Deleted_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . Session::appendSid('admin_groups.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+	$message  = $lang['Deleted_group'] . '<br /><br />';
+	$message .= sprintf($lang['Click_return_groupsadmin'], '<a href="' . Session::appendSid('admin_groups.php') . '">', '</a>') . '<br /><br />';
+	$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 	message_die(GENERAL_MESSAGE, $message);
 }

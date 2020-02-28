@@ -315,7 +315,7 @@ class TemplateFile extends BaseTemplate {
 	 */
 	private function compile($code, $do_not_echo = false, $retvar = '')
 	{
-		$concat = (!$do_not_echo) ? ',' : '.';
+		$concat = $do_not_echo ? '.' : ',';
 
 		// replace \ with \\ and then ' with \'.
 		$code = str_replace('\\', '\\\\', $code);

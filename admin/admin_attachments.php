@@ -284,13 +284,21 @@ if ($check_upload) {
     }
 
     if (!$error) {
-        message_die(GENERAL_MESSAGE, $lang['Test_settings_successful'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_attachments.php?mode=manage') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>'));
+        $message = $lang['Test_settings_successful'] . '<br /><br />';
+        $message .= sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_attachments.php?mode=manage') . '">', '</a>') . '<br /><br />';
+        $message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+
+        message_die(GENERAL_MESSAGE, $message);
     }
 }
 
 // Management
 if ($submit && $mode === 'manage' && !$error) {
-    message_die(GENERAL_MESSAGE, $lang['Attach_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_attachments.php?mode=manage') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>'));
+    $message  = $lang['Attach_config_updated'] . '<br /><br />';
+    $message .= sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_attachments.php?mode=manage') . '">', '</a>') . '<br /><br />';
+    $message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+
+    message_die(GENERAL_MESSAGE, $message);
 }
 
 if ($mode === 'manage') {
@@ -299,8 +307,8 @@ if ($mode === 'manage') {
     $yes_no_switches = ['disable_mod', 'allow_pm_attach', 'allow_ftp_upload', 'attachment_topic_review', 'display_order', 'show_apcp', 'ftp_pasv_mode'];
 
     foreach ($yes_no_switches as $variable) {
-        eval('$' . $variable . "_yes = ( \$new_attach['" . $variable . "'] !== '0' ) ? 'checked=\"checked\"' : '';");
-        eval('$' . $variable . "_no = ( \$new_attach['" . $variable . "'] === '0' ) ? 'checked=\"checked\"' : '';");
+        eval('$' . $variable . "_yes = \$new_attach['" . $variable . "'] !== '0' ? 'checked=\"checked\"' : '';");
+        eval('$' . $variable . "_no = \$new_attach['" . $variable . "'] === '0' ? 'checked=\"checked\"' : '';");
     }
 
     if (function_exists('ftp_connect')) {
@@ -428,7 +436,9 @@ if ($submit && $mode === 'shadow') {
         ->where('[attach_id] IN %in', $attach_id_list)
         ->execute();
 
-    $message = $lang['Attach_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_attachments.php?mode=shadow') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+    $message  = $lang['Attach_config_updated'] . '<br /><br />';
+    $message .= sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_attachments.php?mode=shadow') . '">', '</a>') . '<br /><br />';
+    $message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
     message_die(GENERAL_MESSAGE, $message);
 }
@@ -445,7 +455,8 @@ if ($mode === 'shadow') {
     $shadow_attachments = [];
     $shadow_row = [];
 
-    $template->assignVars([
+    $template->assignVars(
+        [
             'L_SHADOW_TITLE' => $lang['Shadow_attachments'],
             'L_SHADOW_EXPLAIN' => $lang['Shadow_attachments_explain'],
             'L_EXPLAIN_FILE' => $lang['Shadow_attachments_file_explain'],
@@ -458,7 +469,8 @@ if ($mode === 'shadow') {
             'L_UNMARK_ALL' => $lang['Unmark_all'],
 
             'S_HIDDEN' => $hidden,
-            'S_ATTACH_ACTION' => Session::appendSid('admin_attachments.php?mode=shadow')]
+            'S_ATTACH_ACTION' => Session::appendSid('admin_attachments.php?mode=shadow')
+        ]
     );
 
     $table_attachments = [];
@@ -557,13 +569,17 @@ foreach ($shadow_row['attach_id'] as $i => $shadowRow) {
         [
             'ATTACH_ID' => $shadow_row['attach_id'][$i],
             'ATTACH_FILENAME' => basename($shadow_row['physical_filename'][$i]),
-            'ATTACH_COMMENT' => (trim($shadow_row['comment'][$i]) === '') ? $lang['No_file_comment_available'] : trim($shadow_row['comment'][$i])
+            'ATTACH_COMMENT' => trim($shadow_row['comment'][$i]) === '' ? $lang['No_file_comment_available'] : trim($shadow_row['comment'][$i])
         ]
     );
 }
 
 if ($submit && $mode === 'cats' && !$error) {
-    message_die(GENERAL_MESSAGE, $lang['Attach_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_attachments.php?mode=cats') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>'));
+    $message  = $lang['Attach_config_updated'] . '<br /><br />';
+    $message .= sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_attachments.php?mode=cats') . '">', '</a>') . '<br /><br />';
+    $message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+
+    message_die(GENERAL_MESSAGE, $message);
 }
 
 if ($mode === 'cats') {
@@ -775,7 +791,11 @@ if ($check_image_cat) {
     }
 
     if (!$error) {
-        message_die(GENERAL_MESSAGE, $lang['Test_settings_successful'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_attachments.php?mode=cats') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>'));
+        $message  = $lang['Test_settings_successful'] . '<br /><br />';
+        $message .= sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_attachments.php?mode=cats') . '">', '</a>') . '<br /><br />';
+        $message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+
+        message_die(GENERAL_MESSAGE, $message);
     }
 }
 
@@ -783,7 +803,7 @@ if ($mode === 'sync') {
     $info = '';
     @set_time_limit(0);
 
-    echo (isset($lang['Sync_topics'])) ? $lang['Sync_topics'] : 'Sync Topics';
+    echo isset($lang['Sync_topics']) ? $lang['Sync_topics'] : 'Sync Topics';
 
     $topics = dibi::select('topic_id')
         ->from(Tables::TOPICS_TABLE)
@@ -805,7 +825,7 @@ if ($mode === 'sync') {
     }
 
     echo '<br /><br />';
-    echo (isset($lang['Sync_posts'])) ? $lang['Sync_posts'] : 'Sync Posts';
+    echo isset($lang['Sync_posts']) ? $lang['Sync_posts'] : 'Sync Posts';
 
     // Reassign Attachments to the Poster ID
     $rows = dibi::select(['a.attach_id', 'a.post_id', 'a.user_id_1', 'p.poster_id'])
@@ -956,11 +976,12 @@ if ($submit && $mode === 'quota') {
 
             dibi::insert(Tables::ATTACH_QUOTA_LIMITS_TABLE, ['quota_desc' => $quota_desc, 'quota_limit' => $filesize])->execute();
         }
-
     }
 
     if (!$error) {
-        $message = $lang['Attach_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_attachments.php?mode=quota') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+        $message  = $lang['Attach_config_updated'] . '<br /><br />';
+        $message .= sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_attachments.php?mode=quota') . '">', '</a>') . '<br /><br />';
+        $message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
         message_die(GENERAL_MESSAGE, $message);
     }

@@ -112,6 +112,7 @@ if (!$updatePassword && (int)$board_config['require_activation'] === USER_ACTIVA
     );
 
     $message = $updatePassword ? $lang['Password_activated'] : $lang['Account_active'];
+
     message_die(GENERAL_MESSAGE, $message);
 }
 

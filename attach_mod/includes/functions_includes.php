@@ -70,27 +70,6 @@ function attach_setup_forum_auth(&$simple_auth_ary, &$forum_auth_fields, &$field
 }
 
 /**
- * Setup s_auth_can in viewforum and viewtopic (viewtopic.php/viewforum.php)
- * @param $is_auth
- * @param $s_auth_can
- */
-function attach_build_auth_levels($is_auth, &$s_auth_can)
-{
-    global $lang, $attach_config, $forum_id;
-
-    if ((int)$attach_config['disable_mod']) {
-        return;
-    }
-
-    // If you want to have the rules window link within the forum view too, comment out the two lines, and comment the third line
-//	$rules_link = '(<a href="' . $phpbb_root_path . 'attach_rules.' . $phpEx . '?f=' . $forum_id . '" target="_blank">Rules</a>)';
-//	$s_auth_can .= ( ( $is_auth['auth_attachments'] ) ? $rules_link . ' ' . $lang['Rules_attach_can'] : $lang['Rules_attach_cannot'] ) . '<br />';
-    $s_auth_can .= (($is_auth['auth_attachments']) ? $lang['Rules_attach_can'] : $lang['Rules_attach_cannot']) . '<br />';
-
-    $s_auth_can .= (($is_auth['auth_download']) ? $lang['Rules_download_can'] : $lang['Rules_download_cannot']) . '<br />';
-}
-
-/**
  * Called from admin_users.php and admin_groups.php in order to process Quota Settings (admin/admin_users.php:admin/admin_groups.php)
  * @param      $admin_mode
  * @param bool $submit
@@ -343,12 +322,12 @@ function display_upload_attach_box_limits($user_id, $group_id = 0)
         ->groupBy('attach_id')
         ->fetchPairs(null, 'attach_id');
 
-    $upload_filesize = (count($attach_ids) > 0) ? get_total_attach_filesize($attach_ids) : 0;
+    $upload_filesize = count($attach_ids) > 0 ? get_total_attach_filesize($attach_ids) : 0;
 
     $user_uploaded = get_formatted_filesize($upload_filesize);
 
-    $upload_limit_pct = ($upload_filesize_limit > 0) ? round(($upload_filesize / $upload_filesize_limit) * 100) : 0;
-    $upload_limit_img_length = ($upload_filesize_limit > 0) ? round(($upload_filesize / $upload_filesize_limit) * $board_config['privmsg_graphic_length']) : 0;
+    $upload_limit_pct = $upload_filesize_limit > 0 ? round(($upload_filesize / $upload_filesize_limit) * 100) : 0;
+    $upload_limit_img_length = $upload_filesize_limit > 0 ? round(($upload_filesize / $upload_filesize_limit) * $board_config['privmsg_graphic_length']) : 0;
 
     if ($upload_limit_pct > 100) {
         $upload_limit_img_length = $board_config['privmsg_graphic_length'];

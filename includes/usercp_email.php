@@ -134,7 +134,8 @@ if (isset($_POST['submit'])) {
             ]
         );
 
-        $message = $lang['Email_sent'] . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
+        $message  = $lang['Email_sent'] . '<br /><br />';
+        $message .= sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
         message_die(GENERAL_MESSAGE, $message);
     }

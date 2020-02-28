@@ -579,7 +579,7 @@ function language_select($default, $select_name = 'language', $file_to_check = '
 		$options = '';
 
 		foreach ($lg as $displayName => $filename) {
-			$selected = ( mb_strtolower($default) === mb_strtolower($filename) ) ? 'selected="selected"' : '';
+			$selected = mb_strtolower($default) === mb_strtolower($filename) ? 'selected="selected"' : '';
 
             $options .= '<option value="' . $filename . '" ' . $selected . '>' . htmlspecialchars(ucwords($displayName), ENT_QUOTES) . '</option>';
 		}

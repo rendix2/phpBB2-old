@@ -113,12 +113,12 @@ for ($i = 0; $i < $faq_block_count; $i++) {
         $template->assignBlockVars('faq_block_link', ['BLOCK_TITLE' => $faq_block_titles[$i]]);
 
         for ($j = 0; $j < $faq_block_i_count; $j++) {
-			$row_color = !($j % 2) ? $theme['td_color1'] : $theme['td_color2'];
-			$row_class = !($j % 2) ? $theme['td_class1'] : $theme['td_class2'];
+			$rowColor = ($j % 2) ? $theme['td_color1'] : $theme['td_color2'];
+			$rowClass = ($j % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
 			$faq_block_faq_row_data = [
-                'ROW_COLOR'    => '#' . $row_color,
-                'ROW_CLASS'    => $row_class,
+                'ROW_COLOR'    => '#' . $rowColor,
+                'ROW_CLASS'    => $rowClass,
                 'FAQ_QUESTION' => $faq_block[$i][$j]['question'],
                 'FAQ_ANSWER'   => $faq_block[$i][$j]['answer'],
 
@@ -128,8 +128,8 @@ for ($i = 0; $i < $faq_block_count; $i++) {
             $template->assignBlockVars('faq_block.faq_row', $faq_block_faq_row_data);
 
             $faq_block_link_faq_row_link_data = [
-                'ROW_COLOR' => '#' . $row_color,
-                'ROW_CLASS' => $row_class,
+                'ROW_COLOR' => '#' . $rowColor,
+                'ROW_CLASS' => $rowClass,
                 'FAQ_LINK'  => $faq_block[$i][$j]['question'],
 
                 'U_FAQ_LINK' => '#' . $faq_block[$i][$j]['id']

@@ -98,7 +98,7 @@ function send_file_to_browser($attachment, $upload_dir)
 {
     global $HTTP_USER_AGENT, $lang, $attach_config;
 
-    $filename = ($upload_dir === '') ? $attachment->physical_filename : $upload_dir . '/' . $attachment->physical_filename;
+    $filename = $upload_dir === '' ? $attachment->physical_filename : $upload_dir . '/' . $attachment->physical_filename;
 
     $gotit = false;
 
@@ -146,7 +146,7 @@ function send_file_to_browser($attachment, $upload_dir)
     // Correct the mime type - we force application/octetstream for all files, except images
     // Please do not change this, it is a security precaution
     if (!mb_strstr($attachment->mimetype, 'image')) {
-        $attachment->mimetype = ($browser_agent === 'ie' || $browser_agent === 'opera') ? 'application/octetstream' : 'application/octet-stream';
+        $attachment->mimetype = $browser_agent === 'ie' || $browser_agent === 'opera' ? 'application/octetstream' : 'application/octet-stream';
     }
 
     // Now the tricky part... let's dance
@@ -175,9 +175,7 @@ function send_file_to_browser($attachment, $upload_dir)
     } else if (!$gotit && (int)$attach_config['allow_ftp_upload']) {
         $conn_id = attach_init_ftp();
 
-        $ini_val = (@PHP_VERSION >= '4.0.0') ? 'ini_get' : 'get_cfg_var';
-
-        $tmp_path = (!@$ini_val('safe_mode')) ? '/tmp' : $upload_dir;
+        $tmp_path = !@ini_get('safe_mode') ? '/tmp' : $upload_dir;
         $tmp_filename = @tempnam($tmp_path, 't0000');
 
         @unlink($tmp_filename);
@@ -287,10 +285,12 @@ $rows = dibi::select(['e.extension', 'g.download_mode'])
 
 $num_rows = count($rows);
 
+$download_modes = [];
+
 foreach ($rows as $row) {
     $extension = strtolower(trim($row->extension));
     $allowed_extensions[] = $extension;
-    $download_mode[$extension] = $row->download_mode;
+    $download_modes[$extension] = $row->download_mode;
 }
 
 // disallowed ?
@@ -298,7 +298,7 @@ if (!in_array($attachment->extension, $allowed_extensions) && $userdata['user_le
     message_die(GENERAL_MESSAGE, sprintf($lang['Extension_disabled_after_posting'], $attachment->extension));
 }
 
-$download_mode = (int)$download_mode[$attachment->extension];
+$download_mode = (int)$download_modes[$attachment->extension];
 
 if ($thumbnail) {
     $attachment->physical_filename = THUMB_DIR . '/t_' . $attachment->physical_filename;
@@ -313,9 +313,9 @@ if (!$thumbnail) {
 
 // Determine the 'presenting'-method
 if ($download_mode === PHYSICAL_LINK) {
-    $server_protocol = ($board_config['cookie_secure']) ? 'https://' : 'http://';
+    $server_protocol = $board_config['cookie_secure'] ? 'https://' : 'http://';
     $server_name = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['server_name']));
-    $server_port = ($board_config['server_port'] <> 80) ? ':' . trim($board_config['server_port']) : '';
+    $server_port = $board_config['server_port'] !== 80 ? ':' . trim($board_config['server_port']) : '';
     $script_name = preg_replace('/^\/?(.*?)\/?$/', '/\1', trim($board_config['script_path']));
 
     if ($script_name[mb_strlen($script_name)] !== '/') {

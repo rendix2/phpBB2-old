@@ -95,7 +95,7 @@ function get_supported_image_types($type)
         return [
             'gd' => ($new_type) ? true : false,
             'format' => $new_type,
-            'version' => (function_exists('imagecreatetruecolor')) ? 2 : 1
+            'version' => function_exists('imagecreatetruecolor') ? 2 : 1
         ];
     }
 
@@ -115,7 +115,7 @@ function create_thumbnail($source, $new_file, $mimetype)
 
     $source = amod_realpath($source);
     $min_filesize = (int)$attach_config['img_min_thumb_filesize'];
-    $img_filesize = (@file_exists($source)) ? @filesize($source) : false;
+    $img_filesize = @file_exists($source) ? @filesize($source) : false;
 
     if (!$img_filesize || $img_filesize <= $min_filesize) {
         return false;

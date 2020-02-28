@@ -44,14 +44,18 @@ switch ($mode) {
         $common = array_intersect($files, $neededFiles);
 
         if (count(array_diff($neededFiles, $common))) {
-            $message = $lang['Installed_language_missing_files'] . '<br /><br />' . sprintf($lang['Click_return_language'], '<a href="' . Session::appendSid('admin_languages.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+            $message  = $lang['Installed_language_missing_files'] . '<br /><br />';
+            $message .= sprintf($lang['Click_return_language'], '<a href="' . Session::appendSid('admin_languages.php') . '">', '</a>') . '<br /><br />';
+            $message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
             message_die(GENERAL_MESSAGE, $message);
         }
 
         dibi::insert(Tables::LANGUAGES_TABLE,  ['lang_name' => $_GET[POST_LANG_URL],])->execute();
 
-        $message = $lang['Installed_language'] . '<br /><br />' . sprintf($lang['Click_return_language'], '<a href="' . Session::appendSid('admin_languages.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+        $message  = $lang['Installed_language'] . '<br /><br />';
+        $message .= sprintf($lang['Click_return_language'], '<a href="' . Session::appendSid('admin_languages.php') . '">', '</a>') . '<br /><br />';
+        $message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
         message_die(GENERAL_MESSAGE, $message);
 
@@ -63,7 +67,9 @@ switch ($mode) {
             ->fetch();
 
         if (!$language) {
-            $message = $lang['Language_not_found'] . '<br /><br />' . sprintf($lang['Click_return_language'], '<a href="' . Session::appendSid('admin_languages.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+            $message  = $lang['Language_not_found'] . '<br /><br />';
+            $message .= sprintf($lang['Click_return_language'], '<a href="' . Session::appendSid('admin_languages.php') . '">', '</a>') . '<br /><br />';
+            $message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
             message_die(GENERAL_MESSAGE, $message);
         }
@@ -114,7 +120,9 @@ switch ($mode) {
                 $cache = new Cache($storage, Tables::CONFIG_TABLE);
                 $cache->remove(Tables::CONFIG_TABLE);
 
-                $message = $lang['language_no_replacement'] . '<br /><br />' . sprintf($lang['Click_return_language'], '<a href="' . Session::appendSid('admin_languages.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+                $message  = $lang['language_no_replacement'] . '<br /><br />';
+                $message .= sprintf($lang['Click_return_language'], '<a href="' . Session::appendSid('admin_languages.php') . '">', '</a>') . '<br /><br />';
+                $message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
                 message_die(GENERAL_MESSAGE, $message);
             }
@@ -139,7 +147,9 @@ switch ($mode) {
                 $cache = new Cache($storage, Tables::CONFIG_TABLE);
                 $cache->remove(Tables::CONFIG_TABLE);
 
-                $message = $lang['language_no_replacement'] . '<br /><br />' . sprintf($lang['Click_return_language'], '<a href="' . Session::appendSid('admin_languages.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+                $message  = $lang['language_no_replacement'] . '<br /><br />';
+                $message .= sprintf($lang['Click_return_language'], '<a href="' . Session::appendSid('admin_languages.php') . '">', '</a>') . '<br /><br />';
+                $message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
                 message_die(GENERAL_MESSAGE, $message);
             }
@@ -156,7 +166,9 @@ switch ($mode) {
         $cache = new Cache($storage, Tables::CONFIG_TABLE);
         $cache->remove(Tables::CONFIG_TABLEBLE);
 
-        $message = $lang['Delete_language'] . '<br /><br />' . sprintf($lang['Click_return_language'], '<a href="' . Session::appendSid('admin_languages.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+        $message  = $lang['Delete_language'] . '<br /><br />';
+        $message .= sprintf($lang['Click_return_language'], '<a href="' . Session::appendSid('admin_languages.php') . '">', '</a>') . '<br /><br />';
+        $message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 	    message_die(GENERAL_MESSAGE, $message);
         break;

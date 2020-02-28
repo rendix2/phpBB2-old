@@ -150,7 +150,9 @@ if ($markRead === 'topics') {
         );
     }
 
-    $message = $lang['Topics_marked_read'] . '<br /><br />' . sprintf($lang['Click_return_forum'], '<a href="' . Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forumId") . '">', '</a> ');
+    $message  = $lang['Topics_marked_read'] . '<br /><br />';
+    $message .= sprintf($lang['Click_return_forum'], '<a href="' . Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forumId") . '">', '</a> ');
+
 	message_die(GENERAL_MESSAGE, $message);
 }
 //
@@ -378,13 +380,19 @@ $template->assignVars(
 //
 // User authorisation levels output
 //
-$s_auth_can  = ( $is_auth['auth_post']   ? $lang['Rules_post_can']   : $lang['Rules_post_cannot'] )   . '<br />';
-$s_auth_can .= ( $is_auth['auth_reply']  ? $lang['Rules_reply_can']  : $lang['Rules_reply_cannot'] )  . '<br />';
-$s_auth_can .= ( $is_auth['auth_edit']   ? $lang['Rules_edit_can']   : $lang['Rules_edit_cannot'] )   . '<br />';
-$s_auth_can .= ( $is_auth['auth_delete'] ? $lang['Rules_delete_can'] : $lang['Rules_delete_cannot'] ) . '<br />';
-$s_auth_can .= ( $is_auth['auth_vote']   ? $lang['Rules_vote_can']   : $lang['Rules_vote_cannot'] )   . '<br />';
+$s_auth_can  = $is_auth['auth_post']   ? $lang['Rules_post_can']   : $lang['Rules_post_cannot']   . '<br />';
+$s_auth_can .= $is_auth['auth_reply']  ? $lang['Rules_reply_can']  : $lang['Rules_reply_cannot']  . '<br />';
+$s_auth_can .= $is_auth['auth_edit']   ? $lang['Rules_edit_can']   : $lang['Rules_edit_cannot']   . '<br />';
+$s_auth_can .= $is_auth['auth_delete'] ? $lang['Rules_delete_can'] : $lang['Rules_delete_cannot'] . '<br />';
+$s_auth_can .= $is_auth['auth_vote']   ? $lang['Rules_vote_can']   : $lang['Rules_vote_cannot']   . '<br />';
 
-attach_build_auth_levels($is_auth, $s_auth_can);
+if (!(bool)$attach_config['disable_mod']) {
+    // If you want to have the rules window link within the forum view too, comment out the two lines, and comment the third line
+    //	$rules_link = '(<a href="' . $phpbb_root_path . 'attach_rules.' . $phpEx . '?f=' . $forum_id . '" target="_blank">Rules</a>)';
+    //	$s_auth_can .= ( ( $is_auth['auth_attachments'] ) ? $rules_link . ' ' . $lang['Rules_attach_can'] : $lang['Rules_attach_cannot'] ) . '<br />';
+    $s_auth_can .= $is_auth['auth_attachments']  ? $lang['Rules_attach_can']   : $lang['Rules_attach_cannot']   . '<br />';
+    $s_auth_can .= $is_auth['auth_download']     ? $lang['Rules_download_can'] : $lang['Rules_download_cannot'] . '<br />';
+}
 
 if ($is_auth['auth_mod']) {
 	$s_auth_can .= sprintf($lang['Rules_moderate'], '<a href="modcp.php?' . POST_FORUM_URL . "=$forumId&amp;start=" . $start . '&amp;sid=' . $userdata['session_id'] . '">', '</a>');
@@ -597,8 +605,8 @@ if ($totalBaseTopics) {
 
 		$last_post_url = '<a href="' . Session::appendSid('viewtopic.php?' . POST_POST_URL . '=' . $topic->topic_last_post_id) . '#' . $topic->topic_last_post_id . '"><img src="' . $images['icon_latest_reply'] . '" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" border="0" /></a>';
 		
-		$rowColor = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-		$rowClass = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+		$rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+		$rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
         $template->assignBlockVars('topicrow',
             [
@@ -646,7 +654,6 @@ if ($totalBaseTopics) {
     $template->assignVars(['L_NO_TOPICS' => $noTopicsMessage]);
 
     $template->assignBlockVars('switch_no_topics', []);
-
 }
 
 //

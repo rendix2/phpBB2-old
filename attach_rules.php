@@ -27,7 +27,7 @@ $userdata = init_userprefs(PAGE_RULES);
 
 // Display the allowed Extension Groups and Upload Size
 if ($privmsg) {
-    $auth['auth_attachments'] = ($userdata['user_level'] !== ADMIN) ? (int)$attach_config['allow_pm_attach'] : true;
+    $auth['auth_attachments'] = $userdata['user_level'] !== ADMIN ? (int)$attach_config['allow_pm_attach'] : true;
     $auth['auth_view'] = true;
     $_max_filesize = $attach_config['max_filesize_pm'];
 } else {
@@ -54,14 +54,14 @@ $nothing = true;
 foreach ($rows as $row) {
     $auth_cache = trim($row->forum_permissions);
 
-    $permit = ($privmsg) ? true : ((is_forum_authed($auth_cache, $forum_id)) || trim($row->forum_permissions) === '');
+    $permit = $privmsg ? true : ((is_forum_authed($auth_cache, $forum_id)) || trim($row->forum_permissions) === '');
 
     if ($permit) {
         $nothing = false;
         $f_size = (int)trim($row->max_filesize);
 
-        $det_filesize = (!$f_size) ? $_max_filesize : $f_size;
-        $max_filesize = ($det_filesize === 0) ? $lang['Unlimited'] : get_formatted_filesize($det_filesize);
+        $det_filesize = $f_size ? $f_size : $_max_filesize;
+        $max_filesize = $det_filesize === 0 ? $lang['Unlimited'] : get_formatted_filesize($det_filesize);
 
         $template->assignBlockVars('group_row',
             [

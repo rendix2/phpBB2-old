@@ -425,7 +425,7 @@ function limit_array($array, $start, $pagelimit)
     $count = count($array);
 
     // array from start - start+pagelimit
-    $limit = ($count < ($start + $pagelimit)) ? $count : $start + $pagelimit;
+    $limit = $count < ($start + $pagelimit) ? $count : $start + $pagelimit;
 
     $limit_array = [];
 

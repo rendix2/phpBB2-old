@@ -286,7 +286,9 @@ if ($userdata['session_logged_in']) {
                 ]
             );
 
-            $message = $lang['No_longer_watching'] . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topicId&amp;start=$start") . '">', '</a>');
+            $message  = $lang['No_longer_watching'] . '<br /><br />';
+            $message .= sprintf($lang['Click_return_topic'], '<a href="' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topicId&amp;start=$start") . '">', '</a>');
+
 			message_die(GENERAL_MESSAGE, $message);
 		} else {
 			$isWatchingTopic = true;
@@ -327,17 +329,17 @@ if ($userdata['session_logged_in']) {
                 ]
             );
 
-            $message = $lang['You_are_watching'] . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topicId&amp;start=$start") . '">', '</a>');
+            $message  = $lang['You_are_watching'] . '<br /><br />';
+            $message .= sprintf($lang['Click_return_topic'], '<a href="' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topicId&amp;start=$start") . '">', '</a>');
+
 			message_die(GENERAL_MESSAGE, $message);
 		} else {
 			$isWatchingTopic = 0;
 		}
 	}
 } else {
-    if (isset($_GET['unwatch'])) {
-        if ($_GET['unwatch'] === 'topic') {
-			redirect(Session::appendSid('login.php?redirect=viewtopic.php&' . POST_TOPIC_URL . "=$topicId&unwatch=topic", true));
-		}
+    if (isset($_GET['unwatch']) && $_GET['unwatch'] === 'topic') {
+        redirect(Session::appendSid('login.php?redirect=viewtopic.php&' . POST_TOPIC_URL . "=$topicId&unwatch=topic", true));
 	} else {
 		$canWatchTopic   = 0;
 		$isWatchingTopic = 0;
@@ -524,6 +526,7 @@ if ($count_orig_word) {
 // Was a highlight request part of the URI?
 //
 $highLightMatch = $highLight = '';
+
 if (isset($_GET['highlight'])) {
 	// Split words and phrases
 	$words = explode(' ', trim(htmlspecialchars($_GET['highlight'])));
@@ -551,11 +554,14 @@ $viewPreviousTopicUrl = Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "
 $viewNextTopicUrl     = Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topicId&amp;view=next");
 $thankTopicUrl        = Session::appendSid('posting.php?mode=thank&amp;' . POST_TOPIC_URL . "=$topicId");
 
-$replyImage = $forum_topic_data->forum_status === FORUM_LOCKED || $forum_topic_data->topic_status === TOPIC_LOCKED ? $images['reply_locked'] : $images['reply_new'];
-$replyAlt   = $forum_topic_data->forum_status === FORUM_LOCKED || $forum_topic_data->topic_status === TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['Reply_to_topic'];
+$topicLocked = $forum_topic_data->topic_status === TOPIC_LOCKED;
+$forumLocked = $forum_topic_data->forum_status === FORUM_LOCKED;
 
-$postImage = $forum_topic_data->forum_status === FORUM_LOCKED ? $images['post_locked'] : $images['post_new'];
-$postAlt   = $forum_topic_data->forum_status === FORUM_LOCKED ? $lang['Forum_locked'] : $lang['Post_new_topic'];
+$replyImage = $forumLocked || $topicLocked ? $images['reply_locked'] : $images['reply_new'];
+$replyAlt   = $forumLocked || $topicLocked ? $lang['Topic_locked'] : $lang['Reply_to_topic'];
+
+$postImage = $forumLocked ? $images['post_locked'] : $images['post_new'];
+$postAlt   = $forumLocked ? $lang['Forum_locked'] : $lang['Post_new_topic'];
 
 $thankImage = $images['thanks'];
 $thankAlt   = $lang['thanks_alt'];
@@ -608,13 +614,19 @@ PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, 
 //
 // User authorisation levels output
 //
-$s_auth_can  = ( $is_auth['auth_post']   ? $lang['Rules_post_can']   : $lang['Rules_post_cannot'] )   . '<br />';
-$s_auth_can .= ( $is_auth['auth_reply']  ? $lang['Rules_reply_can']  : $lang['Rules_reply_cannot'] )  . '<br />';
-$s_auth_can .= ( $is_auth['auth_edit']   ? $lang['Rules_edit_can']   : $lang['Rules_edit_cannot'] )   . '<br />';
-$s_auth_can .= ( $is_auth['auth_delete'] ? $lang['Rules_delete_can'] : $lang['Rules_delete_cannot'] ) . '<br />';
-$s_auth_can .= ( $is_auth['auth_vote']   ? $lang['Rules_vote_can']   : $lang['Rules_vote_cannot'] )   . '<br />';
+$s_auth_can  = $is_auth['auth_post']   ? $lang['Rules_post_can']   : $lang['Rules_post_cannot']   . '<br />';
+$s_auth_can .= $is_auth['auth_reply']  ? $lang['Rules_reply_can']  : $lang['Rules_reply_cannot']  . '<br />';
+$s_auth_can .= $is_auth['auth_edit']   ? $lang['Rules_edit_can']   : $lang['Rules_edit_cannot']   . '<br />';
+$s_auth_can .= $is_auth['auth_delete'] ? $lang['Rules_delete_can'] : $lang['Rules_delete_cannot'] . '<br />';
+$s_auth_can .= $is_auth['auth_vote']   ? $lang['Rules_vote_can']   : $lang['Rules_vote_cannot']   . '<br />';
 
-attach_build_auth_levels($is_auth, $s_auth_can);
+if (!(bool)$attach_config['disable_mod']) {
+    // If you want to have the rules window link within the forum view too, comment out the two lines, and comment the third line
+    //	$rules_link = '(<a href="' . $phpbb_root_path . 'attach_rules.' . $phpEx . '?f=' . $forum_id . '" target="_blank">Rules</a>)';
+    //	$s_auth_can .= ( ( $is_auth['auth_attachments'] ) ? $rules_link . ' ' . $lang['Rules_attach_can'] : $lang['Rules_attach_cannot'] ) . '<br />';
+    $s_auth_can .= $is_auth['auth_attachments']  ? $lang['Rules_attach_can']   : $lang['Rules_attach_cannot']   . '<br />';
+    $s_auth_can .= $is_auth['auth_download']     ? $lang['Rules_download_can'] : $lang['Rules_download_cannot'] . '<br />';
+}
 
 $topic_mod = '';
 
@@ -625,7 +637,7 @@ if ($is_auth['auth_mod']) {
 
 	$topic_mod .= '<a href="modcp.php?' . POST_TOPIC_URL . "=$topicId&amp;mode=move&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_move'] . '" alt="' . $lang['Move_topic'] . '" title="' . $lang['Move_topic'] . '" border="0" /></a>&nbsp;';
 
-	$topic_mod .= ( $forum_topic_data->topic_status === TOPIC_UNLOCKED ) ? '<a href="modcp.php?' . POST_TOPIC_URL . "=$topicId&amp;mode=lock&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_lock'] . '" alt="' . $lang['Lock_topic'] . '" title="' . $lang['Lock_topic'] . '" border="0" /></a>&nbsp;' : '<a href="modcp.php?' . POST_TOPIC_URL . "=$topicId&amp;mode=unlock&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_unlock'] . '" alt="' . $lang['Unlock_topic'] . '" title="' . $lang['Unlock_topic'] . '" border="0" /></a>&nbsp;';
+	$topic_mod .= $forum_topic_data->topic_status === TOPIC_UNLOCKED ? '<a href="modcp.php?' . POST_TOPIC_URL . "=$topicId&amp;mode=lock&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_lock'] . '" alt="' . $lang['Lock_topic'] . '" title="' . $lang['Lock_topic'] . '" border="0" /></a>&nbsp;' : '<a href="modcp.php?' . POST_TOPIC_URL . "=$topicId&amp;mode=unlock&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_unlock'] . '" alt="' . $lang['Unlock_topic'] . '" title="' . $lang['Unlock_topic'] . '" border="0" /></a>&nbsp;';
 
 	$topic_mod .= '<a href="modcp.php?' . POST_TOPIC_URL . "=$topicId&amp;mode=split&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_split'] . '" alt="' . $lang['Split_topic'] . '" title="' . $lang['Split_topic'] . '" border="0" /></a>&nbsp;';
 }
@@ -635,6 +647,7 @@ if ($is_auth['auth_mod']) {
 //
 $s_watching_topic = '';
 $s_watching_topic_img = '';
+
 if ($canWatchTopic) {
 	if ($isWatchingTopic) {
 		$s_watching_topic = '<a href="viewtopic.php?' . POST_TOPIC_URL . "=$topicId&amp;unwatch=topic&amp;start=$start&amp;sid=" . $userdata['session_id'] . '">' . $lang['Stop_watching_topic'] . '</a>';
@@ -752,7 +765,7 @@ if (!empty($forum_topic_data->topic_vote)) {
 
         $pollExpired = $votes[0]->vote_length && ($votes[0]->vote_start + $votes[0]->vote_length < time());
 
-        if ($userVoted || $viewResult || $pollExpired || !$is_auth['auth_vote'] || $forum_topic_data->topic_status === TOPIC_LOCKED) {
+        if ($userVoted || $viewResult || $pollExpired || !$is_auth['auth_vote'] || $topicLocked) {
             $template->setFileNames(['pollbox' => 'viewtopic_poll_result.tpl']);
 
             $voteResultsSum = 0;
@@ -895,11 +908,13 @@ if ($show_thanks === FORUM_THANKABLE) {
 
     // Create button switch
     if ($userdata['user_id'] !== $author->user_id && !$thanked) {
-        $template->assignBlockVars('thanks_button', [
-            'THANK_IMG' => $thankImage,
-            'U_THANK_TOPIC' => $thankTopicUrl,
-            'L_THANK_TOPIC' => $thankAlt
-        ]);
+        $template->assignBlockVars('thanks_button',
+            [
+                'THANK_IMG' => $thankImage,
+                'U_THANK_TOPIC' => $thankTopicUrl,
+                'L_THANK_TOPIC' => $thankAlt
+            ]
+        );
     }
 
 }
@@ -927,7 +942,7 @@ foreach ($posts as $i => $post) {
 	$posterAvatar = '';
 
     if ($post->user_avatar_type && $posterId !== ANONYMOUS && $post->user_allowavatar) {
-		switch( $post->user_avatar_type) {
+		switch ($post->user_avatar_type) {
 			case USER_AVATAR_UPLOAD:
 				$posterAvatar = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $post->user_avatar . '" alt="" border="0" />' : '';
 				break;
@@ -983,7 +998,8 @@ foreach ($posts as $i => $post) {
 	// Generate ranks, set them to empty string initially.
 	//
 	$posterRank = '';
-	$rankImage     = '';
+	$rankImage  = '';
+
     if ($post->user_id === ANONYMOUS) {
 	    // WHAT WAS THERE???????
 	} elseif ($post->user_rank) {
@@ -1182,8 +1198,8 @@ foreach ($posts as $i => $post) {
 	// Again this will be handled by the templating
 	// code at some point
 	//
-	$rowColor = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-	$rowClass     = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+	$rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+	$rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
     $template->assignBlockVars('postrow',
         [

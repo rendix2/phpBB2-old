@@ -135,7 +135,8 @@ if ($mode !== '') {
 			$message = $lang['Word_added'];
 		}
 
-		$message .= '<br /><br />' . sprintf($lang['Click_return_wordadmin'], '<a href="' . Session::appendSid('admin_words.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+		$message .= '<br /><br />' . sprintf($lang['Click_return_wordadmin'], '<a href="' . Session::appendSid('admin_words.php') . '">', '</a>') . '<br /><br />';
+		$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 		message_die(GENERAL_MESSAGE, $message);
 	} elseif ($mode === 'delete') {
@@ -157,7 +158,9 @@ if ($mode !== '') {
                 ->where('word_id = %i', $word_id)
                 ->execute();
 
-			$message = $lang['Word_removed'] . '<br /><br />' . sprintf($lang['Click_return_wordadmin'], '<a href="' . Session::appendSid('admin_words.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+			$message  = $lang['Word_removed'] . '<br /><br />';
+			$message .= sprintf($lang['Click_return_wordadmin'], '<a href="' . Session::appendSid('admin_words.php') . '">', '</a>') . '<br /><br />';
+			$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		} elseif ($word_id && !$confirm) {
@@ -209,13 +212,13 @@ if ($mode !== '') {
     foreach ($words as $i => $word) {
 		$word_id = $word->word_id;
 
-		$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-		$row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+		$rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+		$rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
         $template->assignBlockVars('words',
             [
-                'ROW_COLOR'   => '#' . $row_color,
-                'ROW_CLASS'   => $row_class,
+                'ROW_COLOR'   => '#' . $rowColor,
+                'ROW_CLASS'   => $rowClass,
                 'WORD'        => htmlspecialchars($word->word),
                 'REPLACEMENT' => htmlspecialchars($word->replacement),
 

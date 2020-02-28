@@ -30,7 +30,6 @@ require_once $phpbb_root_path . 'common.php';
 //
 // Start session management
 //
-
 $userdata = init_userprefs(PAGE_INDEX);
 //
 // End session management
@@ -70,7 +69,8 @@ if ($markRead === 'forums') {
         ]
     );
 
-    $message = $lang['Forums_marked_read'] . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a> ');
+    $message  = $lang['Forums_marked_read'] . '<br /><br />';
+    $message .= sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a> ');
 
     message_die(GENERAL_MESSAGE, $message);
 }
@@ -427,8 +427,8 @@ foreach ($categories as $i => $category) {
                             $moderatorList = '&nbsp;';
                         }
 
-                        $rowColor = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-                        $rowClass = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+                        $rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+                        $rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
                         $catRowData = [
                             'ROW_COLOR'        => '#' . $rowColor,

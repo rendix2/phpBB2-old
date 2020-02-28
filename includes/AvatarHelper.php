@@ -20,7 +20,7 @@ class AvatarHelper
     {
         global $lang;
 
-        switch( $type) {
+        switch ($type) {
             case 'jpeg':
             case 'pjpeg':
             case 'jpg':

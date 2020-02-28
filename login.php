@@ -41,7 +41,9 @@ function loginFailed(BaseTemplate $template, array $lang)
         ]
     );
 
-    $message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], '<a href="login.php' . $redirectLink  .'">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
+    $message  = $lang['Error_login'] . '<br /><br />';
+    $message .= sprintf($lang['Click_return_login'], '<a href="login.php' . $redirectLink  .'">', '</a>') . '<br /><br />';
+    $message .= sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
     message_die(GENERAL_MESSAGE, $message);
 }
@@ -204,7 +206,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 	if (!$userdata['session_logged_in'] || (isset($_GET['admin']) && $userdata['session_logged_in'] && $userdata['user_level'] === ADMIN)) {
 		$page_title = $lang['Login'];
 
-        PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+        PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $page_title, $gen_simple_header);
 
         if (isset($_GET['admin']) && $userdata['user_acp_password'] === '') {
             message_die(GENERAL_MESSAGE, $lang['No_ACP_Password']);
