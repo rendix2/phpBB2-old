@@ -335,17 +335,17 @@ if (count($attachments) > 0) {
 
             $template->assignBlockVars('attachrow',
                 [
-                    'ROW_NUMBER' => $i + ($start + 1),
-                    'ROW_COLOR' => '#' . $rowColor,
-                    'ROW_CLASS' => $rowClass,
+                    'ROW_NUMBER' => $i + $start + 1,
+                    'ROW_COLOR'  => '#' . $rowColor,
+                    'ROW_CLASS'  => $rowClass,
 
-                    'FILENAME' => $attachment->real_filename,
-                    'COMMENT' => nl2br($attachment->comment),
-                    'EXTENSION' => $attachment->extension,
-                    'SIZE' => get_formatted_filesize($attachment->filesize),
+                    'FILENAME'       => $attachment->real_filename,
+                    'COMMENT'        => nl2br($attachment->comment),
+                    'EXTENSION'      => $attachment->extension,
+                    'SIZE'           => get_formatted_filesize($attachment->filesize),
                     'DOWNLOAD_COUNT' => $attachment->download_count,
-                    'POST_TIME' => create_date($board_config['default_dateformat'], $attachment->filetime, $board_config['board_timezone']),
-                    'POST_TITLE' => $post_titles,
+                    'POST_TIME'      => create_date($board_config['default_dateformat'], $attachment->filetime, $board_config['board_timezone']),
+                    'POST_TITLE'     => $post_titles,
 
                     'S_DELETE_BOX' => $delete_box,
                     'S_HIDDEN' => $hidden_field,

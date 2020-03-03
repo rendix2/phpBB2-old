@@ -37,10 +37,10 @@ $userdata = init_userprefs(PAGE_INDEX);
 
 $categoryId = isset($_GET[POST_CAT_URL]) ? $_GET[POST_CAT_URL] : -1;
 
+$markRead = '';
+
 if (isset($_GET['mark']) || isset($_POST['mark'])) {
     $markRead = isset($_POST['mark']) ? $_POST['mark'] : $_GET['mark'];
-} else {
-    $markRead = '';
 }
 
 // define cookie names

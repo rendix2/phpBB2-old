@@ -138,7 +138,7 @@ $columns = [
 
 $users = dibi::select($columns)
     ->from(Tables::USERS_TABLE)
-    ->where('user_id <> %i', ANONYMOUS);
+    ->where('[user_id] <> %i', ANONYMOUS);
 
 switch ($mode) {
     case 'joined':
@@ -271,6 +271,7 @@ foreach ($users as $i => $user) {
             'ROW_NUMBER' => $i + $start + 1,
             'ROW_COLOR' => '#' . $rowColor,
             'ROW_CLASS' => $rowClass,
+
             'USERNAME' => $user->username,
 
             // <!-- BEGIN Another Online/Offline indicator -->
@@ -285,12 +286,13 @@ foreach ($users as $i => $user) {
             'TOPIC_WATCHES' => $user->user_topic_watches ? $user->user_topic_watches : 0,
 
             'AVATAR_IMG' => $posterAvatar,
+
             'PROFILE_IMG' => $profileImage,
-
             'PROFILE' => $profile,
-            'SEARCH_IMG' => $searchImage,
 
+            'SEARCH_IMG' => $searchImage,
             'SEARCH' => $search,
+
             'PM_IMG' => $pmImage,
             'PM' => $pm,
 

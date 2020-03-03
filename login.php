@@ -172,7 +172,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
                     ];
 
                     dibi::update(Tables::USERS_TABLE, $updatData)
-                        ->where('user_id = %i', $row->user_id)
+                        ->where('[user_id] = %i', $row->user_id)
                         ->execute();
                 }
             }

@@ -238,7 +238,6 @@ unset($moderators);
 // then get it's value, find the number of topics with dates newer than it (to properly
 // handle pagination) and alter the main query
 //
-
 if (!empty($_POST['topicdays']) || !empty($_GET['topicdays'])) {
 	$topicDays     = !empty($_POST['topicdays'])       ? (int)$_POST['topicdays']   : (int)$_GET['topicdays'];
     $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
@@ -320,19 +319,15 @@ $basicTopics = dibi::select(['t.*', 'u.username', 'u.user_id'])
     ->innerJoin(Tables::USERS_TABLE)
     ->as('u')
     ->on('t.topic_poster = u.user_id')
-
     ->innerJoin(Tables::POSTS_TABLE)
     ->as('p')
     ->on('p.post_id = t.topic_first_post_id')
-
     ->innerJoin(Tables::POSTS_TABLE)
     ->as('p2')
     ->on('p2.post_id = t.topic_last_post_id')
-
     ->innerJoin(Tables::USERS_TABLE)
     ->as('u2')
     ->on('u2.user_id = p2.poster_id')
-
     ->where('t.forum_id = %i', $forumId)
     ->where('t.topic_type <> %i', POST_ANNOUNCE);
 
