@@ -71,7 +71,7 @@ if ($mode !== '') {
 			if ($word_id) {
                 $word_info = dibi::select('*')
                     ->from(Tables::WORDS_TABLE)
-                    ->where('word_id = %i', $word_id)
+                    ->where('[word_id] = %i', $word_id)
                     ->fetch();
 
 				$s_hidden_fields .= '<input type="hidden" name="id" value="' . $word_id . '" />';
@@ -120,7 +120,7 @@ if ($mode !== '') {
             ];
 
             dibi::update(Tables::WORDS_TABLE, $update_data)
-                ->where('word_id = %i', $word_id)
+                ->where('[word_id] = %i', $word_id)
                 ->execute();
 
 			$message = $lang['Word_updated'];
@@ -155,7 +155,7 @@ if ($mode !== '') {
             $cache->remove(Tables::WORDS_TABLE);
 
 		    dibi::delete(Tables::WORDS_TABLE)
-                ->where('word_id = %i', $word_id)
+                ->where('[word_id] = %i', $word_id)
                 ->execute();
 
 			$message  = $lang['Word_removed'] . '<br /><br />';

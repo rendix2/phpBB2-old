@@ -117,7 +117,7 @@ if ($markRead === 'topics') {
         $lastPost = dibi::select('MAX(post_time)')
             ->as('last_post')
             ->from(Tables::POSTS_TABLE)
-            ->where('forum_id = %i', $forumId)
+            ->where('[forum_id] = %i', $forumId)
             ->fetchSingle();
 
 		if ($lastPost) {
@@ -129,7 +129,7 @@ if ($markRead === 'topics') {
                 unset($trackingForums[key($trackingForums)]);
             }
 
-            if ($lastPost > $userdata['user_lastvisit']) {
+            if ($lastPost > $userdata['user_last_visit']) {
                 $trackingForums[$forumId] = time();
 
 				setcookie(
@@ -184,16 +184,16 @@ $userModerators = dibi::select('u.user_id, u.username')
     ->as('aa')
     ->innerJoin(Tables::USERS_GROUPS_TABLE)
     ->as('ug')
-    ->on('ug.group_id = aa.group_id')
+    ->on('[ug.group_id] = [aa.group_id]')
     ->innerJoin(Tables::GROUPS_TABLE)
     ->as('g')
     ->on('g.group_id = aa.group_id')
     ->innerJoin(Tables::USERS_TABLE)
     ->as('u')
-    ->on('u.user_id = ug.user_id')
+    ->on('[u.user_id] = [ug.user_id]')
     ->where('aa.forum_id = %i', $forumId)
-    ->where('aa.auth_mod = %i', 1)
-    ->where('g.group_single_user = %i', 1)
+    ->where('[aa.auth_mod] = %i', 1)
+    ->where('[g.group_single_user] = %i', 1)
     ->groupBy('u.user_id')
     ->groupBy('u.username')
     ->orderBy('u.user_id')
@@ -210,13 +210,13 @@ $groupModerators = dibi::select('g.group_id, g.group_name')
     ->as('aa')
     ->innerJoin(Tables::USERS_GROUPS_TABLE)
     ->as('ug')
-    ->on('ug.group_id = aa.group_id')
+    ->on('[ug.group_id] = [aa.group_id]')
     ->innerJoin(Tables::GROUPS_TABLE)
     ->as('g')
     ->on('g.group_id = aa.group_id')
     ->where('aa.forum_id = %i', $forumId)
-    ->where('aa.auth_mod = %i', 1)
-    ->where('g.group_single_user = %i', 0)
+    ->where('[aa.auth_mod] = %i', 1)
+    ->where('[g.group_single_user] = %i', 0)
     ->where('g.group_type <> %i', GROUP_HIDDEN)
     ->groupBy('g.group_id')
     ->groupBy('g.group_name')
@@ -287,7 +287,7 @@ $announcementTopics = dibi::select(['t.*', 'u.username', 'u.user_id'])
     ->as('t')
     ->innerJoin(Tables::USERS_TABLE)
     ->as('u')
-    ->on('t.topic_poster = u.user_id')
+    ->on('[t.topic_poster] = [u.user_id]')
     ->innerJoin(Tables::POSTS_TABLE)
     ->as('p')
     ->on('p.post_id = t.topic_last_post_id')
@@ -318,7 +318,7 @@ $basicTopics = dibi::select(['t.*', 'u.username', 'u.user_id'])
     ->as('t')
     ->innerJoin(Tables::USERS_TABLE)
     ->as('u')
-    ->on('t.topic_poster = u.user_id')
+    ->on('[t.topic_poster] = [u.user_id]')
     ->innerJoin(Tables::POSTS_TABLE)
     ->as('p')
     ->on('p.post_id = t.topic_first_post_id')
@@ -506,7 +506,7 @@ if ($totalBaseTopics) {
 
 			$newest_post_img = '';
 
-			if ($userdata['session_logged_in'] && $topic->post_time > $userdata['user_lastvisit']) {
+			if ($userdata['session_logged_in'] && $topic->post_time > $userdata['user_last_visit']) {
                 if (!empty($trackingTopics) || !empty($trackingForums) || isset($_COOKIE[$forumAllCookieName])) {
                     $unreadTopics = true;
 

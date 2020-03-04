@@ -28,7 +28,7 @@ $columns = [
     'u.username',
     'u.user_session_time',
     'u.user_session_page',
-    'u.user_allow_viewonline',
+    'u.user_allow_view_online',
     's.session_logged_in',
     's.session_ip',
     's.session_start',
@@ -40,18 +40,18 @@ $registeredUsers = dibi::select($columns)
     ->as('u')
     ->innerJoin(Tables::SESSIONS_TABLE)
     ->as('s')
-    ->on('u.user_id = s.session_user_id')
-    ->where('s.session_logged_in = %i', 1)
-    ->where('u.user_id <> %i', ANONYMOUS)
-    ->where('s.session_time >= %i', $time->getTimestamp())
+    ->on('[u.user_id] = [s.session_user_id]')
+    ->where('[s.session_logged_in] = %i', 1)
+    ->where('[u.user_id] <> %i', ANONYMOUS)
+    ->where('[s.session_time] >= %i', $time->getTimestamp())
     ->orderBy('u.user_id', dibi::DESC)
     ->groupBy('u.user_id')
     ->fetchAll();
 
 $guestUsers = dibi::select(['session_page', 'session_logged_in', 'session_time', 'session_ip', 'session_start'])
     ->from(Tables::SESSIONS_TABLE)
-    ->where('session_logged_in = %i', 0)
-    ->where('session_time >= %i', $time->getTimestamp())
+    ->where('[session_logged_in] = %i', 0)
+    ->where('[session_time] >= %i', $time->getTimestamp())
     ->orderBy('session_time', 'DESC')
     ->fetchAll();
 

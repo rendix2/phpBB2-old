@@ -125,14 +125,14 @@ $columns = [
     'user_topics',
     'user_thanks',
     'user_topic_watches',
-    'user_regdate',
+    'user_reg_date',
     'user_from',
     'user_website',
     'user_email',
     'user_avatar',
     'user_avatar_type',
-    'user_allowavatar',
-    'user_allow_viewonline',
+    'user_allow_avatar',
+    'user_allow_view_online',
     'user_session_time'
 ];
 
@@ -203,7 +203,7 @@ foreach ($users as $i => $user) {
     $from         = !empty($user->user_from) ? htmlspecialchars($user->user_from, ENT_QUOTES) : '&nbsp;';
     $posterAvatar = '';
 
-    if ($user->user_avatar_type && $user->user_id !== ANONYMOUS && $user->user_allowavatar) {
+    if ($user->user_avatar_type && $user->user_id !== ANONYMOUS && $user->user_allow_avatar) {
         switch ($user->user_avatar_type) {
             case USER_AVATAR_UPLOAD:
                 $posterAvatar = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $user->user_avatar . '" alt="" border="0" />' : '';
@@ -218,19 +218,19 @@ foreach ($users as $i => $user) {
     }
 
     // <!-- BEGIN Another Online/Offline indicator -->
-    if ((!$user->user_allow_viewonline && $userdata['user_level'] === ADMIN) || $user->user_allow_viewonline) {
+    if ((!$user->user_allow_view_online && $userdata['user_level'] === ADMIN) || $user->user_allow_view_online) {
         $expiry_time = time() - ONLINE_TIME_DIFF;
 
         if ($user->user_session_time >= $expiry_time) {
             $user_onlinestatus = '<img src="' . $images['Online'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" />';
 
-            if (!$user->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+            if (!$user->user_allow_view_online && $userdata['user_level'] === ADMIN) {
                 $user_onlinestatus = '<img src="' . $images['Hidden_Admin'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
             }
         } else {
             $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
 
-            if (!$user->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+            if (!$user->user_allow_view_online && $userdata['user_level'] === ADMIN) {
                 $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
             }
         }
@@ -279,7 +279,7 @@ foreach ($users as $i => $user) {
             // <!-- END Another Online/Offline indicator -->
 
             'FROM' => $from,
-            'JOINED' => create_date($lang['DATE_FORMAT'], $user->user_regdate, $board_config['board_timezone']),
+            'JOINED' => create_date($lang['DATE_FORMAT'], $user->user_reg_date, $board_config['board_timezone']),
             'POSTS' => $user->user_posts ? $user->user_posts : 0,
             'TOPICS' => $user->user_topics ? $user->user_topics : 0,
             'THANKS' => $user->user_thanks ? $user->user_thanks : 0,

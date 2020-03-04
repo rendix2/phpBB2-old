@@ -168,7 +168,7 @@ switch (Config::DBMS) {
             ->on('p.post_id = f.forum_last_post_id')
             ->leftJoin(Tables::USERS_TABLE)
             ->as('u')
-            ->on('u.user_id = p.poster_id')
+            ->on('[u.user_id] = [p.poster_id]')
             ->orderBy('f.cat_id')
             ->orderBy('f.forum_order')
             ->fetchAll();
@@ -187,8 +187,8 @@ if (!$totalForums) {
 //
 if ($userdata['session_logged_in']) {
     // 60 days limit
-    if ($userdata['user_lastvisit'] < (time() - 5184000)) {
-        $userdata['user_lastvisit'] = time() - 5184000;
+    if ($userdata['user_last_visit'] < (time() - 5184000)) {
+        $userdata['user_last_visit'] = time() - 5184000;
     }
 
     $new_topic_tmp_data = dibi::select('t.forum_id, t.topic_id, p.post_time')
@@ -197,7 +197,7 @@ if ($userdata['session_logged_in']) {
         ->innerJoin(Tables::POSTS_TABLE) // maybe there should be letft/inner join....
         ->as('p')
         ->on('p.post_id = t.topic_last_post_id')
-        ->where('p.post_time > %i', $userdata['user_lastvisit'])
+        ->where('p.post_time > %i', $userdata['user_last_visit'])
         ->where('t.topic_moved_id = %i', 0)
         ->fetchAll();
 
@@ -218,15 +218,15 @@ $forumModeratorsData = dibi::select('aa.forum_id, u.user_id, u.username')
     ->as('aa')
     ->innerJoin(Tables::USERS_GROUPS_TABLE)
     ->as('ug')
-    ->on('ug.group_id = aa.group_id')
+    ->on('[ug.group_id] = [aa.group_id]')
     ->innerJoin(Tables::GROUPS_TABLE)
     ->as('g')
     ->on('g.group_id = aa.group_id')
     ->innerJoin(Tables::USERS_TABLE)
     ->as('u')
-    ->on('u.user_id = ug.user_id')
-    ->where('aa.auth_mod = %i', 1)
-    ->where('g.group_single_user = %i', 1)
+    ->on('[u.user_id] = [ug.user_id]')
+    ->where('[aa.auth_mod] = %i', 1)
+    ->where('[g.group_single_user] = %i', 1)
     ->groupBy('u.user_id')
     ->groupBy('u.username')
     ->groupBy('aa.forum_id')
@@ -245,12 +245,12 @@ $forumModeratorsData = dibi::select('aa.forum_id, g.group_id, g.group_name')
     ->as('aa')
     ->innerJoin(Tables::USERS_GROUPS_TABLE)
     ->as('ug')
-    ->on('ug.group_id = aa.group_id')
+    ->on('[ug.group_id] = [aa.group_id]')
     ->innerJoin(Tables::GROUPS_TABLE)
     ->as('g')
     ->on('g.group_id = aa.group_id')
-    ->where('aa.auth_mod = %i', 1)
-    ->where('g.group_single_user = %i', 0)
+    ->where('[aa.auth_mod] = %i', 1)
+    ->where('[g.group_single_user] = %i', 0)
     ->where('g.group_type <> %i', GROUP_HIDDEN)
     ->groupBy('g.group_id')
     ->groupBy('g.group_name')
@@ -274,7 +274,7 @@ $is_auth = Auth::authorize(Auth::AUTH_VIEW, Auth::AUTH_ALL, $userdata, $forums);
 
 $onlineUsersCount = dibi::select('COUNT(*)')
     ->from(Tables::SESSIONS_TABLE)
-    ->where('session_logged_in = %i', 1)
+    ->where('[session_logged_in] = %i', 1)
     ->groupBy('session_user_id')
     ->fetchSingle();
 

@@ -137,8 +137,8 @@ class Auth
 
         switch ($type) {
             case self::AUTH_ALL:
-                $authSql    = ['a.auth_view', 'a.auth_read', 'a.auth_post', 'a.auth_reply', 'a.auth_edit', 'a.auth_delete', 'a.auth_sticky', 'a.auth_announce', 'a.auth_vote', 'a.auth_pollcreate', 'a.auth_attachments', 'a.auth_download'];
-                $authFields = ['auth_view', 'auth_read', 'auth_post', 'auth_reply', 'auth_edit', 'auth_delete', 'auth_sticky', 'auth_announce', 'auth_vote', 'auth_pollcreate', 'auth_attachments', 'auth_download'];
+                $authSql    = ['a.auth_view', 'a.auth_read', 'a.auth_post', 'a.auth_reply', 'a.auth_edit', 'a.auth_delete', 'a.auth_sticky', 'a.auth_announce', 'a.auth_vote', 'a.auth_poll_create', 'a.auth_attachments', 'a.auth_download'];
+                $authFields = ['auth_view', 'auth_read', 'auth_post', 'auth_reply', 'auth_edit', 'auth_delete', 'auth_sticky', 'auth_announce', 'auth_vote', 'auth_poll_create', 'auth_attachments', 'auth_download'];
                 break;
 
             case self::AUTH_VIEW:
@@ -182,8 +182,8 @@ class Auth
                 break;
 
             case self::AUTH_POLL_CREATE:
-                $authSql    = ['a.auth_pollcreate'];
-                $authFields = ['auth_pollcreate'];
+                $authSql    = ['a.auth_poll_create'];
+                $authFields = ['auth_poll_create'];
                 break;
 
             case self::AUTH_VOTE:
@@ -245,8 +245,8 @@ class Auth
                 ->innerJoin(Tables::USERS_GROUPS_TABLE)
                 ->as('ug')
                 ->on('a.group_id = ug.group_id')
-                ->where('ug.user_id = %i', $userdata['user_id'])
-                ->where('ug.user_pending = %i', 0);
+                ->where('[ug.user_id] = %i', $userdata['user_id'])
+                ->where('[ug.user_pending] = %i', 0);
 
             if ($forumId !== self::AUTH_ALL) {
                 $rows->where('a.forum_id = %i', $forumId);

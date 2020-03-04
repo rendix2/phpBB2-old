@@ -109,7 +109,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
             // If the last login is more than x minutes ago, then reset the login tries/time
             if ($row->user_last_login_try && $board_config['login_reset_time'] && $row->user_last_login_try < (time() - ($board_config['login_reset_time'] * 60))) {
                 dibi::update(Tables::USERS_TABLE, ['user_login_tries' => 0, 'user_last_login_try' => 0])
-                    ->where('user_id = %i', $row->user_id)
+                    ->where('[user_id] = %i', $row->user_id)
                     ->execute();
 
                 $row->user_last_login_try = $row->user_login_tries = 0;
@@ -154,7 +154,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 
                 // Reset login tries
                 dibi::update(Tables::USERS_TABLE, ['user_login_tries' => 0, 'user_last_login_try' => 0])
-                    ->where('user_id = %i', $row->user_id)
+                    ->where('[user_id] = %i', $row->user_id)
                     ->execute();
 
                 if ($session_id) {

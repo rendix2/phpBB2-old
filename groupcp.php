@@ -52,7 +52,7 @@ function generate_user_info(
 	global $lang, $images, $board_config;
 
 	$from = !empty($row->user_from) ? htmlspecialchars($row->user_from, ENT_QUOTES) : '&nbsp;';
-	$joined = create_date($dateFormat, $row->user_regdate, $board_config['board_timezone']);
+	$joined = create_date($dateFormat, $row->user_reg_date, $board_config['board_timezone']);
 	$posts = $row->user_posts ? $row->user_posts : 0;
 	$topics = $row->user_topics ? $row->user_topics : 0;
 	$posterAvatar = '';
@@ -61,7 +61,7 @@ function generate_user_info(
      * TODO this never be true
      * add this columns into selects
      */
-	if ($row->user_avatar_type && $row->user_id !== ANONYMOUS && $row->user_allowavatar) {
+	if ($row->user_avatar_type && $row->user_id !== ANONYMOUS && $row->user_allow_avatar) {
 		switch ($row->user_avatar_type) {
 			case USER_AVATAR_UPLOAD:
 				$posterAvatar = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $row->user_avatar . '" alt="" border="0" />' : '';
@@ -146,7 +146,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
 
     $group_moderator = dibi::select('group_moderator')
         ->from(Tables::GROUPS_TABLE)
-        ->where('group_id = %i', $groupId)
+        ->where('[group_id] = %i', $groupId)
         ->fetchSingle();
 
     if ($group_moderator !== $userdata['user_id'] && $userdata['user_level'] !== ADMIN) {
@@ -164,7 +164,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
 	}
 
 	dibi::update(Tables::GROUPS_TABLE, ['group_type' => (int)$_POST['group_type'] ])
-        ->where('group_id = %i', $groupId)
+        ->where('[group_id] = %i', $groupId)
         ->execute();
 
     $template->assignVars(
@@ -195,7 +195,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
         ->as('ug')
         ->innerJoin(Tables::GROUPS_TABLE)
         ->as('g')
-        ->on('ug.group_id = g.group_id')
+        ->on('[ug.group_id] = [g.group_id]')
         ->where('g.group_id = %i', $groupId)
         ->where('g.group_type <> %i', GROUP_HIDDEN)
         ->fetchAll();
@@ -298,8 +298,8 @@ if (isset($_POST['groupstatus']) && $groupId) {
 
 	if ($confirm) {
 	    dibi::delete(Tables::USERS_GROUPS_TABLE)
-            ->where('user_id = %i', $userdata['user_id'])
-            ->where('group_id = %i', $groupId)
+            ->where('[user_id] = %i', $userdata['user_id'])
+            ->where('[group_id] = %i', $groupId)
             ->execute();
 
         if ($userdata['user_level'] !== ADMIN && $userdata['user_level'] === MOD) {
@@ -309,14 +309,14 @@ if (isset($_POST['groupstatus']) && $groupId) {
                 ->as('aa')
                 ->innerJoin(Tables::USERS_GROUPS_TABLE)
                 ->as('ug')
-                ->on('aa.group_id = ug.group_id')
-                ->where('ug.user_id = %i', $userdata['user_id'])
-                ->where('aa.auth_mod = %i', 1)
+                ->on('[aa.group_id] = [ug.group_id]')
+                ->where('[ug.user_id] = %i', $userdata['user_id'])
+                ->where('[aa.auth_mod] = %i', 1)
                 ->fetchSingle();
 
             if (!$is_auth_mod) {
                 dibi::update(Tables::USERS_TABLE, ['user_level' => USER])
-                    ->where('user_id = %i', $userdata['user_id'])
+                    ->where('[user_id] = %i', $userdata['user_id'])
                     ->execute();
             }
         }
@@ -409,7 +409,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
                 ->as('g')
                 ->innerJoin(Tables::AUTH_ACCESS_TABLE)
                 ->as('aa')
-                ->on('aa.group_id = g.group_id')
+                ->on('[aa.group_id] = [g.group_id]')
                 ->where('g.group_id = %i', $groupId)
                 ->orderBy('aa.auth_mod', dibi::DESC)
                 ->fetch();
@@ -488,9 +488,9 @@ if (isset($_POST['groupstatus']) && $groupId) {
                     ->as('ug')
                     ->innerJoin(Tables::USERS_TABLE)
                     ->as('u')
-                    ->on('ug.user_id = u.user_id')
-                    ->where('u.user_id = %i', $row->user_id)
-                    ->where('ug.group_id = %i', $groupId)
+                    ->on('[ug.user_id] = [u.user_id]')
+                    ->where('[u.user_id] = %i', $row->user_id)
+                    ->where('[ug.group_id] = %i', $groupId)
                     ->fetch();
 
 				if ($member) {
@@ -516,7 +516,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
 
                     if ($row->user_level !== ADMIN && $row->user_level !== MOD && $groupInfo->auth_mod) {
                         dibi::update(Tables::USERS_TABLE, ['user_level' => MOD])
-                            ->where('user_id = %i', $row->user_id)
+                            ->where('[user_id] = %i', $row->user_id)
                             ->execute();
                     }
 
@@ -526,7 +526,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
 					//
                     $groupName =  dibi::select('group_name')
                         ->from(Tables::GROUPS_TABLE)
-                        ->where('group_id = %i', $groupId)
+                        ->where('[group_id] = %i', $groupId)
                         ->fetchSingle();
 
 					// TODO group not exists
@@ -562,14 +562,14 @@ if (isset($_POST['groupstatus']) && $groupId) {
                     if (isset($_POST['approve'])) {
                         if ($groupInfo->auth_mod) {
 						    dibi::update(Tables::USERS_TABLE, ['user_level' => MOD])
-                                ->where('user_id IN %in', $members)
+                                ->where('[user_id] IN %in', $members)
                                 ->where('user_level NOT IN %in', [MOD, ADMIN])
                                 ->execute();
 						}
 
 						dibi::update(Tables::USERS_GROUPS_TABLE, ['user_pending' => 0])
-                            ->where('user_id IN %in', $members)
-                            ->where('group_id = %i', $groupId)
+                            ->where('[user_id] IN %in', $members)
+                            ->where('[group_id] = %i', $groupId)
                             ->execute();
 
                     } elseif (isset($_POST['deny']) || isset($_POST['remove'])) {
@@ -579,9 +579,9 @@ if (isset($_POST['groupstatus']) && $groupId) {
                                 ->as('aa')
                                 ->innerJoin(Tables::USERS_GROUPS_TABLE)
                                 ->as('ug')
-                                ->on('aa.group_id = ug.group_id')
-                                ->where('ug.user_id IN %in', $members)
-                                ->where('aa.auth_mod = %i', 1)
+                                ->on('[aa.group_id] = [ug.group_id]')
+                                ->where('[ug.user_id] IN %in', $members)
+                                ->where('[aa.auth_mod] = %i', 1)
                                 ->groupBy('ug.user_id')
                                 ->groupBy('ug.group_id')
                                 ->orderBy('ug.user_id')
@@ -590,15 +590,15 @@ if (isset($_POST['groupstatus']) && $groupId) {
 
                             if (count($user_ids)) {
                                 dibi::update(Tables::USERS_TABLE, ['user_level' => USER])
-                                    ->where('user_id IN %in', $user_ids)
+                                    ->where('[user_id] IN %in', $user_ids)
                                     ->where('user_level <> %i', ADMIN)
                                     ->execute();
                             }
 						}
 
 						dibi::delete(Tables::USERS_GROUPS_TABLE)
-                            ->where('user_id IN %in', $members)
-                            ->where('group_id = %i', $groupId)
+                            ->where('[user_id] IN %in', $members)
+                            ->where('[group_id] = %i', $groupId)
                             ->execute();
 					}
 
@@ -608,7 +608,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
                     if (isset($_POST['approve'])) {
                         $bcc_list = dibi::select('user_email')
                             ->from(Tables::USERS_TABLE)
-                            ->where('user_id IN %in', $members)
+                            ->where('[user_id] IN %in', $members)
                             ->fetchPairs(null, 'user_email');
 
 						//
@@ -616,7 +616,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
 						//
 						$groupName = dibi::select('group_name')
                             ->from(Tables::GROUPS_TABLE)
-                            ->where('group_id = %i', $groupId)
+                            ->where('[group_id] = %i', $groupId)
                             ->fetchSingle();
 
 						if ($groupName === false) {
@@ -662,8 +662,8 @@ if (isset($_POST['groupstatus']) && $groupId) {
 	//
     $groupInfo = dibi::select('*')
         ->from(Tables::GROUPS_TABLE)
-        ->where('group_id = %i', $groupId)
-        ->where('group_single_user = %i', 0)
+        ->where('[group_id] = %i', $groupId)
+        ->where('[group_single_user] = %i', 0)
         ->fetch();
 
     if (!$groupInfo) {
@@ -675,14 +675,14 @@ if (isset($_POST['groupstatus']) && $groupId) {
         'user_id',
         'user_posts',
         'user_topics',
-        'user_regdate',
+        'user_reg_date',
         'user_from',
         'user_website',
         'user_email',
         'user_avatar_type',
-        'user_allowavatar',
+        'user_allow_avatar',
         'user_avatar',
-        'user_allow_viewonline',
+        'user_allow_view_online',
         'user_session_time'
     ];
 
@@ -691,7 +691,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
     //
     $group_moderator = dibi::select($columns)
         ->from(Tables::USERS_TABLE)
-        ->where('user_id = %i', $groupInfo->group_moderator)
+        ->where('[user_id] = %i', $groupInfo->group_moderator)
         ->fetch();
 
     $columns = [
@@ -699,12 +699,12 @@ if (isset($_POST['groupstatus']) && $groupId) {
         'u.user_id',
         'u.user_posts',
         'u.user_topics',
-        'u.user_regdate',
+        'u.user_reg_date',
         'u.user_from',
         'u.user_website',
         'u.user_email',
         'u.user_avatar_type',
-        'u.user_allow_viewonline',
+        'u.user_allow_view_online',
         'u.user_session_time'
     ];
 
@@ -716,9 +716,9 @@ if (isset($_POST['groupstatus']) && $groupId) {
         ->as('u')
         ->innerJoin(Tables::USERS_GROUPS_TABLE)
         ->as('ug')
-        ->on('u.user_id = ug.user_id')
-        ->where('ug.group_id = %i', $groupId)
-        ->where('ug.user_pending = %i', 0)
+        ->on('[u.user_id] = [ug.user_id]')
+        ->where('[ug.group_id] = %i', $groupId)
+        ->where('[ug.user_pending] = %i', 0)
         ->where('ug.user_id <> %i', $group_moderator->user_id)
         ->orderBy('u.username')
         ->limit($board_config['group_members_per_page'])
@@ -731,9 +731,9 @@ if (isset($_POST['groupstatus']) && $groupId) {
         ->as('u')
         ->innerJoin(Tables::USERS_GROUPS_TABLE)
         ->as('ug')
-        ->on('u.user_id = ug.user_id')
-        ->where('ug.group_id = %i', $groupId)
-        ->where('ug.user_pending = %i', 0)
+        ->on('[u.user_id] = [ug.user_id]')
+        ->where('[ug.group_id] = %i', $groupId)
+        ->where('[ug.user_pending] = %i', 0)
         ->where('ug.user_id <> %i', $group_moderator->user_id)
         ->orderBy('u.username')
         ->fetchSingle();
@@ -743,12 +743,12 @@ if (isset($_POST['groupstatus']) && $groupId) {
         'u.user_id',
         'u.user_posts',
         'u.user_topics',
-        'u.user_regdate',
+        'u.user_reg_date',
         'u.user_from',
         'u.user_website',
         'u.user_email',
         'u.user_avatar_type',
-        'u.user_allow_viewonline',
+        'u.user_allow_view_online',
         'u.user_session_time'
     ];
 
@@ -757,12 +757,12 @@ if (isset($_POST['groupstatus']) && $groupId) {
         ->as('g')
         ->innerJoin(Tables::USERS_GROUPS_TABLE)
         ->as('ug')
-        ->on('g.group_id = ug.group_id')
+        ->on('[g.group_id] = [ug.group_id]')
         ->innerJoin(Tables::USERS_TABLE)
         ->as('u')
-        ->on('u.user_id = ug.user_id')
+        ->on('[u.user_id] = [ug.user_id]')
         ->where('g.group_id = %i', $groupId)
-        ->where('ug.user_pending = %i', 1)
+        ->where('[ug.user_pending] = %i', 1)
         ->orderBy('u.username')
         ->fetchAll();
 
@@ -839,19 +839,19 @@ if (isset($_POST['groupstatus']) && $groupId) {
 	generate_user_info($group_moderator, $board_config['default_dateformat'], $isModerator, $from, $posts, $topics, $joined, $poster_avatar, $profileImage, $profile, $searchImage, $search, $pmImage, $pm, $emailImage, $email, $wwwImage, $www);
 
     // <!-- BEGIN Another Online/Offline indicator -->
-    if ((!$group_moderator->user_allow_viewonline && $userdata['user_level'] === ADMIN) || $group_moderator->user_allow_viewonline) {
+    if ((!$group_moderator->user_allow_view_online && $userdata['user_level'] === ADMIN) || $group_moderator->user_allow_view_online) {
         $expiry_time = time() - ONLINE_TIME_DIFF;
 
         if ($group_moderator->user_session_time >= $expiry_time) {
             $user_onlinestatus = '<img src="' . $images['Online'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" />';
 
-            if (!$group_moderator->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+            if (!$group_moderator->user_allow_view_online && $userdata['user_level'] === ADMIN) {
                 $user_onlinestatus = '<img src="' . $images['Hidden_Admin'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
             }
         } else {
             $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
 
-            if (!$group_moderator->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+            if (!$group_moderator->user_allow_view_online && $userdata['user_level'] === ADMIN) {
                 $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
             }
         }
@@ -961,19 +961,19 @@ if (isset($_POST['groupstatus']) && $groupId) {
 		generate_user_info($groupMember, $board_config['default_dateformat'], $isModerator, $from, $posts, $topics, $joined, $poster_avatar, $profileImage, $profile, $searchImage, $search, $pmImage, $pm, $emailImage, $email, $wwwImage, $www);
 
         // <!-- BEGIN Another Online/Offline indicator -->
-        if ((!$groupMember->user_allow_viewonline && $userdata['user_level'] === ADMIN) || $groupMember->user_allow_viewonline) {
+        if ((!$groupMember->user_allow_view_online && $userdata['user_level'] === ADMIN) || $groupMember->user_allow_view_online) {
             $expiry_time = time() - ONLINE_TIME_DIFF;
 
             if ($groupMember->user_session_time >= $expiry_time) {
                 $user_onlinestatus = '<img src="' . $images['Online'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" />';
 
-                if (!$groupMember->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                if (!$groupMember->user_allow_view_online && $userdata['user_level'] === ADMIN) {
                     $user_onlinestatus = '<img src="' . $images['Hidden_Admin'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
                 }
             } else {
                 $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
 
-                if (!$groupMember->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                if (!$groupMember->user_allow_view_online && $userdata['user_level'] === ADMIN) {
                     $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
                 }
             }
@@ -1092,19 +1092,19 @@ if (isset($_POST['groupstatus']) && $groupId) {
             );
 
             // <!-- BEGIN Another Online/Offline indicator -->
-            if ((!$modgroup_pending_value->user_allow_viewonline && $userdata['user_level'] === ADMIN) || $modgroup_pending_value->user_allow_viewonline) {
+            if ((!$modgroup_pending_value->user_allow_view_online && $userdata['user_level'] === ADMIN) || $modgroup_pending_value->user_allow_view_online) {
                 $expiry_time = time() - ONLINE_TIME_DIFF;
 
                 if ($modgroup_pending_value->user_session_time >= $expiry_time) {
                     $user_onlinestatus = '<img src="' . $images['Online'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" />';
 
-                    if (!$modgroup_pending_value->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                    if (!$modgroup_pending_value->user_allow_view_online && $userdata['user_level'] === ADMIN) {
                         $user_onlinestatus = '<img src="' . $images['Hidden_Admin'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
                     }
                 } else {
                     $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
 
-                    if (!$modgroup_pending_value->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                    if (!$modgroup_pending_value->user_allow_view_online && $userdata['user_level'] === ADMIN) {
                         $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
                     }
                 }
@@ -1183,8 +1183,8 @@ if (isset($_POST['groupstatus']) && $groupId) {
             ->as('g')
             ->innerJoin(Tables::USERS_GROUPS_TABLE)
             ->as('ug')
-            ->on('ug.group_id = g.group_id')
-            ->where('ug.user_id = %i', $userdata['user_id'])
+            ->on('[ug.group_id] = [g.group_id]')
+            ->where('[ug.user_id] = %i', $userdata['user_id'])
             ->where('g.group_single_user <> %i', 1)
             ->orderBy('g.group_name')
             ->orderBy('ug.user_id')
@@ -1213,7 +1213,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
 	//
     $groups = dibi::select(['group_id', 'group_name', 'group_type'])
         ->from(Tables::GROUPS_TABLE)
-        ->where('group_single_user <> %i', 1);
+        ->where('[group_single_user] <> %i', 1);
 
     if (count($inGroup)) {
         $groups->where('group_id NOT IN %in', $inGroup);

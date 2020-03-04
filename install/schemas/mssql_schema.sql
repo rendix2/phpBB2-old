@@ -21,7 +21,7 @@ CREATE TABLE [phpbb_auth_access] (
 	[auth_sticky] [smallint] NOT NULL ,
 	[auth_announce] [smallint] NOT NULL ,
 	[auth_vote] [smallint] NOT NULL ,
-	[auth_pollcreate] [smallint] NOT NULL ,
+	[auth_poll_create] [smallint] NOT NULL ,
 	[auth_attachments] [smallint] NOT NULL ,
 	[auth_mod] [smallint] NOT NULL
 ) ON [PRIMARY]
@@ -29,7 +29,7 @@ GO
 
 CREATE TABLE [phpbb_banlist] (
 	[ban_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[ban_userid] [int] NULL ,
+	[ban_user_id] [int] NULL ,
 	[ban_ip] [char] (8) NULL ,
 	[ban_email] [varchar] (50) NULL
 ) ON [PRIMARY]
@@ -92,7 +92,7 @@ CREATE TABLE [phpbb_forums] (
 	[auth_sticky] [smallint] NOT NULL ,
 	[auth_announce] [smallint] NOT NULL ,
 	[auth_vote] [smallint] NOT NULL ,
-	[auth_pollcreate] [smallint] NOT NULL ,
+	[auth_poll_create] [smallint] NOT NULL ,
 	[auth_attachments] [smallint] NOT NULL
 ) ON [PRIMARY]
 GO
@@ -350,8 +350,8 @@ CREATE TABLE [phpbb_users] (
 	[user_acp_password] [varchar] (512) NOT NULL ,
 	[user_session_time] [int] NOT NULL ,
 	[user_session_page] [smallint] NOT NULL ,
-	[user_lastvisit] [int] NOT NULL ,
-	[user_regdate] [int] NOT NULL ,
+	[user_last_visit] [int] NOT NULL ,
+	[user_reg_date] [int] NOT NULL ,
 	[user_level] [smallint] NOT NULL ,
 	[user_posts] [int] NOT NULL ,
 	[user_topics] [int] NOT NULL ,
@@ -360,20 +360,20 @@ CREATE TABLE [phpbb_users] (
 	[user_timezone] [varchar] (100) NOT NULL ,
 	[user_style] [int] NULL ,
 	[user_lang] [varchar] (255) NULL ,
-	[user_dateformat] [varchar] (14) NOT NULL ,
+	[user_date_format] [varchar] (14) NOT NULL ,
 	[user_new_privmsg] [smallint] NOT NULL ,
 	[user_unread_privmsg] [smallint] NOT NULL ,
 	[user_last_privmsg] [int] NOT NULL ,
 	[user_login_tries] [smallint] NOT NULL ,
 	[user_last_login_try] [int] NOT NULL ,
-	[user_emailtime] [int] NOT NULL ,
-	[user_attachsig] [smallint] NULL ,
-	[user_allowhtml] [smallint] NULL ,
-	[user_allowbbcode] [smallint] NULL ,
-	[user_allowsmile] [smallint] NULL ,
-	[user_allowavatar] [smallint] NULL ,
+	[user_email_time] [int] NOT NULL ,
+	[user_attach_sig] [smallint] NULL ,
+	[user_allow_html] [smallint] NULL ,
+	[user_allow_bbcode] [smallint] NULL ,
+	[user_allow_smile] [smallint] NULL ,
+	[user_allow_avatar] [smallint] NULL ,
 	[user_allow_pm] [smallint] NOT NULL ,
-	[user_allow_viewonline] [smallint] NOT NULL ,
+	[user_allow_view_online] [smallint] NOT NULL ,
 	[user_notify_pm] [smallint] NOT NULL ,
 	[user_popup_pm] [smallint] NULL ,
 	[user_rank] [int] NULL ,
@@ -381,13 +381,13 @@ CREATE TABLE [phpbb_users] (
 	[user_avatar] [varchar] (100) NULL ,
 	[user_email] [varchar] (255) NULL ,
 	[user_website] [varchar] (100) NULL ,
-	[user_occ] [varchar] (100) NULL ,
+	[user_occupation] [varchar] (100) NULL ,
 	[user_from] [varchar] (100) NULL ,
 	[user_sig] [text] NULL ,
 	[user_sig_bbcode_uid] [char] (10) NULL ,
 	[user_interests] [varchar] (255) NULL ,
-	[user_actkey] [varchar] (32) NULL ,
-	[user_newpasswd] [varchar] (512) NULL ,
+	[user_act_key] [varchar] (32) NULL ,
+	[user_new_password] [varchar] (512) NULL ,
 	[user_notify] [smallint] NOT NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
@@ -604,7 +604,7 @@ ALTER TABLE [phpbb_auth_access] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_auth_access_auth_sticky] DEFAULT (0) FOR [auth_sticky],
 	CONSTRAINT [DF_phpbb_auth_access_auth_announce] DEFAULT (0) FOR [auth_announce],
 	CONSTRAINT [DF_phpbb_auth_access_auth_vote] DEFAULT (0) FOR [auth_vote],
-	CONSTRAINT [DF_phpbb_auth_access_auth_pollcreate] DEFAULT (0) FOR [auth_pollcreate],
+	CONSTRAINT [DF_phpbb_auth_access_auth_poll_create] DEFAULT (0) FOR [auth_poll_create],
 	CONSTRAINT [DF_phpbb_auth_access_auth_attachments] DEFAULT (0) FOR [auth_attachments],
 	CONSTRAINT [DF_phpbb_auth_access_auth_mod] DEFAULT (0) FOR [auth_mod]
 GO
@@ -624,7 +624,7 @@ ALTER TABLE [phpbb_forums] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_forums_auth_sticky] DEFAULT (0) FOR [auth_sticky],
 	CONSTRAINT [DF_phpbb_forums_auth_announce] DEFAULT (0) FOR [auth_announce],
 	CONSTRAINT [DF_phpbb_forums_auth_vote] DEFAULT (0) FOR [auth_vote],
-	CONSTRAINT [DF_phpbb_forums_auth_pollcreate] DEFAULT (0) FOR [auth_pollcreate],
+	CONSTRAINT [DF_phpbb_forums_auth_poll_create] DEFAULT (0) FOR [auth_poll_create],
 	CONSTRAINT [DF_phpbb_forums_auth_attachments] DEFAULT (0) FOR [auth_attachments]
 GO
 
@@ -668,23 +668,23 @@ ALTER TABLE [phpbb_users] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_users_user_topic_watches] DEFAULT (0) FOR [user_topic_watches],
 	CONSTRAINT [DF_phpbb_users_user_session_time] DEFAULT (0) FOR [user_session_time],
 	CONSTRAINT [DF_phpbb_users_user_session_page] DEFAULT (0) FOR [user_session_page],
-	CONSTRAINT [DF_phpbb_users_user_lastvisit] DEFAULT (0) FOR [user_lastvisit],
+	CONSTRAINT [DF_phpbb_users_user_last_visit] DEFAULT (0) FOR [user_last_visit],
 	CONSTRAINT [DF_phpbb_users_user_new_privmsg] DEFAULT (0) FOR [user_new_privmsg],
 	CONSTRAINT [DF_phpbb_users_user_unread_privmsg] DEFAULT (0) FOR [user_unread_privmsg],
 	CONSTRAINT [DF_phpbb_users_user_last_privmsg] DEFAULT (0) FOR [user_last_privmsg],
 	CONSTRAINT [DF_phpbb_users_user_login_tries] DEFAULT (0) FOR [user_login_tries],
 	CONSTRAINT [DF_phpbb_users_user_last_login_try] DEFAULT (0) FOR [user_last_login_try],
-	CONSTRAINT [DF_phpbb_users_user_emailtime] DEFAULT (0) FOR [user_emailtime],
-	CONSTRAINT [DF_phpbb_users_user_attachsig] DEFAULT (1) FOR [user_attachsig],
-	CONSTRAINT [DF_phpbb_users_user_allowhtml] DEFAULT (0) FOR [user_allowhtml],
-	CONSTRAINT [DF_phpbb_users_user_allowbbcode] DEFAULT (1) FOR [user_allowbbcode],
-	CONSTRAINT [DF_phpbb_users_user_allowsmile] DEFAULT (1) FOR [user_allowsmile],
-	CONSTRAINT [DF_phpbb_users_user_allowavatar] DEFAULT (1) FOR [user_allowavatar],
+	CONSTRAINT [DF_phpbb_users_user_email_time] DEFAULT (0) FOR [user_email_time],
+	CONSTRAINT [DF_phpbb_users_user_attach_sig] DEFAULT (1) FOR [user_attach_sig],
+	CONSTRAINT [DF_phpbb_users_user_allow_html] DEFAULT (0) FOR [user_allow_html],
+	CONSTRAINT [DF_phpbb_users_user_allow_bbcode] DEFAULT (1) FOR [user_allow_bbcode],
+	CONSTRAINT [DF_phpbb_users_user_allow_smile] DEFAULT (1) FOR [user_allow_smile],
+	CONSTRAINT [DF_phpbb_users_user_allow_avatar] DEFAULT (1) FOR [user_allow_avatar],
 	CONSTRAINT [DF_phpbb_users_user_allow_pm] DEFAULT (1) FOR [user_allow_pm],
-	CONSTRAINT [DF_phpbb_users_user_allow_viewonline] DEFAULT (1) FOR [user_allow_viewonline],
+	CONSTRAINT [DF_phpbb_users_user_allow_view_online] DEFAULT (1) FOR [user_allow_view_online],
 	CONSTRAINT [DF_phpbb_users_user_notify_pm] DEFAULT (0) FOR [user_notify_pm],
 	CONSTRAINT [DF_phpbb_users_user_popup_pm] DEFAULT (1) FOR [user_popup_pm],
-	CONSTRAINT [DF_phpbb_users_user_dateformat] DEFAULT('d M Y H:i') FOR [user_dateformat],
+	CONSTRAINT [DF_phpbb_users_user_date_format] DEFAULT('d M Y H:i') FOR [user_date_format],
 	CONSTRAINT [DF_phpbb_users_user_avatar_type] DEFAULT (0) FOR [user_avatar_type]
 GO
 
@@ -698,7 +698,7 @@ GO
  CREATE  INDEX [IX_phpbb_auth_access] ON [phpbb_auth_access]([group_id], [forum_id]) ON [PRIMARY]
 GO
 
- CREATE  INDEX [IX_phpbb_banlist] ON [phpbb_banlist]([ban_userid], [ban_ip]) ON [PRIMARY]
+ CREATE  INDEX [IX_phpbb_banlist] ON [phpbb_banlist]([ban_user_id], [ban_ip]) ON [PRIMARY]
 GO
 
  CREATE  INDEX [IX_phpbb_categories] ON [phpbb_categories]([cat_order]) ON [PRIMARY]
@@ -797,7 +797,7 @@ new indexes
 
 GO
 
-CREATE  INDEX [IX_ban_userid] ON [phpbb_banlist]([ban_userid]) ON [PRIMARY]
+CREATE  INDEX [IX_ban_user_id] ON [phpbb_banlist]([ban_user_id]) ON [PRIMARY]
 
 GO
 

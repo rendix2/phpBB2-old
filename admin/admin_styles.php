@@ -97,7 +97,7 @@ switch ($mode) {
 
                     $templateCheck = dibi::select('themes_id')
                         ->from(Tables::THEMES_TABLE)
-                        ->where('style_name = %s', $newTemplate->getFilename())
+                        ->where('[style_name] = %s', $newTemplate->getFilename())
                         ->fetch();
 
                     if (!$templateCheck) {
@@ -231,7 +231,7 @@ switch ($mode) {
                 $cache->remove($key);
 
 			    dibi::update(Tables::THEMES_TABLE, $updated)
-                    ->where('themes_id = %i', $style_id)
+                    ->where('[themes_id] = %i', $style_id)
                     ->execute();
 				
 				//
@@ -239,12 +239,12 @@ switch ($mode) {
 				//
 				$theme_exists = dibi::select('themes_id')
                     ->from(Tables::THEMES_NAME_TABLE)
-                    ->where('themes_id = %i', $style_id)
+                    ->where('[themes_id] = %i', $style_id)
                     ->fetchSingle();
 
 				if ($theme_exists) {
 				    dibi::update(Tables::THEMES_NAME_TABLE, $updated_name)
-                        ->where('themes_id = %i', $style_id)
+                        ->where('[themes_id] = %i', $style_id)
                         ->execute();
 				} else {
                     $updated_name['themes_id'] =  $style_id;
@@ -263,7 +263,7 @@ switch ($mode) {
 				//
                 $theme_check = dibi::select('themes_id')
                     ->from(Tables::THEMES_TABLE)
-                    ->where('style_name = %s', $updated['style_name'])
+                    ->where('[style_name] = %s', $updated['style_name'])
                     ->fetch();
 				
 				if ($theme_check) {
@@ -296,7 +296,7 @@ switch ($mode) {
 				//
                 $selected_values = dibi::select('*')
                     ->from(Tables::THEMES_TABLE)
-                    ->where('themes_id = %i', $style_id)
+                    ->where('[themes_id] = %i', $style_id)
                     ->fetch();
 				
 				//
@@ -304,7 +304,7 @@ switch ($mode) {
 				//
                 $selected_names = dibi::select('*')
                     ->from(Tables::THEMES_NAME_TABLE)
-                    ->where('themes_id = %i', $style_id)
+                    ->where('[themes_id] = %i', $style_id)
                     ->fetch();
 
                 $selected = array_merge($selected_names->toArray(), $selected_values->toArray());
@@ -456,7 +456,7 @@ switch ($mode) {
 
             $themes = dibi::select('*')
                 ->from(Tables::THEMES_TABLE)
-                ->where('template_name = %s', $template_name)
+                ->where('[template_name] = %s', $template_name)
                 ->fetchAll();
 			
 			if (!count($themes)) {
@@ -551,7 +551,7 @@ switch ($mode) {
             $cache->remove($key);
 
             dibi::delete(Tables::THEMES_TABLE)
-                ->where('themes_id = %i', $style_id)
+                ->where('[themes_id] = %i', $style_id)
                 ->execute();
 
 			//
@@ -559,11 +559,11 @@ switch ($mode) {
 			// if the SQL dosan't work
 			//
             dibi::delete(Tables::THEMES_NAME_TABLE)
-                ->where('themes_id = %i', $style_id)
+                ->where('[themes_id] = %i', $style_id)
                 ->execute();
 
             dibi::update(Tables::USERS_TABLE, ['user_style' => $board_config['default_style']])
-                ->where('user_style = %i', $style_id)
+                ->where('[user_style] = %i', $style_id)
                 ->execute();
 
 			$message  = $lang['Style_removed'] . '<br /><br />';

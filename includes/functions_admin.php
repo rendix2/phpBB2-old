@@ -41,7 +41,7 @@ function make_forum_select($boxName, $ignoreForum = false, $selectForum = '')
         ->as('c')
         ->innerJoin(Tables::FORUMS_TABLE)
         ->as('f')
-        ->on('f.cat_id = c.cat_id')
+        ->on('[f.cat_id] = [c.cat_id]')
         ->orderBy('c.cat_order')
         ->orderBy(' f.forum_order')
         ->fetchAll();

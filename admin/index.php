@@ -226,7 +226,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
 
     $registeredOnlineUsers = dibi::select('COUNT(*)')
         ->from(Tables::SESSIONS_TABLE)
-        ->where('session_logged_in = %i', 1)
+        ->where('[session_logged_in] = %i', 1)
         ->groupBy('session_user_id')
         ->fetchSingle();
 
@@ -234,21 +234,21 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
     $totalUnActiveUsers = dibi::select('COUNT(*)')
         ->as('total')
         ->from(Tables::USERS_TABLE)
-        ->where('user_active = %i', 0)
+        ->where('[user_active] = %i', 0)
         ->where('user_id != %i', ANONYMOUS)
         ->fetchSingle();
 
     $totalModerators = dibi::select('COUNT(user_id)')
         ->as('total')
         ->from(Tables::USERS_TABLE)
-        ->where('user_level = %i', MOD)
+        ->where('[user_level] = %i', MOD)
         ->where('user_id != %i', ANONYMOUS)
         ->fetchSingle();
 
     $totalAdministrators = dibi::select('COUNT(user_id)')
         ->as('total')
         ->from(Tables::USERS_TABLE)
-        ->where('user_level = %i', ADMIN)
+        ->where('[user_level] = %i', ADMIN)
         ->where('user_id != %i', ANONYMOUS)
         ->fetchSingle();
 

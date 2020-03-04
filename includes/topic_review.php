@@ -54,7 +54,7 @@ function topic_review($topic_id, $is_inline_review)
             'f.auth_delete',
             'f.auth_sticky',
             'f.auth_announce',
-            'f.auth_pollcreate',
+            'f.auth_poll_create',
             'f.auth_vote',
             'f.auth_attachments',
             'f.auth_download',
@@ -69,7 +69,7 @@ function topic_review($topic_id, $is_inline_review)
             ->as('t')
             ->innerJoin(Tables::FORUMS_TABLE)
             ->as('f')
-            ->on('f.forum_id = t.forum_id')
+            ->on('[f.forum_id] = [t.forum_id]')
             ->where('t.topic_id = %i', $topic_id)
             ->fetch();
 
@@ -128,10 +128,10 @@ function topic_review($topic_id, $is_inline_review)
         ->as('p')
         ->innerJoin(Tables::USERS_TABLE)
         ->as('u')
-        ->on('p.poster_id = u.user_id')
+        ->on('[p.poster_id] = [u.user_id]')
         ->innerJoin(Tables::POSTS_TEXT_TABLE)
         ->as('pt')
-        ->on('p.post_id = pt.post_id')
+        ->on('[p.post_id] = [pt.post_id]')
         ->where('p.topic_id = %i', $topic_id)
         ->orderBy('p.post_time', dibi::DESC)
         ->limit($board_config['posts_per_page'])

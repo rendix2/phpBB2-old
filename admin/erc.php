@@ -705,7 +705,7 @@ switch ($mode) {
 				foreach ($default_config as $key => $value) {
 				    $row = dibi::select('config_value')
 				    ->from(Tables::CONFIG_TABLE)
-				    ->where('config_name = %s', $key)
+				    ->where('[config_name] = %s', $key)
 				    ->fetch();
 
 					if (!$row){
@@ -736,25 +736,25 @@ switch ($mode) {
 				
 				if ($secure_select === 1) {
 				    dibi::update(Tables::CONFIG_TABLE, ['config_value' => $secure])
-				        ->where('config_name = %s', 'cookie_secure')
+				        ->where('[config_name] = %s', 'cookie_secure')
 				        ->execute();
 				}
 
 				if ($domain_select === 1) {
 				    dibi::update(Tables::CONFIG_TABLE, ['config_value' => $domain])
-				        ->where('config_name = %s', 'server_name')
+				        ->where('[config_name] = %s', 'server_name')
 				        ->execute();
 				}
 
 				if ($port_select === 1) {
 				    dibi::update(Tables::CONFIG_TABLE, ['config_value' => $port])
-				        ->where('config_name = %s', 'server_port')
+				        ->where('[config_name] = %s', 'server_port')
 				        ->execute();
 				}
 
 				if ($path_select === 1) {
 				    dibi::update(Tables::CONFIG_TABLE, ['config_value' => $path])
-				        ->where('config_name = %s', 'script_path')
+				        ->where('[config_name] = %s', 'script_path')
 				        ->execute();
 				}
 
@@ -771,15 +771,15 @@ switch ($mode) {
 				$cookie_path = isset($_POST['cookie_path']) ? str_replace("\\'", "''", $_POST['cookie_path']) : '';
 
 				dibi::update(Tables::CONFIG_TABLE, ['config_value' => $cookie_domain])
-				->where('config_name = %s', 'cookie_domain')
+				->where('[config_name] = %s', 'cookie_domain')
 				->execute();
 
 				dibi::update(Tables::CONFIG_TABLE, ['config_value' => $cookie_name])
-				->where('config_name = %s', 'cookie_name')
+				->where('[config_name] = %s', 'cookie_name')
 				->execute();
 
 				dibi::update(Tables::CONFIG_TABLE, ['config_value' => $cookie_path])
-				->where('config_name = %s', 'cookie_path')
+				->where('[config_name] = %s', 'cookie_path')
 				->execute();
 
 				$cache = new Cache($storage, Tables::CONFIG_TABLE);
@@ -800,7 +800,7 @@ switch ($mode) {
 				      ->execute();
 
 				    dibi::update(Tables::CONFIG_TABLE, ['config_value' => $new_lang])
-				        ->where('config_name = %s', 'default_lang')
+				        ->where('[config_name] = %s', 'default_lang')
 				        ->execute();
 
 				    $cache = new Cache($storage, Tables::CONFIG_TABLE);
@@ -892,7 +892,7 @@ switch ($mode) {
 				    ->execute();
 
 				    dibi::update(Tables::CONFIG_TABLE, ['config_value' => $new_style])
-				    ->where('config_name = %s', 'default_style')
+				    ->where('[config_name] = %s', 'default_style')
 				    ->execute();
 
 				    $cache = new Cache($storage, Tables::CONFIG_TABLE);
@@ -905,7 +905,7 @@ switch ($mode) {
 				check_authorisation();
 
 				dibi::update(Tables::CONFIG_TABLE, ['config_value' => 0])
-				->where('config_name = %s', 'gzip_compress')
+				->where('[config_name] = %s', 'gzip_compress')
 				->execute();
 
 				$cache = new Cache($storage, Tables::CONFIG_TABLE);
@@ -921,7 +921,7 @@ switch ($mode) {
 
 				$row = dibi::select('user_id')
 				->from(Tables::USERS_TABLE)
-				->where('user_id = %i', ANONYMOUS)
+				->where('[user_id] = %i', ANONYMOUS)
 				->fetch();
 
 				if ($row) { // anonymous user exists
@@ -932,32 +932,32 @@ switch ($mode) {
                         'user_id' => ANONYMOUS,
                         'username' => 'Anonymous',
                         'user_level' => 0,
-                        'user_regdate' => 0,
+                        'user_reg_date' => 0,
                         'user_password' => '',
                         'user_acp_password' => '',
                         'user_email'    => '',
                         'user_website'  => '',
-                        'user_occ'   => '',
+                        'user_occupation' => '',
                         'user_from' => '',
                         'user_interests' => '',
                         'user_sig' => '',
                         'user_style' => null,
                         'user_posts' => 0,
                         'user_topics' => 0,
-                        'user_attachsig' => 0,
-                        'user_allowsmile' => 1,
-                        'user_allowhtml' => 1,
-                        'user_allowbbcode' => 1,
+                        'user_attach_sig' => 0,
+                        'user_allow_smile' => 1,
+                        'user_allow_html' => 1,
+                        'user_allow_bbcode' => 1,
                         'user_allow_pm' => 0,
                         'user_notify_pm' => 1,
-                        'user_allow_viewonline' => 1,
+                        'user_allow_view_online' => 1,
                         'user_rank' => 0,
                         'user_avatar' => '',
                         'user_lang' => '',
                         'user_timezone' => '',
-                        'user_dateformat' => '',
-                        'user_actkey' => '',
-                        'user_newpasswd' => '',
+                        'user_date_format' => '',
+                        'user_act_key' => '',
+                        'user_new_password' => '',
                         'user_notify' => 0,
                         'user_active' => 0
                     ];
@@ -976,7 +976,7 @@ switch ($mode) {
 
 				$rows = dibi::select(['user_id', 'username'])
 				->from(Tables::USERS_TABLE)
-				->where('user_level = %i', ADMIN)
+				->where('[user_level] = %i', ADMIN)
 				->fetchAll();
 ?>
 	<p><?php echo $lang['Removing_admins'] . ':'; ?></p>
@@ -991,16 +991,16 @@ switch ($mode) {
 						    ->as('ug')
 						    ->innerJoin(Tables::AUTH_ACCESS_TABLE)
 						    ->as('aa')
-						    ->on('ug.group_id = aa.group_id')
-						    ->where('ug.user_id = %i', $row->user_id)
-						    ->where('ug.user_pending <> %i', 1)
-						    ->where('aa.auth_mod = %i', 1)
+						    ->on('[ug.group_id] = [aa.group_id]')
+						    ->where('[ug.user_id] = %i', $row->user_id)
+						    ->where('[ug.user_pending] <> %i', 1)
+						    ->where('[aa.auth_mod] = %i', 1)
 						    ->fetch();
 
 						$new_state = $row2 ? MOD : USER;
 
 						dibi::update(Tables::USERS_TABLE, ['user_level' => $new_state])
-						    ->where('user_id = %i', $row->user_id)
+						    ->where('[user_id] = %i', $row->user_id)
 						    ->execute();
 
 ?>
@@ -1019,7 +1019,7 @@ switch ($mode) {
 
 				$affected_rows1 = dibi::update(Tables::USERS_TABLE, ['user_active' => 1, 'user_level' => ADMIN])
 				->where('username = %s', $username)
-				->where('user_id <> %i', ANONYMOUS)
+				->where('[user_id] <> %i', ANONYMOUS)
 				->execute(dibi::AFFECTED_ROWS);
 
 				// Try to update the login data

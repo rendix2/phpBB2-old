@@ -42,7 +42,7 @@ function get_db_stat($mode)
         case 'newestuser':
             return dibi::select(['user_id', 'username'])
                 ->from(Tables::USERS_TABLE)
-                ->where('user_id <> %i', ANONYMOUS)
+                ->where('[user_id] <> %i', ANONYMOUS)
                 ->orderBy('user_id', dibi::DESC)
                 ->fetch();
 
@@ -93,12 +93,12 @@ function get_userdata($user_id, $force_str = false)
         ->from(Tables::USERS_TABLE);
 
     if (is_int($user_id)) {
-        $user->where('user_id = %i', $user_id);
+        $user->where('[user_id] = %i', $user_id);
     } else {
-        $user->where('username = %s', $user_id);
+        $user->where('[username] = %s', $user_id);
     }
 
-    $user = $user->where('user_id <> %i', ANONYMOUS)->fetch();
+    $user = $user->where('[user_id] <> %i', ANONYMOUS)->fetch();
 
 	return $user;
 }
@@ -120,7 +120,7 @@ function make_jumpbox($action, $match_forum_id = 0)
         ->as('c')
         ->innerJoin(Tables::FORUMS_TABLE)
         ->as('f')
-        ->on('f.cat_id = c.cat_id')
+        ->on('[f.cat_id] = [c.cat_id]')
         ->groupBy('c.cat_id')
         ->groupBy('c.cat_title')
         ->groupBy(' c.cat_order')
@@ -201,8 +201,8 @@ function init_userprefs($pageId)
             $default_lang = ltrim(basename(rtrim($userData['user_lang'])), "'");
         }
 
-        if (!empty($userData['user_dateformat'])) {
-            $board_config['default_dateformat'] = $userData['user_dateformat'];
+        if (!empty($userData['user_date_format'])) {
+            $board_config['default_dateformat'] = $userData['user_date_format'];
         }
 
         if (isset($userData['user_timezone'])) {
@@ -247,7 +247,7 @@ function init_userprefs($pageId)
 		$userData['user_lang'] = $default_lang;
 	} elseif ($userData['user_id'] === ANONYMOUS && $board_config['default_lang'] !== $default_lang) {
         dibi::update(Tables::CONFIG_TABLE, ['config_value' => $default_lang])
-            ->where('config_name = %s', 'default_lang')
+            ->where('[config_name] = %s', 'default_lang')
             ->execute();
 
         $cache = new Cache($storage, Tables::CONFIG_TABLE);
@@ -305,7 +305,7 @@ function setupStyle($style)
 	} else {
         $theme = dibi::select('*')
             ->from(Tables::THEMES_TABLE)
-            ->where('themes_id = %i', (int)$style)
+            ->where('[themes_id] = %i', (int)$style)
             ->fetch();
 
         $cache->save($key, $theme);
@@ -318,7 +318,7 @@ function setupStyle($style)
 
 	    $default_theme = dibi::select('*')
             ->from(Tables::THEMES_TABLE)
-            ->where('themes_id = %i',(int) $board_config['default_style'])
+            ->where('[themes_id] = %i',(int) $board_config['default_style'])
             ->fetch();
 
 	    if ($default_theme) {

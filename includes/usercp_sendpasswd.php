@@ -56,12 +56,12 @@ if (isset($_POST['submit'])) {
     $userPassword      = Random::generate(12);
 
     $updateData = [
-        'user_newpasswd' => password_hash($userPassword, PASSWORD_BCRYPT),
-        'user_actkey'    => $userActivationKey
+        'user_new_password' => password_hash($userPassword, PASSWORD_BCRYPT),
+        'user_act_key'      => $userActivationKey
     ];
 
     dibi::update(Tables::USERS_TABLE, $updateData)
-        ->where('user_id = %i', $user->user_id)
+        ->where('[user_id] = %i', $user->user_id)
         ->execute();
 
     $emailer = new Emailer($board_config['smtp_delivery']);

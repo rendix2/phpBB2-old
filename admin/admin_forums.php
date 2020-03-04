@@ -33,20 +33,19 @@ $phpbb_root_path = '.' . $sep . '..' . $sep;
 require_once '.' . $sep . 'pagestart.php';
 
 $forum_auth_ary = [
-    'auth_view'       => Auth::AUTH_ALL,
-    'auth_read'       => Auth::AUTH_ALL,
-    'auth_post'       => Auth::AUTH_REG,
-    'auth_reply'      => Auth::AUTH_REG,
-    'auth_edit'       => Auth::AUTH_REG,
-    'auth_delete'     => Auth::AUTH_REG,
-    'auth_sticky'     => Auth::AUTH_MOD,
-    'auth_announce'   => Auth::AUTH_MOD,
-    'auth_vote'       => Auth::AUTH_REG,
-    'auth_pollcreate' => Auth::AUTH_REG
+    'auth_view'        => Auth::AUTH_ALL,
+    'auth_read'        => Auth::AUTH_ALL,
+    'auth_post'        => Auth::AUTH_REG,
+    'auth_reply'       => Auth::AUTH_REG,
+    'auth_edit'        => Auth::AUTH_REG,
+    'auth_delete'      => Auth::AUTH_REG,
+    'auth_sticky'      => Auth::AUTH_MOD,
+    'auth_announce'    => Auth::AUTH_MOD,
+    'auth_vote'        => Auth::AUTH_REG,
+    'auth_poll_create' => Auth::AUTH_REG,
+    'auth_attachments' => Auth::AUTH_REG,
+    'auth_download'    => Auth::AUTH_REG
 ];
-
-$forum_auth_ary['auth_attachments'] = Auth::AUTH_REG;
-$forum_auth_ary['auth_download'] =Auth:: AUTH_REG;
 
 //
 // Mode setting
@@ -215,7 +214,7 @@ if (isset($_POST['addforum']) || isset($_POST['addcategory'])) {
 		//
 		// stripslashes needs to be run on this because slashes are added when the forum name is posted
 		//
-		$forumname = stripslashes($_POST['forumname'][$cat_id]);
+		$forumName = stripslashes($_POST['forumname'][$cat_id]);
 	}
 }
 
@@ -229,68 +228,69 @@ if (!empty($mode)) {
 			if ($mode === 'editforum') {
 				// $newmode determines if we are going to INSERT or UPDATE after posting?
 
-				$l_title = $lang['Edit_forum'];
-				$newmode = 'modforum';
-				$buttonvalue = $lang['Update'];
+				$l_title     = $lang['Edit_forum'];
+				$newMode     = 'modforum';
+				$buttonValue = $lang['Update'];
 
-				$forum_id = (int)$_GET[POST_FORUM_URL];
+				$forumId = (int)$_GET[POST_FORUM_URL];
 
-				$row = get_info('forum', $forum_id);
+				$row = get_info('forum', $forumId);
 
-				$cat_id = $row->cat_id;
-				$forumname = $row->forum_name;
-				$forumdesc = $row->forum_desc;
-				$forumstatus = $row->forum_status;
-                $forumThank = $row->forum_thank_enable;
+				$cat_id           = $row->cat_id;
+				$forumName        = $row->forum_name;
+				$forumDescription = $row->forum_desc;
+				$forumStatus      = $row->forum_status;
+                $forumThank       = $row->forum_thank_enable;
 
 				//
 				// start forum prune stuff.
 				//
                 if ($row->prune_enable) {
-					$prune_enabled = 'checked="checked"';
+					$pruneEnabled = 'checked="checked"';
 
 					$pr_row = dibi::select('*')
                         ->from(Tables::PRUNE_TABLE)
-                        ->where('forum_id = %i', $forum_id)
+                        ->where('[forum_id] = %i', $forumId)
                         ->fetch();
 
                     if (!$pr_row) {
 						 message_die(GENERAL_ERROR, "Auto-Prune: Couldn't read auto_prune table.", __LINE__, __FILE__);
         			}
 				} else {
-					$prune_enabled = '';
+					$pruneEnabled = '';
 				}
 			} else {
-				$l_title = $lang['Create_forum'];
-				$newmode = 'createforum';
-				$buttonvalue = $lang['Create_forum'];
+				$l_title     = $lang['Create_forum'];
+				$newMode     = 'createforum';
+				$buttonValue = $lang['Create_forum'];
 
-				$forumdesc = '';
-				$forumstatus = FORUM_UNLOCKED;
-                $forumThank = FORUM_UNTHANKABLE;
-				$forum_id = '';
-				$prune_enabled = '';
+				$forumDescription = '';
+				$forumStatus      = FORUM_UNLOCKED;
+                $forumThank       = FORUM_UNTHANKABLE;
+				$forumId          = '';
+				$pruneEnabled     = '';
 			}
 
-			$catlist = get_list('category', $cat_id, true);
+			$categorySelect = get_list('category', $cat_id, true);
 
-			// todo! $forumlocked or $forumunlocked might be undefined
-			$forumstatus === FORUM_LOCKED ? $forumlocked = 'selected="selected"' : $forumunlocked = 'selected="selected"';
+            $forumLocked   = '';
+            $forumUnLocked = '';
 
-			// These two options ($lang['Status_unlocked'] and $lang['Status_locked']) seem to be missing from
-			// the language files.
-			$lang['Status_unlocked'] = isset($lang['Status_unlocked']) ? $lang['Status_unlocked'] : 'Unlocked';
-			$lang['Status_locked'] = isset($lang['Status_locked']) ? $lang['Status_locked'] : 'Locked';
+            if ($forumStatus === FORUM_LOCKED) {
+                $forumLocked = 'selected="selected"';
+            } else {
+                $forumUnLocked = 'selected="selected"';
+            }
 
-			$statuslist = '<option value="' . FORUM_UNLOCKED . "\" $forumunlocked>" . $lang['Status_unlocked'] . "</option>\n";
-			$statuslist .= '<option value="' . FORUM_LOCKED . "\" $forumlocked>" . $lang['Status_locked'] . "</option>\n";
+			$statusList = '<option value="' . FORUM_UNLOCKED . "\" $forumUnLocked>" . $lang['Status_unlocked'] . "</option>\n";
+			$statusList .= '<option value="' . FORUM_LOCKED . "\" $forumLocked>" . $lang['Status_locked'] . "</option>\n";
 
             // Begin Thank Mod
-            $thank_yes = $forumThank ? 'checked="checked"' : '';
-            $thank_no = !$forumThank ? 'checked="checked"' : '';
+            $thankYes = $forumThank ? 'checked="checked"' : '';
+            $thankNo  = !$forumThank ? 'checked="checked"' : '';
             // End Thank Mod
 
-            $s_hidden_fields = '<input type="hidden" name="mode" value="' . $newmode . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
+            $s_hidden_fields = '<input type="hidden" name="mode" value="' . $newMode . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forumId . '" />';
 
             $template->setFileNames(['body' => 'admin/forum_edit_body.tpl']);
 
@@ -298,10 +298,10 @@ if (!empty($mode)) {
                 [
                     'S_FORUM_ACTION'  => Session::appendSid('admin_forums.php'),
                     'S_HIDDEN_FIELDS' => $s_hidden_fields,
-                    'S_SUBMIT_VALUE'  => $buttonvalue,
-                    'S_CAT_LIST'      => $catlist,
-                    'S_STATUS_LIST'   => $statuslist,
-                    'S_PRUNE_ENABLED' => $prune_enabled,
+                    'S_SUBMIT_VALUE'  => $buttonValue,
+                    'S_CAT_LIST'      => $categorySelect,
+                    'S_STATUS_LIST'   => $statusList,
+                    'S_PRUNE_ENABLED' => $pruneEnabled,
 
                     'L_FORUM_TITLE'       => $l_title,
                     'L_FORUM_EXPLAIN'     => $lang['Forum_edit_delete_explain'],
@@ -319,13 +319,14 @@ if (!empty($mode)) {
                     'L_PRUNE_FREQ'        => $lang['prune_freq'],
                     'L_DAYS'              => $lang['Days'],
 
-                    'THANK_ENABLE' => $thank_yes,
-                    'THANK_DISABLE' => $thank_no,
+                    'THANK_ENABLE'  => $thankYes,
+                    'THANK_DISABLE' => $thankNo,
 
                     'PRUNE_DAYS'  => isset($pr_row['prune_days']) ? $pr_row->prune_days : 7,
                     'PRUNE_FREQ'  => isset($pr_row['prune_freq']) ? $pr_row->prune_freq : 1,
-                    'FORUM_NAME'  => htmlspecialchars($forumname, ENT_QUOTES),
-                    'DESCRIPTION' => htmlspecialchars($forumdesc, ENT_QUOTES)
+
+                    'FORUM_NAME'  => htmlspecialchars($forumName, ENT_QUOTES),
+                    'DESCRIPTION' => htmlspecialchars($forumDescription, ENT_QUOTES)
                 ]
             );
             $template->pparse('body');
@@ -339,17 +340,17 @@ if (!empty($mode)) {
 				message_die(GENERAL_ERROR, "Can't create a forum without a name");
 			}
 
-            $max_order = dibi::select('MAX(forum_order)')
+            $maxCategoryOrder = dibi::select('MAX(forum_order)')
                 ->as('max_order')
                 ->from(Tables::FORUMS_TABLE)
-                ->where('cat_id = %i', (int)$_POST[POST_CAT_URL])
+                ->where('[cat_id] = %i', (int)$_POST[POST_CAT_URL])
                 ->fetchSingle();
 
-			if ($max_order === false) {
+			if ($maxCategoryOrder === false) {
 				message_die(GENERAL_ERROR, "Couldn't get order number from forums table");
 			}
 
-			$next_order = $max_order + 10;
+			$nextCategoryOrder = $maxCategoryOrder + 10;
 
 			//
 			// Default permissions of public ::
@@ -357,7 +358,7 @@ if (!empty($mode)) {
             $forum_auth_ary['forum_name'] = $_POST['forumname'];
             $forum_auth_ary['cat_id'] = (int)$_POST[POST_CAT_URL];
             $forum_auth_ary['forum_desc'] = $_POST['forumdesc'];
-            $forum_auth_ary['forum_order'] = $next_order;
+            $forum_auth_ary['forum_order'] = $nextCategoryOrder;
             $forum_auth_ary['forum_status'] = (int)$_POST['forumstatus'];
             $forum_auth_ary['prune_enable'] = (int)$_POST['prune_enable'];
             $forum_auth_ary['forum_thank_enable'] = (int)$_POST['forum_thank_enable'];
@@ -386,24 +387,23 @@ if (!empty($mode)) {
 			message_die(GENERAL_MESSAGE, $message);
 
 			break;
-
 		case 'modforum':
 			// Modify a forum in the DB
             if (isset($_POST['prune_enable']) && $_POST['prune_enable'] !== '1') {
                 $_POST['prune_enable'] = 0;
             }
 
-			$update_data = [
-			    'forum_name'   => $_POST['forumname'],
-                'cat_id'       => (int)$_POST[POST_CAT_URL],
-                'forum_desc'   => $_POST['forumdesc'],
-                'forum_status' => (int)$_POST['forumstatus'],
-                'prune_enable' => (int)$_POST['prune_enable'],
-                'forum_thank_enable'  => (int)$_POST['forum_thank_enable']
+            $update_data = [
+                'forum_name'         => $_POST['forumname'],
+                'cat_id'             => (int)$_POST[POST_CAT_URL],
+                'forum_desc'         => $_POST['forumdesc'],
+                'forum_status'       => (int)$_POST['forumstatus'],
+                'prune_enable'       => (int)$_POST['prune_enable'],
+                'forum_thank_enable' => (int)$_POST['forum_thank_enable']
             ];
 
 			dibi::update(Tables::FORUMS_TABLE, $update_data)
-                ->where('forum_id = %i', (int)$_POST[POST_FORUM_URL])
+                ->where('[forum_id] = %i', (int)$_POST[POST_FORUM_URL])
                 ->execute();
 
             if ($_POST['prune_enable'] === '1') {
@@ -415,7 +415,7 @@ if (!empty($mode)) {
 				$prune_count = dibi::select('COUNT(*)')
                     ->as('prune_count')
                     ->from(Tables::PRUNE_TABLE)
-                    ->where('forum_id = %i', (int)$_POST[POST_FORUM_URL])
+                    ->where('[forum_id] = %i', (int)$_POST[POST_FORUM_URL])
                     ->fetchSingle();
 
 				if ($prune_count === false) {
@@ -429,7 +429,7 @@ if (!empty($mode)) {
                     ];
 
 				    dibi::update(Tables::PRUNE_TABLE, $update_data)
-                        ->where('forum_id = %i', (int)$_POST[POST_FORUM_URL])
+                        ->where('[forum_id] = %i', (int)$_POST[POST_FORUM_URL])
                         ->execute();
 				} else {
 				    $insert_data = [
@@ -444,7 +444,7 @@ if (!empty($mode)) {
 
 			$message  = $lang['Forums_updated'] . '<br /><br />';
             $message .= sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />';
-            $messa   .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+            $message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 
@@ -456,12 +456,12 @@ if (!empty($mode)) {
 				message_die(GENERAL_ERROR, "Can't create a category without a name");
 			}
 
-			$max_order = dibi::select('MAX(cat_order)')
+			$maxCategoryOrder = dibi::select('MAX(cat_order)')
                 ->as('max_order')
                 ->from(Tables::CATEGORIES_TABLE)
                 ->fetchSingle();
 
-			$next_order = $max_order + 10;
+			$nextCategoryOrder = $maxCategoryOrder + 10;
 
 			//
 			// There is no problem having duplicate forum names so we won't check for it.
@@ -469,7 +469,7 @@ if (!empty($mode)) {
 
             $insert_data = [
                 'cat_title' => $_POST['categoryname'],
-                'cat_order' => $next_order
+                'cat_order' => $nextCategoryOrder
             ];
 
             dibi::insert(Tables::CATEGORIES_TABLE, $insert_data)->execute();
@@ -486,28 +486,24 @@ if (!empty($mode)) {
 			//
 			// Show form to edit a category
 			//
-			$newmode = 'modcat';
-			$buttonvalue = $lang['Update'];
-
 			$cat_id = (int)$_GET[POST_CAT_URL];
 
 			$row = get_info('category', $cat_id);
-			$cat_title = $row->cat_title;
 
             $template->setFileNames(['body' => 'admin/category_edit_body.tpl']);
 
-            $s_hidden_fields = '<input type="hidden" name="mode" value="' . $newmode . '" /><input type="hidden" name="' . POST_CAT_URL . '" value="' . $cat_id . '" />';
+            $s_hidden_fields = '<input type="hidden" name="mode" value="modcat" /><input type="hidden" name="' . POST_CAT_URL . '" value="' . $cat_id . '" />';
 
             $template->assignVars(
                 [
-                    'CAT_TITLE' => htmlspecialchars($cat_title, ENT_QUOTES),
+                    'CAT_TITLE' => htmlspecialchars($row->cat_title, ENT_QUOTES),
 
                     'L_EDIT_CATEGORY'         => $lang['Edit_Category'],
                     'L_EDIT_CATEGORY_EXPLAIN' => $lang['Edit_Category_explain'],
                     'L_CATEGORY'              => $lang['Category'],
 
                     'S_HIDDEN_FIELDS' => $s_hidden_fields,
-                    'S_SUBMIT_VALUE'  => $buttonvalue,
+                    'S_SUBMIT_VALUE'  => $lang['Update'],
                     'S_FORUM_ACTION'  => Session::appendSid('admin_forums.php')
                 ]
             );
@@ -518,7 +514,7 @@ if (!empty($mode)) {
 		case 'modcat':
             // Modify a category in the DB
 		    dibi::update(Tables::CATEGORIES_TABLE, ['cat_title' => $_POST['cat_title']])
-                ->where('cat_id = %i', (int)$_POST[POST_CAT_URL])
+                ->where('[cat_id] = %i', (int)$_POST[POST_CAT_URL])
                 ->execute();
 
 			$message  = $lang['Forums_updated'] . '<br /><br />';
@@ -531,23 +527,21 @@ if (!empty($mode)) {
 
 		case 'deleteforum':
 			// Show form to delete a forum
-			$forum_id = (int)$_GET[POST_FORUM_URL];
+			$forumId = (int)$_GET[POST_FORUM_URL];
 
 			$select_to = '<select name="to_id">';
 			$select_to .= "<option value=\"-1\"$s>" . $lang['Delete_all_posts'] . "</option>\n";
-			$select_to .= get_list('forum', $forum_id, 0);
+			$select_to .= get_list('forum', $forumId, 0);
 			$select_to .= '</select>';
 
-			$buttonvalue = $lang['Move_and_Delete'];
+			$newMode = 'movedelforum';
 
-			$newmode = 'movedelforum';
-
-			$foruminfo = get_info('forum', $forum_id);
+			$foruminfo = get_info('forum', $forumId);
 			$name = $foruminfo->forum_name;
 
             $template->setFileNames(['body' => 'admin/forum_delete_body.tpl']);
 
-            $s_hidden_fields = '<input type="hidden" name="mode" value="' . $newmode . '" /><input type="hidden" name="from_id" value="' . $forum_id . '" />';
+            $s_hidden_fields = '<input type="hidden" name="mode" value="' . $newMode . '" /><input type="hidden" name="from_id" value="' . $forumId . '" />';
 
             $template->assignVars(
                 [
@@ -561,7 +555,7 @@ if (!empty($mode)) {
                     'S_HIDDEN_FIELDS' => $s_hidden_fields,
                     'S_FORUM_ACTION'  => Session::appendSid('admin_forums.php'),
                     'S_SELECT_TO'     => $select_to,
-                    'S_SUBMIT_VALUE'  => $buttonvalue
+                    'S_SUBMIT_VALUE'  => $lang['Move_and_Delete']
                 ]
             );
 
@@ -579,27 +573,26 @@ if (!empty($mode)) {
 			// Either delete or move all posts in a forum
 			if ($to_id === -1) {
 				// Delete polls in this forum
-
-                $vote_ids = dibi::select('v.vote_id')
+                $voteIds = dibi::select('v.vote_id')
                     ->from(Tables::VOTE_DESC_TABLE)
                     ->as('v')
                     ->innerJoin(Tables::TOPICS_TABLE)
                     ->as('t')
-                    ->on('v.topic_id = t.topic_id')
-                    ->where('t.forum_id = %i', $from_id)
+                    ->on('[v.topic_id] = [t.topic_id]')
+                    ->where('[t.forum_id] = %i', $from_id)
                     ->fetchPairs(null, 'vote_id');
 
-                if (count($vote_ids)) {
+                if (count($voteIds)) {
                     dibi::delete(Tables::VOTE_DESC_TABLE)
-                        ->where('vote_id IN %in', $vote_ids)
+                        ->where('[vote_id] IN %in', $voteIds)
                         ->execute();
 
                     dibi::delete(Tables::VOTE_RESULTS_TABLE)
-                        ->where('vote_id IN %in', $vote_ids)
+                        ->where('[vote_id] IN %in', $voteIds)
                         ->execute();
 
                     dibi::delete(Tables::VOTE_USERS_TABLE)
-                        ->where('vote_id IN %in', $vote_ids)
+                        ->where('[vote_id] IN %in', $voteIds)
                         ->execute();
                 }
 
@@ -607,7 +600,7 @@ if (!empty($mode)) {
 			} else {
 			    $forums_exists = dibi::select('*')
                     ->from(Tables::FORUMS_TABLE)
-                    ->where('forum_id IN %in', [$from_id, $to_id])
+                    ->where('[forum_id] IN %in', [$from_id, $to_id])
                     ->fetchAll();
 
 				if (count($forums_exists) !== 2) {
@@ -615,11 +608,11 @@ if (!empty($mode)) {
 				}
 
 				dibi::update(Tables::TOPICS_TABLE, ['forum_id' => $to_id])
-                    ->where('forum_id = %i', $from_id)
+                    ->where('[forum_id] = %i', $from_id)
                     ->execute();
 
 				dibi::update(Tables::POSTS_TABLE, ['forum_id' => $to_id])
-                    ->where('forum_id = %i', $from_id)
+                    ->where('[forum_id] = %i', $from_id)
                     ->execute();
 
 				Sync::oneForum($to_id);
@@ -633,7 +626,7 @@ if (!empty($mode)) {
                 ->as('ug')
                 ->on('ug.group_id = a.group_id')
                 ->where('a.forum_id <> %i', $from_id)
-                ->where('a.auth_mod = %i', 1)
+                ->where('[a.auth_mod] = %i', 1)
                 ->fetchPairs(null, 'user_id');
 
             if (count($user_mods_ids)) {
@@ -642,30 +635,30 @@ if (!empty($mode)) {
                     ->as('a')
                     ->innerJoin(Tables::USERS_GROUPS_TABLE)
                     ->as('ug')
-                    ->on('ug.group_id = a.group_id')
-                    ->where('a.forum_id = %i', $from_id)
-                    ->where('a.auth_mod = %i', 1)
-                    ->where('ug.user_id NOT IN %in', $user_mods_ids)
+                    ->on('[ug.group_id] = [a.group_id]')
+                    ->where('[a.forum_id] = %i', $from_id)
+                    ->where('[a.auth_mod] = %i', 1)
+                    ->where('[ug.user_id] NOT IN %in', $user_mods_ids)
                     ->fetchPairs(null, 'user_id');
 
                 if (count($user_ids)) {
                     dibi::update(Tables::USERS_TABLE, ['user_level' => USER])
-                        ->where('user_id IN %in', $user_ids)
-                        ->where('user_level <> %i', ADMIN)
+                        ->where('[user_id] IN %in', $user_ids)
+                        ->where('[user_level] <> %i', ADMIN)
                         ->execute();
                 }
             }
 
             dibi::delete(Tables::FORUMS_TABLE)
-                ->where('forum_id = %i', $from_id)
+                ->where('[forum_id] = %i', $from_id)
                 ->execute();
 
 			dibi::delete(Tables::AUTH_ACCESS_TABLE)
-                ->where('forum_id = %i', $from_id)
+                ->where('[forum_id] = %i', $from_id)
                 ->execute();
 
             dibi::delete(Tables::PRUNE_TABLE)
-                ->where('forum_id = %i', $from_id)
+                ->where('[forum_id] = %i', $from_id)
                 ->execute();
 
 			$message  = $lang['Forums_updated'] . '<br /><br />';
@@ -682,11 +675,10 @@ if (!empty($mode)) {
 			//
 			$cat_id = (int)$_GET[POST_CAT_URL];
 
-			$buttonvalue = $lang['Move_and_Delete'];
-			$newmode = 'movedelcat';
-
 			$catinfo = get_info('category', $cat_id);
 			$name = $catinfo->cat_title;
+
+            $select_to = '';
 
 			if ($catinfo->number === 1) {
                 $count = dibi::select('COUNT(*)')
@@ -711,7 +703,7 @@ if (!empty($mode)) {
 
             $template->setFileNames(['body' => 'admin/forum_delete_body.tpl']);
 
-            $s_hidden_fields = '<input type="hidden" name="mode" value="' . $newmode . '" /><input type="hidden" name="from_id" value="' . $cat_id . '" />';
+            $s_hidden_fields = '<input type="hidden" name="mode" value="movedelcat" /><input type="hidden" name="from_id" value="' . $cat_id . '" />';
 
             $template->assignVars(
                 [
@@ -725,7 +717,7 @@ if (!empty($mode)) {
                     'S_HIDDEN_FIELDS' => $s_hidden_fields,
                     'S_FORUM_ACTION'  => Session::appendSid('admin_forums.php'),
                     'S_SELECT_TO'     => $select_to,
-                    'S_SUBMIT_VALUE'  => $buttonvalue
+                    'S_SUBMIT_VALUE'  => $lang['Move_and_Delete']
                 ]
             );
 
@@ -750,12 +742,12 @@ if (!empty($mode)) {
 				}
 
 				dibi::update(Tables::FORUMS_TABLE, ['cat_id' => $to_id])
-                    ->where('cat_id = %i', $from_id)
+                    ->where('[cat_id] = %i', $from_id)
                     ->execute();
 			}
 
 			dibi::delete(Tables::CATEGORIES_TABLE)
-                ->where('cat_id = %i', $from_id)
+                ->where('[cat_id] = %i', $from_id)
                 ->execute();
 
 			$message  = $lang['Forums_updated'] . '<br /><br />';
@@ -770,20 +762,20 @@ if (!empty($mode)) {
 			//
 			// Change order of forums in the DB
 			//
-			$move     = (int)$_GET['move'];
-			$forum_id = (int)$_GET[POST_FORUM_URL];
+			$move    = (int)$_GET['move'];
+			$forumId = (int)$_GET[POST_FORUM_URL];
 
-			$forum_info = get_info('forum', $forum_id);
+			$forum_info = get_info('forum', $forumId);
 
 			$cat_id = $forum_info->cat_id;
 
             if ($move > 0) {
                 dibi::update(Tables::FORUMS_TABLE, ['forum_order%sql' => 'forum_order + ' . $move])
-                    ->where('forum_id = %i', $forum_id)
+                    ->where('[forum_id] = %i', $forumId)
                     ->execute();
             } else {
                 dibi::update(Tables::FORUMS_TABLE, ['forum_order%sql' => 'forum_order  - ' . abs($move)])
-                    ->where('forum_id = %i', $forum_id)
+                    ->where('[forum_id] = %i', $forumId)
                     ->execute();
             }
 
@@ -801,11 +793,11 @@ if (!empty($mode)) {
 
             if ($move > 0) {
                 dibi::update(Tables::CATEGORIES_TABLE, ['cat_order%sql' => 'cat_order + ' . $move])
-                    ->where('cat_id = %i', $cat_id)
+                    ->where('[cat_id] = %i', $cat_id)
                     ->execute();
             } else {
                 dibi::update(Tables::CATEGORIES_TABLE, ['cat_order%sql' => 'cat_order - ' . abs($move)])
-                    ->where('cat_id = %i', $cat_id)
+                    ->where('[cat_id] = %i', $cat_id)
                     ->execute();
             }
 
@@ -859,18 +851,17 @@ $categories = dibi::select(['cat_id', 'cat_title', 'cat_order'])
     ->orderBy('cat_order')
     ->fetchAll();
 
-$category_count = count($categories);
+$categoriesCount = count($categories);
+$forumsCount     = 0;
 
-$forums_count = 0;
-
-if ($category_count) {
+if ($categoriesCount) {
     $forums = dibi::select('*')
         ->from(Tables::FORUMS_TABLE)
         ->orderBy('cat_id')
         ->orderBy('forum_order')
         ->fetchAll();
 
-    $forums_count = count($forums);
+    $forumsCount = count($forums);
 
 	//
 	// Okay, let's build the index
@@ -918,7 +909,7 @@ if ($category_count) {
             $template->assignBlockVars('catrow.up', []);
         }
 
-        if ($cat_i !== $category_count) {
+        if ($cat_i !== $categoriesCount) {
             $template->assignBlockVars('catrow.down', []);
         }
 
@@ -926,7 +917,7 @@ if ($category_count) {
 
         foreach ($forums as $i => $forum) {
             $forum_i++;
-			$forum_id = $forum->forum_id;
+			$forumId = $forum->forum_id;
 
 			if ($forum->cat_id === $cat_id) {
                 $rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
@@ -943,14 +934,14 @@ if ($category_count) {
                         'NUM_POSTS'  => $forum->forum_posts,
                         'NUM_THANKS'  => $forum->forum_thanks,
 
-                        'U_VIEWFORUM'         => Session::appendSid($phpbb_root_path . 'viewforum.php?' . POST_FORUM_URL . "=$forum_id"),
-                        'U_FORUM_EDIT'        => Session::appendSid('admin_forums.php?mode=editforum&amp;' . POST_FORUM_URL . "=$forum_id"),
-                        'U_FORUM_DELETE'      => Session::appendSid('admin_forums.php?mode=deleteforum&amp;' . POST_FORUM_URL . "=$forum_id"),
-                        'U_FORUM_MOVE_UP'     => Session::appendSid('admin_forums.php?mode=forum_order&amp;move=-15&amp;' . POST_FORUM_URL . "=$forum_id"),
-                        'U_FORUM_MOVE_DOWN'   => Session::appendSid('admin_forums.php?mode=forum_order&amp;move=15&amp;' . POST_FORUM_URL . "=$forum_id"),
-                        'U_FORUM_RESYNC'      => Session::appendSid('admin_forums.php?mode=forum_sync&amp;' . POST_FORUM_URL . "=$forum_id"),
-                        'U_FORUM_PERMISSIONS' => Session::appendSid('admin_forumauth.php?' . POST_FORUM_URL . "=$forum_id"),
-                        'U_FORUM_PRUNE'       => Session::appendSid('admin_forum_prune.php?' . POST_FORUM_URL . "=$forum_id")
+                        'U_VIEWFORUM'         => Session::appendSid($phpbb_root_path . 'viewforum.php?' . POST_FORUM_URL . "=$forumId"),
+                        'U_FORUM_EDIT'        => Session::appendSid('admin_forums.php?mode=editforum&amp;' . POST_FORUM_URL . "=$forumId"),
+                        'U_FORUM_DELETE'      => Session::appendSid('admin_forums.php?mode=deleteforum&amp;' . POST_FORUM_URL . "=$forumId"),
+                        'U_FORUM_MOVE_UP'     => Session::appendSid('admin_forums.php?mode=forum_order&amp;move=-15&amp;' . POST_FORUM_URL . "=$forumId"),
+                        'U_FORUM_MOVE_DOWN'   => Session::appendSid('admin_forums.php?mode=forum_order&amp;move=15&amp;' . POST_FORUM_URL . "=$forumId"),
+                        'U_FORUM_RESYNC'      => Session::appendSid('admin_forums.php?mode=forum_sync&amp;' . POST_FORUM_URL . "=$forumId"),
+                        'U_FORUM_PERMISSIONS' => Session::appendSid('admin_forumauth.php?' . POST_FORUM_URL . "=$forumId"),
+                        'U_FORUM_PRUNE'       => Session::appendSid('admin_forum_prune.php?' . POST_FORUM_URL . "=$forumId")
                     ]
                 );
 

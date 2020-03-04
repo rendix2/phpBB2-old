@@ -64,7 +64,7 @@ foreach ($configs as $config) {
     if (isset($_POST['submit'])) {
         if ($new[$config_name] !== $board_config[$config_name]) {
             dibi::update(Tables::CONFIG_TABLE, ['config_value' => $new[$config_name]])
-                ->where('config_name = %s', $config_name)
+                ->where('[config_name] = %s', $config_name)
                 ->execute();
         }
     }

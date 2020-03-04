@@ -161,7 +161,7 @@ switch ($mode_id) {
 
                 $total_deactivated_users = dibi::select('COUNT(user_id) - 1')
                     ->from(Tables::USERS_TABLE)
-                    ->where('user_active = %i', 0)
+                    ->where('[user_active] = %i', 0)
                     ->fetchSingle();
 
                 if ($total_deactivated_users === false) {
@@ -170,7 +170,7 @@ switch ($mode_id) {
 
                 $total_moderators = dibi::select('COUNT(user_id) - 1')
                     ->from(Tables::USERS_TABLE)
-                    ->where('user_level = %i', MOD)
+                    ->where('[user_level] = %i', MOD)
                     ->fetchSingle();
 
                 if ($total_moderators === false) {
@@ -179,7 +179,7 @@ switch ($mode_id) {
 
                 $total_administrators = dibi::select('COUNT(user_id) - 1')
                     ->from(Tables::USERS_TABLE)
-                    ->where('user_level = %i', ADMIN)
+                    ->where('[user_level] = %i', ADMIN)
                     ->fetchSingle();
 
                 if ($total_administrators === false) {
@@ -188,8 +188,8 @@ switch ($mode_id) {
 
 				$administrator_names = dibi::select('username')
 					->from(Tables::USERS_TABLE)
-					->where('user_level = %i', ADMIN)
-					->where('user_id <> %i', ANONYMOUS)
+					->where('[user_level] = %i', ADMIN)
+					->where('[user_id] <> %i', ANONYMOUS)
 					->orderBy('username')
 					->fetchPairs(null, 'username');
 
@@ -477,7 +477,7 @@ switch ($mode_id) {
 
 				$checkAnonymous = dibi::select('user_id')
 					->from(Tables::USERS_TABLE)
-					->where('user_id = %i', ANONYMOUS)
+					->where('[user_id] = %i', ANONYMOUS)
 					->fetchSingle();
 
                 if ($checkAnonymous === ANONYMOUS) {
@@ -489,12 +489,12 @@ switch ($mode_id) {
                         'user_id' => ANONYMOUS,
                         'username' => 'Anonymous',
                         'user_level' => 0,
-                        'user_regdate' => 0,
+                        'user_reg_date' => 0,
                         'user_password' => '',
                         'user_acp_password' => '',
                         'user_email'    => '',
                         'user_website'  => '',
-                        'user_occ'   => '',
+                        'user_occupation'   => '',
                         'user_from' => '',
                         'user_interests' => '',
                         'user_sig' => '',
@@ -503,20 +503,20 @@ switch ($mode_id) {
                         'user_topics' => 0,
                         'user_thanks' => 0,
                         'user_topic_watches' => 0,
-                        'user_attachsig' => 0,
-                        'user_allowsmile' => 1,
-                        'user_allowhtml' => 1,
-                        'user_allowbbcode' => 1,
+                        'user_attach_sig' => 0,
+                        'user_allow_smile' => 1,
+                        'user_allow_html' => 1,
+                        'user_allow_bbcode' => 1,
                         'user_allow_pm' => 1,
                         'user_notify_pm' => 0,
-                        'user_allow_viewonline' => 1,
+                        'user_allow_view_online' => 1,
                         'user_rank' => 1,
                         'user_avatar' => '',
                         'user_lang' => '',
                         'user_timezone' => '',
-                        'user_dateformat' => '',
-                        'user_actkey' => '',
-                        'user_newpasswd' => '',
+                        'user_date_format' => '',
+                        'user_act_key' => '',
+                        'user_new_password' => '',
                         'user_notify' => 0,
                         'user_active' => 0
                     ];
@@ -532,7 +532,7 @@ switch ($mode_id) {
 
 				// Update the cases where user_pending is null (there were some cases reported, so we just do it)
 				$affected_rows = dibi::update(Tables::USERS_GROUPS_TABLE, ['user_pending' => 1])
-					->where('user_pending IS NULL')
+					->where('[user_pending] IS NULL')
 					->execute(dibi::AFFECTED_ROWS);
 
                 if ($affected_rows === 1) {
@@ -548,9 +548,9 @@ switch ($mode_id) {
                     ->as('ug')
                     ->innerJoin(Tables::GROUPS_TABLE)
                     ->as('g')
-                    ->on('ug.group_id = g.group_id')
-                    ->where('ug.user_pending = %i', 1)
-                    ->where('g.group_single_user = %i', 1)
+                    ->on('[ug.group_id] = [g.group_id]')
+                    ->where('[ug.user_pending] = %i', 1)
+                    ->where('[g.group_single_user] = %i', 1)
                     ->fetchPairs(null, 'group_id');
 
                 if (count($result_array)) {
@@ -559,8 +559,8 @@ switch ($mode_id) {
                     echo('<p class="gen">' . $lang['Updating_pending_information'] . ": $record_list</p>\n");
 
                     dibi::update(Tables::USERS_GROUPS_TABLE, ['user_pending' => 0])
-                        ->where('user_pending = %i', 0)
-                        ->where('group_id IN %in', $result_array)
+                        ->where('[user_pending] = %i', 0)
+                        ->where('[group_id] IN %in', $result_array)
                         ->execute();
                 }
 
@@ -579,10 +579,10 @@ switch ($mode_id) {
                     ->as('u')
                     ->leftJoin(Tables::USERS_GROUPS_TABLE)
                     ->as('ug')
-                    ->on('u.user_id = ug.user_id')
+                    ->on('[u.user_id] = [ug.user_id]')
                     ->leftJoin(Tables::GROUPS_TABLE)
                     ->as('g')
-                    ->on('ug.group_id = g.group_id')
+                    ->on('[ug.group_id] = [g.group_id]')
                     ->groupBy('u.user_id')
                     ->having('group_count <> 1 OR ISNULL(group_count)')
                     ->fetchAll();
@@ -612,24 +612,24 @@ switch ($mode_id) {
                         ->as('u')
                         ->innerJoin(Tables::USERS_GROUPS_TABLE)
                         ->as('ug')
-                        ->on('u.user_id = ug.user_id')
+                        ->on('[u.user_id] = [ug.user_id]')
                         ->innerJoin(Tables::GROUPS_TABLE)
                         ->as('g')
-                        ->on('ug.group_id = g.group_id')
-                        ->where('u.user_id IN %in', $multiple_groups)
-                        ->where('g.group_single_user = %i', 1)
+                        ->on('[ug.group_id] = [g.group_id]')
+                        ->where('[u.user_id] IN %in', $multiple_groups)
+                        ->where('[g.group_single_user] = %i', 1)
                         ->fetchPairs(null, 'group_id');
 
                     $record_list = implode(',', $result_array);
                     echo('<li>' . $lang['Removing_groups'] . ": $record_list</li>\n");
 
                     dibi::delete(Tables::GROUPS_TABLE)
-                        ->where('group_id IN %in', $result_array)
+                        ->where('[group_id] IN %in', $result_array)
                         ->execute();
 
                     echo('<li>' . $lang['Removing_user_groups'] . ": $record_list</li>\n");
                     dibi::delete(Tables::USERS_GROUPS_TABLE)
-                        ->where('group_id IN %in', $result_array)
+                        ->where('[group_id] IN %in', $result_array)
                         ->execute();
 
                     echo("</ul></font>\n");
@@ -676,9 +676,9 @@ switch ($mode_id) {
                     ->as('g')
                     ->leftJoin(Tables::USERS_TABLE)
                     ->as('u')
-                    ->on('g.group_moderator = u.user_id')
-                    ->where('g.group_single_user = %i', 0)
-                    ->where('(u.user_id IS NULL OR u.user_id = %i)', ANONYMOUS)
+                    ->on('[g.group_moderator] = [u.user_id]')
+                    ->where('[g.group_single_user] = %i', 0)
+                    ->where('([u.user_id] IS NULL OR [u.user_id] = %i)', ANONYMOUS)
                     ->fetchAll();
 
                 foreach ($rows as $row) {
@@ -691,7 +691,7 @@ switch ($mode_id) {
                     echo('<li>' . htmlspecialchars($row->group_name) . ' (' . $row->group_id . ")</li>\n");
 
                     dibi::update(Tables::GROUPS_TABLE, ['group_moderator' => $userdata['user_id']])
-                        ->where('group_id = %i', $row->group_id)
+                        ->where('[group_id] = %i', $row->group_id)
                         ->execute();
                 }
 
@@ -706,14 +706,14 @@ switch ($mode_id) {
                 echo('<p class="gen"><b>' . $lang['Checking_moderator_membership'] . "</b></p>\n");
                 $rows = dibi::select(['group_id', 'group_name', 'group_moderator'])
                     ->from(Tables::GROUPS_TABLE)
-                    ->where('group_single_user = %i', 0)
+                    ->where('[group_single_user] = %i', 0)
                     ->fetchAll();
 
                 foreach ($rows as $row) {
                     $row2 = dibi::select('user_pending')
                         ->from(Tables::USERS_GROUPS_TABLE)
-                        ->where('group_id = %i', $row->group_id)
-                        ->where('user_id = %i', $row->group_moderator)
+                        ->where('[group_id] = %i', $row->group_id)
+                        ->where('[user_id] = %i', $row->group_moderator)
                         ->fetch();
 
                     if (!$row2) {// No record found
@@ -740,8 +740,8 @@ switch ($mode_id) {
                         echo('<li>' . htmlspecialchars($row->group_name) . ' (' . $row->group_id . ') - ' . $lang['Moderator_changed_pending'] . "</li>\n");
 
                         dibi::update(Tables::USERS_GROUPS_TABLE, ['user_pending' => 0])
-                            ->where('group_id = %i', $row->group_id)
-                            ->where('user_id = %i', $row->group_moderator)
+                            ->where('[group_id] = %i', $row->group_id)
+                            ->where('[user_id] = %i', $row->group_moderator)
                             ->execute();
                     }
                 }
@@ -761,15 +761,15 @@ switch ($mode_id) {
                     ->as('ug')
                     ->leftJoin(Tables::USERS_TABLE)
                     ->as('u')
-                    ->on('ug.user_id = u.user_id')
-                    ->where('u.user_id IS NULL')
+                    ->on('[ug.user_id] = [u.user_id]')
+                    ->where('[u.user_id] IS NULL')
                     ->groupBy('ug.user_id')
                     ->fetchPairs(null, 'user_id');
 
                 if (count($result_array)) {
                     $record_list   = implode(',', $result_array);
                     $affected_rows = dibi::delete(Tables::USERS_GROUPS_TABLE)
-                        ->where('user_id IN %in', $result_array)
+                        ->where('[user_id] IN %in', $result_array)
                         ->execute(dibi::AFFECTED_ROWS);
 
                     if ($affected_rows === 1) {
@@ -790,15 +790,15 @@ switch ($mode_id) {
                     ->as('g')
                     ->leftJoin(Tables::USERS_GROUPS_TABLE)
                     ->as('ug')
-                    ->on('g.group_id = ug.group_id')
-                    ->where('ug.group_id IS NULL')
+                    ->on('[g.group_id] = [ug.group_id]')
+                    ->where('[ug.group_id] IS NULL')
                     ->fetchPairs(null, 'group_id');
 
                 if (count($result_array)) {
                     $record_list = implode(',', $result_array);
 
                     $affected_rows = dibi::delete(Tables::GROUPS_TABLE)
-                        ->where('group_id IN %in', $result_array)
+                        ->where('[group_id] IN %in', $result_array)
                         ->execute(dibi::AFFECTED_ROWS);
 
                     if ($affected_rows === 1) {
@@ -818,14 +818,14 @@ switch ($mode_id) {
                     ->as('ug')
                     ->leftJoin(Tables::GROUPS_TABLE)
                     ->as('g')
-                    ->on('ug.group_id = g.group_id')
-                    ->where('g.group_id IS NULL')
+                    ->on('[ug.group_id] = [g.group_id]')
+                    ->where('[g.group_id] IS NULL')
                     ->groupBy('ug.group_id')
                     ->fetchPairs(null, 'group_id');
 
                 if (count($result_array)) {
                     $affected_rows = dibi::delete(Tables::USERS_GROUPS_TABLE)
-                        ->where('group_id IN %in', $result_array)
+                        ->where('[group_id] IN %in', $result_array)
                         ->execute(dibi::AFFECTED_ROWS);
 
                     if ($affected_rows === 1) {
@@ -845,9 +845,9 @@ switch ($mode_id) {
                     ->as('u')
                     ->leftJoin(Tables::RANKS_TABLE)
                     ->as('r')
-                    ->on('u.user_rank = r.rank_id')
-                    ->where('r.rank_id IS NULL')
-                    ->where('u.user_rank <> %i', 0)
+                    ->on('[u.user_rank] = [r.rank_id]')
+                    ->where('[r.rank_id] IS NULL')
+                    ->where('[u.user_rank] <> %i', 0)
                     ->fetchAll();
 
                 $result_array = [];
@@ -873,7 +873,7 @@ switch ($mode_id) {
                     $record_list = implode(',', $result_array);
 
                     dibi::update(Tables::USERS_TABLE, ['user_rank' => 0])
-                        ->where('user_id IN %in', $result_array)
+                        ->where('[user_id] IN %in', $result_array)
                         ->execute();
                 } else {
                     echo($lang['Nothing_to_do']);
@@ -886,9 +886,9 @@ switch ($mode_id) {
                     ->as('u')
                     ->leftJoin(Tables::THEMES_TABLE)
                     ->as('t')
-                    ->on('u.user_style = t.themes_id')
-                    ->where('t.themes_id IS NULL')
-                    ->where('u.user_id <> %i', ANONYMOUS)
+                    ->on('[u.user_style] = [t.themes_id]')
+                    ->where('[t.themes_id] IS NULL')
+                    ->where('[u.user_id] <> %i', ANONYMOUS)
                     ->groupBy('u.user_style')
                     ->fetchAll();
 
@@ -900,8 +900,8 @@ switch ($mode_id) {
                         echo('<p class="gen">' . $lang['Updating_users_without_style'] . "</p>\n");
 
                         dibi::update(Tables::USERS_TABLE, ['user_style' => 0])
-                            ->where('user_style IS NULL')
-                            ->where('user_id <> %i', ANONYMOUS)
+                            ->where('[user_style] IS NULL')
+                            ->where('[user_id] <> %i', ANONYMOUS)
                             ->execute();
 
                         $result_array[] = 0;
@@ -916,7 +916,7 @@ switch ($mode_id) {
 
                     $new_style = dibi::select('themes_id')
                         ->from(Tables::THEMES_TABLE)
-                        ->where('themes_id = %i', $board_config['default_style'])
+                        ->where('[themes_id] = %i', $board_config['default_style'])
                         ->fetchSingle();
 
                     // the default template is not available
@@ -925,7 +925,7 @@ switch ($mode_id) {
 
                         $new_style = dibi::select('themes_id')
                             ->from(Tables::THEMES_TABLE)
-                            ->where('themes_id = %i', $userdata['user_style'])
+                            ->where('[themes_id] = %i', $userdata['user_style'])
                             ->fetchSingle();
 
                         // We never should get to this point. If both the board and the user style is invalid, I
@@ -938,7 +938,7 @@ switch ($mode_id) {
                     echo('<p class="gen">' . sprintf($lang['Updating_themes'], $new_style) . "...</p>\n");
 
                     dibi::update(Tables::USERS_TABLE, ['user_style' => $new_style])
-                        ->where('user_style IN %in', $result_array)
+                        ->where('[user_style] IN %in', $result_array)
                         ->execute();
                 } else {
                     echo($lang['Nothing_to_do']);
@@ -952,8 +952,8 @@ switch ($mode_id) {
                     ->as('tn')
                     ->leftJoin(Tables::THEMES_TABLE)
                     ->as('t')
-                    ->on('tn.themes_id = t.themes_id')
-                    ->where('t.themes_id IS NULL')
+                    ->on('[tn.themes_id] = [t.themes_id]')
+                    ->where('[t.themes_id] IS NULL')
                     ->fetchPairs(null, 'themes_id');
 
                 if (count($result_array)) {
@@ -961,7 +961,7 @@ switch ($mode_id) {
                     $record_list = implode(',', $result_array);
 
                     $affected_rows = dibi::delete(Tables::THEMES_NAME_TABLE)
-                        ->where('themes_id IN %in', $result_array)
+                        ->where('[themes_id] IN %in', $result_array)
                         ->execute(dibi::AFFECTED_ROWS);
 
                     if ($affected_rows === 1) {
@@ -978,7 +978,7 @@ switch ($mode_id) {
 
                 $tmp_array = dibi::select('user_lang')
                     ->from(Tables::USERS_TABLE)
-                    ->where('user_id <> %i', ANONYMOUS)
+                    ->where('[user_id] <> %i', ANONYMOUS)
                     ->groupBy('user_lang')
                     ->fetchPairs(null, 'user_lang');
 
@@ -994,7 +994,7 @@ switch ($mode_id) {
                     // Getting default board_language as long as the original one was changed in functions.php
                     $boardLanguage = dibi::select('config_value')
                         ->from(Tables::CONFIG_TABLE)
-                        ->where('config_name = %s', 'default_lang')
+                        ->where('[config_name] = %s', 'default_lang')
                         ->fetchSingle();
 
                     if ($boardLanguage === false) {
@@ -1045,22 +1045,22 @@ switch ($mode_id) {
                 // Remove ban data without a valid user
                 echo('<p class="gen"><b>' . $lang['Remove_invalid_ban_data'] . "</b></p>\n");
 
-                $result_array = dibi::select('b.ban_userid')
+                $result_array = dibi::select('b.ban_user_id')
                     ->from(Tables::BAN_LIST_TABLE)
                     ->as('b')
                     ->leftJoin(Tables::USERS_TABLE)
                     ->as('u')
-                    ->on('b.ban_userid = u.user_id')
-                    ->where('u.user_id IS NULL')
-                    ->where('b.ban_userid <> %i', 0)
-                    ->where('b.ban_userid IS NOT NULL')
-                    ->fetchPairs(null, 'ban_userid');
+                    ->on('[b.ban_user_id] = [u.user_id]')
+                    ->where('[u.user_id] IS NULL')
+                    ->where('[b.ban_user_id] <> %i', 0)
+                    ->where('[b.ban_user_id] IS NOT NULL')
+                    ->fetchPairs(null, 'ban_user_id');
 
                 if (count($result_array)) {
                     $record_list = implode(',', $result_array);
 
                     $affected_rows = dibi::delete(Tables::BAN_LIST_TABLE)
-                        ->where('ban_userid IN %in', $result_array)
+                        ->where('[ban_user_id] IN %in', $result_array)
                         ->execute(dibi::AFFECTED_ROWS);
 
                     if ($affected_rows === 1) {
@@ -1081,7 +1081,7 @@ switch ($mode_id) {
                         ->as('k')
                         ->leftJoin(Tables::USERS_TABLE)
                         ->as('u')
-                        ->on('k.user_id = u.user_id')
+                        ->on('[k.user_id] = [u.user_id]')
                         ->where('u.user_id IS NULL OR k.user_id = %i OR k.last_login > %i', ANONYMOUS, time())
                         ->fetchPairs(null, 'key_id');
 
@@ -1119,8 +1119,8 @@ switch ($mode_id) {
                     ->as('p')
                     ->leftJoin(Tables::USERS_TABLE)
                     ->as('u')
-                    ->on('p.poster_id = u.user_id')
-                    ->where('u.user_id IS NULL')
+                    ->on('[p.poster_id] = [u.user_id]')
+                    ->where('[u.user_id] IS NULL')
                     ->fetchPairs(null, 'post_id');
 
                 if (count($result_array)) {
@@ -1129,7 +1129,7 @@ switch ($mode_id) {
                     echo('<p class="gen">' . $lang['Updating_posts'] . "</p>\n");
 
                     dibi::update(Tables::POSTS_TABLE, ['poster_id' => DELETED, 'post_username' => ''])
-                        ->where('post_id IN %in', $result_array)
+                        ->where('[post_id] IN %in', $result_array)
                         ->execute();
                 } else {
                     echo($lang['Nothing_to_do']);
@@ -1143,8 +1143,8 @@ switch ($mode_id) {
                     ->as('t')
                     ->leftJoin(Tables::USERS_TABLE)
                     ->as('u')
-                    ->on('t.topic_poster = u.user_id')
-                    ->where('u.user_id IS NULL')
+                    ->on('[t.topic_poster] = [u.user_id]')
+                    ->where('[u.user_id] IS NULL')
                     ->fetchAll();
 
                 foreach ($rows as $row) {
@@ -1157,7 +1157,7 @@ switch ($mode_id) {
                     echo('<li>' . sprintf($lang['Updating_topic'], $row->topic_id, $row->topic_poster, $poster_id) . "</li>\n");
 
                     dibi::update(Tables::TOPICS_TABLE, ['topic_poster' => $poster_id])
-                        ->where('topic_id = %i', $row->topic_id)
+                        ->where('[topic_id] = %i', $row->topic_id)
                         ->execute();
                 }
 
@@ -1178,7 +1178,7 @@ switch ($mode_id) {
                     ->as('f')
                     ->leftJoin(Tables::CATEGORIES_TABLE)
                     ->as('c')
-                    ->on('f.cat_id = c.cat_id')
+                    ->on('[f.cat_id] = [c.cat_id]')
                     ->where('c.cat_id IS NULL')
                     ->fetchAll();
 
@@ -1204,7 +1204,7 @@ switch ($mode_id) {
                     echo('<p class="gen">' . sprintf($lang['Setting_category'], $lang['New_cat_name']) . " </p>\n");
 
                     dibi::update(Tables::FORUMS_TABLE, ['cat_id' => $new_cat])
-                        ->where('forum_id IN %in', $result_array)
+                        ->where('[forum_id] IN %in', $result_array)
                         ->execute();
                 } else {
                     echo($lang['Nothing_to_do']);
@@ -1218,14 +1218,14 @@ switch ($mode_id) {
                     ->as('p')
                     ->leftJoin(Tables::POSTS_TEXT_TABLE)
                     ->as('pt')
-                    ->on('p.post_id = pt.post_id')
+                    ->on('[p.post_id] = [pt.post_id]')
                     ->leftJoin(Tables::TOPICS_TABLE)
                     ->as('t')
-                    ->on('p.topic_id = t.topic_id')
+                    ->on('[p.topic_id] = [t.topic_id]')
                     ->leftJoin(Tables::USERS_TABLE)
                     ->as('u')
-                    ->on('p.poster_id = u.user_id')
-                    ->where('pt.post_id IS NULL')
+                    ->on('[p.poster_id] = [u.user_id]')
+                    ->where('[pt.post_id] IS NULL')
                     ->fetchAll();
 
                 $result_array = [];
@@ -1252,7 +1252,7 @@ switch ($mode_id) {
                     echo('<p class="gen">' . $lang['Deleting_Posts'] . " </p>\n");
 
                     dibi::delete(Tables::POSTS_TABLE)
-                        ->where('post_id IN %in', $result_array)
+                        ->where('[post_id] IN %in', $result_array)
                         ->execute();
 
                     $update_post_data = true;
@@ -1268,9 +1268,9 @@ switch ($mode_id) {
                     ->as('t')
                     ->leftJoin(Tables::POSTS_TABLE)
                     ->as('p')
-                    ->on('t.topic_id = p.topic_id')
-                    ->where('p.topic_id IS NULL')
-                    ->where('t.topic_status <> %i', TOPIC_MOVED)
+                    ->on('[t.topic_id] = [p.topic_id]')
+                    ->where('[p.topic_id] IS NULL')
+                    ->where('[t.topic_status] <> %i', TOPIC_MOVED)
                     ->fetchAll();
 
                 $result_array = [];
@@ -1295,7 +1295,7 @@ switch ($mode_id) {
                     echo('<p class="gen">' . $lang['Deleting_topics'] . " </p>\n");
 
                     dibi::delete(Tables::TOPICS_TABLE)
-                        ->where('topic_id IN %in', $result_array)
+                        ->where('[topic_id] IN %in', $result_array)
                         ->execute();
 
                     $update_post_data = true;
@@ -1311,8 +1311,8 @@ switch ($mode_id) {
                     ->as('t')
                     ->leftJoin(Tables::FORUMS_TABLE)
                     ->as('f')
-                    ->on('t.forum_id = f.forum_id')
-                    ->where('f.forum_id IS NULL')
+                    ->on('[t.forum_id] = [f.forum_id]')
+                    ->where('[f.forum_id] IS NULL')
                     ->fetchAll();
 
                 $result_array = [];
@@ -1338,11 +1338,11 @@ switch ($mode_id) {
                     echo('<p class="gen">' . sprintf($lang['Setting_forum'], $lang['New_forum_name']) . " </p>\n");
 
                     dibi::update(Tables::TOPICS_TABLE, ['forum_id' => $new_forum])
-                        ->where('topic_id IN %in', $result_array)
+                        ->where('[topic_id] IN %in', $result_array)
                         ->execute();
 
                     dibi::update(Tables::POSTS_TABLE, ['forum_id' => $new_forum])
-                        ->where('topic_id IN %in', $result_array)
+                        ->where('[topic_id] IN %in', $result_array)
                         ->execute();
                     $update_post_data = true;
                 } else {
@@ -1359,8 +1359,8 @@ switch ($mode_id) {
                     ->as('p')
                     ->leftJoin(Tables::TOPICS_TABLE)
                     ->as('t')
-                    ->on('p.topic_id = t.topic_id')
-                    ->where('t.topic_id IS NULL OR t.topic_status = %i', TOPIC_MOVED)
+                    ->on('[p.topic_id] = [t.topic_id]')
+                    ->where('[t.topic_id] IS NULL OR [t.topic_status] = %i', TOPIC_MOVED)
                     ->orderBy('p.topic_id')
                     ->orderBy('p.post_time')
                     ->fetchAll();
@@ -1382,7 +1382,7 @@ switch ($mode_id) {
 
                         $row2 = dibi::select('post_subject')
                             ->from(Tables::POSTS_TEXT_TABLE)
-                            ->where('post_id = %i', $first_post)
+                            ->where('[post_id] = %i', $first_post)
                             ->fetch();
 
                         if (!$row2) {
@@ -1394,7 +1394,7 @@ switch ($mode_id) {
                         // Get data from first post
                         $firstPost = dibi::select(['poster_id', 'post_time'])
                             ->from(Tables::POSTS_TABLE)
-                            ->where('post_id = %i', $first_post)
+                            ->where('[post_id] = %i', $first_post)
                             ->fetch();
 
                         if (!$firstPost) {
@@ -1423,7 +1423,7 @@ switch ($mode_id) {
                         echo('<li>' . sprintf($lang['Setting_topic'], implode(', ', $posts), htmlspecialchars($topic_title), $new_topic, $lang['New_forum_name']) . " </li>\n");
 
                         dibi::update(Tables::POSTS_TABLE, ['forum_id' => $new_forum, 'topic_id' => $new_topic])
-                            ->where('post_id IN %in', $result_array)
+                            ->where('[post_id] IN %in', $result_array)
                             ->execute();
                     }
                 }
@@ -1452,14 +1452,14 @@ switch ($mode_id) {
                     ->as('p')
                     ->leftJoin(Tables::TOPICS_TABLE)
                     ->as('t')
-                    ->on('p.topic_id = t.topic_id')
+                    ->on('[p.topic_id] = [t.topic_id]')
                     ->leftJoin(Tables::FORUMS_TABLE)
                     ->as('fp')
-                    ->on('p.forum_id = fp.forum_id')
+                    ->on('[p.forum_id] = [fp.forum_id]')
                     ->leftJoin(Tables::FORUMS_TABLE)
                     ->as('ft')
-                    ->on('t.forum_id = ft.forum_id')
-                    ->where('p.forum_id <> t.forum_id')
+                    ->on('[t.forum_id] = [ft.forum_id]')
+                    ->where('[p.forum_id] <> [t.forum_id]')
                     ->fetchAll();
 
                 foreach ($rows as $row) {
@@ -1472,7 +1472,7 @@ switch ($mode_id) {
                     echo('<li>' . sprintf($lang['Setting_post_forum'], $row->post_id, htmlspecialchars($row->p_forum_name), $row->p_forum_id, htmlspecialchars($row->t_forum_name), $row->t_forum_id) . "</li>\n");
 
                     dibi::update(Tables::POSTS_TABLE, ['forum_id' => $row->t_forum_id])
-                        ->where('post_id = %i', $row->post_id)
+                        ->where('[post_id] = %i', $row->post_id)
                         ->execute();
                 }
 
@@ -1492,8 +1492,8 @@ switch ($mode_id) {
                     ->as('pt')
                     ->leftJoin(Tables::POSTS_TABLE)
                     ->as('p')
-                    ->on('pt.post_id = p.post_id')
-                    ->where('p.post_id IS NULL')
+                    ->on('[pt.post_id] = [p.post_id]')
+                    ->where('[p.post_id] IS NULL')
                     ->fetchAll();
 
 				foreach ($rows as $row) {
@@ -1545,9 +1545,9 @@ switch ($mode_id) {
                     ->as('t')
                     ->leftJoin(Tables::TOPICS_TABLE)
                     ->as('mt')
-                    ->on('t.topic_moved_id = mt.topic_id')
-                    ->where('mt.topic_id IS NULL')
-                    ->where('t.topic_status = %i', TOPIC_MOVED)
+                    ->on('[t.topic_moved_id] = [mt.topic_id]')
+                    ->where('[mt.topic_id] IS NULL')
+                    ->where('[t.topic_status] = %i', TOPIC_MOVED)
                     ->fetchPairs(null, 'topic_id');
 
                 if (count($result_array)) {
@@ -1555,8 +1555,8 @@ switch ($mode_id) {
                     echo('<p class="gen">' . $lang['Deleting_invalid_moved_topics'] . "</p>\n");
 
                     $affected_rows = dibi::delete(Tables::TOPICS_TABLE)
-                        ->where('topic_id IN %in', $result_array)
-                        ->where('topic_status = %i', TOPIC_MOVED)
+                        ->where('[topic_id] IN %in', $result_array)
+                        ->where('[topic_status] = %i', TOPIC_MOVED)
                         ->execute(dibi::AFFECTED_ROWS);
 
                     if ($affected_rows === 1) {
@@ -1570,8 +1570,8 @@ switch ($mode_id) {
 
 				// Check for normal topics with move information
                 $affected_rows = dibi::update(Tables::TOPICS_TABLE, ['topic_moved_id' => 0])
-                    ->where('topic_moved_id <> %i', 0)
-                    ->where('topic_status <> %i', TOPIC_MOVED)
+                    ->where('[topic_moved_id] <> %i', 0)
+                    ->where('[topic_status] <> %i', TOPIC_MOVED)
                     ->execute(dibi::AFFECTED_ROWS);
 
                 if ($affected_rows === 1) {
@@ -1591,8 +1591,8 @@ switch ($mode_id) {
                     ->as('p')
                     ->leftJoin(Tables::FORUMS_TABLE)
                     ->as('f')
-                    ->on('p.forum_id = f.forum_id')
-                    ->where('f.forum_id IS NULL')
+                    ->on('[p.forum_id] = [f.forum_id]')
+                    ->where('[f.forum_id] IS NULL')
                     ->groupBy('p.forum_id')
                     ->fetchPairs(null, 'forum_id');
 
@@ -1602,7 +1602,7 @@ switch ($mode_id) {
                     ->as('p')
                     ->leftJoin(Tables::FORUMS_TABLE)
                     ->as('f')
-                    ->on('p.forum_id = f.forum_id')
+                    ->on('[p.forum_id] = [f.forum_id]')
                     ->groupBy('p.forum_id')
                     ->having('COUNT(p.forum_id) > %i', 1)
                     ->fetchPairs(null, 'forum_id');
@@ -1615,7 +1615,7 @@ switch ($mode_id) {
                     $db_updated  = true;
 
                     $affected_rows = dibi::delete(Tables::PRUNE_TABLE)
-                        ->where('forum_id IN %in', $result_array)
+                        ->where('[forum_id] IN %in', $result_array)
                         ->execute(dibi::AFFECTED_ROWS);
 
                     if ($affected_rows === 1) {
@@ -1633,16 +1633,16 @@ switch ($mode_id) {
                     ->as('f')
                     ->leftJoin(Tables::PRUNE_TABLE)
                     ->as('p')
-                    ->on('f.forum_id = p.forum_id')
-                    ->where('p.forum_id IS NULL')
-                    ->where('f.prune_enable = 1')
+                    ->on('[f.forum_id] = [p.forum_id]')
+                    ->where('[p.forum_id] IS NULL')
+                    ->where('[f.prune_enable] = %i', 1)
                     ->fetchPairs(null, 'forum_id');
 
                 if (count($result_array)) {
                     $record_list = implode(',', $result_array);
 
                     $affected_rows = dibi::update(Tables::FORUMS_TABLE, ['prune_enable' => 0])
-                        ->where('forum_id IN %in', $result_array)
+                        ->where('[forum_id] IN %in', $result_array)
                         ->execute(dibi::AFFECTED_ROWS);
 
                     if ($affected_rows === 1) {
@@ -1663,7 +1663,7 @@ switch ($mode_id) {
                     ->leftJoin(Tables::USERS_TABLE)
                     ->as('u')
                     ->on('tw.user_id = u.user_id')
-                    ->where('u.user_id IS NULL')
+                    ->where('[u.user_id] IS NULL')
                     ->groupBy('tw.user_id')
                     ->fetchPairs(null, 'user_id');
 
@@ -1685,13 +1685,13 @@ switch ($mode_id) {
 
                     if ($countUsers) {
                         $affected_rows += dibi::delete(Tables::TOPICS_WATCH_TABLE)
-                            ->where('user_id IN %in', $user_array)
+                            ->where('[user_id] IN %in', $user_array)
                             ->execute(dibi::AFFECTED_ROWS);
                     }
 
                     if ($countTopics) {
                         $affected_rows += dibi::delete(Tables::TOPICS_WATCH_TABLE)
-                            ->where('topic_id IN %in', $topic_array)
+                            ->where('[topic_id] IN %in', $topic_array)
                             ->execute(dibi::AFFECTED_ROWS);
                     }
 
@@ -1712,8 +1712,8 @@ switch ($mode_id) {
                     ->as('aa')
                     ->leftJoin(Tables::GROUPS_TABLE)
                     ->as('g')
-                    ->on('aa.group_id = g.group_id')
-                    ->where('g.group_id IS NULL')
+                    ->on('[aa.group_id] = [g.group_id]')
+                    ->where('[g.group_id] IS NULL')
                     ->groupBy('aa.group_id')
                     ->fetchPairs(null, 'group_id');
 
@@ -1722,8 +1722,8 @@ switch ($mode_id) {
                     ->as('aa')
                     ->leftJoin(Tables::FORUMS_TABLE)
                     ->as('f')
-                    ->on('aa.forum_id = f.forum_id')
-                    ->where('f.forum_id IS NULL')
+                    ->on('[aa.forum_id] = [f.forum_id]')
+                    ->where('[f.forum_id] IS NULL')
                     ->groupBy('aa.forum_id')
                     ->fetchPairs(null, 'forum_id');
 
@@ -1735,13 +1735,13 @@ switch ($mode_id) {
 
                     if ($countGroups) {
                         $affected_rows += dibi::delete(Tables::AUTH_ACCESS_TABLE)
-                            ->where('group_id IN %in', $group_array)
+                            ->where('[group_id] IN %in', $group_array)
                             ->execute(dibi::AFFECTED_ROWS);
                     }
 
                     if ($countForums) {
                         $affected_rows += dibi::delete(Tables::AUTH_ACCESS_TABLE)
-                            ->where('forum_id IN %in', $forum_array)
+                            ->where('[forum_id] IN %in', $forum_array)
                             ->execute(dibi::AFFECTED_ROWS);
                     }
 
@@ -1806,15 +1806,15 @@ switch ($mode_id) {
 					echo('<p class="gen">' . $lang['Deleting_Votes'] . " </p>\n");
 
 					dibi::delete(Tables::VOTE_DESC_TABLE)
-						->where('vote_id IN %in', $result_array)
+						->where('[vote_id] IN %in', $result_array)
 						->execute();
 
 					dibi::delete(Tables::VOTE_RESULTS_TABLE)
-						->where('vote_id IN %in', $result_array)
+						->where('[vote_id] IN %in', $result_array)
 						->execute();
 
 					dibi::delete(Tables::VOTE_USERS_TABLE)
-						->where('vote_id IN %in', $result_array)
+						->where('[vote_id] IN %in', $result_array)
 						->execute();
 				} else {
 					echo($lang['Nothing_to_do']);
@@ -1828,8 +1828,8 @@ switch ($mode_id) {
 					->as('v')
 					->leftJoin(Tables::VOTE_RESULTS_TABLE)
 					->as('vr')
-					->on('v.vote_id = vr.vote_id')
-					->where('vr.vote_id IS NULL')
+					->on('[v.vote_id] = [vr.vote_id]')
+					->where('[vr.vote_id] IS NULL')
 					->fetchAll();
 
 				$result_array = [];
@@ -1856,15 +1856,15 @@ switch ($mode_id) {
                     $record_list = implode(',', $result_array);
 
                     dibi::delete(Tables::VOTE_DESC_TABLE)
-                        ->where('vote_id IN %in', $result_array)
+                        ->where('[vote_id] IN %in', $result_array)
                         ->execute();
 
                     dibi::delete(Tables::VOTE_RESULTS_TABLE)
-                        ->where('vote_id IN %in', $result_array)
+                        ->where('[vote_id] IN %in', $result_array)
                         ->execute();
 
                     dibi::delete(Tables::VOTE_USERS_TABLE)
-                        ->where('vote_id IN %in', $result_array)
+                        ->where('[vote_id] IN %in', $result_array)
                         ->execute();
 
                     echo('<p class="gen">' . $lang['Deleting_Votes'] . " </p>\n");
@@ -1881,9 +1881,9 @@ switch ($mode_id) {
 					->as('t')
 					->leftJoin(Tables::VOTE_DESC_TABLE)
 					->as('v')
-					->on('t.topic_id = v.topic_id')
-					->where('v.vote_id IS NULL')
-					->where('t.topic_vote = %i', 1)
+					->on('[t.topic_id] = [v.topic_id]')
+					->where('[v.vote_id] IS NULL')
+					->where('[t.topic_vote] = %i', 1)
 					->fetchPairs(null, 'topic_id');
 
                 if (count($result_array)) {
@@ -1891,7 +1891,7 @@ switch ($mode_id) {
                     echo('<p class="gen">' . $lang['Updating_topics_wo_vote'] . "</p>\n");
 
                     $affected_rows = dibi::update(Tables::TOPICS_TABLE, ['topic_vote' => 0])
-                        ->where('topic_id IN %in', $result_array)
+                        ->where('[topic_id] IN %in', $result_array)
                         ->execute(dibi::AFFECTED_ROWS);
 
                     if ($affected_rows === 1) {
@@ -1909,8 +1909,8 @@ switch ($mode_id) {
                     ->as('t')
                     ->innerJoin(Tables::VOTE_DESC_TABLE)
                     ->as('v')
-                    ->on('t.topic_id = v.topic_id')
-                    ->where('t.topic_vote = 0')
+                    ->on('[t.topic_id] = [v.topic_id]')
+                    ->where('[t.topic_vote] = %i', 0)
                     ->fetchPairs(null, 'topic_id');
 
                 if (count($result_array)) {
@@ -1918,7 +1918,7 @@ switch ($mode_id) {
                     echo('<p class="gen">' . $lang['Updating_topics_w_vote'] . "</p>\n");
 
                     $affected_rows = dibi::update(Tables::TOPICS_TABLE, ['topic_vote' => 1])
-                        ->where('topic_id IN %in', $result_array)
+                        ->where('[topic_id] IN %in', $result_array)
                         ->execute(dibi::AFFECTED_ROWS);
 
                     if ($affected_rows === 1) {
@@ -1942,8 +1942,8 @@ switch ($mode_id) {
                     ->as('vr')
                     ->leftJoin(Tables::VOTE_DESC_TABLE)
                     ->as('v')
-                    ->on('vr.vote_id = v.vote_id')
-                    ->where('v.vote_id IS NULL')
+                    ->on('[vr.vote_id] = [v.vote_id]')
+                    ->where('[v.vote_id] IS NULL')
                     ->fetchAll();
 
                 foreach ($rows as $row) {
@@ -1976,8 +1976,8 @@ switch ($mode_id) {
                     ->as('vu')
                     ->leftJoin(Tables::USERS_TABLE)
                     ->as('u')
-                    ->on('vu.vote_user_id = u.user_id')
-                    ->where('u.user_id IS NULL')
+                    ->on('[vu.vote_user_id] = [u.user_id]')
+                    ->where('[u.user_id] IS NULL')
                     ->groupBy('vu.vote_user_id')
                     ->fetchPairs(null, 'vote_user_id');
 
@@ -1987,7 +1987,7 @@ switch ($mode_id) {
                     ->leftJoin(Tables::VOTE_DESC_TABLE)
                     ->as('v')
                     ->on('vu.vote_id = v.vote_id')
-                    ->where('v.vote_id IS NULL')
+                    ->where('[v.vote_id] IS NULL')
                     ->groupBy('vu.vote_id')
                     ->fetchPairs(null, 'vote_id');
 
@@ -1999,13 +1999,13 @@ switch ($mode_id) {
 
                     if ($countUsers) {
                         $affected_rows += dibi::delete(Tables::VOTE_USERS_TABLE)
-                            ->where('vote_user_id IN %in', $user_array)
+                            ->where('[vote_user_id] IN %in', $user_array)
                             ->execute(dibi::AFFECTED_ROWS);
                     }
 
                     if ($countVotes) {
                         $affected_rows += dibi::delete(Tables::VOTE_USERS_TABLE)
-                            ->where('vote_id IN %in', $vote_array)
+                            ->where('[vote_id] IN %in', $vote_array)
                             ->execute(dibi::AFFECTED_ROWS);
                     }
 
@@ -2040,13 +2040,13 @@ switch ($mode_id) {
                     ->as('pm')
                     ->leftJoin(Tables::PRIVATE_MESSAGE_TEXT_TABLE)
                     ->as('pmt')
-                    ->on('pm.privmsgs_id = pmt.privmsgs_text_id')
+                    ->on('[pm.privmsgs_id] = [pmt.privmsgs_text_id]')
                     ->leftJoin(Tables::USERS_TABLE)
                     ->as('uf')
-                    ->on('pm.privmsgs_from_userid = uf.user_id')
+                    ->on('[pm.privmsgs_from_userid] = [uf.user_id]')
                     ->leftJoin(Tables::USERS_TABLE)
                     ->as('ut')
-                    ->on('pm.privmsgs_to_userid = ut.user_id')
+                    ->on('[pm.privmsgs_to_userid] = [ut.user_id]')
                     ->where('pmt.privmsgs_text_id IS NULL')
                     ->fetchAll();
 
@@ -2072,7 +2072,7 @@ switch ($mode_id) {
                     echo('<p class="gen">' . $lang['Deleting_Pms'] . " </p>\n");
 
                     dibi::delete(Tables::PRIVATE_MESSAGE_TABLE)
-                        ->where('privmsgs_id IN %in', $result_array)
+                        ->where('[privmsgs_id] IN %in', $result_array)
                         ->execute();
                 } else {
                     echo($lang['Nothing_to_do']);
@@ -2086,8 +2086,8 @@ switch ($mode_id) {
 					->as('pmt')
 					->leftJoin(Tables::PRIVATE_MESSAGE_TABLE)
 					->as('pm')
-					->on('pmt.privmsgs_text_id = pm.privmsgs_id')
-					->where('pm.privmsgs_id IS NULL')
+					->on('[pmt.privmsgs_text_id] = [pm.privmsgs_id]')
+					->where('[pm.privmsgs_id] IS NULL')
 					->fetchPairs(null, 'privmsgs_text_id');
 
                 if (count($result_array)) {
@@ -2095,7 +2095,7 @@ switch ($mode_id) {
                     $record_list = implode(',', $result_array);
 
                     $affected_rows = dibi::delete(Tables::PRIVATE_MESSAGE_TEXT_TABLE)
-                        ->where('privmsgs_text_id IN %in', $result_array)
+                        ->where('[privmsgs_text_id] IN %in', $result_array)
                         ->execute(dibi::AFFECTED_ROWS);
 
                     if ($affected_rows === 1) {
@@ -2115,8 +2115,8 @@ switch ($mode_id) {
                     ->as('pm')
                     ->leftJoin(Tables::USERS_TABLE)
                     ->as('u')
-                    ->on('pm.privmsgs_from_userid = u.user_id')
-                    ->where('u.user_id IS NULL')
+                    ->on('[pm.privmsgs_from_userid] = [u.user_id]')
+                    ->where('[u.user_id] IS NULL')
                     ->fetchPairs(null, 'privmsgs_id');
 
                 if (count($result_array)) {
@@ -2125,7 +2125,7 @@ switch ($mode_id) {
                     echo('<p class="gen">' . $lang['Updating_pms'] . "</p>\n");
 
                     dibi::update(Tables::PRIVATE_MESSAGE_TABLE, ['privmsgs_from_userid' => DELETED])
-                        ->where('privmsgs_id IN %in', $result_array)
+                        ->where('[privmsgs_id] IN %in', $result_array)
                         ->execute();
                 } else {
                     echo($lang['Nothing_to_do']);
@@ -2139,8 +2139,8 @@ switch ($mode_id) {
                     ->as('pm')
                     ->leftJoin(Tables::USERS_TABLE)
                     ->as('u')
-                    ->on('pm.privmsgs_to_userid = u.user_id')
-                    ->where('u.user_id IS NULL')
+                    ->on('[pm.privmsgs_to_userid] = [u.user_id]')
+                    ->where('[u.user_id] IS NULL')
                     ->fetchPairs(null, 'privmsgs_id');
 
                 if (count($result_array)) {
@@ -2149,7 +2149,7 @@ switch ($mode_id) {
                     echo('<p class="gen">' . $lang['Updating_pms'] . "</p>\n");
 
                     dibi::update(Tables::PRIVATE_MESSAGE_TABLE, ['privmsgs_to_userid' => DELETED])
-                        ->where('privmsgs_id IN %in', $result_array)
+                        ->where('[privmsgs_id] IN %in', $result_array)
                         ->execute();
                 } else {
                     echo($lang['Nothing_to_do']);
@@ -2183,11 +2183,11 @@ switch ($mode_id) {
                     echo('<p class="gen">' . $lang['Deleting_pms'] . "</p>\n");
 
                     dibi::delete(Tables::PRIVATE_MESSAGE_TABLE)
-                        ->where('privmsgs_id IN %in', $result_array)
+                        ->where('[privmsgs_id] IN %in', $result_array)
                         ->execute();
 
                     dibi::delete(Tables::PRIVATE_MESSAGE_TEXT_TABLE)
-                        ->where('privmsgs_text_id IN %in', $result_array)
+                        ->where('[privmsgs_text_id] IN %in', $result_array)
                         ->execute();
                 } else {
                     echo($lang['Nothing_to_do']);
@@ -2203,9 +2203,9 @@ switch ($mode_id) {
                     ->as('u')
                     ->innerJoin(Tables::PRIVATE_MESSAGE_TABLE)
                     ->as('pm')
-                    ->on('u.user_id = pm.privmsgs_to_userid')
-                    ->where('u.user_id <> %i', ANONYMOUS)
-                    ->where('pm.privmsgs_type = %i', PRIVMSGS_NEW_MAIL)
+                    ->on('[u.user_id] = [pm.privmsgs_to_userid]')
+                    ->where('[u.user_id] <> %i', ANONYMOUS)
+                    ->where('[pm.privmsgs_type] = %i', PRIVMSGS_NEW_MAIL)
                     ->groupBy('u.user_id')
                     ->groupBy('u.username')
                     ->groupBy('u.user_new_privmsg')
@@ -2224,7 +2224,7 @@ switch ($mode_id) {
                             . "</li>\n");
 
                         dibi::update(Tables::USERS_TABLE, ['user_new_privmsg' => $row->new_counter])
-                            ->where('user_id = %i', $row->user_id)
+                            ->where('[user_id] = %i', $row->user_id)
                             ->execute();
                     }
                 }
@@ -2233,13 +2233,13 @@ switch ($mode_id) {
                 if (count($result_array)) {
                     $rows = dibi::select(['user_id', 'username'])
                         ->from(Tables::USERS_TABLE)
-                        ->where('user_id NOT IN %in', $result_array)
-                        ->where('user_new_privmsg <> %i', 0)
+                        ->where('[user_id] NOT IN %in', $result_array)
+                        ->where('[user_new_privmsg] <> %i', 0)
                         ->fetchAll();
                 } else {
                     $rows = dibi::select(['user_id', 'username'])
                         ->from(Tables::USERS_TABLE)
-                        ->where('user_new_privmsg <> %i', 0)
+                        ->where('[user_new_privmsg] <> %i', 0)
                         ->fetchAll();
                 }
 
@@ -2253,7 +2253,7 @@ switch ($mode_id) {
                     echo('<li>' . sprintf($lang['Synchronizing_user'], htmlspecialchars($row->username), $row->user_id) . "</li>\n");
 
                     dibi::update(Tables::USERS_TABLE, ['user_new_privmsg' => 0])
-                        ->where('user_id = %i', $row->user_id)
+                        ->where('[user_id] = %i', $row->user_id)
                         ->execute();
                 }
 
@@ -2274,8 +2274,8 @@ switch ($mode_id) {
                     ->as('u')
                     ->innerJoin(Tables::PRIVATE_MESSAGE_TABLE)
                     ->as('pm')
-                    ->on('u.user_id = pm.privmsgs_to_userid')
-                    ->where('u.user_id <> %i', ANONYMOUS)
+                    ->on('[u.user_id] = [pm.privmsgs_to_userid]')
+                    ->where('[u.user_id] <> %i', ANONYMOUS)
                     ->fetchAll();
 
                 $result_array = [];
@@ -2293,7 +2293,7 @@ switch ($mode_id) {
                         echo('<li>' . sprintf($lang['Synchronizing_user'], htmlspecialchars($row->username), $row->user_id) . "</li>\n");
 
                         dibi::update(Tables::USERS_TABLE, ['user_unread_privmsg' => $row->new_counter])
-                            ->where('user_id = %i', $row->user_id)
+                            ->where('[user_id] = %i', $row->user_id)
                             ->execute();
                     }
                 }
@@ -2302,13 +2302,13 @@ switch ($mode_id) {
                 if (count($result_array)) {
                     $rows = dibi::select(['user_id', 'username'])
                         ->from(Tables::USERS_TABLE)
-                        ->where('user_id NOT IN %in', $result_array)
-                        ->where('user_unread_privmsg <> %i', 0)
+                        ->where('[user_id] NOT IN %in', $result_array)
+                        ->where('[user_unread_privmsg] <> %i', 0)
                         ->fetchAll();
                 } else {
                     $rows = dibi::select(['user_id', 'username'])
                         ->from(Tables::USERS_TABLE)
-                        ->where('user_unread_privmsg <> %i', 0)
+                        ->where('[user_unread_privmsg] <> %i', 0)
                         ->fetchAll();
                 }
 
@@ -2322,7 +2322,7 @@ switch ($mode_id) {
                     echo('<li>' . sprintf($lang['Synchronizing_user'], htmlspecialchars($row->username), $row->user_id) . "</li>\n");
 
                     dibi::update(Tables::USERS_TABLE, ['user_unread_privmsg' => 0])
-                        ->where('user_id = %i', $row->user_id)
+                        ->where('[user_id] = %i', $row->user_id)
                         ->execute();
                 }
 
@@ -2375,7 +2375,7 @@ switch ($mode_id) {
                 	// todo get_config_data() may be used
 					$config = dibi::select('config_value')
 						->from(Tables::CONFIG_TABLE)
-						->where('config_name = %s', $key)
+						->where('[config_name] = %s', $key)
 						->fetch();
 
                     if (!$config) {
@@ -2417,8 +2417,8 @@ switch ($mode_id) {
                     ->as('sm')
                     ->leftJoin(Tables::POSTS_TABLE)
                     ->as('p')
-                    ->on('sm.post_id = p.post_id')
-                    ->where('p.post_id IS NULL')
+                    ->on('[sm.post_id] = [p.post_id]')
+                    ->where('[p.post_id] IS NULL')
                     ->groupBy('sm.post_id')
                     ->fetchPairs(null, 'post_id');
 
@@ -2427,8 +2427,8 @@ switch ($mode_id) {
                     ->as('sm')
                     ->leftJoin(Tables::SEARCH_WORD_TABLE)
                     ->as('sw')
-                    ->on('sm.word_id = sw.word_id')
-                    ->where('sw.word_id IS NULL OR sw.word_common = %i', 1)
+                    ->on('[sm.word_id] = [sw.word_id]')
+                    ->where('[sw.word_id] IS NULL OR [sw.word_common] = %i', 1)
                     ->groupBy('sm.word_id')
                     ->fetchPairs(null, 'word_id');
 
@@ -2440,13 +2440,13 @@ switch ($mode_id) {
 
                     if ($postCount) {
                         $affected_rows += dibi::delete(Tables::SEARCH_MATCH_TABLE)
-                            ->where('post_id IN %in', $post_array)
+                            ->where('[post_id] IN %in', $post_array)
                             ->execute(dibi::AFFECTED_ROWS);
                     }
 
                     if ($wordCount) {
                         $affected_rows += dibi::delete(Tables::SEARCH_MATCH_TABLE)
-                            ->where('word_id IN %in', $word_array)
+                            ->where('[word_id] IN %in', $word_array)
                             ->execute(dibi::AFFECTED_ROWS);
                     }
 
@@ -2473,9 +2473,9 @@ switch ($mode_id) {
                     ->as('sw')
                     ->leftJoin(Tables::SEARCH_MATCH_TABLE)
                     ->as('sm')
-                    ->on('sw.word_id = sm.word_id')
-                    ->where('sm.word_id IS NULL')
-                    ->where('sw.word_common <> 1')
+                    ->on('[sw.word_id] = [sm.word_id]')
+                    ->where('[sm.word_id] IS NULL')
+                    ->where('[sw.word_common] <> %i', 1)
                     ->fetchAll();
 
                 $result_array = [];
@@ -2488,7 +2488,7 @@ switch ($mode_id) {
                         $record_list = implode(',', $result_array);
 
                         $affected_rows += dibi::delete(Tables::SEARCH_WORD_TABLE)
-                            ->where('word_id IN %in', $result_array)
+                            ->where('[word_id] IN %in', $result_array)
                             ->execute(dibi::AFFECTED_ROWS);
 
                         $result_array = [];
@@ -2500,7 +2500,7 @@ switch ($mode_id) {
                     $record_list = implode(',', $result_array);
 
                     $affected_rows += dibi::delete(Tables::SEARCH_WORD_TABLE)
-                        ->where('word_id IN %in', $result_array)
+                        ->where('[word_id] IN %in', $result_array)
                         ->execute(dibi::AFFECTED_ROWS);
                 }
 
@@ -2573,8 +2573,8 @@ switch ($mode_id) {
                 dibi::query('TRUNCATE TABLE %n', Tables::SEARCH_TABLE);
 
                 dibi::delete(Tables::SEARCH_MATCH_TABLE)
-                    ->where('post_id > %i', (int)$board_config['dbmtnc_rebuild_pos'])
-                    ->where('post_id <= %i', (int)$board_config['dbmtnc_rebuild_end'])
+                    ->where('[post_id] > %i', (int)$board_config['dbmtnc_rebuild_pos'])
+                    ->where('[post_id] <= %i', (int)$board_config['dbmtnc_rebuild_end'])
                     ->execute();
 
                 echo('<p class="gen">' . $lang['Done'] . "</p>\n");
@@ -2626,8 +2626,8 @@ switch ($mode_id) {
 				// We have all data so get the post information
 				$rows = dibi::select(['post_id', 'post_subject', 'post_text'])
 					->from(Tables::POSTS_TEXT_TABLE)
-					->where('post_id > %i', $board_config['dbmtnc_rebuild_pos'])
-					->where('post_id <= %i', $board_config['dbmtnc_rebuild_end'])
+					->where('[post_id] > %i', $board_config['dbmtnc_rebuild_pos'])
+					->where('[post_id] <= %i', $board_config['dbmtnc_rebuild_end'])
 					->orderBy('post_id')
 					->limit($posts_to_index)
 					->fetchAll();
@@ -2681,13 +2681,13 @@ switch ($mode_id) {
 				$posts_total = dibi::select('Count(*)')
 					->as('posts_total')
 					->from(Tables::POSTS_TEXT_TABLE)
-					->where('post_id <= %i', $board_config['dbmtnc_rebuild_end'])
+					->where('[post_id] <= %i', $board_config['dbmtnc_rebuild_end'])
 					->fetchSingle();
 
 				$posts_indexed = dibi::select('Count(*)')
 					->as('posts_indexed')
 					->from(Tables::POSTS_TEXT_TABLE)
-					->where('post_id <= %i', $last_post)
+					->where('[post_id] <= %i', $last_post)
 					->fetchSingle();
 				
 				echo('<p class="gen">' . sprintf($lang['Indexing_progress'], $posts_indexed, $posts_total, ($posts_indexed / $posts_total) * 100, $last_post) . "</p>\n");
@@ -2724,7 +2724,7 @@ switch ($mode_id) {
 					->as('t')
 					->innerJoin(Tables::POSTS_TABLE)
 					->as('p')
-					->on('t.topic_id = p.topic_id')
+					->on('[t.topic_id] = [p.topic_id]')
 					->groupBy('t.topic_id')
 					->groupBy('t.topic_title')
 					->groupBy('t.topic_replies')
@@ -2749,7 +2749,7 @@ switch ($mode_id) {
 					];
 
 					dibi::update(Tables::TOPICS_TABLE, $updateData)
-						->where('topic_id = %i', $row->topic_id)
+						->where('[topic_id] = %i', $row->topic_id)
 						->execute();
 				}
 
@@ -2765,7 +2765,7 @@ switch ($mode_id) {
 
 				$rows = dibi::select(['topic_id', 'topic_title', 'topic_last_post_id', 'topic_moved_id'])
 					->from(Tables::TOPICS_TABLE)
-					->where('topic_status = %i', TOPIC_MOVED)
+					->where('[topic_status] = %i', TOPIC_MOVED)
 					->fetchAll();
 
 				foreach ($rows as $row) {
@@ -2779,15 +2779,15 @@ switch ($mode_id) {
 						->select('MAX(post_id)')
 						->as('topic_last_post_id')
 						->from(Tables::POSTS_TABLE)
-						->where('topic_id = %i', $row->topic_moved_id)
-						->where('post_id <= %i', $row->topic_last_post_id)
+						->where('[topic_id] = %i', $row->topic_moved_id)
+						->where('[post_id] <= %i', $row->topic_last_post_id)
 						->groupBy('topic_id')
 						->fetch();
 
 					if ($row2) {
 						$row3 = dibi::select('topic_id')
 							->from(Tables::TOPICS_TABLE)
-							->where('topic_id = %i', $row->topic_id)
+							->where('[topic_id] = %i', $row->topic_id)
 							->where(
 								'(topic_replies <> %i OR topic_first_post_id <> %i OR topic_last_post_id <> %i)',
 								$row2->topic_replies,
@@ -2812,7 +2812,7 @@ switch ($mode_id) {
 							];
 
 							dibi::update(Tables::TOPICS_TABLE, $updateData)
-								->where('topic_id = %i', $row->topic_id)
+								->where('[topic_id] = %i', $row->topic_id)
 								->execute();
 						}
 					} else {
@@ -2911,7 +2911,7 @@ switch ($mode_id) {
 					->as('f')
 					->innerJoin(Tables::TOPICS_TABLE)
 					->as('t')
-					->on('f.forum_id = t.forum_id')
+					->on('[f.forum_id] = [t.forum_id]')
 					->groupBy('f.forum_id')
 					->groupBy('f.forum_name')
 					->groupBy('f.forum_topics')
@@ -2927,7 +2927,7 @@ switch ($mode_id) {
 					echo('<li>' . sprintf($lang['Synchronizing_forum'], $row->forum_id, htmlspecialchars($row->forum_name)) . "</li>\n");
 
 					dibi::update(Tables::FORUMS_TABLE, ['forum_topics' => $row->new_topics])
-						->where('forum_id = %i', $row->forum_id)
+						->where('[forum_id] = %i', $row->forum_id)
 						->execute();
 				}
 
@@ -2946,8 +2946,8 @@ switch ($mode_id) {
 					->as('f')
 					->leftJoin(Tables::TOPICS_TABLE)
 					->as('t')
-					->on('f.forum_id = t.forum_id')
-					->where('t.forum_id IS NULL')
+					->on('[f.forum_id] = [t.forum_id]')
+					->where('[t.forum_id] IS NULL')
 					->where('(f.forum_topics <> %i OR f.forum_last_post_id <> %i)', 0, 0)
 					->fetchPairs(null, 'forum_id');
 
@@ -2955,7 +2955,7 @@ switch ($mode_id) {
 
 				if (count($result_array)) {
 					$affected_rows = dibi::update(Tables::FORUMS_TABLE, ['forum_topics' => 0, 'forum_last_post_id' => 0])
-						->where('forum_id IN %in', $result_array)
+						->where('[forum_id] IN %in', $result_array)
 						->execute(dibi::AFFECTED_ROWS);
 
 					if ($affected_rows === 1) {
@@ -2981,7 +2981,7 @@ switch ($mode_id) {
 					->as('f')
 					->innerJoin(Tables::POSTS_TABLE)
 					->as('p')
-					->on('f.forum_id = p.forum_id')
+					->on('[f.forum_id] = [p.forum_id]')
 					->groupBy('f.forum_id')
 					->groupBy('f.forum_name')
 					->groupBy('f.forum_name')
@@ -3000,7 +3000,7 @@ switch ($mode_id) {
 					echo('<li>' . sprintf($lang['Synchronizing_forum'], $row->forum_id, htmlspecialchars($row->forum_name)) . "</li>\n");
 
 					dibi::update(Tables::FORUMS_TABLE, ['forum_posts' => $row->new_posts, 'forum_last_post_id' => $row->new_last_post_id])
-						->where('forum_id = %i', $row->forum_id)
+						->where('[forum_id] = %i', $row->forum_id)
 						->execute();
 				}
 
@@ -3019,8 +3019,8 @@ switch ($mode_id) {
 					->as('f')
 					->leftJoin(Tables::POSTS_TABLE)
 					->as('p')
-					->on('f.forum_id = p.forum_id')
-					->where('p.forum_id IS NULL')
+					->on('[f.forum_id] = [p.forum_id]')
+					->where('[p.forum_id] IS NULL')
 					->where('f.forum_posts <> %i', 0)
 					->fetchPairs(null, 'forum_id');
 
@@ -3028,7 +3028,7 @@ switch ($mode_id) {
 					$record_list = implode(',', $result_array);
 
 					$affected_rows = dibi::update(Tables::FORUMS_TABLE, ['forum_posts' => 0])
-						->where('forum_id IN %in', $result_array)
+						->where('[forum_id] IN %in', $result_array)
 						->execute(dibi::AFFECTED_ROWS);
 
 					if ($affected_rows === 1) {
@@ -3138,8 +3138,8 @@ switch ($mode_id) {
 					->as('u')
 					->innerJoin(Tables::POSTS_TABLE)
 					->as('p')
-					->on('u.user_id = p.poster_id')
-					->where('u.user_id <> %i', ANONYMOUS)
+					->on('[u.user_id] = [p.poster_id]')
+					->where('[u.user_id] <> %i', ANONYMOUS)
 					->groupBy('u.user_id')
 					->groupBy('u.username')
 					->groupBy('u.user_posts')
@@ -3160,7 +3160,7 @@ switch ($mode_id) {
 						echo('<li>' . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row->username), $row->user_id, $row->user_posts, $row->new_counter) . "</li>\n");
 
 						dibi::update(Tables::USERS_TABLE, ['user_posts' => $row->new_counter])
-							->where('user_id = %i', $row->user_id)
+							->where('[user_id] = %i', $row->user_id)
 							->execute();
 					}
 				}
@@ -3169,13 +3169,13 @@ switch ($mode_id) {
                 if (count($result_array)) {
                     $rows = dibi::select(['user_id', 'username', 'user_posts'])
                         ->from(Tables::USERS_TABLE)
-                        ->where('user_id NOT IN %in', $result_array)
-                        ->where('user_posts <> %i', 0)
+                        ->where('[user_id] NOT IN %in', $result_array)
+                        ->where('[user_posts] <> %i', 0)
                         ->fetchAll();
                 } else {
                     $rows = dibi::select(['user_id', 'username', 'user_posts'])
                         ->from(Tables::USERS_TABLE)
-                        ->where('user_posts <> %i', 0)
+                        ->where('[user_posts] <> %i', 0)
                         ->fetchAll();
                 }
 
@@ -3188,7 +3188,7 @@ switch ($mode_id) {
                     echo('<li>' . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row->username), $row->user_id, $row->user_posts, 0) . "</li>\n");
 
                     dibi::update(Tables::USERS_TABLE, ['user_posts' => 0])
-                        ->where('user_id = %i', $row->user_id)
+                        ->where('[user_id] = %i', $row->user_id)
                         ->execute();
                 }
 
@@ -3210,8 +3210,8 @@ switch ($mode_id) {
                     ->as('u')
                     ->innerJoin(Tables::TOPICS_TABLE)
                     ->as('t')
-                    ->on('u.user_id = t.topic_poster')
-                    ->where('u.user_id <> %i', ANONYMOUS)
+                    ->on('[u.user_id] = [t.topic_poster]')
+                    ->where('[u.user_id] <> %i', ANONYMOUS)
                     ->groupBy('u.user_id')
                     ->groupBy('u.username')
                     ->groupBy('u.user_topics')
@@ -3232,7 +3232,7 @@ switch ($mode_id) {
                         echo('<li>' . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row->username), $row->user_id, $row->user_topics, $row->new_counter) . "</li>\n");
 
                         dibi::update(Tables::USERS_TABLE, ['user_topics' => $row->new_counter])
-                            ->where('user_id = %i', $row->user_id)
+                            ->where('[user_id] = %i', $row->user_id)
                             ->execute();
                     }
                 }
@@ -3241,13 +3241,13 @@ switch ($mode_id) {
                 if (count($result_array)) {
                     $rows = dibi::select(['user_id', 'username', 'user_topics'])
                         ->from(Tables::USERS_TABLE)
-                        ->where('user_id NOT IN %in', $result_array)
-                        ->where('user_topics <> %i', 0)
+                        ->where('[user_id] NOT IN %in', $result_array)
+                        ->where('[user_topics] <> %i', 0)
                         ->fetchAll();
                 } else {
                     $rows = dibi::select(['user_id', 'username', 'user_topics'])
                         ->from(Tables::USERS_TABLE)
-                        ->where('user_topics <> %i', 0)
+                        ->where('[user_topics] <> %i', 0)
                         ->fetchAll();
                 }
 
@@ -3261,7 +3261,7 @@ switch ($mode_id) {
                     echo('<li>' . sprintf($lang['Synchronizing_user_counter'], htmlspecialchars($row->username), $row->user_id, $row->user_topics, 0) . "</li>\n");
 
                     dibi::update(Tables::USERS_TABLE, ['user_topics' => 0])
-                        ->where('user_id = %i', $row->user_id)
+                        ->where('[user_id] = %i', $row->user_id)
                         ->execute();
                 }
 
@@ -3286,7 +3286,7 @@ switch ($mode_id) {
                     ->innerJoin(Tables::THANKS_TABLE)
                     ->as('t')
                     ->on('[u.user_id] = [t.user_id]')
-                    ->where('u.user_id <> %i', ANONYMOUS)
+                    ->where('[u.user_id] <> %i', ANONYMOUS)
                     ->groupBy('u.user_id')
                     ->groupBy('u.username')
                     ->groupBy('u.user_thanks')
@@ -3356,7 +3356,7 @@ switch ($mode_id) {
                     ->innerJoin(Tables::TOPICS_WATCH_TABLE)
                     ->as('t')
                     ->on('[u.user_id] = [t.user_id]')
-                    ->where('u.user_id <> %i', ANONYMOUS)
+                    ->where('[u.user_id] <> %i', ANONYMOUS)
                     ->groupBy('u.user_id')
                     ->groupBy('u.username')
                     ->groupBy('u.user_topic_watches')
@@ -3426,9 +3426,9 @@ switch ($mode_id) {
 					->as('ug')
 					->innerJoin(Tables::AUTH_ACCESS_TABLE)
 					->as('aa')
-					->on('ug.group_id = aa.group_id')
-					->where('aa.auth_mod = %i', 1)
-					->where('ug.user_pending <> %i', 1)
+					->on('[ug.group_id] = [aa.group_id]')
+					->where('[aa.auth_mod] = %i', 1)
+					->where('[ug.user_pending] <> %i', 1)
 					->groupBy('ug.user_id')
 					->fetchPairs(null, 'user_id');
 
@@ -3445,8 +3445,8 @@ switch ($mode_id) {
 
 				$rows = dibi::select(['user_id', 'username'])
 					->from(Tables::USERS_TABLE)
-					->where('user_level = %i', MOD)
-					->where('user_id NOT IN %in', $result_array)
+					->where('[user_level] = %i', MOD)
+					->where('[user_id] NOT IN %in', $result_array)
 					->fetchAll();
 
 				foreach ($rows as $row) {
@@ -3458,7 +3458,7 @@ switch ($mode_id) {
 					echo('<li>' . sprintf($lang['Changing_moderator_status'], htmlspecialchars($row->username), $row->user_id) . "</li>\n");
 
 					dibi::update(Tables::USERS_TABLE, ['user_level' => USER])
-						->where('user_id = %i', $row->user_id)
+						->where('[user_id] = %i', $row->user_id)
 						->execute();
 				}
 
@@ -3474,8 +3474,8 @@ switch ($mode_id) {
 
 				$rows = dibi::select(['user_id', 'username'])
 					->from(Tables::USERS_TABLE)
-					->where('user_level = %i', USER)
-					->where('user_id IN %in', $result_array)
+					->where('[user_level] = %i', USER)
+					->where('[user_id] IN %in', $result_array)
 					->fetchAll();
 
 				foreach ($rows as $row) {
@@ -3488,7 +3488,7 @@ switch ($mode_id) {
 					echo('<li>' . sprintf($lang['Changing_moderator_status'], htmlspecialchars($row->username), $row->user_id) . "</li>\n");
 
 					dibi::update(Tables::USERS_TABLE, ['user_level' => MOD])
-						->where('user_id = %i', $row->user_id)
+						->where('[user_id] = %i', $row->user_id)
 						->execute();
 				}
 
@@ -3512,7 +3512,7 @@ switch ($mode_id) {
 				echo('<p class="gen"><b>' . $lang['Checking_post_dates'] . "</b></p>\n");
 
 				$affected_rows = dibi::update(Tables::POSTS_TABLE, ['post_time' => $time])
-					->where('post_time > %i', $time)
+					->where('[post_time] > %i', $time)
 					->execute(dibi::AFFECTED_ROWS);
 
                 if ($affected_rows === 1) {
@@ -3541,8 +3541,8 @@ switch ($mode_id) {
 				// Checking user table (last e-mail)
 				echo('<p class="gen"><b>' . $lang['Checking_email_dates'] . "</b></p>\n");
 
-				$affected_rows = dibi::update(Tables::USERS_TABLE, ['user_emailtime' => $time])
-					->where('user_emailtime > %i', $time)
+				$affected_rows = dibi::update(Tables::USERS_TABLE, ['user_email_time' => $time])
+					->where('[user_email_time] > %i', $time)
 					->execute(dibi::AFFECTED_ROWS);
 
                 if ($affected_rows === 1) {
@@ -3576,7 +3576,7 @@ switch ($mode_id) {
 
 
 					$affected_rows = dibi::delete(Tables::SEARCH_TABLE)
-						->where('search_time > %i', $time)
+						->where('[search_time] > %i', $time)
 						->execute(dibi::AFFECTED_ROWS);
 
 					if ($affected_rows === 1) {
@@ -3782,7 +3782,7 @@ switch ($mode_id) {
 				// Table is to big - so delete some records
 				if ($sessionCount > HEAP_SIZE) {
 					$deleteFluent = dibi::delete(Tables::SESSIONS_TABLE)
-						->where('session_id != %s', $userdata['session_id']);
+						->where('[session_id] != %s', $userdata['session_id']);
 
 					// When using MySQL 4: delete only the oldest records
 					if (Config::DBMS === 'mysql4') {

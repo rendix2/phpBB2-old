@@ -73,7 +73,7 @@ $forum_auth_fields = [
     'auth_sticky',
     'auth_announce',
     'auth_vote',
-    'auth_pollcreate',
+    'auth_poll_create',
     'auth_attachments',
     'auth_download',
 ];
@@ -88,7 +88,7 @@ $auth_field_match = [
     'auth_sticky'     => Auth::AUTH_STICKY,
     'auth_announce'   => Auth::AUTH_ANNOUNCE,
     'auth_vote'       => Auth::AUTH_VOTE,
-    'auth_pollcreate' => Auth::AUTH_POLL_CREATE,
+    'auth_poll_create' => Auth::AUTH_POLL_CREATE,
     'auth_attachments' => Auth::AUTH_ATTACH,
     'auth_download'    => Auth::AUTH_DOWNLOAD,
 ];
@@ -103,7 +103,7 @@ $field_names = [
     'auth_sticky'     => $lang['Sticky'],
     'auth_announce'   => $lang['Announce'],
     'auth_vote'       => $lang['Vote'],
-    'auth_pollcreate' => $lang['Pollcreate'],
+    'auth_poll_create' => $lang['Pollcreate'],
     'auth_attachments' => $lang['Auth_attach'],
     'auth_download'    => $lang['Auth_download'],
 ];
@@ -120,12 +120,12 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
             ->as('ug')
             ->innerJoin(Tables::USERS_TABLE)
             ->as('u')
-            ->on('ug.user_id = u.user_id')
+            ->on('[ug.user_id] = [u.user_id]')
             ->from(Tables::GROUPS_TABLE)
             ->as('g')
-            ->on('g.group_id = ug.group_id')
-            ->where('u.user_id = %i', $user_id)
-            ->where('g.group_single_user = %i', 1)
+            ->on('[g.group_id] = [ug.group_id]')
+            ->where('[u.user_id] = %i', $user_id)
+            ->where('[g.group_single_user] = %i', 1)
             ->fetch();
 
 		$group_id = $row->group_id;
@@ -141,12 +141,12 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 		//
 		if ($userdata['user_id'] !== $user_id) {
 		    dibi::update(Tables::USERS_TABLE, ['user_level' => ADMIN, 'user_acp_password%sql' => 'user_password'])
-                ->where('user_id = %i', $user_id)
+                ->where('[user_id] = %i', $user_id)
                 ->execute();
 
 			dibi::delete(Tables::AUTH_ACCESS_TABLE)
-                ->where('group_id = %i', $group_id)
-                ->where('auth_mod = %i', 0)
+                ->where('[group_id] = %i', $group_id)
+                ->where('[auth_mod] = %i', 0)
                 ->execute();
 
 			//
@@ -165,7 +165,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
             ];
 
             dibi::update(Tables::AUTH_ACCESS_TABLE, $update_data)
-                ->where('group_id = %i', $group_id)
+                ->where('[group_id] = %i', $group_id)
                 ->execute();
 		}
 
@@ -193,14 +193,14 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
                 ];
 
                 dibi::update(Tables::AUTH_ACCESS_TABLE, $update_data)
-                    ->where('group_id = %i', $group_id)
+                    ->where('[group_id] = %i', $group_id)
                     ->execute();
 
                 //
                 // Update users level, reset to USER
                 //
 				dibi::update(Tables::USERS_TABLE, ['user_level' => USER, 'user_acp_password' => ''])
-                    ->where('user_id = %i', $user_id)
+                    ->where('[user_id] = %i', $user_id)
                     ->execute();
 			}
 
@@ -216,7 +216,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
                     ->as('f')
                     ->innerJoin(Tables::CATEGORIES_TABLE)
                     ->as('c')
-                    ->on('f.cat_id = c.cat_id')
+                    ->on('[f.cat_id] = [c.cat_id]')
                     ->orderBy('c.cat_order', dibi::ASC)
                     ->orderBy('f.forum_order', dibi::ASC)
                     ->fetchAll();
@@ -253,7 +253,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
                 ->as('f')
                 ->innerJoin(Tables::CATEGORIES_TABLE)
                 ->as('c')
-                ->on('f.cat_id = c.cat_id')
+                ->on('[f.cat_id] = [c.cat_id]')
                 ->orderBy('c.cat_order')
                 ->orderBy('f.forum_order')
                 ->fetchAssoc('forum_id');
@@ -264,17 +264,17 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
                     ->as('aa')
                     ->innerJoin(Tables::USERS_GROUPS_TABLE)
                     ->as('ug')
-                    ->on('aa.group_id = ug.group_id')
+                    ->on('[aa.group_id] = [ug.group_id]')
                     ->innerJoin(Tables::GROUPS_TABLE)
                     ->as('g')
-                    ->on('g.group_id = ug.group_id')
-                    ->where('ug.user_id = %i', $user_id)
-                    ->where('g.group_single_user = %i', 1)
+                    ->on('[g.group_id] = [ug.group_id]')
+                    ->where('[ug.user_id] = %i', $user_id)
+                    ->where('[g.group_single_user] = %i', 1)
                     ->fetchAll();
             } else {
                 $auth_access = dibi::select('*')
                     ->from(Tables::AUTH_ACCESS_TABLE)
-                    ->where('group_id = %i', $group_id)
+                    ->where('[group_id] = %i', $group_id)
                     ->fetchAssoc('forum_id');
             }
 
@@ -343,16 +343,16 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
                     $update_acl_status[$forum_id]['auth_mod'] = isset($update_mod_status[$forum_id]) ? $update_mod_status[$forum_id] : 0;
 
                     dibi::update(Tables::AUTH_ACCESS_TABLE, $update_acl_status[$forum_id])
-                        ->where('group_id = %i', $group_id)
-                        ->where('forum_id = %i', $forum_id)
+                        ->where('[group_id] = %i', $group_id)
+                        ->where('[forum_id] = %i', $forum_id)
                         ->execute();
                 }
             }
 
             if (count($delete_sql)) {
                 dibi::delete(Tables::AUTH_ACCESS_TABLE)
-                    ->where('group_id = %i', $group_id)
-                    ->where('forum_id IN %in', $delete_sql)
+                    ->where('[group_id] = %i', $group_id)
+                    ->where('[forum_id] IN %in', $delete_sql)
                     ->execute();
 			}
 
@@ -371,12 +371,12 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
             ->as('aa')
             ->innerJoin(Tables::USERS_GROUPS_TABLE)
             ->as('ug')
-            ->on('ug.group_id = aa.group_id')
+            ->on('[ug.group_id] = [aa.group_id]')
             ->innerJoin(Tables::USERS_TABLE)
             ->as('u')
-            ->on('u.user_id = ug.user_id')
-            ->where('ug.user_pending = %i', 0)
-            ->where('u.user_level NOT IN %in', [MOD, ADMIN])
+            ->on('[u.user_id] = [ug.user_id]')
+            ->where('[ug.user_pending] = %i', 0)
+            ->where('[u.user_level] NOT IN %in', [MOD, ADMIN])
             ->groupBy('u.user_id')
             ->having('SUM(aa.auth_mod) > %i', 0)
             ->fetchPairs(null, 'user_id');
@@ -428,11 +428,11 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
                     ->as('u')
                     ->leftJoin(Tables::USERS_GROUPS_TABLE)
                     ->as('ug')
-                    ->on('ug.user_id = u.user_id')
+                    ->on('[ug.user_id] = [u.user_id]')
                     ->leftJoin(Tables::AUTH_ACCESS_TABLE)
                     ->as('aa')
-                    ->on('aa.group_id = ug.group_id')
-                    ->where('u.user_level NOT IN %in', [USER, ADMIN])
+                    ->on('[aa.group_id] = [ug.group_id]')
+                    ->where('[u.user_level] NOT IN %in', [USER, ADMIN])
                     ->groupBy('u.user_id')
                     ->having('SUM(aa.auth_mod) = %i', 0)
                     ->fetchPairs(null, 'user_id');
@@ -441,19 +441,19 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 
         if (count($set_mod)) {
             dibi::update(Tables::USERS_TABLE, ['user_level' => MOD])
-                ->where('user_id IN %in', $set_mod)
+                ->where('[user_id] IN %in', $set_mod)
                 ->execute();
 		}
 
 		if (count($unset_mod)) {
 		    dibi::update(Tables::USERS_TABLE, ['user_level' => USER])
-                ->where('user_id IN %in', $unset_mod)
+                ->where('[user_id] IN %in', $unset_mod)
                 ->execute();
 		}
 
         $group_user = dibi::select('user_id')
             ->from(Tables::USERS_GROUPS_TABLE)
-            ->where('group_id = %i', $group_id)
+            ->where('[group_id] = %i', $group_id)
             ->fetchPairs('user_id', 'user_id');
 
 		$rows = dibi::select('ug.user_id')
@@ -463,9 +463,9 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
             ->as('aa')
             ->innerJoin(Tables::USERS_GROUPS_TABLE)
             ->as('ug')
-            ->on('aa.group_id = ug.group_id')
-            ->where('ug.user_id IN %in', $group_user)
-            ->where('aa.auth_mod = %i', 1)
+            ->on('[aa.group_id] = [ug.group_id]')
+            ->where('[ug.user_id] IN %in', $group_user)
+            ->where('[aa.auth_mod] = %i', 1)
             ->groupBy('ug.user_id')
             ->fetchPairs(null, 'user_id');
 
@@ -477,8 +477,8 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 
 		if (count($group_user)) {
 		    dibi::update(Tables::USERS_TABLE, ['user_level' => USER])
-                ->where('user_id IN %in', $group_user)
-                ->where('user_level = %i', MOD)
+                ->where('[user_id] IN %in', $group_user)
+                ->where('[user_level] = %i', MOD)
                 ->execute();
 		}
 
@@ -503,7 +503,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
         ->as('f')
         ->innerJoin(Tables::CATEGORIES_TABLE)
         ->as('c')
-        ->on('f.cat_id = c.cat_id')
+        ->on('[f.cat_id] = [c.cat_id]')
         ->orderBy('c.cat_order', dibi::ASC)
         ->orderBy('f.forum_order', dibi::ASC)
         ->fetchAll();
@@ -534,7 +534,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
         ->as('ug');
 
     if ($mode === 'user') {
-	    $ug_info->where('u.user_id = %i', $user_id)
+	    $ug_info->where('[u.user_id] = %i', $user_id)
             ->where('ug.user_id = u.user_id')
             ->where('g.group_id = ug.group_id');
     } else {
@@ -551,17 +551,17 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
             ->as('aa')
             ->innerJoin(Tables::USERS_GROUPS_TABLE)
             ->as('ug')
-            ->on('aa.group_id = ug.group_id')
+            ->on('[aa.group_id] = [ug.group_id]')
             ->innerJoin(Tables::GROUPS_TABLE)
             ->as('g')
-            ->on('g.group_id = ug.group_id')
-            ->where('ug.user_id = %i', $user_id)
-            ->where('g.group_single_user = %i', 1)
+            ->on('[g.group_id] = [ug.group_id]')
+            ->where('[ug.user_id] = %i', $user_id)
+            ->where('[g.group_single_user] = %i', 1)
             ->fetchAll();
     } else {
         $rows = dibi::select('*')
             ->from(Tables::AUTH_ACCESS_TABLE)
-            ->where('group_id = %i', $group_id)
+            ->where('[group_id] = %i', $group_id)
             ->fetchAll();
     }
 

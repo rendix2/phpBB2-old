@@ -73,7 +73,7 @@ $zone = new DateTimeZone($userTimezone);
 
 $regdate = new DateTime();
 $regdate->setTimezone($zone);
-$regdate->setTimestamp($profileData->user_regdate);
+$regdate->setTimestamp($profileData->user_reg_date);
 
 $memberdays = new DateTime('now', $zone);
 $memberdays = $memberdays->diff($regdate)->days;
@@ -124,7 +124,7 @@ if ($profileData->user_topic_watches !== 0) {
 
 $avatarImage = '';
 
-if ($profileData->user_avatar_type && $profileData->user_allowavatar) {
+if ($profileData->user_avatar_type && $profileData->user_allow_avatar) {
 	switch ($profileData->user_avatar_type) {
 		case USER_AVATAR_UPLOAD:
 			$avatarImage = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $profileData->user_avatar . '" alt="" border="0" />' : '';
@@ -179,19 +179,19 @@ $searchImage = '<a href="' . $temp_url . '"><img src="' . $images['icon_search']
 $search      = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $profileData->username) . '</a>';
 
 // <!-- BEGIN Another Online/Offline indicator -->
-if ((!$profileData->user_allow_viewonline && $userdata['user_level'] === ADMIN) || $profileData->user_allow_viewonline) {
+if ((!$profileData->user_allow_view_online && $userdata['user_level'] === ADMIN) || $profileData->user_allow_view_online) {
     $expiry_time = time() - ONLINE_TIME_DIFF;
 
     if ($profileData->user_session_time >= $expiry_time) {
         $user_onlinestatus = '<img src="' . $images['Online'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" />';
 
-        if (!$profileData->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+        if (!$profileData->user_allow_view_online && $userdata['user_level'] === ADMIN) {
             $user_onlinestatus = '<img src="' . $images['Hidden_Admin'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" align="middle" />';
         }
     } else {
         $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
 
-        if (!$profileData->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+        if (!$profileData->user_allow_view_online && $userdata['user_level'] === ADMIN) {
             $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
         }
     }
@@ -216,7 +216,7 @@ if (function_exists('get_html_translation_table')) {
 $template->assignVars(
     [
         'USERNAME' => $profileData->username,
-        'JOINED' => create_date($lang['DATE_FORMAT'], $profileData->user_regdate, $board_config['board_timezone']),
+        'JOINED' => create_date($lang['DATE_FORMAT'], $profileData->user_reg_date, $board_config['board_timezone']),
         'LAST_VISIT' => create_date($lang['DATE_FORMAT'], $profileData->user_session_time, $board_config['board_timezone']),
         'POSTER_RANK' => htmlspecialchars($posterRank, ENT_QUOTES),
         'RANK_IMAGE' => $rankImage,
@@ -249,9 +249,9 @@ $template->assignVars(
         'WWW_IMG' => $www_img,
         'WWW' => $www,
 
-        'LOCATION' => $profileData->user_from ? htmlspecialchars($profileData->user_from, ENT_QUOTES) : '&nbsp;',
-        'OCCUPATION' => $profileData->user_occ ? htmlspecialchars($profileData->user_occ, ENT_QUOTES) : '&nbsp;',
-        'INTERESTS' => $profileData->user_interests ? htmlspecialchars($profileData->user_interests, ENT_QUOTES) : '&nbsp;',
+        'LOCATION'   => $profileData->user_from         ? htmlspecialchars($profileData->user_from, ENT_QUOTES) : '&nbsp;',
+        'OCCUPATION' => $profileData->user_occupation ? htmlspecialchars($profileData->user_occupation, ENT_QUOTES) : '&nbsp;',
+        'INTERESTS'  => $profileData->user_interests   ? htmlspecialchars($profileData->user_interests, ENT_QUOTES) : '&nbsp;',
 
         // <!-- BEGIN Another Online/Offline indicator -->
         'USER_ONLINESTATUS' => $user_onlinestatus,

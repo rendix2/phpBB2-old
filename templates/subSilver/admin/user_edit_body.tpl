@@ -449,13 +449,13 @@
 				<span class="gen">{L_ALLOW_AVATAR}</span>
 			</td>
 			<td class="row2">
-				<input type="radio" name="user_allowavatar" id="user_allowavatar_1" value="1" {ALLOW_AVATAR_YES} />
-				<label for="user_allowavatar_1">
+				<input type="radio" name="user_allow_avatar" id="user_allow_avatar_1" value="1" {ALLOW_AVATAR_YES} />
+				<label for="user_allow_avatar_1">
 					<span class="gen">{L_YES}</span>
 				</label>
 
-				<input type="radio" name="user_allowavatar" id="user_allowavatar_0" value="0" {ALLOW_AVATAR_NO} />
-				<label for="user_allowavatar_0">
+				<input type="radio" name="user_allow_avatar" id="user_allow_avatar_0" value="0" {ALLOW_AVATAR_NO} />
+				<label for="user_allow_avatar_0">
 					<span class="gen">{L_NO}</span>
 				</label>
 			</td>

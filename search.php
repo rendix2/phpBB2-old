@@ -173,7 +173,7 @@ if ($mode === 'searchuser') {
                 if ($userdata['session_logged_in']) {
                     $search_ids = dibi::select('post_id')
                         ->from(Tables::POSTS_TABLE)
-                        ->where('post_time >= %i', $userdata['user_lastvisit'])
+                        ->where('post_time >= %i', $userdata['user_last_visit'])
                         ->fetchPairs(null, 'post_id');
 				} else {
 					redirect(Session::appendSid('login.php?redirect=search.php&search_id=newposts', true));
@@ -415,7 +415,7 @@ if ($mode === 'searchuser') {
                         if ($search_author !== '') {
                             $search_ids->innerJoin(Tables::USERS_TABLE)
                                 ->as('u')
-                                ->on('u.user_id = p.poster_id')
+                                ->on('[u.user_id] = [p.poster_id]')
                                 ->where('[u.user_id] IN %in', $user_ids);
 
                             if ($search_time) {
@@ -630,9 +630,9 @@ if ($mode === 'searchuser') {
                 'u.user_id',
                 'u.user_sig',
                 'u.user_sig_bbcode_uid',
-                'u.user_allow_viewonline',
+                'u.user_allow_view_online',
                 'u.user_session_time',
-                'u.user_allowhtml'
+                'u.user_allow_html'
             ];
 
             $search_sets = dibi::select($columns)
@@ -671,15 +671,15 @@ if ($mode === 'searchuser') {
                 ->select('p2.post_time')
                 ->select('p.post_id')
                 ->select('pt.post_text')
-                ->select('u.user_allowhtml')
+                ->select('u.user_allow_html')
                 ->from(Tables::TOPICS_TABLE)
                 ->as('t')
                 ->innerJoin(Tables::FORUMS_TABLE)
                 ->as('f')
-                ->on('f.forum_id = t.forum_id')
+                ->on('[f.forum_id] = [t.forum_id]')
                 ->innerJoin(Tables::USERS_TABLE)
                 ->as('u')
-                ->on('t.topic_poster = u.user_id')
+                ->on('[t.topic_poster] = [u.user_id]')
                 ->innerJoin(Tables::POSTS_TABLE)
                 ->as('p')
                 ->on('p.post_id = t.topic_first_post_id')
@@ -691,7 +691,7 @@ if ($mode === 'searchuser') {
                 ->on('u2.user_id = p2.poster_id')
                 ->innerJoin(Tables::POSTS_TEXT_TABLE)
                 ->as('pt')
-                ->on('p.post_id = pt.post_id')
+                ->on('[p.post_id] = [pt.post_id]')
                 ->where('t.topic_id IN %in', $search_ids);
 		}
 
@@ -807,7 +807,7 @@ if ($mode === 'searchuser') {
                         $message = preg_replace('/\[url\]|\[\/url\]/si', '', $message);
                         $message = mb_strlen($message) > $return_chars ? mb_substr($message, 0, $return_chars) . ' ...' : $message;
                     } else {
-                        if (!$board_config['allow_html'] && $search_set->user_allowhtml) {
+                        if (!$board_config['allow_html'] && $search_set->user_allow_html) {
                             $message = preg_replace('#(<)([\/]?.*?)(>)#is', '&lt;\\2&gt;', $message);
                         }
 
@@ -906,7 +906,7 @@ if ($mode === 'searchuser') {
 
                 $poster .= $search_set->user_id !== ANONYMOUS ? '</a>' : '';
 
-                if ($userdata['session_logged_in'] && $search_set->post_time > $userdata['user_lastvisit']) {
+                if ($userdata['session_logged_in'] && $search_set->post_time > $userdata['user_last_visit']) {
                     if (isset($trackingTopics[$topic_id], $trackingForums[$forum_id])) {
                         $topic_last_read = $trackingTopics[$topic_id] > $trackingForums[$forum_id] ? $trackingTopics[$topic_id] : $trackingForums[$forum_id];
                     } elseif (isset($trackingTopics[$topic_id]) || isset($trackingForums[$forum_id])) {
@@ -928,19 +928,19 @@ if ($mode === 'searchuser') {
                 }
 
                 // <!-- BEGIN Another Online/Offline indicator -->
-                if ((!$search_set->user_allow_viewonline && $userdata['user_level'] === ADMIN) || $search_set->user_allow_viewonline) {
+                if ((!$search_set->user_allow_view_online && $userdata['user_level'] === ADMIN) || $search_set->user_allow_view_online) {
                     $expiry_time = time() - ONLINE_TIME_DIFF;
 
                     if ($search_set->user_session_time >= $expiry_time) {
                         $user_onlinestatus = '<img src="' . $images['Online'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" align="middle" />';
 
-                        if (!$search_set->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                        if (!$search_set->user_allow_view_online && $userdata['user_level'] === ADMIN) {
                             $user_onlinestatus = '<img src="' . $images['Hidden_Admin'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" align="middle" />';
                         }
                     } else {
                         $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
 
-                        if (!$search_set->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                        if (!$search_set->user_allow_view_online && $userdata['user_level'] === ADMIN) {
                             $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
                         }
                     }
@@ -1031,7 +1031,8 @@ if ($mode === 'searchuser') {
 					$topic_type = $lang['Topic_Moved'] . ' ';
 					$topic_id = $search_set->topic_moved_id;
 
-					$folder_image = '<img src="' . $images['folder'] . '" alt="' . $lang['No_new_posts'] . '" />';
+                    $folder_alt = $lang['Topic_Moved'];
+					$folder_image = $images['folder'];
 					$newest_post_img = '';
 				} else {
                     if ($search_set->topic_status === TOPIC_LOCKED) {
@@ -1053,7 +1054,7 @@ if ($mode === 'searchuser') {
 						}
 					}
 
-                    if ($userdata['session_logged_in'] && $search_set->post_time > $userdata['user_lastvisit']) {
+                    if ($userdata['session_logged_in'] && $search_set->post_time > $userdata['user_last_visit']) {
                         if (!empty($trackingTopics) || !empty($trackingForums) || isset($_COOKIE[$forum_all_cookie_name])) {
 
                             $unread_topics = true;
@@ -1082,7 +1083,7 @@ if ($mode === 'searchuser') {
                                 $newest_post_img = '';
                             }
 
-                        } elseif ($search_set->post_time > $userdata['user_lastvisit']) {
+                        } elseif ($search_set->post_time > $userdata['user_last_visit']) {
                             $folder_image = $folder_new;
                             $folder_alt = $lang['New_posts'];
 
@@ -1201,7 +1202,7 @@ $result = dibi::select(['c.cat_title', 'c.cat_id', 'f.forum_name', 'f.forum_id']
     ->as('c')
     ->innerJoin(Tables::FORUMS_TABLE)
     ->as('f')
-    ->on('f.cat_id = c.cat_id')
+    ->on('[f.cat_id] = [c.cat_id]')
     ->orderBy('c.cat_order')
     ->orderBy('f.forum_order')
     ->fetchAll();

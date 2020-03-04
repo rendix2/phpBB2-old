@@ -204,7 +204,7 @@ switch ($mode) {
 
         $post_info = dibi::select('*')
             ->from(Tables::FORUMS_TABLE)
-            ->where('forum_id = %i', $forumId)
+            ->where('[forum_id] = %i', $forumId)
             ->fetch();
         break;
 
@@ -220,7 +220,7 @@ switch ($mode) {
         ->as('f')
         ->innerJoin(Tables::TOPICS_TABLE)
         ->as('t')
-        ->on('f.forum_id = t.forum_id')
+        ->on('[f.forum_id] = [t.forum_id]')
         ->where('t.topic_id = %i', $topicId)
         ->fetch();
 		break;
@@ -265,16 +265,16 @@ switch ($mode) {
                 ->as('p')
                 ->innerJoin(Tables::TOPICS_TABLE)
                 ->as('t')
-                ->on('t.topic_id = p.topic_id')
+                ->on('[t.topic_id] = [p.topic_id]')
                 ->innerJoin(Tables::FORUMS_TABLE)
                 ->as('f')
-                ->on('f.forum_id = p.forum_id')
+                ->on('[f.forum_id] = [p.forum_id]')
                 ->innerJoin(Tables::POSTS_TEXT_TABLE)
                 ->as('pt')
-                ->on('pt.post_id = p.post_id')
+                ->on('[pt.post_id] = [p.post_id]')
                 ->innerJoin(Tables::USERS_TABLE)
                 ->as('u')
-                ->on('u.user_id = p.poster_id')
+                ->on('[u.user_id] = [p.poster_id]')
                 ->where('p.post_id = %i', $postId)
                 ->fetch();
         } else {
@@ -297,10 +297,10 @@ switch ($mode) {
                 ->as('p')
                 ->innerJoin(Tables::TOPICS_TABLE)
                 ->as('t')
-                ->on('t.topic_id = p.topic_id')
+                ->on('[t.topic_id] = [p.topic_id]')
                 ->innerJoin(Tables::FORUMS_TABLE)
                 ->as('f')
-                ->on('f.forum_id = p.forum_id')
+                ->on('[f.forum_id] = [p.forum_id]')
                 ->where('p.post_id = %i', $postId)
                 ->fetch();
         }
@@ -362,7 +362,7 @@ if ($post_info) {
 
             $postData['edit_poll'] = (!$poll_results_sum || $is_auth['auth_mod']) && $postData['first_post'];
 		} else {
-            $postData['edit_poll'] = $postData['first_post'] && $is_auth['auth_pollcreate'];
+            $postData['edit_poll'] = $postData['first_post'] && $is_auth['auth_poll_create'];
 		}
 
 		//
@@ -440,7 +440,7 @@ if ($board_config['allow_html']) {
     if ($submit || $refresh) {
         $html_on = !$_POST['disable_html'];
     } else {
-        $html_on = $userdata['user_id'] === ANONYMOUS ? $board_config['allow_html'] : $userdata['user_allowhtml'];
+        $html_on = $userdata['user_id'] === ANONYMOUS ? $board_config['allow_html'] : $userdata['user_allow_html'];
     }
 }
 
@@ -450,7 +450,7 @@ if ($board_config['allow_bbcode']) {
     if ($submit || $refresh) {
         $bbcode_on = !isset($_POST['disable_bbcode']);
     } else {
-        $bbcode_on = $userdata['user_id'] === ANONYMOUS ? $board_config['allow_bbcode'] : $userdata['user_allowbbcode'];
+        $bbcode_on = $userdata['user_id'] === ANONYMOUS ? $board_config['allow_bbcode'] : $userdata['user_allow_bbcode'];
     }
 }
 
@@ -460,7 +460,7 @@ if ($board_config['allow_smilies']) {
     if ($submit || $refresh) {
         $smilies_on = !isset($_POST['disable_smilies']);
     } else {
-        $smilies_on = $userdata['user_id'] === ANONYMOUS ? $board_config['allow_smilies'] : $userdata['user_allowsmile'];
+        $smilies_on = $userdata['user_id'] === ANONYMOUS ? $board_config['allow_smilies'] : $userdata['user_allow_smile'];
     }
 }
 
@@ -470,8 +470,8 @@ if (($submit || $refresh) && $is_auth['auth_read']) {
     if ($mode !== 'newtopic' && $userdata['session_logged_in'] && $is_auth['auth_read']) {
         $notify_user = dibi::select('topic_id')
             ->from(Tables::TOPICS_WATCH_TABLE)
-            ->where('topic_id = %i', $topicId)
-            ->where('user_id = %i', $userdata['user_id'])
+            ->where('[topic_id] = %i', $topicId)
+            ->where('[user_id] = %i', $userdata['user_id'])
             ->fetchSingle();
 
         $notify_user = (bool)$notify_user;
@@ -483,7 +483,7 @@ if (($submit || $refresh) && $is_auth['auth_read']) {
 if ($submit || $refresh) {
     $attachSignature = isset($_POST['attach_sig']);
 } else {
-    $attachSignature = $userdata['user_id'] === ANONYMOUS ? 0 : $userdata['user_attachsig'];
+    $attachSignature = $userdata['user_id'] === ANONYMOUS ? 0 : $userdata['user_attach_sig'];
 }
 
 execute_posting_attachment_handling();
@@ -669,9 +669,11 @@ if (($delete || $pollDelete || $mode === 'delete') && !$confirm) {
 			$subject = !empty($_POST['subject'])  ? trim($_POST['subject']) : '';
 			$message = !empty($_POST['message'])  ? $_POST['message']       : '';
 
-			$pollTitle   = isset($_POST['poll_title']) && $is_auth['auth_pollcreate']       ? $_POST['poll_title'] : '';
-			$pollOptions = isset($_POST['poll_option_text']) && $is_auth['auth_pollcreate'] ? $_POST['poll_option_text'] : '';
-			$pollLength  = isset($_POST['poll_length']) && $is_auth['auth_pollcreate']      ? $_POST['poll_length'] : '';
+			$canPollCreate = $is_auth['auth_poll_create'];
+
+			$pollTitle   = isset($_POST['poll_title']) && $canPollCreate       ? $_POST['poll_title']       : '';
+			$pollOptions = isset($_POST['poll_option_text']) && $canPollCreate ? $_POST['poll_option_text'] : '';
+			$pollLength  = isset($_POST['poll_length']) && $canPollCreate      ? $_POST['poll_length']      : '';
 
 			$bbcode_uid = '';
 
@@ -789,7 +791,7 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg !== '') {
 		// Finalise processing as per viewtopic
 		//
         if (!$html_on) {
-            if ($userSignature !== '' || !$userdata['user_allowhtml']) {
+            if ($userSignature !== '' || !$userdata['user_allow_html']) {
                 $userSignature = preg_replace('#(<)([\/]?.*?)(>)#is', '&lt;\2&gt;', $userSignature);
             }
         }
@@ -814,7 +816,7 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg !== '') {
         $previewMessage = make_clickable($previewMessage);
 
         if ($smilies_on) {
-            if ($userdata['user_allowsmile'] && $userSignature !== '') {
+            if ($userdata['user_allow_smile'] && $userSignature !== '') {
                 $userSignature = smilies_pass($userSignature);
             }
 
@@ -885,7 +887,7 @@ if ($refresh || isset($_POST['del_poll_option']) || $error_msg !== '') {
             $bbcode_on  = (bool)$post_info->enable_bbcode;
             $smilies_on = (bool)$post_info->enable_smilies;
 		} else {
-			$attachSignature = (bool)$userdata['user_attachsig'];
+			$attachSignature = (bool)$userdata['user_attach_sig'];
 			$userSignature   = $userdata['user_sig'];
 		}
 
@@ -1152,7 +1154,7 @@ $template->assignVars(
 //
 // Poll entry switch/output
 //
-if (($mode === 'newtopic' || ($mode === 'editpost' && $postData['edit_poll'])) && $is_auth['auth_pollcreate']) {
+if (($mode === 'newtopic' || ($mode === 'editpost' && $postData['edit_poll'])) && $is_auth['auth_poll_create']) {
     $template->assignVars(
         [
             'L_ADD_A_POLL'          => $lang['Add_poll'],

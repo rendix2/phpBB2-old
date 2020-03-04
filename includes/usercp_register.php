@@ -144,10 +144,10 @@ if (
         $allowbbcode     = isset($_POST['allowbbcode'])  ? (bool)$_POST['allowbbcode']  : $board_config['allow_bbcode'];
         $allowSmileys    = isset($_POST['allowsmilies']) ? (bool)$_POST['allowsmilies'] : $board_config['allow_smilies'];
 	} else {
-		$attachSignature = isset($_POST['attachsig'])    ? (bool)$_POST['attachsig']    : $userdata['user_attachsig'];
-		$allowHtml       = isset($_POST['allowhtml'])    ? (bool)$_POST['allowhtml']    : $userdata['user_allowhtml'];
-		$allowbbcode     = isset($_POST['allowbbcode'])  ? (bool)$_POST['allowbbcode']  : $userdata['user_allowbbcode'];
-		$allowSmileys    = isset($_POST['allowsmilies']) ? (bool)$_POST['allowsmilies'] : $userdata['user_allowsmile'];
+		$attachSignature = isset($_POST['attachsig'])    ? (bool)$_POST['attachsig']    : $userdata['user_attach_sig'];
+		$allowHtml       = isset($_POST['allowhtml'])    ? (bool)$_POST['allowhtml']    : $userdata['user_allow_html'];
+		$allowbbcode     = isset($_POST['allowbbcode'])  ? (bool)$_POST['allowbbcode']  : $userdata['user_allow_bbcode'];
+		$allowSmileys    = isset($_POST['allowsmilies']) ? (bool)$_POST['allowsmilies'] : $userdata['user_allow_smile'];
 	}
 
     if (!empty($_POST['language'])) {
@@ -166,7 +166,7 @@ if (
 	// TODO i think i have this value already in $board_config, why i get it again???
 	$board_default_dateformat = dibi::select('config_value')
         ->from(Tables::CONFIG_TABLE)
-        ->where('config_name = %s', 'default_dateformat')
+        ->where('[config_name] = %s', 'default_dateformat')
         ->fetchSingle();
 
 	$board_config['default_dateformat'] = $board_default_dateformat;
@@ -263,7 +263,7 @@ if (isset($_POST['submit'])) {
 			$row = dibi::select('code')
                 ->from(Tables::CONFIRM_TABLE)
                 ->where('confirm_id = %s', $confirmId)
-                ->where('session_id = %s', $userdata['session_id'])
+                ->where('[session_id] = %s', $userdata['session_id'])
                 ->fetch();
 
 			if ($row) {
@@ -273,7 +273,7 @@ if (isset($_POST['submit'])) {
 				} else {
 				    dibi::delete(Tables::CONFIRM_TABLE)
                         ->where('confirm_id = %s', $confirmId)
-                        ->where('session_id = %s', $userdata['session_id'])
+                        ->where('[session_id] = %s', $userdata['session_id'])
                         ->execute();
 				}
 			} else {
@@ -301,7 +301,7 @@ if (isset($_POST['submit'])) {
             if ($mode === 'editprofile') {
 			    $db_password = dibi::select('user_password')
                     ->from(Tables::USERS_TABLE)
-                    ->where('user_id = %i', $userId)
+                    ->where('[user_id] = %i', $userId)
                     ->fetchSingle();
 
                 if (!$db_password) {
@@ -340,7 +340,7 @@ if (isset($_POST['submit'])) {
         if ($mode === 'editprofile') {
             $db_password = dibi::select('user_password')
                 ->from(Tables::USERS_TABLE)
-                ->where('user_id = %i', $userId)
+                ->where('[user_id] = %i', $userId)
                 ->fetchSingle();
 
             if (!$db_password) {
@@ -441,33 +441,33 @@ if (isset($_POST['submit'])) {
 			}
 
             $updateData = [
-                'user_email'            => $email,
-                'user_website'          => $website,
-                'user_occ'              => $occupation,
-                'user_from'             => $location,
-                'user_interests'        => $interests,
-                'user_sig'              => $signature,
-                'user_sig_bbcode_uid'   => $signature_bbcode_uid,
-                'user_attachsig'        => $attachSignature,
-                'user_allowsmile'       => $allowSmileys,
-                'user_allowhtml'        => $allowHtml,
-                'user_allowbbcode'      => $allowbbcode,
-                'user_allow_viewonline' => $allowViewOnline,
-                'user_notify'           => $notifyReply,
-                'user_notify_pm'        => $notifyPm,
-                'user_popup_pm'         => $popupPm,
-                'user_timezone'         => $userTimeZone,
-                'user_dateformat'       => $userDateFormat,
-                'user_lang'             => $userLanguage,
-                'user_style'            => $userStyle,
-                'user_active'           => $userActive,
-                'user_actkey'           => $userActivationKey
+                'user_email'             => $email,
+                'user_website'           => $website,
+                'user_occupation'        => $occupation,
+                'user_from'              => $location,
+                'user_interests'         => $interests,
+                'user_sig'               => $signature,
+                'user_sig_bbcode_uid'    => $signature_bbcode_uid,
+                'user_attach_sig'        => $attachSignature,
+                'user_allow_smile'       => $allowSmileys,
+                'user_allow_html'        => $allowHtml,
+                'user_allow_bbcode'      => $allowbbcode,
+                'user_allow_view_online' => $allowViewOnline,
+                'user_notify'            => $notifyReply,
+                'user_notify_pm'         => $notifyPm,
+                'user_popup_pm'          => $popupPm,
+                'user_timezone'          => $userTimeZone,
+                'user_date_format'       => $userDateFormat,
+                'user_lang'              => $userLanguage,
+                'user_style'             => $userStyle,
+                'user_active'            => $userActive,
+                'user_act_key'           => $userActivationKey
             ];
 
 			$updateData = array_merge($updateData, $avatarData, $username_data, $user_password_data);
 
 			dibi::update(Tables::USERS_TABLE, $updateData)
-                ->where('user_id = %i', $userId)
+                ->where('[user_id] = %i', $userId)
                 ->execute();
 
 			// We remove all stored login keys since the password has been updated
@@ -504,7 +504,7 @@ if (isset($_POST['submit'])) {
                 } elseif ($board_config['require_activation'] === USER_ACTIVATION_ADMIN) {
  				    $admins = dibi::select(['user_email', 'user_lang'])
                         ->from(Tables::USERS_TABLE)
-                        ->where('user_level = %i', ADMIN)
+                        ->where('[user_level] = %i', ADMIN)
                         ->fetchAll();
 
                     foreach ($admins as $admin) {
@@ -548,33 +548,33 @@ if (isset($_POST['submit'])) {
 			//
 
             $insertData = [
-                'username' => $userName,
-                'user_regdate' => time(),
-                'user_password' => $newPassword,
-                'user_email' => $email,
-                'user_website' => $website,
-                'user_occ' =>  $occupation,
-                'user_from' => $location,
-                'user_interests' => $interests,
-                'user_sig' => $signature,
-                'user_sig_bbcode_uid' => $signature_bbcode_uid,
+                'username'               => $userName,
+                'user_reg_date'          => time(),
+                'user_password'          => $newPassword,
+                'user_email'             => $email,
+                'user_website'           => $website,
+                'user_occupation'        => $occupation,
+                'user_from'              => $location,
+                'user_interests'         => $interests,
+                'user_sig'               => $signature,
+                'user_sig_bbcode_uid'    => $signature_bbcode_uid,
                 //'user_avatar' => null, // TODO $avatar_sql,
                 //'user_avatar_type' => null, // TODO $avatar_sql,
-                'user_attachsig' => $attachSignature,
-                'user_allowsmile' => $allowSmileys,
-                'user_allowhtml' => $allowHtml,
-                'user_allowbbcode' => $allowbbcode,
-                'user_allow_viewonline' => $allowViewOnline,
-                'user_notify' => $notifyReply,
-                'user_popup_pm' => $popupPm,
-                'user_timezone' => $userTimeZone,
-                'user_dateformat' => $userDateFormat,
-                'user_lang' => $userLanguage,
-                'user_style' => $userStyle,
-                'user_level' => USER,
-                'user_allow_pm' => 1,
-                'user_active' => null,
-                'user_actkey' => null
+                'user_attach_sig'        => $attachSignature,
+                'user_allow_smile'       => $allowSmileys,
+                'user_allow_html'        => $allowHtml,
+                'user_allow_bbcode'      => $allowbbcode,
+                'user_allow_view_online' => $allowViewOnline,
+                'user_notify'            => $notifyReply,
+                'user_popup_pm'          => $popupPm,
+                'user_timezone'          => $userTimeZone,
+                'user_date_format'       => $userDateFormat,
+                'user_lang'              => $userLanguage,
+                'user_style'             => $userStyle,
+                'user_level'             => USER,
+                'user_allow_pm'          => 1,
+                'user_active'            => null,
+                'user_act_key'           => null
             ];
 
             $insertData = array_merge($insertData, $avatarData);
@@ -586,10 +586,10 @@ if (isset($_POST['submit'])) {
 				$userActivationKey = substr($userActivationKey, 0, $keyLength);
 
                 $insertData['user_active'] = 0;
-                $insertData['user_actkey'] = $userActivationKey;
+                $insertData['user_act_key'] = $userActivationKey;
 			} else {
                 $insertData['user_active'] = 1;
-                $insertData['user_actkey'] = '';
+                $insertData['user_act_key'] = '';
 			}
 
 			$userId = dibi::insert(Tables::USERS_TABLE, $insertData)->execute();
@@ -672,7 +672,7 @@ if (isset($_POST['submit'])) {
             if ($board_config['require_activation'] === USER_ACTIVATION_ADMIN) {
 			    $admins = dibi::select(['user_email', 'user_lang'])
                     ->from(Tables::USERS_TABLE)
-                    ->where('user_level = %i', ADMIN)
+                    ->where('[user_level] = %i', ADMIN)
                     ->fetchAll();
 
                 foreach ($admins as $admin) {
@@ -732,7 +732,7 @@ if ($error) {
 
 	$website = $userdata['user_website'];
 	$location = $userdata['user_from'];
-	$occupation = $userdata['user_occ'];
+	$occupation = $userdata['user_occupation'];
 	$interests = $userdata['user_interests'];
 	$signature_bbcode_uid = $userdata['user_sig_bbcode_uid'];
 	$signature = ($signature_bbcode_uid !== '') ? preg_replace("/:(([a-z0-9]+:)?)$signature_bbcode_uid(=|\])/si", '\\3', $userdata['user_sig']) : $userdata['user_sig'];
@@ -740,19 +740,19 @@ if ($error) {
 	$notifyPm = $userdata['user_notify_pm'];
 	$popupPm = $userdata['user_popup_pm'];
 	$notifyReply = $userdata['user_notify'];
-	$attachSignature = $userdata['user_attachsig'];
-	$allowHtml = $userdata['user_allowhtml'];
-	$allowbbcode = $userdata['user_allowbbcode'];
-	$allowSmileys = $userdata['user_allowsmile'];
-	$allowViewOnline = $userdata['user_allow_viewonline'];
+	$attachSignature = $userdata['user_attach_sig'];
+	$allowHtml = $userdata['user_allow_html'];
+	$allowbbcode = $userdata['user_allow_bbcode'];
+	$allowSmileys = $userdata['user_allow_smile'];
+	$allowViewOnline = $userdata['user_allow_view_online'];
 
-	$userAvatar = $userdata['user_allowavatar'] ? $userdata['user_avatar'] : '';
-	$userAvatarType = $userdata['user_allowavatar'] ? $userdata['user_avatar_type'] : USER_AVATAR_NONE;
+	$userAvatar = $userdata['user_allow_avatar'] ? $userdata['user_avatar'] : '';
+	$userAvatarType = $userdata['user_allow_avatar'] ? $userdata['user_avatar_type'] : USER_AVATAR_NONE;
 
 	$userStyle = $userdata['user_style'];
 	$userLanguage = $userdata['user_lang'];
 	$userTimeZone = $userdata['user_timezone'];
-	$userDateFormat = $userdata['user_dateformat'];
+	$userDateFormat = $userdata['user_date_format'];
 }
 
 //
@@ -816,9 +816,9 @@ if (isset($_POST['avatargallery']) && !$error) {
 		$s_hidden_fields .= '<input type="hidden" name="avatarlocal" value="' . $userAvatarLocal . '" /><input type="hidden" name="avatarcatname" value="' . $userAvatarCategory . '" />';
 	}
 
-	$htmlStatus    = $userdata['user_allowhtml'] && $board_config['allow_html']     ? $lang['HTML_is_ON']     : $lang['HTML_is_OFF'];
-	$bbcodeStatus  = $userdata['user_allowbbcode'] && $board_config['allow_bbcode'] ? $lang['BBCode_is_ON']   : $lang['BBCode_is_OFF'];
-	$smileysStatus = $userdata['user_allowsmile'] && $board_config['allow_smilies'] ? $lang['Smilies_are_ON'] : $lang['Smilies_are_OFF'];
+	$htmlStatus    = $userdata['user_allow_html'] && $board_config['allow_html']     ? $lang['HTML_is_ON']     : $lang['HTML_is_OFF'];
+	$bbcodeStatus  = $userdata['user_allow_bbcode'] && $board_config['allow_bbcode'] ? $lang['BBCode_is_ON']   : $lang['BBCode_is_OFF'];
+	$smileysStatus = $userdata['user_allow_smile'] && $board_config['allow_smilies'] ? $lang['Smilies_are_ON'] : $lang['Smilies_are_OFF'];
 
     if ($error) {
         $template->setFileNames(['reg_header' => 'error_body.tpl']);
@@ -855,7 +855,7 @@ if (isset($_POST['avatargallery']) && !$error) {
         $attempts = dibi::select('COUNT(session_id)')
             ->as('attempts')
             ->from(Tables::CONFIRM_TABLE)
-            ->where('session_id = %s', $userdata['session_id'])
+            ->where('[session_id] = %s', $userdata['session_id'])
             ->fetchSingle();
 
         // TODO use constant
@@ -1014,7 +1014,7 @@ if (isset($_POST['avatargallery']) && !$error) {
 	//
     if (
         $mode !== 'register' &&
-        $userdata['user_allowavatar'] &&
+        $userdata['user_allow_avatar'] &&
             (
                 $board_config['allow_avatar_upload'] ||
                 $board_config['allow_avatar_local'] ||

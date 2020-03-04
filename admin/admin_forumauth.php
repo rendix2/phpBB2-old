@@ -65,7 +65,7 @@ $forum_auth_fields = [
     'auth_sticky',
     'auth_announce',
     'auth_vote',
-    'auth_pollcreate'
+    'auth_poll_create'
 ];
 
 $field_names = [
@@ -78,7 +78,7 @@ $field_names = [
     'auth_sticky'     => $lang['Sticky'],
     'auth_announce'   => $lang['Announce'],
     'auth_vote'       => $lang['Vote'],
-    'auth_pollcreate' => $lang['Pollcreate']
+    'auth_poll_create' => $lang['Pollcreate']
 ];
 
 $forum_auth_levels = ['ALL', 'REG', 'PRIVATE', 'MOD', 'ADMIN'];
@@ -113,7 +113,7 @@ if (isset($_POST['submit'])) {
                 $update_data = array_combine($forum_auth_fields, $simple_ary);
 
                 dibi::update(Tables::FORUMS_TABLE, $update_data)
-                    ->where('forum_id = %i', $forum_id)
+                    ->where('[forum_id] = %i', $forum_id)
                     ->execute();
             }
 		} else {
@@ -130,7 +130,7 @@ if (isset($_POST['submit'])) {
             }
 
 		    dibi::update(Tables::FORUMS_TABLE, $update_data)
-                ->where('forum_id = %i', $forum_id)
+                ->where('[forum_id] = %i', $forum_id)
                 ->execute();
 		}
 
@@ -164,7 +164,7 @@ $forums = dibi::select('f.*')
     ->on('c.cat_id = f.cat_id');
 
 if ($forum_sql) {
-    $forums->where('forum_id = %i', $forum_id);
+    $forums->where('[forum_id] = %i', $forum_id);
 }
 
 $forums = $forums->orderBy('c.cat_order', dibi::ASC)
@@ -178,13 +178,13 @@ if (empty($forum_id)) {
 	//
     $template->setFileNames(['body' => 'admin/auth_select_body.tpl']);
 
-    $select_list = '<select name="' . POST_FORUM_URL . '">';
+    $forumsSelect = '<select name="' . POST_FORUM_URL . '">';
 
     foreach ($forums as $forum) {
-		$select_list .= '<option value="' . $forum->forum_id . '">' . htmlspecialchars($forum->forum_name, ENT_QUOTES) . '</option>';
+		$forumsSelect .= '<option value="' . $forum->forum_id . '">' . htmlspecialchars($forum->forum_name, ENT_QUOTES) . '</option>';
 	}
 
-	$select_list .= '</select>';
+	$forumsSelect .= '</select>';
 
     $template->assignVars(
         [
@@ -194,7 +194,7 @@ if (empty($forum_id)) {
             'L_LOOK_UP'      => $lang['Look_up_Forum'],
 
             'S_AUTH_ACTION' => Session::appendSid('admin_forumauth.php'),
-            'S_AUTH_SELECT' => $select_list
+            'S_AUTH_SELECT' => $forumsSelect
         ]
     );
 } else {
@@ -283,11 +283,11 @@ if (empty($forum_id)) {
 	    [
             'FORUM_NAME' => htmlspecialchars($forum_name, ENT_QUOTES),
 
-            'L_FORUM' => $lang['Forum'],
-            'L_AUTH_TITLE' => $lang['Auth_Control_Forum'],
+            'L_FORUM'        => $lang['Forum'],
+            'L_AUTH_TITLE'   => $lang['Auth_Control_Forum'],
             'L_AUTH_EXPLAIN' => $lang['Forum_auth_explain'],
-            'L_SUBMIT' => $lang['Submit'],
-            'L_RESET' => $lang['Reset'],
+            'L_SUBMIT'       => $lang['Submit'],
+            'L_RESET'        => $lang['Reset'],
 
             'U_SWITCH_MODE' => $u_switch_mode,
 

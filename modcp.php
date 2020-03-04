@@ -102,7 +102,7 @@ if (!empty($topicId)) {
         ->as('t')
         ->innerJoin(Tables::FORUMS_TABLE)
         ->as('f')
-        ->on('f.forum_id = t.forum_id')
+        ->on('[f.forum_id] = [t.forum_id]')
         ->where('t.topic_id = %i', $topicId)
         ->fetch();
 
@@ -380,7 +380,7 @@ switch ($mode) {
                     ->from(Tables::TOPICS_TABLE)
                     ->where('[topic_id] IN %in', $topics_ids)
                     ->where('[forum_id] = %i', $old_forum_id)
-                    ->where('topic_status <> %i', TOPIC_MOVED)
+                    ->where('[topic_status] <> %i', TOPIC_MOVED)
                     ->fetchAll();
 
                 foreach ($topics as $topic) {

@@ -67,9 +67,9 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
                 ->as('ug')
                 ->innerJoin(Tables::GROUPS_TABLE)
                 ->as('g')
-                ->on('g.group_id = ug.group_id')
-                ->where('ug.user_id = %i', $user_id)
-                ->where('g.group_single_user = %i', 1)
+                ->on('[g.group_id] = [ug.group_id]')
+                ->where('[ug.user_id] = %i', $user_id)
+                ->where('[g.group_single_user] = %i', 1)
                 ->fetch();
 
             $update_data = [
@@ -94,19 +94,19 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
                 ->execute();
 
 			dibi::delete(Tables::USERS_TABLE)
-                ->where('user_id = %i', $user_id)
+                ->where('[user_id] = %i', $user_id)
                 ->execute();
 
             dibi::delete(Tables::USERS_GROUPS_TABLE)
-                ->where('user_id = %i', $user_id)
+                ->where('[user_id] = %i', $user_id)
                 ->execute();
 
             dibi::delete(Tables::GROUPS_TABLE)
-                ->where('group_id = %i', $row->group_id)
+                ->where('[group_id] = %i', $row->group_id)
                 ->execute();
 
             dibi::delete(Tables::AUTH_ACCESS_TABLE)
-                ->where('group_id = %i', $row->group_id)
+                ->where('[group_id] = %i', $row->group_id)
                 ->execute();
 
             dibi::delete(Tables::THANKS_TABLE)
@@ -114,19 +114,19 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
                 ->execute();
 
             dibi::delete(Tables::TOPICS_WATCH_TABLE)
-                ->where('user_id = %i', $user_id)
+                ->where('[user_id] = %i', $user_id)
                 ->execute();
 
             dibi::delete(Tables::BAN_LIST_TABLE)
-                ->where('ban_userid = %i', $user_id)
+                ->where('[ban_user_id] = %i', $user_id)
                 ->execute();
 
             dibi::delete(Tables::SESSIONS_TABLE)
-                ->where('session_user_id = %i', $user_id)
+                ->where('[session_user_id] = %i', $user_id)
                 ->execute();
 
             dibi::delete(Tables::SESSIONS_AUTO_LOGIN_KEYS_TABLE)
-                ->where('user_id = %i', $user_id)
+                ->where('[user_id] = %i', $user_id)
                 ->execute();
 
             $privmsgs_ids = dibi::select('privmsgs_id')
@@ -136,11 +136,11 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 
             if (count($privmsgs_ids)) {
                 dibi::delete(Tables::PRIVATE_MESSAGE_TABLE)
-                    ->where('privmsgs_id IN %in', $privmsgs_ids)
+                    ->where('[privmsgs_id] IN %in', $privmsgs_ids)
                     ->execute();
 
                 dibi::delete(Tables::PRIVATE_MESSAGE_TEXT_TABLE)
-                    ->where('privmsgs_text_id IN %in', $privmsgs_ids)
+                    ->where('[privmsgs_text_id] IN %in', $privmsgs_ids)
                     ->execute();
             }
 
@@ -202,10 +202,10 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
         $user_avatar      = empty($user_avatar_loc) ? $this_userdata->user_avatar      : '';
         $user_avatar_type = empty($user_avatar_loc) ? $this_userdata->user_avatar_type : '';
 
-        $user_status      = !empty($_POST['user_status'])      ? (int)$_POST['user_status']      : 0;
-        $user_allowpm     = !empty($_POST['user_allowpm'])     ? (int)$_POST['user_allowpm']     : 0;
-        $user_rank        = !empty($_POST['user_rank'])        ? (int)$_POST['user_rank']        : 0;
-        $user_allowavatar = !empty($_POST['user_allowavatar']) ? (int)$_POST['user_allowavatar'] : 0;
+        $user_status      = !empty($_POST['user_status'])       ? (int)$_POST['user_status']       : 0;
+        $user_allowpm     = !empty($_POST['user_allowpm'])      ? (int)$_POST['user_allowpm']      : 0;
+        $user_rank        = !empty($_POST['user_rank'])         ? (int)$_POST['user_rank']         : 0;
+        $user_allowavatar = !empty($_POST['user_allow_avatar']) ? (int)$_POST['user_allow_avatar'] : 0;
 
         if (isset($_POST['avatargallery']) || isset($_POST['submitavatar']) || isset($_POST['cancelavatar'])) {
 			$username = stripslashes($username);
@@ -581,48 +581,48 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 		// Update entry in DB
 		//
         if (!$error) {
-		    $update_data = [
-                'user_email' => $email,
-                'user_website' => $website,
-                'user_occ'     => $occupation,
-                'user_from'    => $location,
-                'user_interests' => $interests,
-                'user_sig'       => $signature,
-                'user_attachsig' => $attachsig,
-                'user_sig_bbcode_uid' => $signature_bbcode_uid,
-                'user_allowsmile' => $allowsmilies,
-                'user_allowhtml'  => $allowhtml,
-                'user_allowavatar' => $user_allowavatar,
-                'user_allowbbcode' => $allowbbcode,
-                'user_allow_viewonline' => $allowviewonline,
-                'user_notify'           => $notifyreply,
-                'user_allow_pm'         => $user_allowpm,
-                'user_notify_pm'        => $notifypm,
-                'user_popup_pm'         => $popuppm,
-                'user_lang' => $user_lang,
-                'user_style' => $user_style,
-                'user_timezone' => $user_timezone,
-                'user_dateformat' => $user_dateformat,
-                'user_active' =>  $user_status,
-                'user_rank' => $user_rank,
+            $update_data = [
+                'user_email'             => $email,
+                'user_website'           => $website,
+                'user_occupation'        => $occupation,
+                'user_from'              => $location,
+                'user_interests'         => $interests,
+                'user_sig'               => $signature,
+                'user_attach_sig'        => $attachsig,
+                'user_sig_bbcode_uid'    => $signature_bbcode_uid,
+                'user_allow_smile'       => $allowsmilies,
+                'user_allow_html'        => $allowhtml,
+                'user_allow_avatar'      => $user_allowavatar,
+                'user_allow_bbcode'      => $allowbbcode,
+                'user_allow_view_online' => $allowviewonline,
+                'user_notify'            => $notifyreply,
+                'user_allow_pm'          => $user_allowpm,
+                'user_notify_pm'         => $notifypm,
+                'user_popup_pm'          => $popuppm,
+                'user_lang'              => $user_lang,
+                'user_style'             => $user_style,
+                'user_timezone'          => $user_timezone,
+                'user_dateformat'        => $user_dateformat,
+                'user_active'            => $user_status,
+                'user_rank'              => $user_rank,
             ];
 
 		    $update_data = array_merge($update_data, $username_sql, $passwd_sql, $avatar_sql);
 
 		    $result = dibi::update(Tables::USERS_TABLE, $update_data)
-                ->where('user_id = %i', $user_id)
+                ->where('[user_id] = %i', $user_id)
                 ->execute();
 
             if (isset($rename_user)) {
                 dibi::update(Tables::GROUPS_TABLE, ['group_name' => $rename_user])
-                    ->where('group_name = %s', $this_userdata['username'])
+                    ->where('[group_name] = %s', $this_userdata['username'])
                     ->execute();
             }
 
             // Delete user session, to prevent the user navigating the forum (if logged in) when disabled
             if (!$user_status) {
                 dibi::delete(Tables::SESSIONS_TABLE)
-                    ->where('session_user_id = %i', $user_id)
+                    ->where('[session_user_id] = %i', $user_id)
                     ->execute();
             }
 
@@ -684,39 +684,39 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
         $acp_password = '';
         $acp_password_confirm = '';
 
-		$website = $this_userdata->user_website;
-		$location = $this_userdata->user_from;
-		$occupation = $this_userdata->user_occ;
-		$interests = $this_userdata->user_interests;
+        $website    = $this_userdata->user_website;
+        $location   = $this_userdata->user_from;
+        $occupation = $this_userdata->user_occupation;
+        $interests  = $this_userdata->user_interests;
 
 		$signature = $this_userdata->user_sig_bbcode_uid !== '' ? preg_replace('#:' . $this_userdata->user_sig_bbcode_uid . '#si', '', $this_userdata->user_sig) : $this_userdata->user_sig;
 		$signature = preg_replace(PostHelper::$htmlEntitiesMatch, PostHelper::$htmlEntitiesReplace, $signature);
 
-		$notifypm = $this_userdata->user_notify_pm;
-		$popuppm = $this_userdata->user_popup_pm;
-		$notifyreply = $this_userdata->user_notify;
-		$attachsig = $this_userdata->user_attachsig;
-		$allowhtml = $this_userdata->user_allowhtml;
-		$allowbbcode = $this_userdata->user_allowbbcode;
-		$allowsmilies = $this_userdata->user_allowsmile;
-		$allowviewonline = $this_userdata->user_allow_viewonline;
+        $notifypm        = $this_userdata->user_notify_pm;
+        $popuppm         = $this_userdata->user_popup_pm;
+        $notifyreply     = $this_userdata->user_notify;
+        $attachsig       = $this_userdata->user_attach_sig;
+        $allowhtml       = $this_userdata->user_allow_html;
+        $allowbbcode     = $this_userdata->user_allow_bbcode;
+        $allowsmilies    = $this_userdata->user_allow_smile;
+        $allowviewonline = $this_userdata->user_allow_view_online;
 
-		$user_avatar = $this_userdata->user_avatar;
-		$user_avatar_type = $this_userdata->user_avatar_type;
-		$user_style = $this_userdata->user_style;
-		$user_lang = $this_userdata->user_lang;
-		$user_timezone = $this_userdata->user_timezone;
-		$user_dateformat = htmlspecialchars($this_userdata->user_dateformat);
-		
-		$user_status = $this_userdata->user_active;
-		$user_allowavatar = $this_userdata->user_allowavatar;
-		$user_allowpm = $this_userdata->user_allow_pm;
+        $user_avatar      = $this_userdata->user_avatar;
+        $user_avatar_type = $this_userdata->user_avatar_type;
+        $user_style       = $this_userdata->user_style;
+        $user_lang        = $this_userdata->user_lang;
+        $user_timezone    = $this_userdata->user_timezone;
+        $user_dateformat  = htmlspecialchars($this_userdata->user_dateformat);
+
+        $user_status      = $this_userdata->user_active;
+        $user_allowavatar = $this_userdata->user_allow_avatar;
+        $user_allowpm     = $this_userdata->user_allow_pm;
 		
 		$COPPA = false;
 
-		$html_status    = $this_userdata->user_allowhtml   ? $lang['HTML_is_ON']     : $lang['HTML_is_OFF'];
-		$bbcode_status  = $this_userdata->user_allowbbcode ? $lang['BBCode_is_ON']   : $lang['BBCode_is_OFF'];
-		$smilies_status = $this_userdata->user_allowsmile  ? $lang['Smilies_are_ON'] : $lang['Smilies_are_OFF'];
+		$html_status    = $this_userdata->user_allow_html   ? $lang['HTML_is_ON']     : $lang['HTML_is_OFF'];
+		$bbcode_status  = $this_userdata->user_allow_bbcode ? $lang['BBCode_is_ON']   : $lang['BBCode_is_OFF'];
+		$smilies_status = $this_userdata->user_allow_smile  ? $lang['Smilies_are_ON'] : $lang['Smilies_are_OFF'];
 	}
 
 	if (isset($_POST['avatargallery']) && !$error) {

@@ -150,7 +150,7 @@ if (isset($_POST['submit'])) {
         $in_banlist = false;
 
         foreach ($bans as $ban) {
-            if ($user_value === $ban->ban_userid) {
+            if ($user_value === $ban->ban_user_id) {
                 $in_banlist = true;
             }
         }
@@ -158,7 +158,7 @@ if (isset($_POST['submit'])) {
         if (!$in_banlist) {
             $kill_session_sql .= (($kill_session_sql !== '') ? ' OR ' : '') . 'session_user_id = ' . $user_value;
 
-            dibi::insert(Tables::BAN_LIST_TABLE, ['ban_userid' => $user_value])
+            dibi::insert(Tables::BAN_LIST_TABLE, ['ban_user_id' => $user_value])
                 ->execute();
         }
     }
@@ -291,9 +291,9 @@ if (isset($_POST['submit'])) {
         ->as('b')
         ->innerJoin(Tables::USERS_TABLE)
         ->as('u')
-        ->on('u.user_id = b.ban_userid')
-        ->where('b.ban_userid <> %i', 0)
-        ->where('u.user_id <> %i', ANONYMOUS)
+        ->on('[u.user_id] = [b.ban_user_id]')
+        ->where('[b.ban_user_id] <> %i', 0)
+        ->where('[u.user_id] <> %i', ANONYMOUS)
         ->orderBy('u.user_id', dibi::ASC)
         ->fetchAll();
 

@@ -36,7 +36,7 @@ CREATE TABLE phpbb_auth_access (
    auth_sticky int2 DEFAULT '0' NOT NULL,
    auth_announce int2 DEFAULT '0' NOT NULL,
    auth_vote int2 DEFAULT '0' NOT NULL,
-   auth_pollcreate int2 DEFAULT '0' NOT NULL,
+   auth_poll_create int2 DEFAULT '0' NOT NULL,
    auth_attachments int2 DEFAULT '0' NOT NULL,
    auth_mod int2 DEFAULT '0' NOT NULL,
    CONSTRAINT phpbb_auth_access_pkey PRIMARY KEY (group_id, forum_id)
@@ -73,12 +73,12 @@ CREATE TABLE phpbb_groups (
 -------------------------------------------------------- */
 CREATE TABLE phpbb_banlist (
    ban_id int4 DEFAULT nextval('phpbb_banlist_id_seq'::text) NOT NULL,
-   ban_userid int4,
+   ban_user_id int4,
    ban_ip char(8),
    ban_email varchar(255),
    CONSTRAINT phpbb_banlist_pkey PRIMARY KEY (ban_id)
 );
-CREATE  INDEX ban_userid_phpbb_banlist_index ON phpbb_banlist (ban_userid);
+CREATE  INDEX ban_user_id_phpbb_banlist_index ON phpbb_banlist (ban_user_id);
 
 
 /* --------------------------------------------------------
@@ -136,7 +136,7 @@ CREATE TABLE phpbb_forums (
    auth_delete int2 DEFAULT '0' NOT NULL,
    auth_announce int2 DEFAULT '0' NOT NULL,
    auth_sticky int2 DEFAULT '0' NOT NULL,
-   auth_pollcreate int2 DEFAULT '0' NOT NULL,
+   auth_poll_create int2 DEFAULT '0' NOT NULL,
    auth_vote int2 DEFAULT '0' NOT NULL,
    auth_attachments int2 DEFAULT '0' NOT NULL,
    CONSTRAINT phpbb_forums_pkey PRIMARY KEY (forum_id)
@@ -494,15 +494,15 @@ CREATE TABLE phpbb_users (
    user_id int4 DEFAULT nextval('phpbb_users_id_seq'::text) NOT NULL,
    user_active int2,
    username varchar(25) DEFAULT '' NOT NULL,
-   user_regdate int4 DEFAULT '0' NOT NULL,
+   user_reg_date int4 DEFAULT '0' NOT NULL,
    user_password varchar(512) DEFAULT '' NOT NULL,
    user_acp_password VARCHAR(512) NOT NULL DEFAULT '',
    user_session_time int4 DEFAULT '0' NOT NULL,
    user_session_page int2 DEFAULT '0' NOT NULL,
-   user_lastvisit int4 DEFAULT '0' NOT NULL,
+   user_last_visit int4 DEFAULT '0' NOT NULL,
    user_email varchar(255),
    user_website varchar(100),
-   user_occ varchar(100),
+   user_occupation varchar(100),
    user_from varchar(100),
    user_interests varchar(255),
    user_sig text,
@@ -517,26 +517,26 @@ CREATE TABLE phpbb_users (
    user_last_privmsg int4 DEFAULT '0' NOT NULL,
    user_login_tries int2 DEFAULT '0' NOT NULL,
    user_last_login_try int4 DEFAULT '0' NOT NULL,
-   user_emailtime int4,
-   user_attachsig int2,
-   user_allowhtml int2 DEFAULT '1',
-   user_allowbbcode int2 DEFAULT '1',
-   user_allowsmile int2 DEFAULT '1',
+   user_email_time int4,
+   user_attach_sig int2,
+   user_allow_html int2 DEFAULT '1',
+   user_allow_bbcode int2 DEFAULT '1',
+   user_allow_smile int2 DEFAULT '1',
    user_allow_pm int2 DEFAULT '1' NOT NULL,
-   user_allowavatar int2 DEFAULT '1' NOT NULL,
-   user_allow_viewonline int2 DEFAULT '1' NOT NULL,
+   user_allow_avatar int2 DEFAULT '1' NOT NULL,
+   user_allow_view_online int2 DEFAULT '1' NOT NULL,
    user_rank int4 DEFAULT '0',
    user_avatar varchar(100),
    user_avatar_type int2 DEFAULT '0' NOT NULL,
    user_level int4 DEFAULT '0',
    user_lang varchar(255),
    user_timezone varchar(50) DEFAULT 'Europe/Berlin' NOT NULL,
-   user_dateformat varchar(14) DEFAULT 'd M Y H:i' NOT NULL,
+   user_date_format varchar(14) DEFAULT 'd M Y H:i' NOT NULL,
    user_notify_pm int2 DEFAULT '0' NOT NULL,
    user_popup_pm int2 DEFAULT '0' NOT NULL,
    user_notify int2,
-   user_actkey varchar(32),
-   user_newpasswd varchar(512),
+   user_act_key varchar(32),
+   user_new_password varchar(512),
    CONSTRAINT phpbb_users_pkey PRIMARY KEY (user_id)
 );
 
@@ -605,4 +605,4 @@ CREATE TABLE phpbb_template_cache (
 
 ALTER TABLE `phpbb_user_group` ADD PRIMARY KEY (`group_id`, `user_id`);
 ALTER TABLE `phpbb_users` ADD UNIQUE(`username`);
-ALTER TABLE phpbb_banlist ADD INDEX ban_userid ( ban_userid );
+ALTER TABLE phpbb_banlist ADD INDEX ban_user_id ( ban_user_id );

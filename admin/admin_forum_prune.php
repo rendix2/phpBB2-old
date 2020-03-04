@@ -59,7 +59,7 @@ $forums = dibi::select('f.*')
     ->on('c.cat_id = f.cat_id');
 
 if ($forum_sql) {
-    $forums->where('forum_id = %i', $forum_id);
+    $forums->where('[forum_id] = %i', $forum_id);
 }
 
 $forums = $forums->orderBy('c.cat_order', dibi::ASC)
@@ -122,14 +122,14 @@ if (isset($_POST['doprune'])) {
 		//
         $template->setFileNames(['body' => 'admin/forum_prune_select_body.tpl']);
 
-        $select_list = '<select name="' . POST_FORUM_URL . '">';
-		$select_list .= '<option value="-1">' . $lang['All_Forums'] . '</option>';
+        $forumsSelect = '<select name="' . POST_FORUM_URL . '">';
+		$forumsSelect .= '<option value="-1">' . $lang['All_Forums'] . '</option>';
 
 		foreach ($forums as $forum) {
-            $select_list .= '<option value="' . $forum->forum_id . '">' . htmlspecialchars($forum->forum_name, ENT_QUOTES) . '</option>';
+            $forumsSelect .= '<option value="' . $forum->forum_id . '">' . htmlspecialchars($forum->forum_name, ENT_QUOTES) . '</option>';
         }
 
-		$select_list .= '</select>';
+		$forumsSelect .= '</select>';
 
 		//
 		// Assign the template variables.
@@ -141,7 +141,7 @@ if (isset($_POST['doprune'])) {
                 'L_LOOK_UP'      => $lang['Look_up_Forum'],
 
                 'S_FORUMPRUNE_ACTION' => Session::appendSid('admin_forum_prune.php'),
-                'S_FORUMS_SELECT'     => $select_list
+                'S_FORUMS_SELECT'     => $forumsSelect
             ]
         );
 	} else {

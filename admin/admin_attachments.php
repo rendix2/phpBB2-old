@@ -11,8 +11,6 @@
 use Nette\Caching\Cache;
 use phpBB2\Sync;
 
-/**
- */
 define('IN_PHPBB', true);
 
 $sep = DIRECTORY_SEPARATOR;
@@ -595,7 +593,7 @@ if ($mode === 'cats') {
 
     $rows = dibi::select(['group_name', 'cat_id'])
         ->from(Tables::ATTACH_EXTENSION_GROUPS_TABLE)
-        ->where('[cat_id] > 0')
+        ->where('[cat_id] > %i', 0)
         ->orderBy('cat_id')
         ->fetchAll();
 

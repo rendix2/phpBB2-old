@@ -118,7 +118,7 @@ class Select
     {
         $groups = dibi::select(['group_id', 'group_name'])
             ->from(Tables::GROUPS_TABLE)
-            ->where('group_single_user <> %i', 1)
+            ->where('[group_single_user] <> %i', 1)
             ->orderBy('group_name')
             ->fetchPairs('group_id', 'group_name');
 
@@ -202,7 +202,7 @@ class Select
         // and fix bug in origin code
         $defaultTheme = dibi::select(['style_name'])
             ->from(Tables::THEMES_TABLE)
-            ->where('themes_id = %i', $boardConfig['default_style'])
+            ->where('[themes_id] = %i', $boardConfig['default_style'])
             ->fetchSingle();
 
         $templateOptions = '';

@@ -85,7 +85,7 @@ if (isset($_GET['view']) && empty($_GET[POST_POST_URL])) {
                     ->where('s.session_id = %s', $sessionId)
                     ->where('u.user_id = s.session_user_id')
                     ->where('p.topic_id = %i', $topicId)
-                    ->where('p.post_time >= u.user_lastvisit')
+                    ->where('p.post_time >= u.user_last_visit')
                     ->orderBy('p.post_time', dibi::ASC)
                     ->fetch();
 
@@ -156,7 +156,7 @@ if ($postId) {
         'f.auth_delete',
         'f.auth_sticky',
         'f.auth_announce',
-        'f.auth_pollcreate',
+        'f.auth_poll_create',
         'f.auth_vote',
         'f.auth_attachments',
         'f.auth_download',
@@ -171,10 +171,10 @@ if ($postId) {
         ->as('t')
         ->innerJoin(Tables::FORUMS_TABLE)
         ->as('f')
-        ->on('f.forum_id = t.forum_id')
+        ->on('[f.forum_id] = [t.forum_id]')
         ->innerJoin(Tables::POSTS_TABLE)
         ->as('p')
-        ->on('t.topic_id = p.topic_id')
+        ->on('[t.topic_id] = [p.topic_id]')
         ->innerJoin(Tables::POSTS_TABLE)
         ->as('p2')
         ->on('p2.topic_id = p.topic_id')
@@ -200,7 +200,7 @@ if ($postId) {
         ->groupBy('f.auth_delete')
         ->groupBy('f.auth_sticky')
         ->groupBy('f.auth_announce')
-        ->groupBy('f.auth_pollcreate')
+        ->groupBy('f.auth_poll_create')
         ->groupBy('f.auth_vote')
         ->groupBy('f.auth_attachments')
         ->orderBy('p.post_id', dibi::ASC)
@@ -226,7 +226,7 @@ if ($postId) {
         'f.auth_delete',
         'f.auth_sticky',
         'f.auth_announce',
-        'f.auth_pollcreate',
+        'f.auth_poll_create',
         'f.auth_vote',
         'f.auth_attachments',
         'f.auth_download',
@@ -239,7 +239,7 @@ if ($postId) {
         ->as('t')
         ->innerJoin(Tables::FORUMS_TABLE)
         ->as('f')
-        ->on('f.forum_id = t.forum_id')
+        ->on('[f.forum_id] = [t.forum_id]')
         ->where('t.topic_id = %i', $topicId)
         ->fetch();
 }
@@ -302,8 +302,8 @@ if ($userdata['session_logged_in']) {
 
 	$row = dibi::select('notify_status')
         ->from(Tables::TOPICS_WATCH_TABLE)
-        ->where('topic_id = %i', $topicId)
-        ->where('user_id = %i', $userdata['user_id'])
+        ->where('[topic_id] = %i', $topicId)
+        ->where('[user_id] = %i', $userdata['user_id'])
         ->fetch();
 
     if ($row) {
@@ -315,8 +315,8 @@ if ($userdata['session_logged_in']) {
 
 				dibi::delete(Tables::TOPICS_WATCH_TABLE)
                     ->setFlag($sqlPriority)
-                    ->where('topic_id = %i', $topicId)
-                    ->where('user_id = %i', $userdata['user_id'])
+                    ->where('[topic_id] = %i', $topicId)
+                    ->where('[user_id] = %i', $userdata['user_id'])
                     ->execute();
 
                 $userManager->updateByPrimary($userdata['user_id'], ['user_topic_watches%sql' => 'user_topic_watches - 1']);
@@ -340,8 +340,8 @@ if ($userdata['session_logged_in']) {
 
 				dibi::update(Tables::TOPICS_WATCH_TABLE, ['notify_status' => 0])
                     ->setFlag($sqlPriority)
-                    ->where('topic_id = %i', $topicId)
-                    ->where('user_id = %i', $userdata['user_id'])
+                    ->where('[topic_id] = %i', $topicId)
+                    ->where('[user_id] = %i', $userdata['user_id'])
                     ->execute();
 			}
 		}
@@ -411,7 +411,7 @@ if (!empty($_POST['postdays']) || !empty($_GET['postdays'])) {
         ->as('t')
         ->innerJoin(Tables::POSTS_TABLE)
         ->as('p')
-        ->on('p.topic_id = t.topic_id')
+        ->on('[p.topic_id] = [t.topic_id]')
         ->where('t.topic_id = %i', $topicId)
         ->where('p.post_time >= %i', $time->getTimestamp())
         ->fetchSingle();
@@ -456,15 +456,15 @@ $columns = [
     'u.user_from',
     'u.user_website',
     'u.user_email',
-    'u.user_regdate',
+    'u.user_reg_date',
     'u.user_rank',
     'u.user_sig',
     'u.user_sig_bbcode_uid',
     'u.user_avatar',
     'u.user_avatar_type',
-    'u.user_allowavatar',
-    'u.user_allowsmile',
-    'u.user_allow_viewonline',
+    'u.user_allow_avatar',
+    'u.user_allow_smile',
+    'u.user_allow_view_online',
     'u.user_session_time',
     'p.*',
     'pt.post_text',
@@ -477,10 +477,10 @@ $posts = dibi::select($columns)
     ->as('p')
     ->innerJoin(Tables::USERS_TABLE)
     ->as('u')
-    ->on('u.user_id = p.poster_id')
+    ->on('[u.user_id] = [p.poster_id]')
     ->innerJoin(Tables::POSTS_TEXT_TABLE)
     ->as('pt')
-    ->on('pt.post_id = p.post_id')
+    ->on('[pt.post_id] = [p.post_id]')
     ->where('p.topic_id = %i', $topicId);
 
 // todo check if time is added correctly
@@ -526,7 +526,7 @@ if ($resync) {
     $totalReplies = dibi::select('COUNT(post_id)')
         ->as('total')
         ->from(Tables::POSTS_TABLE)
-        ->where('topic_id = %i', $topicId)
+        ->where('[topic_id] = %i', $topicId)
         ->fetchSingle();
 }
 
@@ -620,7 +620,7 @@ if ($userdata['session_logged_in']) {
     } elseif (!empty($trackingTopics[$topicId]) || !empty($trackingForums[$forumId])) {
         $topicLastRead = !empty($trackingTopics[$topicId]) ? $trackingTopics[$topicId] : $trackingForums[$forumId];
     } else {
-        $topicLastRead = $userdata['user_lastvisit'];
+        $topicLastRead = $userdata['user_last_visit'];
     }
 
     if (count($trackingTopics) >= 150 && empty($trackingTopics[$topicId])) {
@@ -901,7 +901,7 @@ init_display_post_attachments($forum_topic_data['topic_attachment']);
 // Update the topic view counter
 //
 dibi::update(Tables::TOPICS_TABLE, ['topic_views%sql' => 'topic_views + 1'])
-    ->where('topic_id = %i', $topicId)
+    ->where('[topic_id] = %i', $topicId)
     ->execute();
 
 // Begin Thanks Mod
@@ -979,11 +979,11 @@ foreach ($posts as $i => $post) {
 
 	$posterFrom = $post->user_from && $post->user_id !== ANONYMOUS ? $lang['Location'] . ': ' . htmlspecialchars($post->user_from, ENT_QUOTES) : '';
 
-	$posterJoined = $post->user_id !== ANONYMOUS ? $lang['Joined'] . ': ' . create_date($lang['DATE_FORMAT'], $post->user_regdate, $board_config['board_timezone']) : '';
+	$posterJoined = $post->user_id !== ANONYMOUS ? $lang['Joined'] . ': ' . create_date($lang['DATE_FORMAT'], $post->user_reg_date, $board_config['board_timezone']) : '';
 
 	$posterAvatar = '';
 
-    if ($post->user_avatar_type && $posterId !== ANONYMOUS && $post->user_allowavatar) {
+    if ($post->user_avatar_type && $posterId !== ANONYMOUS && $post->user_allow_avatar) {
 		switch ($post->user_avatar_type) {
 			case USER_AVATAR_UPLOAD:
 				$posterAvatar = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $post->user_avatar . '" alt="" border="0" />' : '';
@@ -998,19 +998,19 @@ foreach ($posts as $i => $post) {
 	}
 
     // <!-- BEGIN Another Online/Offline indicator -->
-    if ((!$post->user_allow_viewonline && $userdata['user_level'] === ADMIN) || $post->user_allow_viewonline) {
+    if ((!$post->user_allow_view_online && $userdata['user_level'] === ADMIN) || $post->user_allow_view_online) {
         $expiry_time = time() - ONLINE_TIME_DIFF;
 
         if ($post->user_session_time >= $expiry_time) {
             $user_onlinestatus = '<img src="' . $images['Online'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" align="middle" />';
 
-            if (!$post->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+            if (!$post->user_allow_view_online && $userdata['user_level'] === ADMIN) {
                 $user_onlinestatus = '<img src="' . $images['Hidden_Admin'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" align="middle" />';
             }
         } else {
             $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
 
-            if (!$post->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+            if (!$post->user_allow_view_online && $userdata['user_level'] === ADMIN) {
                 $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
             }
         }
@@ -1026,7 +1026,7 @@ foreach ($posts as $i => $post) {
 	//
 	// Define the little post icon
 	//
-    if ($userdata['session_logged_in'] && $post->post_time > $userdata['user_lastvisit'] && $post->post_time > $topicLastRead) {
+    if ($userdata['session_logged_in'] && $post->post_time > $userdata['user_last_visit'] && $post->post_time > $topicLastRead) {
         $miniPostImage = $images['icon_minipost_new'];
         $miniPostAlt   = $lang['New_post'];
     } else {
@@ -1158,7 +1158,7 @@ foreach ($posts as $i => $post) {
 	// If the board has HTML off but the post has HTML
 	// on then we process it, else leave it alone
 	//
-    if (!$board_config['allow_html'] || !$userdata['user_allowhtml']) {
+    if (!$board_config['allow_html'] || !$userdata['user_allow_html']) {
         if ($userSignature !== '') {
             $userSignature = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $userSignature);
         }
@@ -1189,7 +1189,7 @@ foreach ($posts as $i => $post) {
 	// Parse smilies
 	//
     if ($board_config['allow_smilies']) {
-        if ($post->user_allowsmile && $userSignature !== '') {
+        if ($post->user_allow_smile && $userSignature !== '') {
             $userSignature = smilies_pass($userSignature);
         }
 

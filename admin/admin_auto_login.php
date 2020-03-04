@@ -37,7 +37,7 @@ switch ($mode) {
         ->as('s')
         ->innerJoin(Tables::USERS_TABLE)
         ->as('u')
-        ->on('u.user_id = s.user_id')
+        ->on('[u.user_id] = [s.user_id]')
         ->fetchAll();
 
     $latte = new LatteFactory($storage, $userdata);

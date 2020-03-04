@@ -173,7 +173,7 @@ if ($mode === 'newpm') {
         'u.user_from',
         'u.user_website',
         'u.user_email',
-        'u.user_regdate',
+        'u.user_reg_date',
         'u.user_rank',
         'u.user_sig',
         'u.user_avatar',
@@ -195,7 +195,7 @@ if ($mode === 'newpm') {
         ->as('user_id_2')
         ->select('u.user_session_time')
         ->as('user_session_time_1')
-        ->select('u.user_allow_viewonline')
+        ->select('u.user_allow_view_online')
         ->select($columns)
         ->from(Tables::PRIVATE_MESSAGE_TABLE)
         ->as('pm')
@@ -377,7 +377,7 @@ if ($mode === 'newpm') {
 
     $privmsg_sent_id = isset($privmsg_sent_id) ? $privmsg_sent_id : $privmsg_id;
 
-    $attachment_mod['pm']->duplicate_attachment_pm($privmsg['privmsgs_attachment'], $privmsg['privmsgs_id'], $privmsg_sent_id);
+    $attachment_mod['pm']->duplicate_attachment_pm($privmsg->privmsgs_attachment, $privmsg->privmsgs_id, $privmsg_sent_id);
 
 	//
 	// Pick a folder, any folder, so long as it's one below ...
@@ -404,19 +404,19 @@ if ($mode === 'newpm') {
 	];
 
     // <!-- BEGIN Another Online/Offline indicator -->
-    if ((!$privmsg['user_allow_viewonline'] && $userdata['user_level'] === ADMIN) || $privmsg['user_allow_viewonline']) {
+    if ((!$privmsg->user_allow_view_online && $userdata['user_level'] === ADMIN) || $privmsg->user_allow_view_online) {
         $expiry_time = time() - ONLINE_TIME_DIFF;
 
-        if ($privmsg['user_session_time_1'] >= $expiry_time) {
+        if ($privmsg->user_session_time_1 >= $expiry_time) {
             $user_onlinestatus = '<img src="' . $images['Online_small'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" />';
 
-            if (!$privmsg['user_allow_viewonline'] && $userdata['user_level'] === ADMIN) {
+            if (!$privmsg->user_allow_view_online && $userdata['user_level'] === ADMIN) {
                 $user_onlinestatus = '<img src="' . $images['Hidden_Admin_small'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
             }
         } else {
             $user_onlinestatus = '<img src="' . $images['Offline_small'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
 
-            if (!$privmsg['user_allow_viewonline'] && $userdata['user_level'] === ADMIN) {
+            if (!$privmsg->user_allow_view_online && $userdata['user_level'] === ADMIN) {
                 $user_onlinestatus = '<img src="' . $images['Offline_small'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
             }
         }
@@ -551,7 +551,7 @@ if ($mode === 'newpm') {
 	$username_to = $privmsg->username_2;
 	$user_id_to = $privmsg->user_id_2;
 
-    init_display_pm_attachments($privmsg['privmsgs_attachment']);
+    init_display_pm_attachments($privmsg->privmsgs_attachment);
 
 	$post_date = create_date($board_config['default_dateformat'], $privmsg->privmsgs_date, $board_config['board_timezone']);
 
@@ -603,7 +603,7 @@ if ($mode === 'newpm') {
 	// If the board has HTML off but the post has HTML
 	// on then we process it, else leave it alone
 	//
-    if (!$board_config['allow_html'] || !$userdata['user_allowhtml']) {
+    if (!$board_config['allow_html'] || !$userdata['user_allow_html']) {
         if ($user_sig !== '') {
             $user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
         }
@@ -1040,22 +1040,22 @@ if ($mode === 'newpm') {
     $html_on = 0;
 
     if ($board_config['allow_html']) {
-        $html_on = $submit || $refresh ? !isset($_POST['disable_html']) : $userdata['user_allowhtml'];
+        $html_on = $submit || $refresh ? !isset($_POST['disable_html']) : $userdata['user_allow_html'];
     }
 
     $bbcode_on = 0;
 
     if ($board_config['allow_bbcode']) {
-        $bbcode_on = $submit || $refresh ? !isset($_POST['disable_bbcode']) : $userdata['user_allowbbcode'];
+        $bbcode_on = $submit || $refresh ? !isset($_POST['disable_bbcode']) : $userdata['user_allow_bbcode'];
     }
 
     $smilies_on = 0;
 
     if ($board_config['allow_smilies']) {
-        $smilies_on = $submit || $refresh ? !isset($_POST['disable_smilies']) : $userdata['user_allowsmile'];
+        $smilies_on = $submit || $refresh ? !isset($_POST['disable_smilies']) : $userdata['user_allow_smile'];
     }
 
-	$attach_sig = $submit || $refresh ? isset($_POST['attach_sig']) : $userdata['user_attachsig'];
+	$attach_sig = $submit || $refresh ? isset($_POST['attach_sig']) : $userdata['user_attach_sig'];
 	$user_sig = $userdata['user_sig'] !== '' && $board_config['allow_sig'] ? $userdata['user_sig'] : '';
 
     if ($submit && $mode !== 'edit') {
@@ -1380,7 +1380,7 @@ if ($mode === 'newpm') {
                 'u.username',
                 'u.user_id',
                 'u.user_sig',
-                'u.user_allow_viewonline',
+                'u.user_allow_view_online',
                 'u.user_session_time'
             ];
 
@@ -1508,7 +1508,7 @@ if ($mode === 'newpm') {
         //
         // Finalise processing as per viewtopic
         //
-        if (!$html_on || !$board_config['allow_html'] || !$userdata['user_allowhtml']) {
+        if (!$html_on || !$board_config['allow_html'] || !$userdata['user_allow_html']) {
             if ($user_sig !== '') {
                 $user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
             }
@@ -1824,7 +1824,7 @@ $columns = [
     'u.user_id',
     'u.username',
     'u.user_session_time',
-    'u.user_allow_viewonline'
+    'u.user_allow_view_online'
 ];
 
 $sql = dibi::select($columns)
@@ -1847,7 +1847,7 @@ switch ($folder) {
         $sql_tot->where('[privmsgs_from_userid] = %i', $userdata['user_id'])
             ->where('[privmsgs_type] IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_READ_MAIL]);
 
-        $sql->on('u.user_id = pm.privmsgs_to_userid')
+        $sql->on('[u.user_id] = [pm.privmsgs_to_userid]')
             ->where('[pm.privmsgs_from_userid] = %i', $userdata['user_id'])
             ->where('[pm.privmsgs_type] IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL]);
 		break;
@@ -1856,7 +1856,7 @@ switch ($folder) {
         $sql_tot->where('[privmsgs_from_userid] = %i', $userdata['user_id'])
             ->where('[privmsgs_type] = %i', PRIVMSGS_SENT_MAIL);
 
-        $sql->on('u.user_id = pm.privmsgs_to_userid')
+        $sql->on('[u.user_id] = [pm.privmsgs_to_userid]')
             ->where('[pm.privmsgs_from_userid] = %i', $userdata['user_id'])
             ->where('[pm.privmsgs_type] = %i', PRIVMSGS_SENT_MAIL);
 		break;
@@ -2064,19 +2064,19 @@ if (count($rows)) {
 		$msg_username = $row->username;
 
         // <!-- BEGIN Another Online/Offline indicator -->
-        if ((!$row->user_allow_viewonline && $userdata['user_level'] === ADMIN) || $row->user_allow_viewonline) {
+        if ((!$row->user_allow_view_online && $userdata['user_level'] === ADMIN) || $row->user_allow_view_online) {
             $expiry_time = time() - ONLINE_TIME_DIFF;
 
             if ($row->user_session_time >= $expiry_time) {
                 $user_onlinestatus = '<img src="' . $images['Online_small'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" />';
 
-                if (!$row->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                if (!$row->user_allow_view_online && $userdata['user_level'] === ADMIN) {
                     $user_onlinestatus = '<img src="' . $images['Hidden_Admin_small'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
                 }
             } else {
                 $user_onlinestatus = '<img src="' . $images['Offline_small'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
 
-                if (!$row->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                if (!$row->user_allow_view_online && $userdata['user_level'] === ADMIN) {
                     $user_onlinestatus = '<img src="' . $images['Offline_small'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
                 }
             }
