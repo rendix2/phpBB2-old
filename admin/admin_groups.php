@@ -114,6 +114,8 @@ if (isset($_POST['group_update'])) {
 			->where('[group_id] = %i', $group_id)
 			->execute();
 
+		attachment_quota_settings('group', $_POST['group_update'], $mode);
+
 		$message  = $lang['Updated_group'] . '<br /><br />';
 		$message .= sprintf($lang['Click_return_groupsadmin'], '<a href="' . Session::appendSid('admin_groups.php') . '">', '</a>') . '<br /><br />';
 		$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
@@ -142,13 +144,13 @@ if (isset($_POST['group_update'])) {
 		$message .= sprintf($lang['Click_return_groupsadmin'], '<a href="' . Session::appendSid('admin_groups.php') . '">', '</a>') . '<br /><br />';
 		$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
+		attachment_quota_settings('group', $_POST['group_update'], $mode);
+
 		message_die(GENERAL_MESSAGE, $message);
 	} else {
 		message_die(GENERAL_MESSAGE, $lang['No_group_action']);
 	}
 }
-
-attachment_quota_settings('group', $_POST['group_update'], $mode);
 
 // add or edit view
 if ($mode === 'edit' || $mode === 'new') {
@@ -287,17 +289,11 @@ if ($mode === 'users') {
 
 		'D_USERS' => $users,
 
-		'L_GROUP_TITLE'   => $lang['Group_administration'],
-
-		'L_USER_ID' => $lang['User_id'],
-		'L_USER_NAME' => $lang['Username'],
-		'L_POSTS' => $lang['Number_posts'],
-		'L_TOPICS' => $lang['Number_topics'],
-		'L_DELETE' => $lang['Delete'],
-
 		'S_SID' => $SID,
 		'S_GROUP_ID' => $group_id,
-		'S_GROUP_NAME' => $group->group_name
+		'S_GROUP_NAME' => $group->group_name,
+
+		'lang' => $lang
 	];
 
 	$latte->render('admin/group_users.latte', $parameters);

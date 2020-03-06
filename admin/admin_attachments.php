@@ -554,22 +554,24 @@ if ($mode === 'shadow') {
 foreach ($shadow_attachments as $shadow_attachment) {
     $template->assignBlockVars('file_shadow_row',
         [
-            'ATTACH_ID' => $shadow_attachment,
+            'ATTACH_ID'       => $shadow_attachment,
             'ATTACH_FILENAME' => $shadow_attachment,
-            'ATTACH_COMMENT' => $lang['No_file_comment_available'],
-            'U_ATTACHMENT' => $upload_dir . '/' . basename($shadow_attachment)
+            'ATTACH_COMMENT'  => $lang['No_file_comment_available'],
+            'U_ATTACHMENT'    => $upload_dir . '/' . basename($shadow_attachment)
         ]
     );
 }
 
-foreach ($shadow_row['attach_id'] as $i => $shadowRow) {
-    $template->assignBlockVars('table_shadow_row',
-        [
-            'ATTACH_ID' => $shadow_row['attach_id'][$i],
-            'ATTACH_FILENAME' => basename($shadow_row['physical_filename'][$i]),
-            'ATTACH_COMMENT' => trim($shadow_row['comment'][$i]) === '' ? $lang['No_file_comment_available'] : trim($shadow_row['comment'][$i])
-        ]
-    );
+if (isset($shadow_row['attach_id'])) {
+    foreach ($shadow_row['attach_id'] as $i => $shadowRow) {
+        $template->assignBlockVars('table_shadow_row',
+            [
+                'ATTACH_ID'       => $shadow_row['attach_id'][$i],
+                'ATTACH_FILENAME' => basename($shadow_row['physical_filename'][$i]),
+                'ATTACH_COMMENT'  => trim($shadow_row['comment'][$i]) === '' ? $lang['No_file_comment_available'] : trim($shadow_row['comment'][$i])
+            ]
+        );
+    }
 }
 
 if ($submit && $mode === 'cats' && !$error) {

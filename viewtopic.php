@@ -76,17 +76,17 @@ if (isset($_GET['view']) && empty($_GET[POST_POST_URL])) {
 
             if ($sessionId) {
                 // TODO USE INNER JOINS
-			    $sessionPostId = dibi::select('p.post_id')
+                $sessionPostId = dibi::select('p.post_id')
                     ->from(Tables::POSTS_TABLE)
                     ->as('p')
-                    ->from(Tables::SESSIONS_TABLE)
-                    ->as('s')
-                    ->from(Tables::USERS_TABLE)
+                    ->innerJoin(Tables::USERS_TABLE)
                     ->as('u')
+                    ->on('[p.post_time] >= [u.user_last_visit]')
+                    ->innerJoin(Tables::SESSIONS_TABLE)
+                    ->as('s')
+                    ->on('[u.user_id] = [s.session_user_id]')
                     ->where('[s.session_id] = %s', $sessionId)
-                    ->where('[u.user_id] = [s.session_user_id]')
                     ->where('[p.topic_id] = %i', $topicId)
-                    ->where('[p.post_time] >= [u.user_last_visit]')
                     ->orderBy('p.post_time', dibi::ASC)
                     ->fetch();
 

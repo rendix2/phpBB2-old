@@ -121,7 +121,7 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
             ->innerJoin(Tables::USERS_TABLE)
             ->as('u')
             ->on('[ug.user_id] = [u.user_id]')
-            ->from(Tables::GROUPS_TABLE)
+            ->innerJoin(Tables::GROUPS_TABLE)
             ->as('g')
             ->on('[g.group_id] = [ug.group_id]')
             ->where('[u.user_id] = %i', $user_id)
@@ -242,9 +242,11 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 				$change_acl_list = [];
 
                 foreach ($forum_auth_fields as $field) {
-					foreach ($_POST['private_' . $field] as $forum_id => $value) {
-						$change_acl_list[$forum_id][$field] = $value;
-					}
+                    if (isset($_POST['private_' . $field] )) {
+                        foreach ($_POST['private_' . $field] as $forum_id => $value) {
+                            $change_acl_list[$forum_id][$field] = $value;
+                        }
+                    }
 				}
 			}
 
@@ -525,27 +527,19 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 		}
 	}
 
-    $ug_info = dibi::select(['u.user_id', 'u.username', 'u.user_level', 'g.group_id', 'g.group_name', 'g.group_single_user', 'ug.user_pending'])
-        ->from(Tables::USERS_TABLE)
-        ->as('u')
-        ->from(Tables::GROUPS_TABLE)
-        ->as('g')
-        ->from(Tables::USERS_GROUPS_TABLE)
-        ->as('ug');
-
     if ($mode === 'user') {
-	    $ug_info->where('[u.user_id] = %i', $user_id)
-            ->where('[ug.user_id] = [u.user_id]')
-            ->where('[g.group_id] = [ug.group_id]');
-    } else {
-        $ug_info->where('[g.group_id] = %i', $group_id)
-            ->where('[ug.group_id] = [g.group_id]')
-            ->where('[u.user_id] = [ug.user_id]');
-    }
+        $ug_info = dibi::select(['u.user_id', 'u.username', 'u.user_level', 'g.group_id', 'g.group_name', 'g.group_single_user', 'ug.user_pending'])
+            ->from(Tables::USERS_TABLE)
+            ->as('u')
+            ->innerJoin(Tables::USERS_GROUPS_TABLE)
+            ->as('ug')
+            ->on('[ug.user_id] = [u.user_id]')
+            ->innerJoin(Tables::GROUPS_TABLE)
+            ->as('g')
+            ->on('[g.group_id] = [ug.group_id]')
+            ->where('[u.user_id] = %i', $user_id)
+            ->fetchAll();
 
-    $ug_info = $ug_info->fetchAll();
-
-    if ($mode === 'user') {
         $rows = dibi::select(['aa.*', 'g.group_single_user'])
             ->from(Tables::AUTH_ACCESS_TABLE)
             ->as('aa')
@@ -559,6 +553,18 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
             ->where('[g.group_single_user] = %i', 1)
             ->fetchAll();
     } else {
+        $ug_info = dibi::select(['u.user_id', 'u.username', 'u.user_level', 'g.group_id', 'g.group_name', 'g.group_single_user', 'ug.user_pending'])
+            ->from(Tables::USERS_TABLE)
+            ->as('u')
+            ->innerJoin(Tables::USERS_GROUPS_TABLE)
+            ->as('ug')
+            ->on('[u.user_id] = [ug.user_id]')
+            ->innerJoin(Tables::GROUPS_TABLE)
+            ->as('g')
+            ->on('[ug.group_id] = [g.group_id]')
+            ->where('[g.group_id] = %i', $group_id)
+            ->fetchAll();
+
         $rows = dibi::select('*')
             ->from(Tables::AUTH_ACCESS_TABLE)
             ->where('[group_id] = %i', $group_id)
@@ -641,11 +647,11 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
     foreach ($auth_ug as $forum_id => $user_ary) {
         if (empty($adv)) {
             if ($forum_auth_level[$forum_id] === Auth::AUTH_ACL) {
-                $allowed = 1;
+                $allowed = true;
 
                 foreach ($forum_auth_level_fields[$forum_id] as $j => $auth_level_field) {
                     if (!$auth_ug[$forum_id][$auth_level_field]) {
-                        $allowed = 0;
+                        $allowed = false;
 
                         break;
                     }
@@ -720,25 +726,16 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
                 ]
             );
         } else {
-            foreach ($optionlist_acl_adv[$forum_id] as $acl_select) {
-                $template->assignBlockVars('forums.aclvalues',
-                    [
-                        'S_ACL_SELECT' => $acl_select
-                    ]
-                );
+            if (isset($optionlist_acl_adv[$forum_id])) {
+                foreach ($optionlist_acl_adv[$forum_id] as $acl_select) {
+                    $template->assignBlockVars('forums.aclvalues', ['S_ACL_SELECT' => $acl_select]);
+                }
             }
         }
 
         $i++;
     }
 //	@reset($auth_user);
-
-    if ($mode === 'user') {
-        $t_username  = $ug_info[0]->username;
-        $s_user_type = $is_admin ? '<select name="userlevel"><option value="admin" selected="selected">' . $lang['Auth_Admin'] . '</option><option value="user">' . $lang['Auth_User'] . '</option></select>' : '<select name="userlevel"><option value="admin">' . $lang['Auth_Admin'] . '</option><option value="user" selected="selected">' . $lang['Auth_User'] . '</option></select>';
-    } else {
-        $t_groupname = htmlspecialchars($ug_info[0]->group_name, ENT_QUOTES);
-    }
 
 	$names = [];
 
@@ -753,24 +750,6 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
             }
         }
     }
-
-	$t_usergroup_list = $t_pending_list = '';
-
-    // TODO i hope we can do it in one foreach!
-    if (count($names)) {
-        foreach ($ug_info as $i => $ug_info_value) {
-            $ug = $mode === 'user' ? 'group&amp;' . POST_GROUPS_URL : 'user&amp;' . POST_USERS_URL;
-
-            if (!$ug_info_value->user_pending) {
-                $t_usergroup_list .= (($t_usergroup_list !== '') ? ', ' : '') . '<a href="' . Session::appendSid("admin_ug_auth.php?mode=$ug=" . $names[$i]['id']) . '">' . htmlspecialchars($names[$i]['name'], ENT_QUOTES) . '</a>';
-            } else {
-                $t_pending_list .= (($t_pending_list !== '') ? ', ' : '') . '<a href="' . Session::appendSid("admin_ug_auth.php?mode=$ug=" . $names[$i]['id']) . '">' . htmlspecialchars($names[$i]['name'], ENT_QUOTES) . '</a>';
-            }
-        }
-    }
-
-	$t_usergroup_list = $t_usergroup_list === '' ? $lang['None'] : $t_usergroup_list;
-	$t_pending_list   = $t_pending_list === ''   ? $lang['None'] : $t_pending_list;
 
 	$s_column_span = 2; // Two columns always present
 
@@ -800,25 +779,25 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 	$u_switch_mode = '<a href="' . $switch_mode . '">' . $switch_mode_text . '</a>';
 
 	$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="adv" value="' . $adv . '" />';
-	$s_hidden_fields .= ( $mode === 'user' ) ? '<input type="hidden" name="' . POST_USERS_URL . '" value="' . $user_id . '" />' : '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
+	$s_hidden_fields .= $mode === 'user' ? '<input type="hidden" name="' . POST_USERS_URL . '" value="' . $user_id . '" />' : '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
 
     if ($mode === 'user') {
         $template->assignBlockVars('switch_user_auth', []);
 
-        $template->assignVars(
-            [
-                'USERNAME'               => $t_username,
-                'USER_LEVEL'             => $lang['User_Level'] . ' : ' . $s_user_type,
-                'USER_GROUP_MEMBERSHIPS' => $lang['Group_memberships'] . ' : ' . $t_usergroup_list
-            ]
-        );
-    } else {
-        $template->assignBlockVars('switch_group_auth', []);
+        $s_user_type = $is_admin ?
+            '<select name="userlevel"><option value="admin" selected="selected">' . $lang['Auth_Admin'] . '</option><option value="user">' . $lang['Auth_User'] . '</option></select>' :
+            '<select name="userlevel"><option value="admin">' . $lang['Auth_Admin'] . '</option><option value="user" selected="selected">' . $lang['Auth_User'] . '</option></select>';
 
         $template->assignVars(
             [
-                'USERNAME'         => $t_groupname,
-                'GROUP_MEMBERSHIP' => $lang['Usergroup_members'] . ' : ' . $t_usergroup_list . '<br />' . $lang['Pending_members'] . ' : ' . $t_pending_list
+                'USERNAME'   => htmlspecialchars($ug_info[0]->username, ENT_QUOTES),
+                'USER_LEVEL' => $lang['User_Level'] . ' : ' . $s_user_type,
+            ]
+        );
+    } else {
+        $template->assignVars(
+            [
+                'USERNAME' => htmlspecialchars($ug_info[0]->group_name, ENT_QUOTES),
             ]
         );
     }

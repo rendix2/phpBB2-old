@@ -217,10 +217,8 @@ function default_quota_limit_select($select_name, $default_quota = 0)
         ->fetchPairs('quota_limit_id', 'quota_desc');
 
     $quota_select = '<select name="' . $select_name . '">';
-    $quota_name[0]['quota_limit_id'] = 0;
-    $quota_name[0]['quota_desc'] = $lang['No_quota_limit'];
 
-    $quota_name = array_merge($quota_name, $quota_name_data);
+    $quota_name = array_merge([$lang['No_quota_limit']], $quota_name_data);
 
     foreach ($quota_name as $limit => $desc) {
         $selected = $limit === $default_quota ? ' selected="selected"' : '';

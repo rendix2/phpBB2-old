@@ -1,14 +1,15 @@
-<h1>{$L_GROUP_TITLE}</h1>
+<h1>{$lang['Group_administration']}</h1>
 
 <h2>{$S_GROUP_NAME}</h2>
 
 <table cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
     <thead>
         <tr>
-            <th class="thHead">{$L_USER_ID}</th>
-            <th class="thHead">{$L_USER_NAME}</th>
-            <th class="thHead">{$L_POSTS}</th>
-            <th class="thHead">{$L_TOPICS}</th>
+            <th class="thHead">{$lang['User_id']}</th>
+            <th class="thHead">{$lang['Username']}</th>
+            <th class="thHead">{$lang['Number_posts']}</th>
+            <th class="thHead">{$lang['Number_topics']}</th>
+            <th class="thHead">{$lang['Pending_members']}</th>
             <th class="thHead"></th>
         </tr>
     </thead>
@@ -21,7 +22,14 @@
             <td class="{$iterator->isEven() ? row1 : row2}">{$user->user_posts}</td>
             <td class="{$iterator->isEven() ? row1 : row2}">{$user->user_topics}</td>
             <td class="{$iterator->isEven() ? row1 : row2}">
-                <a href="admin_groups.php?{$C_USER_ID}={$user->user_id}&{$C_GROUP_ID}={$S_GROUP_ID}&{$S_SID}&{$C_MODE}=deleteUser">{$L_DELETE}</a>
+                {if $user->user_pending}
+                    {$lang['Yes']}
+                {else}
+                    {$lang['No']}
+                {/if}
+            </td>
+            <td class="{$iterator->isEven() ? row1 : row2}">
+                <a href="admin_groups.php?{$C_USER_ID}={$user->user_id}&{$C_GROUP_ID}={$S_GROUP_ID}&{$S_SID}&{$C_MODE}=deleteUser">{$lang['Delete']}</a>
             </td>
         </tr>
     {/foreach}
