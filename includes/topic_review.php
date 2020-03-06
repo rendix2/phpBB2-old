@@ -70,7 +70,7 @@ function topic_review($topic_id, $is_inline_review)
             ->innerJoin(Tables::FORUMS_TABLE)
             ->as('f')
             ->on('[f.forum_id] = [t.forum_id]')
-            ->where('t.topic_id = %i', $topic_id)
+            ->where('[t.topic_id] = %i', $topic_id)
             ->fetch();
 
         if (!$forum) {
@@ -132,7 +132,7 @@ function topic_review($topic_id, $is_inline_review)
         ->innerJoin(Tables::POSTS_TEXT_TABLE)
         ->as('pt')
         ->on('[p.post_id] = [pt.post_id]')
-        ->where('p.topic_id = %i', $topic_id)
+        ->where('[p.topic_id] = %i', $topic_id)
         ->orderBy('p.post_time', dibi::DESC)
         ->limit($board_config['posts_per_page'])
         ->fetchAll();

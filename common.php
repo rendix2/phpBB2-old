@@ -91,12 +91,14 @@ require_once $phpbb_root_path . 'includes' . $sep . 'constants.php';
 require_once $phpbb_root_path . 'includes' . $sep . 'functions.php';
 
 // now we connect to database via dibi!
-$connection = dibi::connect([
-    'driver'   => Config::DATABASE_DRIVER,
-    'username' => Config::DATABASE_USER,
-    'password' => Config::DATABASE_PASSWORD,
-    'dsn'      => Config::DATABASE_DNS
-]);
+$connection = dibi::connect(
+    [
+        'driver'   => Config::DATABASE_DRIVER,
+        'username' => Config::DATABASE_USER,
+        'password' => Config::DATABASE_PASSWORD,
+        'dsn'      => Config::DATABASE_DNS
+    ]
+);
 
 $connection->connect();
 

@@ -204,7 +204,7 @@ if ($mode === 'newpm') {
         ->on('[pmt.privmsgs_text_id] = [pm.privmsgs_id]')
         ->innerJoin(Tables::USERS_TABLE)
         ->as('u')
-        ->on('u.user_id = pm.privmsgs_from_userid')
+        ->on('[u.user_id] = [pm.privmsgs_from_userid]')
         ->innerJoin(Tables::USERS_TABLE)
         ->as('u2')
         ->on('[u2.user_id] = [pm.privmsgs_to_userid]')
@@ -758,7 +758,7 @@ if ($mode === 'newpm') {
                 $mark_list = dibi::select('privmsgs_id')
                     ->from(Tables::PRIVATE_MESSAGE_TABLE)
                     ->where(
-                        '( (privmsgs_from_userid = %i AND privmsgs_type = %i) OR (privmsgs_to_userid  = %i AND privmsgs_type = %i) )',
+                        '( ([privmsgs_from_userid] = %i AND [privmsgs_type] = %i) OR ([privmsgs_to_userid]  = %i AND [privmsgs_type] = %i) )',
                         $userdata['user_id'],
                         PRIVMSGS_SAVED_OUT_MAIL,
                         $userdata['user_id'],
@@ -873,7 +873,7 @@ if ($mode === 'newpm') {
                     dibi::delete(Tables::PRIVATE_MESSAGE_TABLE)
                         ->where('[privmsgs_id] IN %in', $mark_list)
                         ->where(
-                            '( (privmsgs_from_userid = %i AND privmsgs_type = %i ) OR (privmsgs_to_userid = %i AND privmsgs_type = %i ) )',
+                            '( ([privmsgs_from_userid] = %i AND [privmsgs_type] = %i ) OR ([privmsgs_to_userid] = %i AND [privmsgs_type] = %i ) )',
                             $userdata['user_id'],
                             PRIVMSGS_SAVED_OUT_MAIL,
                             $userdata['user_id'],
@@ -897,7 +897,7 @@ if ($mode === 'newpm') {
             ->as('oldest_post_time')
             ->from(Tables::PRIVATE_MESSAGE_TABLE)
             ->where(
-                '((privmsgs_to_userid = %i AND privmsgs_type = %i) OR (privmsgs_from_userid = %i AND privmsgs_type = %i))',
+                '(([privmsgs_to_userid] = %i AND [privmsgs_type] = %i) OR ([privmsgs_from_userid] = %i AND [privmsgs_type] = %i))',
                 $userdata['user_id'],
                 PRIVMSGS_SAVED_IN_MAIL,
                 $userdata['user_id'],
@@ -911,7 +911,7 @@ if ($mode === 'newpm') {
 			    $old_privmsgs_id = dibi::select('privmsgs_id')
                     ->from(Tables::PRIVATE_MESSAGE_TABLE)
                     ->where(
-                        '((privmsgs_to_userid = %i AND privmsgs_type = %i) OR (privmsgs_from_userid = %i AND privmsgs_type = %i))',
+                        '(([privmsgs_to_userid] = %i AND [privmsgs_type] = %i) OR ([privmsgs_from_userid] = %i AND [privmsgs_type] = %i))',
                         $userdata['user_id'],
                         PRIVMSGS_SAVED_IN_MAIL,
                         $userdata['user_id'],
@@ -1838,7 +1838,7 @@ switch ($folder) {
         $sql_tot->where('[privmsgs_to_userid] = %i', $userdata['user_id'])
             ->where('[privmsgs_type] IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_READ_MAIL, PRIVMSGS_UNREAD_MAIL]);
 
-		$sql->on('u.user_id = pm.privmsgs_from_userid')
+		$sql->on('[u.user_id] = [pm.privmsgs_from_userid]')
             ->where('[privmsgs_to_userid] = %i', $userdata['user_id'])
             ->where('[pm.privmsgs_type] IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_READ_MAIL, PRIVMSGS_UNREAD_MAIL]);
 		break;
@@ -1863,16 +1863,16 @@ switch ($folder) {
 
 	case 'savebox':
         $sql_tot->where(
-            '((privmsgs_to_userid = %i AND privmsgs_type = %i) OR (privmsgs_from_userid = %i AND privmsgs_type = %i))',
+            '(([privmsgs_to_userid] = %i AND [privmsgs_type] = %i) OR ([privmsgs_from_userid] = %i AND [privmsgs_type] = %i))',
             $userdata['user_id'],
             PRIVMSGS_SAVED_IN_MAIL,
             $userdata['user_id'],
             PRIVMSGS_SAVED_OUT_MAIL
         );
 
-        $sql->on('u.user_id = pm.privmsgs_from_userid')
+        $sql->on('[u.user_id] = [pm.privmsgs_from_userid]')
             ->where(
-                '((pm.privmsgs_to_userid = %i AND pm.privmsgs_type = %i) OR (pm.privmsgs_from_userid = %i AND pm.privmsgs_type = %i))',
+                '(([pm.privmsgs_to_userid] = %i AND [pm.privmsgs_type] = %i) OR ([pm.privmsgs_from_userid] = %i AND [pm.privmsgs_type] = %i))',
                 $userdata['user_id'],
                 PRIVMSGS_SAVED_IN_MAIL,
                 $userdata['user_id'],

@@ -73,7 +73,7 @@ class TemplateDatabase extends BaseTemplate
 
         $rows = dibi::select('*')
             ->from(Tables::TEMPLATE_CACHE_TABLE)
-            ->where('template_name IN %in', $filename_array)
+            ->where('[template_name] IN %in', $filename_array)
             ->fetchAll();
 
         foreach ($rows as $row) {

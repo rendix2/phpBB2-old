@@ -262,7 +262,7 @@ if (isset($_POST['submit'])) {
 			// todo maybe fetchSingle()??
 			$row = dibi::select('code')
                 ->from(Tables::CONFIRM_TABLE)
-                ->where('confirm_id = %s', $confirmId)
+                ->where('[confirm_id] = %s', $confirmId)
                 ->where('[session_id] = %s', $userdata['session_id'])
                 ->fetch();
 
@@ -272,7 +272,7 @@ if (isset($_POST['submit'])) {
 					$errorMessage .= ( isset($errorMessage) ? '<br />' : '' ) . $lang['Confirm_code_wrong'];
 				} else {
 				    dibi::delete(Tables::CONFIRM_TABLE)
-                        ->where('confirm_id = %s', $confirmId)
+                        ->where('[confirm_id] = %s', $confirmId)
                         ->where('[session_id] = %s', $userdata['session_id'])
                         ->execute();
 				}
@@ -848,7 +848,7 @@ if (isset($_POST['avatargallery']) && !$error) {
 
 	    if (count($sessions)) {
 	        dibi::delete(Tables::CONFIRM_TABLE)
-                ->where('session_id NOT IN %in', $sessions)
+                ->where('[session_id] NOT IN %in', $sessions)
                 ->execute();
         }
 

@@ -535,12 +535,12 @@ if (isset($_POST['submit']) && (($mode === 'user' && $user_id) || ($mode === 'gr
 
     if ($mode === 'user') {
 	    $ug_info->where('[u.user_id] = %i', $user_id)
-            ->where('ug.user_id = u.user_id')
-            ->where('g.group_id = ug.group_id');
+            ->where('[ug.user_id] = [u.user_id]')
+            ->where('[g.group_id] = [ug.group_id]');
     } else {
-        $ug_info->where('g.group_id = %i', $group_id)
-            ->where('ug.group_id = g.group_id')
-            ->where('u.user_id = ug.user_id');
+        $ug_info->where('[g.group_id] = %i', $group_id)
+            ->where('[ug.group_id] = [g.group_id]')
+            ->where('[u.user_id] = [ug.user_id]');
     }
 
     $ug_info = $ug_info->fetchAll();

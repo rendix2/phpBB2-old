@@ -66,7 +66,7 @@ if ($mode === 'edit') {// OK, lets edit this ranks
 
 	$rankInfo = dibi::select('*')
 		->from(Tables::RANKS_TABLE)
-		->where('rank_id = %i', $rankId)
+		->where('[rank_id] = %i', $rankId)
 		->fetch();
 
 	if (!$rankInfo) {
@@ -172,7 +172,7 @@ if ($mode === 'edit') {// OK, lets edit this ranks
 	if ($rankId) {
 		if (!$specialRank) {
 			dibi::update(Tables::USERS_TABLE, ['user_rank' => 0])
-				->where('user_rank = %i', $rankId)
+				->where('[user_rank] = %i', $rankId)
 				->execute();
 		}
 
@@ -185,7 +185,7 @@ if ($mode === 'edit') {// OK, lets edit this ranks
 		];
 
 		dibi::update(Tables::RANKS_TABLE, $updateData)
-			->where('rank_id = %i', $rankId)
+			->where('[rank_id] = %i', $rankId)
 			->execute();
 
 		$message = $lang['Rank_updated'];
@@ -223,11 +223,11 @@ if ($mode === 'edit') {// OK, lets edit this ranks
 		$cache->remove($key);
 
 		dibi::delete(Tables::RANKS_TABLE)
-			->where('rank_id = %i', $rankId)
+			->where('[rank_id] = %i', $rankId)
 			->execute();
 
 		dibi::update(Tables::USERS_TABLE, ['user_rank' => 0])
-			->where('user_rank = %i', $rankId)
+			->where('[user_rank] = %i', $rankId)
 			->execute();
 
 		$message  = $lang['Rank_removed'] . '<br /><br />';

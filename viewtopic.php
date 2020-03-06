@@ -75,6 +75,7 @@ if (isset($_GET['view']) && empty($_GET[POST_POST_URL])) {
             }
 
             if ($sessionId) {
+                // TODO USE INNER JOINS
 			    $sessionPostId = dibi::select('p.post_id')
                     ->from(Tables::POSTS_TABLE)
                     ->as('p')
@@ -82,10 +83,10 @@ if (isset($_GET['view']) && empty($_GET[POST_POST_URL])) {
                     ->as('s')
                     ->from(Tables::USERS_TABLE)
                     ->as('u')
-                    ->where('s.session_id = %s', $sessionId)
-                    ->where('u.user_id = s.session_user_id')
-                    ->where('p.topic_id = %i', $topicId)
-                    ->where('p.post_time >= u.user_last_visit')
+                    ->where('[s.session_id] = %s', $sessionId)
+                    ->where('[u.user_id] = [s.session_user_id]')
+                    ->where('[p.topic_id] = %i', $topicId)
+                    ->where('[p.post_time] >= [u.user_last_visit]')
                     ->orderBy('p.post_time', dibi::ASC)
                     ->fetch();
 
@@ -113,10 +114,10 @@ if (isset($_GET['view']) && empty($_GET[POST_POST_URL])) {
             ->as('t')
             ->innerJoin(Tables::TOPICS_TABLE)
             ->as('t2')
-            ->on('t.forum_id = t2.forum_id')
-            ->where('t2.topic_id = %i', $topicId)
-            ->where('t.topic_moved_id = %i', 0)
-            ->where('t.topic_last_post_id '. $sqlCondition . ' t2.topic_last_post_id')
+            ->on('[t.forum_id] = [t2.forum_id]')
+            ->where('[t2.topic_id] = %i', $topicId)
+            ->where('[t.topic_moved_id] = %i', 0)
+            ->where('[t.topic_last_post_id] '. $sqlCondition . ' [t2.topic_last_post_id]')
             ->orderBy('t.topic_last_post_id', $sqlOrdering)
             ->fetch();
 
@@ -177,9 +178,9 @@ if ($postId) {
         ->on('[t.topic_id] = [p.topic_id]')
         ->innerJoin(Tables::POSTS_TABLE)
         ->as('p2')
-        ->on('p2.topic_id = p.topic_id')
-        ->where('p.post_id = %i', $postId)
-        ->where('p2.post_id <= %i', $postId)
+        ->on('[p2.topic_id] = [p.topic_id]')
+        ->where('[p.post_id] = %i', $postId)
+        ->where('[p2.post_id] <= %i', $postId)
         ->groupBy('p.post_id')
         ->groupBy('t.topic_id')
         ->groupBy('t.topic_title')
@@ -240,7 +241,7 @@ if ($postId) {
         ->innerJoin(Tables::FORUMS_TABLE)
         ->as('f')
         ->on('[f.forum_id] = [t.forum_id]')
-        ->where('t.topic_id = %i', $topicId)
+        ->where('[t.topic_id] = %i', $topicId)
         ->fetch();
 }
 
@@ -412,8 +413,8 @@ if (!empty($_POST['postdays']) || !empty($_GET['postdays'])) {
         ->innerJoin(Tables::POSTS_TABLE)
         ->as('p')
         ->on('[p.topic_id] = [t.topic_id]')
-        ->where('t.topic_id = %i', $topicId)
-        ->where('p.post_time >= %i', $time->getTimestamp())
+        ->where('[t.topic_id] = %i', $topicId)
+        ->where('[p.post_time] >= %i', $time->getTimestamp())
         ->fetchSingle();
 
 	$limitPostsTime = true;
@@ -481,11 +482,11 @@ $posts = dibi::select($columns)
     ->innerJoin(Tables::POSTS_TEXT_TABLE)
     ->as('pt')
     ->on('[pt.post_id] = [p.post_id]')
-    ->where('p.topic_id = %i', $topicId);
+    ->where('[p.topic_id] = %i', $topicId);
 
 // todo check if time is added correctly
 if ($limitPostsTime) {
-    $posts->where('p.post_time >= %i', $time->getTimestamp());
+    $posts->where('[p.post_time] >= %i', $time->getTimestamp());
 }
 
 $posts = $posts
@@ -778,8 +779,8 @@ if (!empty($forum_topic_data->topic_vote)) {
         ->as('vd')
         ->innerJoin(Tables::VOTE_RESULTS_TABLE)
         ->as('vr')
-        ->on('vr.vote_id = vd.vote_id')
-        ->where('vd.topic_id = %i', $topicId)
+        ->on('[vr.vote_id] = [vd.vote_id]')
+        ->where('[vd.topic_id] = %i', $topicId)
         ->orderBy('vr.vote_option_id', dibi::ASC)
         ->fetchAll();
 
@@ -794,8 +795,8 @@ if (!empty($forum_topic_data->topic_vote)) {
          */
         $userVoted = dibi::select('vote_id')
             ->from(Tables::VOTE_USERS_TABLE)
-            ->where('vote_id = %i', $voteId)
-            ->where('vote_user_id = %i', (int)$userdata['user_id'])
+            ->where('[vote_id] = %i', $voteId)
+            ->where('[vote_user_id] = %i', (int)$userdata['user_id'])
             ->fetch();
 
         if (isset($_GET['vote']) || isset($_POST['vote'])) {

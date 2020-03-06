@@ -119,6 +119,7 @@ for ($i = 0; $i < $faq_block_count; $i++) {
 			$faq_block_faq_row_data = [
                 'ROW_COLOR'    => '#' . $rowColor,
                 'ROW_CLASS'    => $rowClass,
+
                 'FAQ_QUESTION' => $faq_block[$i][$j]['question'],
                 'FAQ_ANSWER'   => $faq_block[$i][$j]['answer'],
 

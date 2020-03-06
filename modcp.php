@@ -71,6 +71,7 @@ $move    = isset($_POST['move']);
 $lock    = isset($_POST['lock']);
 $unlock  = isset($_POST['unlock']);
 $confirm = isset($_POST['confirm']);
+
 $mode    = '';
 
 if (isset($_POST[POST_MODE]) || isset($_GET[POST_MODE])) {
@@ -103,7 +104,7 @@ if (!empty($topicId)) {
         ->innerJoin(Tables::FORUMS_TABLE)
         ->as('f')
         ->on('[f.forum_id] = [t.forum_id]')
-        ->where('t.topic_id = %i', $topicId)
+        ->where('[t.topic_id] = %i', $topicId)
         ->fetch();
 
     if (!$topic_row) {
@@ -666,7 +667,7 @@ switch ($mode) {
                 ->innerJoin(Tables::POSTS_TEXT_TABLE)
                 ->as('pt')
                 ->on('[p.post_id] = [pt.post_id]')
-                ->where('p.topic_id = %i', $topicId)
+                ->where('[p.topic_id] = %i', $topicId)
                 ->orderBy('p.post_time', dibi::ASC)
                 ->fetchAll();
 
@@ -831,7 +832,7 @@ switch ($mode) {
             if ($row->poster_ip === $post->poster_ip) {
                 $template->assignVars(
                     [
-                        'POSTS' => $row->postings . ' ' . (($row->postings === 1) ? $lang['Post'] : $lang['Posts'])
+                        'POSTS' => $row->postings . ' ' . ($row->postings === 1 ? $lang['Post'] : $lang['Posts'])
                     ]
                 );
                 continue;

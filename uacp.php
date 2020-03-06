@@ -56,11 +56,11 @@ $mode = get_var('mode', '');
 
 $mode_types = [
     'real_filename' => $lang['Sort_Filename'],
-    'comment' => $lang['Sort_Comment'],
-    'extension' => $lang['Sort_Extension'],
-    'filesize' => $lang['Sort_Size'],
-    'downloads' => $lang['Sort_Downloads'],
-    'post_time' => $lang['Sort_Posttime']
+    'comment'       => $lang['Sort_Comment'],
+    'extension'     => $lang['Sort_Extension'],
+    'filesize'      => $lang['Sort_Size'],
+    'downloads'     => $lang['Sort_Downloads'],
+    'post_time'     => $lang['Sort_Posttime']
 ];
 
 if (!$mode) {
@@ -104,7 +104,7 @@ if ($confirm && count($delete_id_list)) {
 	    $row = dibi::select(['post_id', 'privmsgs_id'])
             ->from(Tables::ATTACH_ATTACHMENT_TABLE)
             ->where('[attach_id] = %i', $attachId)
-            ->where('(user_id_1 = %i OR user_id_2 = %i)', $profiledata['user_id'], $profiledata['user_id'])
+            ->where('([user_id_1] = %i OR [user_id_2] = %i)', $profiledata['user_id'], $profiledata['user_id'])
             ->fetch();
 
         if ($row) {
@@ -164,27 +164,27 @@ $s_hidden .= '<input type="hidden" name="sid" value="' . $userdata['session_id']
 // Assign Template Vars
 $template->assignVars(
     [
-        'L_SUBMIT' => $lang['Submit'],
-        'L_UACP' => $lang['UACP'],
+        'L_SUBMIT'             => $lang['Submit'],
+        'L_UACP'               => $lang['UACP'],
         'L_SELECT_SORT_METHOD' => $lang['Select_sort_method'],
-        'L_ORDER' => $lang['Order'],
-        'L_FILENAME' => $lang['File_name'],
-        'L_FILECOMMENT' => $lang['File_comment_cp'],
-        'L_EXTENSION' => $lang['Extension'],
-        'L_SIZE' => $lang['Sort_Size'],
-        'L_DOWNLOADS' => $lang['Downloads'],
-        'L_POST_TIME' => $lang['Post_time'],
-        'L_POSTED_IN_TOPIC' => $lang['Posted_in_topic'],
-        'L_DELETE' => $lang['Delete'],
-        'L_DELETE_MARKED' => $lang['Delete_marked'],
-        'L_MARK_ALL' => $lang['Mark_all'],
-        'L_UNMARK_ALL' => $lang['Unmark_all'],
+        'L_ORDER'              => $lang['Order'],
+        'L_FILENAME'           => $lang['File_name'],
+        'L_FILECOMMENT'        => $lang['File_comment_cp'],
+        'L_EXTENSION'          => $lang['Extension'],
+        'L_SIZE'               => $lang['Sort_Size'],
+        'L_DOWNLOADS'          => $lang['Downloads'],
+        'L_POST_TIME'          => $lang['Post_time'],
+        'L_POSTED_IN_TOPIC'    => $lang['Posted_in_topic'],
+        'L_DELETE'             => $lang['Delete'],
+        'L_DELETE_MARKED'      => $lang['Delete_marked'],
+        'L_MARK_ALL'           => $lang['Mark_all'],
+        'L_UNMARK_ALL'         => $lang['Unmark_all'],
 
         'USERNAME' => $profiledata['username'],
 
-        'S_USER_HIDDEN' => $s_hidden,
-        'S_MODE_ACTION' => Session::appendSid($phpbb_root_path . 'uacp.php'),
-        'S_MODE_SELECT' => $select_sort_mode,
+        'S_USER_HIDDEN'  => $s_hidden,
+        'S_MODE_ACTION'  => Session::appendSid($phpbb_root_path . 'uacp.php'),
+        'S_MODE_SELECT'  => $select_sort_mode,
         'S_ORDER_SELECT' => $select_sort_order
     ]
 );

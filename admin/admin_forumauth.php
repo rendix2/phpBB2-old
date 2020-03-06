@@ -161,7 +161,7 @@ $forums = dibi::select('f.*')
     ->as('f')
     ->innerJoin(Tables::CATEGORIES_TABLE)
     ->as('c')
-    ->on('c.cat_id = f.cat_id');
+    ->on('[c.cat_id] = [f.cat_id]');
 
 if ($forum_sql) {
     $forums->where('[forum_id] = %i', $forum_id);

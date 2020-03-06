@@ -87,8 +87,8 @@ class Session
                     ->as('k')
                     ->on('[k.user_id] = [u.user_id]')
                     ->where('[u.user_id] = %i', (int) $userId)
-                    ->where('u.user_active = %i', 1)
-                    ->where('k.key_id = %s', hash('sha512', $sessionData['autologinid']))
+                    ->where('[u.user_active] = %i', 1)
+                    ->where('[k.key_id] = %s', hash('sha512', $sessionData['autologinid']))
                     ->fetch();
 
                 $userData = $userData->toArray();
@@ -191,7 +191,7 @@ class Session
 
         $result = dibi::update(Tables::SESSIONS_TABLE, $updateData)
             ->where('[session_id] = %s', $sessionId)
-            ->where('session_ip = %s', $userIp)
+            ->where('[session_ip] = %s', $userIp)
             ->execute();
 
         if (!$result || !dibi::getAffectedRows()) {
@@ -242,7 +242,7 @@ class Session
                     ];
 
                     dibi::update(Tables::SESSIONS_AUTO_LOGIN_KEYS_TABLE, $updateData)
-                        ->where('key_id = %s', hash('sha512', $sessionData['autologinid']))
+                        ->where('[key_id] = %s', hash('sha512', $sessionData['autologinid']))
                         ->execute();
                 } else {
                     $insertData = [
@@ -502,7 +502,7 @@ class Session
 
             dibi::delete(Tables::SESSIONS_AUTO_LOGIN_KEYS_TABLE)
                 ->where('[user_id] = %i',(int) $userId)
-                ->where('key_id = %s', $autoLoginKey)
+                ->where('[key_id] = %s', $autoLoginKey)
                 ->execute();
         }
 
@@ -570,8 +570,8 @@ class Session
         $time->sub(new DateInterval('PT' . $board_config['session_length'] . 'S'));
 
         dibi::delete(Tables::SESSIONS_TABLE)
-            ->where('session_time < %i', $time->getTimestamp())
-            ->where('session_id <> %s', $session_id)
+            ->where('[session_time] < %i', $time->getTimestamp())
+            ->where('[session_id] <> %s', $session_id)
             ->execute();
 
         //
@@ -587,7 +587,7 @@ class Session
             $time->sub(new DateInterval('P' . (int)$board_config['max_autologin_time'] . 'D'));
 
             dibi::delete(Tables::SESSIONS_AUTO_LOGIN_KEYS_TABLE)
-                ->where('last_login < %i', $time->getTimestamp())
+                ->where('[last_login] < %i', $time->getTimestamp())
                 ->execute();
         }
 
@@ -613,7 +613,7 @@ class Session
             ->where('[user_id] = %i', $userId);
 
         if ($key_sql) {
-            $deleteSessionKeys->where('key_id != %s', hash('sha512', $userdata['session_key']));
+            $deleteSessionKeys->where('[key_id] != %s', hash('sha512', $userdata['session_key']));
         }
 
         $deleteSessionKeys->execute();
@@ -622,7 +622,7 @@ class Session
             ->where('[session_user_id] = %i', $userId);
 
         if ($userId === $userdata['user_id']) {
-            $deleteSession->where('session_id <> %s', $userdata['session_id']);
+            $deleteSession->where('[session_id] <> %s', $userdata['session_id']);
         }
 
         $deleteSession->execute();
@@ -638,7 +638,7 @@ class Session
             ];
 
             dibi::update(Tables::SESSIONS_AUTO_LOGIN_KEYS_TABLE, $update_data)
-                ->where('key_id = %s', hash('sha512', $userdata['session_key']))
+                ->where('[key_id] = %s', hash('sha512', $userdata['session_key']))
                 ->execute();
 
             // And now rebuild the cookie

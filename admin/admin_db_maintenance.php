@@ -1082,14 +1082,14 @@ switch ($mode_id) {
                         ->leftJoin(Tables::USERS_TABLE)
                         ->as('u')
                         ->on('[k.user_id] = [u.user_id]')
-                        ->where('u.user_id IS NULL OR k.user_id = %i OR k.last_login > %i', ANONYMOUS, time())
+                        ->where('[u.user_id] IS NULL OR [k.user_id] = %i OR [k.last_login] > %i', ANONYMOUS, time())
                         ->fetchPairs(null, 'key_id');
 
                     if (count($result_array)) {
                         $record_list = '\'' . implode('\',\'', $result_array) . '\'';
 
                         $affected_rows = dibi::delete(Tables::SESSIONS_AUTO_LOGIN_KEYS_TABLE)
-                            ->where('key_id IN %in', $result_array)
+                            ->where('[key_id] IN %in', $result_array)
                             ->execute(dibi::AFFECTED_ROWS);
 
                         if ($affected_rows === 1) {
@@ -1179,7 +1179,7 @@ switch ($mode_id) {
                     ->leftJoin(Tables::CATEGORIES_TABLE)
                     ->as('c')
                     ->on('[f.cat_id] = [c.cat_id]')
-                    ->where('c.cat_id IS NULL')
+                    ->where('[c.cat_id] IS NULL')
                     ->fetchAll();
 
                 foreach ($rows as $row) {
@@ -1662,7 +1662,7 @@ switch ($mode_id) {
                     ->as('tw')
                     ->leftJoin(Tables::USERS_TABLE)
                     ->as('u')
-                    ->on('tw.user_id = u.user_id')
+                    ->on('[tw.user_id] = [u.user_id]')
                     ->where('[u.user_id] IS NULL')
                     ->groupBy('tw.user_id')
                     ->fetchPairs(null, 'user_id');
@@ -1672,8 +1672,8 @@ switch ($mode_id) {
                     ->as('tw')
                     ->leftJoin(Tables::TOPICS_TABLE)
                     ->as('t')
-                    ->on('tw.topic_id = t.topic_id')
-                    ->where('t.topic_id IS NULL')
+                    ->on('[tw.topic_id] = [t.topic_id]')
+                    ->where('[t.topic_id] IS NULL')
                     ->groupBy('tw.topic_id')
                     ->fetchPairs(null, 'topic_id');
 
@@ -1778,8 +1778,8 @@ switch ($mode_id) {
                     ->as('v')
                     ->leftJoin(Tables::TOPICS_TABLE)
                     ->as('t')
-                    ->on('v.topic_id = t.topic_id')
-                    ->where('t.topic_id IS NULL')
+                    ->on('[v.topic_id] = [t.topic_id]')
+                    ->where('[t.topic_id] IS NULL')
                     ->fetchAll();
 
                 $result_array = [];
@@ -1956,8 +1956,8 @@ switch ($mode_id) {
                     echo('<li>' . sprintf($lang['Invalid_result'], htmlspecialchars($row->vote_option_text), $row->vote_result) . "</li>\n");
 
                     dibi::delete(Tables::VOTE_RESULTS_TABLE)
-                        ->where('vote_id = %i', $row->vote_id)
-                        ->where('vote_option_id = %i', $row->vote_option_id)
+                        ->where('[vote_id] = %i', $row->vote_id)
+                        ->where('[vote_option_id] = %i', $row->vote_option_id)
                         ->execute();
                 }
 
@@ -1986,7 +1986,7 @@ switch ($mode_id) {
                     ->as('vu')
                     ->leftJoin(Tables::VOTE_DESC_TABLE)
                     ->as('v')
-                    ->on('vu.vote_id = v.vote_id')
+                    ->on('[vu.vote_id] = [v.vote_id]')
                     ->where('[v.vote_id] IS NULL')
                     ->groupBy('vu.vote_id')
                     ->fetchPairs(null, 'vote_id');
@@ -2047,7 +2047,7 @@ switch ($mode_id) {
                     ->leftJoin(Tables::USERS_TABLE)
                     ->as('ut')
                     ->on('[pm.privmsgs_to_userid] = [ut.user_id]')
-                    ->where('pmt.privmsgs_text_id IS NULL')
+                    ->where('[pmt.privmsgs_text_id] IS NULL')
                     ->fetchAll();
 
 				$result_array = [];
@@ -2174,7 +2174,7 @@ switch ($mode_id) {
 
 				$result_array = dibi::select('privmsgs_id')
 					->from(Tables::PRIVATE_MESSAGE_TABLE)
-					->where('(privmsgs_from_userid = %i AND privmsgs_type IN %in) OR (privmsgs_to_userid = %i AND privmsgs_type IN %in)', DELETED, $fromArray, DELETED, $toArray)
+					->where('([privmsgs_from_userid] = %i AND [privmsgs_type] IN %in) OR ([privmsgs_to_userid] = %i AND [privmsgs_type] IN %in)', DELETED, $fromArray, DELETED, $toArray)
 					->fetchPairs(null, 'privmsgs_id');
 
                 if (count($result_array)) {
@@ -2948,7 +2948,7 @@ switch ($mode_id) {
 					->as('t')
 					->on('[f.forum_id] = [t.forum_id]')
 					->where('[t.forum_id] IS NULL')
-					->where('(f.forum_topics <> %i OR f.forum_last_post_id <> %i)', 0, 0)
+					->where('([f.forum_topics] <> %i OR [f.forum_last_post_id] <> %i)', 0, 0)
 					->fetchPairs(null, 'forum_id');
 
                 $db_updated = false;
@@ -3021,7 +3021,7 @@ switch ($mode_id) {
 					->as('p')
 					->on('[f.forum_id] = [p.forum_id]')
 					->where('[p.forum_id] IS NULL')
-					->where('f.forum_posts <> %i', 0)
+					->where('[f.forum_posts] <> %i', 0)
 					->fetchPairs(null, 'forum_id');
 
 				if (count($result_array)) {
@@ -3527,7 +3527,7 @@ switch ($mode_id) {
 				echo('<p class="gen"><b>' . $lang['Checking_pm_dates'] . "</b></p>\n");
 
 				$affected_rows = dibi::update(Tables::PRIVATE_MESSAGE_TABLE, ['privmsgs_date' => $time])
-					->where('privmsgs_date > %i', $time)
+					->where('[privmsgs_date] > %i', $time)
 					->execute(dibi::AFFECTED_ROWS);
 
                 if ($affected_rows === 1) {
@@ -3558,7 +3558,7 @@ switch ($mode_id) {
 					echo('<p class="gen"><b>' . $lang['Checking_login_dates'] . "</b></p>\n");
 
 					$affected_rows = dibi::update(Tables::USERS_TABLE, ['user_last_login_try' => $time])
-						->where('user_last_login_try > %i', $time)
+						->where('[user_last_login_try] > %i', $time)
 						->execute(dibi::AFFECTED_ROWS);
 
 					if ($affected_rows === 1) {

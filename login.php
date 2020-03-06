@@ -95,7 +95,7 @@ if (isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 
 		$row = dibi::select($columns)
             ->from(Tables::USERS_TABLE)
-            ->where('username = %s', $username)
+            ->where('[username] = %s', $username)
             ->fetch();
 
 		// user was not found!

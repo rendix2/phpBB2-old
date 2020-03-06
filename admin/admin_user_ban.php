@@ -245,7 +245,7 @@ if (isset($_POST['submit'])) {
 
     if (count($where_sql)) {
         dibi::delete(Tables::BAN_LIST_TABLE)
-            ->where('ban_id IN %in', $where_sql)
+            ->where('[ban_id] IN %in', $where_sql)
             ->execute();
     }
 

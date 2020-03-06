@@ -130,7 +130,7 @@ function get_database_size()
         case 'postgres':
             $row = dibi::select('proname')
                 ->from('pg_proc')
-                ->where('proname = %s', 'pg_database_size')
+                ->where('[proname] = %s', 'pg_database_size')
                 ->fetch();
 
             if ($row->proname === 'pg_database_size') {
@@ -142,7 +142,7 @@ function get_database_size()
 
                 $oid = dibi::select('oid')
                     ->from('pg_database')
-                    ->where('datname = %s', $database)
+                    ->where('[datname] = %s', $database)
                     ->fetchSingle();
 
                 $databaseSize = dibi::select( 'pg_database_size(%n)', $oid)->as('size')->fetchSingle();

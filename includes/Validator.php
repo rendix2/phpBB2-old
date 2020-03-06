@@ -104,7 +104,7 @@ class Validator
 
             $dbEmail = dibi::select('user_email')
                 ->from(Tables::USERS_TABLE)
-                ->where('user_email = %s', $email)
+                ->where('[user_email] = %s', $email)
                 ->fetch();
 
             if ($dbEmail) {

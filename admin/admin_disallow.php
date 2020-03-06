@@ -61,7 +61,7 @@ if (isset($_POST['add_name'])) {
     }
 
     dibi::delete(Tables::DISS_ALLOW_TABLE)
-        ->where('disallow_id = %i', $disallowed_id)
+        ->where('[disallow_id] = %i', $disallowed_id)
         ->execute();
 
 	$message .= $lang['Disallowed_deleted'] . '<br /><br />';

@@ -796,7 +796,7 @@ switch ($mode) {
 
 				if (is_file(@realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $new_lang . $sep . 'lang_main.php')) && is_file(@realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $new_lang . $sep .'lang_admin.php'))){
 				    dibi::update(Tables::USERS_TABLE, ['user_lang' => $new_lang])
-				     ->where('username = %s', $board_user)
+				     ->where('[username] = %s', $board_user)
 				      ->execute();
 
 				    dibi::update(Tables::CONFIG_TABLE, ['config_value' => $new_lang])
@@ -888,7 +888,7 @@ switch ($mode) {
 
 				if ($method === 'select_theme') {
 				    dibi::update(Tables::USERS_TABLE, ['user_style' => $new_style])
-				    ->where('username = %s', $board_user)
+				    ->where('[username] = %s', $board_user)
 				    ->execute();
 
 				    dibi::update(Tables::CONFIG_TABLE, ['config_value' => $new_style])
@@ -1018,13 +1018,13 @@ switch ($mode) {
 				$username = isset($_POST['username']) ? str_replace("\\'", "''", $_POST['username']) : '';
 
 				$affected_rows1 = dibi::update(Tables::USERS_TABLE, ['user_active' => 1, 'user_level' => ADMIN])
-				->where('username = %s', $username)
+				->where('[username] = %s', $username)
 				->where('[user_id] <> %i', ANONYMOUS)
 				->execute(dibi::AFFECTED_ROWS);
 
 				// Try to update the login data
 				$affected_rows2 = dibi::update(Tables::USERS_TABLE, ['user_login_tries' => 0, 'user_last_login_try' => 0])
-				->where('username = %s', $username)
+				->where('[username] = %s', $username)
 				->execute(dibi::AFFECTED_ROWS);
 
 				$affected_rows = max($affected_rows1, $affected_rows2);

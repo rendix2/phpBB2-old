@@ -274,7 +274,7 @@ if ($mode === 'users') {
 		->as('ug')
 		->innerJoin(Tables::USERS_TABLE)
 		->as('u')
-		->on('ug.user_id =  u.user_id')
+		->on('[ug.user_id] = [u.user_id]')
 		->where('[ug.group_id] = %i', $group_id)
 		->fetchAll();
 
@@ -325,7 +325,7 @@ if ($mode === '') {
 		->leftJoin(Tables::USERS_TABLE)
 		->as('u')
 		->on('[g.group_moderator] = [u.user_id]')
-		->where('g.group_single_user <> %i', 1)
+		->where('[g.group_single_user] <> %i', 1)
 		->fetchAll();
 
 	$parameters = [
@@ -390,11 +390,11 @@ if ($mode === 'delete') {
 				->from(Tables::USERS_GROUPS_TABLE)
 				->as('ug')
 				->where('[a.auth_mod] = %i', 1)
-				->where('g.group_id = a.group_id')
-				->where('a.group_id = ug.group_id')
-				->where('g.group_id = ug.group_id')
+				->where('[g.group_id] = [a.group_id]')
+				->where('[a.group_id] = [ug.group_id]')
+				->where('[g.group_id] = [ug.group_id]')
 				->where('[ug.user_id] = %i',(int)$user->user_id)
-				->where('ug.group_id <> %i', $group_id)
+				->where('[ug.group_id] <> %i', $group_id)
 				->fetchAll();
 
 			if (count($group_ids) === 0) {

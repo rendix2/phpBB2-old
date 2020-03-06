@@ -323,7 +323,7 @@ function setupStyle($style)
 
 	    if ($default_theme) {
 	        dibi::update(Tables::USERS_TABLE, ['user_style' => (int) $board_config['default_style']])
-                ->where('user_style = %s', $style)
+                ->where('[user_style] = %s', $style)
                 ->execute();
         } else {
             message_die(CRITICAL_ERROR, "Could not get theme data for themes_id [$style]");

@@ -312,7 +312,7 @@ class Emailer
 				$to = ' ';
 
 				dibi::update(Tables::CONFIG_TABLE, ['config_value' => 1])
-                    ->where('config_name =  %s', 'sendmail_fix')
+                    ->where('[config_name] = %s', 'sendmail_fix')
                     ->execute();
 
                 $cache = new Cache($storage, Tables::CONFIG_TABLE);

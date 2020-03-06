@@ -154,12 +154,12 @@ if ($mode === 'searchuser') {
             ->as('sr')
             ->innerJoin(Tables::SESSIONS_TABLE)
             ->as('se')
-            ->on('sr.session_id = se.session_id');
+            ->on('[sr.session_id] = [se.session_id]');
 
 		if ($userdata['user_id'] === ANONYMOUS) {
-		    $result->where('se.session_ip = %s', $user_ip);
+		    $result->where('[se.session_ip] = %s', $user_ip);
         } else {
-		    $result->where('se.session_user_id = %s', $userdata['user_id']);
+		    $result->where('[se.session_user_id] = %s', $userdata['user_id']);
         }
 
 		$result = $result->fetch();
@@ -173,7 +173,7 @@ if ($mode === 'searchuser') {
                 if ($userdata['session_logged_in']) {
                     $search_ids = dibi::select('post_id')
                         ->from(Tables::POSTS_TABLE)
-                        ->where('post_time >= %i', $userdata['user_last_visit'])
+                        ->where('[post_time] >= %i', $userdata['user_last_visit'])
                         ->fetchPairs(null, 'post_id');
 				} else {
 					redirect(Session::appendSid('login.php?redirect=search.php&search_id=newposts', true));
@@ -186,7 +186,7 @@ if ($mode === 'searchuser') {
                 if ($userdata['session_logged_in']) {
                     $search_ids = dibi::select('post_id')
                         ->from(Tables::POSTS_TABLE)
-                        ->where('poster_id = %i', $userdata['user_id'])
+                        ->where('[poster_id] = %i', $userdata['user_id'])
                         ->fetchPairs(null, 'post_id');
                 } else {
                     redirect(Session::appendSid('login.php?redirect=search.php&search_id=egosearch', true));
@@ -216,7 +216,7 @@ if ($mode === 'searchuser') {
                     ->where('[poster_id] IN %in', $user_ids);
 
                 if ($search_time) {
-                    $search_ids->where('post_time >= %i', $search_time);
+                    $search_ids->where('[post_time] >= %i', $search_time);
                 }
 
                 $search_ids = $search_ids->fetchPairs(null, 'post_id');
@@ -277,7 +277,7 @@ if ($mode === 'searchuser') {
                                 ->where('[w.word_common] <> %i', 1);
 
                             if (!$search_fields) {
-                                $post_ids->where('m.title_match = %i', 0);
+                                $post_ids->where('[m.title_match] = %i', 0);
                             }
 
                             $post_ids = $post_ids->fetchPairs(null, 'post_id');
@@ -400,7 +400,7 @@ if ($mode === 'searchuser') {
                             ->where('[post_id] IN %in', $search_id_chunk);
 
                         if ($search_time) {
-                            $search_ids->where('post_time >= %i', $search_time);
+                            $search_ids->where('[post_time] >= %i', $search_time);
                         }
 
                         $search_ids = $search_ids->groupBy('topic_id')
@@ -682,17 +682,17 @@ if ($mode === 'searchuser') {
                 ->on('[t.topic_poster] = [u.user_id]')
                 ->innerJoin(Tables::POSTS_TABLE)
                 ->as('p')
-                ->on('p.post_id = t.topic_first_post_id')
+                ->on('[p.post_id] = [t.topic_first_post_id]')
                 ->innerJoin(Tables::POSTS_TABLE)
                 ->as('p2')
-                ->on('p2.post_id = t.topic_last_post_id')
+                ->on('[p2.post_id] = [t.topic_last_post_id]')
                 ->innerJoin(Tables::USERS_TABLE)
                 ->as('u2')
-                ->on('u2.user_id = p2.poster_id')
+                ->on('[u2.user_id] = [p2.poster_id]')
                 ->innerJoin(Tables::POSTS_TEXT_TABLE)
                 ->as('pt')
                 ->on('[p.post_id] = [pt.post_id]')
-                ->where('t.topic_id IN %in', $search_ids);
+                ->where('[t.topic_id] IN %in', $search_ids);
 		}
 
 		$per_page = $show_results === 'posts' ? $board_config['posts_per_page'] : $board_config['topics_per_page'];

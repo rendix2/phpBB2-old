@@ -215,7 +215,7 @@ class Auth
                     ->select($authSql)
                     ->from(Tables::FORUMS_TABLE)
                     ->as('a')
-                    ->where('a.forum_id = %i', $forumId)
+                    ->where('[a.forum_id] = %i', $forumId)
                     ->fetch();
             } else {
                 $f_access = dibi::select('a.forum_id')
@@ -244,12 +244,12 @@ class Auth
                 ->as('a')
                 ->innerJoin(Tables::USERS_GROUPS_TABLE)
                 ->as('ug')
-                ->on('a.group_id = ug.group_id')
+                ->on('[a.group_id] = [ug.group_id]')
                 ->where('[ug.user_id] = %i', $userdata['user_id'])
                 ->where('[ug.user_pending] = %i', 0);
 
             if ($forumId !== self::AUTH_ALL) {
-                $rows->where('a.forum_id = %i', $forumId);
+                $rows->where('[a.forum_id] = %i', $forumId);
             }
 
             $rows = $rows->fetchAll();

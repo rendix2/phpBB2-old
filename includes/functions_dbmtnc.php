@@ -615,7 +615,7 @@ function check_authorisation($die = true)
 		case 'board':
             $row = dibi::select(['user_id', 'username', 'user_password', 'user_acp_password', 'user_active', 'user_level'])
                 ->from(Tables::USERS_TABLE)
-                ->where('username = %s', $board_user)
+                ->where('[username] = %s', $board_user)
                 ->fetch();
 
             if ($row === false) {

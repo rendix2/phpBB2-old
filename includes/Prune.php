@@ -21,7 +21,7 @@ class Prune
     {
         $topics = dibi::select('topic_id')
             ->from(Tables::TOPICS_TABLE)
-            ->where('topic_last_post_id = %i', 0)
+            ->where('[topic_last_post_id] = %i', 0)
             ->fetchAll();
 
         foreach ($topics as $topic) {
@@ -36,16 +36,16 @@ class Prune
             ->as('p')
             ->innerJoin(Tables::TOPICS_TABLE)
             ->as('t')
-            ->on('p.post_id = t.topic_last_post_id')
-            ->where('t.forum_id = %i', $forumId);
+            ->on('[p.post_id] = [t.topic_last_post_id]')
+            ->where('[t.forum_id] = %i', $forumId);
 
         if (!$pruneAll) {
             $topicQuery->where('[t.topic_vote] = %i', 0)
-                ->where('t.topic_type <> %i', POST_ANNOUNCE);
+                ->where('[t.topic_type] <> %i', POST_ANNOUNCE);
         }
 
         if ($pruneDate) {
-            $topicQuery->where('p.post_time < %i', $pruneDate);
+            $topicQuery->where('[p.post_time] < %i', $pruneDate);
         }
 
         $topicData = $topicQuery->fetchPairs(null, 'topic_id');

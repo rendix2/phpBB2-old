@@ -37,8 +37,8 @@ if (isset($_POST['submit'])) {
 
 	$user = dibi::select(['user_id', 'username', 'user_email', 'user_active', 'user_lang'])
         ->from(Tables::USERS_TABLE)
-        ->where('user_email = %s', $email)
-        ->where('username = %s', $username)
+        ->where('[user_email] = %s', $email)
+        ->where('[username] = %s', $username)
         ->fetch();
 
 	if (!$user) {

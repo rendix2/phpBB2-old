@@ -196,8 +196,8 @@ if (isset($_POST['groupstatus']) && $groupId) {
         ->innerJoin(Tables::GROUPS_TABLE)
         ->as('g')
         ->on('[ug.group_id] = [g.group_id]')
-        ->where('g.group_id = %i', $groupId)
-        ->where('g.group_type <> %i', GROUP_HIDDEN)
+        ->where('[g.group_id] = %i', $groupId)
+        ->where('[g.group_type] <> %i', GROUP_HIDDEN)
         ->fetchAll();
 
 	if (!count($rows)) {
@@ -247,8 +247,8 @@ if (isset($_POST['groupstatus']) && $groupId) {
         ->as('u')
         ->innerJoin(Tables::GROUPS_TABLE)
         ->as('g')
-        ->on('u.user_id = g.group_moderator ')
-        ->where('g.group_id = %i', $groupId)
+        ->on('[u.user_id] = [g.group_moderator]')
+        ->where('[g.group_id] = %i', $groupId)
         ->fetch();
 
 	$emailer = new Emailer($board_config['smtp_delivery']);
@@ -396,8 +396,8 @@ if (isset($_POST['groupstatus']) && $groupId) {
                 ->as('g')
                 ->innerJoin(Tables::AUTH_ACCESS_TABLE)
                 ->as('aa')
-                ->on('aa.group_id (+) = g.group_id')
-                ->where('g.group_id = %i', $groupId)
+                ->on('[aa.group_id] (+) = [g.group_id]')
+                ->where('[g.group_id] = %i', $groupId)
                 ->orderBy('aa.auth_mod', dibi::DESC)
                 ->fetch();
 			break;
@@ -410,7 +410,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
                 ->innerJoin(Tables::AUTH_ACCESS_TABLE)
                 ->as('aa')
                 ->on('[aa.group_id] = [g.group_id]')
-                ->where('g.group_id = %i', $groupId)
+                ->where('[g.group_id] = %i', $groupId)
                 ->orderBy('aa.auth_mod', dibi::DESC)
                 ->fetch();
 			break;
@@ -451,7 +451,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
 
 				$row = dibi::select(['user_id', 'user_email', 'user_lang', 'user_level'])
                     ->from(Tables::USERS_TABLE)
-                    ->where('username = %s', $username)
+                    ->where('[username] = %s', $username)
                     ->fetch();
 
                 if (!$row) {
@@ -563,7 +563,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
                         if ($groupInfo->auth_mod) {
 						    dibi::update(Tables::USERS_TABLE, ['user_level' => MOD])
                                 ->where('[user_id] IN %in', $members)
-                                ->where('user_level NOT IN %in', [MOD, ADMIN])
+                                ->where('[user_level] NOT IN %in', [MOD, ADMIN])
                                 ->execute();
 						}
 
@@ -591,7 +591,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
                             if (count($user_ids)) {
                                 dibi::update(Tables::USERS_TABLE, ['user_level' => USER])
                                     ->where('[user_id] IN %in', $user_ids)
-                                    ->where('user_level <> %i', ADMIN)
+                                    ->where('[user_level] <> %i', ADMIN)
                                     ->execute();
                             }
 						}
@@ -719,7 +719,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
         ->on('[u.user_id] = [ug.user_id]')
         ->where('[ug.group_id] = %i', $groupId)
         ->where('[ug.user_pending] = %i', 0)
-        ->where('ug.user_id <> %i', $group_moderator->user_id)
+        ->where('[ug.user_id] <> %i', $group_moderator->user_id)
         ->orderBy('u.username')
         ->limit($board_config['group_members_per_page'])
         ->offset($start)
@@ -734,7 +734,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
         ->on('[u.user_id] = [ug.user_id]')
         ->where('[ug.group_id] = %i', $groupId)
         ->where('[ug.user_pending] = %i', 0)
-        ->where('ug.user_id <> %i', $group_moderator->user_id)
+        ->where('[ug.user_id] <> %i', $group_moderator->user_id)
         ->orderBy('u.username')
         ->fetchSingle();
 
@@ -761,7 +761,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
         ->innerJoin(Tables::USERS_TABLE)
         ->as('u')
         ->on('[u.user_id] = [ug.user_id]')
-        ->where('g.group_id = %i', $groupId)
+        ->where('[g.group_id] = %i', $groupId)
         ->where('[ug.user_pending] = %i', 1)
         ->orderBy('u.username')
         ->fetchAll();
@@ -1185,7 +1185,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
             ->as('ug')
             ->on('[ug.group_id] = [g.group_id]')
             ->where('[ug.user_id] = %i', $userdata['user_id'])
-            ->where('g.group_single_user <> %i', 1)
+            ->where('[g.group_single_user] <> %i', 1)
             ->orderBy('g.group_name')
             ->orderBy('ug.user_id')
             ->fetchAll();
@@ -1216,7 +1216,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
         ->where('[group_single_user] <> %i', 1);
 
     if (count($inGroup)) {
-        $groups->where('group_id NOT IN %in', $inGroup);
+        $groups->where('[group_id] NOT IN %in', $inGroup);
     }
 
     $groups = $groups->orderBy('group_name')

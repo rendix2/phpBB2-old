@@ -78,19 +78,19 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
             ];
 
             dibi::update(Tables::POSTS_TABLE, $update_data)
-                ->where('poster_id = %i', $user_id)
+                ->where('[poster_id] = %i', $user_id)
                 ->execute();
 
             dibi::update(Tables::TOPICS_TABLE, ['topic_poster' => DELETED])
-                ->where('topic_poster = %i', $user_id)
+                ->where('[topic_poster] = %i', $user_id)
                 ->execute();
 
             dibi::update(Tables::VOTE_USERS_TABLE, ['vote_user_id' => DELETED])
-                ->where('vote_user_id = %i', $user_id)
+                ->where('[vote_user_id] = %i', $user_id)
                 ->execute();
 
             dibi::update(Tables::GROUPS_TABLE, ['group_moderator' => DELETED])
-                ->where('group_moderator = %i', $user_id)
+                ->where('[group_moderator] = %i', $user_id)
                 ->execute();
 
 			dibi::delete(Tables::USERS_TABLE)
@@ -131,7 +131,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 
             $privmsgs_ids = dibi::select('privmsgs_id')
                 ->from(Tables::PRIVATE_MESSAGE_TABLE)
-                ->where('privmsgs_from_userid = %i OR privmsgs_to_userid = %i', $user_id, $user_id)
+                ->where('[privmsgs_from_userid] = %i OR [privmsgs_to_userid] = %i', $user_id, $user_id)
                 ->fetchPairs(null, 'privmsgs_id');
 
             if (count($privmsgs_ids)) {
@@ -754,7 +754,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 
 		$ranks = dibi::select('*')
             ->from(Tables::RANKS_TABLE)
-            ->where('rank_special = %i', 1)
+            ->where('[rank_special] = %i', 1)
             ->orderBy('rank_title')
             ->fetchAll();
 

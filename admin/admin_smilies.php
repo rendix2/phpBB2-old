@@ -155,7 +155,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
                         ];
 
 					    dibi::update(Tables::SMILEYS_TABLE, $update_data)
-                            ->where('code = %s', $smile_data[$j])
+                            ->where('[code] = %s', $smile_data[$j])
                             ->execute();
 					}
 				} else {
@@ -300,7 +300,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
                 $cache->remove($key_all);
 
 			    dibi::delete(Tables::SMILEYS_TABLE)
-                    ->where('smilies_id = %i', $smiley_id)
+                    ->where('[smilies_id] = %i', $smiley_id)
                     ->execute();
 
 				$message  = $lang['smiley_del_success'] . '<br /><br />';
@@ -340,7 +340,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
 
             $smile_data = dibi::select('*')
                 ->from(Tables::SMILEYS_TABLE)
-                ->where('smilies_id = %i', $smiley_id)
+                ->where('[smilies_id] = %i', $smiley_id)
                 ->fetch();
 
             if (!$smile_data) {
@@ -437,7 +437,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
             ];
 
             dibi::update(Tables::SMILEYS_TABLE, $update_data)
-                ->where('smilies_id = %i', $smile_id)
+                ->where('[smilies_id] = %i', $smile_id)
                 ->execute();
 
 			$message  = $lang['smiley_edit_success'] . '<br /><br />';

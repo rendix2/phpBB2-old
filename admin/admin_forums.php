@@ -624,8 +624,8 @@ if (!empty($mode)) {
                 ->as('a')
                 ->innerJoin(Tables::USERS_GROUPS_TABLE)
                 ->as('ug')
-                ->on('ug.group_id = a.group_id')
-                ->where('a.forum_id <> %i', $from_id)
+                ->on('[ug.group_id] = [a.group_id]')
+                ->where('[a.forum_id] <> %i', $from_id)
                 ->where('[a.auth_mod] = %i', 1)
                 ->fetchPairs(null, 'user_id');
 
@@ -734,7 +734,7 @@ if (!empty($mode)) {
 			if (!empty($to_id)) {
 			    $cat_exists = dibi::select('*')
                     ->from(Tables::CATEGORIES_TABLE)
-                    ->where('cat_id IN %in', [$from_id, $to_id])
+                    ->where('[cat_id] IN %in', [$from_id, $to_id])
                     ->fetchAll();
 
 				if (count($cat_exists) !== 2) {

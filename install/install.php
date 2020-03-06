@@ -876,7 +876,7 @@ if ($_GET['install'] == 1 && $validated) {
             ];
 
             dibi::update($table_prefix . 'users', $update_data)
-                ->where('username = %s', 'Admin')
+                ->where('[username] = %s', 'Admin')
                 ->execute();
 
             dibi::update($table_prefix . 'users', ['user_reg_date' => time()])

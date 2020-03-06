@@ -221,7 +221,7 @@ switch ($mode) {
         ->innerJoin(Tables::TOPICS_TABLE)
         ->as('t')
         ->on('[f.forum_id] = [t.forum_id]')
-        ->where('t.topic_id = %i', $topicId)
+        ->where('[t.topic_id] = %i', $topicId)
         ->fetch();
 		break;
 
@@ -275,7 +275,7 @@ switch ($mode) {
                 ->innerJoin(Tables::USERS_TABLE)
                 ->as('u')
                 ->on('[u.user_id] = [p.poster_id]')
-                ->where('p.post_id = %i', $postId)
+                ->where('[p.post_id] = %i', $postId)
                 ->fetch();
         } else {
             $columns = [
@@ -301,7 +301,7 @@ switch ($mode) {
                 ->innerJoin(Tables::FORUMS_TABLE)
                 ->as('f')
                 ->on('[f.forum_id] = [p.forum_id]')
-                ->where('p.post_id = %i', $postId)
+                ->where('[p.post_id] = %i', $postId)
                 ->fetch();
         }
 
@@ -340,8 +340,8 @@ if ($post_info) {
                 ->as('vd')
                 ->innerJoin(Tables::VOTE_RESULTS_TABLE)
                 ->as('vr')
-                ->on('vr.vote_id = vd.vote_id')
-                ->where('vd.topic_id = %i', $topicId)
+                ->on('[vr.vote_id] = [vd.vote_id]')
+                ->where('[vd.topic_id] = %i', $topicId)
                 ->orderBy('vr.vote_option_id')
                 ->fetchAll();
 
@@ -603,9 +603,9 @@ if (($delete || $pollDelete || $mode === 'delete') && !$confirm) {
         ->as('vd')
         ->innerJoin(Tables::VOTE_RESULTS_TABLE)
         ->as('vr')
-        ->on('vr.vote_id = vd.vote_id')
-        ->where('vd.topic_id = %i', $topicId)
-        ->where('vr.vote_option_id = %i', $vote_option_id)
+        ->on('[vr.vote_id] = [vd.vote_id]')
+        ->where('[vd.topic_id] = %i', $topicId)
+        ->where('[vr.vote_option_id] = %i', $vote_option_id)
         ->groupBy('vd.vote_id')
         ->fetch();
 
@@ -617,8 +617,8 @@ if (($delete || $pollDelete || $mode === 'delete') && !$confirm) {
 
     $row = dibi::select('*')
         ->from(Tables::VOTE_USERS_TABLE)
-        ->where('vote_id = %i', $vote_id)
-        ->where('vote_user_id = %i', $userdata['user_id'])
+        ->where('[vote_id] = %i', $vote_id)
+        ->where('[vote_user_id] = %i', $userdata['user_id'])
         ->fetch();
 
     if ($row) {
@@ -626,8 +626,8 @@ if (($delete || $pollDelete || $mode === 'delete') && !$confirm) {
     }
 
     dibi::update(Tables::VOTE_RESULTS_TABLE, ['vote_result%sql' => 'vote_result + 1'])
-        ->where('vote_id = %i', $vote_id)
-        ->where('vote_option_id = %i', $vote_option_id)
+        ->where('[vote_id] = %i', $vote_id)
+        ->where('[vote_option_id] = %i', $vote_option_id)
         ->execute();
 
     $insert_data = [
