@@ -399,6 +399,58 @@ switch ($mode_id) {
 
                 $template->pparse('body');
 				break;
+
+            case 'languages':
+                echo('<h1>' . $lang['Checking_languages'] . "</h1>\n");
+                lock_db();
+
+                // Check for missing languages
+                echo('<p class="gen"><b>' . $lang['Checking_missing_languages'] . "</b></p>\n");
+
+                $unknownLanguages = dibi::select(['user_id', 'username', 'user_lang'])
+                    ->from(Tables::USERS_TABLE)
+                    ->where('[user_lang] NOT IN',
+                        dibi::select('lang_name')
+                            ->from(Tables::LANGUAGES_TABLE)
+                    )
+                    ->where('[user_id] != %i', ANONYMOUS)
+                    ->fetchAll();
+
+                if (count($unknownLanguages)) {
+                    // Getting default board_language as long as the original one was changed in functions.php
+                    $boardLanguage = dibi::select('config_value')
+                        ->from(Tables::CONFIG_TABLE)
+                        ->where('[config_name] = %s', 'default_lang')
+                        ->fetchSingle();
+
+                    if ($boardLanguage === false) {
+                        throw_error("Couldn't get config data! Please check your configuration table.");
+                    }
+
+                    foreach ($unknownLanguages as $row) {
+                        if (!$list_open) {
+                            echo('<p class="gen"><b>' . $lang['Updating_user_with_unknown_language'] . ":</b></p>\n");
+                            echo("<font class=\"gen\"><ul>\n");
+                            $list_open = true;
+                        }
+
+                        echo('<li>' . htmlspecialchars($row->username) . ' (' . $row->user_lang . " => " . $boardLanguage . " ) </li>\n");
+
+                        dibi::update(Tables::USERS_TABLE, ['user_lang' => $boardLanguage])
+                            ->where('[user_id] = %i', $row->user_id)
+                            ->execute();
+                    }
+
+                    echo("</ul></font>\n");
+                    $list_open = false;
+
+                } else {
+                    echo($lang['Nothing_to_do']);
+                }
+                lock_db(true);
+                
+                break;
+
             case 'thanks': // Check thanks
                 echo('<h1>' . $lang['Checking_thanks'] . "</h1>\n");
                 lock_db();

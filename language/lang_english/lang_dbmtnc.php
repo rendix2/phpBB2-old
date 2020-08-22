@@ -121,6 +121,13 @@ $mtnc[] = [
 	0
 ];
 $mtnc[] = [
+	'languages',
+	'Check languages table',
+	'This will check the languages table for errors.',
+	'Users with unknown language will be set English. Proceed?',
+	0
+];
+$mtnc[] = [
 	'check_config',
 	'Check configuration table',
 	'This will check the configuration table for missing entries.',
@@ -299,8 +306,10 @@ $lang['Click_return_dbmtnc_config'] = 'Click %sHere%s to return to configuration
 // check_user
 $lang['Checking_user_tables'] = 'Checking user and group tables';
 $lang['Checking_thanks'] = 'Checking thanks table';
+$lang['Checking_languages'] = 'Checking languages table';
 $lang['Checking_missing_anonymous'] = 'Checking for missing anonymous account';
 $lang['Checking_missing_thankers'] = 'Checking for missing thankful users';
+$lang['Checking_missing_languages'] = 'Checking for missing languages';
 $lang['Checking_missing_thank_topic'] = 'Checking for missing topics with thanks';
 $lang['Anonymous_recreated'] = 'Anonymous account recreated';
 $lang['Checking_incorrect_pending_information'] = 'Checking for incorrect pending information';
@@ -333,6 +342,7 @@ $lang['Checking_themes'] = 'Checking for invalid themes settings';
 $lang['Updating_users_without_style'] = 'Updating users with no theme set';
 $lang['Default_theme_invalid'] = '<b>Attention:</b> The default style is invalid. Please check your configuration.';
 $lang['Updating_themes'] = 'Updating invalid themes to theme %d';
+$lang['Updating_user_with_unknown_language'] = 'Updating user with invalid languages';
 $lang['Checking_theme_names'] = 'Checking for invalid theme name data';
 $lang['Removing_invalid_theme_names'] = 'Removing invalid theme name data';
 $lang['Checking_languages'] = 'Checking for invalid language settings';
