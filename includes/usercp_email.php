@@ -74,58 +74,39 @@ if (isset($_POST['submit'])) {
 
     if (!$error) {
         $result = dibi::update(Tables::USERS_TABLE, ['user_emailtime' => time()])
-            ->where('user_id = %i', $userdata['user_id'])
+            ->where('[user_id] = %i', $userdata['user_id'])
             ->execute();
 
         if (!$result) {
             message_die(GENERAL_ERROR, 'Could not update last email time');
         }
 
-        $emailer = new Emailer($board_config['smtp_delivery']);
-
-        $emailer->setFrom($userdata['user_email']);
-        $emailer->setReplyTo($userdata['user_email']);
-
-        $emailHeaders = 'X-AntiAbuse: Board servername - ' . $server_name . "\n";
-        $emailHeaders .= 'X-AntiAbuse: User_id - ' . $userdata['user_id'] . "\n";
-        $emailHeaders .= 'X-AntiAbuse: Username - ' . $userdata['username'] . "\n";
-        $emailHeaders .= 'X-AntiAbuse: User IP - ' . decode_ip($user_ip) . "\n";
-
-        $emailer->useTemplate('profile_send_email', $user->user_lang);
-        $emailer->setEmailAddress($user->user_email);
-        $emailer->setSubject($subject);
-        $emailer->addExtraHeaders($emailHeaders);
-
-        $emailer->assignVars(
+        $params =
             [
                 'SITENAME' => $board_config['sitename'],
                 'BOARD_EMAIL' => $board_config['board_email'],
                 'FROM_USERNAME' => $userdata['username'],
                 'TO_USERNAME' => $user->username,
                 'MESSAGE' => $message
-            ]
+            ];
+
+        $mailer = new \phpBB2\Mailer(
+            new LatteFactory($storage, $userdata),
+            $board_config,
+            'profile_send_email',
+            $user->user_lang,
+            $params,
+            $subject,
+            $user->user_email
         );
-        $emailer->send();
-        $emailer->reset();
 
         if (!empty($_POST['cc_email'])) {
-            $emailer->setFrom($userdata['user_email']);
-            $emailer->setReplyTo($userdata['user_email']);
-            $emailer->useTemplate('profile_send_email');
-            $emailer->setEmailAddress($userdata['user_email']);
-            $emailer->setSubject($subject);
+            $mailer->getMessage()->setFrom($userdata['user_email']);
+            $mailer->getMessage()->addReplyTo($userdata['user_email']);
+            $mailer->getMessage()->addTo($userdata['user_email']);
+            $mailer->getMessage()->setSubject($subject);
 
-            $emailer->assignVars(
-                [
-                    'SITENAME' => $board_config['sitename'],
-                    'BOARD_EMAIL' => $board_config['board_email'],
-                    'FROM_USERNAME' => $userdata['username'],
-                    'TO_USERNAME' => $user->username,
-                    'MESSAGE' => $message
-                ]
-            );
-            $emailer->send();
-            $emailer->reset();
+            $mailer->send();
         }
 
         $template->assignVars(
@@ -142,7 +123,7 @@ if (isset($_POST['submit'])) {
 
 PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $lang['Send_email_msg'], $gen_simple_header);
 
-$template->setFileNames(['body' => 'profile_send_email.tpl']);
+$template->setFileNames(['body' => 'profile_send_email.latte']);
 
 make_jumpbox('viewforum.php');
 

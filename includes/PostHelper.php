@@ -2,6 +2,7 @@
 
 use Nette\Caching\Cache;
 use Nette\Utils\Random;
+use phpBB2\Mailer;
 
 /**
  * Class PostHelper
@@ -700,8 +701,6 @@ class PostHelper
                 }
 
                 if (count($bcc_list_ary)) {
-                    $emailer = new Emailer($board_config['smtp_delivery']);
-
                     $scriptName = preg_replace('/^\/?(.*?)\/?$/', '\1', trim($board_config['script_path']));
                     $scriptName = $scriptName !== '' ? $scriptName . '/viewtopic.php' : 'viewtopic.php';
                     $serverName = trim($board_config['server_name']);
@@ -712,42 +711,41 @@ class PostHelper
                     $replacementWords = [];
                     obtain_word_list($origWords, $replacementWords);
 
-                    $emailer->setFrom($board_config['board_email']);
-                    $emailer->setReplyTo($board_config['board_email']);
-
                     $topicTitle = count($origWords) ? preg_replace($origWords, $replacementWords, self::unPrepareMessage($topicTitle)) : self::unPrepareMessage($topicTitle);
 
                     foreach ($bcc_list_ary as $userLang => $bccList) {
-                        $emailer->useTemplate('topic_notify', $userLang);
+                        $params = [
+                            'EMAIL_SIG'   => $board_config['board_email_sig'],
+                            'SITENAME'    => $board_config['sitename'],
+                            'TOPIC_TITLE' => $topicTitle,
+
+                            'U_TOPIC'               => $serverProtocol . $serverName . $serverPort . $scriptName . '?' . POST_POST_URL . "=$postId#$postId",
+                            'U_STOP_WATCHING_TOPIC' => $serverProtocol . $serverName . $serverPort . $scriptName . '?' . POST_TOPIC_URL . "=$topicId&unwatch=topic"
+                        ];
+
+                        $mailer = new Mailer(
+                          new LatteFactory($storage, $userdata),
+                          $board_config,
+                            'topic_notify',
+                            $params,
+                            $userLang,
+                            $lang['Topic_reply_notification'],
+                            null
+                        );
 
                         foreach ($bccList as $bccValue) {
-                            $emailer->addBcc($bccValue);
+                            $mailer->getMessage()->addBcc($bccValue);
                         }
 
                         // The Topic_reply_notification lang string below will be used
                         // if for some reason the mail template subject cannot be read
                         // ... note it will not necessarily be in the posters own language!
-                        $emailer->setSubject($lang['Topic_reply_notification']);
 
                         // This is a nasty kludge to remove the username var ... till (if?)
                         // translators update their templates
-                        $msg = preg_replace('#[ ]?{USERNAME}#', '', $emailer->getMsg());
+                        $msg = preg_replace('#[ ]?{USERNAME}#', '', $mailer->getMessage()->getHtmlBody());
 
-                        $emailer->setMsg($msg);
-
-                        $emailer->assignVars(
-                            [
-                                'EMAIL_SIG'   => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
-                                'SITENAME'    => $board_config['sitename'],
-                                'TOPIC_TITLE' => $topicTitle,
-
-                                'U_TOPIC'               => $serverProtocol . $serverName . $serverPort . $scriptName . '?' . POST_POST_URL . "=$postId#$postId",
-                                'U_STOP_WATCHING_TOPIC' => $serverProtocol . $serverName . $serverPort . $scriptName . '?' . POST_TOPIC_URL . "=$topicId&unwatch=topic"
-                            ]
-                        );
-
-                        $emailer->send();
-                        $emailer->reset();
+                        $mailer->getMessage()->setHtmlBody($msg);
                     }
                 }
             }

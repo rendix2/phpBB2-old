@@ -78,24 +78,24 @@ dibi::update(Tables::USERS_TABLE, $updateData)
     ->execute();
 
 if (!$updatePassword && (int)$board_config['require_activation'] === USER_ACTIVATION_ADMIN) {
-    $emailer = new Emailer($board_config['smtp_delivery']);
+    $params =
+    [
+        'SITENAME'  => $board_config['sitename'],
+        'USERNAME'  => $user->username,
+        'EMAIL_SIG' => $board_config['board_email_sig'],
+    ];
 
-    $emailer->setFrom($board_config['board_email']);
-    $emailer->setReplyTo($board_config['board_email']);
-
-    $emailer->useTemplate('admin_welcome_activated', $user->user_lang);
-    $emailer->setEmailAddress($user->user_email);
-    $emailer->setSubject($lang['Account_activated_subject']);
-
-    $emailer->assignVars(
-        [
-            'SITENAME'  => $board_config['sitename'],
-            'USERNAME'  => $user->username,
-            'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : ''
-        ]
+    $mailer = new \phpBB2\Mailer(
+        new LatteFactory($storage, $userdata),
+        $board_config,
+        'admin_welcome_activated',
+        $params,
+        $user->user_lang,
+        $lang['Account_activated_subject'],
+        $user->user_email
     );
-    $emailer->send();
-    $emailer->reset();
+
+    $mailer->send();
 
     $template->assignVars(
         [

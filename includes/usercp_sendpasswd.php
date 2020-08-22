@@ -64,27 +64,26 @@ if (isset($_POST['submit'])) {
         ->where('user_id = %i', $user->user_id)
         ->execute();
 
-    $emailer = new Emailer($board_config['smtp_delivery']);
+    $params =         [
+        'SITENAME'  => $board_config['sitename'],
+        'USERNAME'  => $user->username,
+        'PASSWORD'  => $userPassword,
+        'EMAIL_SIG' => $board_config['board_email_sig'],
 
-    $emailer->setFrom($board_config['board_email']);
-    $emailer->setReplyTo($board_config['board_email']);
+        'U_ACTIVATE' => $serverUrl . '?mode=activate&' . POST_USERS_URL . '=' . $user->user_id . '&act_key=' . $userActivationKey
+    ];
 
-    $emailer->useTemplate('user_activate_passwd', $user->user_lang);
-    $emailer->setEmailAddress($user->user_email);
-    $emailer->setSubject($lang['New_password_activation']);
-
-    $emailer->assignVars(
-        [
-            'SITENAME'  => $board_config['sitename'],
-            'USERNAME'  => $user->username,
-            'PASSWORD'  => $userPassword,
-            'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
-
-            'U_ACTIVATE' => $serverUrl . '?mode=activate&' . POST_USERS_URL . '=' . $user->user_id . '&act_key=' . $userActivationKey
-        ]
+    $mailer = new \phpBB2\Mailer(
+        new LatteFactory($storage, $userdata),
+        $board_config,
+        'user_activate_passwd',
+        $params,
+        $user->user_lang,
+        $lang['New_password_activation'],
+        $user->user_email
     );
-    $emailer->send();
-    $emailer->reset();
+
+    $mailer->send();
 
     $template->assignVars(
         [

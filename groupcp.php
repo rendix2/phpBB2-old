@@ -243,26 +243,26 @@ if (isset($_POST['groupstatus']) && $groupId) {
         ->where('g.group_id = %i', $groupId)
         ->fetch();
 
-	$emailer = new Emailer($board_config['smtp_delivery']);
-
-	$emailer->setFrom($board_config['board_email']);
-	$emailer->setReplyTo($board_config['board_email']);
-
-	$emailer->useTemplate('group_request', $moderator->user_lang);
-	$emailer->setEmailAddress($moderator->user_email);
-	$emailer->setSubject($lang['Group_request']);
-
-	$emailer->assignVars(
-	    [
-            'SITENAME' => $board_config['sitename'],
+    $params =
+        [
+            'SITENAME'        => $board_config['sitename'],
             'GROUP_MODERATOR' => $moderator->username,
-            'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
+            'EMAIL_SIG'       => $board_config['board_email_sig'],
 
             'U_GROUPCP' => $serverUrl . '?' . POST_GROUPS_URL . "=$groupId&validate=true"
-        ]
-	);
-	$emailer->send();
-	$emailer->reset();
+        ];
+
+    $mailer = new \phpBB2\Mailer(
+        new LatteFactory($storage, $userdata),
+        $board_config,
+        'group_request',
+        $params,
+        $moderator->user_lang,
+        $lang['Group_request'],
+        $moderator->user_email
+    );
+
+    $mailer->send();
 
     $template->assignVars(
         [
@@ -514,26 +514,26 @@ if (isset($_POST['groupstatus']) && $groupId) {
                         message_die(GENERAL_ERROR, 'Could not get group information');
                     }
 
-					$emailer = new Emailer($board_config['smtp_delivery']);
-
-					$emailer->setFrom($board_config['board_email']);
-					$emailer->setReplyTo($board_config['board_email']);
-
-					$emailer->useTemplate('group_added', $row->user_lang);
-					$emailer->setEmailAddress($row->user_email);
-					$emailer->setSubject($lang['Group_added']);
-
-                    $emailer->assignVars(
+                    $params =
                         [
                             'SITENAME'   => $board_config['sitename'],
                             'GROUP_NAME' => $groupName,
-                            'EMAIL_SIG'  => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
+                            'EMAIL_SIG'  => $board_config['board_email_sig'],
 
                             'U_GROUPCP' => $serverUrl . '?' . POST_GROUPS_URL . "=$groupId"
-                        ]
+                        ];
+
+                    $mailer = new \phpBB2\Mailer(
+                        new LatteFactory($storage, $userdata),
+                        $board_config,
+                        'group_added',
+                        $params,
+                        $row->user_lang,
+                        $lang['Group_added'],
+                        $row->user_email
                     );
-                    $emailer->send();
-					$emailer->reset();
+
+                    $mailer->send();
 				}
 			} else {
 				if (( ( isset($_POST['approve']) || isset($_POST['deny']) ) && isset($_POST['pending_members']) ) || ( isset($_POST['remove']) && isset($_POST['members']) )) {
@@ -603,30 +603,30 @@ if (isset($_POST['groupstatus']) && $groupId) {
 							message_die(GENERAL_ERROR, 'Could not get group information');
 						}
 
-						$emailer = new Emailer($board_config['smtp_delivery']);
+						$params = [
+                            'SITENAME'   => $board_config['sitename'],
+                            'GROUP_NAME' => $groupName,
+                            'EMAIL_SIG'  => $board_config['board_email_sig'],
 
-						$emailer->setFrom($board_config['board_email']);
-						$emailer->setReplyTo($board_config['board_email']);
+                            'U_GROUPCP' => $serverUrl . '?' . POST_GROUPS_URL . "=$groupId"
+                        ];
 
-						foreach ($bcc_list as $bcc_value) {
-							$emailer->addBcc($bcc_value);
-						}
-
-						$emailer->useTemplate('group_approved');
-						$emailer->setSubject($lang['Group_approved']);
-
-                        $emailer->assignVars(
-                            [
-                                'SITENAME'   => $board_config['sitename'],
-                                'GROUP_NAME' => $groupName,
-                                'EMAIL_SIG'  => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
-
-                                'U_GROUPCP' => $serverUrl . '?' . POST_GROUPS_URL . "=$groupId"
-                            ]
+						$mailer = new \phpBB2\Mailer(
+						    new LatteFactory($storage, $userdata),
+                            $board_config,
+                            'group_approved',
+                            $params,
+                            null,
+                            $lang['Group_approved'],
+                            null
                         );
-                        $emailer->send();
-						$emailer->reset();
-					}
+
+                        foreach ($bcc_list as $bcc_value) {
+                            $mailer->getMessage()->addBcc($bcc_value);
+                        }
+
+                        $mailer->send();
+                    }
 				}
 			}
 		}

@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 use Nette\Utils\Random;
+use phpBB2\Mailer;
 
 /***************************************************************************
  *
@@ -480,51 +481,53 @@ if (isset($_POST['submit'])) {
 				//
 				// The users account has been deactivated, send them an email with a new activation key
 				//
-				$emailer = new Emailer($board_config['smtp_delivery']);
-
                 if ($board_config['require_activation'] !== USER_ACTIVATION_ADMIN) {
- 					$emailer->setFrom($board_config['board_email']);
- 					$emailer->setReplyTo($board_config['board_email']);
-
- 					$emailer->useTemplate('user_activate', stripslashes($userLanguage));
- 					$emailer->setEmailAddress($email);
- 					$emailer->setSubject($lang['Reactivate']);
-
-                    $emailer->assignVars(
+                    $params =
                         [
                             'SITENAME'  => $board_config['sitename'],
                             'USERNAME'  => preg_replace(PostHelper::$unHtmlSpecialCharsMatch, PostHelper::$unHtmlSpecialCharsReplace, mb_substr(str_replace("\'", "'", $userName), 0, 25)),
-                            'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
+                            'EMAIL_SIG' => $board_config['board_email_sig'],
 
                             'U_ACTIVATE' => $serverUrl . '?mode=activate&' . POST_USERS_URL . '=' . $userId . '&act_key=' . $userActivationKey
-                        ]
+                        ];
+
+                    $mailer = new Mailer(
+                        new LatteFactory($storage, $userdata),
+                        $board_config,
+                        'user_activate',
+                        $params,
+                        $userLanguage,
+                        $lang['Reactivate'],
+                        $email
                     );
-                    $emailer->send();
- 					$emailer->reset();
+
+                    $mailer->send();
                 } elseif ($board_config['require_activation'] === USER_ACTIVATION_ADMIN) {
- 				    $admins = dibi::select(['user_email', 'user_lang'])
+                    $admins = dibi::select(['user_email', 'user_lang'])
                         ->from(Tables::USERS_TABLE)
                         ->where('user_level = %i', ADMIN)
                         ->fetchAll();
 
                     foreach ($admins as $admin) {
-                        $emailer->setFrom($board_config['board_email']);
-                        $emailer->setReplyTo($board_config['board_email']);
-
-                        $emailer->setEmailAddress(trim($admin->user_email));
-                        $emailer->useTemplate('admin_activate', $admin->user_lang);
-                        $emailer->setSubject($lang['Reactivate']);
-
-                        $emailer->assignVars(
+                        $params =
                             [
                                 'USERNAME'  => preg_replace(PostHelper::$unHtmlSpecialCharsMatch, PostHelper::$unHtmlSpecialCharsReplace, mb_substr(str_replace("\'", "'", $userName), 0, 25)),
-                                'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
+                                'EMAIL_SIG' => $board_config['board_email_sig'],
 
                                 'U_ACTIVATE' => $serverUrl . '?mode=activate&' . POST_USERS_URL . '=' . $userId . '&act_key=' . $userActivationKey
-                            ]
+                            ];
+
+                        $mailer = new Mailer(
+                            new LatteFactory($storage, $userdata),
+                            $board_config,
+                            'admin_activate',
+                            $params,
+                            $admin->user_lang,
+                            $lang['Reactivate'],
+                            $admin->user_email
                         );
-                        $emailer->send();
-                        $emailer->reset();
+
+                        $mailer->send();
                     }
  				}
 
@@ -623,49 +626,45 @@ if (isset($_POST['submit'])) {
 				$emailTemplate = 'user_welcome';
 			}
 
-			$emailer = new Emailer($board_config['smtp_delivery']);
-
-			$emailer->setFrom($board_config['board_email']);
-			$emailer->setReplyTo($board_config['board_email']);
-
-			$emailer->useTemplate($emailTemplate, stripslashes($userLanguage));
-			$emailer->setEmailAddress($email);
-			$emailer->setSubject(sprintf($lang['Welcome_subject'], $board_config['sitename']));
-
             if ($coppa) {
-                $emailer->assignVars(
-                    [
-                        'SITENAME'    => $board_config['sitename'],
-                        'WELCOME_MSG' => sprintf($lang['Welcome_subject'], $board_config['sitename']),
-                        'USERNAME'    => preg_replace(PostHelper::$unHtmlSpecialCharsMatch, PostHelper::$unHtmlSpecialCharsReplace, mb_substr(str_replace("\'", "'", $userName), 0, 25)),
-                        'PASSWORD'    => $confirmPassword,
-                        'EMAIL_SIG'   => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
+                $params = [
+                    'SITENAME'    => $board_config['sitename'],
+                    'WELCOME_MSG' => sprintf($lang['Welcome_subject'], $board_config['sitename']),
+                    'USERNAME'    => preg_replace(PostHelper::$unHtmlSpecialCharsMatch, PostHelper::$unHtmlSpecialCharsReplace, mb_substr(str_replace("\'", "'", $userName), 0, 25)),
+                    'PASSWORD'    => $confirmPassword,
+                    'EMAIL_SIG'   => $board_config['board_email_sig'],
 
-                        'FAX_INFO'      => $board_config['coppa_fax'],
-                        'MAIL_INFO'     => $board_config['coppa_mail'],
-                        'EMAIL_ADDRESS' => $email,
-                        'WEB_SITE'      => $website,
-                        'FROM'          => $location,
-                        'OCC'           => $occupation,
-                        'INTERESTS'     => $interests
-                    ]
-                );
+                    'FAX_INFO'      => $board_config['coppa_fax'],
+                    'MAIL_INFO'     => $board_config['coppa_mail'],
+                    'EMAIL_ADDRESS' => $email,
+                    'WEB_SITE'      => $website,
+                    'FROM'          => $location,
+                    'OCC'           => $occupation,
+                    'INTERESTS'     => $interests
+                ];
             } else {
-                $emailer->assignVars(
-                    [
-                        'SITENAME'    => $board_config['sitename'],
-                        'WELCOME_MSG' => sprintf($lang['Welcome_subject'], $board_config['sitename']),
-                        'USERNAME'    => preg_replace(PostHelper::$unHtmlSpecialCharsMatch, PostHelper::$unHtmlSpecialCharsReplace, mb_substr(str_replace("\'", "'", $userName), 0, 25)),
-                        'PASSWORD'    => $confirmPassword,
-                        'EMAIL_SIG'   => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
+                $params = [
+                    'SITENAME'    => $board_config['sitename'],
+                    'WELCOME_MSG' => sprintf($lang['Welcome_subject'], $board_config['sitename']),
+                    'USERNAME'    => preg_replace(PostHelper::$unHtmlSpecialCharsMatch, PostHelper::$unHtmlSpecialCharsReplace, mb_substr(str_replace("\'", "'", $userName), 0, 25)),
+                    'PASSWORD'    => $confirmPassword,
+                    'EMAIL_SIG'   => $board_config['board_email_sig'],
 
-                        'U_ACTIVATE' => $serverUrl . '?mode=activate&' . POST_USERS_URL . '=' . $userId . '&act_key=' . $userActivationKey
-                    ]
-                );
+                    'U_ACTIVATE' => $serverUrl . '?mode=activate&' . POST_USERS_URL . '=' . $userId . '&act_key=' . $userActivationKey
+                ];
             }
 
-			$emailer->send();
-			$emailer->reset();
+            $mailer = new Mailer(
+                new LatteFactory($storage, $userdata),
+                $board_config,
+                $emailTemplate,
+                $params,
+                $userLanguage,
+                sprintf($lang['Welcome_subject'], $board_config['sitename']),
+                $email
+            );
+
+            $mailer->send();
 
             if ($board_config['require_activation'] === USER_ACTIVATION_ADMIN) {
 			    $admins = dibi::select(['user_email', 'user_lang'])
@@ -674,23 +673,25 @@ if (isset($_POST['submit'])) {
                     ->fetchAll();
 
                 foreach ($admins as $admin) {
-					$emailer->setFrom($board_config['board_email']);
-					$emailer->setReplyTo($board_config['board_email']);
+                    $params =
+                    [
+                        'USERNAME'  => preg_replace(PostHelper::$unHtmlSpecialCharsMatch, PostHelper::$unHtmlSpecialCharsReplace, mb_substr(str_replace("\'", "'", $userName), 0, 25)),
+                        'EMAIL_SIG' => $board_config['board_email_sig'],
 
-					$emailer->setEmailAddress(trim($admin->user_email));
-					$emailer->useTemplate('admin_activate', $admin->user_lang);
-					$emailer->setSubject($lang['New_account_subject']);
+                        'U_ACTIVATE' => $serverUrl . '?mode=activate&' . POST_USERS_URL . '=' . $userId . '&act_key=' . $userActivationKey
+                    ];
 
-                    $emailer->assignVars(
-                        [
-                            'USERNAME'  => preg_replace(PostHelper::$unHtmlSpecialCharsMatch, PostHelper::$unHtmlSpecialCharsReplace, mb_substr(str_replace("\'", "'", $userName), 0, 25)),
-                            'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
-
-                            'U_ACTIVATE' => $serverUrl . '?mode=activate&' . POST_USERS_URL . '=' . $userId . '&act_key=' . $userActivationKey
-                        ]
+                    $mailer = new Mailer(
+                        new LatteFactory($storage, $userdata),
+                        $board_config,
+                        'admin_activate',
+                        $params,
+                        $admin->user_lang,
+                        $lang['New_account_subject'],
+                        $admin->user_email
                     );
-                    $emailer->send();
-					$emailer->reset();
+
+                    $mailer->send();
 				}
 			}
 

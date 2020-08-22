@@ -267,7 +267,7 @@ class TemplateFile extends BaseTemplate {
 	    $sep = DIRECTORY_SEPARATOR;
 
 		// Check if it's an absolute or relative path.
-		if (mb_substr($filename, 0, 1) !== '/') {
+		if (mb_substr($filename, 0, 1) !== DIRECTORY_SEPARATOR) {
             $filename = realpath($this->root . $sep . $filename);
 		}
 

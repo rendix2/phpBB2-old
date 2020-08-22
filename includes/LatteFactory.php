@@ -77,4 +77,13 @@ class LatteFactory
 
         $this->latte->render($this->path . 'templates' . $sep . $cachedTheme->template_name  . $sep . $name, $params);
     }
+
+    public function renderMail($name, $lang, $params)
+    {
+        $sep = DIRECTORY_SEPARATOR;
+
+        $latteFile = realpath('.' . $sep . 'language' . $sep . 'lang_' . stripslashes($lang) . $sep . 'email' . $sep . $name .'.latte');
+
+        return $this->latte->renderToString($latteFile, $params);
+    }
 }

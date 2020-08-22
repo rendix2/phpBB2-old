@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 use Nette\Utils\Random;
+use phpBB2\Mailer;
 
 /***************************************************************************
  *
@@ -1270,27 +1271,26 @@ if ($mode === 'newpm') {
 				$server_protocol = $board_config['cookie_secure'] ? 'https://' : 'http://';
 				$server_port = $board_config['server_port'] !== 80 ? ':' . trim($board_config['server_port']) . '/' : '/';
 
-				$emailer = new Emailer($board_config['smtp_delivery']);
-					
-				$emailer->setFrom($board_config['board_email']);
-				$emailer->setReplyTo($board_config['board_email']);
-
-				$emailer->useTemplate('privmsg_notify', $to_userdata['user_lang']);
-				$emailer->setEmailAddress($to_userdata['user_email']);
-				$emailer->setSubject($lang['Notification_subject']);
-
-                $emailer->assignVars(
+				$params =
                     [
                         'USERNAME'  => stripslashes($toUserName),
                         'SITENAME'  => $board_config['sitename'],
-                        'EMAIL_SIG' => !empty($board_config['board_email_sig']) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
+                        'EMAIL_SIG' => $board_config['board_email_sig'],
 
                         'U_INBOX' => $server_protocol . $server_name . $server_port . $script_name . '?folder=inbox'
-                    ]
+                    ];
+
+                $mailer = new Mailer(
+                    new LatteFactory($storage, $userdata),
+                    $board_config,
+                    'privmsg_notify',
+                    $params,
+                    $to_userdata['user_lang'],
+                    $lang['Notification_subject'],
+                    $to_userdata['user_email']
                 );
 
-                $emailer->send();
-				$emailer->reset();
+				$mailer->send();
 			}
 		}
 

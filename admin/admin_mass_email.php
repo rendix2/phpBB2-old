@@ -10,6 +10,8 @@
 *
 ****************************************************************************/
 
+use phpBB2\Mailer;
+
 /***************************************************************************
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -96,34 +98,27 @@ if (isset($_POST['submit'])) {
 			$board_config['smtp_host'] = @ini_get('SMTP');
 		}
 
-		$emailer = new Emailer($board_config['smtp_delivery']);
-	
-		$emailer->setFrom($board_config['board_email']);
-		$emailer->setReplyTo($board_config['board_email']);
+		$params = [
+            'SITENAME'    => $board_config['sitename'],
+            'BOARD_EMAIL' => $board_config['board_email'],
+            'MESSAGE'     => $message
+        ];
+
+        $mailer = new Mailer(
+            new LatteFactory($storage, $userdata),
+            $board_config,
+            'admin_send_email',
+            $params,
+            null,
+            $subject,
+            $board_config['board_email'],
+        );
 
 		foreach ($bbc_list as $email) {
-            $emailer->addBcc($email);
+            $mailer->getMessage()->addBcc($email);
         }
 
-		$email_headers = 'X-AntiAbuse: Board servername - ' . $board_config['server_name'] . "\n";
-		$email_headers .= 'X-AntiAbuse: User_id - ' . $userdata['user_id'] . "\n";
-		$email_headers .= 'X-AntiAbuse: Username - ' . $userdata['username'] . "\n";
-		$email_headers .= 'X-AntiAbuse: User IP - ' . decode_ip($user_ip) . "\n";
-
-		$emailer->useTemplate('admin_send_email');
-		$emailer->setEmailAddress($board_config['board_email']);
-		$emailer->setSubject($subject);
-		$emailer->addExtraHeaders($email_headers);
-
-        $emailer->assignVars(
-            [
-                'SITENAME'    => $board_config['sitename'],
-                'BOARD_EMAIL' => $board_config['board_email'],
-                'MESSAGE'     => $message
-            ]
-        );
-        $emailer->send();
-		$emailer->reset();
+        $mailer->send();
 
 		message_die(GENERAL_MESSAGE, $lang['Email_sent'] . '<br /><br />' . sprintf($lang['Click_return_admin_index'],  '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>'));
 	}

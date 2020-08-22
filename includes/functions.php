@@ -120,10 +120,10 @@ function make_jumpbox($action, $match_forum_id = 0)
         ->as('c')
         ->innerJoin(Tables::FORUMS_TABLE)
         ->as('f')
-        ->on('f.cat_id = c.cat_id')
+        ->on('[f.cat_id] = [c.cat_id]')
         ->groupBy('c.cat_id')
         ->groupBy('c.cat_title')
-        ->groupBy(' c.cat_order')
+        ->groupBy('c.cat_order')
         ->orderBy('c.cat_order')
         ->fetchAll();
 
@@ -305,7 +305,7 @@ function setupStyle($style)
 	} else {
         $theme = dibi::select('*')
             ->from(Tables::THEMES_TABLE)
-            ->where('themes_id = %i', (int)$style)
+            ->where('[themes_id] = %i', (int)$style)
             ->fetch();
 
         $cache->save($key, $theme);
@@ -318,12 +318,12 @@ function setupStyle($style)
 
 	    $default_theme = dibi::select('*')
             ->from(Tables::THEMES_TABLE)
-            ->where('themes_id = %i',(int) $board_config['default_style'])
+            ->where('[themes_id] = %i',(int) $board_config['default_style'])
             ->fetch();
 
 	    if ($default_theme) {
 	        dibi::update(Tables::USERS_TABLE, ['user_style' => (int) $board_config['default_style']])
-                ->where('user_style = %s', $style)
+                ->where('[user_style] = %s', $style)
                 ->execute();
         } else {
             message_die(CRITICAL_ERROR, "Could not get theme data for themes_id [$style]");
