@@ -447,6 +447,7 @@ switch ($mode_id) {
                 } else {
                     echo($lang['Nothing_to_do']);
                 }
+
                 lock_db(true);
                 
                 break;
