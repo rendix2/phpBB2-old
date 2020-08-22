@@ -109,8 +109,8 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
 		$rowCount = 0;
 
 		foreach ($actions as $action => $fileName) {
-			$rowColor = !($rowCount%2) ? $theme['td_color1'] : $theme['td_color2'];
-			$rowClass = !($rowCount%2) ? $theme['td_class1'] : $theme['td_class2'];
+			$rowColor = ($rowCount % 2) ? $theme['td_color1'] : $theme['td_color2'];
+			$rowClass = ($rowCount % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
 			$action = !empty($lang[$action]) ? $lang[$action] : str_replace('_', ' ', $action);
 
@@ -226,7 +226,7 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
 
     $registeredOnlineUsers = dibi::select('COUNT(*)')
         ->from(Tables::SESSIONS_TABLE)
-        ->where('session_logged_in = %i', 1)
+        ->where('[session_logged_in] = %i', 1)
         ->groupBy('session_user_id')
         ->fetchSingle();
 
@@ -234,22 +234,22 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
     $totalUnActiveUsers = dibi::select('COUNT(*)')
         ->as('total')
         ->from(Tables::USERS_TABLE)
-        ->where('user_active = %i', 0)
-        ->where('user_id != %i', ANONYMOUS)
+        ->where('[user_active] = %i', 0)
+        ->where('[user_id] != %i', ANONYMOUS)
         ->fetchSingle();
 
     $totalModerators = dibi::select('COUNT(user_id)')
         ->as('total')
         ->from(Tables::USERS_TABLE)
-        ->where('user_level = %i', MOD)
-        ->where('user_id != %i', ANONYMOUS)
+        ->where('[user_level] = %i', MOD)
+        ->where('[user_id] != %i', ANONYMOUS)
         ->fetchSingle();
 
     $totalAdministrators = dibi::select('COUNT(user_id)')
         ->as('total')
         ->from(Tables::USERS_TABLE)
-        ->where('user_level = %i', ADMIN)
-        ->where('user_id != %i', ANONYMOUS)
+        ->where('[user_level] = %i', ADMIN)
+        ->where('[user_id] != %i', ANONYMOUS)
         ->fetchSingle();
 
     $totalTemplates = dibi::select('COUNT(themes_id)')

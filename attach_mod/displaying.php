@@ -252,7 +252,7 @@ function privmsgs_attachment_image($privmsg_id)
 {
     global $attach_config, $userdata;
 
-    $auth = ($userdata['user_level'] === ADMIN) ? 1 : (int)$attach_config['allow_pm_attach'];
+    $auth = $userdata['user_level'] === ADMIN ? 1 : (int)$attach_config['allow_pm_attach'];
 
     if (!attachment_exists_db($privmsg_id, PAGE_PRIVMSGS) || !$auth || (int)$attach_config['disable_mod'] || $attach_config['topic_icon'] === '') {
         return '';

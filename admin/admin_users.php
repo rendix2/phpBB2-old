@@ -67,9 +67,9 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
                 ->as('ug')
                 ->innerJoin(Tables::GROUPS_TABLE)
                 ->as('g')
-                ->on('g.group_id = ug.group_id')
-                ->where('ug.user_id = %i', $user_id)
-                ->where('g.group_single_user = %i', 1)
+                ->on('[g.group_id] = [ug.group_id]')
+                ->where('[ug.user_id] = %i', $user_id)
+                ->where('[g.group_single_user] = %i', 1)
                 ->fetch();
 
             $update_data = [
@@ -78,35 +78,35 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
             ];
 
             dibi::update(Tables::POSTS_TABLE, $update_data)
-                ->where('poster_id = %i', $user_id)
+                ->where('[poster_id] = %i', $user_id)
                 ->execute();
 
             dibi::update(Tables::TOPICS_TABLE, ['topic_poster' => DELETED])
-                ->where('topic_poster = %i', $user_id)
+                ->where('[topic_poster] = %i', $user_id)
                 ->execute();
 
             dibi::update(Tables::VOTE_USERS_TABLE, ['vote_user_id' => DELETED])
-                ->where('vote_user_id = %i', $user_id)
+                ->where('[vote_user_id] = %i', $user_id)
                 ->execute();
 
             dibi::update(Tables::GROUPS_TABLE, ['group_moderator' => DELETED])
-                ->where('group_moderator = %i', $user_id)
+                ->where('[group_moderator] = %i', $user_id)
                 ->execute();
 
 			dibi::delete(Tables::USERS_TABLE)
-                ->where('user_id = %i', $user_id)
+                ->where('[user_id] = %i', $user_id)
                 ->execute();
 
             dibi::delete(Tables::USERS_GROUPS_TABLE)
-                ->where('user_id = %i', $user_id)
+                ->where('[user_id] = %i', $user_id)
                 ->execute();
 
             dibi::delete(Tables::GROUPS_TABLE)
-                ->where('group_id = %i', $row->group_id)
+                ->where('[group_id] = %i', $row->group_id)
                 ->execute();
 
             dibi::delete(Tables::AUTH_ACCESS_TABLE)
-                ->where('group_id = %i', $row->group_id)
+                ->where('[group_id] = %i', $row->group_id)
                 ->execute();
 
             dibi::delete(Tables::THANKS_TABLE)
@@ -114,37 +114,39 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
                 ->execute();
 
             dibi::delete(Tables::TOPICS_WATCH_TABLE)
-                ->where('user_id = %i', $user_id)
+                ->where('[user_id] = %i', $user_id)
                 ->execute();
 
             dibi::delete(Tables::BAN_LIST_TABLE)
-                ->where('ban_userid = %i', $user_id)
+                ->where('[ban_user_id] = %i', $user_id)
                 ->execute();
 
             dibi::delete(Tables::SESSIONS_TABLE)
-                ->where('session_user_id = %i', $user_id)
+                ->where('[session_user_id] = %i', $user_id)
                 ->execute();
 
             dibi::delete(Tables::SESSIONS_AUTO_LOGIN_KEYS_TABLE)
-                ->where('user_id = %i', $user_id)
+                ->where('[user_id] = %i', $user_id)
                 ->execute();
 
             $privmsgs_ids = dibi::select('privmsgs_id')
                 ->from(Tables::PRIVATE_MESSAGE_TABLE)
-                ->where('privmsgs_from_userid = %i OR privmsgs_to_userid = %i', $user_id, $user_id)
+                ->where('[privmsgs_from_userid] = %i OR [privmsgs_to_userid] = %i', $user_id, $user_id)
                 ->fetchPairs(null, 'privmsgs_id');
 
             if (count($privmsgs_ids)) {
                 dibi::delete(Tables::PRIVATE_MESSAGE_TABLE)
-                    ->where('privmsgs_id IN %in', $privmsgs_ids)
+                    ->where('[privmsgs_id] IN %in', $privmsgs_ids)
                     ->execute();
 
                 dibi::delete(Tables::PRIVATE_MESSAGE_TEXT_TABLE)
-                    ->where('privmsgs_text_id IN %in', $privmsgs_ids)
+                    ->where('[privmsgs_text_id] IN %in', $privmsgs_ids)
                     ->execute();
             }
 
-			$message = $lang['User_deleted'] . '<br /><br />' . sprintf($lang['Click_return_useradmin'], '<a href="' . Session::appendSid('admin_users.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+			$message  = $lang['User_deleted'] . '<br /><br />';
+            $message .= sprintf($lang['Click_return_useradmin'], '<a href="' . Session::appendSid('admin_users.php') . '">', '</a>') . '<br /><br />';
+            $message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		}
@@ -152,11 +154,11 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 		$username = !empty($_POST['username']) ? phpbb_clean_username($_POST['username']) : '';
 		$email = !empty($_POST['email']) ? trim(strip_tags(htmlspecialchars($_POST['email'] ) )) : '';
 
-		$password = !empty($_POST['password']) ? trim(strip_tags(htmlspecialchars($_POST['password'] ) )) : '';
-		$password_confirm = !empty($_POST['password_confirm']) ? trim(strip_tags(htmlspecialchars($_POST['password_confirm'] ) )) : '';
+		$password         = !empty($_POST['password'])         ? trim(strip_tags(htmlspecialchars($_POST['password'])))         : '';
+		$password_confirm = !empty($_POST['password_confirm']) ? trim(strip_tags(htmlspecialchars($_POST['password_confirm']))) : '';
 
-        $acp_password = ( !empty($_POST['acp_password']) ) ? trim(strip_tags(htmlspecialchars( $_POST['acp_password'] ) )) : '';
-        $acp_password_confirm = ( !empty($_POST['acp_password_confirm']) ) ? trim(strip_tags(htmlspecialchars( $_POST['acp_password_confirm'] ) )) : '';
+        $acp_password         = !empty($_POST['acp_password'])         ? trim(strip_tags(htmlspecialchars($_POST['acp_password'])))         : '';
+        $acp_password_confirm = !empty($_POST['acp_password_confirm']) ? trim(strip_tags(htmlspecialchars($_POST['acp_password_confirm']))) : '';
 
         $website    = !empty($_POST['website'])    ? trim($_POST['website'])    : '';
         $location   = !empty($_POST['location'])   ? trim($_POST['location'])   : '';
@@ -188,7 +190,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
             $user_avatar_local = isset($_POST['avatarlocal']) ? $_POST['avatarlocal'] : '';
         }
 
-		$user_avatar_category = ( isset($_POST['avatarcatname']) && $board_config['allow_avatar_local'] ) ? htmlspecialchars($_POST['avatarcatname']) : '' ;
+		$user_avatar_category = isset($_POST['avatarcatname']) && $board_config['allow_avatar_local'] ? htmlspecialchars($_POST['avatarcatname']) : '';
 
         $user_avatar_remoteurl = !empty($_POST['avatarremoteurl'])          ? trim($_POST['avatarremoteurl']) : '';
         $user_avatar_url       = !empty($_POST['avatarurl'])                ? trim($_POST['avatarurl'])       : '';
@@ -200,10 +202,10 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
         $user_avatar      = empty($user_avatar_loc) ? $this_userdata->user_avatar      : '';
         $user_avatar_type = empty($user_avatar_loc) ? $this_userdata->user_avatar_type : '';
 
-        $user_status      = !empty($_POST['user_status'])      ? (int)$_POST['user_status']      : 0;
-        $user_allowpm     = !empty($_POST['user_allowpm'])     ? (int)$_POST['user_allowpm']     : 0;
-        $user_rank        = !empty($_POST['user_rank'])        ? (int)$_POST['user_rank']        : 0;
-        $user_allowavatar = !empty($_POST['user_allowavatar']) ? (int)$_POST['user_allowavatar'] : 0;
+        $user_status      = !empty($_POST['user_status'])       ? (int)$_POST['user_status']       : 0;
+        $user_allowpm     = !empty($_POST['user_allowpm'])      ? (int)$_POST['user_allowpm']      : 0;
+        $user_rank        = !empty($_POST['user_rank'])         ? (int)$_POST['user_rank']         : 0;
+        $user_allowavatar = !empty($_POST['user_allow_avatar']) ? (int)$_POST['user_allow_avatar'] : 0;
 
         if (isset($_POST['avatargallery']) || isset($_POST['submitavatar']) || isset($_POST['cancelavatar'])) {
 			$username = stripslashes($username);
@@ -243,10 +245,10 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 
                 if ($result['error']) {
 					$error = true;
-					$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $result['error_msg'];
+					$error_msg .= (isset($error_msg) ? '<br />' : '') . $result['error_msg'];
                 } elseif (mb_strtolower(str_replace("\\'", "''", $username)) === mb_strtolower($userdata['username'])) {
 					$error = true;
-					$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Username_taken'];
+					$error_msg .= (isset($error_msg) ? '<br />' : '') . $lang['Username_taken'];
 				}
 			}
 
@@ -261,7 +263,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
         if ($board_config['complex_acp_pw'] && !empty($acp_password)) {
             if (!empty($password) && $password === $acp_password) {
                 $error = true;
-                $error_msg .= ((isset($error_msg)) ? '<br />' : '') . $lang['ACP_Password_match_pw'];
+                $error_msg .= (isset($error_msg) ? '<br />' : '') . $lang['ACP_Password_match_pw'];
             } else {
                 $row = dibi::select('user_password')
                     ->from(Tables::USERS_TABLE)
@@ -274,7 +276,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 
                 if (password_verify($acp_password, $row->user_password)) {
                     $error = true;
-                    $error_msg .= ((isset($error_msg)) ? '<br />' : '') . $lang['ACP_Password_match_pw'];
+                    $error_msg .= (isset($error_msg) ? '<br />' : '') . $lang['ACP_Password_match_pw'];
                 }
             }
         }
@@ -310,10 +312,10 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 
             if ($password !== $password_confirm) {
                 $error = true;
-				$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Password_mismatch'];
+				$error_msg .= (isset($error_msg) ? '<br />' : '' ) . $lang['Password_mismatch'];
 			} elseif($passwordLength < USER_MIN_PASSWORD_LENGTH) {
                 $error = true;
-                $error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Password_short'];
+                $error_msg .= (isset($error_msg) ? '<br />' : '' ) . $lang['Password_short'];
             } elseif($passwordLength < USER_MAX_PASSWORD_LENGTH) {
                 $error = true;
                 $error_msg .= (isset($error_msg) ? '<br />' : '') . $lang['Password_long'];
@@ -322,7 +324,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 			}
         } elseif (($password && !$password_confirm) || (!$password && $password_confirm)) {
             $error = true;
-			$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['Password_mismatch'];
+			$error_msg .= (isset($error_msg) ? '<br />' : '' ) . $lang['Password_mismatch'];
         }
 
 		if ($signature !== '') {
@@ -386,7 +388,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 						preg_match("'image\/[x\-]*([a-z]+)'", $user_avatar_filetype, $user_avatar_filetype);
 						$user_avatar_filetype = $user_avatar_filetype[1];
 
-						switch( $user_avatar_filetype) {
+						switch ($user_avatar_filetype) {
 							case 'jpeg':
 							case 'pjpeg':
 							case 'jpg':
@@ -507,11 +509,9 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 
 										$avatar_filename = $user_id . $imgtype;
 
-										if ($this_userdata['user_avatar_type'] === USER_AVATAR_UPLOAD &&
-                                            $this_userdata['user_avatar'] !== '') {
+										if ($this_userdata['user_avatar_type'] === USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] !== '') {
 
 										    $path = $phpbb_root_path . $board_config['avatar_path'] . $sep . $this_userdata['user_avatar'];
-
 
 											if (file_exists(@realpath($path))) {
 												@unlink($path);
@@ -581,48 +581,48 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 		// Update entry in DB
 		//
         if (!$error) {
-		    $update_data = [
-                'user_email' => $email,
-                'user_website' => $website,
-                'user_occ'     => $occupation,
-                'user_from'    => $location,
-                'user_interests' => $interests,
-                'user_sig'       => $signature,
-                'user_attachsig' => $attachsig,
-                'user_sig_bbcode_uid' => $signature_bbcode_uid,
-                'user_allowsmile' => $allowsmilies,
-                'user_allowhtml'  => $allowhtml,
-                'user_allowavatar' => $user_allowavatar,
-                'user_allowbbcode' => $allowbbcode,
-                'user_allow_viewonline' => $allowviewonline,
-                'user_notify'           => $notifyreply,
-                'user_allow_pm'         => $user_allowpm,
-                'user_notify_pm'        => $notifypm,
-                'user_popup_pm'         => $popuppm,
-                'user_lang' => $user_lang,
-                'user_style' => $user_style,
-                'user_timezone' => $user_timezone,
-                'user_dateformat' => $user_dateformat,
-                'user_active' =>  $user_status,
-                'user_rank' => $user_rank,
+            $update_data = [
+                'user_email'             => $email,
+                'user_website'           => $website,
+                'user_occupation'        => $occupation,
+                'user_from'              => $location,
+                'user_interests'         => $interests,
+                'user_sig'               => $signature,
+                'user_attach_sig'        => $attachsig,
+                'user_sig_bbcode_uid'    => $signature_bbcode_uid,
+                'user_allow_smile'       => $allowsmilies,
+                'user_allow_html'        => $allowhtml,
+                'user_allow_avatar'      => $user_allowavatar,
+                'user_allow_bbcode'      => $allowbbcode,
+                'user_allow_view_online' => $allowviewonline,
+                'user_notify'            => $notifyreply,
+                'user_allow_pm'          => $user_allowpm,
+                'user_notify_pm'         => $notifypm,
+                'user_popup_pm'          => $popuppm,
+                'user_lang'              => $user_lang,
+                'user_style'             => $user_style,
+                'user_timezone'          => $user_timezone,
+                'user_dateformat'        => $user_dateformat,
+                'user_active'            => $user_status,
+                'user_rank'              => $user_rank,
             ];
 
 		    $update_data = array_merge($update_data, $username_sql, $passwd_sql, $avatar_sql);
 
 		    $result = dibi::update(Tables::USERS_TABLE, $update_data)
-                ->where('user_id = %i', $user_id)
+                ->where('[user_id] = %i', $user_id)
                 ->execute();
 
             if (isset($rename_user)) {
                 dibi::update(Tables::GROUPS_TABLE, ['group_name' => $rename_user])
-                    ->where('group_name = %s', $this_userdata['username'])
+                    ->where('[group_name] = %s', $this_userdata['username'])
                     ->execute();
             }
 
             // Delete user session, to prevent the user navigating the forum (if logged in) when disabled
             if (!$user_status) {
                 dibi::delete(Tables::SESSIONS_TABLE)
-                    ->where('session_user_id = %i', $user_id)
+                    ->where('[session_user_id] = %i', $user_id)
                     ->execute();
             }
 
@@ -632,8 +632,9 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
                 Session::resetKeys($user_id, $user_ip);
             }
 
-            $message = $lang['Admin_user_updated'];
-			$message .= '<br /><br />' . sprintf($lang['Click_return_useradmin'], '<a href="' . Session::appendSid('admin_users.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+            $message  = $lang['Admin_user_updated'] . '<br /><br />';
+			$message .= sprintf($lang['Click_return_useradmin'], '<a href="' . Session::appendSid('admin_users.php') . '">', '</a>') . '<br /><br />';
+			$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		} else {
@@ -683,39 +684,39 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
         $acp_password = '';
         $acp_password_confirm = '';
 
-		$website = $this_userdata->user_website;
-		$location = $this_userdata->user_from;
-		$occupation = $this_userdata->user_occ;
-		$interests = $this_userdata->user_interests;
+        $website    = $this_userdata->user_website;
+        $location   = $this_userdata->user_from;
+        $occupation = $this_userdata->user_occupation;
+        $interests  = $this_userdata->user_interests;
 
-		$signature = ($this_userdata->user_sig_bbcode_uid !== '') ? preg_replace('#:' . $this_userdata->user_sig_bbcode_uid . '#si', '', $this_userdata->user_sig) : $this_userdata->user_sig;
+		$signature = $this_userdata->user_sig_bbcode_uid !== '' ? preg_replace('#:' . $this_userdata->user_sig_bbcode_uid . '#si', '', $this_userdata->user_sig) : $this_userdata->user_sig;
 		$signature = preg_replace(PostHelper::$htmlEntitiesMatch, PostHelper::$htmlEntitiesReplace, $signature);
 
-		$notifypm = $this_userdata->user_notify_pm;
-		$popuppm = $this_userdata->user_popup_pm;
-		$notifyreply = $this_userdata->user_notify;
-		$attachsig = $this_userdata->user_attachsig;
-		$allowhtml = $this_userdata->user_allowhtml;
-		$allowbbcode = $this_userdata->user_allowbbcode;
-		$allowsmilies = $this_userdata->user_allowsmile;
-		$allowviewonline = $this_userdata->user_allow_viewonline;
+        $notifypm        = $this_userdata->user_notify_pm;
+        $popuppm         = $this_userdata->user_popup_pm;
+        $notifyreply     = $this_userdata->user_notify;
+        $attachsig       = $this_userdata->user_attach_sig;
+        $allowhtml       = $this_userdata->user_allow_html;
+        $allowbbcode     = $this_userdata->user_allow_bbcode;
+        $allowsmilies    = $this_userdata->user_allow_smile;
+        $allowviewonline = $this_userdata->user_allow_view_online;
 
-		$user_avatar = $this_userdata->user_avatar;
-		$user_avatar_type = $this_userdata->user_avatar_type;
-		$user_style = $this_userdata->user_style;
-		$user_lang = $this_userdata->user_lang;
-		$user_timezone = $this_userdata->user_timezone;
-		$user_dateformat = htmlspecialchars($this_userdata->user_dateformat);
-		
-		$user_status = $this_userdata->user_active;
-		$user_allowavatar = $this_userdata->user_allowavatar;
-		$user_allowpm = $this_userdata->user_allow_pm;
+        $user_avatar      = $this_userdata->user_avatar;
+        $user_avatar_type = $this_userdata->user_avatar_type;
+        $user_style       = $this_userdata->user_style;
+        $user_lang        = $this_userdata->user_lang;
+        $user_timezone    = $this_userdata->user_timezone;
+        $user_dateformat  = htmlspecialchars($this_userdata->user_dateformat);
+
+        $user_status      = $this_userdata->user_active;
+        $user_allowavatar = $this_userdata->user_allow_avatar;
+        $user_allowpm     = $this_userdata->user_allow_pm;
 		
 		$COPPA = false;
 
-		$html_status    = $this_userdata->user_allowhtml   ? $lang['HTML_is_ON']     : $lang['HTML_is_OFF'];
-		$bbcode_status  = $this_userdata->user_allowbbcode ? $lang['BBCode_is_ON']   : $lang['BBCode_is_OFF'];
-		$smilies_status = $this_userdata->user_allowsmile  ? $lang['Smilies_are_ON'] : $lang['Smilies_are_OFF'];
+		$html_status    = $this_userdata->user_allow_html   ? $lang['HTML_is_ON']     : $lang['HTML_is_OFF'];
+		$bbcode_status  = $this_userdata->user_allow_bbcode ? $lang['BBCode_is_ON']   : $lang['BBCode_is_OFF'];
+		$smilies_status = $this_userdata->user_allow_smile  ? $lang['Smilies_are_ON'] : $lang['Smilies_are_OFF'];
 	}
 
 	if (isset($_POST['avatargallery']) && !$error) {
@@ -753,7 +754,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
 
 		$ranks = dibi::select('*')
             ->from(Tables::RANKS_TABLE)
-            ->where('rank_special = %i', 1)
+            ->where('[rank_special] = %i', 1)
             ->orderBy('rank_title')
             ->fetchAll();
 
@@ -820,7 +821,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
                 'L_ACP_PASSWORD' => $lang['ACP_password'],
                 'L_ACP_PASSWORD_CONFIRM' => $lang['ACP_password_confirm'],
                 'L_ACP_PASSWORD_EXPLAIN' => $lang['ACP_password_explain'],
-                'L_ACP_PASSWORD_COMPLEX' => ($board_config['complex_acp_pw']) ? $lang['ACP_password_complex'] : '',
+                'L_ACP_PASSWORD_COMPLEX' => $board_config['complex_acp_pw'] ? $lang['ACP_password_complex'] : '',
                 'L_SUBMIT' => $lang['Submit'],
                 'L_RESET' => $lang['Reset'],
                 'L_WEBSITE' => $lang['Website'],
@@ -900,9 +901,7 @@ if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset(
     }
 
     $template->pparse('body');
-}
-else
-{
+} else {
 	//
 	// Default user selection box
 	//
@@ -921,8 +920,8 @@ else
             'S_USER_ACTION' => Session::appendSid('admin_users.php'),
         ]
     );
-    $template->pparse('body');
 
+    $template->pparse('body');
 }
 
 require_once '.' . $sep . 'page_footer_admin.php';

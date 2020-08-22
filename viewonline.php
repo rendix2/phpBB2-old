@@ -68,7 +68,7 @@ $isAuth = Auth::authorize(Auth::AUTH_VIEW, Auth::AUTH_ALL, $userdata);
 //
 // Get user list
 //
-$columns = ['u.user_id', 'u.username', 'u.user_allow_viewonline', 'u.user_level', 's.session_logged_in', 's.session_time', 's.session_page', 's.session_ip'];
+$columns = ['u.user_id', 'u.username', 'u.user_allow_view_online', 'u.user_level', 's.session_logged_in', 's.session_time', 's.session_page', 's.session_ip'];
 
 $userTimeZone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
 
@@ -81,8 +81,8 @@ $rows = dibi::select($columns)
     ->as('u')
     ->innerJoin(Tables::SESSIONS_TABLE)
     ->as('s')
-    ->on('u.user_id = s.session_user_id')
-    ->where('s.session_time >= %i', $time->getTimestamp())
+    ->on('[u.user_id] = [s.session_user_id]')
+    ->where('[s.session_time] >= %i', $time->getTimestamp())
     ->orderBy('u.username', dibi::ASC)
     ->orderBy('s.session_ip', dibi::ASC)
     ->fetchAll();
@@ -106,7 +106,7 @@ foreach ($rows as $row) {
         if ($userId !== $previousUserId) {
 			$userName = $row->username;
 
-            if ($row->user_allow_viewonline) {
+            if ($row->user_allow_view_online) {
                 $viewOnline = true;
                 $registeredUsers++;
             } else {
@@ -194,8 +194,8 @@ foreach ($rows as $row) {
 			$location    = $forums[$row->session_page];
 		}
 
-		$rowColor = ( $$whichCounter % 2 ) ? $theme['td_color1'] : $theme['td_color2'];
-		$rowClass = ( $$whichCounter % 2 ) ? $theme['td_class1'] : $theme['td_class2'];
+		$rowColor = ($$whichCounter % 2) ? $theme['td_color1'] : $theme['td_color2'];
+		$rowClass = ($$whichCounter % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
         $template->assignBlockVars((string)$whichRow,
             [

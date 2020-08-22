@@ -54,7 +54,7 @@ function topic_review($topic_id, $is_inline_review)
             'f.auth_delete',
             'f.auth_sticky',
             'f.auth_announce',
-            'f.auth_pollcreate',
+            'f.auth_poll_create',
             'f.auth_vote',
             'f.auth_attachments',
             'f.auth_download',
@@ -69,8 +69,8 @@ function topic_review($topic_id, $is_inline_review)
             ->as('t')
             ->innerJoin(Tables::FORUMS_TABLE)
             ->as('f')
-            ->on('f.forum_id = t.forum_id')
-            ->where('t.topic_id = %i', $topic_id)
+            ->on('[f.forum_id] = [t.forum_id]')
+            ->where('[t.topic_id] = %i', $topic_id)
             ->fetch();
 
         if (!$forum) {
@@ -115,7 +115,7 @@ function topic_review($topic_id, $is_inline_review)
 
 		$page_title = $lang['Topic_review'] . ' - ' . $forum->topic_title;
 
-        PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+        PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $page_title, $gen_simple_header);
 
         $template->setFileNames(['reviewbody' => 'posting_topic_review.tpl']);
     }
@@ -128,11 +128,11 @@ function topic_review($topic_id, $is_inline_review)
         ->as('p')
         ->innerJoin(Tables::USERS_TABLE)
         ->as('u')
-        ->on('p.poster_id = u.user_id')
+        ->on('[p.poster_id] = [u.user_id]')
         ->innerJoin(Tables::POSTS_TEXT_TABLE)
         ->as('pt')
-        ->on('p.post_id = pt.post_id')
-        ->where('p.topic_id = %i', $topic_id)
+        ->on('[p.post_id] = [pt.post_id]')
+        ->where('[p.topic_id] = %i', $topic_id)
         ->orderBy('p.post_time', dibi::DESC)
         ->limit($board_config['posts_per_page'])
         ->fetchAll();
@@ -190,8 +190,8 @@ function topic_review($topic_id, $is_inline_review)
 			// Again this will be handled by the templating
 			// code at some point
 			//
-			$rowColor = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-			$rowClass = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+			$rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+			$rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
             $template->assignBlockVars('postrow',
                 [

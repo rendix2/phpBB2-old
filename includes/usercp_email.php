@@ -42,7 +42,7 @@ if (!$userdata['session_logged_in']) {
 
 $user = dibi::select(['username', 'user_email', 'user_lang'])
     ->from(Tables::USERS_TABLE)
-    ->where('user_id = %i', $user_id)
+    ->where('[user_id] = %i', $user_id)
     ->fetch();
 
 if (!$user) {
@@ -51,7 +51,7 @@ if (!$user) {
 
 $sep = DIRECTORY_SEPARATOR;
 
-if (time() - $userdata['user_emailtime'] < $board_config['flood_interval']) {
+if (time() - $userdata['user_email_time'] < $board_config['flood_interval']) {
     message_die(GENERAL_MESSAGE, $lang['Flood_email_limit']);
 }
 
@@ -73,7 +73,7 @@ if (isset($_POST['submit'])) {
     }
 
     if (!$error) {
-        $result = dibi::update(Tables::USERS_TABLE, ['user_emailtime' => time()])
+        $result = dibi::update(Tables::USERS_TABLE, ['user_email_time' => time()])
             ->where('[user_id] = %i', $userdata['user_id'])
             ->execute();
 
@@ -115,7 +115,8 @@ if (isset($_POST['submit'])) {
             ]
         );
 
-        $message = $lang['Email_sent'] . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
+        $message  = $lang['Email_sent'] . '<br /><br />';
+        $message .= sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
         message_die(GENERAL_MESSAGE, $message);
     }
@@ -123,7 +124,7 @@ if (isset($_POST['submit'])) {
 
 PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $lang['Send_email_msg'], $gen_simple_header);
 
-$template->setFileNames(['body' => 'profile_send_email.latte']);
+$template->setFileNames(['body' => 'profile_send_email.tpl']);
 
 make_jumpbox('viewforum.php');
 

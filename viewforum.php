@@ -117,7 +117,7 @@ if ($markRead === 'topics') {
         $lastPost = dibi::select('MAX(post_time)')
             ->as('last_post')
             ->from(Tables::POSTS_TABLE)
-            ->where('forum_id = %i', $forumId)
+            ->where('[forum_id] = %i', $forumId)
             ->fetchSingle();
 
 		if ($lastPost) {
@@ -129,7 +129,7 @@ if ($markRead === 'topics') {
                 unset($trackingForums[key($trackingForums)]);
             }
 
-            if ($lastPost > $userdata['user_lastvisit']) {
+            if ($lastPost > $userdata['user_last_visit']) {
                 $trackingForums[$forumId] = time();
 
 				setcookie(
@@ -150,7 +150,9 @@ if ($markRead === 'topics') {
         );
     }
 
-    $message = $lang['Topics_marked_read'] . '<br /><br />' . sprintf($lang['Click_return_forum'], '<a href="' . Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forumId") . '">', '</a> ');
+    $message  = $lang['Topics_marked_read'] . '<br /><br />';
+    $message .= sprintf($lang['Click_return_forum'], '<a href="' . Session::appendSid('viewforum.php?' . POST_FORUM_URL . "=$forumId") . '">', '</a> ');
+
 	message_die(GENERAL_MESSAGE, $message);
 }
 //
@@ -182,16 +184,16 @@ $userModerators = dibi::select('u.user_id, u.username')
     ->as('aa')
     ->innerJoin(Tables::USERS_GROUPS_TABLE)
     ->as('ug')
-    ->on('ug.group_id = aa.group_id')
+    ->on('[ug.group_id] = [aa.group_id]')
     ->innerJoin(Tables::GROUPS_TABLE)
     ->as('g')
-    ->on('g.group_id = aa.group_id')
+    ->on('[g.group_id] = [aa.group_id]')
     ->innerJoin(Tables::USERS_TABLE)
     ->as('u')
-    ->on('u.user_id = ug.user_id')
-    ->where('aa.forum_id = %i', $forumId)
-    ->where('aa.auth_mod = %i', 1)
-    ->where('g.group_single_user = %i', 1)
+    ->on('[u.user_id] = [ug.user_id]')
+    ->where('[aa.forum_id] = %i', $forumId)
+    ->where('[aa.auth_mod] = %i', 1)
+    ->where('[g.group_single_user] = %i', 1)
     ->groupBy('u.user_id')
     ->groupBy('u.username')
     ->orderBy('u.user_id')
@@ -208,14 +210,14 @@ $groupModerators = dibi::select('g.group_id, g.group_name')
     ->as('aa')
     ->innerJoin(Tables::USERS_GROUPS_TABLE)
     ->as('ug')
-    ->on('ug.group_id = aa.group_id')
+    ->on('[ug.group_id] = [aa.group_id]')
     ->innerJoin(Tables::GROUPS_TABLE)
     ->as('g')
-    ->on('g.group_id = aa.group_id')
-    ->where('aa.forum_id = %i', $forumId)
-    ->where('aa.auth_mod = %i', 1)
-    ->where('g.group_single_user = %i', 0)
-    ->where('g.group_type <> %i', GROUP_HIDDEN)
+    ->on('[g.group_id] = [aa.group_id]')
+    ->where('[aa.forum_id] = %i', $forumId)
+    ->where('[aa.auth_mod] = %i', 1)
+    ->where('[g.group_single_user] = %i', 0)
+    ->where('[g.group_type] <> %i', GROUP_HIDDEN)
     ->groupBy('g.group_id')
     ->groupBy('g.group_name')
     ->orderBy('g.group_id')
@@ -236,7 +238,6 @@ unset($moderators);
 // then get it's value, find the number of topics with dates newer than it (to properly
 // handle pagination) and alter the main query
 //
-
 if (!empty($_POST['topicdays']) || !empty($_GET['topicdays'])) {
 	$topicDays     = !empty($_POST['topicdays'])       ? (int)$_POST['topicdays']   : (int)$_GET['topicdays'];
     $user_timezone = isset($userdata['user_timezone']) ? $userdata['user_timezone'] : $board_config['board_timezone'];
@@ -252,9 +253,9 @@ if (!empty($_POST['topicdays']) || !empty($_GET['topicdays'])) {
         ->as('t')
         ->innerJoin(Tables::POSTS_TABLE)
         ->as('p')
-        ->on('p.post_id = t.topic_last_post_id')
-        ->where('t.forum_id = %i', $forumId)
-        ->where('p.post_time >= %i', $minTopicTime)
+        ->on('[p.post_id] = [t.topic_last_post_id]')
+        ->where('[t.forum_id] = %i', $forumId)
+        ->where('[p.post_time] >= %i', $minTopicTime)
         ->fetchSingle();
 
 	$topicsCount     = $forumTopics ? $forumTopics : 1;
@@ -286,15 +287,15 @@ $announcementTopics = dibi::select(['t.*', 'u.username', 'u.user_id'])
     ->as('t')
     ->innerJoin(Tables::USERS_TABLE)
     ->as('u')
-    ->on('t.topic_poster = u.user_id')
+    ->on('[t.topic_poster] = [u.user_id]')
     ->innerJoin(Tables::POSTS_TABLE)
     ->as('p')
-    ->on('p.post_id = t.topic_last_post_id')
+    ->on('[p.post_id] = [t.topic_last_post_id]')
     ->innerJoin(Tables::USERS_TABLE)
     ->as('u2')
-    ->on('p.poster_id = u2.user_id')
-    ->where('t.forum_id = %i', $forumId)
-    ->where('t.topic_type = %i', POST_ANNOUNCE)
+    ->on('[p.poster_id] = [u2.user_id]')
+    ->where('[t.forum_id] = %i', $forumId)
+    ->where('[t.topic_type] = %i', POST_ANNOUNCE)
     ->orderBy('t.topic_last_post_id', dibi::DESC)
     ->fetchAll();
 
@@ -317,25 +318,21 @@ $basicTopics = dibi::select(['t.*', 'u.username', 'u.user_id'])
     ->as('t')
     ->innerJoin(Tables::USERS_TABLE)
     ->as('u')
-    ->on('t.topic_poster = u.user_id')
-
+    ->on('[t.topic_poster] = [u.user_id]')
     ->innerJoin(Tables::POSTS_TABLE)
     ->as('p')
-    ->on('p.post_id = t.topic_first_post_id')
-
+    ->on('[p.post_id] = [t.topic_first_post_id]')
     ->innerJoin(Tables::POSTS_TABLE)
     ->as('p2')
-    ->on('p2.post_id = t.topic_last_post_id')
-
+    ->on('[p2.post_id] = [t.topic_last_post_id]')
     ->innerJoin(Tables::USERS_TABLE)
     ->as('u2')
-    ->on('u2.user_id = p2.poster_id')
-
-    ->where('t.forum_id = %i', $forumId)
-    ->where('t.topic_type <> %i', POST_ANNOUNCE);
+    ->on('[u2.user_id] = [p2.poster_id]')
+    ->where('[t.forum_id] = %i', $forumId)
+    ->where('[t.topic_type] <> %i', POST_ANNOUNCE);
 
     if ($limitTopicsTime) {
-        $basicTopics->where('p.post_time >= %i', $minTopicTime);
+        $basicTopics->where('[p.post_time] >= %i', $minTopicTime);
     }
 
     $basicTopics = $basicTopics->orderBy('t.topic_type', dibi::DESC)
@@ -378,13 +375,19 @@ $template->assignVars(
 //
 // User authorisation levels output
 //
-$s_auth_can  = ( $is_auth['auth_post']   ? $lang['Rules_post_can']   : $lang['Rules_post_cannot'] )   . '<br />';
-$s_auth_can .= ( $is_auth['auth_reply']  ? $lang['Rules_reply_can']  : $lang['Rules_reply_cannot'] )  . '<br />';
-$s_auth_can .= ( $is_auth['auth_edit']   ? $lang['Rules_edit_can']   : $lang['Rules_edit_cannot'] )   . '<br />';
-$s_auth_can .= ( $is_auth['auth_delete'] ? $lang['Rules_delete_can'] : $lang['Rules_delete_cannot'] ) . '<br />';
-$s_auth_can .= ( $is_auth['auth_vote']   ? $lang['Rules_vote_can']   : $lang['Rules_vote_cannot'] )   . '<br />';
+$s_auth_can  = $is_auth['auth_post']   ? $lang['Rules_post_can']   : $lang['Rules_post_cannot']   . '<br />';
+$s_auth_can .= $is_auth['auth_reply']  ? $lang['Rules_reply_can']  : $lang['Rules_reply_cannot']  . '<br />';
+$s_auth_can .= $is_auth['auth_edit']   ? $lang['Rules_edit_can']   : $lang['Rules_edit_cannot']   . '<br />';
+$s_auth_can .= $is_auth['auth_delete'] ? $lang['Rules_delete_can'] : $lang['Rules_delete_cannot'] . '<br />';
+$s_auth_can .= $is_auth['auth_vote']   ? $lang['Rules_vote_can']   : $lang['Rules_vote_cannot']   . '<br />';
 
-attach_build_auth_levels($is_auth, $s_auth_can);
+if (!(bool)$attach_config['disable_mod']) {
+    // If you want to have the rules window link within the forum view too, comment out the two lines, and comment the third line
+    //	$rules_link = '(<a href="' . $phpbb_root_path . 'attach_rules.' . $phpEx . '?f=' . $forum_id . '" target="_blank">Rules</a>)';
+    //	$s_auth_can .= ( ( $is_auth['auth_attachments'] ) ? $rules_link . ' ' . $lang['Rules_attach_can'] : $lang['Rules_attach_cannot'] ) . '<br />';
+    $s_auth_can .= $is_auth['auth_attachments']  ? $lang['Rules_attach_can']   : $lang['Rules_attach_cannot']   . '<br />';
+    $s_auth_can .= $is_auth['auth_download']     ? $lang['Rules_download_can'] : $lang['Rules_download_cannot'] . '<br />';
+}
 
 if ($is_auth['auth_mod']) {
 	$s_auth_can .= sprintf($lang['Rules_moderate'], '<a href="modcp.php?' . POST_FORUM_URL . "=$forumId&amp;start=" . $start . '&amp;sid=' . $userdata['session_id'] . '">', '</a>');
@@ -503,7 +506,7 @@ if ($totalBaseTopics) {
 
 			$newest_post_img = '';
 
-			if ($userdata['session_logged_in'] && $topic->post_time > $userdata['user_lastvisit']) {
+			if ($userdata['session_logged_in'] && $topic->post_time > $userdata['user_last_visit']) {
                 if (!empty($trackingTopics) || !empty($trackingForums) || isset($_COOKIE[$forumAllCookieName])) {
                     $unreadTopics = true;
 
@@ -597,8 +600,8 @@ if ($totalBaseTopics) {
 
 		$last_post_url = '<a href="' . Session::appendSid('viewtopic.php?' . POST_POST_URL . '=' . $topic->topic_last_post_id) . '#' . $topic->topic_last_post_id . '"><img src="' . $images['icon_latest_reply'] . '" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" border="0" /></a>';
 		
-		$rowColor = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-		$rowClass = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+		$rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+		$rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
         $template->assignBlockVars('topicrow',
             [
@@ -646,7 +649,6 @@ if ($totalBaseTopics) {
     $template->assignVars(['L_NO_TOPICS' => $noTopicsMessage]);
 
     $template->assignBlockVars('switch_no_topics', []);
-
 }
 
 //

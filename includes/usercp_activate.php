@@ -25,22 +25,22 @@ if (!defined('IN_PHPBB')) {
     die('Hacking attempt');
 }
 
-$columns = ['user_active', 'user_id', 'username', 'user_email', 'user_newpasswd', 'user_lang', 'user_actkey'];
+$columns = ['user_active', 'user_id', 'username', 'user_email', 'user_new_password', 'user_lang', 'user_act_key'];
 
 $user = dibi::select($columns)
     ->from(Tables::USERS_TABLE)
-    ->where('user_id = %i', (int)$_GET[POST_USERS_URL])
+    ->where('[user_id] = %i', (int)$_GET[POST_USERS_URL])
     ->fetch();
 
 if (!$user) {
     message_die(GENERAL_MESSAGE, $lang['No_such_user']);
 }
 
-if (trim($user->user_actkey) !== '' && trim($user->user_actkey) !== trim($_GET['act_key'])) {
+if (trim($user->user_act_key) !== '' && trim($user->user_act_key) !== trim($_GET['act_key'])) {
     message_die(GENERAL_MESSAGE, $lang['Wrong_activation']);
 }
 
-if ($user->user_active && trim($user->user_actkey) === '') {
+if ($user->user_active && trim($user->user_act_key) === '') {
     $template->assignVars(
         ['META' => '<meta http-equiv="refresh" content="10;url=' . Session::appendSid('index.php') . '">']
     );
@@ -51,7 +51,7 @@ if ($user->user_active && trim($user->user_actkey) === '') {
 // we have done some basic checks
 // now we can active user
 
-if ((int)$board_config['require_activation'] === USER_ACTIVATION_ADMIN && $user->user_newpasswd === '') {
+if ((int)$board_config['require_activation'] === USER_ACTIVATION_ADMIN && $user->user_new_password === '') {
     if (!$userdata['session_logged_in']) {
         redirect(Session::appendSid('login.php?redirect=profile.php&mode=activate&' . POST_USERS_URL . '=' . $user->user_id . '&act_key=' . trim($_GET['act_key'])));
     } elseif ($userdata['user_level'] !== ADMIN) {
@@ -61,20 +61,20 @@ if ((int)$board_config['require_activation'] === USER_ACTIVATION_ADMIN && $user-
 
 $updateData = [
     'user_active' => 1,
-    'user_actkey' => ''
+    'user_act_key' => ''
 ];
 
 $updatePassword = false;
 
-if ($user->user_newpasswd !== '') {
+if ($user->user_new_password !== '') {
     $updatePassword = true;
 
-    $updateData['user_password']  = $user->user_newpasswd;
-    $updateData['user_newpasswd'] = '';
+    $updateData['user_password']  = $user->user_new_password;
+    $updateData['user_new_password'] = '';
 }
 
 dibi::update(Tables::USERS_TABLE, $updateData)
-    ->where('user_id = %i', $user->user_id)
+    ->where('[user_id] = %i', $user->user_id)
     ->execute();
 
 if (!$updatePassword && (int)$board_config['require_activation'] === USER_ACTIVATION_ADMIN) {
@@ -112,6 +112,7 @@ if (!$updatePassword && (int)$board_config['require_activation'] === USER_ACTIVA
     );
 
     $message = $updatePassword ? $lang['Password_activated'] : $lang['Account_active'];
+
     message_die(GENERAL_MESSAGE, $message);
 }
 

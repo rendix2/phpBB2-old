@@ -75,17 +75,18 @@ if (isset($_GET['view']) && empty($_GET[POST_POST_URL])) {
             }
 
             if ($sessionId) {
-			    $sessionPostId = dibi::select('p.post_id')
+                // TODO USE INNER JOINS
+                $sessionPostId = dibi::select('p.post_id')
                     ->from(Tables::POSTS_TABLE)
                     ->as('p')
-                    ->from(Tables::SESSIONS_TABLE)
-                    ->as('s')
-                    ->from(Tables::USERS_TABLE)
+                    ->innerJoin(Tables::USERS_TABLE)
                     ->as('u')
-                    ->where('s.session_id = %s', $sessionId)
-                    ->where('u.user_id = s.session_user_id')
-                    ->where('p.topic_id = %i', $topicId)
-                    ->where('p.post_time >= u.user_lastvisit')
+                    ->on('[p.post_time] >= [u.user_last_visit]')
+                    ->innerJoin(Tables::SESSIONS_TABLE)
+                    ->as('s')
+                    ->on('[u.user_id] = [s.session_user_id]')
+                    ->where('[s.session_id] = %s', $sessionId)
+                    ->where('[p.topic_id] = %i', $topicId)
                     ->orderBy('p.post_time', dibi::ASC)
                     ->fetch();
 
@@ -113,10 +114,10 @@ if (isset($_GET['view']) && empty($_GET[POST_POST_URL])) {
             ->as('t')
             ->innerJoin(Tables::TOPICS_TABLE)
             ->as('t2')
-            ->on('t.forum_id = t2.forum_id')
-            ->where('t2.topic_id = %i', $topicId)
-            ->where('t.topic_moved_id = %i', 0)
-            ->where('t.topic_last_post_id '. $sqlCondition . ' t2.topic_last_post_id')
+            ->on('[t.forum_id] = [t2.forum_id]')
+            ->where('[t2.topic_id] = %i', $topicId)
+            ->where('[t.topic_moved_id] = %i', 0)
+            ->where('[t.topic_last_post_id] '. $sqlCondition . ' [t2.topic_last_post_id]')
             ->orderBy('t.topic_last_post_id', $sqlOrdering)
             ->fetch();
 
@@ -136,11 +137,32 @@ if (isset($_GET['view']) && empty($_GET[POST_POST_URL])) {
 //
 
 if ($postId) {
-    $columns = ['t.topic_id', 't.topic_title', 't.topic_status', 't.topic_replies', 't.topic_time', 't.topic_type',
-                't.topic_vote', 't.topic_last_post_id', 'f.forum_name', 'f.forum_status', 'f.forum_id', 'f.auth_view',
-                'f.auth_read', 'f.auth_post', 'f.auth_reply', 'f.auth_edit', 'f.auth_delete', 'f.auth_sticky',
-                'f.auth_announce', 'f.auth_pollcreate', 'f.auth_vote', 'f.auth_attachments',
-                'f.auth_download', 't.topic_attachment', 'forum_thank_enable'
+    $columns = [
+        't.topic_id',
+        't.topic_title',
+        't.topic_status',
+        't.topic_replies',
+        't.topic_time',
+        't.topic_type',
+        't.topic_vote',
+        't.topic_last_post_id',
+        'f.forum_name',
+        'f.forum_status',
+        'f.forum_id',
+        'f.auth_view',
+        'f.auth_read',
+        'f.auth_post',
+        'f.auth_reply',
+        'f.auth_edit',
+        'f.auth_delete',
+        'f.auth_sticky',
+        'f.auth_announce',
+        'f.auth_poll_create',
+        'f.auth_vote',
+        'f.auth_attachments',
+        'f.auth_download',
+        't.topic_attachment',
+        'forum_thank_enable'
     ];
 
     $forum_topic_data = dibi::select($columns)
@@ -150,15 +172,15 @@ if ($postId) {
         ->as('t')
         ->innerJoin(Tables::FORUMS_TABLE)
         ->as('f')
-        ->on('f.forum_id = t.forum_id')
+        ->on('[f.forum_id] = [t.forum_id]')
         ->innerJoin(Tables::POSTS_TABLE)
         ->as('p')
-        ->on('t.topic_id = p.topic_id')
+        ->on('[t.topic_id] = [p.topic_id]')
         ->innerJoin(Tables::POSTS_TABLE)
         ->as('p2')
-        ->on('p2.topic_id = p.topic_id')
-        ->where('p.post_id = %i', $postId)
-        ->where('p2.post_id <= %i', $postId)
+        ->on('[p2.topic_id] = [p.topic_id]')
+        ->where('[p.post_id] = %i', $postId)
+        ->where('[p2.post_id] <= %i', $postId)
         ->groupBy('p.post_id')
         ->groupBy('t.topic_id')
         ->groupBy('t.topic_title')
@@ -179,17 +201,38 @@ if ($postId) {
         ->groupBy('f.auth_delete')
         ->groupBy('f.auth_sticky')
         ->groupBy('f.auth_announce')
-        ->groupBy('f.auth_pollcreate')
+        ->groupBy('f.auth_poll_create')
         ->groupBy('f.auth_vote')
         ->groupBy('f.auth_attachments')
         ->orderBy('p.post_id', dibi::ASC)
         ->fetch();
 } else {
-    $columns = ['t.topic_id', 't.topic_title', 't.topic_status', 't.topic_replies', 't.topic_time', 't.topic_type',
-                't.topic_vote', 't.topic_last_post_id', 'f.forum_name', 'f.forum_status', 'f.forum_id', 'f.auth_view',
-                'f.auth_read', 'f.auth_post', 'f.auth_reply', 'f.auth_edit', 'f.auth_delete', 'f.auth_sticky',
-                'f.auth_announce', 'f.auth_pollcreate', 'f.auth_vote', 'f.auth_attachments',
-                'f.auth_download', 'forum_thank_enable', 't.topic_attachment'
+    $columns = [
+        't.topic_id',
+        't.topic_title',
+        't.topic_status',
+        't.topic_replies',
+        't.topic_time',
+        't.topic_type',
+        't.topic_vote',
+        't.topic_last_post_id',
+        'f.forum_name',
+        'f.forum_status',
+        'f.forum_id',
+        'f.auth_view',
+        'f.auth_read',
+        'f.auth_post',
+        'f.auth_reply',
+        'f.auth_edit',
+        'f.auth_delete',
+        'f.auth_sticky',
+        'f.auth_announce',
+        'f.auth_poll_create',
+        'f.auth_vote',
+        'f.auth_attachments',
+        'f.auth_download',
+        'forum_thank_enable',
+        't.topic_attachment'
     ];
 
     $forum_topic_data = dibi::select($columns)
@@ -197,8 +240,8 @@ if ($postId) {
         ->as('t')
         ->innerJoin(Tables::FORUMS_TABLE)
         ->as('f')
-        ->on('f.forum_id = t.forum_id')
-        ->where('t.topic_id = %i', $topicId)
+        ->on('[f.forum_id] = [t.forum_id]')
+        ->where('[t.topic_id] = %i', $topicId)
         ->fetch();
 }
 
@@ -260,8 +303,8 @@ if ($userdata['session_logged_in']) {
 
 	$row = dibi::select('notify_status')
         ->from(Tables::TOPICS_WATCH_TABLE)
-        ->where('topic_id = %i', $topicId)
-        ->where('user_id = %i', $userdata['user_id'])
+        ->where('[topic_id] = %i', $topicId)
+        ->where('[user_id] = %i', $userdata['user_id'])
         ->fetch();
 
     if ($row) {
@@ -273,8 +316,8 @@ if ($userdata['session_logged_in']) {
 
 				dibi::delete(Tables::TOPICS_WATCH_TABLE)
                     ->setFlag($sqlPriority)
-                    ->where('topic_id = %i', $topicId)
-                    ->where('user_id = %i', $userdata['user_id'])
+                    ->where('[topic_id] = %i', $topicId)
+                    ->where('[user_id] = %i', $userdata['user_id'])
                     ->execute();
 
                 $userManager->updateByPrimary($userdata['user_id'], ['user_topic_watches%sql' => 'user_topic_watches - 1']);
@@ -286,7 +329,9 @@ if ($userdata['session_logged_in']) {
                 ]
             );
 
-            $message = $lang['No_longer_watching'] . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topicId&amp;start=$start") . '">', '</a>');
+            $message  = $lang['No_longer_watching'] . '<br /><br />';
+            $message .= sprintf($lang['Click_return_topic'], '<a href="' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topicId&amp;start=$start") . '">', '</a>');
+
 			message_die(GENERAL_MESSAGE, $message);
 		} else {
 			$isWatchingTopic = true;
@@ -296,8 +341,8 @@ if ($userdata['session_logged_in']) {
 
 				dibi::update(Tables::TOPICS_WATCH_TABLE, ['notify_status' => 0])
                     ->setFlag($sqlPriority)
-                    ->where('topic_id = %i', $topicId)
-                    ->where('user_id = %i', $userdata['user_id'])
+                    ->where('[topic_id] = %i', $topicId)
+                    ->where('[user_id] = %i', $userdata['user_id'])
                     ->execute();
 			}
 		}
@@ -327,17 +372,17 @@ if ($userdata['session_logged_in']) {
                 ]
             );
 
-            $message = $lang['You_are_watching'] . '<br /><br />' . sprintf($lang['Click_return_topic'], '<a href="' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topicId&amp;start=$start") . '">', '</a>');
+            $message  = $lang['You_are_watching'] . '<br /><br />';
+            $message .= sprintf($lang['Click_return_topic'], '<a href="' . Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topicId&amp;start=$start") . '">', '</a>');
+
 			message_die(GENERAL_MESSAGE, $message);
 		} else {
 			$isWatchingTopic = 0;
 		}
 	}
 } else {
-    if (isset($_GET['unwatch'])) {
-        if ($_GET['unwatch'] === 'topic') {
-			redirect(Session::appendSid('login.php?redirect=viewtopic.php&' . POST_TOPIC_URL . "=$topicId&unwatch=topic", true));
-		}
+    if (isset($_GET['unwatch']) && $_GET['unwatch'] === 'topic') {
+        redirect(Session::appendSid('login.php?redirect=viewtopic.php&' . POST_TOPIC_URL . "=$topicId&unwatch=topic", true));
 	} else {
 		$canWatchTopic   = 0;
 		$isWatchingTopic = 0;
@@ -367,9 +412,9 @@ if (!empty($_POST['postdays']) || !empty($_GET['postdays'])) {
         ->as('t')
         ->innerJoin(Tables::POSTS_TABLE)
         ->as('p')
-        ->on('p.topic_id = t.topic_id')
-        ->where('t.topic_id = %i', $topicId)
-        ->where('p.post_time >= %i', $time->getTimestamp())
+        ->on('[p.topic_id] = [t.topic_id]')
+        ->where('[t.topic_id] = %i', $topicId)
+        ->where('[p.post_time] >= %i', $time->getTimestamp())
         ->fetchSingle();
 
 	$limitPostsTime = true;
@@ -412,15 +457,15 @@ $columns = [
     'u.user_from',
     'u.user_website',
     'u.user_email',
-    'u.user_regdate',
+    'u.user_reg_date',
     'u.user_rank',
     'u.user_sig',
     'u.user_sig_bbcode_uid',
     'u.user_avatar',
     'u.user_avatar_type',
-    'u.user_allowavatar',
-    'u.user_allowsmile',
-    'u.user_allow_viewonline',
+    'u.user_allow_avatar',
+    'u.user_allow_smile',
+    'u.user_allow_view_online',
     'u.user_session_time',
     'p.*',
     'pt.post_text',
@@ -433,15 +478,15 @@ $posts = dibi::select($columns)
     ->as('p')
     ->innerJoin(Tables::USERS_TABLE)
     ->as('u')
-    ->on('u.user_id = p.poster_id')
+    ->on('[u.user_id] = [p.poster_id]')
     ->innerJoin(Tables::POSTS_TEXT_TABLE)
     ->as('pt')
-    ->on('pt.post_id = p.post_id')
-    ->where('p.topic_id = %i', $topicId);
+    ->on('[pt.post_id] = [p.post_id]')
+    ->where('[p.topic_id] = %i', $topicId);
 
 // todo check if time is added correctly
 if ($limitPostsTime) {
-    $posts->where('p.post_time >= %i', $time->getTimestamp());
+    $posts->where('[p.post_time] >= %i', $time->getTimestamp());
 }
 
 $posts = $posts
@@ -482,7 +527,7 @@ if ($resync) {
     $totalReplies = dibi::select('COUNT(post_id)')
         ->as('total')
         ->from(Tables::POSTS_TABLE)
-        ->where('topic_id = %i', $topicId)
+        ->where('[topic_id] = %i', $topicId)
         ->fetchSingle();
 }
 
@@ -524,6 +569,7 @@ if ($count_orig_word) {
 // Was a highlight request part of the URI?
 //
 $highLightMatch = $highLight = '';
+
 if (isset($_GET['highlight'])) {
 	// Split words and phrases
 	$words = explode(' ', trim(htmlspecialchars($_GET['highlight'])));
@@ -551,11 +597,14 @@ $viewPreviousTopicUrl = Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "
 $viewNextTopicUrl     = Session::appendSid('viewtopic.php?' . POST_TOPIC_URL . "=$topicId&amp;view=next");
 $thankTopicUrl        = Session::appendSid('posting.php?mode=thank&amp;' . POST_TOPIC_URL . "=$topicId");
 
-$replyImage = $forum_topic_data->forum_status === FORUM_LOCKED || $forum_topic_data->topic_status === TOPIC_LOCKED ? $images['reply_locked'] : $images['reply_new'];
-$replyAlt   = $forum_topic_data->forum_status === FORUM_LOCKED || $forum_topic_data->topic_status === TOPIC_LOCKED ? $lang['Topic_locked'] : $lang['Reply_to_topic'];
+$topicLocked = $forum_topic_data->topic_status === TOPIC_LOCKED;
+$forumLocked = $forum_topic_data->forum_status === FORUM_LOCKED;
 
-$postImage = $forum_topic_data->forum_status === FORUM_LOCKED ? $images['post_locked'] : $images['post_new'];
-$postAlt   = $forum_topic_data->forum_status === FORUM_LOCKED ? $lang['Forum_locked'] : $lang['Post_new_topic'];
+$replyImage = $forumLocked || $topicLocked ? $images['reply_locked'] : $images['reply_new'];
+$replyAlt   = $forumLocked || $topicLocked ? $lang['Topic_locked'] : $lang['Reply_to_topic'];
+
+$postImage = $forumLocked ? $images['post_locked'] : $images['post_new'];
+$postAlt   = $forumLocked ? $lang['Forum_locked'] : $lang['Post_new_topic'];
 
 $thankImage = $images['thanks'];
 $thankAlt   = $lang['thanks_alt'];
@@ -572,7 +621,7 @@ if ($userdata['session_logged_in']) {
     } elseif (!empty($trackingTopics[$topicId]) || !empty($trackingForums[$forumId])) {
         $topicLastRead = !empty($trackingTopics[$topicId]) ? $trackingTopics[$topicId] : $trackingForums[$forumId];
     } else {
-        $topicLastRead = $userdata['user_lastvisit'];
+        $topicLastRead = $userdata['user_last_visit'];
     }
 
     if (count($trackingTopics) >= 150 && empty($trackingTopics[$topicId])) {
@@ -608,13 +657,19 @@ PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, 
 //
 // User authorisation levels output
 //
-$s_auth_can  = ( $is_auth['auth_post']   ? $lang['Rules_post_can']   : $lang['Rules_post_cannot'] )   . '<br />';
-$s_auth_can .= ( $is_auth['auth_reply']  ? $lang['Rules_reply_can']  : $lang['Rules_reply_cannot'] )  . '<br />';
-$s_auth_can .= ( $is_auth['auth_edit']   ? $lang['Rules_edit_can']   : $lang['Rules_edit_cannot'] )   . '<br />';
-$s_auth_can .= ( $is_auth['auth_delete'] ? $lang['Rules_delete_can'] : $lang['Rules_delete_cannot'] ) . '<br />';
-$s_auth_can .= ( $is_auth['auth_vote']   ? $lang['Rules_vote_can']   : $lang['Rules_vote_cannot'] )   . '<br />';
+$s_auth_can  = $is_auth['auth_post']   ? $lang['Rules_post_can']   : $lang['Rules_post_cannot']   . '<br />';
+$s_auth_can .= $is_auth['auth_reply']  ? $lang['Rules_reply_can']  : $lang['Rules_reply_cannot']  . '<br />';
+$s_auth_can .= $is_auth['auth_edit']   ? $lang['Rules_edit_can']   : $lang['Rules_edit_cannot']   . '<br />';
+$s_auth_can .= $is_auth['auth_delete'] ? $lang['Rules_delete_can'] : $lang['Rules_delete_cannot'] . '<br />';
+$s_auth_can .= $is_auth['auth_vote']   ? $lang['Rules_vote_can']   : $lang['Rules_vote_cannot']   . '<br />';
 
-attach_build_auth_levels($is_auth, $s_auth_can);
+if (!(bool)$attach_config['disable_mod']) {
+    // If you want to have the rules window link within the forum view too, comment out the two lines, and comment the third line
+    //	$rules_link = '(<a href="' . $phpbb_root_path . 'attach_rules.' . $phpEx . '?f=' . $forum_id . '" target="_blank">Rules</a>)';
+    //	$s_auth_can .= ( ( $is_auth['auth_attachments'] ) ? $rules_link . ' ' . $lang['Rules_attach_can'] : $lang['Rules_attach_cannot'] ) . '<br />';
+    $s_auth_can .= $is_auth['auth_attachments']  ? $lang['Rules_attach_can']   : $lang['Rules_attach_cannot']   . '<br />';
+    $s_auth_can .= $is_auth['auth_download']     ? $lang['Rules_download_can'] : $lang['Rules_download_cannot'] . '<br />';
+}
 
 $topic_mod = '';
 
@@ -625,7 +680,7 @@ if ($is_auth['auth_mod']) {
 
 	$topic_mod .= '<a href="modcp.php?' . POST_TOPIC_URL . "=$topicId&amp;mode=move&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_move'] . '" alt="' . $lang['Move_topic'] . '" title="' . $lang['Move_topic'] . '" border="0" /></a>&nbsp;';
 
-	$topic_mod .= ( $forum_topic_data->topic_status === TOPIC_UNLOCKED ) ? '<a href="modcp.php?' . POST_TOPIC_URL . "=$topicId&amp;mode=lock&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_lock'] . '" alt="' . $lang['Lock_topic'] . '" title="' . $lang['Lock_topic'] . '" border="0" /></a>&nbsp;' : '<a href="modcp.php?' . POST_TOPIC_URL . "=$topicId&amp;mode=unlock&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_unlock'] . '" alt="' . $lang['Unlock_topic'] . '" title="' . $lang['Unlock_topic'] . '" border="0" /></a>&nbsp;';
+	$topic_mod .= $forum_topic_data->topic_status === TOPIC_UNLOCKED ? '<a href="modcp.php?' . POST_TOPIC_URL . "=$topicId&amp;mode=lock&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_lock'] . '" alt="' . $lang['Lock_topic'] . '" title="' . $lang['Lock_topic'] . '" border="0" /></a>&nbsp;' : '<a href="modcp.php?' . POST_TOPIC_URL . "=$topicId&amp;mode=unlock&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_unlock'] . '" alt="' . $lang['Unlock_topic'] . '" title="' . $lang['Unlock_topic'] . '" border="0" /></a>&nbsp;';
 
 	$topic_mod .= '<a href="modcp.php?' . POST_TOPIC_URL . "=$topicId&amp;mode=split&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_split'] . '" alt="' . $lang['Split_topic'] . '" title="' . $lang['Split_topic'] . '" border="0" /></a>&nbsp;';
 }
@@ -635,6 +690,7 @@ if ($is_auth['auth_mod']) {
 //
 $s_watching_topic = '';
 $s_watching_topic_img = '';
+
 if ($canWatchTopic) {
 	if ($isWatchingTopic) {
 		$s_watching_topic = '<a href="viewtopic.php?' . POST_TOPIC_URL . "=$topicId&amp;unwatch=topic&amp;start=$start&amp;sid=" . $userdata['session_id'] . '">' . $lang['Stop_watching_topic'] . '</a>';
@@ -723,8 +779,8 @@ if (!empty($forum_topic_data->topic_vote)) {
         ->as('vd')
         ->innerJoin(Tables::VOTE_RESULTS_TABLE)
         ->as('vr')
-        ->on('vr.vote_id = vd.vote_id')
-        ->where('vd.topic_id = %i', $topicId)
+        ->on('[vr.vote_id] = [vd.vote_id]')
+        ->where('[vd.topic_id] = %i', $topicId)
         ->orderBy('vr.vote_option_id', dibi::ASC)
         ->fetchAll();
 
@@ -739,8 +795,8 @@ if (!empty($forum_topic_data->topic_vote)) {
          */
         $userVoted = dibi::select('vote_id')
             ->from(Tables::VOTE_USERS_TABLE)
-            ->where('vote_id = %i', $voteId)
-            ->where('vote_user_id = %i', (int)$userdata['user_id'])
+            ->where('[vote_id] = %i', $voteId)
+            ->where('[vote_user_id] = %i', (int)$userdata['user_id'])
             ->fetch();
 
         if (isset($_GET['vote']) || isset($_POST['vote'])) {
@@ -752,7 +808,7 @@ if (!empty($forum_topic_data->topic_vote)) {
 
         $pollExpired = $votes[0]->vote_length && ($votes[0]->vote_start + $votes[0]->vote_length < time());
 
-        if ($userVoted || $viewResult || $pollExpired || !$is_auth['auth_vote'] || $forum_topic_data->topic_status === TOPIC_LOCKED) {
+        if ($userVoted || $viewResult || $pollExpired || !$is_auth['auth_vote'] || $topicLocked) {
             $template->setFileNames(['pollbox' => 'viewtopic_poll_result.tpl']);
 
             $voteResultsSum = 0;
@@ -846,7 +902,7 @@ init_display_post_attachments($forum_topic_data['topic_attachment']);
 // Update the topic view counter
 //
 dibi::update(Tables::TOPICS_TABLE, ['topic_views%sql' => 'topic_views + 1'])
-    ->where('topic_id = %i', $topicId)
+    ->where('[topic_id] = %i', $topicId)
     ->execute();
 
 // Begin Thanks Mod
@@ -895,11 +951,13 @@ if ($show_thanks === FORUM_THANKABLE) {
 
     // Create button switch
     if ($userdata['user_id'] !== $author->user_id && !$thanked) {
-        $template->assignBlockVars('thanks_button', [
-            'THANK_IMG' => $thankImage,
-            'U_THANK_TOPIC' => $thankTopicUrl,
-            'L_THANK_TOPIC' => $thankAlt
-        ]);
+        $template->assignBlockVars('thanks_button',
+            [
+                'THANK_IMG' => $thankImage,
+                'U_THANK_TOPIC' => $thankTopicUrl,
+                'L_THANK_TOPIC' => $thankAlt
+            ]
+        );
     }
 
 }
@@ -922,12 +980,12 @@ foreach ($posts as $i => $post) {
 
 	$posterFrom = $post->user_from && $post->user_id !== ANONYMOUS ? $lang['Location'] . ': ' . htmlspecialchars($post->user_from, ENT_QUOTES) : '';
 
-	$posterJoined = $post->user_id !== ANONYMOUS ? $lang['Joined'] . ': ' . create_date($lang['DATE_FORMAT'], $post->user_regdate, $board_config['board_timezone']) : '';
+	$posterJoined = $post->user_id !== ANONYMOUS ? $lang['Joined'] . ': ' . create_date($lang['DATE_FORMAT'], $post->user_reg_date, $board_config['board_timezone']) : '';
 
 	$posterAvatar = '';
 
-    if ($post->user_avatar_type && $posterId !== ANONYMOUS && $post->user_allowavatar) {
-		switch( $post->user_avatar_type) {
+    if ($post->user_avatar_type && $posterId !== ANONYMOUS && $post->user_allow_avatar) {
+		switch ($post->user_avatar_type) {
 			case USER_AVATAR_UPLOAD:
 				$posterAvatar = $board_config['allow_avatar_upload'] ? '<img src="' . $board_config['avatar_path'] . '/' . $post->user_avatar . '" alt="" border="0" />' : '';
 				break;
@@ -941,19 +999,19 @@ foreach ($posts as $i => $post) {
 	}
 
     // <!-- BEGIN Another Online/Offline indicator -->
-    if ((!$post->user_allow_viewonline && $userdata['user_level'] === ADMIN) || $post->user_allow_viewonline) {
+    if ((!$post->user_allow_view_online && $userdata['user_level'] === ADMIN) || $post->user_allow_view_online) {
         $expiry_time = time() - ONLINE_TIME_DIFF;
 
         if ($post->user_session_time >= $expiry_time) {
             $user_onlinestatus = '<img src="' . $images['Online'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" align="middle" />';
 
-            if (!$post->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+            if (!$post->user_allow_view_online && $userdata['user_level'] === ADMIN) {
                 $user_onlinestatus = '<img src="' . $images['Hidden_Admin'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" align="middle" />';
             }
         } else {
             $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
 
-            if (!$post->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+            if (!$post->user_allow_view_online && $userdata['user_level'] === ADMIN) {
                 $user_onlinestatus = '<img src="' . $images['Offline'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
             }
         }
@@ -969,7 +1027,7 @@ foreach ($posts as $i => $post) {
 	//
 	// Define the little post icon
 	//
-    if ($userdata['session_logged_in'] && $post->post_time > $userdata['user_lastvisit'] && $post->post_time > $topicLastRead) {
+    if ($userdata['session_logged_in'] && $post->post_time > $userdata['user_last_visit'] && $post->post_time > $topicLastRead) {
         $miniPostImage = $images['icon_minipost_new'];
         $miniPostAlt   = $lang['New_post'];
     } else {
@@ -983,7 +1041,8 @@ foreach ($posts as $i => $post) {
 	// Generate ranks, set them to empty string initially.
 	//
 	$posterRank = '';
-	$rankImage     = '';
+	$rankImage  = '';
+
     if ($post->user_id === ANONYMOUS) {
 	    // WHAT WAS THERE???????
 	} elseif ($post->user_rank) {
@@ -1100,7 +1159,7 @@ foreach ($posts as $i => $post) {
 	// If the board has HTML off but the post has HTML
 	// on then we process it, else leave it alone
 	//
-    if (!$board_config['allow_html'] || !$userdata['user_allowhtml']) {
+    if (!$board_config['allow_html'] || !$userdata['user_allow_html']) {
         if ($userSignature !== '') {
             $userSignature = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $userSignature);
         }
@@ -1131,7 +1190,7 @@ foreach ($posts as $i => $post) {
 	// Parse smilies
 	//
     if ($board_config['allow_smilies']) {
-        if ($post->user_allowsmile && $userSignature !== '') {
+        if ($post->user_allow_smile && $userSignature !== '') {
             $userSignature = smilies_pass($userSignature);
         }
 
@@ -1182,8 +1241,8 @@ foreach ($posts as $i => $post) {
 	// Again this will be handled by the templating
 	// code at some point
 	//
-	$rowColor = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-	$rowClass     = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+	$rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+	$rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
     $template->assignBlockVars('postrow',
         [

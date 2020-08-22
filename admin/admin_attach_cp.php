@@ -8,8 +8,6 @@
  *
  */
 
-/**
- */
 define('IN_PHPBB', true);
 
 $sep = DIRECTORY_SEPARATOR;
@@ -18,7 +16,6 @@ $sep = DIRECTORY_SEPARATOR;
 $phpbb_root_path = '.' . $sep . '..' . $sep;
 
 require_once 'pagestart.php';
-
 require_once $phpbb_root_path . 'attach_mod' . $sep . 'includes' . $sep . 'constants.php';
 
 if (!(int)$attach_config['allow_ftp_upload']) {
@@ -43,12 +40,12 @@ if (!isset($lang['Test_settings_successful'])) {
 // Init Variables
 $start = get_var('start', 0);
 $sort_order = get_var('order', 'ASC');
-$sort_order = ($sort_order === 'ASC') ? 'ASC' : 'DESC';
+$sort_order = $sort_order === 'ASC' ? 'ASC' : 'DESC';
 $mode = get_var('mode', '');
 $view = get_var('view', '');
-$uid = (isset($_POST['u_id'])) ? get_var('u_id', 0) : get_var('uid', 0);
 
-$view = (isset($_POST['search']) && $_POST['search']) ? 'attachments' : $view;
+$uid  = isset($_POST['u_id']) ? get_var('u_id', 0) : get_var('uid', 0);
+$view = isset($_POST['search']) && $_POST['search'] ? 'attachments' : $view;
 
 // process modes based on view
 if ($view === 'username') {
@@ -110,7 +107,7 @@ $view_types = [
 $select_view = '<select name="view">';
 
 foreach ($view_types as $value => $text) {
-    $selected = ($view === $value) ? ' selected="selected"' : '';
+    $selected = $view === $value ? ' selected="selected"' : '';
     $select_view .= '<option value="' . $value . '"' . $selected . '>' . $text . '</option>';
 }
 
@@ -120,7 +117,7 @@ if (count($mode_types) > 0) {
     $select_sort_mode = '<select name="mode">';
 
     foreach ($mode_types as $value => $text) {
-        $selected = ($mode === $value) ? ' selected="selected"' : '';
+        $selected = $mode === $value ? ' selected="selected"' : '';
         $select_sort_mode .= '<option value="' . $value . '"' . $selected . '>' . $text . '</option>';
     }
 
@@ -354,7 +351,6 @@ if ($view === 'search') {
     );
 }
 
-
 // Username
 if ($view === 'username') {
     $template->setFileNames(['body' => 'admin/attach_cp_user.tpl']);
@@ -371,7 +367,6 @@ if ($view === 'username') {
             'S_ORDER_SELECT' => $select_sort_order
         ]
     );
-
 
     // Get all Users with their respective total attachments amount
     $members = dibi::select(['u.username'])
@@ -391,10 +386,10 @@ if ($view === 'username') {
         $members = getOrderBy($members, $mode, $view, $start, $sort_order, $board_config);
     }
 
-    $members = $members->fetchAll();
-    $num_members = count($members);
+    $members      = $members->fetchAll();
+    $membersCount = count($members);
 
-    if ($num_members > 0) {
+    if ($membersCount > 0) {
         foreach ($members as $member) {
             // Get all attach_id's the specific user posted
             $attach_ids = dibi::select('attach_id')
@@ -421,14 +416,14 @@ if ($view === 'username') {
         }
 
         foreach ($members as $i => $member) {
-            $row_color = (!($i % 2)) ? $theme['td_color1'] : $theme['td_color2'];
-            $row_class = (!($i % 2)) ? $theme['td_class1'] : $theme['td_class2'];
+            $rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+            $rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
             $template->assignBlockVars('memberrow',
                 [
                     'ROW_NUMBER' => $i + ($_GET['start'] + 1),
-                    'ROW_COLOR' => '#' . $row_color,
-                    'ROW_CLASS' => $row_class,
+                    'ROW_COLOR' => '#' . $rowColor,
+                    'ROW_CLASS' => $rowClass,
                     'USERNAME' => $member->username,
                     'TOTAL_ATTACHMENTS' => $member->total_attachments,
                     'TOTAL_SIZE' => get_formatted_filesize($member->total_size),
@@ -448,7 +443,7 @@ if ($view === 'username') {
 
 // Attachments
 if ($view === 'attachments') {
-    $user_based = ($uid) ? true : false;
+    $user_based = $uid ? true : false;
     $search_based = isset($_POST['search']) && $_POST['search'];
 
     $hidden_fields = '';
@@ -556,8 +551,8 @@ if ($view === 'attachments') {
                 }
             }
 
-            $row_color = (!($i % 2)) ? $theme['td_color1'] : $theme['td_color2'];
-            $row_class = (!($i % 2)) ? $theme['td_class1'] : $theme['td_class2'];
+            $rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+            $rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
             // Is the Attachment assigned to more than one post ?
             // If it's not assigned to any post, it's an private message thingy. ;)
@@ -602,8 +597,8 @@ if ($view === 'attachments') {
             $template->assignBlockVars('attachrow',
                 [
                     'ROW_NUMBER' => $i + ($_GET['start'] + 1),
-                    'ROW_COLOR' => '#' . $row_color,
-                    'ROW_CLASS' => $row_class,
+                    'ROW_COLOR' => '#' . $rowColor,
+                    'ROW_CLASS' => $rowClass,
 
                     'FILENAME' => $attachment->real_filename,
                     'COMMENT' => $attachment->comment,
@@ -615,6 +610,7 @@ if ($view === 'attachments') {
 
                     'S_DELETE_BOX' => $delete_box,
                     'S_HIDDEN' => $hidden_field,
+
                     'U_VIEW_ATTACHMENT' => Session::appendSid($phpbb_root_path . 'download.php?id=' . $attachments[$i]['attach_id'])
                 ]
 //				'U_VIEW_POST' => ($attachments[$i]['post_id'] !== 0) ? Session::appendSid("../viewtopic." . $phpEx . "?" . POST_POST_URL . "=" . $attachments[$i]['post_id'] . "#" . $attachments[$i]['post_id']) : '')

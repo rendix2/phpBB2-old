@@ -47,8 +47,8 @@ if (!preg_match('/^[A-Za-z0-9]+$/', $confirmId)) {
 // Try and grab code for this id and session
 $code = dibi::select('code')
     ->from(Tables::CONFIRM_TABLE)
-    ->where('session_id = %s', $userdata['session_id'])
-    ->where('confirm_id = %s', $confirmId)
+    ->where('[session_id] = %s', $userdata['session_id'])
+    ->where('[confirm_id] = %s', $confirmId)
     ->fetchSingle();
 
 // If we have a row then grab data else create a new id

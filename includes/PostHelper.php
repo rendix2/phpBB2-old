@@ -234,9 +234,9 @@ class PostHelper
                 ->from(Tables::POSTS_TABLE);
 
             if ($userdata['user_id'] === ANONYMOUS) {
-                $maxPostTime->where('poster_ip = %s', $user_ip);
+                $maxPostTime->where('[poster_ip] = %s', $user_ip);
             } else {
-                $maxPostTime->where('poster_id = %i', $userdata['user_id']);
+                $maxPostTime->where('[poster_id] = %i', $userdata['user_id']);
             }
 
             $maxPostTime = $maxPostTime->fetchSingle();
@@ -276,7 +276,7 @@ class PostHelper
                 }
 
                 dibi::update(Tables::TOPICS_TABLE, $updateData)
-                    ->where('topic_id = %i', $topicId)
+                    ->where('[topic_id] = %i', $topicId)
                     ->execute();
             }
         }
@@ -296,7 +296,7 @@ class PostHelper
             }
 
             dibi::update(Tables::POSTS_TABLE, $updateData)
-                ->where('post_id = %i', $postId)
+                ->where('[post_id] = %i', $postId)
                 ->execute();
 
             $updateData = [
@@ -306,7 +306,7 @@ class PostHelper
             ];
 
             dibi::update(Tables::POSTS_TEXT_TABLE, $updateData)
-                ->where('post_id = %i', $postId)
+                ->where('[post_id] = %i', $postId)
                 ->execute();
         } else {
             $insertData = [
@@ -347,7 +347,7 @@ class PostHelper
                 ];
 
                 dibi::update(Tables::VOTE_DESC_TABLE, $updateData)
-                    ->where('topic_id = %i', $topicId)
+                    ->where('[topic_id] = %i', $topicId)
                     ->execute();
             } else {
                 $insertData = [
@@ -366,7 +366,7 @@ class PostHelper
             if ($mode === 'editpost' && $postData['has_poll']) {
                 $votes = dibi::select(['vote_option_id', 'vote_result'])
                     ->from(Tables::VOTE_RESULTS_TABLE)
-                    ->where('vote_id = %i', $pollId)
+                    ->where('[vote_id] = %i', $pollId)
                     ->orderBy('vote_option_id', dibi::ASC)
                     ->fetchPairs('vote_option_id', 'vote_result');
 
@@ -402,8 +402,8 @@ class PostHelper
                         ];
 
                         dibi::update(Tables::VOTE_RESULTS_TABLE, $updateData)
-                            ->where('vote_option_id = %i', $optionId)
-                            ->where('vote_id = %i', $pollId)
+                            ->where('[vote_option_id] = %i', $optionId)
+                            ->where('[vote_id] = %i', $pollId)
                             ->execute();
                     }
 
@@ -413,8 +413,8 @@ class PostHelper
 
             if (count($deleteOptionSql)) {
                 dibi::delete(Tables::VOTE_RESULTS_TABLE)
-                    ->where('vote_option_id IN %in', $deleteOptionSql)
-                    ->where('vote_id = %i', $pollId)
+                    ->where('[vote_option_id] IN %in', $deleteOptionSql)
+                    ->where('[vote_id] = %i', $pollId)
                     ->execute();
             }
         }
@@ -454,7 +454,7 @@ class PostHelper
                     $lastPostId = dibi::select('MAX(post_id)')
                         ->as('last_post_id')
                         ->from(Tables::POSTS_TABLE)
-                        ->where('topic_id = %i', $topicId)
+                        ->where('[topic_id] = %i', $topicId)
                         ->fetchSingle();
 
                     if ($lastPostId === false) {
@@ -468,7 +468,7 @@ class PostHelper
                     $lastPostId = dibi::select('MAX(post_id)')
                         ->as('last_post_id')
                         ->from(Tables::POSTS_TABLE)
-                        ->where('forum_id = %i', $forumId)
+                        ->where('[forum_id] = %i', $forumId)
                         ->fetchSingle();
 
                     if ($lastPostId) {
@@ -481,7 +481,7 @@ class PostHelper
                 $firstPostId = dibi::select('MIN(post_id)')
                     ->as('first_post_id')
                     ->from(Tables::POSTS_TABLE)
-                    ->where('topic_id = %i', $topicId)
+                    ->where('[topic_id] = %i', $topicId)
                     ->fetchSingle();
 
                 if ($firstPostId) {
@@ -511,25 +511,25 @@ class PostHelper
 
         if ($mode !== 'poll_delete') {
             dibi::update(Tables::FORUMS_TABLE, $forumUpdateSql)
-                ->where('forum_id = %i', $forumId)
+                ->where('[forum_id] = %i', $forumId)
                 ->execute();
         }
 
         if (count($topicUpdateSql)) {
             dibi::update(Tables::TOPICS_TABLE, $topicUpdateSql)
-                ->where('topic_id = %i', $topicId)
+                ->where('[topic_id] = %i', $topicId)
                 ->execute();
         }
 
         if ($mode !== 'poll_delete') {
             dibi::update(Tables::USERS_TABLE, ['user_posts%sql' => 'user_posts ' . $sign])
-                ->where('user_id = %i', $userId)
+                ->where('[user_id] = %i', $userId)
                 ->execute();
         }
 
         if ($mode === 'newtopic') {
             dibi::update(Tables::USERS_TABLE, ['user_topics%sql' => 'user_topics + 1'])
-                ->where('user_id = %i', $userId)
+                ->where('[user_id] = %i', $userId)
                 ->execute();
         }
     }
@@ -563,24 +563,24 @@ class PostHelper
 
         if ($mode !== 'poll_delete') {
             dibi::delete(Tables::POSTS_TABLE)
-                ->where('post_id = %i', $postId)
+                ->where('[post_id] = %i', $postId)
                 ->execute();
 
             dibi::delete(Tables::POSTS_TEXT_TABLE)
-                ->where('post_id = %i', $postId)
+                ->where('[post_id] = %i', $postId)
                 ->execute();
 
             if ($postData['last_post'] && $postData['first_post']) {
                 dibi::delete(Tables::TOPICS_TABLE)
-                    ->where('topic_id = %i OR topic_moved_id = %i', $topicId, $topicId)
+                    ->where('[topic_id] = %i OR [topic_moved_id] = %i', $topicId, $topicId)
                     ->execute();
 
                 dibi::delete(Tables::TOPICS_WATCH_TABLE)
-                    ->where('topic_id = %i', $topicId)
+                    ->where('[topic_id] = %i', $topicId)
                     ->execute();
 
                 dibi::update(Tables::USERS_TABLE, ['user_topics%sql' => 'user_topics - 1'])
-                    ->where('user_id = %i', $postData['poster_id'])
+                    ->where('[user_id] = %i', $postData['poster_id'])
                     ->execute();
 
                 $usersManager = $container->getService('UsersManager');
@@ -604,15 +604,15 @@ class PostHelper
 
         if ($mode === 'poll_delete' || ($mode === 'delete' && $postData['first_post'] && $postData['last_post']) && $postData['has_poll'] && $postData['edit_poll']) {
             dibi::delete(Tables::VOTE_DESC_TABLE)
-                ->where('topic_id = %i', $topicId)
+                ->where('[topic_id] = %i', $topicId)
                 ->execute();
 
             dibi::delete(Tables::VOTE_RESULTS_TABLE)
-                ->where('vote_id = %i', $pollId)
+                ->where('[vote_id] = %i', $pollId)
                 ->execute();
 
             dibi::delete(Tables::VOTE_USERS_TABLE)
-                ->where('vote_id = %i', $pollId)
+                ->where('[vote_id] = %i', $pollId)
                 ->execute();
         }
 
@@ -657,9 +657,9 @@ class PostHelper
         }
 
         if ($mode === 'reply') {
-            $userIds = dibi::select('ban_userid')
+            $userIds = dibi::select('ban_user_id')
                 ->from(Tables::BAN_LIST_TABLE)
-                ->fetchPairs(null, 'ban_userid');
+                ->fetchPairs(null, 'ban_user_id');
 
             $userNotId = array_merge([$userdata['user_id']], [ANONYMOUS], $userIds);
 
@@ -668,10 +668,10 @@ class PostHelper
                 ->as('tw')
                 ->innerJoin(Tables::USERS_TABLE)
                 ->as('u')
-                ->on('u.user_id = tw.user_id')
-                ->where('tw.topic_id = %i', $topicId)
-                ->where('tw.user_id NOT IN %in', $userNotId)
-                ->where('tw.notify_status = %i', TOPIC_WATCH_UN_NOTIFIED)
+                ->on('[u.user_id] = [tw.user_id]')
+                ->where('[tw.topic_id] = %i', $topicId)
+                ->where('[tw.user_id] NOT IN %in', $userNotId)
+                ->where('[tw.notify_status] = %i', TOPIC_WATCH_UN_NOTIFIED)
                 ->fetchAll();
 
             $updateWatchedSql = [];
@@ -752,22 +752,22 @@ class PostHelper
 
             if (count($updateWatchedSql)) {
                 dibi::update(Tables::TOPICS_WATCH_TABLE, ['notify_status' => TOPIC_WATCH_NOTIFIED])
-                    ->where('topic_id = %i', $topicId)
-                    ->where('user_id IN %in', $updateWatchedSql)
+                    ->where('[topic_id] = %i', $topicId)
+                    ->where('[user_id] IN %in', $updateWatchedSql)
                     ->execute();
             }
         }
 
         $topicWatch = dibi::select('topic_id')
             ->from(Tables::TOPICS_WATCH_TABLE)
-            ->where('topic_id = %i', $topicId)
-            ->where('user_id = %i', $userdata['user_id'])
+            ->where('[topic_id] = %i', $topicId)
+            ->where('[user_id] = %i', $userdata['user_id'])
             ->fetchSingle();
 
         if (!$notifyUser && $topicWatch) {
             dibi::delete(Tables::TOPICS_WATCH_TABLE)
-                ->where('topic_id = %i', $topicId)
-                ->where('user_id = %i', $userdata['user_id'])
+                ->where('[topic_id] = %i', $topicId)
+                ->where('[user_id] = %i', $userdata['user_id'])
                 ->execute();
         } elseif ($notifyUser && $topicWatch === false) {
             $insertData = [

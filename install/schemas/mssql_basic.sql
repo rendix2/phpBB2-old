@@ -97,7 +97,7 @@ SET IDENTITY_INSERT phpbb_categories OFF;
 /*
   -- Forums
 */
-INSERT INTO phpbb_forums (forum_id, cat_id, forum_name, forum_desc, forum_status, forum_order, forum_posts, forum_topics, forum_thanks, forum_last_post_id, prune_next, prune_enable, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_announce, auth_sticky, auth_pollcreate, auth_vote, auth_attachments) VALUES (1, 1, 'Test Forum 1', 'This is just a test forum, nothing special here.', '', 1, 1, 0, 1, 1, '', 1, '', '', 1, 1, 1, 1, 3, 3, 1, 1, 3);
+INSERT INTO phpbb_forums (forum_id, cat_id, forum_name, forum_desc, forum_status, forum_order, forum_posts, forum_topics, forum_thanks, forum_last_post_id, prune_next, prune_enable, auth_view, auth_read, auth_post, auth_reply, auth_edit, auth_delete, auth_announce, auth_sticky, auth_poll_create, auth_vote, auth_attachments) VALUES (1, 1, 'Test Forum 1', 'This is just a test forum, nothing special here.', '', 1, 1, 0, 1, 1, '', 1, '', '', 1, 1, 1, 1, 3, 3, 1, 1, 3);
 
 -- Languages
 INSERT INTO phpbb_languages (lang_name) VALUES('english');
@@ -107,8 +107,8 @@ INSERT INTO phpbb_languages (lang_name) VALUES('english');
   Default Admin --> username: admin
                     password: admin (change this or remove it once everything is working!)
 */
-INSERT INTO phpbb_users (user_id, username, user_level, user_regdate, user_password, user_email, user_website, user_occ, user_from, user_interests, user_sig, user_style, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_pm, user_notify_pm, user_allow_viewonline, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active) VALUES ( -1, 'Anonymous', 0, 0, '', '', '', '', '', '', '', NULL, 0, 0, 1, 1, 1, 0, 1, 1, NULL, '', '', 'Europe/Berlin', '', '', '', 0, 0);
-INSERT INTO phpbb_users (user_id, username, user_level, user_regdate, user_password, user_email, user_website, user_occ, user_from, user_interests, user_sig, user_style, user_posts, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_pm, user_notify_pm, user_popup_pm, user_allow_viewonline, user_rank, user_avatar, user_lang, user_timezone, user_dateformat, user_actkey, user_newpasswd, user_notify, user_active) VALUES ( 2, 'Admin', 1, 0, '21232f297a57a5a743894a0e4a801fc3', 'admin@yourdomain.com', '', '', '', '', '', 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, '', 'english', 'Europe/Berlin', 'd M Y h:i a', '', '', 0, 1);
+INSERT INTO phpbb_users (user_id, username, user_level, user_reg_date, user_password, user_email, user_website, user_occupation, user_from, user_interests, user_sig, user_style, user_posts, user_attach_sig, user_allow_smile, user_allow_html, user_allow_bbcode, user_allow_pm, user_notify_pm, user_allow_view_online, user_rank, user_avatar, user_lang, user_timezone, user_date_format, user_act_key, user_new_password, user_notify, user_active) VALUES ( -1, 'Anonymous', 0, 0, '', '', '', '', '', '', '', NULL, 0, 0, 1, 1, 1, 0, 1, 1, NULL, '', '', 'Europe/Berlin', '', '', '', 0, 0);
+INSERT INTO phpbb_users (user_id, username, user_level, user_reg_date, user_password, user_email, user_website, user_occupation, user_from, user_interests, user_sig, user_style, user_posts, user_attach_sig, user_allow_smile, user_allow_html, user_allow_bbcode, user_allow_pm, user_notify_pm, user_popup_pm, user_allow_view_online, user_rank, user_avatar, user_lang, user_timezone, user_date_format, user_act_key, user_new_password, user_notify, user_active) VALUES ( 2, 'Admin', 1, 0, '21232f297a57a5a743894a0e4a801fc3', 'admin@yourdomain.com', '', '', '', '', '', 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, '', 'english', 'Europe/Berlin', 'd M Y h:i a', '', '', 0, 1);
 
 
 /*

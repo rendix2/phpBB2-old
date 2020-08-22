@@ -68,7 +68,7 @@ class PageHelper
             $l_login_logout = $lang['Login'];
         }
 
-        $s_last_visit = $userData['session_logged_in'] ? create_date($boardConfig['default_dateformat'], $userData['user_lastvisit'], $boardConfig['board_timezone']) : '';
+        $s_last_visit = $userData['session_logged_in'] ? create_date($boardConfig['default_dateformat'], $userData['user_last_visit'], $boardConfig['board_timezone']) : '';
 
         //
         // Obtain number of new private messages
@@ -79,9 +79,9 @@ class PageHelper
                 $l_message_new = $userData['user_new_privmsg'] === 1 ? $lang['New_pm'] : $lang['New_pms'];
                 $l_privmsgs_text = sprintf($l_message_new, $userData['user_new_privmsg']);
 
-                if ($userData['user_last_privmsg'] > $userData['user_lastvisit']) {
-                    dibi::update(Tables::USERS_TABLE, ['user_last_privmsg' => $userData['user_lastvisit']])
-                        ->where('user_id = %i', $userData['user_id'])
+                if ($userData['user_last_privmsg'] > $userData['user_last_visit']) {
+                    dibi::update(Tables::USERS_TABLE, ['user_last_privmsg' => $userData['user_last_visit']])
+                        ->where('[user_id] = %i', $userData['user_id'])
                         ->execute();
 
                     $s_privmsg_new = 1;

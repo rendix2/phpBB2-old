@@ -41,7 +41,7 @@ function make_forum_select($boxName, $ignoreForum = false, $selectForum = '')
         ->as('c')
         ->innerJoin(Tables::FORUMS_TABLE)
         ->as('f')
-        ->on('f.cat_id = c.cat_id')
+        ->on('[f.cat_id] = [c.cat_id]')
         ->orderBy('c.cat_order')
         ->orderBy(' f.forum_order')
         ->fetchAll();
@@ -130,7 +130,7 @@ function get_database_size()
         case 'postgres':
             $row = dibi::select('proname')
                 ->from('pg_proc')
-                ->where('proname = %s', 'pg_database_size')
+                ->where('[proname] = %s', 'pg_database_size')
                 ->fetch();
 
             if ($row->proname === 'pg_database_size') {
@@ -142,7 +142,7 @@ function get_database_size()
 
                 $oid = dibi::select('oid')
                     ->from('pg_database')
-                    ->where('datname = %s', $database)
+                    ->where('[datname] = %s', $database)
                     ->fetchSingle();
 
                 $databaseSize = dibi::select( 'pg_database_size(%n)', $oid)->as('size')->fetchSingle();
@@ -156,7 +156,7 @@ function get_database_size()
             break;
     }
 
-    $databaseSize = ($databaseSize !== false) ? get_formatted_filesize($databaseSize) : $lang['Not_available'];
+    $databaseSize = $databaseSize !== false ? get_formatted_filesize($databaseSize) : $lang['Not_available'];
 
     return $databaseSize;
 }
@@ -171,7 +171,7 @@ function get_database_size()
  */
 function getForumLocation($sessionPage, array $lang)
 {
-    switch($sessionPage) {
+    switch ($sessionPage) {
         case PAGE_ADMIN_INDEX:
             return $lang['Admin_index'];
         case PAGE_POSTING:

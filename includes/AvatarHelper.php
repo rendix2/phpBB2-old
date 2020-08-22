@@ -20,7 +20,7 @@ class AvatarHelper
     {
         global $lang;
 
-        switch( $type) {
+        switch ($type) {
             case 'jpeg':
             case 'pjpeg':
             case 'jpg':
@@ -525,7 +525,7 @@ class AvatarHelper
             $systemHiddenVars .= '<input type="hidden" name="mode" value="edit" />';
             $systemHiddenVars .= '<input type="hidden" name="coppa" value="' . $coppa . '" />';
             $systemHiddenVars .= '<input type="hidden" name="id" value="' . $userId . '" />';
-            $systemHiddenVars .= '<input type="hidden" name="user_allowavatar" value="' . $allowAvatar . '" />';
+            $systemHiddenVars .= '<input type="hidden" name="user_allow_avatar" value="' . $allowAvatar . '" />';
             $systemHiddenVars .= '<input type="hidden" name="user_allowpm" value="' . $allowPm . '" />';
             $systemHiddenVars .= '<input type="hidden" name="popup_pm" value="' . $popupPm . '" />';
             $systemHiddenVars .= '<input type="hidden" name="user_rank" value="' . $userRank . '" />';

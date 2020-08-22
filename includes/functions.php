@@ -42,7 +42,7 @@ function get_db_stat($mode)
         case 'newestuser':
             return dibi::select(['user_id', 'username'])
                 ->from(Tables::USERS_TABLE)
-                ->where('user_id <> %i', ANONYMOUS)
+                ->where('[user_id] <> %i', ANONYMOUS)
                 ->orderBy('user_id', dibi::DESC)
                 ->fetch();
 
@@ -93,12 +93,12 @@ function get_userdata($user_id, $force_str = false)
         ->from(Tables::USERS_TABLE);
 
     if (is_int($user_id)) {
-        $user->where('user_id = %i', $user_id);
+        $user->where('[user_id] = %i', $user_id);
     } else {
-        $user->where('username = %s', $user_id);
+        $user->where('[username] = %s', $user_id);
     }
 
-    $user = $user->where('user_id <> %i', ANONYMOUS)->fetch();
+    $user = $user->where('[user_id] <> %i', ANONYMOUS)->fetch();
 
 	return $user;
 }
@@ -201,8 +201,8 @@ function init_userprefs($pageId)
             $default_lang = ltrim(basename(rtrim($userData['user_lang'])), "'");
         }
 
-        if (!empty($userData['user_dateformat'])) {
-            $board_config['default_dateformat'] = $userData['user_dateformat'];
+        if (!empty($userData['user_date_format'])) {
+            $board_config['default_dateformat'] = $userData['user_date_format'];
         }
 
         if (isset($userData['user_timezone'])) {
@@ -247,7 +247,7 @@ function init_userprefs($pageId)
 		$userData['user_lang'] = $default_lang;
 	} elseif ($userData['user_id'] === ANONYMOUS && $board_config['default_lang'] !== $default_lang) {
         dibi::update(Tables::CONFIG_TABLE, ['config_value' => $default_lang])
-            ->where('config_name = %s', 'default_lang')
+            ->where('[config_name] = %s', 'default_lang')
             ->execute();
 
         $cache = new Cache($storage, Tables::CONFIG_TABLE);
@@ -445,7 +445,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 		$init_page_max = $total_pages > 3 ? 3 : $total_pages;
 
 		for ($i = 1; $i < $init_page_max + 1; $i++) {
-			$page_string .= ( $i === $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . Session::appendSid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+			$page_string .= $i === $on_page ? '<b>' . $i . '</b>' : '<a href="' . Session::appendSid($base_url . '&amp;start=' . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
 
 			if ($i <  $init_page_max) {
 				$page_string .= ', ';
@@ -705,7 +705,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
         if (defined('IN_ADMIN')) {
             require_once $phpbb_root_path . 'admin' . $sep . 'page_header_admin.php';
         } else {
-            PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+            PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $page_title, $gen_simple_header);
         }
 	}
 

@@ -22,7 +22,9 @@ switch ($mode) {
             ->where('[key_id] = %s', $_GET[POST_SESSION_USER_URL])
             ->execute();
 
-        $message = $lang['Delete_auto_login'] . '<br /><br />' . sprintf($lang['Click_return_language'], '<a href="' . Session::appendSid('admin_auto_login.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+        $message  = $lang['Delete_auto_login'] . '<br /><br />';
+        $message .= sprintf($lang['Click_return_language'], '<a href="' . Session::appendSid('admin_auto_login.php') . '">', '</a>') . '<br /><br />';
+        $message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
         message_die(GENERAL_MESSAGE, $message);
         break;
@@ -35,7 +37,7 @@ switch ($mode) {
         ->as('s')
         ->innerJoin(Tables::USERS_TABLE)
         ->as('u')
-        ->on('u.user_id = s.user_id')
+        ->on('[u.user_id] = [s.user_id]')
         ->fetchAll();
 
     $latte = new LatteFactory($storage, $userdata);

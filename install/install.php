@@ -861,7 +861,7 @@ if ($_GET['install'] == 1 && $validated) {
 
             foreach ($update_config as $config_name => $config_value) {
                 dibi::update($table_prefix . 'config' , ['config_value' => $config_value])
-                    ->where('config_name = %s',  $config_name)
+                    ->where('[config_name] = %s',  $config_name)
                     ->execute();
 			}
 
@@ -876,10 +876,10 @@ if ($_GET['install'] == 1 && $validated) {
             ];
 
             dibi::update($table_prefix . 'users', $update_data)
-                ->where('username = %s', 'Admin')
+                ->where('[username] = %s', 'Admin')
                 ->execute();
 
-            dibi::update($table_prefix . 'users', ['user_regdate' => time()])
+            dibi::update($table_prefix . 'users', ['user_reg_date' => time()])
             ->execute();
 
             $lang_options = [];

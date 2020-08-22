@@ -229,4 +229,6 @@ $lang['Extension'] = 'Extension';
 $lang['Auth_attach'] = 'Post Files';
 $lang['Auth_download'] = 'Download Files';
 
+$lang['Statistic'] = 'Statistics';
+
 ?>

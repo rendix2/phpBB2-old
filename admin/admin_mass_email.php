@@ -69,9 +69,9 @@ if (isset($_POST['submit'])) {
             ->as('u')
             ->innerJoin(Tables::USERS_GROUPS_TABLE)
             ->as('ug')
-            ->on('u.user_id = ug.user_id')
-            ->where('ug.group_id = %i', $group_id)
-            ->where('ug.user_pending <> %i', 1)
+            ->on('[u.user_id] = [ug.user_id]')
+            ->where('[ug.group_id] = %i', $group_id)
+            ->where('[ug.user_pending] <> %i', 1)
             ->fetchPairs(null, 'user_email');
     } else {
         $bbc_list = dibi::select('user_email')
@@ -120,7 +120,10 @@ if (isset($_POST['submit'])) {
 
         $mailer->send();
 
-		message_die(GENERAL_MESSAGE, $lang['Email_sent'] . '<br /><br />' . sprintf($lang['Click_return_admin_index'],  '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>'));
+		$message = $lang['Email_sent'] . '<br /><br />';
+		$message .= sprintf($lang['Click_return_admin_index'],  '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+
+		message_die(GENERAL_MESSAGE, $message);
 	}
 }
 
@@ -136,7 +139,7 @@ if ($error) {
 
 $groups = dibi::select(['group_id', 'group_name'])
     ->from(Tables::GROUPS_TABLE)
-    ->where('group_single_user <> %i', 1)
+    ->where('[group_single_user] <> %i', 1)
     ->fetchPairs('group_id', 'group_name');
 
 $select_list = '<select name = "' . POST_GROUPS_URL . '"><option value = "-1">' . $lang['All_users'] . '</option>';

@@ -185,9 +185,9 @@ function attach_init_ftp($mode = false)
 {
     global $lang, $attach_config;
 
-    $server = (trim($attach_config['ftp_server']) === '') ? 'localhost' : trim($attach_config['ftp_server']);
+    $server = trim($attach_config['ftp_server']) === '' ? 'localhost' : trim($attach_config['ftp_server']);
 
-    $ftp_path = ($mode === MODE_THUMBNAIL) ? trim($attach_config['ftp_path']) . '/' . THUMB_DIR : trim($attach_config['ftp_path']);
+    $ftp_path = $mode === MODE_THUMBNAIL ? trim($attach_config['ftp_path']) . '/' . THUMB_DIR : trim($attach_config['ftp_path']);
 
     $conn_id = @ftp_connect($server);
 
@@ -236,7 +236,7 @@ function unlink_attach($filename, $mode = false)
         $res = @ftp_delete($conn_id, $filename);
         if (!$res) {
             if (ATTACH_DEBUG) {
-                $add = ($mode === MODE_THUMBNAIL) ? '/' . THUMB_DIR : '';
+                $add = $mode === MODE_THUMBNAIL ? '/' . THUMB_DIR : '';
                 message_die(GENERAL_ERROR, sprintf($lang['Ftp_error_delete'], $attach_config['ftp_path'] . $add));
             }
 
@@ -380,11 +380,7 @@ function attachment_exists_db($post_id, $page = 0)
         ->where('%n = %i', $sql_id, $post_id)
         ->fetch();
 
-    if ($check) {
-        return true;
-    } else {
-        return false;
-    }
+    return (bool) $check;
 }
 
 /**
@@ -413,7 +409,7 @@ function get_attachments_from_post($post_id_array)
         return $attachments;
     }
 
-    $display_order = ((int)$attach_config['display_order'] === 0) ? 'DESC' : 'ASC';
+    $display_order = (int)$attach_config['display_order'] === 0 ? 'DESC' : 'ASC';
 
     return $attachments = dibi::select(['a.post_id', 'd.*'])
         ->from(Tables::ATTACH_ATTACHMENT_TABLE)
@@ -452,7 +448,7 @@ function get_attachments_from_pm($privmsgs_id_array)
         return $attachments;
     }
 
-    $display_order = ((int)$attach_config['display_order'] === 0) ? 'DESC' : 'ASC';
+    $display_order = (int)$attach_config['display_order'] === 0 ? 'DESC' : 'ASC';
 
     return dibi::select(['a.privmsgs_id', 'd.*'])
         ->from(Tables::ATTACH_ATTACHMENT_TABLE)
@@ -593,12 +589,13 @@ function user_in_group($user_id, $group_id)
 
 /**
  * Realpath replacement for attachment mod
- * @param $path
+ * @param string $path
+ *
  * @return false|string
 */
 function amod_realpath($path)
 {
-    return (function_exists('realpath')) ? realpath($path) : $path;
+    return function_exists('realpath') ? realpath($path) : $path;
 }
 
 /**
@@ -621,6 +618,7 @@ function _set_var(&$result, $var, $type, $multibyte = false)
         $result = trim(htmlspecialchars(str_replace(["\r\n", "\r", '\xFF'], ["\n", "\n", ' '], $result)));
         // 2.0.x is doing addslashes on all variables
         $result = stripslashes($result);
+
         if ($multibyte) {
             $result = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $result);
         }
@@ -638,16 +636,17 @@ function _set_var(&$result, $var, $type, $multibyte = false)
 */
 function get_var($var_name, $default, $multibyte = false)
 {
-    $request_var = (isset($_POST[$var_name])) ? $_POST : $_GET;
+    $request_var = isset($_POST[$var_name]) ? $_POST : $_GET;
 
     if (!isset($request_var[$var_name]) || (is_array($request_var[$var_name]) && !is_array($default)) || (is_array($default) && !is_array($request_var[$var_name]))) {
-        return (is_array($default)) ? [] : $default;
+        return is_array($default) ? [] : $default;
     }
 
     $var = $request_var[$var_name];
 
     if (is_array($default)) {
         list($key_type, $type) = each($default);
+
         $type = gettype($type);
         $key_type = gettype($key_type);
     } else {

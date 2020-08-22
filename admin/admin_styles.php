@@ -74,7 +74,9 @@ switch ($mode) {
 
 			dibi::insert(Tables::THEMES_TABLE, $insert_data)->execute();
 			
-			$message = $lang['Theme_installed'] . '<br /><br />' . sprintf($lang['Click_return_styleadmin'], '<a href="' . Session::appendSid('admin_styles.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+			$message  = $lang['Theme_installed'] . '<br /><br />';
+			$message .= sprintf($lang['Click_return_styleadmin'], '<a href="' . Session::appendSid('admin_styles.php') . '">', '</a>') . '<br /><br />';
+			$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		} else {
@@ -95,7 +97,7 @@ switch ($mode) {
 
                     $templateCheck = dibi::select('themes_id')
                         ->from(Tables::THEMES_TABLE)
-                        ->where('style_name = %s', $newTemplate->getFilename())
+                        ->where('[style_name] = %s', $newTemplate->getFilename())
                         ->fetch();
 
                     if (!$templateCheck) {
@@ -108,23 +110,25 @@ switch ($mode) {
 
             $template->setFileNames(['body' => 'admin/styles_addnew_body.tpl']);
 
-            $template->assignVars([
+            $template->assignVars(
+                [
                     'L_STYLES_TITLE'    => $lang['Styles_admin'],
                     'L_STYLES_ADD_TEXT' => $lang['Styles_addnew_explain'],
                     'L_STYLE'           => $lang['Style'],
                     'L_TEMPLATE'        => $lang['Template'],
                     'L_INSTALL'         => $lang['Install'],
                     'L_ACTION'          => $lang['Action']
-                ]);
+                ]
+            );
 
-            foreach ($installableThemes as $installableTheme) {
-                $row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-                $row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+            foreach ($installableThemes as $i => $installableTheme) {
+                $rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+                $rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
                 $template->assignBlockVars('styles',
                     [
-                        'ROW_CLASS'     => $row_class,
-                        'ROW_COLOR'     => '#' . $row_color,
+                        'ROW_CLASS'     => $rowClass,
+                        'ROW_COLOR'     => '#' . $rowColor,
                         'STYLE_NAME'    => $installableTheme['style_name'],
                         'TEMPLATE_NAME' => $installableTheme['template_name'],
 
@@ -227,7 +231,7 @@ switch ($mode) {
                 $cache->remove($key);
 
 			    dibi::update(Tables::THEMES_TABLE, $updated)
-                    ->where('themes_id = %i', $style_id)
+                    ->where('[themes_id] = %i', $style_id)
                     ->execute();
 				
 				//
@@ -235,12 +239,12 @@ switch ($mode) {
 				//
 				$theme_exists = dibi::select('themes_id')
                     ->from(Tables::THEMES_NAME_TABLE)
-                    ->where('themes_id = %i', $style_id)
+                    ->where('[themes_id] = %i', $style_id)
                     ->fetchSingle();
 
 				if ($theme_exists) {
 				    dibi::update(Tables::THEMES_NAME_TABLE, $updated_name)
-                        ->where('themes_id = %i', $style_id)
+                        ->where('[themes_id] = %i', $style_id)
                         ->execute();
 				} else {
                     $updated_name['themes_id'] =  $style_id;
@@ -248,7 +252,9 @@ switch ($mode) {
 				    dibi::insert(Tables::THEMES_NAME_TABLE, $updated_name)->execute();
 				}
 							
-				$message = $lang['Theme_updated'] . '<br /><br />' . sprintf($lang['Click_return_styleadmin'], '<a href="' . Session::appendSid('admin_styles.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+				$message  = $lang['Theme_updated'] . '<br /><br />';
+				$message .= sprintf($lang['Click_return_styleadmin'], '<a href="' . Session::appendSid('admin_styles.php') . '">', '</a>') . '<br /><br />';
+				$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 				message_die(GENERAL_MESSAGE, $message);
 			} else {
@@ -257,7 +263,7 @@ switch ($mode) {
 				//
                 $theme_check = dibi::select('themes_id')
                     ->from(Tables::THEMES_TABLE)
-                    ->where('style_name = %s', $updated['style_name'])
+                    ->where('[style_name] = %s', $updated['style_name'])
                     ->fetch();
 				
 				if ($theme_check) {
@@ -273,7 +279,9 @@ switch ($mode) {
 
                 dibi::insert(Tables::THEMES_NAME_TABLE, $updated_name)->execute();
 				
-				$message = $lang['Theme_created'] . '<br /><br />' . sprintf($lang['Click_return_styleadmin'], '<a href="' . Session::appendSid('admin_styles.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+				$message  = $lang['Theme_created'] . '<br /><br />';
+				$message .= sprintf($lang['Click_return_styleadmin'], '<a href="' . Session::appendSid('admin_styles.php') . '">', '</a>') . '<br /><br />';
+				$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 				message_die(GENERAL_MESSAGE, $message);
 			}
@@ -288,7 +296,7 @@ switch ($mode) {
 				//
                 $selected_values = dibi::select('*')
                     ->from(Tables::THEMES_TABLE)
-                    ->where('themes_id = %i', $style_id)
+                    ->where('[themes_id] = %i', $style_id)
                     ->fetch();
 				
 				//
@@ -296,7 +304,7 @@ switch ($mode) {
 				//
                 $selected_names = dibi::select('*')
                     ->from(Tables::THEMES_NAME_TABLE)
-                    ->where('themes_id = %i', $style_id)
+                    ->where('[themes_id] = %i', $style_id)
                     ->fetch();
 
                 $selected = array_merge($selected_names->toArray(), $selected_values->toArray());
@@ -448,7 +456,7 @@ switch ($mode) {
 
             $themes = dibi::select('*')
                 ->from(Tables::THEMES_TABLE)
-                ->where('template_name = %s', $template_name)
+                ->where('[template_name] = %s', $template_name)
                 ->fetchAll();
 			
 			if (!count($themes)) {
@@ -499,7 +507,9 @@ switch ($mode) {
 			$result = @fwrite($fp, $theme_data, mb_strlen($theme_data));
 			fclose($fp);
 			
-			$message = $lang['Theme_info_saved'] . '<br /><br />' . sprintf($lang['Click_return_styleadmin'], '<a href="' . Session::appendSid('admin_styles.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+			$message  = $lang['Theme_info_saved'] . '<br /><br />';
+			$message .= sprintf($lang['Click_return_styleadmin'], '<a href="' . Session::appendSid('admin_styles.php') . '">', '</a>') . '<br /><br />';
+			$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
         } elseif ($_POST['send_file']) {
@@ -541,7 +551,7 @@ switch ($mode) {
             $cache->remove($key);
 
             dibi::delete(Tables::THEMES_TABLE)
-                ->where('themes_id = %i', $style_id)
+                ->where('[themes_id] = %i', $style_id)
                 ->execute();
 
 			//
@@ -549,14 +559,16 @@ switch ($mode) {
 			// if the SQL dosan't work
 			//
             dibi::delete(Tables::THEMES_NAME_TABLE)
-                ->where('themes_id = %i', $style_id)
+                ->where('[themes_id] = %i', $style_id)
                 ->execute();
 
             dibi::update(Tables::USERS_TABLE, ['user_style' => $board_config['default_style']])
-                ->where('user_style = %i', $style_id)
+                ->where('[user_style] = %i', $style_id)
                 ->execute();
 
-			$message = $lang['Style_removed'] . '<br /><br />' . sprintf($lang['Click_return_styleadmin'], '<a href="' . Session::appendSid('admin_styles.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+			$message  = $lang['Style_removed'] . '<br /><br />';
+			$message .= sprintf($lang['Click_return_styleadmin'], '<a href="' . Session::appendSid('admin_styles.php') . '">', '</a>') . '<br /><br />';
+			$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		} else {
@@ -608,17 +620,15 @@ switch ($mode) {
             ]
         );
 
-        $i = 0;
-        foreach ($styles as $style) {
-            $i++;
+        foreach ($styles as $i => $style) {
             // TODO $theme should be $style?
-			$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-			$row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+			$rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+			$rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
             $template->assignBlockVars('styles',
                 [
-                    'ROW_CLASS'     => $row_class,
-                    'ROW_COLOR'     => $row_color,
+                    'ROW_CLASS'     => $rowClass,
+                    'ROW_COLOR'     => $rowColor,
                     'STYLE_NAME'    => $style->style_name,
                     'TEMPLATE_NAME' => $style->template_name,
 

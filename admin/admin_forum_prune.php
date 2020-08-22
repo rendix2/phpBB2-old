@@ -34,6 +34,9 @@ require_once '.' . $sep . 'pagestart.php';
 //
 // Get the forum ID for pruning
 //
+$forum_id = '';
+$forum_sql = false;
+
 if (isset($_GET[POST_FORUM_URL]) || isset($_POST[POST_FORUM_URL])) {
     $forum_id = isset($_POST[POST_FORUM_URL]) ? $_POST[POST_FORUM_URL] : $_GET[POST_FORUM_URL];
 
@@ -43,23 +46,20 @@ if (isset($_GET[POST_FORUM_URL]) || isset($_POST[POST_FORUM_URL])) {
         $forum_id = (int)$forum_id;
         $forum_sql = true;
     }
-} else {
-    $forum_id = '';
-    $forum_sql = false;
 }
+
 //
 // Get a list of forum's or the data for the forum that we are pruning.
 //
-
 $forums = dibi::select('f.*')
     ->from(Tables::FORUMS_TABLE)
     ->as('f')
     ->innerJoin(Tables::CATEGORIES_TABLE)
     ->as('c')
-    ->on('c.cat_id = f.cat_id');
+    ->on('[c.cat_id] = [f.cat_id]');
 
 if ($forum_sql) {
-    $forums->where('forum_id = %i', $forum_id);
+    $forums->where('[forum_id] = %i', $forum_id);
 }
 
 $forums = $forums->orderBy('c.cat_order', dibi::ASC)
@@ -82,18 +82,18 @@ if (isset($_POST['doprune'])) {
 
     $template->setFileNames(['body' => 'admin/forum_prune_result_body.tpl']);
 
-    foreach ($forums as $forum) {
+    foreach ($forums as $i => $forum) {
         $prune_result = Prune::run($forum->forum_id, $prune_date->getTimestamp());
 
         Sync::oneForum($forum->forum_id);
 
-        $row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-        $row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+        $rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+        $rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
         $template->assignBlockVars('prune_results',
             [
-                'ROW_COLOR' => '#' . $row_color,
-                'ROW_CLASS' => $row_class,
+                'ROW_COLOR' => '#' . $rowColor,
+                'ROW_CLASS' => $rowClass,
 
                 'FORUM_NAME'   => htmlspecialchars($forum->forum_name, ENT_QUOTES),
                 'FORUM_TOPICS' => $prune_result['topics'],
@@ -122,14 +122,14 @@ if (isset($_POST['doprune'])) {
 		//
         $template->setFileNames(['body' => 'admin/forum_prune_select_body.tpl']);
 
-        $select_list = '<select name="' . POST_FORUM_URL . '">';
-		$select_list .= '<option value="-1">' . $lang['All_Forums'] . '</option>';
+        $forumsSelect = '<select name="' . POST_FORUM_URL . '">';
+		$forumsSelect .= '<option value="-1">' . $lang['All_Forums'] . '</option>';
 
 		foreach ($forums as $forum) {
-            $select_list .= '<option value="' . $forum->forum_id . '">' . htmlspecialchars($forum->forum_name, ENT_QUOTES) . '</option>';
+            $forumsSelect .= '<option value="' . $forum->forum_id . '">' . htmlspecialchars($forum->forum_name, ENT_QUOTES) . '</option>';
         }
 
-		$select_list .= '</select>';
+		$forumsSelect .= '</select>';
 
 		//
 		// Assign the template variables.
@@ -141,7 +141,7 @@ if (isset($_POST['doprune'])) {
                 'L_LOOK_UP'      => $lang['Look_up_Forum'],
 
                 'S_FORUMPRUNE_ACTION' => Session::appendSid('admin_forum_prune.php'),
-                'S_FORUMS_SELECT'     => $select_list
+                'S_FORUMS_SELECT'     => $forumsSelect
             ]
         );
 	} else {

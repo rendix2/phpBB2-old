@@ -155,7 +155,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
                         ];
 
 					    dibi::update(Tables::SMILEYS_TABLE, $update_data)
-                            ->where('code = %s', $smile_data[$j])
+                            ->where('[code] = %s', $smile_data[$j])
                             ->execute();
 					}
 				} else {
@@ -170,7 +170,9 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
 			}
 		}
 
-		$message = $lang['smiley_import_success'] . '<br /><br />' . sprintf($lang['Click_return_smileadmin'], '<a href="' . Session::appendSid('admin_smilies.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+		$message  = $lang['smiley_import_success'] . '<br /><br />';
+		$message .= sprintf($lang['Click_return_smileadmin'], '<a href="' . Session::appendSid('admin_smilies.php') . '">', '</a>') . '<br /><br />';
+		$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 		message_die(GENERAL_MESSAGE, $message);
 	} else {
@@ -236,15 +238,15 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
 		exit;
 	}
 
-	$message = sprintf($lang['export_smiles'], '<a href="' . Session::appendSid('admin_smilies.php?export_pack=send', true) . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_smileadmin'], '<a href="' . Session::appendSid('admin_smilies.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+	$message  = sprintf($lang['export_smiles'], '<a href="' . Session::appendSid('admin_smilies.php?export_pack=send', true) . '">', '</a>') . '<br /><br />';
+	$message .= sprintf($lang['Click_return_smileadmin'], '<a href="' . Session::appendSid('admin_smilies.php') . '">', '</a>') . '<br /><br />';
+	$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 	message_die(GENERAL_MESSAGE, $message);
-
 } elseif (isset($_POST['add']) || isset($_GET['add'])) {
 	//
 	// Admin has selected to add a smiley.
 	//
-
     $template->setFileNames(['body' => 'admin/smile_edit_body.tpl']);
 
     $filename_list = '';
@@ -277,7 +279,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
 
     $template->pparse('body');
 } elseif ($mode !== '') {
-	switch( $mode) {
+	switch ($mode) {
 		case 'delete':
 			//
 			// Admin has selected to delete a smiley.
@@ -298,10 +300,12 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
                 $cache->remove($key_all);
 
 			    dibi::delete(Tables::SMILEYS_TABLE)
-                    ->where('smilies_id = %i', $smiley_id)
+                    ->where('[smilies_id] = %i', $smiley_id)
                     ->execute();
 
-				$message = $lang['smiley_del_success'] . '<br /><br />' . sprintf($lang['Click_return_smileadmin'], '<a href="' . Session::appendSid('admin_smilies.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+				$message  = $lang['smiley_del_success'] . '<br /><br />';
+				$message .= sprintf($lang['Click_return_smileadmin'], '<a href="' . Session::appendSid('admin_smilies.php') . '">', '</a>') . '<br /><br />';
+				$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 				message_die(GENERAL_MESSAGE, $message);
 			} else {
@@ -336,7 +340,7 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
 
             $smile_data = dibi::select('*')
                 ->from(Tables::SMILEYS_TABLE)
-                ->where('smilies_id = %i', $smiley_id)
+                ->where('[smilies_id] = %i', $smiley_id)
                 ->fetch();
 
             if (!$smile_data) {
@@ -433,10 +437,12 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
             ];
 
             dibi::update(Tables::SMILEYS_TABLE, $update_data)
-                ->where('smilies_id = %i', $smile_id)
+                ->where('[smilies_id] = %i', $smile_id)
                 ->execute();
 
-			$message = $lang['smiley_edit_success'] . '<br /><br />' . sprintf($lang['Click_return_smileadmin'], '<a href="' . Session::appendSid('admin_smilies.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+			$message  = $lang['smiley_edit_success'] . '<br /><br />';
+			$message .= sprintf($lang['Click_return_smileadmin'], '<a href="' . Session::appendSid('admin_smilies.php') . '">', '</a>') . '<br /><br />';
+			$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 			break;
@@ -488,13 +494,14 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
 
             dibi::insert(Tables::SMILEYS_TABLE, $insert_data)->execute();
 
-			$message = $lang['smiley_add_success'] . '<br /><br />' . sprintf($lang['Click_return_smileadmin'], '<a href="' . Session::appendSid('admin_smilies.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+			$message  = $lang['smiley_add_success'] . '<br /><br />';
+			$message .= sprintf($lang['Click_return_smileadmin'], '<a href="' . Session::appendSid('admin_smilies.php') . '">', '</a>') . '<br /><br />';
+			$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 			break;
 	}
 } else {
-
 	//
 	// This is the main display of the page before the admin has selected
 	// any options.
@@ -534,20 +541,20 @@ if (isset($_GET['import_pack']) || isset($_POST['import_pack'])) {
         $smiley->code = str_replace('&lt;', '<', $smiley->code);
         $smiley->code = str_replace('&gt;', '>', $smiley->code);
 
-        $row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-        $row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+        $rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+        $rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
         $template->assignBlockVars('smiles',
             [
-            'ROW_COLOR' => '#' . $row_color,
-            'ROW_CLASS' => $row_class,
+                'ROW_COLOR' => '#' . $rowColor,
+                'ROW_CLASS' => $rowClass,
 
-            'SMILEY_IMG' => $phpbb_root_path . $board_config['smilies_path'] . $sep . $smiley->smile_url,
-            'CODE'       => $smiley->code,
-            'EMOT'       => $smiley->emoticon,
+                'SMILEY_IMG' => $phpbb_root_path . $board_config['smilies_path'] . $sep . $smiley->smile_url,
+                'CODE'       => $smiley->code,
+                'EMOT'       => $smiley->emoticon,
 
-            'U_SMILEY_EDIT'   => Session::appendSid('admin_smilies.php?mode=edit&amp;id=' . $smiley->smilies_id),
-            'U_SMILEY_DELETE' => Session::appendSid('admin_smilies.php?mode=delete&amp;id=' . $smiley->smilies_id)
+                'U_SMILEY_EDIT'   => Session::appendSid('admin_smilies.php?mode=edit&amp;id=' . $smiley->smilies_id),
+                'U_SMILEY_DELETE' => Session::appendSid('admin_smilies.php?mode=delete&amp;id=' . $smiley->smilies_id)
             ]
         );
     }

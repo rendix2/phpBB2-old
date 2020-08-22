@@ -173,7 +173,9 @@ if ($submit && $mode === 'extensions') {
     }
 
     if (!$error) {
-        $message = $lang['Attach_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_extensions.php?mode=extensions') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+        $message  = $lang['Attach_config_updated'] . '<br /><br />';
+        $message .= sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_extensions.php?mode=extensions') . '">', '</a>') . '<br /><br />';
+        $message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
         message_die(GENERAL_MESSAGE, $message);
     }
@@ -201,19 +203,11 @@ if ($mode === 'extensions') {
         ]
     );
 
-    if ($submit) {
-        $template->assignVars(
-            [
-                'S_ADD_GROUP_SELECT' => group_select('add_group_select', $extension_group)
-            ]
-        );
-    } else {
-        $template->assignVars(
-            [
-                'S_ADD_GROUP_SELECT' => group_select('add_group_select')
-            ]
-        );
-    }
+    $template->assignVars(
+        [
+            'S_ADD_GROUP_SELECT' => $submit ? group_select('add_group_select', $extension_group) : group_select('add_group_select')
+        ]
+    );
 
     $extension_rows = dibi::select('*')
         ->from(Tables::ATTACH_EXTENSION_TABLE)
@@ -246,7 +240,6 @@ if ($mode === 'extensions') {
             }
         }
     }
-
 }
 
 // Extension Groups
@@ -351,7 +344,9 @@ if ($submit && $mode === 'groups') {
     }
 
     if (!$error) {
-        $message = $lang['Attach_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_extensions.php?mode=groups') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+        $message  = $lang['Attach_config_updated'] . '<br /><br />';
+        $message .= sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_extensions.php?mode=groups') . '">', '</a>') . '<br /><br />';
+        $message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
         message_die(GENERAL_MESSAGE, $message);
     }
@@ -364,7 +359,7 @@ if ($mode === 'groups') {
     if (!$size && !$submit) {
         $max_add_filesize = $attach_config['max_filesize'];
 
-        $size = ($max_add_filesize >= 1048576) ? 'mb' : (($max_add_filesize >= 1024) ? 'kb' : 'b');
+        $size = $max_add_filesize >= 1048576 ? 'mb' : (($max_add_filesize >= 1024) ? 'kb' : 'b');
     }
 
     if ($max_add_filesize >= 1048576) {
@@ -421,7 +416,7 @@ if ($mode === 'groups') {
             $extension_group->max_filesize = round($extension_group->max_filesize / 1024 * 100) / 100;
         }
 
-        $s_allowed = ($extension_group->allow_group === 1) ? 'checked="checked"' : '';
+        $s_allowed = $extension_group->allow_group === 1 ? 'checked="checked"' : '';
 
         $template->assignBlockVars('grouprow',
             [
@@ -435,8 +430,8 @@ if ($mode === 'groups') {
                 'S_FILESIZE' => size_select('size_select_list[]', $size_format),
 
                 'MAX_FILESIZE' => $extension_group->max_filesize,
-                'CAT_BOX' => ($viewgroup === $extension_group->group_id) ? $lang['Decollapse'] : $lang['Collapse'],
-                'U_VIEWGROUP' => ($viewgroup === $extension_group->group_id) ? Session::appendSid('admin_extensions.php?mode=groups') : Session::appendSid('admin_extensions.php?mode=groups&' . POST_GROUPS_URL . '=' . $extension_group->group_id),
+                'CAT_BOX' => $viewgroup === $extension_group->group_id ? $lang['Decollapse'] : $lang['Collapse'],
+                'U_VIEWGROUP' => $viewgroup === $extension_group->group_id ? Session::appendSid('admin_extensions.php?mode=groups') : Session::appendSid('admin_extensions.php?mode=groups&' . POST_GROUPS_URL . '=' . $extension_group->group_id),
                 'U_FORUM_PERMISSIONS' => Session::appendSid("admin_extensions.php?mode=$mode&amp;e_mode=perm&amp;e_group=" . $extension_group->group_id)
             ]
         );
@@ -517,11 +512,12 @@ if ($submit && $mode === 'forbidden') {
     }
 
     if (!$error) {
-        $message = $lang['Attach_config_updated'] . '<br /><br />' . sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_extensions.php?mode=forbidden') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+        $message  = $lang['Attach_config_updated'] . '<br /><br />';
+        $message .= sprintf($lang['Click_return_attach_config'], '<a href="' . Session::appendSid('admin_extensions.php?mode=forbidden') . '">', '</a>') . '<br /><br />';
+        $message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
         message_die(GENERAL_MESSAGE, $message);
     }
-
 }
 
 if ($mode === 'forbidden') {
@@ -634,7 +630,7 @@ if ($delete_forum && $e_mode === 'perm' && $group) {
         }
     }
 
-    $auth_bitstream = (count($auth_p) > 0) ? auth_pack($auth_p) : '';
+    $auth_bitstream = count($auth_p) > 0 ? auth_pack($auth_p) : '';
 
     dibi::update(Tables::ATTACH_EXTENSION_GROUPS_TABLE, ['forum_permissions' => $auth_bitstream])
         ->where('[group_id] = %i', $group)
@@ -743,7 +739,7 @@ if ($e_mode === 'perm' && $group) {
     $message = '';
 
     foreach ($empty_perm_forums as $forum_id => $forum_name) {
-        $message .= ($message === '') ? $forum_name : '<br />' . $forum_name;
+        $message .= $message === '' ? $forum_name : '<br />' . $forum_name;
     }
 
     if (count($empty_perm_forums) > 0) {

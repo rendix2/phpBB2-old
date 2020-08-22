@@ -194,8 +194,8 @@ if (file_exists($phpbb_root_path . 'files/')) {
     $write = $exists = @mkdir($phpbb_root_path . 'files/', 0777);
 }
 
-$exists = ($exists) ? '<b style="color:green">Directory found</b>' : '<b style="color:red">Directory not found - please make sure you create it before using the attachment mod</b>';
-$write = ($write) ? ', <b style="color:green">Directory writeable</b>' : (($exists) ? ', <b style="color:red">Directory not writeable - please make sure you make it writeable before using the attachment mod</b>' : '');
+$exists = $exists ? '<b style="color:green">Directory found</b>' : '<b style="color:red">Directory not found - please make sure you create it before using the attachment mod</b>';
+$write = $write ? ', <b style="color:green">Directory writeable</b>' : (($exists) ? ', <b style="color:red">Directory not writeable - please make sure you make it writeable before using the attachment mod</b>' : '');
 
 ?>
 Checking attachment mod storage directory:<br/>

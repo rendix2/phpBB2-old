@@ -152,7 +152,7 @@ function update_config($name, $value)
 	global $storage;
 
     dibi::update(Tables::CONFIG_TABLE, ['config_value' => $value])
-        ->where('config_name = %s', $name)
+        ->where('[config_name] = %s', $name)
         ->execute();
 
     $cache = new Cache($storage, Tables::CONFIG_TABLE);
@@ -397,7 +397,7 @@ function create_forum()
         $next_forum_order = dibi::select('MAX(forum_order)')
             ->as('forum_order')
             ->from(Tables::FORUMS_TABLE)
-            ->where('cat_id = %i', $cat_id)
+            ->where('[cat_id] = %i', $cat_id)
             ->fetchSingle();
 
         $next_forum_order += 10;
@@ -422,7 +422,7 @@ function create_forum()
             'auth_sticky' => Auth::AUTH_ADMIN,
             'auth_announce' => Auth::AUTH_ADMIN,
             'auth_vote' => Auth::AUTH_ADMIN,
-            'auth_pollcreate' => Auth::AUTH_ADMIN,
+            'auth_poll_create' => Auth::AUTH_ADMIN,
             'auth_attachments' => 0,
         ];
 
@@ -444,19 +444,19 @@ function create_topic()
 	$forum_id = create_forum();
 
 	if (!$topic_created) {
-	    $insertData = [
-	        'forum_id' => $forum_id,
-            'topic_title' => $lang['New_topic_name'],
-            'topic_poster' => ANONYMOUS,
-            'topic_time' => time(),
-            'topic_views' => 0,
-            'topic_replies' => 0,
-            'topic_status' => TOPIC_UNLOCKED,
-            'topic_vote' => 0,
-            'topic_type' => POST_NORMAL,
+        $insertData = [
+            'forum_id'            => $forum_id,
+            'topic_title'         => $lang['New_topic_name'],
+            'topic_poster'        => ANONYMOUS,
+            'topic_time'          => time(),
+            'topic_views'         => 0,
+            'topic_replies'       => 0,
+            'topic_status'        => TOPIC_UNLOCKED,
+            'topic_vote'          => 0,
+            'topic_type'          => POST_NORMAL,
             'topic_first_post_id' => 0,
-            'topic_last_post_id' => 0,
-            'topic_moved_id' => 0,
+            'topic_last_post_id'  => 0,
+            'topic_moved_id'      => 0,
         ];
 
 	    $topic_id = dibi::insert(Tables::TOPICS_TABLE, $insertData)->execute(dibi::IDENTIFIER);
@@ -473,7 +473,7 @@ function get_poster($topic_id)
     $firstPost = dibi::select('Min(post_id)')
         ->as('first_post')
         ->from(Tables::POSTS_TABLE)
-        ->where('topic_id = %i', $topic_id)
+        ->where('[topic_id] = %i', $topic_id)
         ->fetchSingle();
 
     if (!$firstPost) {
@@ -482,7 +482,7 @@ function get_poster($topic_id)
 
     $posterId = dibi::select('poster_id')
         ->from(Tables::POSTS_TABLE)
-        ->where('post_id = %i', $firstPost)
+        ->where('[post_id] = %i', $firstPost)
         ->fetch();
 
     if (!$posterId) {
@@ -579,7 +579,7 @@ function language_select($default, $select_name = 'language', $file_to_check = '
 		$options = '';
 
 		foreach ($lg as $displayName => $filename) {
-			$selected = ( mb_strtolower($default) === mb_strtolower($filename) ) ? 'selected="selected"' : '';
+			$selected = mb_strtolower($default) === mb_strtolower($filename) ? 'selected="selected"' : '';
 
             $options .= '<option value="' . $filename . '" ' . $selected . '>' . htmlspecialchars(ucwords($displayName), ENT_QUOTES) . '</option>';
 		}
@@ -615,7 +615,7 @@ function check_authorisation($die = true)
 		case 'board':
             $row = dibi::select(['user_id', 'username', 'user_password', 'user_acp_password', 'user_active', 'user_level'])
                 ->from(Tables::USERS_TABLE)
-                ->where('username = %s', $board_user)
+                ->where('[username] = %s', $board_user)
                 ->fetch();
 
             if ($row === false) {
@@ -650,7 +650,7 @@ function get_config_data($option)
 {
 	$config = dibi::select('config_value')
         ->from(Tables::CONFIG_TABLE)
-        ->where('config_name = %s', $option)
+        ->where('[config_name] = %s', $option)
         ->fetchSingle();
 
     if (!$config) {

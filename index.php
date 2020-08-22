@@ -30,7 +30,6 @@ require_once $phpbb_root_path . 'common.php';
 //
 // Start session management
 //
-
 $userdata = init_userprefs(PAGE_INDEX);
 //
 // End session management
@@ -38,10 +37,10 @@ $userdata = init_userprefs(PAGE_INDEX);
 
 $categoryId = isset($_GET[POST_CAT_URL]) ? $_GET[POST_CAT_URL] : -1;
 
+$markRead = '';
+
 if (isset($_GET['mark']) || isset($_POST['mark'])) {
     $markRead = isset($_POST['mark']) ? $_POST['mark'] : $_GET['mark'];
-} else {
-    $markRead = '';
 }
 
 // define cookie names
@@ -70,7 +69,8 @@ if ($markRead === 'forums') {
         ]
     );
 
-    $message = $lang['Forums_marked_read'] . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a> ');
+    $message  = $lang['Forums_marked_read'] . '<br /><br />';
+    $message .= sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a> ');
 
     message_die(GENERAL_MESSAGE, $message);
 }
@@ -149,10 +149,10 @@ switch (Config::DBMS) {
             ->as('f')
             ->innerJoin(Tables::POSTS_TABLE)
             ->as('p')
-            ->on('p.post_id = f.forum_last_post_id(+)')
+            ->on('[p.post_id] = [f.forum_last_post_id(+)]')
             ->innerJoin(Tables::USERS_TABLE)
             ->as('u')
-            ->on('u.user_id = p.poster_id(+)')
+            ->on('[u.user_id] = [p.poster_id(+)]')
             ->orderBy('f.cat_id')
             ->orderBy('f.forum_order')
             ->fetchAll();
@@ -165,10 +165,10 @@ switch (Config::DBMS) {
             ->as('f')
             ->leftJoin(Tables::POSTS_TABLE)
             ->as('p')
-            ->on('p.post_id = f.forum_last_post_id')
+            ->on('[p.post_id] = [f.forum_last_post_id]')
             ->leftJoin(Tables::USERS_TABLE)
             ->as('u')
-            ->on('u.user_id = p.poster_id')
+            ->on('[u.user_id] = [p.poster_id]')
             ->orderBy('f.cat_id')
             ->orderBy('f.forum_order')
             ->fetchAll();
@@ -187,8 +187,8 @@ if (!$totalForums) {
 //
 if ($userdata['session_logged_in']) {
     // 60 days limit
-    if ($userdata['user_lastvisit'] < (time() - 5184000)) {
-        $userdata['user_lastvisit'] = time() - 5184000;
+    if ($userdata['user_last_visit'] < (time() - 5184000)) {
+        $userdata['user_last_visit'] = time() - 5184000;
     }
 
     $new_topic_tmp_data = dibi::select('t.forum_id, t.topic_id, p.post_time')
@@ -196,9 +196,9 @@ if ($userdata['session_logged_in']) {
         ->as('t')
         ->innerJoin(Tables::POSTS_TABLE) // maybe there should be letft/inner join....
         ->as('p')
-        ->on('p.post_id = t.topic_last_post_id')
-        ->where('p.post_time > %i', $userdata['user_lastvisit'])
-        ->where('t.topic_moved_id = %i', 0)
+        ->on('[p.post_id] = [t.topic_last_post_id]')
+        ->where('[p.post_time] > %i', $userdata['user_last_visit'])
+        ->where('[t.topic_moved_id] = %i', 0)
         ->fetchAll();
 
     $newTopicData = [];
@@ -218,15 +218,15 @@ $forumModeratorsData = dibi::select('aa.forum_id, u.user_id, u.username')
     ->as('aa')
     ->innerJoin(Tables::USERS_GROUPS_TABLE)
     ->as('ug')
-    ->on('ug.group_id = aa.group_id')
+    ->on('[ug.group_id] = [aa.group_id]')
     ->innerJoin(Tables::GROUPS_TABLE)
     ->as('g')
-    ->on('g.group_id = aa.group_id')
+    ->on('[g.group_id] = [aa.group_id]')
     ->innerJoin(Tables::USERS_TABLE)
     ->as('u')
-    ->on('u.user_id = ug.user_id')
-    ->where('aa.auth_mod = %i', 1)
-    ->where('g.group_single_user = %i', 1)
+    ->on('[u.user_id] = [ug.user_id]')
+    ->where('[aa.auth_mod] = %i', 1)
+    ->where('[g.group_single_user] = %i', 1)
     ->groupBy('u.user_id')
     ->groupBy('u.username')
     ->groupBy('aa.forum_id')
@@ -245,13 +245,13 @@ $forumModeratorsData = dibi::select('aa.forum_id, g.group_id, g.group_name')
     ->as('aa')
     ->innerJoin(Tables::USERS_GROUPS_TABLE)
     ->as('ug')
-    ->on('ug.group_id = aa.group_id')
+    ->on('[ug.group_id] = [aa.group_id]')
     ->innerJoin(Tables::GROUPS_TABLE)
     ->as('g')
-    ->on('g.group_id = aa.group_id')
-    ->where('aa.auth_mod = %i', 1)
-    ->where('g.group_single_user = %i', 0)
-    ->where('g.group_type <> %i', GROUP_HIDDEN)
+    ->on('[g.group_id] = [aa.group_id]')
+    ->where('[aa.auth_mod] = %i', 1)
+    ->where('[g.group_single_user] = %i', 0)
+    ->where('[g.group_type] <> %i', GROUP_HIDDEN)
     ->groupBy('g.group_id')
     ->groupBy('g.group_name')
     ->groupBy('aa.forum_id')
@@ -274,7 +274,7 @@ $is_auth = Auth::authorize(Auth::AUTH_VIEW, Auth::AUTH_ALL, $userdata, $forums);
 
 $onlineUsersCount = dibi::select('COUNT(*)')
     ->from(Tables::SESSIONS_TABLE)
-    ->where('session_logged_in = %i', 1)
+    ->where('[session_logged_in] = %i', 1)
     ->groupBy('session_user_id')
     ->fetchSingle();
 
@@ -427,8 +427,8 @@ foreach ($categories as $i => $category) {
                             $moderatorList = '&nbsp;';
                         }
 
-                        $rowColor = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-                        $rowClass = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
+                        $rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+                        $rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
                         $catRowData = [
                             'ROW_COLOR'        => '#' . $rowColor,

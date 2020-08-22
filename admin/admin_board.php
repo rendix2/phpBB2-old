@@ -64,7 +64,7 @@ foreach ($configs as $config) {
     if (isset($_POST['submit'])) {
         if ($new[$config_name] !== $board_config[$config_name]) {
             dibi::update(Tables::CONFIG_TABLE, ['config_value' => $new[$config_name]])
-                ->where('config_name = %s', $config_name)
+                ->where('[config_name] = %s', $config_name)
                 ->execute();
         }
     }
@@ -75,7 +75,9 @@ if (isset($_POST['submit'])) {
 
     $cache->remove(Tables::CONFIG_TABLE);
 
-    $message = $lang['Config_updated'] . '<br /><br />' . sprintf($lang['Click_return_config'], '<a href="' . Session::appendSid('admin_board.php') . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
+    $message  = $lang['Config_updated'] . '<br /><br />';
+    $message .= sprintf($lang['Click_return_config'], '<a href="' . Session::appendSid('admin_board.php') . '">', '</a>') . '<br /><br />';
+    $message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
     message_die(GENERAL_MESSAGE, $message);
 }

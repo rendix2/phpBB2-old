@@ -37,8 +37,8 @@ if (isset($_POST['submit'])) {
 
 	$user = dibi::select(['user_id', 'username', 'user_email', 'user_active', 'user_lang'])
         ->from(Tables::USERS_TABLE)
-        ->where('user_email = %s', $email)
-        ->where('username = %s', $username)
+        ->where('[user_email] = %s', $email)
+        ->where('[username] = %s', $username)
         ->fetch();
 
 	if (!$user) {
@@ -56,12 +56,12 @@ if (isset($_POST['submit'])) {
     $userPassword      = Random::generate(12);
 
     $updateData = [
-        'user_newpasswd' => password_hash($userPassword, PASSWORD_BCRYPT),
-        'user_actkey'    => $userActivationKey
+        'user_new_password' => password_hash($userPassword, PASSWORD_BCRYPT),
+        'user_act_key'      => $userActivationKey
     ];
 
     dibi::update(Tables::USERS_TABLE, $updateData)
-        ->where('user_id = %i', $user->user_id)
+        ->where('[user_id] = %i', $user->user_id)
         ->execute();
 
     $params =         [
@@ -91,7 +91,8 @@ if (isset($_POST['submit'])) {
         ]
     );
 
-    $message = $lang['Password_updated'] . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
+    $message  = $lang['Password_updated'] . '<br /><br />';
+    $message .= sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
     message_die(GENERAL_MESSAGE, $message);
 }
@@ -99,7 +100,7 @@ if (isset($_POST['submit'])) {
 //
 // Output basic page
 //
-PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $page_title, $gen_simple_header);
 
 $template->setFileNames(['body' => 'profile_send_pass.tpl']);
 make_jumpbox('viewforum.php');

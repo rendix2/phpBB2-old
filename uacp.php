@@ -51,16 +51,16 @@ require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $language . $sep .
 
 $start = get_var('start', 0);
 $sort_order = get_var('order', 'ASC');
-$sort_order = ($sort_order === 'ASC') ? 'ASC' : 'DESC';
+$sort_order = $sort_order === 'ASC' ? 'ASC' : 'DESC';
 $mode = get_var('mode', '');
 
 $mode_types = [
     'real_filename' => $lang['Sort_Filename'],
-    'comment' => $lang['Sort_Comment'],
-    'extension' => $lang['Sort_Extension'],
-    'filesize' => $lang['Sort_Size'],
-    'downloads' => $lang['Sort_Downloads'],
-    'post_time' => $lang['Sort_Posttime']
+    'comment'       => $lang['Sort_Comment'],
+    'extension'     => $lang['Sort_Extension'],
+    'filesize'      => $lang['Sort_Size'],
+    'downloads'     => $lang['Sort_Downloads'],
+    'post_time'     => $lang['Sort_Posttime']
 ];
 
 if (!$mode) {
@@ -78,7 +78,7 @@ if (count($mode_types) > 0) {
 	$select_sort_mode = '<select name="mode">';
 
 	foreach ($mode_types as $value => $text) {
-		$selected = ($mode === $value) ? ' selected="selected"' : '';
+		$selected = $mode === $value ? ' selected="selected"' : '';
 		$select_sort_mode .= '<option value="' . $value . '"' . $selected . '>' . $text . '</option>';
 	}
 	$select_sort_mode .= '</select>';
@@ -93,7 +93,7 @@ if ($sort_order === 'ASC') {
 $select_sort_order .= '</select>';
 
 $delete = isset($_POST['delete']);
-$delete_id_list = (isset($_POST['delete_id_list'])) ? array_map('intval', $_POST['delete_id_list']) : [];
+$delete_id_list = isset($_POST['delete_id_list']) ? array_map('intval', $_POST['delete_id_list']) : [];
 
 $confirm = isset($_POST['confirm']) && $_POST['confirm'];
 
@@ -104,7 +104,7 @@ if ($confirm && count($delete_id_list)) {
 	    $row = dibi::select(['post_id', 'privmsgs_id'])
             ->from(Tables::ATTACH_ATTACHMENT_TABLE)
             ->where('[attach_id] = %i', $attachId)
-            ->where('(user_id_1 = %i OR user_id_2 = %i)', $profiledata['user_id'], $profiledata['user_id'])
+            ->where('([user_id_1] = %i OR [user_id_2] = %i)', $profiledata['user_id'], $profiledata['user_id'])
             ->fetch();
 
         if ($row) {
@@ -164,27 +164,27 @@ $s_hidden .= '<input type="hidden" name="sid" value="' . $userdata['session_id']
 // Assign Template Vars
 $template->assignVars(
     [
-        'L_SUBMIT' => $lang['Submit'],
-        'L_UACP' => $lang['UACP'],
+        'L_SUBMIT'             => $lang['Submit'],
+        'L_UACP'               => $lang['UACP'],
         'L_SELECT_SORT_METHOD' => $lang['Select_sort_method'],
-        'L_ORDER' => $lang['Order'],
-        'L_FILENAME' => $lang['File_name'],
-        'L_FILECOMMENT' => $lang['File_comment_cp'],
-        'L_EXTENSION' => $lang['Extension'],
-        'L_SIZE' => $lang['Sort_Size'],
-        'L_DOWNLOADS' => $lang['Downloads'],
-        'L_POST_TIME' => $lang['Post_time'],
-        'L_POSTED_IN_TOPIC' => $lang['Posted_in_topic'],
-        'L_DELETE' => $lang['Delete'],
-        'L_DELETE_MARKED' => $lang['Delete_marked'],
-        'L_MARK_ALL' => $lang['Mark_all'],
-        'L_UNMARK_ALL' => $lang['Unmark_all'],
+        'L_ORDER'              => $lang['Order'],
+        'L_FILENAME'           => $lang['File_name'],
+        'L_FILECOMMENT'        => $lang['File_comment_cp'],
+        'L_EXTENSION'          => $lang['Extension'],
+        'L_SIZE'               => $lang['Sort_Size'],
+        'L_DOWNLOADS'          => $lang['Downloads'],
+        'L_POST_TIME'          => $lang['Post_time'],
+        'L_POSTED_IN_TOPIC'    => $lang['Posted_in_topic'],
+        'L_DELETE'             => $lang['Delete'],
+        'L_DELETE_MARKED'      => $lang['Delete_marked'],
+        'L_MARK_ALL'           => $lang['Mark_all'],
+        'L_UNMARK_ALL'         => $lang['Unmark_all'],
 
         'USERNAME' => $profiledata['username'],
 
-        'S_USER_HIDDEN' => $s_hidden,
-        'S_MODE_ACTION' => Session::appendSid($phpbb_root_path . 'uacp.php'),
-        'S_MODE_SELECT' => $select_sort_mode,
+        'S_USER_HIDDEN'  => $s_hidden,
+        'S_MODE_ACTION'  => Session::appendSid($phpbb_root_path . 'uacp.php'),
+        'S_MODE_SELECT'  => $select_sort_mode,
         'S_ORDER_SELECT' => $select_sort_order
     ]
 );
@@ -245,8 +245,8 @@ if ($num_attach_ids > 0) {
 
 if (count($attachments) > 0) {
     foreach ($attachments as $i => $attachment) {
-        $row_color = (!($i % 2)) ? $theme['td_color1'] : $theme['td_color2'];
-        $row_class = (!($i % 2)) ? $theme['td_class1'] : $theme['td_class2'];
+        $rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+        $rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
 		// Is the Attachment assigned to more than one post?
 		// If it's not assigned to any post, it's an private message thingy. ;)
@@ -335,17 +335,17 @@ if (count($attachments) > 0) {
 
             $template->assignBlockVars('attachrow',
                 [
-                    'ROW_NUMBER' => $i + ($start + 1),
-                    'ROW_COLOR' => '#' . $row_color,
-                    'ROW_CLASS' => $row_class,
+                    'ROW_NUMBER' => $i + $start + 1,
+                    'ROW_COLOR'  => '#' . $rowColor,
+                    'ROW_CLASS'  => $rowClass,
 
-                    'FILENAME' => $attachment->real_filename,
-                    'COMMENT' => nl2br($attachment->comment),
-                    'EXTENSION' => $attachment->extension,
-                    'SIZE' => get_formatted_filesize($attachment->filesize),
+                    'FILENAME'       => $attachment->real_filename,
+                    'COMMENT'        => nl2br($attachment->comment),
+                    'EXTENSION'      => $attachment->extension,
+                    'SIZE'           => get_formatted_filesize($attachment->filesize),
                     'DOWNLOAD_COUNT' => $attachment->download_count,
-                    'POST_TIME' => create_date($board_config['default_dateformat'], $attachment->filetime, $board_config['board_timezone']),
-                    'POST_TITLE' => $post_titles,
+                    'POST_TIME'      => create_date($board_config['default_dateformat'], $attachment->filetime, $board_config['board_timezone']),
+                    'POST_TITLE'     => $post_titles,
 
                     'S_DELETE_BOX' => $delete_box,
                     'S_HIDDEN' => $hidden_field,

@@ -109,17 +109,17 @@ $error = false;
 //
 // Define the box image links
 //
-$inbox_img = $folder !== 'inbox' || $mode !== '' ? '<a href="' . Session::appendSid('privmsg.php?folder=inbox') . '"><img src="' . $images['pm_inbox'] . '" border="0" alt="' . $lang['Inbox'] . '" /></a>' : '<img src="' . $images['pm_inbox'] . '" border="0" alt="' . $lang['Inbox'] . '" />';
-$inbox_url = $folder !== 'inbox' || $mode !== '' ? '<a href="' . Session::appendSid('privmsg.php?folder=inbox') . '">' . $lang['Inbox'] . '</a>' : $lang['Inbox'];
+$inboxImage = $folder !== 'inbox' || $mode !== '' ? '<a href="' . Session::appendSid('privmsg.php?folder=inbox') . '"><img src="' . $images['pm_inbox'] . '" border="0" alt="' . $lang['Inbox'] . '" /></a>' : '<img src="' . $images['pm_inbox'] . '" border="0" alt="' . $lang['Inbox'] . '" />';
+$inboxUrl   = $folder !== 'inbox' || $mode !== '' ? '<a href="' . Session::appendSid('privmsg.php?folder=inbox') . '">' . $lang['Inbox'] . '</a>' : $lang['Inbox'];
 
-$outbox_img = $folder !== 'outbox' || $mode !== '' ? '<a href="' . Session::appendSid('privmsg.php?folder=outbox') . '"><img src="' . $images['pm_outbox'] . '" border="0" alt="' . $lang['Outbox'] . '" /></a>' : '<img src="' . $images['pm_outbox'] . '" border="0" alt="' . $lang['Outbox'] . '" />';
-$outbox_url = $folder !== 'outbox' || $mode !== '' ? '<a href="' . Session::appendSid('privmsg.php?folder=outbox') . '">' . $lang['Outbox'] . '</a>' : $lang['Outbox'];
+$outBoxImage = $folder !== 'outbox' || $mode !== '' ? '<a href="' . Session::appendSid('privmsg.php?folder=outbox') . '"><img src="' . $images['pm_outbox'] . '" border="0" alt="' . $lang['Outbox'] . '" /></a>' : '<img src="' . $images['pm_outbox'] . '" border="0" alt="' . $lang['Outbox'] . '" />';
+$outBoxUrl   = $folder !== 'outbox' || $mode !== '' ? '<a href="' . Session::appendSid('privmsg.php?folder=outbox') . '">' . $lang['Outbox'] . '</a>' : $lang['Outbox'];
 
-$sentbox_img = $folder !== 'sentbox' || $mode !== '' ? '<a href="' . Session::appendSid('privmsg.php?folder=sentbox') . '"><img src="' . $images['pm_sentbox'] . '" border="0" alt="' . $lang['Sentbox'] . '" /></a>' : '<img src="' . $images['pm_sentbox'] . '" border="0" alt="' . $lang['Sentbox'] . '" />';
-$sentbox_url = $folder !== 'sentbox' || $mode !== '' ? '<a href="' . Session::appendSid('privmsg.php?folder=sentbox') . '">' . $lang['Sentbox'] . '</a>' : $lang['Sentbox'];
+$sentBoxImage = $folder !== 'sentbox' || $mode !== '' ? '<a href="' . Session::appendSid('privmsg.php?folder=sentbox') . '"><img src="' . $images['pm_sentbox'] . '" border="0" alt="' . $lang['Sentbox'] . '" /></a>' : '<img src="' . $images['pm_sentbox'] . '" border="0" alt="' . $lang['Sentbox'] . '" />';
+$sentBoxUrl   = $folder !== 'sentbox' || $mode !== '' ? '<a href="' . Session::appendSid('privmsg.php?folder=sentbox') . '">' . $lang['Sentbox'] . '</a>' : $lang['Sentbox'];
 
-$savebox_img = $folder !== 'savebox' || $mode !== '' ? '<a href="' . Session::appendSid('privmsg.php?folder=savebox') . '"><img src="' . $images['pm_savebox'] . '" border="0" alt="' . $lang['Savebox'] . '" /></a>' : '<img src="' . $images['pm_savebox'] . '" border="0" alt="' . $lang['Savebox'] . '" />';
-$savebox_url = $folder !== 'savebox' || $mode !== '' ? '<a href="' . Session::appendSid('privmsg.php?folder=savebox') . '">' . $lang['Savebox'] . '</a>' : $lang['Savebox'];
+$saveBoxImage = $folder !== 'savebox' || $mode !== '' ? '<a href="' . Session::appendSid('privmsg.php?folder=savebox') . '"><img src="' . $images['pm_savebox'] . '" border="0" alt="' . $lang['Savebox'] . '" /></a>' : '<img src="' . $images['pm_savebox'] . '" border="0" alt="' . $lang['Savebox'] . '" />';
+$saveBoxUrl   = $folder !== 'savebox' || $mode !== '' ? '<a href="' . Session::appendSid('privmsg.php?folder=savebox') . '">' . $lang['Savebox'] . '</a>' : $lang['Savebox'];
 
 execute_privmsgs_attachment_handling($mode);
 
@@ -131,7 +131,7 @@ if ($mode === 'newpm') {
 
 	$page_title = $lang['Private_Messaging'];
 
-    PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+    PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $page_title, $gen_simple_header);
 
     $template->setFileNames(['body' => 'privmsgs_popup.tpl']);
 
@@ -157,7 +157,6 @@ if ($mode === 'newpm') {
     $template->pparse('body');
 
     PageHelper::footer($template, $userdata, $lang, $gen_simple_header);
-
 } elseif ($mode === 'read') {
     if (!empty($_GET[POST_POST_URL])) {
         $privmsgs_id = (int)$_GET[POST_POST_URL];
@@ -175,7 +174,7 @@ if ($mode === 'newpm') {
         'u.user_from',
         'u.user_website',
         'u.user_email',
-        'u.user_regdate',
+        'u.user_reg_date',
         'u.user_rank',
         'u.user_sig',
         'u.user_avatar',
@@ -197,21 +196,20 @@ if ($mode === 'newpm') {
         ->as('user_id_2')
         ->select('u.user_session_time')
         ->as('user_session_time_1')
-        ->select('u.user_allow_viewonline')
+        ->select('u.user_allow_view_online')
         ->select($columns)
         ->from(Tables::PRIVATE_MESSAGE_TABLE)
         ->as('pm')
         ->innerJoin(Tables::PRIVATE_MESSAGE_TEXT_TABLE)
         ->as('pmt')
-        ->on('pmt.privmsgs_text_id = pm.privmsgs_id')
+        ->on('[pmt.privmsgs_text_id] = [pm.privmsgs_id]')
         ->innerJoin(Tables::USERS_TABLE)
         ->as('u')
-        ->on('u.user_id = pm.privmsgs_from_userid')
+        ->on('[u.user_id] = [pm.privmsgs_from_userid]')
         ->innerJoin(Tables::USERS_TABLE)
         ->as('u2')
-        ->on('u2.user_id = pm.privmsgs_to_userid')
-        ->where('pm.privmsgs_id = %i', $privmsgs_id);
-
+        ->on('[u2.user_id] = [pm.privmsgs_to_userid]')
+        ->where('[pm.privmsgs_id] = %i', $privmsgs_id);
 
 	//
 	// SQL to pull appropriate message, prevents nosey people
@@ -221,28 +219,28 @@ if ($mode === 'newpm') {
 		case 'inbox':
 			$l_box_name = $lang['Inbox'];
 
-            $privmsg->where('pm.privmsgs_to_userid = %i', $userdata['user_id'])
-                    ->where('pm.privmsgs_type IN %in', [PRIVMSGS_READ_MAIL, PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL]);
+            $privmsg->where('[pm.privmsgs_to_userid] = %i', $userdata['user_id'])
+                    ->where('[pm.privmsgs_type] IN %in', [PRIVMSGS_READ_MAIL, PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL]);
 			break;
 			
 		case 'outbox':
 			$l_box_name = $lang['Outbox'];
 
-            $privmsg->where('pm.privmsgs_from_userid = %i', $userdata['user_id'])
-                    ->where('pm.privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL]);
+            $privmsg->where('[pm.privmsgs_from_userid] = %i', $userdata['user_id'])
+                    ->where('[pm.privmsgs_type] IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL]);
             break;
 			
 		case 'sentbox':
 			$l_box_name = $lang['Sentbox'];
 
-            $privmsg->where('pm.privmsgs_from_userid = %i', $userdata['user_id'])
-                    ->where('pm.privmsgs_type = %i', PRIVMSGS_SENT_MAIL);
+            $privmsg->where('[pm.privmsgs_from_userid] = %i', $userdata['user_id'])
+                    ->where('[pm.privmsgs_type] = %i', PRIVMSGS_SENT_MAIL);
 			break;
 			
 		case 'savebox':
 			$l_box_name = $lang['Savebox'];
 
-            $privmsg->where('((pm.privmsgs_to_userid = %i AND pm.privmsgs_type = %i) OR (pm.privmsgs_from_userid = %i AND pm.privmsgs_type = %i))',
+            $privmsg->where('(([pm.privmsgs_to_userid] = %i AND [pm.privmsgs_type] = %i) OR ([pm.privmsgs_from_userid] = %i AND [pm.privmsgs_type] = %i))',
                     $userdata['user_id'],
                     PRIVMSGS_SAVED_IN_MAIL,
                     $userdata['user_id'],
@@ -277,8 +275,8 @@ if ($mode === 'newpm') {
                 $countUnread = dibi::select('COUNT(*)')
                     ->as('count')
                     ->from(Tables::PRIVATE_MESSAGE_TABLE)
-                    ->where('privmsgs_to_userid = %i', $userdata['user_id'])
-                    ->where('privmsgs_type = %i', PRIVMSGS_NEW_MAIL)
+                    ->where('[privmsgs_to_userid] = %i', $userdata['user_id'])
+                    ->where('[privmsgs_type] = %i', PRIVMSGS_NEW_MAIL)
                     ->fetchSingle();
 
                 $countUnread--;
@@ -288,15 +286,15 @@ if ($mode === 'newpm') {
                 }
 
                 dibi::update(Tables::USERS_TABLE, ['user_new_privmsg' => 'user_new_privmsg - 1'])
-                    ->where('user_id = %i', $userdata['user_id'])
+                    ->where('[user_id] = %i', $userdata['user_id'])
                     ->execute();
                 break;
             case PRIVMSGS_UNREAD_MAIL:
                 $countUnread = dibi::select('COUNT(*)')
                     ->as('count')
                     ->from(Tables::PRIVATE_MESSAGE_TABLE)
-                    ->where('privmsgs_to_userid = %i', $userdata['user_id'])
-                    ->where('privmsgs_type = %i', PRIVMSGS_UNREAD_MAIL)
+                    ->where('[privmsgs_to_userid] = %i', $userdata['user_id'])
+                    ->where('[privmsgs_type] = %i', PRIVMSGS_UNREAD_MAIL)
                     ->fetchSingle();
 
                 $countUnread--;
@@ -306,13 +304,13 @@ if ($mode === 'newpm') {
                 }
 
                 dibi::update(Tables::USERS_TABLE, ['user_unread_privmsg%sql' => $countUnread])
-                    ->where('user_id = %i', $userdata['user_id'])
+                    ->where('[user_id] = %i', $userdata['user_id'])
                     ->execute();
                 break;
         }
 
 		dibi::update(Tables::PRIVATE_MESSAGE_TABLE, ['privmsgs_type' => PRIVMSGS_READ_MAIL])
-            ->where('privmsgs_id = %i', $privmsg->privmsgs_id)
+            ->where('[privmsgs_id] = %i', $privmsg->privmsgs_id)
             ->execute();
 
         $sent_info = dibi::select('COUNT(privmsgs_id)')
@@ -320,8 +318,8 @@ if ($mode === 'newpm') {
             ->select('MIN(privmsgs_date)')
             ->as('oldest_post_time')
             ->from(Tables::PRIVATE_MESSAGE_TABLE)
-            ->where('privmsgs_from_userid = %i', $privmsg->privmsgs_from_userid)
-            ->where('privmsgs_type = %i', PRIVMSGS_SENT_MAIL)
+            ->where('[privmsgs_from_userid] = %i', $privmsg->privmsgs_from_userid)
+            ->where('[privmsgs_type] = %i', PRIVMSGS_SENT_MAIL)
             ->fetch();
 
         $sql_priority = (Config::DBMS === 'mysql') ? 'LOW_PRIORITY' : '';
@@ -330,19 +328,19 @@ if ($mode === 'newpm') {
 			if ($board_config['max_sentbox_privmsgs'] && $sent_info->sent_items >= $board_config['max_sentbox_privmsgs']) {
                 $old_privmsgs_id = dibi::select('privmsgs_id')
                     ->from(Tables::PRIVATE_MESSAGE_TABLE)
-                    ->where('privmsgs_type = %i', PRIVMSGS_SENT_MAIL)
-                    ->where('privmsgs_date = %i', $sent_info->oldest_post_time)
-                    ->where('privmsgs_from_userid = %i', $privmsg->privmsgs_from_userid)
+                    ->where('[privmsgs_type] = %i', PRIVMSGS_SENT_MAIL)
+                    ->where('[privmsgs_date] = %i', $sent_info->oldest_post_time)
+                    ->where('[privmsgs_from_userid] = %i', $privmsg->privmsgs_from_userid)
                     ->fetchSingle();
 
 				dibi::delete(Tables::PRIVATE_MESSAGE_TABLE)
                     ->setFlag($sql_priority)
-                    ->where('privmsgs_id = %i', $old_privmsgs_id)
+                    ->where('[privmsgs_id] = %i', $old_privmsgs_id)
                     ->execute();
 
                 dibi::delete(Tables::PRIVATE_MESSAGE_TEXT_TABLE)
                     ->setFlag($sql_priority)
-                    ->where('privmsgs_text_id = %i', $old_privmsgs_id)
+                    ->where('[privmsgs_text_id] = %i', $old_privmsgs_id)
                     ->execute();
 			}
 		}
@@ -380,7 +378,7 @@ if ($mode === 'newpm') {
 
     $privmsg_sent_id = isset($privmsg_sent_id) ? $privmsg_sent_id : $privmsg_id;
 
-    $attachment_mod['pm']->duplicate_attachment_pm($privmsg['privmsgs_attachment'], $privmsg['privmsgs_id'], $privmsg_sent_id);
+    $attachment_mod['pm']->duplicate_attachment_pm($privmsg->privmsgs_attachment, $privmsg->privmsgs_id, $privmsg_sent_id);
 
 	//
 	// Pick a folder, any folder, so long as it's one below ...
@@ -407,19 +405,19 @@ if ($mode === 'newpm') {
 	];
 
     // <!-- BEGIN Another Online/Offline indicator -->
-    if ((!$privmsg['user_allow_viewonline'] && $userdata['user_level'] === ADMIN) || $privmsg['user_allow_viewonline']) {
+    if ((!$privmsg->user_allow_view_online && $userdata['user_level'] === ADMIN) || $privmsg->user_allow_view_online) {
         $expiry_time = time() - ONLINE_TIME_DIFF;
 
-        if ($privmsg['user_session_time_1'] >= $expiry_time) {
+        if ($privmsg->user_session_time_1 >= $expiry_time) {
             $user_onlinestatus = '<img src="' . $images['Online_small'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" />';
 
-            if (!$privmsg['user_allow_viewonline'] && $userdata['user_level'] === ADMIN) {
+            if (!$privmsg->user_allow_view_online && $userdata['user_level'] === ADMIN) {
                 $user_onlinestatus = '<img src="' . $images['Hidden_Admin_small'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
             }
         } else {
             $user_onlinestatus = '<img src="' . $images['Offline_small'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
 
-            if (!$privmsg['user_allow_viewonline'] && $userdata['user_level'] === ADMIN) {
+            if (!$privmsg->user_allow_view_online && $userdata['user_level'] === ADMIN) {
                 $user_onlinestatus = '<img src="' . $images['Offline_small'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
             }
         }
@@ -429,24 +427,24 @@ if ($mode === 'newpm') {
     // <!-- END Another Online/Offline indicator -->
 
     if ($folder === 'inbox') {
-		$post_img = $post_icons['post_img'];
-		$reply_img = $post_icons['reply_img'];
-		$quote_img = $post_icons['quote_img'];
-		$edit_img = '';
-		$post = $post_icons['post'];
-		$reply = $post_icons['reply'];
-		$quote = $post_icons['quote'];
-		$edit = '';
+		$postImage  = $post_icons['post_img'];
+		$replyImage = $post_icons['reply_img'];
+		$quoteImage = $post_icons['quote_img'];
+		$editImage  = '';
+		$post       = $post_icons['post'];
+		$reply      = $post_icons['reply'];
+		$quote      = $post_icons['quote'];
+		$edit       = '';
 		$l_box_name = $lang['Inbox'];
 	} elseif ($folder === 'outbox') {
-		$post_img = $post_icons['post_img'];
-		$reply_img = '';
-		$quote_img = '';
-		$edit_img = $post_icons['edit_img'];
-		$post = $post_icons['post'];
-		$reply = '';
-		$quote = '';
-		$edit = $post_icons['edit'];
+		$postImage  = $post_icons['post_img'];
+		$replyImage = '';
+		$quoteImage = '';
+		$editImage  = $post_icons['edit_img'];
+		$post       = $post_icons['post'];
+		$reply      = '';
+		$quote      = '';
+		$edit       = $post_icons['edit'];
 		$l_box_name = $lang['Outbox'];
 
         // <!-- BEGIN Another Online/Offline indicator -->
@@ -454,27 +452,27 @@ if ($mode === 'newpm') {
         // <!-- END Another Online/Offline indicator -->
     } elseif ($folder === 'savebox') {
         if ($privmsg->privmsgs_type === PRIVMSGS_SAVED_IN_MAIL) {
-			$post_img = $post_icons['post_img'];
-			$reply_img = $post_icons['reply_img'];
-			$quote_img = $post_icons['quote_img'];
-			$edit_img = '';
-			$post = $post_icons['post'];
-			$reply = $post_icons['reply'];
-			$quote = $post_icons['quote'];
-			$edit = '';
+			$postImage  = $post_icons['post_img'];
+			$replyImage = $post_icons['reply_img'];
+			$quoteImage = $post_icons['quote_img'];
+			$editImage  = '';
+			$post       = $post_icons['post'];
+			$reply      = $post_icons['reply'];
+			$quote      = $post_icons['quote'];
+			$edit       = '';
 
             // <!-- BEGIN Another Online/Offline indicator -->
             $user_onlinestatus = '';
             // <!-- END Another Online/Offline indicator -->
 		} else {
-			$post_img = $post_icons['post_img'];
-			$reply_img = '';
-			$quote_img = '';
-			$edit_img = '';
-			$post = $post_icons['post'];
-			$reply = '';
-			$quote = '';
-			$edit = '';
+			$postImage  = $post_icons['post_img'];
+			$replyImage = '';
+			$quoteImage = '';
+			$editImage  = '';
+			$post       = $post_icons['post'];
+			$reply      = '';
+			$quote      = '';
+			$edit       = '';
 
             // <!-- BEGIN Another Online/Offline indicator -->
             $user_onlinestatus = '';
@@ -483,14 +481,14 @@ if ($mode === 'newpm') {
 
 		$l_box_name = $lang['Saved'];
     } elseif ($folder === 'sentbox') {
-		$post_img = $post_icons['post_img'];
-		$reply_img = '';
-		$quote_img = '';
-		$edit_img = '';
-		$post = $post_icons['post'];
-		$reply = '';
-		$quote = '';
-		$edit = '';
+		$postImage  = $post_icons['post_img'];
+		$replyImage = '';
+		$quoteImage = '';
+		$editImage  = '';
+		$post       = $post_icons['post'];
+		$reply      = '';
+		$quote      = '';
+		$edit       = '';
 		$l_box_name = $lang['Sent'];
 	}
 
@@ -498,7 +496,7 @@ if ($mode === 'newpm') {
 
 	$page_title = $lang['Read_pm'];
 
-    PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+    PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $page_title, $gen_simple_header);
 
 	//
 	// Load templates
@@ -508,24 +506,25 @@ if ($mode === 'newpm') {
 
     $template->assignVars(
         [
-            'INBOX_IMG'   => $inbox_img,
-            'SENTBOX_IMG' => $sentbox_img,
-            'OUTBOX_IMG'  => $outbox_img,
-            'SAVEBOX_IMG' => $savebox_img,
-            'INBOX'       => $inbox_url,
+            'INBOX_IMG'   => $inboxImage,
+            'SENTBOX_IMG' => $sentBoxImage,
+            'OUTBOX_IMG'  => $outBoxImage,
+            'SAVEBOX_IMG' => $saveBoxImage,
 
-            'POST_PM_IMG'  => $post_img,
-            'REPLY_PM_IMG' => $reply_img,
-            'EDIT_PM_IMG'  => $edit_img,
-            'QUOTE_PM_IMG' => $quote_img,
+            'INBOX'   => $inboxUrl,
+            'SENTBOX' => $sentBoxUrl,
+            'OUTBOX'  => $outBoxUrl,
+            'SAVEBOX' => $saveBoxUrl,
+
+            'POST_PM_IMG'  => $postImage,
+            'REPLY_PM_IMG' => $replyImage,
+            'EDIT_PM_IMG'  => $editImage,
+            'QUOTE_PM_IMG' => $quoteImage,
+
             'POST_PM'      => $post,
             'REPLY_PM'     => $reply,
             'EDIT_PM'      => $edit,
             'QUOTE_PM'     => $quote,
-
-            'SENTBOX' => $sentbox_url,
-            'OUTBOX'  => $outbox_url,
-            'SAVEBOX' => $savebox_url,
 
             'BOX_NAME' => $l_box_name,
 
@@ -553,7 +552,7 @@ if ($mode === 'newpm') {
 	$username_to = $privmsg->username_2;
 	$user_id_to = $privmsg->user_id_2;
 
-    init_display_pm_attachments($privmsg['privmsgs_attachment']);
+    init_display_pm_attachments($privmsg->privmsgs_attachment);
 
 	$post_date = create_date($board_config['default_dateformat'], $privmsg->privmsgs_date, $board_config['board_timezone']);
 
@@ -590,7 +589,7 @@ if ($mode === 'newpm') {
 	$bbcode_uid      = $privmsg->privmsgs_bbcode_uid;
 
     if ($board_config['allow_sig']) {
-        $user_sig = ($privmsg->privmsgs_from_userid === $userdata['user_id']) ? $userdata['user_sig'] : $privmsg->user_sig;
+        $user_sig = $privmsg->privmsgs_from_userid === $userdata['user_id'] ? $userdata['user_sig'] : $privmsg->user_sig;
     } else {
         $user_sig = '';
     }
@@ -605,7 +604,7 @@ if ($mode === 'newpm') {
 	// If the board has HTML off but the post has HTML
 	// on then we process it, else leave it alone
 	//
-    if (!$board_config['allow_html'] || !$userdata['user_allowhtml']) {
+    if (!$board_config['allow_html'] || !$userdata['user_allow_html']) {
         if ($user_sig !== '') {
             $user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
         }
@@ -660,7 +659,6 @@ if ($mode === 'newpm') {
             'POSTER_POSTS'  => $poster_posts,
             'POSTER_FROM'   => $poster_from,
             'POSTER_AVATAR' => $poster_avatar,
-
             */
 
             'POST_SUBJECT'  => htmlspecialchars($post_subject, ENT_QUOTES),
@@ -707,7 +705,7 @@ if ($mode === 'newpm') {
 		//
 		// Output confirmation page
 		//
-        PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+        PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $page_title, $gen_simple_header);
 
         $template->setFileNames(['confirm_body' => 'confirm_body.tpl']);
         $template->assignVars(
@@ -729,31 +727,31 @@ if ($mode === 'newpm') {
 
 	} elseif ($confirm && $sid === $userdata['session_id']) {
 	    // check marklist
-		switch($folder) {
+		switch ($folder) {
 			case 'inbox':
                 $mark_list = dibi::select('privmsgs_id')
                     ->from(Tables::PRIVATE_MESSAGE_TABLE)
-                    ->where('privmsgs_to_userid = %i', $userdata['user_id'])
-                    ->where('privmsgs_type IN %in', [PRIVMSGS_READ_MAIL, PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
-                    ->where('privmsgs_id IN %in', $mark_list)
+                    ->where('[privmsgs_to_userid] = %i', $userdata['user_id'])
+                    ->where('[privmsgs_type] IN %in', [PRIVMSGS_READ_MAIL, PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
+                    ->where('[privmsgs_id] IN %in', $mark_list)
                     ->fetchPairs(null, 'privmsgs_id');
                 break;
 
 			case 'outbox':
                 $mark_list = dibi::select('privmsgs_id')
                     ->from(Tables::PRIVATE_MESSAGE_TABLE)
-                    ->where('privmsgs_from_userid = %i', $userdata['user_id'])
-                    ->where('privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
-                    ->where('privmsgs_id IN %in', $mark_list)
+                    ->where('[privmsgs_from_userid] = %i', $userdata['user_id'])
+                    ->where('[privmsgs_type] IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
+                    ->where('[privmsgs_id] IN %in', $mark_list)
                     ->fetchPairs(null, 'privmsgs_id');
 				break;
 
 			case 'sentbox':
                 $mark_list = dibi::select('privmsgs_id')
                     ->from(Tables::PRIVATE_MESSAGE_TABLE)
-                    ->where('privmsgs_from_userid = %i', $userdata['user_id'])
-                    ->where('privmsgs_type = %i', PRIVMSGS_SENT_MAIL)
-                    ->where('privmsgs_id IN %in', $mark_list)
+                    ->where('[privmsgs_from_userid] = %i', $userdata['user_id'])
+                    ->where('[privmsgs_type] = %i', PRIVMSGS_SENT_MAIL)
+                    ->where('[privmsgs_id] IN %in', $mark_list)
                     ->fetchPairs(null, 'privmsgs_id');
 				break;
 
@@ -761,13 +759,13 @@ if ($mode === 'newpm') {
                 $mark_list = dibi::select('privmsgs_id')
                     ->from(Tables::PRIVATE_MESSAGE_TABLE)
                     ->where(
-                        '( (privmsgs_from_userid = %i AND privmsgs_type = %i) OR (privmsgs_to_userid  = %i AND privmsgs_type = %i) )',
+                        '( ([privmsgs_from_userid] = %i AND [privmsgs_type] = %i) OR ([privmsgs_to_userid]  = %i AND [privmsgs_type] = %i) )',
                         $userdata['user_id'],
                         PRIVMSGS_SAVED_OUT_MAIL,
                         $userdata['user_id'],
                         PRIVMSGS_SAVED_IN_MAIL
                     )
-                    ->where('privmsgs_id IN %in', $mark_list)
+                    ->where('[privmsgs_id] IN %in', $mark_list)
                     ->fetchPairs(null, 'privmsgs_id');
 				break;
 		}
@@ -780,18 +778,18 @@ if ($mode === 'newpm') {
                 // so we can adjust users counters appropriately
 			    $rows = dibi::select(['privmsgs_to_userid', 'privmsgs_type'])
                     ->from(Tables::PRIVATE_MESSAGE_TABLE)
-                    ->where('privmsgs_id IN %in', $mark_list);
+                    ->where('[privmsgs_id] IN %in', $mark_list);
 
 				switch ($folder) {
 					case 'inbox':
-                        $rows->where('privmsgs_to_userid = %i', $userdata['user_id']);
+                        $rows->where('[privmsgs_to_userid] = %i', $userdata['user_id']);
 						break;
 					case 'outbox':
-                        $rows->where('privmsgs_from_userid = %i', $userdata['user_id']);
+                        $rows->where('[privmsgs_from_userid] = %i', $userdata['user_id']);
 						break;
 				}
 
-                $rows = $rows->where('privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
+                $rows = $rows->where('[privmsgs_type] IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
                     ->fetchAll();
 
                 if (count($rows)) {
@@ -831,7 +829,7 @@ if ($mode === 'newpm') {
 
 							foreach ($dec_array as $dec => $user_ids) {
 								dibi::update(Tables::USERS_TABLE, [$type . '%sql' => $type . ' - ' . $dec])
-                                    ->where('user_id IN %in', $user_ids)
+                                    ->where('[user_id] IN %in', $user_ids)
                                     ->execute();
 							}
 						}
@@ -843,40 +841,40 @@ if ($mode === 'newpm') {
 
             // Delete the messages text
 			dibi::delete(Tables::PRIVATE_MESSAGE_TEXT_TABLE)
-                ->where('privmsgs_text_id IN %in', $mark_list)
+                ->where('[privmsgs_text_id] IN %in', $mark_list)
                 ->execute();
 
             // Delete the messages
             switch ($folder) {
 				case 'inbox':
                     dibi::delete(Tables::PRIVATE_MESSAGE_TABLE)
-                        ->where('privmsgs_id IN %in', $mark_list)
-                        ->where('privmsgs_to_userid = %i', $userdata['user_id'])
-                        ->where('privmsgs_type IN %in', [PRIVMSGS_READ_MAIL, PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
+                        ->where('[privmsgs_id] IN %in', $mark_list)
+                        ->where('[privmsgs_to_userid] = %i', $userdata['user_id'])
+                        ->where('[privmsgs_type] IN %in', [PRIVMSGS_READ_MAIL, PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
                         ->execute();
                     break;
 
 				case 'outbox':
                     dibi::delete(Tables::PRIVATE_MESSAGE_TABLE)
-                        ->where('privmsgs_id IN %in', $mark_list)
-                        ->where('privmsgs_from_userid = %i', $userdata['user_id'])
-                        ->where('privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
+                        ->where('[privmsgs_id] IN %in', $mark_list)
+                        ->where('[privmsgs_from_userid] = %i', $userdata['user_id'])
+                        ->where('[privmsgs_type] IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
                         ->execute();
                     break;
 
 				case 'sentbox':
                     dibi::delete(Tables::PRIVATE_MESSAGE_TABLE)
-                        ->where('privmsgs_id IN %in', $mark_list)
-                        ->where('privmsgs_from_userid = %i', $userdata['user_id'])
-                        ->where('privmsgs_type = %i', PRIVMSGS_SENT_MAIL)
+                        ->where('[privmsgs_id] IN %in', $mark_list)
+                        ->where('[privmsgs_from_userid] = %i', $userdata['user_id'])
+                        ->where('[privmsgs_type] = %i', PRIVMSGS_SENT_MAIL)
                         ->execute();
 					break;
 
 				case 'savebox':
                     dibi::delete(Tables::PRIVATE_MESSAGE_TABLE)
-                        ->where('privmsgs_id IN %in', $mark_list)
+                        ->where('[privmsgs_id] IN %in', $mark_list)
                         ->where(
-                            '( (privmsgs_from_userid = %i AND privmsgs_type = %i ) OR (privmsgs_to_userid = %i AND privmsgs_type = %i ) )',
+                            '( ([privmsgs_from_userid] = %i AND [privmsgs_type] = %i ) OR ([privmsgs_to_userid] = %i AND [privmsgs_type] = %i ) )',
                             $userdata['user_id'],
                             PRIVMSGS_SAVED_OUT_MAIL,
                             $userdata['user_id'],
@@ -900,7 +898,7 @@ if ($mode === 'newpm') {
             ->as('oldest_post_time')
             ->from(Tables::PRIVATE_MESSAGE_TABLE)
             ->where(
-                '((privmsgs_to_userid = %i AND privmsgs_type = %i) OR (privmsgs_from_userid = %i AND privmsgs_type = %i))',
+                '(([privmsgs_to_userid] = %i AND [privmsgs_type] = %i) OR ([privmsgs_from_userid] = %i AND [privmsgs_type] = %i))',
                 $userdata['user_id'],
                 PRIVMSGS_SAVED_IN_MAIL,
                 $userdata['user_id'],
@@ -914,23 +912,23 @@ if ($mode === 'newpm') {
 			    $old_privmsgs_id = dibi::select('privmsgs_id')
                     ->from(Tables::PRIVATE_MESSAGE_TABLE)
                     ->where(
-                        '((privmsgs_to_userid = %i AND privmsgs_type = %i) OR (privmsgs_from_userid = %i AND privmsgs_type = %i))',
+                        '(([privmsgs_to_userid] = %i AND [privmsgs_type] = %i) OR ([privmsgs_from_userid] = %i AND [privmsgs_type] = %i))',
                         $userdata['user_id'],
                         PRIVMSGS_SAVED_IN_MAIL,
                         $userdata['user_id'],
                         PRIVMSGS_SAVED_OUT_MAIL
                     )
-                    ->where('privmsgs_date = %i', $saved_info->oldest_post_time)
+                    ->where('[privmsgs_date] = %i', $saved_info->oldest_post_time)
                     ->fetchSingle();
 
 				dibi::delete(Tables::PRIVATE_MESSAGE_TABLE)
                     ->setFlag($sql_priority)
-                    ->where('privmsgs_id = %i', $old_privmsgs_id)
+                    ->where('[privmsgs_id] = %i', $old_privmsgs_id)
                     ->execute();
 
                 dibi::delete(Tables::PRIVATE_MESSAGE_TEXT_TABLE)
                     ->setFlag($sql_priority)
-                    ->where('privmsgs_text_id = %i', $old_privmsgs_id)
+                    ->where('[privmsgs_text_id] = %i', $old_privmsgs_id)
                     ->execute();
 			}
 		}
@@ -941,18 +939,18 @@ if ($mode === 'newpm') {
 			// so we can adjust users counters appropriately
             $rows = dibi::select(['privmsgs_to_userid','privmsgs_type'])
                 ->from(Tables::PRIVATE_MESSAGE_TABLE)
-                ->where('privmsgs_id IN %in', $mark_list);
+                ->where('[privmsgs_id] IN %in', $mark_list);
 
             switch ($folder) {
                 case 'inbox':
-                    $rows->where('privmsgs_to_userid = %i', $userdata['user_id']);
+                    $rows->where('[privmsgs_to_userid] = %i', $userdata['user_id']);
                     break;
                 case 'outbox':
-                    $rows->where('privmsgs_from_userid = %i', $userdata['user_id']);
+                    $rows->where('[privmsgs_from_userid] = %i', $userdata['user_id']);
                     break;
             }
 
-            $rows = $rows->where('privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
+            $rows = $rows->where('[privmsgs_type] IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
                 ->fetchAll();
 
             // TODO its safe do ++ on empty array? :O
@@ -993,7 +991,7 @@ if ($mode === 'newpm') {
 
 						foreach ($dec_array as $dec => $user_ids) {
                             dibi::update(Tables::USERS_TABLE, [$type . '%sql' => $type . ' - ' . $dec])
-                                ->where('user_id IN %in', $user_ids)
+                                ->where('[user_id] IN %in', $user_ids)
                                 ->execute();
 						}
 					}
@@ -1006,25 +1004,25 @@ if ($mode === 'newpm') {
 		switch ($folder) {
 			case 'inbox':
                 dibi::update(Tables::PRIVATE_MESSAGE_TABLE, ['privmsgs_type' => PRIVMSGS_SAVED_IN_MAIL])
-                    ->where('privmsgs_to_userid = %i', $userdata['user_id'])
-                    ->where('privmsgs_type IN %in', [PRIVMSGS_READ_MAIL, PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
-                    ->where('privmsgs_id IN %in', $mark_list)
+                    ->where('[privmsgs_to_userid] = %i', $userdata['user_id'])
+                    ->where('[privmsgs_type] IN %in', [PRIVMSGS_READ_MAIL, PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
+                    ->where('[privmsgs_id] IN %in', $mark_list)
                     ->execute();
 				break;
 
 			case 'outbox':
                 dibi::update(Tables::PRIVATE_MESSAGE_TABLE, ['privmsgs_type' => PRIVMSGS_SAVED_OUT_MAIL])
-                    ->where('privmsgs_to_userid = %i', $userdata['user_id'])
-                    ->where('privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
-                    ->where('privmsgs_id IN %in', $mark_list)
+                    ->where('[privmsgs_to_userid] = %i', $userdata['user_id'])
+                    ->where('[privmsgs_type] IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
+                    ->where('[privmsgs_id] IN %in', $mark_list)
                     ->execute();
 				break;
 
 			case 'sentbox':
                 dibi::update(Tables::PRIVATE_MESSAGE_TABLE, ['privmsgs_type' => PRIVMSGS_SAVED_OUT_MAIL])
-                    ->where('privmsgs_to_userid = %i', $userdata['user_id'])
-                    ->where('privmsgs_type = %i', PRIVMSGS_SENT_MAIL)
-                    ->where('privmsgs_id IN %in', $mark_list)
+                    ->where('[privmsgs_to_userid] = %i', $userdata['user_id'])
+                    ->where('[privmsgs_type] = %i', PRIVMSGS_SENT_MAIL)
+                    ->where('[privmsgs_id] IN %in', $mark_list)
                     ->execute();
 				break;
 		}
@@ -1043,22 +1041,22 @@ if ($mode === 'newpm') {
     $html_on = 0;
 
     if ($board_config['allow_html']) {
-        $html_on = $submit || $refresh ? !isset($_POST['disable_html']) : $userdata['user_allowhtml'];
+        $html_on = $submit || $refresh ? !isset($_POST['disable_html']) : $userdata['user_allow_html'];
     }
 
     $bbcode_on = 0;
 
     if ($board_config['allow_bbcode']) {
-        $bbcode_on = $submit || $refresh ? !isset($_POST['disable_bbcode']) : $userdata['user_allowbbcode'];
+        $bbcode_on = $submit || $refresh ? !isset($_POST['disable_bbcode']) : $userdata['user_allow_bbcode'];
     }
 
     $smilies_on = 0;
 
     if ($board_config['allow_smilies']) {
-        $smilies_on = $submit || $refresh ? !isset($_POST['disable_smilies']) : $userdata['user_allowsmile'];
+        $smilies_on = $submit || $refresh ? !isset($_POST['disable_smilies']) : $userdata['user_allow_smile'];
     }
 
-	$attach_sig = $submit || $refresh ? isset($_POST['attach_sig']) : $userdata['user_attachsig'];
+	$attach_sig = $submit || $refresh ? isset($_POST['attach_sig']) : $userdata['user_attach_sig'];
 	$user_sig = $userdata['user_sig'] !== '' && $board_config['allow_sig'] ? $userdata['user_sig'] : '';
 
     if ($submit && $mode !== 'edit') {
@@ -1068,7 +1066,7 @@ if ($mode === 'newpm') {
         $last_post_time = dibi::select('MAX(privmsgs_date)')
             ->as('last_post_time')
             ->from(Tables::PRIVATE_MESSAGE_TABLE)
-            ->where('privmsgs_from_userid = %i', $userdata['user_id'])
+            ->where('[privmsgs_from_userid] = %i', $userdata['user_id'])
             ->fetchSingle();
 
         if ($last_post_time) {
@@ -1084,8 +1082,8 @@ if ($mode === 'newpm') {
 	if ($submit && $mode === 'edit') {
 	    $row = dibi::select('privmsgs_from_userid')
             ->from(Tables::PRIVATE_MESSAGE_TABLE)
-            ->where('privmsgs_id = %i', (int) $privmsg_id)
-            ->where('privmsgs_from_userid = %i', $userdata['user_id'])
+            ->where('[privmsgs_id] = %i', (int) $privmsg_id)
+            ->where('[privmsgs_from_userid] = %i', $userdata['user_id'])
             ->fetch();
 
 		if (!$row) {
@@ -1110,7 +1108,7 @@ if ($mode === 'newpm') {
 
             $to_userdata = dibi::select(['user_id', 'user_notify_pm', 'user_email', 'user_lang', 'user_active'])
                 ->from(Tables::USERS_TABLE)
-                ->where('username = %s', $toUserName)
+                ->where('[username] = %s', $toUserName)
                 ->fetch();
 
             if (!$to_userdata) {
@@ -1166,8 +1164,8 @@ if ($mode === 'newpm') {
                 ->select('MIN(privmsgs_date)')
                 ->as('oldest_post_time')
                 ->from(Tables::PRIVATE_MESSAGE_TABLE)
-                ->where('(privmsgs_type = %i OR privmsgs_type = %i OR privmsgs_type = %i)', PRIVMSGS_NEW_MAIL, PRIVMSGS_READ_MAIL, PRIVMSGS_UNREAD_MAIL)
-                ->where('privmsgs_to_userid = %i', $to_userdata['user_id'])
+                ->where('[privmsgs_type] IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_READ_MAIL, PRIVMSGS_UNREAD_MAIL])
+                ->where('[privmsgs_to_userid] = %i', $to_userdata['user_id'])
                 ->fetch();
 
             if (!$inbox_info) {
@@ -1179,19 +1177,19 @@ if ($mode === 'newpm') {
             if ($board_config['max_inbox_privmsgs'] && $inbox_info->inbox_items >= $board_config['max_inbox_privmsgs']) {
                 $old_privmsgs_id = dibi::select('privmsgs_id')
                     ->from(Tables::PRIVATE_MESSAGE_TABLE)
-                    ->where('(privmsgs_type = %i OR privmsgs_type = %i OR privmsgs_type)', PRIVMSGS_NEW_MAIL, PRIVMSGS_READ_MAIL, PRIVMSGS_UNREAD_MAIL)
-                    ->where('privmsgs_date = %i', $inbox_info->oldest_post_time)
-                    ->where('privmsgs_to_userid = %i', $to_userdata['user_id'])
+                    ->where('[privmsgs_type] IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_READ_MAIL, PRIVMSGS_UNREAD_MAIL])
+                    ->where('[privmsgs_date] = %i', $inbox_info->oldest_post_time)
+                    ->where('[privmsgs_to_userid] = %i', $to_userdata['user_id'])
                     ->fetchSingle();
 
                 dibi::delete(Tables::PRIVATE_MESSAGE_TABLE)
                     ->setFlag($sql_priority)
-                    ->where('privmsgs_id = %i', $old_privmsgs_id)
+                    ->where('[privmsgs_id = %i', $old_privmsgs_id)
                     ->execute();
 
                 dibi::delete(Tables::PRIVATE_MESSAGE_TEXT_TABLE)
                     ->setFlag($sql_priority)
-                    ->where('privmsgs_text_id = %i', $old_privmsgs_id)
+                    ->where('[privmsgs_text_id = %i', $old_privmsgs_id)
                     ->execute();
             }
 
@@ -1225,7 +1223,7 @@ if ($mode === 'newpm') {
             ];
 
 		    dibi::update(Tables::PRIVATE_MESSAGE_TABLE, $update_data)
-                ->where('privmsgs_id = %i', $privmsg_id)
+                ->where('[privmsgs_id] = %i', $privmsg_id)
                 ->execute();
 		}
 
@@ -1244,7 +1242,7 @@ if ($mode === 'newpm') {
             ];
 
 		    dibi::update(Tables::PRIVATE_MESSAGE_TEXT_TABLE, $update_data)
-                ->where('privmsgs_text_id = %i', $privmsg_id)
+                ->where('[privmsgs_text_id] = %i', $privmsg_id)
                 ->execute();
 		}
 
@@ -1261,7 +1259,7 @@ if ($mode === 'newpm') {
             ];
 
             dibi::update(Tables::USERS_TABLE, $update_data)
-                ->where('user_id = %i', $to_userdata['user_id'])
+                ->where('[user_id] = %i', $to_userdata['user_id'])
                 ->execute();
 
             if ($to_userdata['user_notify_pm'] && !empty($to_userdata['user_email']) && $to_userdata['user_active']) {
@@ -1300,9 +1298,11 @@ if ($mode === 'newpm') {
             ]
         );
 
-        $msg = $lang['Message_sent'] . '<br /><br />' . sprintf($lang['Click_return_inbox'], '<a href="' . Session::appendSid('privmsg.php?folder=inbox') . '">', '</a> ') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
+        $message  = $lang['Message_sent'] . '<br /><br />';
+        $message .= sprintf($lang['Click_return_inbox'], '<a href="' . Session::appendSid('privmsg.php?folder=inbox') . '">', '</a> ') . '<br /><br />';
+        $message .= sprintf($lang['Click_return_index'], '<a href="' . Session::appendSid('index.php') . '">', '</a>');
 
-		message_die(GENERAL_MESSAGE, $msg);
+		message_die(GENERAL_MESSAGE, $message);
     } elseif ($preview || $refresh || $error) {
 		//
 		// If we're previewing or refreshing then obtain the data
@@ -1338,8 +1338,8 @@ if ($mode === 'newpm') {
                 ->as('pm')
                 ->innerJoin(Tables::USERS_TABLE)
                 ->as('u')
-                ->on('u.user_id = pm.privmsgs_from_userid')
-                ->where('pm.privmsgs_id = %i', $privmsg_id)
+                ->on('[u.user_id] = [pm.privmsgs_from_userid]')
+                ->where('[pm.privmsgs_id] = %i', $privmsg_id)
                 ->fetch();
 
             if ($userdata['user_id'] !== $postrow->user_id) {
@@ -1362,7 +1362,7 @@ if ($mode === 'newpm') {
             } else {
                 $user_check = dibi::select('username')
                     ->from(Tables::USERS_TABLE)
-                    ->where('user_id = %i', $user_id)
+                    ->where('[user_id] = %i', $user_id)
                     ->fetch();
 
                 if ($user_check) {
@@ -1380,7 +1380,7 @@ if ($mode === 'newpm') {
                 'u.username',
                 'u.user_id',
                 'u.user_sig',
-                'u.user_allow_viewonline',
+                'u.user_allow_view_online',
                 'u.user_session_time'
             ];
 
@@ -1389,13 +1389,13 @@ if ($mode === 'newpm') {
                 ->as('pm')
                 ->innerJoin(Tables::PRIVATE_MESSAGE_TEXT_TABLE)
                 ->as('pmt')
-                ->on('pmt.privmsgs_text_id = pm.privmsgs_id')
+                ->on('[pmt.privmsgs_text_id] = [pm.privmsgs_id]')
                 ->innerJoin(Tables::USERS_TABLE)
                 ->as('u')
-                ->on('u.user_id = pm.privmsgs_to_userid')
-                ->where('pm.privmsgs_id = %i', $privmsg_id)
-                ->where('pm.privmsgs_from_userid = %i', $userdata['user_id'])
-                ->where('(pm.privmsgs_type = %i OR privmsgs_type = %i)', PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL)
+                ->on('[u.user_id] = [pm.privmsgs_to_userid]')
+                ->where('[pm.privmsgs_id] = %i', $privmsg_id)
+                ->where('[pm.privmsgs_from_userid] = %i', $userdata['user_id'])
+                ->where('[pm.privmsgs_type] IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL])
                 ->fetch();
 
             if (!$privmsg) {
@@ -1422,7 +1422,6 @@ if ($mode === 'newpm') {
 
 			$toUserName = $privmsg->username;
 			$to_userid  = $privmsg->user_id;
-
         } elseif ($mode === 'reply' || $mode === 'quote') {
             $columns = [
                 'pm.privmsgs_subject',
@@ -1438,12 +1437,12 @@ if ($mode === 'newpm') {
                 ->as('pm')
                 ->innerJoin(Tables::PRIVATE_MESSAGE_TEXT_TABLE)
                 ->as('pmt')
-                ->on('pmt.privmsgs_text_id = pm.privmsgs_id')
+                ->on('[pmt.privmsgs_text_id] = [pm.privmsgs_id]')
                 ->innerJoin(Tables::USERS_TABLE)
                 ->as('u')
-                ->on('u.user_id = pm.privmsgs_from_userid')
-                ->where('pm.privmsgs_id = %i', $privmsg_id)
-                ->where('pm.privmsgs_to_userid = %i', $userdata['user_id'])
+                ->on('[u.user_id] = [pm.privmsgs_from_userid]')
+                ->where('[pm.privmsgs_id] = %i', $privmsg_id)
+                ->where('[pm.privmsgs_to_userid] = %i', $userdata['user_id'])
                 ->fetch();
 
             if (!$privmsg) {
@@ -1453,7 +1452,8 @@ if ($mode === 'newpm') {
 			$orig_word = $replacement_word = [];
 			obtain_word_list($orig_word, $replacement_word);
 
-			$privmsg_subject = ( ( !preg_match('/^Re:/', $privmsg->privmsgs_subject) ) ? 'Re: ' : '' ) . $privmsg->privmsgs_subject;
+			$privmsg_subject = preg_match('/^Re:/', $privmsg->privmsgs_subject) ? '' : 'Re: ';
+			$privmsg_subject .= $privmsg->privmsgs_subject;
 			$privmsg_subject = preg_replace($orig_word, $replacement_word, $privmsg_subject);
 
 			$toUserName = $privmsg->username;
@@ -1483,8 +1483,7 @@ if ($mode === 'newpm') {
 	// Has admin prevented user from sending PM's?
 	//
     if (!$userdata['user_allow_pm'] && $mode !== 'edit') {
-        $message = $lang['Cannot_send_privmsg'];
-        message_die(GENERAL_MESSAGE, $message);
+        message_die(GENERAL_MESSAGE, $lang['Cannot_send_privmsg']);
     }
 
 	//
@@ -1492,7 +1491,7 @@ if ($mode === 'newpm') {
 	//
 	$page_title = $lang['Send_private_message'];
 
-    PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+    PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $page_title, $gen_simple_header);
 
     if ($preview && !$error) {
 		$orig_word = [];
@@ -1509,7 +1508,7 @@ if ($mode === 'newpm') {
         //
         // Finalise processing as per viewtopic
         //
-        if (!$html_on || !$board_config['allow_html'] || !$userdata['user_allowhtml']) {
+        if (!$html_on || !$board_config['allow_html'] || !$userdata['user_allow_html']) {
             if ($user_sig !== '') {
                 $user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
             }
@@ -1675,14 +1674,14 @@ if ($mode === 'newpm') {
             'FORUM_NAME' => $lang['Private_Message'],
 
             'BOX_NAME' => $l_box_name,
-            'INBOX_IMG' => $inbox_img,
-            'SENTBOX_IMG' => $sentbox_img,
-            'OUTBOX_IMG' => $outbox_img,
-            'SAVEBOX_IMG' => $savebox_img,
-            'INBOX' => $inbox_url,
-            'SENTBOX' => $sentbox_url,
-            'OUTBOX' => $outbox_url,
-            'SAVEBOX' => $savebox_url,
+            'INBOX_IMG' => $inboxImage,
+            'SENTBOX_IMG' => $sentBoxImage,
+            'OUTBOX_IMG' => $outBoxImage,
+            'SAVEBOX_IMG' => $saveBoxImage,
+            'INBOX' => $inboxUrl,
+            'SENTBOX' => $sentBoxUrl,
+            'OUTBOX' => $outBoxUrl,
+            'SAVEBOX' => $saveBoxUrl,
 
             'L_SUBJECT' => $lang['Subject'],
             'L_MESSAGE_BODY' => $lang['Message_body'],
@@ -1774,26 +1773,26 @@ $update_data = [
 ];
 
 dibi::update(Tables::USERS_TABLE, $update_data)
-    ->where('user_id = %i', $userdata['user_id'])
+    ->where('[user_id] = %i', $userdata['user_id'])
     ->execute();
 
 dibi::update(Tables::PRIVATE_MESSAGE_TABLE, ['privmsgs_type' => PRIVMSGS_UNREAD_MAIL])
-    ->where('privmsgs_type = %i', PRIVMSGS_NEW_MAIL)
-    ->where('privmsgs_to_userid = %i', $userdata['user_id'])
+    ->where('[privmsgs_type] = %i', PRIVMSGS_NEW_MAIL)
+    ->where('[privmsgs_to_userid] = %i', $userdata['user_id'])
     ->execute();
 
 //
 // Reset PM counters
 //
 $userdata['user_new_privmsg'] = 0;
-$userdata['user_unread_privmsg'] = ( $userdata['user_new_privmsg'] + $userdata['user_unread_privmsg'] );
+$userdata['user_unread_privmsg'] = $userdata['user_new_privmsg'] + $userdata['user_unread_privmsg'];
 
 //
 // Generate page
 //
 $page_title = $lang['Private_Messaging'];
 
-PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $page_title, $gen_simple_header);
+PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $page_title, $gen_simple_header);
 
 //
 // Load templates
@@ -1825,7 +1824,7 @@ $columns = [
     'u.user_id',
     'u.username',
     'u.user_session_time',
-    'u.user_allow_viewonline'
+    'u.user_allow_view_online'
 ];
 
 $sql = dibi::select($columns)
@@ -1834,46 +1833,46 @@ $sql = dibi::select($columns)
     ->innerJoin(Tables::USERS_TABLE)
     ->as('u');
 
-switch( $folder) {
+switch ($folder) {
 	case 'inbox':
-        $sql_tot->where('privmsgs_to_userid = %i', $userdata['user_id'])
-            ->where('privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_READ_MAIL, PRIVMSGS_UNREAD_MAIL]);
+        $sql_tot->where('[privmsgs_to_userid] = %i', $userdata['user_id'])
+            ->where('[privmsgs_type] IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_READ_MAIL, PRIVMSGS_UNREAD_MAIL]);
 
-		$sql->on('u.user_id = pm.privmsgs_from_userid')
-            ->where('privmsgs_to_userid = %i', $userdata['user_id'])
-            ->where('pm.privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_READ_MAIL, PRIVMSGS_UNREAD_MAIL]);
+		$sql->on('[u.user_id] = [pm.privmsgs_from_userid]')
+            ->where('[privmsgs_to_userid] = %i', $userdata['user_id'])
+            ->where('[pm.privmsgs_type] IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_READ_MAIL, PRIVMSGS_UNREAD_MAIL]);
 		break;
 
 	case 'outbox':
-        $sql_tot->where('privmsgs_from_userid = %i', $userdata['user_id'])
-            ->where('privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_READ_MAIL]);
+        $sql_tot->where('[privmsgs_from_userid] = %i', $userdata['user_id'])
+            ->where('[privmsgs_type] IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_READ_MAIL]);
 
-        $sql->on('u.user_id = pm.privmsgs_to_userid')
-            ->where('pm.privmsgs_from_userid = %i', $userdata['user_id'])
-            ->where('pm.privmsgs_type IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL]);
+        $sql->on('[u.user_id] = [pm.privmsgs_to_userid]')
+            ->where('[pm.privmsgs_from_userid] = %i', $userdata['user_id'])
+            ->where('[pm.privmsgs_type] IN %in', [PRIVMSGS_NEW_MAIL, PRIVMSGS_UNREAD_MAIL]);
 		break;
 
 	case 'sentbox':
-        $sql_tot->where('privmsgs_from_userid = %i', $userdata['user_id'])
-            ->where('privmsgs_type = %i', PRIVMSGS_SENT_MAIL);
+        $sql_tot->where('[privmsgs_from_userid] = %i', $userdata['user_id'])
+            ->where('[privmsgs_type] = %i', PRIVMSGS_SENT_MAIL);
 
-        $sql->on('u.user_id = pm.privmsgs_to_userid')
-            ->where('pm.privmsgs_from_userid = %i', $userdata['user_id'])
-            ->where('pm.privmsgs_type = %i', PRIVMSGS_SENT_MAIL);
+        $sql->on('[u.user_id] = [pm.privmsgs_to_userid]')
+            ->where('[pm.privmsgs_from_userid] = %i', $userdata['user_id'])
+            ->where('[pm.privmsgs_type] = %i', PRIVMSGS_SENT_MAIL);
 		break;
 
 	case 'savebox':
         $sql_tot->where(
-            '((privmsgs_to_userid = %i AND privmsgs_type = %i) OR (privmsgs_from_userid = %i AND privmsgs_type = %i))',
+            '(([privmsgs_to_userid] = %i AND [privmsgs_type] = %i) OR ([privmsgs_from_userid] = %i AND [privmsgs_type] = %i))',
             $userdata['user_id'],
             PRIVMSGS_SAVED_IN_MAIL,
             $userdata['user_id'],
             PRIVMSGS_SAVED_OUT_MAIL
         );
 
-        $sql->on('u.user_id = pm.privmsgs_from_userid')
+        $sql->on('[u.user_id] = [pm.privmsgs_from_userid]')
             ->where(
-                '((pm.privmsgs_to_userid = %i AND pm.privmsgs_type = %i) OR (pm.privmsgs_from_userid = %i AND pm.privmsgs_type = %i))',
+                '(([pm.privmsgs_to_userid] = %i AND [pm.privmsgs_type] = %i) OR ([pm.privmsgs_from_userid] = %i AND [pm.privmsgs_type] = %i))',
                 $userdata['user_id'],
                 PRIVMSGS_SAVED_IN_MAIL,
                 $userdata['user_id'],
@@ -1900,8 +1899,8 @@ if ($submit_msgdays && (!empty($_POST['msgdays']) || !empty($_GET['msgdays']))) 
 
     $min_msg_time = $min_msg_time->getTimestamp();
 
-    $limit_msg_time_total = $sql_tot->where('privmsgs_date > %i', $min_msg_time);
-    $limit_msg_time       = $sql->where('pm.privmsgs_date > %i', $min_msg_time);
+    $limit_msg_time_total = $sql_tot->where('[privmsgs_date] > %i', $min_msg_time);
+    $limit_msg_time       = $sql->where('[pm.privmsgs_date] > %i', $min_msg_time);
 
 	if (!empty($_POST['msgdays'])) {
 		$start = 0;
@@ -1973,9 +1972,9 @@ $post_pm = '<a href="' . $post_pm . '">' . $lang['Post_new_pm'] . '</a>';
 // Output data for inbox status
 //
 if ($folder !== 'outbox') {
-	$inbox_limit_pct = ( $board_config['max_' . $folder . '_privmsgs'] > 0 ) ? round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * 100) : 100;
-	$inbox_limit_img_length = ( $board_config['max_' . $folder . '_privmsgs'] > 0 ) ? round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * $board_config['privmsg_graphic_length']) : $board_config['privmsg_graphic_length'];
-	$inbox_limit_remain = ( $board_config['max_' . $folder . '_privmsgs'] > 0 ) ? $board_config['max_' . $folder . '_privmsgs'] - $pm_all_total : 0;
+	$inbox_limit_pct = $board_config['max_' . $folder . '_privmsgs'] > 0 ? round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * 100) : 100;
+	$inbox_limit_img_length = $board_config['max_' . $folder . '_privmsgs'] > 0 ? round(( $pm_all_total / $board_config['max_' . $folder . '_privmsgs'] ) * $board_config['privmsg_graphic_length']) : $board_config['privmsg_graphic_length'];
+	$inbox_limit_remain = $board_config['max_' . $folder . '_privmsgs'] > 0 ? $board_config['max_' . $folder . '_privmsgs'] - $pm_all_total : 0;
 
 	$template->assignBlockVars('switch_box_size_notice', []);
 
@@ -2003,14 +2002,14 @@ if ($folder !== 'outbox') {
 $template->assignVars(
     [
         'BOX_NAME'    => $l_box_name,
-        'INBOX_IMG'   => $inbox_img,
-        'SENTBOX_IMG' => $sentbox_img,
-        'OUTBOX_IMG'  => $outbox_img,
-        'SAVEBOX_IMG' => $savebox_img,
-        'INBOX'       => $inbox_url,
-        'SENTBOX'     => $sentbox_url,
-        'OUTBOX'      => $outbox_url,
-        'SAVEBOX'     => $savebox_url,
+        'INBOX_IMG'   => $inboxImage,
+        'SENTBOX_IMG' => $sentBoxImage,
+        'OUTBOX_IMG'  => $outBoxImage,
+        'SAVEBOX_IMG' => $saveBoxImage,
+        'INBOX'       => $inboxUrl,
+        'SENTBOX'     => $sentBoxUrl,
+        'OUTBOX'      => $outBoxUrl,
+        'SAVEBOX'     => $saveBoxUrl,
 
         'POST_PM_IMG' => $post_pm_img,
         'POST_PM'     => $post_pm,
@@ -2053,9 +2052,7 @@ $template->assignVars(
 $rows = $sql->fetchAll();
 
 if (count($rows)) {
-	$i = 0;
-
-	foreach ($rows as $row) {
+	foreach ($rows as $i => $row) {
 		$privmsg_id = $row->privmsgs_id;
 
 		$flag = $row->privmsgs_type;
@@ -2067,19 +2064,19 @@ if (count($rows)) {
 		$msg_username = $row->username;
 
         // <!-- BEGIN Another Online/Offline indicator -->
-        if ((!$row->user_allow_viewonline && $userdata['user_level'] === ADMIN) || $row->user_allow_viewonline) {
+        if ((!$row->user_allow_view_online && $userdata['user_level'] === ADMIN) || $row->user_allow_view_online) {
             $expiry_time = time() - ONLINE_TIME_DIFF;
 
             if ($row->user_session_time >= $expiry_time) {
                 $user_onlinestatus = '<img src="' . $images['Online_small'] . '" alt="' . $lang['Online'] . '" title="' . $lang['Online'] . '" border="0" />';
 
-                if (!$row->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                if (!$row->user_allow_view_online && $userdata['user_level'] === ADMIN) {
                     $user_onlinestatus = '<img src="' . $images['Hidden_Admin_small'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
                 }
             } else {
                 $user_onlinestatus = '<img src="' . $images['Offline_small'] . '" alt="' . $lang['Offline'] . '" title="' . $lang['Offline'] . '" border="0" />';
 
-                if (!$row->user_allow_viewonline && $userdata['user_level'] === ADMIN) {
+                if (!$row->user_allow_view_online && $userdata['user_level'] === ADMIN) {
                     $user_onlinestatus = '<img src="' . $images['Offline_small'] . '" alt="' . $lang['Hidden'] . '" title="' . $lang['Hidden'] . '" border="0" />';
                 }
             }
@@ -2106,14 +2103,13 @@ if (count($rows)) {
             $msg_username = '<b>' . $msg_username . '</b>';
         }
 
-		$row_color = !($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
-		$row_class = !($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
-		$i++;
+		$rowColor = ($i % 2) ? $theme['td_color1'] : $theme['td_color2'];
+		$rowClass = ($i % 2) ? $theme['td_class1'] : $theme['td_class2'];
 
         $template->assignBlockVars('listrow',
             [
-                'ROW_COLOR'          => '#' . $row_color,
-                'ROW_CLASS'          => $row_class,
+                'ROW_COLOR'          => '#' . $rowColor,
+                'ROW_CLASS'          => $rowClass,
                 'FROM'               => $msg_username . '&nbsp;' . $user_onlinestatus,
                 'SUBJECT'            => htmlspecialchars($msg_subject, ENT_QUOTES),
                 'DATE'               => $msg_date,
@@ -2140,12 +2136,7 @@ if (count($rows)) {
     );
 
 } else {
-    $template->assignVars(
-        [
-            'L_NO_MESSAGES' => $lang['No_messages_folder']
-        ]
-    );
-
+    $template->assignVars(['L_NO_MESSAGES' => $lang['No_messages_folder']]);
     $template->assignBlockVars('switch_no_messages', [] );
 }
 
