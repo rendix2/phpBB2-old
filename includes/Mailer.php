@@ -31,13 +31,13 @@ class Mailer
      * Mailer constructor.
      * @param LatteFactory $latteFactory
      * @param array $boardConfig
-     * @param $emailName
-     * @param $params
-     * @param $lang
-     * @param $subject
-     * @param $to
+     * @param string $emailName
+     * @param array $params
+     * @param string $lang
+     * @param string $subject
+     * @param string $to
      */
-    public function __construct(LatteFactory $latteFactory, array $boardConfig, $emailName, $params, $lang, $subject, $to)
+    public function __construct(LatteFactory $latteFactory, array $boardConfig, $emailName, array $params, $lang, $subject, $to)
     {
         $this->boardConfig = $boardConfig;
 
@@ -59,20 +59,23 @@ class Mailer
         return $this->message;
     }
 
-
+    /**
+     * @return void
+     */
     public function send()
     {
         $sendMailMailer = new SendmailMailer();
 
-        $smtpMailer = new SmtpMailer([
-            'host' => $this->boardConfig['smtp_host'],
-            'username' => $this->boardConfig['smtp_username'],
-            'password' => $this->boardConfig['smtp_password'],
-            'secure' => 'ssl',
-        ]);
+        $smtpMailer = new SmtpMailer(
+            [
+                'host'     => $this->boardConfig['smtp_host'],
+                'username' => $this->boardConfig['smtp_username'],
+                'password' => $this->boardConfig['smtp_password'],
+                'secure'    => 'ssl',
+            ]
+        );
 
         $mailer = new FallbackMailer([$smtpMailer, $sendMailMailer]);
         $mailer->send($this->message);
     }
-
 }
