@@ -155,6 +155,8 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
             'L_POSTS_PER_DAY'  => $lang['Posts_per_day'],
             'L_TOPICS_PER_DAY' => $lang['Topics_per_day'],
             'L_USERS_PER_DAY'  => $lang['Users_per_day'],
+            'L_THANKS_PER_DAY' => $lang['Thanks_per_day'],
+            'L_TOPIC_WATCH_PER_DAY' => $lang['Topic_watch_per_day'],
 
             'L_AVATAR_DIR_SIZE' => $lang['Avatar_dir_size'],
             'L_DB_SIZE'         => $lang['Database_size'],
@@ -178,6 +180,8 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
             'L_VERSION_STATISTICS'  => $lang['Version_Statistics'],
             'L_MEMBERS_STATISTICS'  => $lang['Members_Statistics'],
             'L_DATABASE_STATISTICS' => $lang['Database_Statistics'],
+            'L_GROUPS_STATISTICS' => $lang['Groups_Statistics'],
+            'L_RANKS_STATISTICS' => $lang['Ranks_Statistics'],
 
             'L_NUMBER_THEMES' => $lang['Number_themes'],
             'L_NUMBER_WATCHING' => $lang['Number_watching'],
@@ -201,12 +205,21 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
         ]
     );
 
+    $thanksManager = $container->getService('ThanksManager');
+    // $topicWatchManager = $container->getService('TopicsWatchManager');
+
     //
 	// Get forum statistics
 	//
 	$totalPosts  = get_db_stat('postcount');
 	$totalUsers  = get_db_stat('usercount');
 	$totalTopics = get_db_stat('topiccount');
+
+	$totalThanks = $thanksManager->getAllCount();
+
+	$totalTopicWatch = dibi::select('COUNT(*)')
+        ->from(Tables::TOPICS_WATCH_TABLE)
+        ->fetchSingle();
 
     $mysql_version = dibi::query('SELECT VERSION() AS mysql_version')->fetchSingle();
 
@@ -324,6 +337,8 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
 	$postsPerDay  = sprintf('%.2f', $totalPosts / $boardRunningDays);
 	$topicsPerDay = sprintf('%.2f', $totalTopics / $boardRunningDays);
 	$usersPerDay  = sprintf('%.2f', $totalUsers / $boardRunningDays);
+	$thanksPerDay  = sprintf('%.2f', $totalThanks / $boardRunningDays);
+	$topicWatchPerDay  = sprintf('%.2f', $totalTopicWatch / $boardRunningDays);
 
 	$avatarDirSize   = 0;
 	$enabledExtensions = ['*.jpg', '*.jpeg', '*.pjpeg', '*.gif', '*.png'];
@@ -356,6 +371,14 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
         $usersPerDay = $totalUsers;
     }
 
+    if ($thanksPerDay > $totalThanks) {
+        $thanksPerDay = $totalThanks;
+    }
+
+    if ($topicWatchPerDay > $totalTopicWatch) {
+        $topicWatchPerDay = $totalTopicWatch;
+    }
+
     $dbSize = get_database_size();
 
     $template->assignVars(
@@ -365,6 +388,8 @@ if (isset($_GET['pane']) && $_GET['pane'] === 'left') {
             'POSTS_PER_DAY'  => $postsPerDay,
             'TOPICS_PER_DAY' => $topicsPerDay,
             'USERS_PER_DAY'  => $usersPerDay,
+            'THANKS_PER_DAY'  => $thanksPerDay,
+            'TOPIC_WATCH_PER_DAY'  => $topicWatchPerDay,
 
             'AVATAR_DIR_SIZE' => $avatarDirSize,
             'DB_SIZE'         => $dbSize,
