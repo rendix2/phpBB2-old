@@ -82,7 +82,7 @@ class LatteFactory
     {
         $sep = DIRECTORY_SEPARATOR;
 
-        $latteFile = realpath('.' . $sep . 'language' . $sep . 'lang_' . stripslashes($lang) . $sep . 'email' . $sep . $name .'.latte');
+        $latteFile = realpath('.' . $sep . 'app' . $sep . 'language' . $sep . 'lang_' . stripslashes($lang) . $sep . 'email' . $sep . $name .'.latte');
 
         return $this->latte->renderToString($latteFile, $params);
     }

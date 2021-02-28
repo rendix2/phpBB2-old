@@ -211,7 +211,7 @@ function guess_lang()
 		foreach ($accept_languages as $accept_language) {
 			foreach ($match_lang as $lang => $match) {
 				if (preg_match('#' . $match . '#i', trim($accept_language))) {
-                    if (file_exists(@realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $lang))) {
+                    if (file_exists(@realpath($phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_' . $lang))) {
 						return $lang;
 					}
 				}
@@ -389,8 +389,8 @@ if (defined('PHPBB_INSTALLED')) {
 }
 
 // Import language file, setup template ...
-require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $boardLanguage . $sep . 'lang_main.php';
-require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $boardLanguage . $sep . 'lang_admin.php';
+require_once $phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_' . $boardLanguage . $sep . 'lang_main.php';
+require_once $phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_' . $boardLanguage . $sep . 'lang_admin.php';
 
 // Ok for the time being I'm commenting this out whilst I'm working on
 // better integration of the install with upgrade as per Bart's request

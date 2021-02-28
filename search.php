@@ -225,8 +225,8 @@ if ($mode === 'searchuser') {
 			$total_match_count = count($search_ids);
 
         } elseif ($search_keywords !== '') {
-            $stopword_array = @file($phpbb_root_path . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'search_stopwords.txt');
-            $synonym_array = @file($phpbb_root_path . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'search_synonyms.txt');
+            $stopword_array = @file($phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'search_stopwords.txt');
+            $synonym_array = @file($phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'search_synonyms.txt');
 
 			$split_search = [];
 			$stripped_keywords = stripslashes($search_keywords);

@@ -212,7 +212,7 @@ function init_userprefs($pageId)
         $default_lang = ltrim(basename(rtrim($board_config['default_lang'])), "'");
     }
 
-    if (!file_exists(@realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $default_lang . $sep . 'lang_main.php'))) {
+    if (!file_exists(@realpath($phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_' . $default_lang . $sep . 'lang_main.php'))) {
         $cache = new Cache($storage, Tables::CONFIG_TABLE);
         $cache->remove(Tables::CONFIG_TABLE);
 
@@ -226,7 +226,7 @@ function init_userprefs($pageId)
 			$default_lang = 'english';
 		}
 
-        if (!file_exists(@realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $default_lang . $sep . 'lang_main.php'))) {
+        if (!file_exists(@realpath($phpbb_root_path . 'app' . $sep .'language' . $sep . 'lang_' . $default_lang . $sep . 'lang_main.php'))) {
             message_die(CRITICAL_ERROR, 'Could not locate valid language pack');
         }
 	}
@@ -256,14 +256,14 @@ function init_userprefs($pageId)
 
 	$board_config['default_lang'] = $default_lang;
 
-    require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'lang_main.php';
+    require_once $phpbb_root_path . 'app' . $sep .'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'lang_main.php';
 
 	if (defined('IN_ADMIN')) {
-        if (!file_exists(@realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'lang_admin.php'))) {
+        if (!file_exists(@realpath($phpbb_root_path . 'app' . $sep .'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'lang_admin.php'))) {
 			$board_config['default_lang'] = 'english';
 		}
 
-        require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'lang_admin.php';
+        require_once $phpbb_root_path . 'app' . $sep .'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'lang_admin.php';
 	}
 
     include_attach_lang();
@@ -600,17 +600,19 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 
         echo "<html>\n<body>\n<b>Critical Error!</b><br />\nmessage_die() was called multiple times.<br />&nbsp;<hr />";
 
-        foreach ($msg_history as $messasage) {
+        foreach ($msg_history as $i => $message) {
+
+
             echo '<b>Error #' . ($i + 1) . "</b>\n<br />\n";
-            if (!empty($messasage->msg_title)) {
-                echo '<b>' . $messasage->msg_title . "</b>\n<br />\n";
+            if (!empty($message['msg_title'])) {
+                echo '<b>' . $message['msg_title'] . "</b>\n<br />\n";
             }
-            echo $messasage->msg_text . "\n<br /><br />\n";
-            if (!empty($messasage->err_line)) {
-                echo '<b>Line :</b> ' . $messasage->err_line . '<br /><b>File :</b> ' . $messasage->err_file . "</b>\n<br />\n";
+            echo $message['msg_text'] . "\n<br /><br />\n";
+            if (!empty($message['err_line'])) {
+                echo '<b>Line :</b> ' . $message['err_line'] . '<br /><b>File :</b> ' . $message['err_file'] . "</b>\n<br />\n";
             }
-            if (!empty($messasage->sql)) {
-                echo '<b>SQL :</b> ' . $messasage->sql . "\n<br />\n";
+            if (!empty($message->sql)) {
+                echo '<b>SQL :</b> ' . $message->sql . "\n<br />\n";
             }
             echo "&nbsp;<hr />\n";
         }
@@ -672,7 +674,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
             // available so we're going to dump out a simple echo'd statement
             //
 
-            require_once $phpbb_root_path . 'language' . $sep . 'lang_english' . $sep . 'lang_main.php';
+            require_once $phpbb_root_path . 'app' . $sep .'language' . $sep . 'lang_english' . $sep . 'lang_main.php';
             if ($msg_text === '') {
                 $msg_text = $lang['A_critical_error'];
             }
@@ -689,9 +691,9 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
     if (!defined('HEADER_INC') && $msg_code !== CRITICAL_ERROR) {
         if (empty($lang)) {
             if (!empty($board_config['default_lang'])) {
-                require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'lang_main.php';
+                require_once $phpbb_root_path . 'app' . $sep .'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'lang_main.php';
             } else {
-                require_once $phpbb_root_path . 'language' . $sep . 'lang_english' . $sep . 'lang_main.php';
+                require_once $phpbb_root_path . 'app' . $sep .'language' . $sep . 'lang_english' . $sep . 'lang_main.php';
             }
         }
 

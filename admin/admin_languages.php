@@ -31,7 +31,7 @@ switch ($mode) {
         ];
 
         $sep = DIRECTORY_SEPARATOR;
-        $foundFiles = Finder::findFiles($neededFiles)->in($phpbb_root_path . 'language' . $sep . 'lang_' . $_GET[POST_LANG_URL]);
+        $foundFiles = Finder::findFiles($neededFiles)->in($phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_' . $_GET[POST_LANG_URL]);
         $files = [];
 
         /**
@@ -74,7 +74,7 @@ switch ($mode) {
             message_die(GENERAL_MESSAGE, $message);
         }
 
-        $foundFiles = Finder::findFiles('*')->in($phpbb_root_path . 'language' . $sep . 'lang_' . $language->lang_name);
+        $foundFiles = Finder::findFiles('*')->in($phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_' . $language->lang_name);
 
         $latte = new LatteFactory($storage, $userdata);
 

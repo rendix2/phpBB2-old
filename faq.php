@@ -57,7 +57,7 @@ if (isset($_GET[POST_MODE])) {
     $l_title = $lang['FAQ'];
 }
 
-require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . $lang_file . '.php';
+require_once $phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . $lang_file . '.php';
 
 attach_faq_include($lang_file);
 

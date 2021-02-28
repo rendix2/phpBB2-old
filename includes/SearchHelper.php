@@ -140,8 +140,8 @@ class SearchHelper
 
         $sep = DIRECTORY_SEPARATOR;
 
-        $stopWords = @file($phpbb_root_path . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'search_stopwords.txt');
-        $synonyms = @file($phpbb_root_path . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'search_synonyms.txt');
+        $stopWords = @file($phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'search_stopwords.txt');
+        $synonyms = @file($phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'search_synonyms.txt');
 
         $search_raw_words = [];
         $search_raw_words['text'] = self::splitWords(self::cleanWords('post', $post_text, $stopWords, $synonyms));

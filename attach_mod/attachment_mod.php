@@ -45,12 +45,12 @@ function attach_mod_get_lang($language_file)
 
     $sep = DIRECTORY_SEPARATOR;
 
-    if (file_exists($phpbb_root_path . 'language' . $sep . 'lang_' . $language . $sep . $language_file . '.php')) {
+    if (file_exists($phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_' . $language . $sep . $language_file . '.php')) {
         return $language;
     } else {
         $language = $attach_config['board_lang'];
 
-        if (file_exists($phpbb_root_path . 'language' . $sep . 'lang_' . $language . $sep . $language_file . '.php')) {
+        if (file_exists($phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_' . $language . $sep . $language_file . '.php')) {
             return $language;
         } else {
             $message = 'Attachment Mod language file does not exist: language' . $sep . 'lang_' . $language . $sep . $language_file . '.php';
@@ -74,11 +74,11 @@ function include_attach_lang()
 
     // Include Language
     $language = attach_mod_get_lang('lang_main_attach');
-    require_once($phpbb_root_path . 'language' . $sep . 'lang_' . $language . $sep . 'lang_main_attach.php');
+    require_once($phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_' . $language . $sep . 'lang_main_attach.php');
 
     if (defined('IN_ADMIN')) {
         $language = attach_mod_get_lang('lang_admin_attach');
-        require_once($phpbb_root_path . 'language' . $sep . 'lang_' . $language . $sep . 'lang_admin_attach.php');
+        require_once($phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_' . $language . $sep . 'lang_admin_attach.php');
     }
 }
 

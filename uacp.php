@@ -47,7 +47,7 @@ if (!file_exists($phpbb_root_path . 'language'. $sep .'lang_' . $language . $sep
 	$language = $attach_config['board_lang'];
 }
 
-require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $language . $sep . 'lang_admin_attach.php';
+require_once $phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_' . $language . $sep . 'lang_admin_attach.php';
 
 $start = get_var('start', 0);
 $sort_order = get_var('order', 'ASC');

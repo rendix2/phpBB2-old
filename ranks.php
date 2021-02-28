@@ -29,7 +29,7 @@ if (!count($ranks)) {
 $latte = new LatteFactory($storage, $userdata);
 
 $params = [
-    'D_RANKS' => $ranks,
+    'ranks' => $ranks,
 
     'L_RANK_NO_DESC' => $lang['rank_no_desc'],
     'L_INDEX' => sprintf($lang['Forum_Index'], $board_config['sitename']),

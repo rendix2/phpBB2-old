@@ -51,7 +51,7 @@ if (!file_exists(@realpath($phpbb_root_path . 'language'.$sep.'lang_' . $board_c
     $board_config['default_lang'] = 'english';
 }
 
-require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'lang_dbmtnc.php';
+require_once $phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'lang_dbmtnc.php';
 
 //
 // Set up variables and constants
@@ -1038,7 +1038,7 @@ switch ($mode_id) {
                 $result_array = [];
 
                 foreach ($tmp_array as $userLang) {
-                    if (!file_exists(@realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $userLang . $sep . 'lang_main.php'))) {
+                    if (!file_exists(@realpath($phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_' . $userLang . $sep . 'lang_main.php'))) {
                         $result_array[] = $userLang;
                     }
                 }
@@ -1055,12 +1055,12 @@ switch ($mode_id) {
                     }
 
                     // Getting default language
-                    if (file_exists(@realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $boardLanguage . $sep . 'lang_main.php'))) {
+                    if (file_exists(@realpath($phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_' . $boardLanguage . $sep . 'lang_main.php'))) {
                         $default_lang = $boardLanguage;
-                    } elseif (file_exists(@realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $userdata['user_lang'] . $sep . 'lang_main.php'))) {
+                    } elseif (file_exists(@realpath($phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_' . $userdata['user_lang'] . $sep . 'lang_main.php'))) {
                         echo('<p class="gen">' . $lang['Default_language_invalid'] . "</p>\n");
                         $default_lang = $userdata['user_lang'];
-                    } elseif (file_exists(@realpath($phpbb_root_path . 'language' . $sep . 'lang_english' . $sep . 'lang_main.php'))) {
+                    } elseif (file_exists(@realpath($phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_english' . $sep . 'lang_main.php'))) {
                         echo('<p class="gen">' . $lang['Default_language_invalid'] . "</p>\n");
                         $default_lang = 'english';
                     } else {

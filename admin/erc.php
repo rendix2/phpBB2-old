@@ -82,9 +82,9 @@ if ($mode === 'download') {
 if (isset($_POST['lg']) || isset($_GET['lg'])) {
 	$lg = isset($_POST['lg']) ? htmlspecialchars($_POST['lg']) : htmlspecialchars($_GET['lg']);
 
-	if (file_exists(@realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $lg . $sep . 'lang_dbmtnc.php'))) {
-		require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $lg . $sep . 'lang_dbmtnc.php';
-		require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $lg .  $sep . 'lang_main.php';
+	if (file_exists(@realpath($phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_' . $lg . $sep . 'lang_dbmtnc.php'))) {
+		require_once $phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_' . $lg . $sep . 'lang_dbmtnc.php';
+		require_once $phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_' . $lg .  $sep . 'lang_main.php';
 	} else {
 		$lg = '';
 	}
@@ -110,12 +110,12 @@ if ($lg === '') {
 
 	if (count($lang_list) === 1) {
 		$lg = $lang_list[0];
-		require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $lg . $sep . 'lang_dbmtnc.php';
-		require_once $phpbb_root_path . 'language' . $sep . 'lang_' . $lg . $sep . 'lang_main.php';
+		require_once $phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_' . $lg . $sep . 'lang_dbmtnc.php';
+		require_once $phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_' . $lg . $sep . 'lang_main.php';
 	} else { // Try to load english language
-		if (file_exists(@realpath($phpbb_root_path . 'language' . $sep . 'lang_english' . $sep . 'lang_dbmtnc.php'))) {
-			require_once $phpbb_root_path . 'language' . $sep . 'lang_english' . $sep . 'lang_dbmtnc.php';
-			require_once $phpbb_root_path . 'language' . $sep . 'lang_english' . $sep . 'lang_main.php';
+		if (file_exists(@realpath($phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_english' . $sep . 'lang_dbmtnc.php'))) {
+			require_once $phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_english' . $sep . 'lang_dbmtnc.php';
+			require_once $phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_english' . $sep . 'lang_main.php';
 			$mode = 'select_lang';
 		} else {
 			$lang['Forum_Home'] = 'Forum Home';
@@ -794,7 +794,7 @@ switch ($mode) {
 				$board_user = mb_substr(str_replace("\\'", "'", $board_user), 0, 25);
 				$board_user = str_replace("'", "\\'", $board_user);
 
-				if (is_file(@realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $new_lang . $sep . 'lang_main.php')) && is_file(@realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $new_lang . $sep .'lang_admin.php'))){
+				if (is_file(@realpath($phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_' . $new_lang . $sep . 'lang_main.php')) && is_file(@realpath($phpbb_root_path . 'language' . $sep . 'lang_' . $new_lang . $sep .'lang_admin.php'))){
 				    dibi::update(Tables::USERS_TABLE, ['user_lang' => $new_lang])
 				     ->where('[username] = %s', $board_user)
 				      ->execute();
