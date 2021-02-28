@@ -43,7 +43,7 @@ PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, 
 
 $language = $board_config['default_lang'];
 
-if (!file_exists($phpbb_root_path . 'language'. $sep .'lang_' . $language . $sep . 'lang_admin_attach.php')) {
+if (!file_exists($phpbb_root_path . 'app'. $sep .'language'. $sep .'lang_' . $language . $sep . 'lang_admin_attach.php')) {
 	$language = $attach_config['board_lang'];
 }
 

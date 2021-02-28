@@ -453,7 +453,7 @@ foreach ($categories as $i => $category) {
             }
         }
     }
-} // for ... categories
+} // foreach ... categories
 
 //
 // Generate the page

@@ -8,7 +8,7 @@
         <th class="thHead"></th>
     </tr>
     </thead>
-    {foreach $D_SESSIONS as $session}
+    {foreach $sessions as $session}
         <tr>
             <td class="{$iterator->isEven() ? row1 : row2}">
                 <a href="admin_users.php?{$C_MODE}=edit&{$C_USER_ID}={$session->user_id}&{$S_SID}">

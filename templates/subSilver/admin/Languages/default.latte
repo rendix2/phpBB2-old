@@ -7,7 +7,7 @@
         <th class="thHead"></th>
     </tr>
     </thead>
-    {foreach $D_LANGUAGES as $language}
+    {foreach $languages as $language}
         <tr>
             <td class="{$iterator->isEven() ? row1 : row2}">{$language->lang_id}</td>
             <td class="{$iterator->isEven() ? row1 : row2}">{$language->lang_name|firstUpper}</td>

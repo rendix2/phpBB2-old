@@ -597,7 +597,7 @@ if (!empty($_POST['send_file']) && $_POST['send_file'] === 1 && empty($_POST['up
     }
 
     $lang_options = [];
-    $languages = Finder::findDirectories('lang_*')->in($phpbb_root_path . 'language');
+    $languages = Finder::findDirectories('lang_*')->in($phpbb_root_path . $sep .'language');
 
     /**
      * @var SplFileInfo $language
@@ -883,7 +883,7 @@ if ($_GET['install'] == 1 && $validated) {
             ->execute();
 
             $lang_options = [];
-            $languages = Finder::findDirectories('lang_*')->in($phpbb_root_path . 'language');
+            $languages = Finder::findDirectories('lang_*')->in($phpbb_root_path . $sep .'language');
 
             /**
              * @var SplFileInfo $language
