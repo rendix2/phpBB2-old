@@ -126,12 +126,6 @@ class UserViewProfilePresenter
             $this->cache->save($key, $ranks);
         }
 
-        //
-        // Output page header and profile_view template
-        //
-        $template->setFileNames(['body' => 'profile_view_body.tpl']);
-        make_jumpbox('viewforum.php');
-
 
         //
         // Calculate the number of days this user has been a member ($memberdays)
