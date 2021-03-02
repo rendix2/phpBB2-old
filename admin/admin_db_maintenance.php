@@ -47,11 +47,11 @@ $timer = getmicrotime();
 //
 // Get language file for this mod
 //
-if (!file_exists(@realpath($phpbb_root_path . . $sep .'language'.$sep.'lang_' . $board_config['default_lang'] . $sep .'lang_dbmtnc.php'))) {
+if (!file_exists(@realpath($phpbb_root_path . $sep . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'lang_dbmtnc.php'))) {
     $board_config['default_lang'] = 'english';
 }
 
-require_once $phpbb_root_path . 'app' . $sep . . $sep .'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'lang_dbmtnc.php';
+require_once $phpbb_root_path . 'app' . $sep . 'language' . $sep . 'lang_' . $board_config['default_lang'] . $sep . 'lang_dbmtnc.php';
 
 //
 // Set up variables and constants

@@ -1,0 +1,34 @@
+<h1>{$lang['Who_is_Online']}</h1>
+
+<table width="100%" cellpadding="4" cellspacing="1" border="0" class="forumline">
+    <tr>
+        <th width="20%" class="thCornerL" height="25">&nbsp;{$lang['Username']}&nbsp;</th>
+        <th width="20%" height="25" class="thTop">&nbsp;{$lang['Login']}&nbsp;</th>
+        <th width="20%" class="thTop">&nbsp;{$lang['Last_updated']}&nbsp;</th>
+        <th width="20%" class="thCornerR">&nbsp;{$lang['Forum_Location']}&nbsp;</th>
+        <th width="20%" height="25" class="thCornerR">&nbsp;{$lang['IP_Address']}&nbsp;</th>
+    </tr>
+
+    {foreach $guestUsers as $guestUser}
+    <tr>
+        <td width="20%" class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}">&nbsp;<span class="gen"><a href="{$geustUser->userProfileLink}" class="gen">{$geustUser->username}</a></span>&nbsp;</td>
+        <td width="20%" align="center" class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}">&nbsp;<span class="gen">{$geustUser->started}</span>&nbsp;</td>
+        <td width="20%" align="center" nowrap="nowrap" class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}">&nbsp;<span class="gen">{$geustUser->lastupdate}</span>&nbsp;</td>
+        <td width="20%" class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}">&nbsp;<span class="gen"><a href="{$geustUser->forumLocationLink}" class="gen">{$geustUser->forumLocation}</a></span>&nbsp;</td>
+        <td width="20%" class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}">&nbsp;<span class="gen">{$geustUser->ipAddress}</span>&nbsp;</td>
+    </tr>
+    {/foreach}
+
+    <tr>
+        <td colspan="5" height="1" class="row3"><img src="../templates/subSilver/images/spacer.gif" width="1" height="1" alt="."></td>
+    </tr>
+    {foreach $registeredUsers as $registeredUser}
+    <tr>
+        <td width="20%" class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}">&nbsp;<span class="gen">{$registeredUser->username}</span>&nbsp;</td>
+        <td width="20%" align="center" class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}">&nbsp;<span class="gen">{$registeredUser->started}</span>&nbsp;</td>
+        <td width="20%" align="center" nowrap="nowrap" class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}">&nbsp;<span class="gen">{$registeredUser->lastupdate}</span>&nbsp;</td>
+        <td width="20%" class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}">&nbsp;<span class="gen"><a href="{$registeredUser->forumLocationLink}" class="gen">{$registeredUser->forumLocation}</a></span>&nbsp;</td>
+        <td width="20%" class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}">&nbsp;<span class="gen">{$registeredUser->ipAddress}</span>&nbsp;</td>
+    </tr>
+    {/foreach}
+</table>

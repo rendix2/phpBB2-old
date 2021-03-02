@@ -56,6 +56,7 @@ $configurator->setTempDirectory(__DIR__ . $sep . 'temp');
 
 $configurator->createRobotLoader()
     ->addDirectory(__DIR__)
+    ->excludeDirectory(__DIR__ . $sep . 'vendor')
     ->register();
 
 $configurator->addConfig(__DIR__ . $sep . 'app' . $sep . 'config' . $sep . 'config.neon');
@@ -96,7 +97,10 @@ $connection = dibi::connect(
         'driver'   => Config::DATABASE_DRIVER,
         'username' => Config::DATABASE_USER,
         'password' => Config::DATABASE_PASSWORD,
-        'dsn'      => Config::DATABASE_DNS
+        'dsn'      => Config::DATABASE_DNS,
+        'options' => [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT
+        ],
     ]
 );
 
