@@ -24,8 +24,6 @@ use phpBB2\Sync;
  *
  ***************************************************************************/
 
-define('IN_PHPBB', true);
-
 $sep = DIRECTORY_SEPARATOR;
 $phpbb_root_path = '.' . DIRECTORY_SEPARATOR;
 

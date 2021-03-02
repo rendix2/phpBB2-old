@@ -20,7 +20,6 @@ use Nette\Caching\Cache;use Nette\Utils\Finder;
  *
  ***************************************************************************/
 
-define('IN_PHPBB', 1);
 $sep = DIRECTORY_SEPARATOR;
 $phpbb_root_path = '.' . $sep . '..' . $sep;
 

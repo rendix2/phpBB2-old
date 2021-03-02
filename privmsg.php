@@ -23,8 +23,6 @@ use phpBB2\Mailer;
  *
  ***************************************************************************/
 
-define('IN_PHPBB', true);
-
 $sep = DIRECTORY_SEPARATOR;
 $phpbb_root_path = '.' . $sep;
 

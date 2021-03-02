@@ -21,8 +21,6 @@ use Nette\Caching\Cache;
  *
  ***************************************************************************/
 
-define('IN_PHPBB', 1);
-
 //
 // Let's set the root dir for phpBB
 //

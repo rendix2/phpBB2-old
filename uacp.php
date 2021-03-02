@@ -10,7 +10,6 @@
 
 $sep = DIRECTORY_SEPARATOR;
 
-define('IN_PHPBB', true);
 $phpbb_root_path = '.' . $sep;
 
 require_once $phpbb_root_path . 'common.php';

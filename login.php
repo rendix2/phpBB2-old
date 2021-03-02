@@ -53,7 +53,6 @@ function loginFailed(BaseTemplate $template, array $lang)
 // board is shut down
 //
 define('IN_LOGIN', true);
-define('IN_PHPBB', true);
 
 $sep = DIRECTORY_SEPARATOR;
 $phpbb_root_path = '.' . $sep;

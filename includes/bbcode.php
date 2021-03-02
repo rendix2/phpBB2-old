@@ -21,10 +21,6 @@ use Nette\Caching\Cache;
  *
  ***************************************************************************/
 
-if (!defined('IN_PHPBB')) {
-	die('Hacking attempt');
-}
-
 define('BBCODE_UID_LEN', 10);
 
 // global that holds loaded-and-prepared bbcode templates, so we only have to do

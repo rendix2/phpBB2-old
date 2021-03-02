@@ -26,10 +26,6 @@ use Tracy\Debugger;
  *
  ***************************************************************************/
 
-if (!defined('IN_PHPBB')) {
-    die('Hacking attempt');
-}
-
 //
 error_reporting  (E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
 

@@ -8,12 +8,6 @@
  *
  */
 
-/**
- */
-if (!defined('IN_PHPBB')) {
-    die('Hacking attempt');
-}
-
 // Attachment Debug Mode
 define('ATTACH_DEBUG', 0);        // Attachment Mod Debugging off
 //define('ATTACH_DEBUG', 1);	// Attachment Mod Debugging on

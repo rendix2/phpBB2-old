@@ -37,10 +37,6 @@ use phpBB2\Mailer;
 
 */
 
-if (!defined('IN_PHPBB')) {
-	die('Hacking attempt');
-}
-
 $sep = DIRECTORY_SEPARATOR;
 
 // ---------------------------------------

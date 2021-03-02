@@ -26,8 +26,6 @@ use Nette\Utils\Finder;
 *	This file will be used for modifying the smiley settings for a board.
 **************************************************************************/
 
-define('IN_PHPBB', 1);
-
 $sep = DIRECTORY_SEPARATOR;
 $phpbb_root_path = '.' . $sep . '..' . $sep;
 

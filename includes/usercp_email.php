@@ -21,10 +21,6 @@
  *
  ***************************************************************************/
 
-if (!defined('IN_PHPBB')) {
-	die('Hacking attempt');
-}
-
 // Is send through board enabled? No, return to index
 if ($userdata['user_level'] !== ADMIN && !$board_config['board_email_form']) {
     message_die(GENERAL_MESSAGE, $lang['Board_prevent_email']);

@@ -10,11 +10,6 @@
 
 /**
  */
-if (defined('IN_PHPBB')) {
-    die('Hacking attempt');
-}
-
-define('IN_PHPBB', true);
 
 $sep = DIRECTORY_SEPARATOR;
 $phpbb_root_path = '.' . $sep;

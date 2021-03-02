@@ -20,8 +20,6 @@
  *
  ***************************************************************************/
 
-define('IN_PHPBB', 1);
-
 //
 // Include required files and check permissions
 //

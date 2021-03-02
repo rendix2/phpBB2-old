@@ -20,10 +20,6 @@
  *
  ***************************************************************************/
 
-if (!defined('IN_PHPBB')) {
-	die('Hacking attempt');
-}
-
 define('HEADER_INC', true);
 
 //

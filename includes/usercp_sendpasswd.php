@@ -23,10 +23,6 @@ use Nette\Utils\Random;
  *
  ***************************************************************************/
 
-if (!defined('IN_PHPBB')) {
-    die('Hacking attempt');
-}
-
 $sep = DIRECTORY_SEPARATOR;
 
 if (isset($_POST['submit'])) {

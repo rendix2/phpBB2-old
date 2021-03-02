@@ -11,8 +11,6 @@
 use Nette\Caching\Cache;
 use phpBB2\Sync;
 
-define('IN_PHPBB', true);
-
 $sep = DIRECTORY_SEPARATOR;
 
 // Let's set the root dir for phpBB

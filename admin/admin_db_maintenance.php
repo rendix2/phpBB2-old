@@ -20,7 +20,6 @@ use Nette\Caching\Cache;
  *
  ***************************************************************************/
 
-define('IN_PHPBB', 1);
 define('DBMTNC_VERSION', '1.3.8');
 // CONFIG_LEVEL = 0: configuration is disabled
 // CONFIG_LEVEL = 1: only general configuration available

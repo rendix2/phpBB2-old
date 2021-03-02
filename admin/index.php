@@ -22,8 +22,6 @@ use Nette\Utils\Finder;
  *
  ***************************************************************************/
 
-define('IN_PHPBB', 1);
-
 //
 // Load default header
 //

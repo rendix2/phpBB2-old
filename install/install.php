@@ -230,7 +230,6 @@ function guess_lang()
 error_reporting  (E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
 
 // Begin main prog
-define('IN_PHPBB', true);
 // Uncomment the following line to completely disable the ftp option...
 // define('NO_FTP', true);
 $phpbb_root_path = '.' . $sep . '..' . $sep;

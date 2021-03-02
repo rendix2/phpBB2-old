@@ -10,9 +10,6 @@
 
 /**
  */
-if (!defined('IN_PHPBB')) {
-    die('Hacking attempt');
-}
 
 $allowed_extensions = [];
 $display_categories = [];

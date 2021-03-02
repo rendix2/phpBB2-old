@@ -344,10 +344,6 @@ class UserViewProfilePresenter
     }
 }
 
-if (!defined('IN_PHPBB')) {
-	die('Hacking attempt');
-}
-
 $userViewProfilePresenter = new UserViewProfilePresenter(
     $container->getService('UsersManager'),
     $container->getService('ThanksManager'),

@@ -30,8 +30,6 @@ use Ifsnop\Mysqldump\Mysqldump;
 *	adapted from the unoficial phpMyAdmin 2.2.0.
 ***************************************************************************/
 
-define('IN_PHPBB', 1);
-
 //
 // Load default header
 //

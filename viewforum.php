@@ -22,8 +22,6 @@ use phpBB2\Models\ForumsManager;
  *
  ***************************************************************************/
 
-define('IN_PHPBB', true);
-
 $sep = DIRECTORY_SEPARATOR;
 $phpbb_root_path = '.' . $sep;
 

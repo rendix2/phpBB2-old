@@ -19,10 +19,6 @@
  *
  ***************************************************************************/
 
-if (!defined('IN_PHPBB')) {
-	die('Hacking attempt');
-}
-
 // Note to potential users of this code ...
 //
 // Remember this is released under the _GPL_ and is subject

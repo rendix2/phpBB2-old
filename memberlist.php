@@ -19,8 +19,6 @@
  *
  ***************************************************************************/
 
-define('IN_PHPBB', true);
-
 $sep = DIRECTORY_SEPARATOR;
 $phpbb_root_path = '.' . $sep;
 

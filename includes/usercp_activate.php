@@ -21,10 +21,6 @@
  *
  ***************************************************************************/
 
-if (!defined('IN_PHPBB')) {
-    die('Hacking attempt');
-}
-
 $columns = ['user_active', 'user_id', 'username', 'user_email', 'user_new_password', 'user_lang', 'user_act_key'];
 
 $user = dibi::select($columns)

@@ -10,12 +10,7 @@
 
 use Nette\Caching\Cache;
 
-/**
- */
-define('IN_PHPBB', true);
-
 // Let's set the root dir for phpBB
-
 $sep = DIRECTORY_SEPARATOR;
 $phpbb_root_path = '..' . $sep;
 

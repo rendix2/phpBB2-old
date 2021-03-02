@@ -30,8 +30,6 @@ use phpBB2\Sync;
  * topics via the moderator operations buttons on all of the viewtopic pages.
  */
 
-define('IN_PHPBB', true);
-
 $sep = DIRECTORY_SEPARATOR;
 $phpbb_root_path = '.' . $sep;
 

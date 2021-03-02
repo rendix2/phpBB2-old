@@ -10,7 +10,6 @@
 
 /**
  */
-define('IN_PHPBB', true);
 define('ATTACH_INSTALL', true);
 
 $sep = DIRECTORY_SEPARATOR;
