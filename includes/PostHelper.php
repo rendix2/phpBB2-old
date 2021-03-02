@@ -811,7 +811,7 @@ class PostHelper
 
             $gen_simple_header = true;
 
-            PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $lang['Emoticons'], $gen_simple_header);
+            PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $lang['Emoticons'], $gen_simple_header);
 
             $template->setFileNames(['smiliesbody' => 'posting_smilies.tpl']);
         }

@@ -338,7 +338,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
 		$s_hidden_fields = '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $groupId . '" /><input type="hidden" name="unsub" value="1" />';
 		$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
-        PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $lang['Group_Control_Panel'], $gen_simple_header);
+        PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $lang['Group_Control_Panel'], $gen_simple_header);
 
         $template->setFileNames(['confirm' => 'confirm_body.tpl']);
 
@@ -822,7 +822,7 @@ if (isset($_POST['groupstatus']) && $groupId) {
         }
     }
 
-    PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $lang['Group_Control_Panel'], $gen_simple_header);
+    PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $lang['Group_Control_Panel'], $gen_simple_header);
 
 	//
 	// Load templates

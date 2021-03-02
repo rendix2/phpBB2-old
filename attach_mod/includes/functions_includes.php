@@ -75,7 +75,7 @@ function attach_setup_forum_auth(&$simple_auth_ary, &$forum_auth_fields, &$field
  * @param bool $submit
  * @param      $mode
  */
-function attachment_quota_settings($admin_mode, $submit = false, $mode)
+function attachment_quota_settings($admin_mode, $mode, $submit = false)
 {
     global $template, $lang, $lang, $phpbb_root_path, $attach_config;
 
@@ -337,18 +337,16 @@ function display_upload_attach_box_limits($user_id, $group_id = 0)
 
     $template->assignBlockVars('switch_upload_limits', []);
 
-    $template->assignVars(
-        [
-            'L_UACP' => $lang['UACP'],
-            'L_UPLOAD_QUOTA' => $lang['Upload_quota'],
-            'U_UACP' => $phpbb_root_path . 'uacp.php?' . POST_USERS_URL . '=' . $user_id . '&amp;sid=' . $userdata['session_id'],
-            'UPLOADED' => sprintf($lang['User_uploaded_profile'], $user_uploaded),
-            'QUOTA' => sprintf($lang['User_quota_profile'], $user_quota),
-            'UPLOAD_LIMIT_IMG_WIDTH' => $upload_limit_img_length,
-            'UPLOAD_LIMIT_PERCENT' => $upload_limit_pct,
-            'PERCENT_FULL' => $l_box_size_status
-        ]
-    );
+    return [
+        'UACPLink' => $phpbb_root_path . 'uacp.php?' . POST_USERS_URL . '=' . $user_id . '&amp;sid=' . $userdata['session_id'],
+
+        'l_uploaded' => sprintf($lang['User_uploaded_profile'], $user_uploaded),
+        'l_quota' => sprintf($lang['User_quota_profile'], $user_quota),
+        'l_percent_full' => sprintf($lang['Upload_percent_profile'], $upload_limit_pct),
+
+        'upload_limit_img_width' => $upload_limit_img_length,
+        'upload_limit_percent' => $upload_limit_pct,
+    ];
 }
 
 

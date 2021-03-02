@@ -47,7 +47,7 @@ if (isset($_POST[POST_MODE]) || isset($_GET[POST_MODE])) {
 // Begin program
 //
 if ($mode === 'edit' || $mode === 'save' && (isset($_POST['username']) || isset($_GET[POST_USERS_URL]) || isset($_POST[POST_USERS_URL]))) {
-    attachment_quota_settings('user', $_POST['submit'], $mode);
+    attachment_quota_settings('user', $mode, $_POST['submit']);
 
 	//
 	// Ok, the profile has been modified and submitted, let's update

@@ -114,7 +114,7 @@ if (isset($_POST['group_update'])) {
 			->where('[group_id] = %i', $group_id)
 			->execute();
 
-		attachment_quota_settings('group', $_POST['group_update'], $mode);
+		attachment_quota_settings('group', $mode, $_POST['group_update']);
 
 		$message  = $lang['Updated_group'] . '<br /><br />';
 		$message .= sprintf($lang['Click_return_groupsadmin'], '<a href="' . Session::appendSid('admin_groups.php') . '">', '</a>') . '<br /><br />';
@@ -144,7 +144,7 @@ if (isset($_POST['group_update'])) {
 		$message .= sprintf($lang['Click_return_groupsadmin'], '<a href="' . Session::appendSid('admin_groups.php') . '">', '</a>') . '<br /><br />';
 		$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
 
-		attachment_quota_settings('group', $_POST['group_update'], $mode);
+		attachment_quota_settings('group', $mode, $_POST['group_update']);
 
 		message_die(GENERAL_MESSAGE, $message);
 	} else {

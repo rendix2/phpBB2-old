@@ -1,0 +1,180 @@
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+    <tr>
+        <td align="left"><span class="nav"><a href="{$indexLink|noescape}" class="nav">{$l_index}</a></span></td>
+    </tr>
+</table>
+
+<table class="forumline" width="100%" cellspacing="1" cellpadding="3" border="0" align="center">
+    <tr>
+        <th class="thHead" colspan="2" height="25" nowrap="nowrap">{$l_viewing_profile}</th>
+    </tr>
+    <tr>
+        <td class="catLeft" width="40%" height="28" align="center"><b><span class="gen">{$lang['Avatar']}</span></b></td>
+        <td class="catRight" width="60%"><b><span class="gen">{$l_about_user}</span></b></td>
+    </tr>
+    <tr>
+        <td class="row1" height="6" valign="top" align="center">
+            {$profileData->avatarImg}<br />
+
+            <span class="postdetails">{$profileData->posterRank}<br />
+                {$profileData->onlineStatus|noescape}
+            </span>
+        </td>
+        <td class="row1" rowspan="3" valign="top"><table width="100%" border="0" cellspacing="1" cellpadding="3">
+                <tr>
+                    <td valign="middle" align="right" nowrap="nowrap"><span class="gen">{$lang['Joined']}:&nbsp;</span></td>
+                    <td width="100%"><b><span class="gen">{$profileData->joined}</span></b></td>
+                </tr>
+                <tr>
+                    <td valign="middle" align="right" nowrap="nowrap"><span class="gen">{$lang['Last_visit']}:&nbsp;</span></td>
+                    <td width="100%"><b><span class="gen">{$profileData->lastVisit}</span></b></td>
+                </tr>
+                <tr>
+                    <td valign="top" align="right" nowrap="nowrap"><span class="gen">{$lang['Total_posts']}:&nbsp;</span></td>
+                    <td valign="top">
+                        <b>
+                            <span class="gen">{$profileData->user_posts}</span>
+                        </b>
+                        <br />
+                        <span class="genmed">[{$l_post_percent_stats} / {$l_post_day_stats}]</span>
+                        <br />
+                        <span class="genmed">
+                            <a href="{$searchUserPostsLink|noescape}" class="genmed">{$l_search_user_posts}</a>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" align="right" nowrap="nowrap"><span class="gen">{$lang['Total_topics']}:&nbsp;</span></td>
+                    <td valign="top">
+                        <b>
+                            <span class="gen">{$profileData->user_topics}</span></b>
+                            <br />
+                            <span class="genmed">[{$l_topic_percent_stats} / {$l_topic_day_stats}]</span>
+                            <br />
+                        <span class="genmed">
+                                <a href="{$searchUserTopicsLink|noescape}" class="genmed">{$l_search_user_topics}</a>
+                        </span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td valign="top" align="right" nowrap="nowrap">
+                        <span class="gen">{$lang['Total_thanks']}:&nbsp;</span>
+                    </td>
+                    <td valign="top">
+                        <b>
+                            <span class="gen">{$profileData->user_thanks}</span>
+                        </b>
+                        <br/>
+                        <span class="genmed">[{$l_thank_percent_stats} / {$l_thank_day_stats}]</span>
+                        <br/>
+                        <span class="genmed">
+						<a href="{$searchUserThanksLink|noescape}" class="genmed">{$l_search_user_thanks}</a>
+					</span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td valign="top" align="right" nowrap="nowrap">
+                        <span class="gen">{$lang['Total_topics_watches']}:&nbsp;</span>
+                    </td>
+                    <td valign="top">
+                        <b>
+                            <span class="gen">{$profileData->user_topic_watches}</span>
+                        </b>
+                        <br/>
+                        <span class="genmed">[{$l_topics_watch_percent_stats} / {$l_topics_watch_day_stats}]</span>
+                        <br/>
+                        <span class="genmed">
+						<a href="{$searchUserTopicsWatchesLink|noescape}" class="genmed">{$l_search_user_topics_watches}</a>
+					</span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td valign="middle" align="right" nowrap="nowrap"><span class="gen">{$lang['Location']}:&nbsp;</span></td>
+                    <td><b><span class="gen">{$profileData->user_from}</span></b></td>
+                </tr>
+                <tr>
+                    <td valign="middle" align="right" nowrap="nowrap"><span class="gen">{$lang['Website']}:&nbsp;</span></td>
+                    <td>
+                        <span class="gen">
+                            <b>{$profileData->www}</b>
+                        </span>
+                    </td>
+                </tr>
+
+
+                <tr>
+                    <td valign="middle" align="right" nowrap="nowrap"><span class="gen">{$lang['Occupation']}:&nbsp;</span></td>
+                    <td>
+                        <b>
+                            <span class="gen">{$profileData->user_occupation}</span>
+                        </b>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" align="right" nowrap="nowrap"><span class="gen">{$lang['Interests']}:</span></td>
+                    <td> <b><span class="gen">{$profileData->user_interests}</span></b></td>
+                </tr>
+
+                <!-- BEGIN switch_upload_limits -->
+                <tr>
+                    <td valign="top" align="right" nowrap="nowrap">
+                        <span class="gen">{$lang['Upload_quota']}:</span>
+                    </td>
+                    <td>
+                        <table width="175" cellspacing="1" cellpadding="2" border="0" class="bodyline">
+                            <tr>
+                                <td colspan="3" width="100%" class="row2">
+                                    <table cellspacing="0" cellpadding="1" border="0">
+                                        <tr>
+                                            <td bgcolor="{$tdColor2Theme}"><img src="templates/subSilver/images/spacer.gif" width="{$upload_limit_img_width}" height="8" alt="{$upload_limit_percent}" /></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="33%" class="row1"><span class="gensmall">0%</span></td>
+                                <td width="34%" align="center" class="row1"><span class="gensmall">50%</span></td>
+                                <td width="33%" align="right" class="row1"><span class="gensmall">100%</span></td>
+                            </tr>
+                        </table>
+                        <b>
+                            <span class="genmed">[{$l_uploaded} / {$l_quota} / {$l_percent_full}]</span>
+                        </b>
+                        <br />
+                        <span class="genmed">
+                            <a href="{$UACPLink|noescape}" class="genmed">{$lang['UACP']}</a>
+                        </span>
+                    </td>
+                </tr>
+                <!-- END switch_upload_limits -->
+
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td class="catLeft" align="center" height="28"><b><span class="gen">{$lang['Contact']} {$profileData->username} </span></b></td>
+    </tr>
+    <tr>
+        <td class="row1" valign="top"><table width="100%" border="0" cellspacing="1" cellpadding="3">
+                <tr>
+                    <td valign="middle" align="right" nowrap="nowrap"><span class="gen">{$lang['Email_address']}:</span></td>
+                    <td class="row1" valign="middle" width="100%"><b><span class="gen">{$img->email|noescape}</span></b></td>
+                </tr>
+                <tr>
+                    <td valign="middle" nowrap="nowrap" align="right"><span class="gen">{$lang['Private_Message']}:</span></td>
+                    <td class="row1" valign="middle"><b><span class="gen">{$img->pm|noescape}</span></b></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+    <tr>
+        <td align="right"><span class="nav"><br />{$jumpBox|noescape}</span></td>
+    </tr>
+</table>

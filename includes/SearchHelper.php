@@ -382,7 +382,7 @@ class SearchHelper
             }
         }
 
-        PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $lang['Search'], $gen_simple_header);
+        PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $lang['Search'], $gen_simple_header);
 
         $template->setFileNames(['search_user_body' => 'search_username.tpl']);
 

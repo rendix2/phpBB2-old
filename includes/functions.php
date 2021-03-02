@@ -182,6 +182,87 @@ function make_jumpbox($action, $match_forum_id = 0)
     $template->assignVarFromHandle('JUMPBOX', 'jumpbox');
 }
 
+function jumpBoxLatte($action, $match_forum_id = 0)
+{
+    /**
+     * @var BaseTemplate $template
+     */
+    global $template;
+    global $userdata, $lang, $SID;
+
+//	$is_auth = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
+
+    $jumpBox = '';
+
+    $categories = dibi::select(['c.cat_id', 'c.cat_title', 'c.cat_order'])
+        ->from(Tables::CATEGORIES_TABLE)
+        ->as('c')
+        ->innerJoin(Tables::FORUMS_TABLE)
+        ->as('f')
+        ->on('[f.cat_id] = [c.cat_id]')
+        ->groupBy('c.cat_id')
+        ->groupBy('c.cat_title')
+        ->groupBy('c.cat_order')
+        ->orderBy('c.cat_order')
+        ->fetchAll();
+
+    if (count($categories)) {
+        $forums = dibi::select('*')
+            ->from(Tables::FORUMS_TABLE)
+            ->orderBy('cat_id')
+            ->orderBy('forum_order')
+            ->fetchAll();
+
+        $jumpBox = '<select name="' . POST_FORUM_URL . '" onchange="if (this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $lang['Select_forum'] . '</option>';
+
+        if (count($forums)) {
+            foreach ($categories as $category) {
+                $boxstring_forums = '';
+
+                foreach ($forums as $forum) {
+                    if ($forum->cat_id === $category->cat_id && $forum->auth_view <= Auth::AUTH_REG) {
+
+//					if ($forum_rows[$j]['cat_id'] === $category_rows[$i]['cat_id'] && $is_auth[$forum_rows[$j]['forum_id']]['auth_view'] )
+//					{
+                        $selected = $forum->forum_id === $match_forum_id ? 'selected="selected"' : '';
+                        $boxstring_forums .=  '<option value="' . $forum->forum_id . '"' . $selected . '>' . htmlspecialchars($forum->forum_name, ENT_QUOTES) . '</option>';
+                    }
+                }
+
+                if ($boxstring_forums !== '') {
+                    $jumpBox .= '<optgroup label="'.$category->cat_title .'">' . $boxstring_forums . '</optgroup>';
+                }
+            }
+        }
+
+        $jumpBox .= '</select>';
+    } else {
+        $jumpBox .= '<select name="' . POST_FORUM_URL . '" onchange="if (this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"></select>';
+    }
+
+    // Let the jumpbox work again in sites having additional session id checks.
+//	if (!empty($SID) )
+//	{
+    $jumpBox .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
+//	}
+
+    $template->setFileNames(['jumpbox' => 'jumpbox.tpl']);
+
+    $template->assignVars(
+        [
+            'L_GO'           => $lang['Go'],
+            'L_JUMP_TO'      => $lang['Jump_to'],
+            'L_SELECT_FORUM' => $lang['Select_forum'],
+
+            'S_JUMPBOX_SELECT' => $jumpBox,
+            'S_JUMPBOX_ACTION' => Session::appendSid($action)
+        ]
+    );
+
+
+    return $jumpBox;
+}
+
 //
 // Initialise user settings on page load
 function init_userprefs($pageId)

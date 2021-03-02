@@ -91,7 +91,7 @@ for ($i = 0; $i < $faq_count; $i++) {
 //
 // Lets build a page ...
 //
-PageHelper::header($template, $userdata, $board_config, $lang, $images,  $theme, $l_title, $gen_simple_header);
+PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $l_title, $gen_simple_header);
 
 $template->setFileNames(['body' => 'faq_body.tpl']);
 make_jumpbox('viewforum.php');
