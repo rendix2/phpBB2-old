@@ -15,6 +15,9 @@
         "nette/php-generator": "^2.6",
         "nette/http": "^2.4",
         "nette/bootstrap": "^2.4",
-        "nette/mail": "^2.4"
+        "nette/mail": "^2.4",
+        "nette/forms": "^v2.4.5",
+        "nette/application": "^v2.4.5",
+        "nette/security": "^v2.2.0"
     }
 }

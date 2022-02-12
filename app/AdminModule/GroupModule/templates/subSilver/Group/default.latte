@@ -1,0 +1,56 @@
+{define title}{/define}
+
+{block content}
+    <h1>{_Group_administration}</h1>
+
+    <p>{_Group_admin_explain}</p>
+
+    <a href="{link Group:edit}">{_New_group}</a>
+
+    <table cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
+        <thead>
+        <tr>
+            <th class="thHead">{_group_id}</th>
+            <th class="thHead">{_group_name}</th>
+            <th class="thHead">{_group_description}</th>
+            <th class="thHead">{_group_status}</th>
+            <th class="thHead">{_group_moderator}</th>
+            <th class="thHead">{_Permissions}</th>
+            <th class="thHead"></th>
+            <th class="thHead"></th>
+            <th class="thHead"></th>
+        </tr>
+        </thead>
+        {foreach $groups as $group}
+            <tr>
+                <td class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}">
+                    <a href="{link Group:edit, $group->group_id}">{$group->group_id}</a>
+                </td>
+                <td class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}">{$group->group_name}</td>
+                <td class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}">{$group->group_description}</td>
+                <td class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}">
+                    {if $group->group_type === $manager::GROUP_OPEN}
+                        {_group_open}
+                    {elseif $group->group_type === $manager::GROUP_CLOSED}
+                        {_group_closed}
+                    {elseif $group->group_type === $manager::GROUP_HIDDEN}
+                        {_group_hidden}
+                    {/if}
+                </td>
+                <td class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}">{$group->username}</td>
+                <td class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}">
+                    <a href="{link Permission:default, $group->group_id}">{_Permissions}</a>
+                </td>
+                <td class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}">
+                    <a href="{link User:default, $group->group_id}">{_Group_users}</a>
+                </td>
+                <td class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}">
+                    <a href="{link Group:edit, $group->group_id}">{_Edit}</a>
+                </td>
+                <td class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}">
+                    <a href="{link Group:delete, $group->group_id}">{_Delete}</a>
+                </td>
+            </tr>
+        {/foreach}
+    </table>
+{/block}

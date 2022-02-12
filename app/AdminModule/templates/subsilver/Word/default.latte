@@ -1,0 +1,29 @@
+{define title}{_Words_title}{/define}
+
+{block content}
+<h1>{_Words_title}</h1>
+
+<p>{_Words_explain}</p>
+
+<a href="{link Word:edit}">{_Add_new_word}</a>
+
+<table cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
+        <tr>
+            <th class="thCornerL">{_Word}</th>
+            <th class="thTop">{_Replacement}</th>
+            <th colspan="2" class="thCornerR">{_Action}</th>
+        </tr>
+        {foreach $words as $word}
+        <tr>
+            <td class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}" align="center">{$word->word}</td>
+            <td class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}" align="center">{$word->replacement}</td>
+            <td class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}">
+                <a href="{link Word:edit, $word->word_id}">{_Edit}</a>
+            </td>
+            <td class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}">
+                <a href="{link Word:delete, $word->word_id}">{_Delete}</a>
+            </td>
+        </tr>
+        {/foreach}
+    </table>
+{/block}

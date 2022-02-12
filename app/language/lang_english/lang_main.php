@@ -44,6 +44,10 @@ $lang['DATE_FORMAT'] =  'd M Y'; // This should be changed to the default date f
 // please add it here.
 // $lang['TRANSLATION'] = '';
 
+//Forms
+$lang['This field is required.'] = 'This field is required.';
+$lang['Please enter a valid integer.'] = 'Please enter a valid integer.';
+
 //
 // Common, these terms are used
 // extensively on several pages
@@ -595,7 +599,9 @@ $lang['Current_Image'] = 'Current Image';
 $lang['Notify_on_privmsg'] = 'Notify on new Private Message';
 $lang['Popup_on_privmsg'] = 'Pop up window on new Private Message'; 
 $lang['Popup_on_privmsg_explain'] = 'Some templates may open a new window to inform you when new private messages arrive.';
+// TODO DELTE
 $lang['Hide_user'] = 'Hide your online status';
+$lang['Show_user'] = 'Show your online status';
 
 $lang['Profile_updated'] = 'Your profile has been updated';
 $lang['Profile_updated_inactive'] = 'Your profile has been updated. However, you have changed vital details, thus your account is now inactive. Check your e-mail to find out how to reactivate your account, or if admin activation is required, wait for the administrator to reactivate it.';

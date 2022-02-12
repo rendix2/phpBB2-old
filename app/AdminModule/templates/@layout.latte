@@ -1,0 +1,234 @@
+<html>
+    <head>
+        <title>{include title}</title>
+    </head>
+
+    
+    <style type="text/css">
+        <!--
+
+        /*
+          The original subSilver Theme for phpBB version 2+
+          Created by subBlue design
+          http://www.subBlue.com
+
+          NOTE: These CSS definitions are stored within the main page body so that you can use the phpBB2
+          theme administration centre. When you have finalised your style you could cut the final CSS code
+          and place it in an external file, deleting this section to save bandwidth.
+        */
+
+
+        /* General page style. The scroll bar colours only visible in IE5.5+ */
+        body {
+            background-color: {$theme->body_bgcolor};
+            scrollbar-face-color: {$theme->tr_color2};
+            scrollbar-highlight-color: {$theme->td_color2};
+            scrollbar-shadow-color: {$theme->tr_color2};
+            scrollbar-3dlight-color: {$theme->tr_color3};
+            scrollbar-arrow-color:  {$theme->body_link};
+            scrollbar-track-color: {$theme->tr_color1};
+            scrollbar-darkshadow-color: {$theme->th_color1};
+        }
+
+        /* General font families for common tags */
+        font,th,td,p { font-family: {$theme->fontface1} }
+        p, td		{ font-size : {$theme->fontsize2}; color : {$theme->body_text}; }
+        a:link,a:active,a:visited { color : {$theme->body_link}; }
+        a:hover		{ text-decoration: underline; color : {$theme->body_hlink}; }
+        hr	{ height: 0px; border: solid {$theme->tr_color3} 0px; border-top-width: 1px;}
+        h1,h2		{ font-family: "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif; font-size : 22px; font-weight : bold; text-decoration : none; line-height : 120%; color : #000000;}
+
+
+        /* This is the border line & background colour round the entire page */
+        .bodyline	{ background-color: {$theme->td_color2}; border: 1px {$theme->th_color1} solid; }
+
+        /* This is the outline round the main forum tables */
+        .forumline	{ background-color: {$theme->td_color2}; border: 2px {$theme->th_color2} solid; }
+
+
+        /* Main table cell colours and backgrounds */
+        td.row1	{ background-color: {$theme->tr_color1}; }
+        td.row2	{ background-color: {$theme->tr_color2}; }
+        td.row3	{ background-color: {$theme->tr_color3}; }
+
+
+        /*
+          This is for the table cell above the Topics, Post & Last posts on the index.php page
+          By default this is the fading out gradiated silver background.
+          However, you could replace this with a bitmap specific for each forum
+        */
+        td.rowpic {
+            background-color: {$theme->td_color2};
+            background-image: url(../templates/subSilver/images/{$theme->th_class3});
+            background-repeat: repeat-y;
+        }
+
+        /* Header cells - the blue and silver gradient backgrounds */
+        th	{
+            color: {$theme->fontcolor3}; font-size: {$theme->fontsize2}px; font-weight : bold;
+            background-color: {$theme->body_link}; height: 25px;
+            background-image: url(../templates/subSilver/images/{$theme->th_class2});
+        }
+
+        td.cat,td.catHead,td.catSides,td.catLeft,td.catRight,td.catBottom {
+            background-image: url(../templates/subSilver/images/{$theme->th_class1});
+            background-color:{$theme->tr_color3}; border: {$theme->th_color3}; border-style: solid; height: 28px;
+        }
+
+
+        /*
+          Setting additional nice inner borders for the main table cells.
+          The names indicate which sides the border will be on.
+          Don't worry if you don't understand this, just ignore it :-)
+        */
+        td.cat,td.catHead,td.catBottom {
+            height: 29px;
+            border-width: 0px 0px 0px 0px;
+        }
+        th.thHead,th.thSides,th.thTop,th.thLeft,th.thRight,th.thBottom,th.thCornerL,th.thCornerR {
+            font-weight: bold; border: {$theme->td_color2}; border-style: solid; height: 28px; }
+        td.row3Right,td.spaceRow {
+            background-color: {$theme->tr_color3}; border: {$theme->th_color3}; border-style: solid; }
+
+        th.thHead,td.catHead { font-size: {$theme->fontsize3}px; border-width: 1px 1px 0px 1px; }
+        th.thSides,td.catSides,td.spaceRow	 { border-width: 0px 1px 0px 1px; }
+        th.thRight,td.catRight,td.row3Right	 { border-width: 0px 1px 0px 0px; }
+        th.thLeft,td.catLeft	  { border-width: 0px 0px 0px 1px; }
+        th.thBottom,td.catBottom  { border-width: 0px 1px 1px 1px; }
+        th.thTop	 { border-width: 1px 0px 0px 0px; }
+        th.thCornerL { border-width: 1px 0px 0px 1px; }
+        th.thCornerR { border-width: 1px 1px 0px 0px; }
+
+
+        /* The largest text used in the index page title and toptic title etc. */
+        .maintitle	{
+            font-weight: bold; font-size: 22px; font-family: "{$theme->fontface2}",{$theme->fontface1};
+            text-decoration: none; line-height : 120%; color : {$theme->body_text};
+        }
+
+
+        /* General text */
+        .gen { font-size : {$theme->fontsize3}px; }
+        .genmed { font-size : {$theme->fontsize2}px; }
+        .gensmall { font-size : {$theme->fontsize1}px; }
+        .gen,.genmed,.gensmall { color : {$theme->body_text}; }
+        a.gen,a.genmed,a.gensmall { color: {$theme->body_link}; text-decoration: none; }
+        a.gen:hover,a.genmed:hover,a.gensmall:hover	{ color: {$theme->body_hlink}; text-decoration: underline; }
+
+
+        /* The register, login, search etc links at the top of the page */
+        .mainmenu		{ font-size : {$theme->fontsize2}px; color : {$theme->body_text} }
+        a.mainmenu		{ text-decoration: none; color : {$theme->body_link};  }
+        a.mainmenu:hover{ text-decoration: underline; color : {$theme->body_hlink}; }
+
+
+        /* Forum category titles */
+        .cattitle		{ font-weight: bold; font-size: {$theme->fontsize3}px ; letter-spacing: 1px; color : {$theme->body_link}}
+        a.cattitle		{ text-decoration: none; color : {$theme->body_link}; }
+        a.cattitle:hover{ text-decoration: underline; }
+
+
+        /* Forum title: Text and link to the forums used in: index.php */
+        .forumlink		{ font-weight: bold; font-size: {$theme->fontsize3}px; color : {$theme->body_link}; }
+        a.forumlink 	{ text-decoration: none; color : {$theme->body_link}; }
+        a.forumlink:hover{ text-decoration: underline; color : {$theme->body_hlink}; }
+
+
+        /* Used for the navigation text, (Page 1,2,3 etc) and the navigation bar when in a forum */
+        .nav			{ font-weight: bold; font-size: {$theme->fontsize2}px; color : {$theme->body_text};}
+        a.nav			{ text-decoration: none; color : {$theme->body_link}; }
+        a.nav:hover		{ text-decoration: underline; }
+
+
+
+        /* Name of poster in viewmsg.php and viewtopic.php and other places */
+        .name			{ font-size : {$theme->fontsize2}px; color : {$theme->body_text};}
+
+        /* Location, number of posts, post date etc */
+        .postdetails		{ font-size : {$theme->fontsize1}px; color : {$theme->body_text}; }
+
+
+        /* The content of the posts (body of text) */
+        .postbody { font-size : {$theme->fontsize3}px; line-height: 18px}
+        a.postlink:link	{ text-decoration: none; color : {$theme->body_link} }
+        a.postlink:visited { text-decoration: none; color : {$theme->body_vlink}; }
+        a.postlink:hover { text-decoration: underline; color : {$theme->body_hlink}}
+
+
+        /* Quote & Code blocks */
+        .code {
+            font-family: {$theme->fontface3}; font-size: {$theme->fontsize2}px; color: {$theme->fontcolor2};
+            background-color: {$theme->td_color1}; border: {$theme->tr_color3}; border-style: solid;
+            border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+        }
+
+        .quote {
+            font-family: {$theme->fontface1}; font-size: {$theme->fontsize2}px; color: {$theme->fontcolor1}; line-height: 125%;
+            background-color: {$theme->td_color1}; border: {$theme->tr_color3}; border-style: solid;
+            border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+        }
+
+
+        /* Copyright and bottom info */
+        .copyright		{ font-size: {$theme->fontsize1}px; font-family: {$theme->fontface1}; color: {$theme->fontcolor1}; letter-spacing: -1px;}
+        a.copyright		{ color: {$theme->fontcolor1}; text-decoration: none;}
+        a.copyright:hover { color: {$theme->body_text}; text-decoration: underline;}
+
+
+        /* Form elements */
+        input,textarea, select {
+            color : {$theme->body_text};
+            font: normal {$theme->fontsize2}px {$theme->fontface1};
+            border-color : {$theme->body_text};
+        }
+
+        /* The text input fields background colour */
+        input.post, textarea.post, select {
+            background-color : {$theme->td_color2};
+        }
+
+        input { text-indent : 2px; }
+
+        /* The buttons used for bbCode styling in message post */
+        input.button {
+            background-color : {$theme->tr_color1};
+            color : {$theme->body_text};
+            font-size: {$theme->fontsize2}px; font-family: {$theme->fontface1};
+        }
+
+        /* The main submit button option */
+        input.mainoption {
+            background-color : {$theme->td_color1};
+            font-weight : bold;
+        }
+
+        /* None-bold submit button */
+        input.liteoption {
+            background-color : {$theme->td_color1};
+            font-weight : normal;
+        }
+
+        /* This is the line in the posting page which shows the rollover
+          help line. This is actually a text box, but if set to be the same
+          colour as the background no one will know ;)
+        */
+        .helpline { background-color: {$theme->tr_color2}; border-style: none; }
+
+
+        /* Import the fancy styles for IE only (NS4.x doesn't use the @import function) */
+        @import url("../templates/subSilver/formIE.css");
+        -->
+    </style>
+
+    <body>
+        {* flashes *}
+        {snippet flashes}
+            {foreach $flashes as $flash}
+                <div class="alert alert-{$flash->type}">{_$flash->message}</div>
+            {/foreach}
+        {/snippet}
+    	{* flashes *}
+
+        {include content}
+    </body>
+</html>

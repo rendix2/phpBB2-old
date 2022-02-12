@@ -1,16 +1,26 @@
 tracy:
     strictMode: false
 
+application:
+	errorPresenter: Error
+	mapping:
+		*: phpBB2\App\*Module\Presenters\*Presenter
+
 session:
     autoStart: smart
     debugger: true
 
 services:
     # model layer => managers
+    router: phpBB2\App\Router\RouterFactory::createRouter
+
+    AuthAccessManager: phpBB2\Models\AuthAccessManager
+    AvatarManager: phpBB2\Models\AvatarManager
     BanlistManager: phpBB2\Models\BanlistManager
     CategoriesManager: phpBB2\Models\CategoriesManager
     ConfigManager: phpBB2\Models\ConfigManager
     ConfirmManager: phpBB2\Models\ConfirmManager
+    DatabaseManager: phpBB2\Models\DatabaseManager
     DissalowManager: phpBB2\Models\DissalowManager
     ForumsManager: phpBB2\Models\ForumsManager
     ForumPruneManager: phpBB2\Models\ForumPruneManager
@@ -34,3 +44,25 @@ services:
     VoteResultsManager: phpBB2\Models\VoteResultsManager
     VoteVotersManager: phpBB2\Models\VoteVotersManager
     WordsManager: phpBB2\Models\WordsManager
+
+    CategoryFacade:
+    	class: phpBB2\App\Models\Facades\CategoryFacade
+
+    LanguageService: phpBB2\App\Services\LanguageService
+    ThemeService: phpBB2\App\Services\ThemeService
+    StartService: phpBB2\App\Services\StartService
+
+    Translator: phpBB2\App\Translator
+
+
+extensions:
+    dibi: Dibi\Bridges\Nette\DibiExtension22
+
+dibi:
+	dns: \Config::DATABASE_DNS%
+	driver: Config::DATABASE_DRIVER
+	host: Config::DATABASE_HOST
+	username: Config::DATABASE_USER
+	password: Config::DATABASE_PASSWORD
+	database: Config::DATABASE_NAME
+	lazy: Config::DATABASE_LAZY

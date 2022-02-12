@@ -26,6 +26,8 @@ CREATE TABLE phpbb_auth_access (
    KEY forum_id (forum_id)
 );
 
+ALTER TABLE `phpbb`.`phpbb_auth_access` ADD PRIMARY KEY (`group_id`, `forum_id`);
+
 
 #
 # Table structure for table 'phpbb_user_group'

@@ -385,69 +385,6 @@ if (!empty($mode)) {
 			message_die(GENERAL_MESSAGE, $message);
 
 			break;
-		case 'modforum':
-			// Modify a forum in the DB
-            if (isset($_POST['prune_enable']) && $_POST['prune_enable'] !== '1') {
-                $_POST['prune_enable'] = 0;
-            }
-
-            $update_data = [
-                'forum_name'         => $_POST['forumname'],
-                'cat_id'             => (int)$_POST[POST_CAT_URL],
-                'forum_desc'         => $_POST['forumdesc'],
-                'forum_status'       => (int)$_POST['forumstatus'],
-                'prune_enable'       => (int)$_POST['prune_enable'],
-                'forum_thank_enable' => (int)$_POST['forum_thank_enable']
-            ];
-
-			dibi::update(Tables::FORUMS_TABLE, $update_data)
-                ->where('[forum_id] = %i', (int)$_POST[POST_FORUM_URL])
-                ->execute();
-
-            if ($_POST['prune_enable'] === '1') {
-				if ($_POST['prune_days'] === '' || $_POST['prune_freq'] === '') {
-					message_die(GENERAL_MESSAGE, $lang['Set_prune_data']);
-				}
-
-				// little improvement
-				$prune_count = dibi::select('COUNT(*)')
-                    ->as('prune_count')
-                    ->from(Tables::PRUNE_TABLE)
-                    ->where('[forum_id] = %i', (int)$_POST[POST_FORUM_URL])
-                    ->fetchSingle();
-
-				if ($prune_count === false) {
-					message_die(GENERAL_ERROR, "Couldn't get forum Prune Information");
-				}
-
-                if ($prune_count > 0) {
-				    $update_data = [
-				        'prune_days' => (int)$_POST['prune_days'],
-                        'prune_freq' => (int)$_POST['prune_freq']
-                    ];
-
-				    dibi::update(Tables::PRUNE_TABLE, $update_data)
-                        ->where('[forum_id] = %i', (int)$_POST[POST_FORUM_URL])
-                        ->execute();
-				} else {
-				    $insert_data = [
-				        'forum_id'   => (int)$_POST[POST_FORUM_URL],
-                        'prune_days' => (int)$_POST['prune_days'],
-                        'prune_freq' => (int)$_POST['prune_freq']
-                    ];
-
-				    dibi::insert(Tables::PRUNE_TABLE, $insert_data)->execute();
-				}
-			}
-
-			$message  = $lang['Forums_updated'] . '<br /><br />';
-            $message .= sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />';
-            $message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
-
-			message_die(GENERAL_MESSAGE, $message);
-
-			break;
-
 		case 'addcat':
 			// Create a category in the DB
 			if (trim($_POST['categoryname']) === '') {
@@ -478,86 +415,6 @@ if (!empty($mode)) {
 
 			message_die(GENERAL_MESSAGE, $message);
 
-			break;
-
-		case 'editcat':
-			//
-			// Show form to edit a category
-			//
-			$cat_id = (int)$_GET[POST_CAT_URL];
-
-			$row = get_info('category', $cat_id);
-
-            $template->setFileNames(['body' => 'admin/category_edit_body.tpl']);
-
-            $s_hidden_fields = '<input type="hidden" name="mode" value="modcat" /><input type="hidden" name="' . POST_CAT_URL . '" value="' . $cat_id . '" />';
-
-            $template->assignVars(
-                [
-                    'CAT_TITLE' => htmlspecialchars($row->cat_title, ENT_QUOTES),
-
-                    'L_EDIT_CATEGORY'         => $lang['Edit_Category'],
-                    'L_EDIT_CATEGORY_EXPLAIN' => $lang['Edit_Category_explain'],
-                    'L_CATEGORY'              => $lang['Category'],
-
-                    'S_HIDDEN_FIELDS' => $s_hidden_fields,
-                    'S_SUBMIT_VALUE'  => $lang['Update'],
-                    'S_FORUM_ACTION'  => Session::appendSid('admin_forums.php')
-                ]
-            );
-
-            $template->pparse('body');
-			break;
-
-		case 'modcat':
-            // Modify a category in the DB
-		    dibi::update(Tables::CATEGORIES_TABLE, ['cat_title' => $_POST['cat_title']])
-                ->where('[cat_id] = %i', (int)$_POST[POST_CAT_URL])
-                ->execute();
-
-			$message  = $lang['Forums_updated'] . '<br /><br />';
-			$message .= sprintf($lang['Click_return_forumadmin'], '<a href="' . Session::appendSid('admin_forums.php') . '">', '</a>') . '<br /><br />';
-			$message .= sprintf($lang['Click_return_admin_index'], '<a href="' . Session::appendSid('index.php?pane=right') . '">', '</a>');
-
-			message_die(GENERAL_MESSAGE, $message);
-
-			break;
-
-		case 'deleteforum':
-			// Show form to delete a forum
-			$forumId = (int)$_GET[POST_FORUM_URL];
-
-			$select_to = '<select name="to_id">';
-			$select_to .= "<option value=\"-1\"$s>" . $lang['Delete_all_posts'] . "</option>\n";
-			$select_to .= get_list('forum', $forumId, 0);
-			$select_to .= '</select>';
-
-			$newMode = 'movedelforum';
-
-			$foruminfo = get_info('forum', $forumId);
-			$name = $foruminfo->forum_name;
-
-            $template->setFileNames(['body' => 'admin/forum_delete_body.tpl']);
-
-            $s_hidden_fields = '<input type="hidden" name="mode" value="' . $newMode . '" /><input type="hidden" name="from_id" value="' . $forumId . '" />';
-
-            $template->assignVars(
-                [
-                    'NAME' => $name,
-
-                    'L_FORUM_DELETE'         => $lang['Forum_delete'],
-                    'L_FORUM_DELETE_EXPLAIN' => $lang['Forum_delete_explain'],
-                    'L_MOVE_CONTENTS'        => $lang['Move_contents'],
-                    'L_FORUM_NAME'           => $lang['Forum_name'],
-
-                    'S_HIDDEN_FIELDS' => $s_hidden_fields,
-                    'S_FORUM_ACTION'  => Session::appendSid('admin_forums.php'),
-                    'S_SELECT_TO'     => $select_to,
-                    'S_SUBMIT_VALUE'  => $lang['Move_and_Delete']
-                ]
-            );
-
-            $template->pparse('body');
 			break;
 
 		case 'movedelforum':
@@ -800,12 +657,6 @@ if (!empty($mode)) {
             }
 
 			renumber_order('category');
-			$show_index = true;
-
-			break;
-
-		case 'forum_sync':
-			Sync::oneForum((int)$_GET[POST_FORUM_URL]);
 			$show_index = true;
 
 			break;

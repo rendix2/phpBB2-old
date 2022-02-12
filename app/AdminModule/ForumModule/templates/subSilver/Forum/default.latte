@@ -1,0 +1,129 @@
+{block title}{/block}
+
+{block content}
+<table width="100%" cellpadding="4" cellspacing="1" border="0" class="forumline" align="center">
+	<tr>
+		<th class="thHead" colspan="8">{_Forum_admin}</th>
+	</tr>
+	{dump $categories}
+	{foreach $categories as $category}
+	<tr>
+		<td class="catLeft">
+		    <span class="cattitle">
+		        <b>
+		            <a href="{link :Admin:Category:Category:edit, $category->cat_id}">{$category->cat_title}</a>
+		        </b>
+		    </span>
+		</td>
+		<td class="cat" align="center" valign="middle">
+		    <span class="gen">{_Number_topics}</span>
+		</td>
+		<td class="cat" align="center" valign="middle">
+		    <span class="gen">{_Number_posts}</span>
+		</td>
+		<td class="cat" align="center" valign="middle">
+		    <span class="gen">{_Number_thanks}</span>
+		</td>
+		<td class="cat" align="center" valign="middle">
+		    <span class="gen">
+		        <a href="{link :Admin:Category:Category:edit, $category->cat_id}">{_Edit}</a>
+		    </span>
+		</td>
+		<td class="cat" align="center" valign="middle">
+		    <span class="gen">
+		        <a href="{link :Admin:Category:Category:delete, $category->cat_id}">{_Delete}</a>
+		    </span>
+		</td>
+		<td class="cat" align="center" valign="middle" nowrap="nowrap">
+			<span class="gen">
+				<!-- BEGIN up -->
+				<a href="{link :Admin:Category:Category:moveUp, $category->cat_id}">{_Move_up}</a>
+				<!-- END up -->
+
+				<!-- BEGIN down -->
+				<a href="{link :Admin:Category:Category:moveDown, $category->cat_id}">{_Move_down}</a>
+				<!-- END down -->
+			</span>
+		</td>
+		<td class="catRight" align="center" valign="middle"><span class="gen">&nbsp;</span></td>
+	</tr>
+	{foreach $category->forums as $forum}
+	<tr>
+		<td class="row2 catLeft">
+		    <span class="gen">
+		        <a href="{link :Forum:Forum:view, $forum->forum_id}" target="_new">{$forum->forum_name}</a>
+		    </span>
+		    <br />
+		    <span class="gensmall">{$forum->forum_desc}</span>
+		</td>
+		<td class="row2" align="center" valign="middle">
+		    <span class="gen">{$forum->forum_topics}</span>
+		</td>
+		<td class="row2" align="center" valign="middle">
+		    <span class="gen">{$forum->forum_posts}</span>
+		</td>
+		<td class="row2" align="center" valign="middle">
+		    <span class="gen">{$forum->forum_thanks}</span>
+		</td>
+		<td class="row2" align="center" valign="middle">
+		    <span class="gen">
+		        <a href="{link Forum:edit, $forum->forum_id}">{_Edit}</a>
+		    </span>
+		</td>
+		<td class="row2" align="center" valign="middle">
+		    <span class="gen">
+		        <a href="{link Forum:delete, $forum->forum_id}">{_Delete}</a>
+		    </span>
+		</td>
+		<td class="row2" align="center" valign="middle">
+			<span class="gen">
+				<!-- BEGIN up -->
+				<a href="{link Forum:moveUp, $forum->forum_id}">{_Move_up}</a>
+				<!-- END up -->
+
+				<!-- BEGIN down -->
+				<a href="{link Forum:moveDown, $forum->forum_id}">{_Move_down}</a>
+				<!-- END down -->
+			</span>
+		</td>
+		<td class="catRight row1" align="center" valign="middle">
+			<span class="gen">
+				<a href="{link Forum:resync, $forum->forum_id}">{_Resync}</a>
+			</span>
+			<span class="gen">
+				<a href="{link :Admin:Forum:Permission:default, $forum->forum_id}">{_Permissions}</a>
+			</span>
+			<span class="gen">
+				<a href="{link :Admin:Forum:Prune:default, $forum->forum_id}">{_Forum_Prune}</a>
+			</span>
+		</td>
+	</tr>
+	{/foreach}
+	{*
+	<tr>
+
+		<td colspan="8" class="row2">
+			<label for="{catrow.S_ADD_FORUM_NAME}">{catrow.L_FORUM_NAME}</label>
+			<input class="post" type="text" name="{catrow.S_ADD_FORUM_NAME}" placeholder="{catrow.L_FORUM_NAME}" id="{catrow.S_ADD_FORUM_NAME}" />
+			<input type="submit" class="liteoption"  name="{catrow.S_ADD_FORUM_SUBMIT}" value="{L_CREATE_FORUM}" />
+		</td>
+	</tr>
+	*}
+	<tr>
+		<td colspan="8" height="1" class="spaceRow"><img src="../templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+	</tr>
+	{/foreach}
+	{*
+		<tr>
+    	    <td colspan="8" class="catBottom"></td>
+    	</tr>
+
+
+	<tr>
+		<td colspan="8" class="catBottom">
+			<label for="categoryname">{_Category_name}</label>
+			<input class="post" type="text" name="categoryname" id="categoryname" placeholder="{_Category_name}" /> <input type="submit" class="liteoption"  name="addcategory" value="{_Create_cate}" /></td>
+	</tr>
+	*}
+</table>
+{/block}

@@ -1,0 +1,13 @@
+{define title}{_Ranks_title}{/define}
+
+{block content}
+    <h1>{_Ranks_title}</h1>
+
+    <p>{_Ranks_explain}</p>
+
+    {control rankForm}
+
+    {if $rank}
+        <img src="{$basePath}/{$rank->rank_image}">
+    {/if}
+{/block}

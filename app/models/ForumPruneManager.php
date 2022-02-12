@@ -10,4 +10,10 @@ namespace phpBB2\Models;
  */
 class ForumPruneManager extends CrudManager
 {
+    public function getByForumId($forumId)
+    {
+        return $this->selectFluent()
+            ->where('[forum_id] = %i', $forumId)
+            ->fetch();
+    }
 }

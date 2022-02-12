@@ -1,0 +1,42 @@
+{define title}{_Group_administration}{/define}
+
+{block content}
+    <h1>{_Group_administration}</h1>
+
+    <h2>{$group->group_name}</h2>
+
+    <a href="{link User:edit, $group->group_id}">{_Add_member}</a>
+
+    <table cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
+        <thead>
+        <tr>
+            <th class="thHead">{_User_id}</th>
+            <th class="thHead">{_Username}</th>
+            <th class="thHead">{_Number_posts}</th>
+            <th class="thHead">{_Number_topics}</th>
+            <th class="thHead">{_Pending_members}</th>
+            <th class="thHead"></th>
+        </tr>
+        </thead>
+        {foreach $users as $groupUser}
+            <tr>
+                <td class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}">
+                    <a href="{link :Admin:User:edit, $groupUser->user_id}">{$groupUser->user_id}</a>
+                </td>
+                <td class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}">{$groupUser->username}</td>
+                <td class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}">{$groupUser->user_posts}</td>
+                <td class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}">{$groupUser->user_topics}</td>
+                <td class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}">
+                    {if $groupUser->user_pending}
+                        {_Yes}
+                    {else}
+                        {_No}
+                    {/if}
+                </td>
+                <td class="{$iterator->isEven() ? $theme['td_class1'] : $theme['td_class2']}">
+                    <a href="{link User:delete, $groupUser->user_id, $presenter->getParameter('id')}">{_Delete}</a>
+                </td>
+            </tr>
+        {/foreach}
+    </table>
+{/block}

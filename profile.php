@@ -20,6 +20,8 @@
  *
  ***************************************************************************/
 
+use phpBB2\ForumModule\Presenters\UserViewProfilePresenter;
+
 $sep = DIRECTORY_SEPARATOR;
 $phpbb_root_path = '.' . $sep;
 
@@ -55,7 +57,25 @@ if (isset($_GET[POST_MODE]) || isset($_POST[POST_MODE])) {
 
     switch ($mode) {
         case 'viewprofile':
-            require_once $phpbb_root_path . 'includes' . $sep . 'usercp_viewprofile.php';
+            $userViewProfilePresenter = new UserViewProfilePresenter(
+                $container->getService('UsersManager'),
+                $container->getService('ThanksManager'),
+                $storage,
+                $userdata,
+                $lang,
+                $attach_config,
+                $board_config,
+                $theme
+            );
+
+            //
+            // Generate page
+            //
+            PageHelper::header($template, $userdata, $board_config, $lang, $images, $theme, $lang['Viewing_profile'], $gen_simple_header);
+
+            $userViewProfilePresenter->renderDefault($_GET[POST_USERS_URL]);
+
+            PageHelper::footer($template, $userdata, $lang, $gen_simple_header);
             break;
 
             // yes both!

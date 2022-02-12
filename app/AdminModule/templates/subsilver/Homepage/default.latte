@@ -1,0 +1,229 @@
+{define title}Homepage{/define}
+
+{block content}
+    <h1>{_Welcome_phpBB}</h1>
+
+    <p>{_Admin_intro|noescape}</p>
+
+    <a href="{link Rank:default}">ranjs</a>
+
+    <h1>{_Forum_stats}</h1>
+
+    <div style="">
+
+        <table class="forumline" style="width:50%;float: left" cellspacing="1" cellpadding="4">
+            <tr>
+                <th colspan="2" class="thHead">{_Board_Statistics}</th>
+            </tr>
+
+            <tr>
+                <td class="row1" width="50%">{_Number_categories}:</td>
+                <td class="row2" width="50%"><b>{$numberOfCategories}</b></td>
+            </tr>
+
+            <tr>
+                <td class="row1">{_Number_forums}:</td>
+                <td class="row2"><b>{$numberOfForums}</b></td>
+            </tr>
+
+            <tr>
+                <td class="row1">{_Number_topics}:</td>
+                <td class="row2"><b>{$numberOfTopics}</b></td>
+            </tr>
+
+            <tr>
+                <td class="row1">{_Number_posts}:</td>
+                <td class="row2"><b>{$numberOfPosts}</b></td>
+            </tr>
+
+            <tr>
+                <td class="row1">{_Number_themes}:</td>
+                <td class="row2"><b>{$numberOfThemes}</b></td>
+            </tr>
+
+            <tr>
+                <td class="row1">{_Number_watching}:</td>
+                <td class="row2"><b>{$numberOfTopicsWatch}</b></td>
+            </tr>
+
+            <tr>
+                <td class="row1">{_Number_languages}:</td>
+                <td class="row2"><b>{$numberOfLanguages}</b></td>
+            </tr>
+        </table>
+
+        <table class="forumline" style="width:50%;float: left" cellspacing="1" cellpadding="4">
+            <tr>
+                <th colspan="2" class="thHead">{_Ranks_Statistics}</th>
+            </tr>
+
+            <tr>
+                <td class="row1" width="50%">{_Number_ranks}:</td>
+                <td class="row2" width="50%"><b>{$numberOfRanks}</b></td>
+            </tr>
+
+            <tr>
+                <td class="row1">{_Number_special_ranks}:</td>
+                <td class="row2"><b>{$numberofSpecialRanks}</b></td>
+            </tr>
+
+            <tr>
+                <td class="row1">{_Number_not_special_ranks}:</td>
+                <td class="row2"><b>{$numberofNotSpecialRanks}</b></td>
+            </tr>
+        </table>
+
+        <table class="forumline" style="width:50%;float: left" cellspacing="1" cellpadding="4">
+            <tr>
+                <th colspan="2" class="thHead">{_Groups_Statistics}</th>
+            </tr>
+
+            <tr>
+                <td class="row1" width="50%">{_Number_groups}:</td>
+                <td class="row2" width="50%"><b>{$numberOfGroups}</b></td>
+            </tr>
+
+            <tr>
+                <td class="row1">{_Number_single_groups}:</td>
+                <td class="row2"><b>{$numberOfSingleUserGroups}</b></td>
+            </tr>
+
+            <tr>
+                <td class="row1">{_Number_not_single_groups}:</td>
+                <td class="row2"><b>{$numberOfNotSingleUserGroups}</b></td>
+            </tr>
+        </table>
+
+        <table class="forumline" style="width:50%;float: right" cellspacing="1" cellpadding="4">
+            <tr>
+                <th colspan="2" class="thHead">{_Database_Statistics}</th>
+            </tr>
+
+            <tr>
+                <td class="row1" width="50%">{_Database_size}:</td>
+                <td class="row2" width="50%"><b>{$dbSize|bytes}</b></td>
+            </tr>
+
+            <tr>
+                <td class="row1">{_Avatar_dir_size}:</td>
+                <td class="row2"><b>{$avatarDirSize}</b></td>
+            </tr>
+
+            {*
+            <tr>
+
+                <td class="row1">{_Gzip_compression}:</td>
+                <td class="row2"><b>{GZIP_COMPRESSION}</b></td>
+            </tr>
+            *}
+
+            <tr>
+                <td class="row1">{_Board_started}:</td>
+                <td class="row2"><b>{$startDay}</b></td>
+            </tr>
+        </table>
+
+        <table class="forumline" style="width:50%;float: left" cellspacing="1" cellpadding="4">
+            <tr>
+                <th colspan="2" class="thHead">{_Board_Statistics}</th>
+            </tr>
+
+            <tr>
+                <td class="row1" width="50%">{_Posts_per_day}:</td>
+                <td class="row2" width="50%"><b>{$postsPerDay}</b></td>
+            </tr>
+
+            <tr>
+                <td class="row1">{_Topics_per_day}:</td>
+                <td class="row2"><b>{$topicsPerDay}</b></td>
+            </tr>
+
+            <tr>
+                <td class="row1">{_Users_per_day}:</td>
+                <td class="row2"><b>{$usersPerDay}</b></td>
+            </tr>
+
+            <tr>
+                <td class="row1">{_Thanks_per_day}:</td>
+                <td class="row2"><b>{$thanksPerDay}</b></td>
+            </tr>
+
+            <tr>
+                <td class="row1">{_Topic_watch_per_day}:</td>
+                <td class="row2"><b>{$topicsWatchsPerDay}</b></td>
+            </tr>
+
+            <tr>
+                <td class="row1">{_Percent_auto_logged}:</td>
+                <td class="row2"><b>{$percentAutoLoggedIn}%</b></td>
+            </tr>
+        </table>
+
+        <table class="forumline" style="width:50%;float: right" cellspacing="1" cellpadding="4">
+            <tr>
+                <th class="thHead" colspan="2">{_Version_Statistics}</th>
+            </tr>
+
+            <tr>
+                <td class="row1" width="50%">{_Version_of_board|noescape}:</td>
+                <td class="row2" width="50%"><b>{$phpBBVersion}</b></td>
+            </tr>
+
+            <tr>
+                <td class="row1">{_Version_of_PHP|noescape}:</td>
+                <td class="row2"><b>{$phpVersion}</b></td>
+            </tr>
+
+            <tr>
+                <td class="row1">{_Version_of_MySQL|noescape}:</td>
+                <td class="row2"><b>{$mysqlVersion}</b></td>
+            </tr>
+        </table>
+
+        <table class="forumline" style="width:50%; float: left" cellspacing="1" cellpadding="4">
+            <tr>
+                <th colspan="2" class="thHead">{_Members_Statistics}</th>
+            </tr>
+
+            <tr>
+                <td class="row1" width="50%">{_Number_users}:</td>
+                <td class="row2"><b>{$numberOfUsers}</b></td>
+            </tr>
+
+            <tr>
+                <td class="row1">{_Online_users}:</td>
+                <td class="row2"><b>{$numberOfOnlineUsers}</b></td>
+            </tr>
+
+            <tr>
+                <td class="row1">{_Online_registered_users}:</td>
+                <td class="row2"><b>{$numberOfRegisteredOnlineUsers}</b></td>
+            </tr>
+
+            <tr>
+                <td class="row1">{_Thereof_activated_users}:</td>
+                <td class="row2"><b>{$numberOfActiveUsers}</b></td>
+            </tr>
+
+            <tr>
+                <td class="row1">{_Thereof_deactivated_users}:</td>
+                <td class="row2"><b>{$numberOfNotActiveUsers}</b></td>
+            </tr>
+
+            <tr>
+                <td class="row1">{_Thereof_Administrators}:</td>
+                <td class="row2"><b>{$numberOfAdministrators}</b></td>
+            </tr>
+
+            <tr>
+                <td class="row1">{_Thereof_Moderators}:</td>
+                <td class="row2"><b>{$numberOfModerators}</b></td>
+            </tr>
+
+            <tr>
+                <td class="row1">{_Number_auto_logged}:</td>
+                <td class="row2"><b>{$numberOfAutoLoggedInUsers}</b></td>
+            </tr>
+        </table>
+    </div>
+{/block}

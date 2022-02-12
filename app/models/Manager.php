@@ -126,4 +126,12 @@ class Manager
         return dibi::select('COUNT(%n)', $this->primaryKey)
         ->from($this->tableName);
     }
+
+    /**
+     * @return mixed
+     */
+    public function getAllCount()
+    {
+        return $this->selectCountFluent()->fetchSingle();
+    }
 }

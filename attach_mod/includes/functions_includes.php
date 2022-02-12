@@ -232,7 +232,7 @@ function attachment_quota_settings($admin_mode, $mode, $submit = false)
 /**
  * Called from usercp_viewprofile, displays the User Upload Quota Box, Upload Stats and a Link to the User Attachment Control Panel
  * Groups are able to be grabbed, but it's not used within the Attachment Mod. ;)
- * (includes/usercp_viewprofile.php)
+ * (includes/UserViewProfilePresenter.php)
  * @param     $user_id
  * @param int $group_id
  */

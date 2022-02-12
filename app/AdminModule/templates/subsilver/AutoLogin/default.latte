@@ -1,0 +1,28 @@
+{define title}{/define}
+
+{block content}
+<table cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
+    <thead>
+    <tr>
+        <th class="thHead">{_User_id}</th>
+        <th class="thHead">{_Username}</th>
+        <th class="thHead">{_IP_Address}</th>
+        <th class="thHead">{_Last_login}</th>
+        <th class="thHead"></th>
+    </tr>
+    </thead>
+    {foreach $sessions as $session}
+        <tr>
+            <td class="{$iterator->isEven() ? row1 : row2}">
+                <a href="{link User:edit, $session->user_id}">{$session->user_id}</a>
+            </td>
+            <td class="{$iterator->isEven() ? row1 : row2}">{$session->username}</td>
+            <td class="{$iterator->isEven() ? row1 : row2}">{$session->last_ip|decodeIp}</td>
+            <td class="{$iterator->isEven() ? row1 : row2}">{$session->last_login|date:'%d.%m.%Y %H:%S:%M'}</td>
+            <td class="{$iterator->isEven() ? row1 : row2}">
+                <a href="{link AutoLogin:delete, $session->key_id}">{_Delete}</a>
+            </td>
+        </tr>
+    {/foreach}
+</table>
+{/block}

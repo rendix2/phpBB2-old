@@ -1,0 +1,11 @@
+{define title}{/define}
+
+{block content}
+    {control userChangePasswordForm}
+
+    {if $presenter->getParameter('id') && $userData->user_level === $usersManager::ADMIN}
+    {control userAdminChangePasswordForm}
+    {/if}
+
+    {control userForm}
+{/block}

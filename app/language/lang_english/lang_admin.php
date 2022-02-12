@@ -469,6 +469,7 @@ $lang['User_admin'] = 'User Administration';
 $lang['User_admin_explain'] = 'Here you can change your users\' information and certain options. To modify the users\' permissions, please use the user and group permissions system.';
 
 $lang['Look_up_user'] = 'Look up user';
+$lang['User_new'] = 'Add new user';
 
 $lang['Admin_user_fail'] = 'Couldn\'t update the user\'s profile.';
 $lang['Admin_user_updated'] = 'The user\'s profile was successfully updated.';

@@ -1,0 +1,9 @@
+{define title}{/define}
+
+{block content}
+    {if $group}
+    <h1>{$group->group_name}</h1>
+    {/if}
+
+    {control groupForm}
+{/block}

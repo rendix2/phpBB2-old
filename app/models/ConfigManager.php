@@ -10,4 +10,9 @@ namespace phpBB2\Models;
  */
 class ConfigManager extends CrudManager
 {
+    public function getConfig()
+    {
+        return $this->getAllPairs('config_value');
+    }
+
 }
